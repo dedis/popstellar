@@ -151,10 +151,6 @@ export const getServerPublicKeyByAddress = (
   return undefined;
 };
 
-const sGetServerState = (state: any) => getServerState(state);
-const sGetLaoState = (state: any) => getLaosState(state);
-const sGetServersByLaoId = (state: any) => getServerState(state).byLaoId;
-
 /**
  * A function that creates a selector that retrieve the public key of the lao organizer's backend
  * @param laoId The lao id
@@ -163,9 +159,9 @@ const sGetServersByLaoId = (state: any) => getServerState(state).byLaoId;
 export const makeLaoOrganizerBackendPublicKeySelector = (laoId: string) =>
   createSelector(
     // First input: The server state
-    sGetServerState,
+    (state: any) => getServerState(state),
     // Second input: The laos state
-    sGetLaoState,
+    (state: any) => getLaosState(state),
     // Selector: returns the server object associated to the given address
     (serverState: ServerReducerState, laoState: LaoReducerState): PublicKey | undefined => {
       // if there is no current lao, return undefined
@@ -194,7 +190,7 @@ export const makeLaoOrganizerBackendPublicKeySelector = (laoId: string) =>
 export const makeServerSelector = (laoId: string, address: ServerAddress) =>
   createSelector(
     // First input: map of lao ids to servers
-    sGetServersByLaoId,
+    (state: any) => getServerState(state).byLaoId,
     // Selector: returns the server object associated to the given address
     (byLaoId: ServerReducerState['byLaoId']): LaoServer | undefined => {
       if (laoId in byLaoId && address in byLaoId[laoId].byAddress) {

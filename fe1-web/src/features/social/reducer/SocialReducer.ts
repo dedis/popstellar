@@ -223,15 +223,15 @@ export default {
 export const getSocialState = (state: any): SocialLaoReducerState => state[socialReducerPath];
 
 // Selector helper functions
-const sGetSocialState = (state: any) => getSocialState(state);
-const sGetCurrentLaoId = (state: any) => getLaosState(state).currentId;
+const selectSocialState = (state: any) => getSocialState(state);
+const selectCurrentLaoId = (state: any) => getLaosState(state).currentId;
 
 export const makeChirpsList = () =>
   createSelector(
     // First input: Get all chirps across all LAOs
-    sGetSocialState,
+    selectSocialState,
     // Second input: Get the current LAO id,
-    sGetCurrentLaoId,
+    selectCurrentLaoId,
     (chirpList: SocialLaoReducerState, laoId: string | undefined): ChirpState[] => {
       if (!laoId) {
         return [];
@@ -250,9 +250,9 @@ export const makeChirpsListOfUser = (user: PublicKey | string | undefined) => {
   const userPublicKey = user?.valueOf();
   return createSelector(
     // First input: Get all chirps across all LAOs
-    sGetSocialState,
+    selectSocialState,
     // Second input: Get the current LAO id,
-    sGetCurrentLaoId,
+    selectCurrentLaoId,
     (chirpList: SocialLaoReducerState, laoId: string | undefined): ChirpState[] => {
       if (!laoId || !userPublicKey) {
         return [];
@@ -279,8 +279,8 @@ const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
 
 export const makeReactionsList = () =>
   createSelector(
-    sGetSocialState,
-    sGetCurrentLaoId,
+    selectSocialState,
+    selectCurrentLaoId,
     (
       list: SocialLaoReducerState,
       laoId: string | undefined,

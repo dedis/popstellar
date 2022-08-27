@@ -135,9 +135,7 @@ export const { addEvent, updateEvent, removeEvent, clearAllEvents } = eventSlice
 
 export const getEventState = (state: any): EventReducerState => state[EVENT_REDUCER_PATH];
 
-const sGetAllEventsIds = (laoId: string) => (state: any) =>
-  getEventState(state).byLaoId[laoId]?.allIds;
-const sGetEventsById = (state: any) => getEventState(state).byId;
+const selectEventsById = (state: any) => getEventState(state).byId;
 
 /**
  * Creates a selector that returns a list of all events for a given lao id
@@ -146,9 +144,9 @@ const sGetEventsById = (state: any) => getEventState(state).byId;
 export const makeEventListSelector = (laoId: string) =>
   createSelector(
     // First input: Get all event ids for the given lao id
-    sGetAllEventsIds(laoId),
+    (state: any) => getEventState(state).byLaoId[laoId]?.allIds,
     // Second input: Get all events across all LAOs
-    sGetEventsById,
+    selectEventsById,
     // Selector: returns an array of EventStates -- should it return an array of Event objects?
     (allIds: string[] | undefined, byId): EventState[] => {
       if (!allIds) {
@@ -169,7 +167,7 @@ export const makeEventSelector = (eventId: Hash | string | undefined) => {
 
   return createSelector(
     // First input: Get all events for a given lao
-    sGetEventsById,
+    selectEventsById,
     // Selector: returns the state of a given event
     (eventsById): EventState | undefined => {
       if (!eventIdString || !(eventIdString in eventsById)) {
@@ -208,9 +206,9 @@ export const getEvent = (eventId: Hash | string | undefined, state: unknown) => 
 export const makeEventByTypeSelector = (laoId: string, eventType: string) =>
   createSelector(
     // First input: Get all event ids for the given lao id
-    sGetAllEventsIds(laoId),
+    (state: any) => getEventState(state).byLaoId[laoId]?.allIds,
     // Second input: Get all events across all LAOs
-    sGetEventsById,
+    selectEventsById,
     // Selector: returns a map of lao ids to a map of event its to event states
     (
       eventIds: string[] | undefined,

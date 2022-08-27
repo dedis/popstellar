@@ -82,14 +82,10 @@ export function requestOpenRollCall(
  */
 export function requestReopenRollCall(
   laoId: Hash,
-  rollCallId: Hash | undefined,
+  rollCallId: Hash,
   start?: Timestamp,
 ): Promise<void> {
   const time = start === undefined ? Timestamp.EpochNow() : start;
-
-  if (!rollCallId) {
-    throw new Error('Impossible to reopen roll call: roll call id is undefined');
-  }
 
   const message = new ReopenRollCall(
     {
