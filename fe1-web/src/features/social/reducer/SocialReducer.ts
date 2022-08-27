@@ -6,7 +6,6 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash, PublicKey, Timestamp } from 'core/objects';
-import { getLaosState } from 'features/lao/reducer/LaoReducer';
 
 import { Chirp, ChirpState, ReactionState } from '../objects';
 
@@ -27,7 +26,7 @@ interface SocialReducerState {
 }
 
 // Root state for the Social Reducer
-interface SocialLaoReducerState {
+export interface SocialLaoReducerState {
   // Associates a given LAO ID with the whole representation of its social media
   byLaoId: Record<string, SocialReducerState>;
 }
@@ -43,7 +42,8 @@ const initialState: SocialLaoReducerState = {
   },
 };
 
-const socialReducerPath = 'social';
+/* Name of the social media slice in storage */
+export const SOCIAL_REDUCER_PATH = 'social';
 
 // helper function to find where to insert the new chirp in ascending time order
 function findInsertIdx(array: string[], byId: Record<string, ChirpState>, element: number): number {
@@ -62,7 +62,7 @@ function findInsertIdx(array: string[], byId: Record<string, ChirpState>, elemen
 }
 
 const socialSlice = createSlice({
-  name: socialReducerPath,
+  name: SOCIAL_REDUCER_PATH,
   initialState,
   reducers: {
     // Add a chirp to the list of chirps
@@ -217,10 +217,10 @@ export const { addChirp, deleteChirp, addReaction } = socialSlice.actions;
 export const socialReduce = socialSlice.reducer;
 
 export default {
-  [socialReducerPath]: socialSlice.reducer,
+  [SOCIAL_REDUCER_PATH]: socialSlice.reducer,
 };
 
-export const getSocialState = (state: any): SocialLaoReducerState => state[socialReducerPath];
+export const getSocialState = (state: any): SocialLaoReducerState => state[SOCIAL_REDUCER_PATH];
 
 // Selector helper functions
 const selectSocialState = (state: any) => getSocialState(state);
@@ -265,11 +265,21 @@ export const makeChirpsListOfUser = (user: PublicKey | string | undefined) => {
           userChirps.forEach((id: string) => allUserChirps.push(chirpList.byLaoId[laoId].byId[id]));
           return allUserChirps;
         }
-      }
-      return [];
-    },
-  );
-};
+        const laoChirps = chirpList.byLaoId[laoId];
+        if (laoChirps) {
+          const allUserChirps: ChirpState[] = [];
+          const userChirps = laoChirps.byUser[userPublicKey];
+          if (userChirps) {
+            userChirps.forEach((id: string) =>
+              allUserChirps.push(chirpList.byLaoId[laoId].byId[id]),
+            );
+            return allUserChirps;
+          }
+        }
+        return [];
+      },
+    );
+  };
 
 const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
   '👍': reactionByUser['👍'] ? reactionByUser['👍'].length : 0,
@@ -277,7 +287,7 @@ const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
   '❤️': reactionByUser['❤️'] ? reactionByUser['❤️'].length : 0,
 });
 
-export const makeReactionsList = () =>
+export const makeReactionsList = (laoId: string | undefined) =>
   createSelector(
     selectSocialState,
     selectCurrentLaoId,

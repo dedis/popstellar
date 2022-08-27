@@ -4,15 +4,15 @@ import { mockRollCall, mockRollCall2, mockRollCallWithAliasState } from '../../_
 import { RollCall, RollCallState } from '../../objects';
 import {
   addRollCall,
-  rollcallReduce,
-  RollCallReducerState,
-  ROLLCALL_REDUCER_PATH,
-  makeRollCallSelector,
-  removeRollCall,
-  updateRollCall,
+  getRollCallById,
   makeRollCallAttendeesListSelector,
   makeRollCallByIdSelector,
-  getRollCallById,
+  makeRollCallSelector,
+  removeRollCall,
+  ROLLCALL_REDUCER_PATH,
+  rollcallReduce,
+  RollCallReducerState,
+  updateRollCall,
 } from '../RollCallReducer';
 
 const mockRollCallState: RollCallState = mockRollCall.toState();
@@ -274,7 +274,12 @@ describe('RollCallReducer', () => {
       expect(
         makeRollCallAttendeesListSelector(mockRollCallState.id)({
           [ROLLCALL_REDUCER_PATH]: {
-            byId: { [mockRollCallState.id]: { ...mockRollCallState, attendees: undefined } },
+            byId: {
+              [mockRollCallState.id]: {
+                ...mockRollCallState,
+                attendees: undefined,
+              },
+            },
             allIds: [mockRollCallState.id],
             idAlias: {},
           } as RollCallReducerState,

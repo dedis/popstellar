@@ -1,17 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
 
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { PublicKey } from 'core/objects';
 import { Color, Spacing, Typography } from 'core/styles';
-import { selectCurrentLao } from 'features/lao/reducer';
-import { RollCall } from 'features/rollCall/objects';
-import { makeRollCallSelector } from 'features/rollCall/reducer';
-import { generateToken } from 'features/wallet/objects';
 import STRINGS from 'resources/strings';
 
+import { SocialMediaContext } from '../context';
+import { SocialHooks } from '../hooks';
+import { SocialFeature } from '../interface';
 import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
@@ -48,9 +46,11 @@ const iconSelector =
  * This class manages the social media navigation and creates the corresponding navigation bar.
  */
 const SocialMediaNavigation = () => {
-  const [currentUserPublicKey, setCurrentUserPublicKey] = useState(new PublicKey(''));
+  const [currentUserPopTokenPublicKey, setCurrentUserPopTokenPublicKey] = useState(
+    undefined as unknown as PublicKey,
+  );
 
-  const lao = useSelector(selectCurrentLao);
+  const lao = SocialHooks.useCurrentLao();
 
   if (lao === undefined) {
     throw new Error('LAO is currently undefined, impossible to access to Social Media');
@@ -58,50 +58,49 @@ const SocialMediaNavigation = () => {
 
   // Get the pop token of the user using the last tokenized roll call
   const rollCallId = lao.last_tokenized_roll_call_id;
-  const eventSelect = makeRollCallSelector(rollCallId);
-  const rollCall: RollCall = useSelector(eventSelect) as RollCall;
+  const rollCall: SocialFeature.RollCall | undefined = SocialHooks.useRollCallById(rollCallId);
 
-  // This will be run again each time the lao.last_tokenized_roll_call_id changes
-  useEffect(() => {
-    generateToken(lao.id, rollCallId)
-      .then((token) => {
-        if (rollCall.containsToken(token)) {
-          setCurrentUserPublicKey(token.publicKey);
-        }
-      })
-      // If an error happens when generating the token, it should not affect the Social Media
-      .catch(() => {
-        /* noop */
-      });
-  }, [lao.id, lao.last_tokenized_roll_call_id, rollCall, rollCallId]);
+  SocialHooks.useSocialContext()
+    .generateToken(lao.id, rollCallId)
+    .then((token) => {
+      if (rollCall?.containsToken(token)) {
+        setCurrentUserPopTokenPublicKey(token.publicKey);
+      }
+    })
+    // If an error happens when generating the token, it should not affect the Social Media
+    .catch(() => {
+      /* noop */
+    });
 
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: iconSelector(route.name),
+    <SocialMediaContext.Provider
+      value={{
+        currentUserPopTokenPublicKey,
+      }}>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: iconSelector(route.name),
 
-        tabBarActiveTintColor: Color.accent,
-        tabBarInactiveTintColor: Color.inactive,
-        headerLeftContainerStyle: {
-          paddingLeft: Spacing.contentSpacing,
-        },
-        headerRightContainerStyle: {
-          paddingRight: Spacing.contentSpacing,
-        },
-        headerTitleStyle: Typography.topNavigationHeading,
-        headerTitleAlign: 'center',
-      })}>
-      <Tab.Screen name={STRINGS.social_media_navigation_tab_home}>
-        {() => <SocialHome currentUserPublicKey={currentUserPublicKey} />}
-      </Tab.Screen>
-      <Tab.Screen name={STRINGS.social_media_navigation_tab_search}>
-        {() => <SocialSearchNavigation currentUserPublicKey={currentUserPublicKey} />}
-      </Tab.Screen>
-      <Tab.Screen name={STRINGS.social_media_navigation_tab_follows} component={SocialFollows} />
-      <Tab.Screen name={STRINGS.social_media_navigation_tab_profile}>
-        {() => <SocialProfile currentUserPublicKey={currentUserPublicKey} />}
-      </Tab.Screen>
-    </Tab.Navigator>
+          tabBarActiveTintColor: Color.accent,
+          tabBarInactiveTintColor: Color.inactive,
+          headerLeftContainerStyle: {
+            paddingLeft: Spacing.contentSpacing,
+          },
+          headerRightContainerStyle: {
+            paddingRight: Spacing.contentSpacing,
+          },
+          headerTitleStyle: Typography.topNavigationHeading,
+          headerTitleAlign: 'center',
+        })}>
+        <Tab.Screen name={STRINGS.social_media_navigation_tab_home} component={SocialHome} />
+        <Tab.Screen
+          name={STRINGS.social_media_navigation_tab_search}
+          component={SocialSearchNavigation}
+        />
+        <Tab.Screen name={STRINGS.social_media_navigation_tab_follows} component={SocialFollows} />
+        <Tab.Screen name={STRINGS.social_media_navigation_tab_profile} component={SocialProfile} />
+      </Tab.Navigator>
+    </SocialMediaContext.Provider>
   );
 };
 

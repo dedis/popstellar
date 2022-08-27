@@ -3,11 +3,14 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
-import { mockKeyPair, mockLaoState } from '__tests__/utils';
+import { mockLao, mockLaoIdHash, mockLaoState, mockPopToken } from '__tests__/utils';
+import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
-import { requestAddChirp } from 'features/social/network/SocialMessageApi';
-import SocialReducer from 'features/social/reducer/SocialReducer';
 
+import { SocialMediaContext } from '../../context';
+import { SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
+import { requestAddChirp } from '../../network/SocialMessageApi';
+import SocialReducer from '../../reducer/SocialReducer';
 import SocialHome from '../SocialHome';
 
 jest.mock('features/social/network/SocialMessageApi', () => {
@@ -17,6 +20,22 @@ jest.mock('features/social/network/SocialMessageApi', () => {
     requestAddChirp: jest.fn(() => Promise.resolve()),
   };
 });
+
+const featureContextValue = {
+  [SOCIAL_FEATURE_IDENTIFIER]: {
+    useCurrentLao: () => mockLao,
+    getCurrentLao: () => mockLao,
+    useCurrentLaoId: () => mockLaoIdHash,
+    getCurrentLaoId: () => mockLaoIdHash,
+    useRollCallById: () => undefined,
+    useRollCallAttendeesById: () => [],
+    generateToken: () => mockPopToken,
+  },
+};
+
+const socialContextValue = {
+  currentUserPopTokenPublicKey: mockPopToken.publicKey,
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -29,7 +48,11 @@ describe('SocialHome', () => {
   it('renders correctly', () => {
     const { toJSON } = render(
       <Provider store={mockStore}>
-        <SocialHome currentUserPublicKey={mockKeyPair.publicKey} />
+        <FeatureContext.Provider value={featureContextValue}>
+          <SocialMediaContext.Provider value={socialContextValue}>
+            <SocialHome />
+          </SocialMediaContext.Provider>
+        </FeatureContext.Provider>
       </Provider>,
     );
     expect(toJSON()).toMatchSnapshot();
@@ -38,7 +61,11 @@ describe('SocialHome', () => {
   it('is possible to publish chirps', async () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
-        <SocialHome currentUserPublicKey={mockKeyPair.publicKey} />
+        <FeatureContext.Provider value={featureContextValue}>
+          <SocialMediaContext.Provider value={socialContextValue}>
+            <SocialHome />
+          </SocialMediaContext.Provider>
+        </FeatureContext.Provider>
       </Provider>,
     );
 
@@ -48,7 +75,7 @@ describe('SocialHome', () => {
     fireEvent.press(getByTestId('new_chirp_publish'));
 
     await waitFor(() => {
-      expect(requestAddChirp).toHaveBeenCalledWith(mockKeyPair.publicKey, mockText);
+      expect(requestAddChirp).toHaveBeenCalledWith(mockPopToken.publicKey, mockText, mockLaoIdHash);
       expect(requestAddChirp).toHaveBeenCalledTimes(1);
     });
   });
