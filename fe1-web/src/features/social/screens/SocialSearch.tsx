@@ -1,22 +1,24 @@
-import PropTypes from 'prop-types';
 import * as React from 'react';
+import { useContext } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import { PublicKey } from 'core/objects';
 import { gray } from 'core/styles/color';
-import { selectCurrentLao } from 'features/lao/reducer';
-import { makeRollCallAttendeesListSelector } from 'features/rollCall/reducer';
 import STRINGS from 'resources/strings';
 
 import { UserListItem } from '../components';
+import { SocialMediaContext } from '../context';
+import { SocialHooks } from '../hooks';
+import { SocialFeature } from '../interface';
 
 /**
  * Component that will be used to allow users to search for other users or topics.
  * For now, it is used to show all the attendees of the last roll call so that everyone can follow
  * whoever they want.
  */
+
 const styles = StyleSheet.create({
   viewCenter: {
     alignSelf: 'center',
@@ -34,56 +36,46 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const SocialSearch = (props: IPropTypes) => {
-  const { currentUserPublicKey } = props;
-  const currentLao = useSelector(selectCurrentLao);
+const SocialSearch = () => {
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
+  const currentLao = SocialHooks.useCurrentLao();
 
   if (!currentLao) {
     throw new Error('Impossible to open Social media Search if you are not connected to a LAO');
   }
 
   const rollCallId = currentLao.last_tokenized_roll_call_id;
-  const attendeesSelect = makeRollCallAttendeesListSelector(rollCallId);
-  const attendees = useSelector(attendeesSelect);
+  const attendees = SocialHooks.useRollCallAttendeesById(rollCallId);
 
   const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
     // Not show our own profile
-    if (item.valueOf() === currentUserPublicKey.valueOf()) {
+    if (item.valueOf() === currentUserPopTokenPublicKey.valueOf()) {
       return null;
     }
-    return (
-      <UserListItem
-        laoId={currentLao.id}
-        publicKey={item}
-        currentUserPublicKey={currentUserPublicKey}
-      />
-    );
+    return <UserListItem laoId={currentLao.id} publicKey={item} />;
   };
 
   return (
-    <View style={styles.viewCenter}>
-      <View style={styles.titleTextView}>
-        <TextBlock text={STRINGS.attendees_of_last_roll_call} />
+    <ScreenWrapper>
+      <View style={styles.viewCenter}>
+        <View style={styles.titleTextView}>
+          <TextBlock text={STRINGS.attendees_of_last_roll_call} />
+        </View>
+        <View style={styles.attendeesList}>
+          <FlatList
+            data={attendees}
+            renderItem={renderItem}
+            keyExtractor={(publicKey) => publicKey.valueOf()}
+          />
+        </View>
       </View>
-      <View style={styles.attendeesList}>
-        <FlatList
-          data={attendees}
-          renderItem={renderItem}
-          keyExtractor={(publicKey) => publicKey.valueOf()}
-        />
-      </View>
-    </View>
+    </ScreenWrapper>
   );
 };
 
-const propTypes = {
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-};
-
-SocialSearch.prototype = propTypes;
-
-type IPropTypes = {
-  currentUserPublicKey: PublicKey;
-};
-
 export default SocialSearch;
+
+export const SocialSearchScreen: SocialFeature.SocialScreen = {
+  id: STRINGS.social_media_navigation_tab_search,
+  Component: SocialSearch,
+};

@@ -3,7 +3,7 @@ import '__tests__/utils/matchers';
 
 import testKeyPair from 'test_data/keypair.json';
 
-import { configureTestFeatures, mockLao, mockLaoId } from '__tests__/utils';
+import { configureTestFeatures, mockLao, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
 import { Hash, PublicKey } from 'core/objects';
@@ -40,7 +40,12 @@ beforeEach(() => {
 describe('MessageApi', () => {
   it('should create the correct request for requestAddChirp with parentId', async () => {
     const parentId = new Hash('id');
-    await msApi.requestAddChirp(new PublicKey(testKeyPair.publicKey), mockText, parentId);
+    await msApi.requestAddChirp(
+      new PublicKey(testKeyPair.publicKey),
+      mockText,
+      mockLaoIdHash,
+      parentId,
+    );
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
@@ -49,7 +54,7 @@ describe('MessageApi', () => {
   });
 
   it('should create the correct request for requestAddChirp without parentId', async () => {
-    await msApi.requestAddChirp(new PublicKey(testKeyPair.publicKey), mockText);
+    await msApi.requestAddChirp(new PublicKey(testKeyPair.publicKey), mockText, mockLaoIdHash);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];

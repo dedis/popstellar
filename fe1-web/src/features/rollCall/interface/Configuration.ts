@@ -2,12 +2,12 @@ import React from 'react';
 import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash, PopToken, RollCallToken } from 'core/objects';
+import { Hash, PopToken, PublicKey, RollCallToken } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 import STRINGS from 'resources/strings';
 
 import { RollCall } from '../objects';
-import { RollCallReducerState, ROLLCALL_REDUCER_PATH } from '../reducer';
+import { ROLLCALL_REDUCER_PATH, RollCallReducerState } from '../reducer';
 import { RollCallFeature } from './Feature';
 
 export const ROLLCALL_FEATURE_IDENTIFIER = 'rollCall';
@@ -111,13 +111,15 @@ export interface RollCallInterface extends FeatureInterface {
   };
 
   hooks: {
-    useRollCallById: (rollCallId: Hash | string) => RollCall | undefined;
+    useRollCallById: (rollCallId: Hash | string | undefined) => RollCall | undefined;
     useRollCallsByLaoId: (laoId: string) => {
       [rollCallId: string]: RollCall;
     };
 
     useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
     useRollCallTokenByRollCallId: (laoId: string, rollCallId: string) => RollCallToken | undefined;
+
+    useRollCallAttendeesById: (rollCallId: Hash | string | undefined) => PublicKey[];
   };
 
   context: RollCallReactContext;
