@@ -73,8 +73,6 @@ export default {
   [MEETING_REDUCER_PATH]: meetingSlice.reducer,
 };
 
-const sGetMeetingState = (state: any) => getMeetingState(state).byId;
-
 /**
  * Creates a selector that retrieves an meeting by its id
  * @param meetingId The if of the meeting / event to retrieve
@@ -85,7 +83,7 @@ export const makeMeetingSelector = (meetingId: Hash | string) => {
 
   return createSelector(
     // First input: map from ids to meetings
-    sGetMeetingState,
+    (state: any) => getMeetingState(state).byId,
     // Selector: returns the selected meeting
     (meetingById: Record<string, MeetingState>): Meeting | undefined => {
       if (!(meetingIdString in meetingById)) {

@@ -124,21 +124,13 @@ export default {
 export const getDigitalCashState = (state: any): DigitalCashLaoReducerState =>
   state[DIGITAL_CASH_REDUCER_PATH];
 
-// Selector helper functions
-const sGetDigitalCashStateForLao = (laoId: Hash | string) => (state: any) =>
-  getDigitalCashState(state).byLaoId[laoId.valueOf()];
-const sGetAllTransactionsHashForLao = (laoId: Hash | string) => (state: any) =>
-  getDigitalCashState(state).byLaoId[laoId.valueOf()]?.allTransactionsHash;
-const sGetTransactionsByHashForLao = (laoId: Hash | string) => (state: any) =>
-  getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash;
-
 /**
  * Selector for the mapping between public key hashes and balances
  * @param laoId the lao in which to search for the balances mapping
  */
 export const makeBalancesSelector = (laoId: Hash | string) =>
   createSelector(
-    sGetDigitalCashStateForLao(laoId),
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
     (laoState: DigitalCashReducerState | undefined) => {
       return laoState?.balances || {};
     },
@@ -151,7 +143,7 @@ export const makeBalancesSelector = (laoId: Hash | string) =>
  */
 export const makeBalanceSelector = (laoId: Hash | string, publicKey: string) =>
   createSelector(
-    sGetDigitalCashStateForLao(laoId),
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
     (laoState: DigitalCashReducerState | undefined) => {
       return laoState?.balances[Hash.fromPublicKey(publicKey).valueOf()] || 0;
     },
@@ -163,8 +155,8 @@ export const makeBalanceSelector = (laoId: Hash | string, publicKey: string) =>
  */
 export const makeTransactionsSelector = (laoId: Hash | string) =>
   createSelector(
-    sGetAllTransactionsHashForLao(laoId),
-    sGetTransactionsByHashForLao(laoId),
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.allTransactionsHash,
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
     (
       transactionHashes: string[] | undefined,
       transactionsByHash: Record<string, TransactionState> | undefined,
@@ -182,7 +174,7 @@ export const makeTransactionsSelector = (laoId: Hash | string) =>
  */
 export const makeTransactionsByHashSelector = (laoId: Hash | string) =>
   createSelector(
-    sGetTransactionsByHashForLao(laoId),
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
     (transactionsByHash: Record<string, TransactionState> | undefined) => {
       return transactionsByHash || {};
     },

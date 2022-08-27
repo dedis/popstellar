@@ -70,18 +70,15 @@ export const getGreetLaoState = (state: any): GreetLaoReducerState => state[GREE
 export const getUnhandledGreetLaoMessageIds = (state: any): string[] =>
   getGreetLaoState(state)?.unhandledIds || [];
 
-const sGetUnhandledGreetLaoMessageIds = (state: any) => getUnhandledGreetLaoMessageIds(state);
-const sGetMessagesById = (state: any) => getMessagesState(state)?.byId;
-
 /**
  * A selector returning a map from message ids to witness signatures
  * for all message ids of lao#greet messages that have not been handled yet.
  */
 export const selectUnhandledGreetLaoWitnessSignaturesByMessageId = createSelector(
   // First input: all unhandled lao greet message ids
-  sGetUnhandledGreetLaoMessageIds,
+  (state: any) => getUnhandledGreetLaoMessageIds(state),
   // Second input: the map of messageIds to the message state
-  sGetMessagesById || {},
+  (state: any) => getMessagesState(state)?.byId || {},
   // Selector: returns a map from lao#greet message id to witness signature
   (
     messageIds: string[],
