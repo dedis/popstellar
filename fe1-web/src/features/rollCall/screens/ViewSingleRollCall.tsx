@@ -1,7 +1,7 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
@@ -256,9 +256,6 @@ export const ViewSinglRollCallScreenRightHeader = () => {
     return null;
   }
 
-  // Once the roll call is opened the first time, idAlias is defined, and needed for closing/reopening the roll call
-  const eventHasBeenOpened = rollCall.idAlias !== undefined;
-
   const makeToastErr = (error: string) => {
     toast.show(error, {
       type: 'danger',
@@ -275,7 +272,8 @@ export const ViewSinglRollCallScreenRightHeader = () => {
   };
 
   const onReopenRollCall = () => {
-    if (eventHasBeenOpened) {
+    // Once the roll call is opened the first time, idAlias is defined
+    if (rollCall.idAlias) {
       requestReopenRollCall(laoId, rollCall.idAlias).catch((e) => {
         makeToastErr(STRINGS.roll_call_location_error_reopen_roll_call);
         console.debug(STRINGS.roll_call_location_error_reopen_roll_call, e);
@@ -287,7 +285,8 @@ export const ViewSinglRollCallScreenRightHeader = () => {
   };
 
   const onScanAttendees = () => {
-    if (eventHasBeenOpened) {
+    // Once the roll call is opened the first time, idAlias is defined
+    if (rollCall.idAlias) {
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_events,
         params: {
@@ -332,18 +331,34 @@ export const ViewSinglRollCallScreenRightHeader = () => {
   const getActionOptions = (status: RollCallStatus): ActionSheetOption[] => {
     switch (status) {
       case RollCallStatus.CREATED:
-        return [{ displayName: STRINGS.roll_call_open, action: onOpenRollCall }];
+        return [
+          {
+            displayName: STRINGS.roll_call_open,
+            action: onOpenRollCall,
+          },
+        ];
       case RollCallStatus.OPENED:
       case RollCallStatus.REOPENED:
         return [
-          { displayName: STRINGS.roll_call_scan_attendees, action: onScanAttendees },
-          { displayName: STRINGS.roll_call_close, action: onCloseRollCall },
+          {
+            displayName: STRINGS.roll_call_scan_attendees,
+            action: onScanAttendees,
+          },
+          {
+            displayName: STRINGS.roll_call_close,
+            action: onCloseRollCall,
+          },
         ];
       case RollCallStatus.CLOSED:
-        return [{ displayName: STRINGS.roll_call_reopen, action: onReopenRollCall }];
+        return [
+          {
+            displayName: STRINGS.roll_call_reopen,
+            action: onReopenRollCall,
+          },
+        ];
 
       default:
-        throw new Error(`Unkwon roll call status '${status}'`);
+        throw new Error(`Unknown roll call status '${status}'`);
     }
   };
 
