@@ -4,13 +4,12 @@ apply plugin: 'jacoco'
 apply plugin: 'dagger.hilt.android.plugin'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 32
 
     defaultConfig {
         applicationId "com.github.dedis.popstellar"
         minSdkVersion 26
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
 
@@ -54,11 +53,6 @@ android {
                 includeAndroidResources true
             }
         }
-
-        // Enable coverage with Jacoco for the project
-        testCoverage {
-            jacocoVersion = "0.8.7"
-        }
     }
 
     // The release tests cannot work as they need the debug-only activity EmptyActivity
@@ -100,6 +94,77 @@ sonarqube {
     }
 }
 
+delete 'src/main/resources/protocol'
+
+copy {
+    from '../../protocol'
+    into 'src/main/resources/protocol'
+
+    include 'answer/**'
+    include 'examples/**'
+    include 'qrcode/**'
+    include 'query/**'
+    include 'jsonRPC.json'
+
+    // Replace the remote part of the base URL ($id) to the local resource path
+    // This modification is done to force the use of local files when loading json sub-schemas ($ref)
+    // https://json-schema.org/understanding-json-schema/structuring.html#base-uri
+
+    filteringCharset = 'UTF-8'
+    filter {
+        String line -> line.replaceAll("https://raw\\.githubusercontent\\.com/dedis/[a-zA-Z0-9_-]+/master/", "resource:/")
+    }
+}
+
+// Jacoco configuration - This configures jacoco for each test task
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['check']) {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+
+    def fileFilter = [
+        '**/R.class',
+        '**/R$*.class',
+        '**/BuildConfig.*',
+        '**/Manifest*.*',
+        '**/*Test*.*',
+        'androidx/**/*.*',
+        // Exclude Hilt generated classes
+        '*_*Factory.class',
+        '*_ComponentTreeDeps.class',
+        '*_Factory.class',
+        '*_GeneratedInjector.class',
+        '*_HiltComponents.class',
+        '*_HiltModules.class',
+        '*_HiltModules_BindsModule.class',
+        '*_HiltModules_KeyModule.class',
+        '*_MembersInjector.class',
+        '*_ProvideFactory.class',
+        '*_SingletonC.class',
+        '*_TestComponentDataSupplier.class',
+        'BR.class',
+        'BuildConfig.class',
+        'DataBinderMapperImpl.class',
+        'Hilt_*.class',
+        '_test_*.class'
+    ]
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/asm_instrumented_project_classes/debug", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree]))
+    executionData.setFrom(fileTree(dir: project.buildDir, includes: [
+        'outputs/unit_test_code_coverage/*/*.exec',
+        'outputs/code_coverage/*/connected/**/*.ec',
+    ]))
+}
+
 dependencies {
     // Android Layout
     implementation 'com.google.android.material:material:1.5.0'
@@ -111,7 +176,6 @@ dependencies {
     implementation 'androidx.test.espresso:espresso-intents:3.4.0'
 
     // Hilt
-    def hilt_version = "2.38.1"
     implementation "com.google.dagger:hilt-android:$hilt_version"
     annotationProcessor "com.google.dagger:hilt-compiler:$hilt_version"
     // Hilt for Robolectric tests
@@ -175,72 +239,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
     androidTestUtil 'androidx.test:orchestrator:1.4.1'
-    // Mockito
-    testImplementation 'org.mockito:mockito-core:3.9.0'
-    androidTestImplementation 'org.mockito:mockito-android:3.9.0'
-}
-
-delete 'src/main/resources/protocol'
-
-copy {
-    from '../../protocol'
-    into 'src/main/resources/protocol'
-
-    include 'answer/**'
-    include 'examples/**'
-    include 'qrcode/**'
-    include 'query/**'
-    include 'jsonRPC.json'
-
-    // Replace the remote part of the base URL ($id) to the local resource path
-    // This modification is done to force the use of local files when loading json sub-schemas ($ref)
-    // https://json-schema.org/understanding-json-schema/structuring.html#base-uri
-
-    filteringCharset = 'UTF-8'
-    filter {
-        String line -> line.replaceAll("https://raw\\.githubusercontent\\.com/dedis/[a-zA-Z0-9_-]+/master/", "resource:/")
-    }
-}
-
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
-    reports {
-        xml.required = true
-        html.required = true
-    }
-
-    def fileFilter = [
-        '**/R.class',
-        '**/R$*.class',
-        '**/BuildConfig.*',
-        '**/Manifest*.*',
-        '**/*Test*.*',
-        'androidx/**/*.*',
-        // Exclude Hilt generated classes
-        '*_*Factory.class',
-        '*_ComponentTreeDeps.class',
-        '*_Factory.class',
-        '*_GeneratedInjector.class',
-        '*_HiltComponents.class',
-        '*_HiltModules.class',
-        '*_HiltModules_BindsModule.class',
-        '*_HiltModules_KeyModule.class',
-        '*_MembersInjector.class',
-        '*_ProvideFactory.class',
-        '*_SingletonC.class',
-        '*_TestComponentDataSupplier.class',
-        'BR.class',
-        'BuildConfig.class',
-        'DataBinderMapperImpl.class',
-        'Hilt_*.class',
-        '_test_*.class'
-    ]
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
-    def mainSrc = "$project.projectDir/src/main/java"
-
-    sourceDirectories.setFrom(files([mainSrc]))
-    classDirectories.setFrom(files([debugTree]))
-    executionData.setFrom(fileTree(dir: project.buildDir, includes: [
-        'outputs/unit_test_code_coverage/*/*.exec',
-        'outputs/code_coverage/*/connected/**/*.ec',
-    ]))
 }
