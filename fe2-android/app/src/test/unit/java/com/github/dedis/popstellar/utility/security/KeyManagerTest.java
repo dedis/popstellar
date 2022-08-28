@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 
+import org.junit.*;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

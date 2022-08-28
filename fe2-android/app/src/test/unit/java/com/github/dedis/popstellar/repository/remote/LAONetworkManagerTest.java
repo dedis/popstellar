@@ -94,11 +94,7 @@ public class LAONetworkManagerTest {
     doAnswer(answer).when(connection).sendMessage(any(Subscribe.class));
 
     // Actual test
-    Disposable disposable =
-        networkManager
-            .subscribe(CHANNEL)
-            // Make sure catchup is not called yet
-            .subscribe(() -> verify(connection, never()).sendMessage(any(Catchup.class)));
+    Disposable disposable = networkManager.subscribe(CHANNEL).subscribe();
     testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
     disposable.dispose();

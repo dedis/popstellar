@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;

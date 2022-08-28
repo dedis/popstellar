@@ -7,6 +7,8 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.security.elGamal.*;
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import org.junit.*;
+
 import java.time.Instant;
 import java.util.*;
 
