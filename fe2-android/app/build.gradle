@@ -14,6 +14,13 @@ android {
         versionCode 1
         versionName "1.0"
 
+        testInstrumentationRunner "com.github.dedis.popstellar.HiltTestRunner"
+
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+
         buildTypes {
             debug {
                 isDefault true
@@ -49,6 +56,14 @@ android {
         testOptions {
             animationsDisabled true
 
+            // Enables dexmaker to work which is necessary for mockito in android tests
+            // https://github.com/mockk/mockk/issues/297#issuecomment-901924678
+            packagingOptions {
+                jniLibs {
+                    useLegacyPackaging true
+                }
+            }
+
             unitTests {
                 returnDefaultValues true
                 includeAndroidResources true
@@ -66,26 +81,52 @@ android {
         }
     }
 
-    // The release tests cannot work as they need the debug-only activity EmptyActivity
-    // This configuration is only there to keep the usual test folder instead of a testDebug folder
     sourceSets {
-        testDebug {
-            java.srcDirs = test.java.srcDirs
-            resources.srcDirs = test.resources.srcDirs
+        // Define the project's file layout. For more information, please read the related documentation
+        //
+        // But, if you need to know the exact behavior, here it is :
+        // The idea is that we use a modified debug sourceset to hold the shared sources between the tests.
+        // This means that the debug version of the app will hold the test sources.
+        //
+        // Then, the test and androidTest sourcesets are relocated inside the test framework directory and
+        // we add their suites directory to the sets
+        debug {
+            setRoot("src/test/framework/common")
         }
 
+        testDebug {
+            setRoot('src/test/framework/robolectric')
+            java.srcDirs += 'src/test/ui/robolectric'
+            // Basic unit tests
+            java.srcDirs += 'src/test/unit/java'
+            resources.srcDirs += 'src/test/unit/res'
+        }
+
+        androidTestDebug {
+            setRoot('src/test/framework/emulator')
+            java.srcDirs += 'src/test/ui/emulator'
+        }
+
+        // Remove usual test and androidTest source sets
         test {
+            java.srcDirs = []
+            resources.srcDirs = []
+        }
+
+        androidTest {
             java.srcDirs = []
             resources.srcDirs = []
         }
     }
 }
 
-// Jacoco configuration - This configures jacoco for each test task
-tasks.withType(Test) {
-    jacoco {
-        includeNoLocationClasses = true
-        excludes = ['jdk.internal.*'] // Allows it to run on Java 11
+// Disable every task related to release unit tests
+project.afterEvaluate {
+    tasks.findAll {
+        var task = it.name.toLowerCase()
+        return task.contains("release") && task.contains("unit")
+    }.forEach {
+        it.enabled = false
     }
 }
 
