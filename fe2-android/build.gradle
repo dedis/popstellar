@@ -3,6 +3,10 @@ buildscript {
     ext {
         // Write shared dependency versions here, they will be available in the whole project
         hilt_version = '2.42'
+        room_version = '2.4.3'
+        scarlet_version = '0.1.11'
+        slf4j_version = '1.7.36'
+        espresso_version = '3.5.0-alpha07'
     }
 
     dependencies {
