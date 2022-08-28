@@ -3,20 +3,21 @@ package com.github.dedis.popstellar.ui.detail.event.election;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.network.method.message.data.election.*;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
+import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.MessageSenderHelper;
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.junit.*;
@@ -30,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import dagger.hilt.android.testing.*;
-import io.reactivex.Completable;
 import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -40,9 +40,11 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.ui.pages.detail.event.election.CastVoteFragmentPageObject.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
@@ -75,8 +77,9 @@ public class CastVoteFragmentTest {
 
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock KeyManager keyManager;
-  @BindValue @Mock MessageSender messageSender;
   @BindValue @Mock GlobalNetworkManager networkManager;
+
+  MessageSenderHelper messageSenderHelper = new MessageSenderHelper();
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -90,7 +93,7 @@ public class CastVoteFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws KeyException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(LAO));
@@ -98,17 +101,24 @@ public class CastVoteFragmentTest {
               .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
           initializeElection();
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
+          when(keyManager.getValidPoPToken(any())).thenReturn(generatePoPToken());
 
-          when(networkManager.getMessageSender()).thenReturn(messageSender);
-          when(messageSender.subscribe(any())).then(args -> Completable.complete());
-          when(messageSender.publish(any(), any())).then(args -> Completable.complete());
-          when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
+          when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
+          messageSenderHelper.setupMock();
         }
       };
 
   @Rule(order = 3)
-  public final FragmentScenarioRule<CastVoteFragment> fragmentRule =
-      FragmentScenarioRule.launch(CastVoteFragment.class, CastVoteFragment::newInstance);
+  public final ActivityFragmentScenarioRule<LaoDetailActivity, CastVoteFragment> fragmentRule =
+      ActivityFragmentScenarioRule.launchIn(
+          LaoDetailActivity.class,
+          new BundleBuilder()
+              .putString(laoIdExtra(), LAO_ID)
+              .putString(fragmentToOpenExtra(), laoDetailValue())
+              .build(),
+          containerId(),
+          CastVoteFragment.class,
+          CastVoteFragment::newInstance);
 
   @Before
   public void setUpViewModel() {
@@ -153,7 +163,22 @@ public class CastVoteFragmentTest {
   @Test
   public void castVoteButtonIsEnabledWhenAnElementIsClicked() {
     onView(withText(ELECTION_BALLOT_TEXT11)).perform(click());
+    castVotePager().perform(swipeLeft());
+    onView(withText(ELECTION_BALLOT_TEXT22)).perform(click());
     castVoteButton().check(matches(isEnabled()));
+  }
+
+  @Test
+  public void castVoteSendsACastVoteMessage() {
+    onView(withText(ELECTION_BALLOT_TEXT11)).perform(click());
+    castVotePager().perform(swipeLeft());
+    onView(withText(ELECTION_BALLOT_TEXT22)).perform(click());
+    castVoteButton().perform(click());
+    // Wait for the operations performed above to complete
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    verify(messageSenderHelper.getMockedSender())
+        .publish(any(), eq(election.getChannel()), any(CastVote.class));
   }
 
   private void initializeElection() {
@@ -172,6 +197,7 @@ public class CastVoteFragmentTest {
             false,
             Arrays.asList(ELECTION_BALLOT_TEXT21, ELECTION_BALLOT_TEXT22),
             election.getId());
+    election.setChannel(Channel.getLaoChannel(LAO_ID).subChannel(election.getId()));
     election.setElectionQuestions(Arrays.asList(electionQuestion1, electionQuestion2));
     election.setStart(START);
     election.setEnd(END);

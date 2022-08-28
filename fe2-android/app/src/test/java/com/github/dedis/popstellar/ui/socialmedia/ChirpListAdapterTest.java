@@ -1,8 +1,8 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
-import android.content.Context;
 import android.content.Intent;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -161,7 +161,7 @@ public class ChirpListAdapterTest {
   }
 
   private ChirpListAdapter createChirpListAdapter(
-      Context context, SocialMediaViewModel socialMediaViewModel, List<Chirp> chirps) {
-    return new ChirpListAdapter(context, socialMediaViewModel, chirps);
+      FragmentActivity activity, SocialMediaViewModel socialMediaViewModel, List<Chirp> chirps) {
+    return new ChirpListAdapter(activity, socialMediaViewModel, chirps);
   }
 }

@@ -201,9 +201,7 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
     mainActivityIntent.putExtras(activityArgs);
 
     ActivityScenario<A> scenario = ActivityScenario.launch(mainActivityIntent);
-    FragmentScenario<A, F> fragmentScenario = new FragmentScenario<>(scenario, fragmentClass);
-
-    scenario.onActivity(
+    ActivityScenario.ActivityAction<A> action =
         activity -> {
           if (factory != null) {
             activity.getSupportFragmentManager().setFragmentFactory(factory);
@@ -221,29 +219,43 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
           activity
               .getSupportFragmentManager()
               .beginTransaction()
-              .add(contentId, fragment, TAG)
+              .replace(contentId, fragment, TAG)
               .setMaxLifecycle(fragment, Lifecycle.State.RESUMED)
               .commitNow();
-        });
+        };
+
+    FragmentScenario<A, F> fragmentScenario =
+        new FragmentScenario<>(scenario, fragmentClass, action);
+
+    scenario.onActivity(action);
 
     return fragmentScenario;
   }
 
   private final ActivityScenario<A> activityScenario;
   private final Class<F> fragmentClass;
+  private final ActivityScenario.ActivityAction<A> startFragment;
 
-  private FragmentScenario(ActivityScenario<A> scenario, Class<F> clazz) {
+  private FragmentScenario(
+      ActivityScenario<A> scenario,
+      Class<F> clazz,
+      ActivityScenario.ActivityAction<A> startFragmentAction) {
     activityScenario = scenario;
     fragmentClass = clazz;
+    startFragment = startFragmentAction;
   }
 
   /**
    * Recreate the scenario
    *
+   * <p>This function will move the activity to the destroyed state and recreate it. It will the
+   * recreate the fragment from the scenario and place it in the activity.
+   *
    * @return the scenario
    */
   public FragmentScenario<A, F> recreate() {
     activityScenario.recreate();
+    activityScenario.onActivity(startFragment);
     return this;
   }
 

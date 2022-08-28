@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -23,6 +24,8 @@ import java.util.*;
 import static com.github.dedis.popstellar.utility.Constants.*;
 
 public class ElectionFragment extends Fragment {
+
+  private static final String TAG = ElectionFragment.class.getSimpleName();
 
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
@@ -82,7 +85,18 @@ public class ElectionFragment extends Fragment {
                   .setMessage(R.string.election_confirm_open)
                   .setPositiveButton(
                       R.string.yes,
-                      (dialogInterface, i) -> laoDetailViewModel.openElection(election))
+                      (dialogInterface, i) ->
+                          laoDetailViewModel.addDisposable(
+                              laoDetailViewModel
+                                  .openElection(election)
+                                  .subscribe(
+                                      () -> {},
+                                      error ->
+                                          ErrorUtils.logAndShow(
+                                              requireContext(),
+                                              TAG,
+                                              error,
+                                              R.string.error_open_election))))
                   .setNegativeButton(R.string.no, null)
                   .show();
               break;
@@ -92,7 +106,18 @@ public class ElectionFragment extends Fragment {
                   .setMessage(R.string.election_confirm_close)
                   .setPositiveButton(
                       R.string.yes,
-                      (dialogInterface, i) -> laoDetailViewModel.endElection(election))
+                      (dialogInterface, i) ->
+                          laoDetailViewModel.addDisposable(
+                              laoDetailViewModel
+                                  .endElection(election)
+                                  .subscribe(
+                                      () -> {},
+                                      error ->
+                                          ErrorUtils.logAndShow(
+                                              requireContext(),
+                                              TAG,
+                                              error,
+                                              R.string.error_end_election))))
                   .setNegativeButton(R.string.no, null)
                   .show();
               break;

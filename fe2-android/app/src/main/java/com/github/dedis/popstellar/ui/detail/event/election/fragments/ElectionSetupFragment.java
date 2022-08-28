@@ -12,18 +12,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
+
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 @AndroidEntryPoint
 public class ElectionSetupFragment extends AbstractEventCreationFragment {
@@ -233,35 +237,39 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
           Log.d(
               TAG,
-              "Creating election with version "
-                  + electionVersion
-                  + ", name "
-                  + electionName
-                  + ", creation time "
-                  + creationTimeInSeconds
-                  + ", start time "
-                  + startTimeInSeconds
-                  + ", end time "
-                  + endTimeInSeconds
-                  + ", voting methods "
-                  + votingMethodFiltered
-                  + ", writesIn "
-                  + writeIns
-                  + ", questions "
-                  + questionsFiltered
-                  + ", ballotsOptions "
-                  + ballotsOptionsFiltered);
-          mLaoDetailViewModel.createNewElection(
-              getParentFragmentManager(),
-              electionVersion,
-              electionName,
-              creationTimeInSeconds,
-              startTimeInSeconds,
-              endTimeInSeconds,
-              votingMethodFiltered,
-              writeIns,
-              ballotsOptionsFiltered,
-              questionsFiltered);
+              String.format(
+                  "Creating election with version %s, name %s, creation time %d, start time %d, end time %d, voting methods %s, writesIn %s, questions %s, ballotsOptions %s",
+                  electionVersion,
+                  electionName,
+                  creationTimeInSeconds,
+                  startTimeInSeconds,
+                  endTimeInSeconds,
+                  votingMethodFiltered,
+                  writeIns,
+                  questionsFiltered,
+                  ballotsOptionsFiltered));
+
+          mLaoDetailViewModel.addDisposable(
+              mLaoDetailViewModel
+                  .createNewElection(
+                      electionVersion,
+                      electionName,
+                      creationTimeInSeconds,
+                      startTimeInSeconds,
+                      endTimeInSeconds,
+                      votingMethodFiltered,
+                      writeIns,
+                      ballotsOptionsFiltered,
+                      questionsFiltered)
+                  .subscribe(
+                      () ->
+                          setCurrentFragment(
+                              getParentFragmentManager(),
+                              R.id.fragment_lao_detail,
+                              LaoDetailFragment::newInstance),
+                      error ->
+                          ErrorUtils.logAndShow(
+                              requireContext(), TAG, error, R.string.error_create_election)));
         });
   }
 

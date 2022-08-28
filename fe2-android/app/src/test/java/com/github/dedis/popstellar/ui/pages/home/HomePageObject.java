@@ -6,7 +6,11 @@ import androidx.test.espresso.ViewInteraction;
 import com.github.dedis.popstellar.R;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.confirmButton;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.newWalletButton;
 
 /**
  * Page object of {@Link HomeActivity}
@@ -51,5 +55,12 @@ public class HomePageObject {
   @IdRes
   public static int homeFragmentContainerId() {
     return R.id.fragment_container_home;
+  }
+
+  public static void initializeWallet() {
+    walletButton().perform(click());
+    newWalletButton().perform(click());
+    confirmButton().perform(click());
+    dialogPositiveButton().performClick();
   }
 }

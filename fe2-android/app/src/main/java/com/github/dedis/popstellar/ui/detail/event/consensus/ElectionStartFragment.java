@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -168,8 +169,15 @@ public class ElectionStartFragment extends Fragment {
   private void setupButtonListeners(LaoDetailViewModel mLaoDetailViewModel, String electionId) {
     electionStart.setOnClickListener(
         clicked ->
-            mLaoDetailViewModel.sendConsensusElect(
-                Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
+            mLaoDetailViewModel.addDisposable(
+                mLaoDetailViewModel
+                    .sendConsensusElect(
+                        Instant.now().getEpochSecond(), electionId, "election", "state", "started")
+                    .subscribe(
+                        msg -> {},
+                        error ->
+                            ErrorUtils.logAndShow(
+                                requireContext(), TAG, error, R.string.error_start_election))));
   }
 
   private void updateStartAndStatus(
