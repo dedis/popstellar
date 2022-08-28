@@ -8,6 +8,7 @@ buildscript {
     dependencies {
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
         classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.4.0.2513'
+        classpath 'com.adarshr:gradle-test-logger-plugin:3.2.0'
     }
 }
 

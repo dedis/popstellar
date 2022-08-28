@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
 apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'com.adarshr.test-logger'
 
 android {
     compileSdkVersion 32
@@ -51,6 +52,16 @@ android {
             unitTests {
                 returnDefaultValues true
                 includeAndroidResources true
+            }
+
+            unitTests.all {
+                // Print test logs in a readable and clear way using
+                // https://github.com/radarsh/gradle-test-logger-plugin
+                testlogger {
+                    showFullStackTraces true
+                    showStandardStreams true
+                    slowThreshold 4000
+                }
             }
         }
     }
