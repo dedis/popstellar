@@ -8,12 +8,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.junit.Rule;
@@ -67,12 +69,13 @@ public class LaunchFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(LAO));
-          when(repository.getAllLaos())
-              .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
+          when(repository.getAllLaoIds())
+              .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO.getId())));
+          when(repository.getLaoView(anyString())).thenReturn(new LaoView(LAO));
 
           when(keyManager.getMainPublicKey()).thenReturn(PK);
           when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);
