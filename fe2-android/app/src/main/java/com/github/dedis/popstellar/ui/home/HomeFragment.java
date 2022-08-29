@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
 
-import java.util.ArrayList;
-
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the Home UI */
@@ -48,15 +46,15 @@ public final class HomeFragment extends Fragment {
 
   private void setupListUpdates() {
     viewModel
-        .getLAOs()
+        .getLaoIdList()
         .observe(
             requireActivity(),
-            laos -> {
+            laoIds -> {
               Log.d(TAG, "Got a list update");
 
-              laoListAdapter.setList(laos);
+              laoListAdapter.setList(laoIds);
 
-              if (!laos.isEmpty()) {
+              if (!laoIds.isEmpty()) {
                 binding.welcomeScreen.setVisibility(View.GONE);
                 binding.listScreen.setVisibility(View.VISIBLE);
                 binding.homeTitle.setVisibility(View.VISIBLE);
@@ -67,7 +65,7 @@ public final class HomeFragment extends Fragment {
   private void setupListAdapter() {
     RecyclerView recyclerView = binding.laoList;
 
-    laoListAdapter = new LAOListAdapter(new ArrayList<>(0), requireActivity(), true);
+    laoListAdapter = new LAOListAdapter(viewModel, requireActivity(), true);
 
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     recyclerView.setLayoutManager(mLayoutManager);

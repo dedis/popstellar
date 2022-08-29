@@ -25,7 +25,7 @@ public class LAORepository {
 
   private final HashMap<String, Lao> laoById = new HashMap<>();
   private final HashMap<String, Subject<Lao>> subjectById = new HashMap<>();
-  private final BehaviorSubject<Set<String>> laosSubject = BehaviorSubject.create();
+  private final BehaviorSubject<List<String>> laosSubject = BehaviorSubject.create();
 
   // ============ Lao Unrelated data ===============
   // State for Messages
@@ -70,7 +70,7 @@ public class LAORepository {
     return laoById.get(channel.extractLaoId());
   }
 
-  public Observable<Set<String>> getAllLaoIds() {
+  public Observable<List<String>> getAllLaoIds() {
     return laosSubject;
   }
 
@@ -118,7 +118,7 @@ public class LAORepository {
       // Otherwise, create the entry
       laoById.put(lao.getId(), lao);
       // Update lao list
-      laosSubject.onNext(laoById.keySet());
+      laosSubject.onNext(new ArrayList<>(laoById.keySet()));
     }
   }
 

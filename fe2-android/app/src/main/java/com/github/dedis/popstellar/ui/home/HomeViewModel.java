@@ -12,6 +12,7 @@ import androidx.lifecycle.*;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -21,6 +22,7 @@ import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -48,7 +50,7 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
   /** LiveData objects that represent the state in a fragment */
   private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
 
-  private final LiveData<List<Lao>> laos;
+  private final LiveData<List<String>> laoIdList;
   private final LiveData<Boolean> isSocialMediaEnabled;
 
   /** Dependencies for this class */
@@ -57,6 +59,7 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
   private final KeyManager keyManager;
   private final Wallet wallet;
   private final GlobalNetworkManager networkManager;
+  private final LAORepository laoRepository;
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -74,11 +77,14 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
     this.keyManager = keyManager;
     this.wallet = wallet;
     this.networkManager = networkManager;
+    this.laoRepository = laoRepository;
 
-    laos =
+    laoIdList =
         LiveDataReactiveStreams.fromPublisher(
-            laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
-    isSocialMediaEnabled = Transformations.map(laos, laoSet -> laoSet != null && !laoSet.isEmpty());
+            laoRepository.getAllLaoIds().toFlowable(BackpressureStrategy.BUFFER));
+
+    isSocialMediaEnabled =
+        Transformations.map(laoIdList, laoSet -> laoSet != null && !laoSet.isEmpty());
   }
 
   @Override
@@ -166,9 +172,12 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
     wallet.newSeed();
   }
 
-  /** Getters for LiveData instances declared above */
-  public LiveData<List<Lao>> getLAOs() {
-    return laos;
+  public LiveData<List<String>> getLaoIdList() {
+    return laoIdList;
+  }
+
+  public LaoView getLaoView(String laoId) throws UnknownLaoException {
+    return laoRepository.getLaoView(laoId);
   }
 
   public LiveData<Boolean> isSocialMediaEnabled() {
