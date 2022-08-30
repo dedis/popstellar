@@ -9,8 +9,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
 
 import java.util.*;
@@ -122,6 +121,7 @@ public final class LaoHandler {
   @SuppressLint("CheckResult")
   public static void handleStateLao(HandlerContext context, StateLao stateLao)
       throws DataHandlingException, UnknownLaoException {
+    MessageRepository messageRepository = context.getMessageRepository();
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
@@ -129,7 +129,7 @@ public final class LaoHandler {
     LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     Log.d(TAG, "Receive State Lao Broadcast " + stateLao.getName());
-    if (!laoRepository.getMessageById().containsKey(stateLao.getModificationId())) {
+    if (!messageRepository.getMessageById().containsKey(stateLao.getModificationId())) {
       Log.d(TAG, "Can't find modification id : " + stateLao.getModificationId());
       // queue it if we haven't received the update message yet
       throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());

@@ -6,13 +6,13 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 public final class HandlerContext {
 
+  private final MessageRepository messageRepository;
   private final LAORepository laoRepository;
   private final KeyManager keyManager;
   private final MessageSender messageSender;
@@ -21,18 +21,24 @@ public final class HandlerContext {
   private final ServerRepository serverRepository;
 
   public HandlerContext(
+      @NonNull MessageRepository messageRepository,
       @NonNull LAORepository laoRepository,
       @NonNull KeyManager keyManager,
       @NonNull MessageSender messageSender,
       @NonNull Channel channel,
       @NonNull MessageGeneral message,
       @NonNull ServerRepository serverRepository) {
+    this.messageRepository = messageRepository;
     this.laoRepository = laoRepository;
     this.keyManager = keyManager;
     this.messageSender = messageSender;
     this.channel = channel;
     this.message = message;
     this.serverRepository = serverRepository;
+  }
+
+  public MessageRepository getMessageRepository() {
+    return messageRepository;
   }
 
   public LAORepository getLaoRepository() {

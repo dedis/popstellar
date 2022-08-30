@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.repository;
 
 import android.util.Log;
 
-import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.*;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
@@ -28,7 +26,6 @@ public class LAORepository {
 
   // ============ Lao Unrelated data ===============
   // State for Messages
-  private final Map<MessageID, MessageGeneral> messageById = new HashMap<>();
   // Observable for view models that need access to all Nodes
   private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject =
       new HashMap<>();
@@ -137,7 +134,7 @@ public class LAORepository {
     channelToNodesSubject.get(channel).onNext(nodes);
   }
 
-  public Map<MessageID, MessageGeneral> getMessageById() {
-    return messageById;
-  }
+  //  public Map<MessageID, MessageGeneral> getMessageById() {
+  //    return messageById;
+  //  }
 }

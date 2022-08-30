@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
@@ -160,6 +161,7 @@ public final class ElectionHandler {
   public static void handleCastVote(HandlerContext context, CastVote castVote)
       throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
+    MessageRepository messageRepository = context.getMessageRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
@@ -182,7 +184,7 @@ public final class ElectionHandler {
       // Value
       long previousMessageCreation =
           previousMessageIdOption
-              .map(s -> laoRepository.getMessageById().get(s))
+              .map(s -> messageRepository.getMessageById().get(s))
               .map(MessageGeneral::getData)
               .map(CastVote.class::cast)
               .map(CastVote::getCreation)

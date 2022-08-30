@@ -5,8 +5,7 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -43,6 +42,7 @@ public final class MessageHandler {
    * @param message the message that was received
    */
   public void handleMessage(
+      MessageRepository messageRepository,
       LAORepository laoRepository,
       MessageSender messageSender,
       Channel channel,
@@ -50,7 +50,7 @@ public final class MessageHandler {
       throws DataHandlingException, UnknownLaoException {
     Log.d(TAG, "handle incoming message");
     // Put the message in the state
-    laoRepository.getMessageById().put(message.getMessageId(), message);
+    messageRepository.addMessage(message);
 
     Data data = message.getData();
     Log.d(TAG, "data with class: " + data.getClass());
@@ -59,7 +59,13 @@ public final class MessageHandler {
 
     registry.handle(
         new HandlerContext(
-            laoRepository, keyManager, messageSender, channel, message, serverRepository),
+            messageRepository,
+            laoRepository,
+            keyManager,
+            messageSender,
+            channel,
+            message,
+            serverRepository),
         data,
         dataObj,
         dataAction);
