@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.socialmedia
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
@@ -46,7 +47,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    * LiveData objects for capturing events
    */
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
-  private final LiveData<List<Lao>> mLAOs;
+  private final LiveData<List<String>> laoIdList;
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
@@ -73,9 +74,9 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     this.keyManager = keyManager;
     disposables = new CompositeDisposable();
 
-    mLAOs =
+    laoIdList =
         LiveDataReactiveStreams.fromPublisher(
-            this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+            this.laoRepository.getAllLaoIds().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   @Override
@@ -91,8 +92,8 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     return mNumberCharsLeft;
   }
 
-  public LiveData<List<Lao>> getLAOs() {
-    return mLAOs;
+  public LiveData<List<String>> getLaoIdList() {
+    return laoIdList;
   }
 
   public LiveData<String> getLaoId() {
@@ -226,6 +227,10 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
     }
+  }
+
+  public LaoView getLaoView(String laoId) throws UnknownLaoException {
+    return laoRepository.getLaoView(laoId);
   }
 
   @Nullable
