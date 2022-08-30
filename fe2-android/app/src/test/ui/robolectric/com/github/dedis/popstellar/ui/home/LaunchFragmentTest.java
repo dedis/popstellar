@@ -34,8 +34,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.*;
-import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.home.LaunchPageObject.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -89,7 +89,7 @@ public class LaunchFragmentTest {
   @Before
   public void setup() {
     // Open the launch tab
-    initializeWallet();
+    HomeActivityTest.initializeWallet();
     launchButton().perform(click());
   }
 

@@ -18,8 +18,8 @@ import java.util.concurrent.TimeoutException;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
-import static com.github.dedis.popstellar.ui.pages.detail.event.pickers.TimePickerPageObject.getBundleResponseKey;
-import static com.github.dedis.popstellar.ui.pages.detail.event.pickers.TimePickerPageObject.getRequestKey;
+import static com.github.dedis.popstellar.testutils.pages.detail.event.pickers.TimePickerPageObject.getBundleResponseKey;
+import static com.github.dedis.popstellar.testutils.pages.detail.event.pickers.TimePickerPageObject.getRequestKey;
 import static org.junit.Assert.assertEquals;
 
 @HiltAndroidTest

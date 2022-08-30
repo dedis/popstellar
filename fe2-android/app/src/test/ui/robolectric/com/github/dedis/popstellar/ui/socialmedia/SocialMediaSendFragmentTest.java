@@ -19,7 +19,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.socialmedia.SocialMediaSendPageObject.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

@@ -15,8 +15,8 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentContainerId;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.homeFragmentContainerId;
+import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

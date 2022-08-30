@@ -50,7 +50,7 @@ import io.reactivex.Completable;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.ui.pages.detail.event.consensus.ElectionStartPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.detail.event.consensus.ElectionStartPageObject.*;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -25,8 +25,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.*;
-import static com.github.dedis.popstellar.ui.pages.detail.witness.WitnessFragmentPageObject.addWitnessButton;
+import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.detail.witness.WitnessFragmentPageObject.addWitnessButton;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 

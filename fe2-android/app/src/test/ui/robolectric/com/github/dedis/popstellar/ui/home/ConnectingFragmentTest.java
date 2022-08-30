@@ -23,7 +23,7 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.ui.pages.home.ConnectingPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.home.ConnectingPageObject.*;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)

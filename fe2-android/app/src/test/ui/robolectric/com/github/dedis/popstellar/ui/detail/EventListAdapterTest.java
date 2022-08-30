@@ -24,7 +24,7 @@ import java.util.*;
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 
-import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;

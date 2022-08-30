@@ -27,7 +27,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static com.github.dedis.popstellar.testutils.UITestUtils.getLastDialog;
-import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.detail.event.EventCreationPageObject.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @LargeTest

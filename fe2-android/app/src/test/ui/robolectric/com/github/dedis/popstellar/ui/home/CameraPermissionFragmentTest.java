@@ -23,8 +23,8 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static com.github.dedis.popstellar.ui.pages.qrcode.CameraPermissionPageObject.allowCameraButton;
-import static com.github.dedis.popstellar.ui.pages.qrcode.CameraPermissionPageObject.getRequestKey;
+import static com.github.dedis.popstellar.testutils.pages.qrcode.CameraPermissionPageObject.allowCameraButton;
+import static com.github.dedis.popstellar.testutils.pages.qrcode.CameraPermissionPageObject.getRequestKey;
 import static org.junit.Assert.*;
 
 /** Test for the CameraPermissionFragment */
