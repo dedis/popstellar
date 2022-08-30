@@ -119,6 +119,7 @@ public class LAORepository {
       laoById.put(lao.getId(), lao);
       // Update lao list
       laosSubject.onNext(new ArrayList<>(laoById.keySet()));
+      subjectById.put(lao.getId(), BehaviorSubject.createDefault(lao));
     }
   }
 
