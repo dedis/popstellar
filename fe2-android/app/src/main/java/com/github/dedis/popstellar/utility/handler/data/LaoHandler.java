@@ -45,7 +45,6 @@ public final class LaoHandler {
     lao.setId(createLao.getId());
     lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
 
-    // Adding the newly created LAO to the repository
     laoRepository.updateLao(lao);
 
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();

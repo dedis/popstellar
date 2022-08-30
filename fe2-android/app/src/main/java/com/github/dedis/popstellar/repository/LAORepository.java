@@ -74,7 +74,6 @@ public class LAORepository {
   }
 
   public Observable<Lao> getLaoObservable(String laoId) {
-    Log.d(TAG, "LaoIds we have are: " + laoById.keySet());
     subjectById.computeIfAbsent(laoId, id -> BehaviorSubject.create());
     return subjectById.get(laoId);
   }
