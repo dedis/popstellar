@@ -9,7 +9,6 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -72,14 +71,6 @@ public class LAORepository {
 
   public Observable<List<String>> getAllLaoIds() {
     return laosSubject;
-  }
-
-  /**
-   * @deprecated This function is moving to #getAllLaoIds()
-   */
-  @Deprecated
-  public Observable<List<Lao>> getAllLaos() {
-    return laosSubject.map(set -> set.stream().map(laoById::get).collect(Collectors.toList()));
   }
 
   public Observable<Lao> getLaoObservable(String laoId) {

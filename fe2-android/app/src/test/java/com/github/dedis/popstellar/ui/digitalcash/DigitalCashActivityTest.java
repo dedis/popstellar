@@ -124,8 +124,6 @@ public class DigitalCashActivityTest {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(LAO));
-          when(repository.getAllLaos())
-              .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
           when(keyManager.getValidPoPToken(any())).thenReturn(POP_TOKEN);
           when(keyManager.getMainPublicKey()).thenReturn(POP_TOKEN.getPublicKey());
           when(networkManager.getMessageSender()).thenReturn(messageSender);
