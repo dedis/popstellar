@@ -11,7 +11,8 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
@@ -131,20 +132,26 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public Single<MessageGeneral> sendChirp(
       String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
-    Lao lao = getCurrentLao();
-    if (lao == null) {
+
+    LaoView laoView;
+    try {
+      laoView = getCurrentLaoView();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
 
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
-    return Single.fromCallable(() -> keyManager.getValidPoPToken(lao))
+    return Single.fromCallable(() -> keyManager.getValidPoPToken(laoView))
         .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to send Chirp : " + token))
         .flatMap(
             token -> {
               Channel channel =
-                  lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
+                  laoView
+                      .getChannel()
+                      .subChannel(SOCIAL)
+                      .subChannel(token.getPublicKey().getEncoded());
               MessageGeneral msg = new MessageGeneral(token, addChirp, gson);
 
               return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
@@ -153,20 +160,26 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
 
   public Single<MessageGeneral> deleteChirp(MessageID chirpId, long timestamp) {
     Log.d(TAG, "Deleting the chirp with id: " + chirpId);
-    Lao lao = getCurrentLao();
-    if (lao == null) {
+
+    final LaoView laoView;
+    try {
+      laoView = getCurrentLaoView();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
 
     DeleteChirp deleteChirp = new DeleteChirp(chirpId, timestamp);
 
-    return Single.fromCallable(() -> keyManager.getValidPoPToken(lao))
+    return Single.fromCallable(() -> keyManager.getValidPoPToken(laoView))
         .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to delete Chirp : " + token))
         .flatMap(
             token -> {
               Channel channel =
-                  lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
+                  laoView
+                      .getChannel()
+                      .subChannel(SOCIAL)
+                      .subChannel(token.getPublicKey().getEncoded());
               MessageGeneral msg = new MessageGeneral(token, deleteChirp, gson);
 
               return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
@@ -174,9 +187,13 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   }
 
   public List<Chirp> getChirpList(String laoId) {
-    Lao lao = getLao(laoId);
-    if (lao == null) return Collections.emptyList();
-    else return lao.getChirpsInOrder();
+    LaoView laoView;
+    try {
+      laoView = getLaoView(laoId);
+    } catch (UnknownLaoException e) {
+      return Collections.emptyList();
+    }
+    return laoView.getChirpsInOrder();
   }
 
   /**
@@ -187,14 +204,17 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    */
   public boolean isOwner(String sender) {
     Log.d(TAG, "Testing if the sender is also the owner");
-    Lao lao = getCurrentLao();
-    if (lao == null) {
+
+    LaoView laoView = null;
+    try {
+      laoView = getCurrentLaoView();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return false;
     }
 
     try {
-      PoPToken token = keyManager.getValidPoPToken(lao);
+      PoPToken token = keyManager.getValidPoPToken(laoView);
       return sender.equals(token.getPublicKey().getEncoded());
     } catch (KeyException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
@@ -219,18 +239,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     return laoRepository.getLaoView(laoId);
   }
 
-  @Nullable
-  public Lao getCurrentLao() {
-    return getLao(getLaoId().getValue());
-  }
-
-  @Nullable
-  private Lao getLao(String laoId) {
-    // TODO Fully move to an LaoView here (and throw the exception further)
-    try {
-      return laoRepository.getLaoView(laoId).createLaoCopy();
-    } catch (UnknownLaoException e) {
-      return null;
-    }
+  public LaoView getCurrentLaoView() throws UnknownLaoException {
+    return getLaoView(getLaoId().getValue());
   }
 }

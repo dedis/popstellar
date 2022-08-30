@@ -7,6 +7,7 @@ import androidx.annotation.VisibleForTesting;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.security.privatekey.ProtectedPrivateKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.*;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
@@ -104,6 +105,21 @@ public class KeyManager {
             .orElseThrow(() -> new NoRollCallException(lao));
 
     return getValidPoPToken(lao.getId(), rollCall);
+  }
+
+  /**
+   * Try to retrieve the user's PoPToken for the given Lao.
+   *
+   * @param laoView of the lao we want to retrieve the PoP Token from
+   * @return the PoP Token if it was retrieved
+   * @throws KeyGenerationException if an error occurs during key generation
+   * @throws UninitializedWalletException if the wallet is not initialized with a seed
+   * @throws InvalidPoPTokenException if the token is not a valid attendee
+   * @throws NoRollCallException if the LAO has no RollCall
+   */
+  public PoPToken getValidPoPToken(LaoView laoView) throws KeyException {
+    // Use the wallet to retrieve the key from the latest closed roll call
+    return getValidPoPToken(laoView.getId(), laoView.getMostRecentRollCall());
   }
 
   /**
