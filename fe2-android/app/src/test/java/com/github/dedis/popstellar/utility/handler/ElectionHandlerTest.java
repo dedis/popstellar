@@ -12,8 +12,7 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
 import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -59,6 +58,7 @@ public class ElectionHandlerTest extends TestCase {
   private Election electionEncrypted;
   private ElectionQuestion electionQuestion;
 
+  private MessageRepository messageRepository;
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
   private ServerRepository serverRepository;
@@ -77,6 +77,7 @@ public class ElectionHandlerTest extends TestCase {
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
+    messageRepository = new MessageRepository();
     laoRepository = new LAORepository();
     messageHandler =
         new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
@@ -130,7 +131,7 @@ public class ElectionHandlerTest extends TestCase {
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
-    laoRepository.getMessageById().put(createLaoMessage.getMessageId(), createLaoMessage);
+    messageRepository.addMessage(createLaoMessage);
   }
 
   @Test
@@ -151,7 +152,8 @@ public class ElectionHandlerTest extends TestCase {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionSetupOpenBallot, GSON);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the Election is present with state OPENED and the correct ID
     Optional<Election> electionOpt =
@@ -189,7 +191,11 @@ public class ElectionHandlerTest extends TestCase {
 
     // Call the message handler
     messageHandler.handleMessage(
-        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
+        messageRepository,
+        laoRepository,
+        messageSender,
+        LAO_CHANNEL.subChannel(election.getId()),
+        message);
 
     // Check the Election is present with state RESULTS_READY and the results
     Optional<Election> electionOpt =
@@ -208,7 +214,11 @@ public class ElectionHandlerTest extends TestCase {
 
     // Call the message handler
     messageHandler.handleMessage(
-        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
+        messageRepository,
+        laoRepository,
+        messageSender,
+        LAO_CHANNEL.subChannel(election.getId()),
+        message);
 
     // Check the Election is present with state CLOSED and the results
     Optional<Election> electionOpt =
@@ -224,7 +234,8 @@ public class ElectionHandlerTest extends TestCase {
 
     for (EventState state : EventState.values()) {
       election.setEventState(state);
-      messageHandler.handleMessage(laoRepository, messageSender, election.getChannel(), message);
+      messageHandler.handleMessage(
+          messageRepository, laoRepository, messageSender, election.getChannel(), message);
       if (state == EventState.CREATED) {
         // Test for current TimeStamp
         assertEquals(EventState.OPENED, election.getState().getValue());
@@ -244,7 +255,11 @@ public class ElectionHandlerTest extends TestCase {
 
     // Call the message handler
     messageHandler.handleMessage(
-        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
+        messageRepository,
+        laoRepository,
+        messageSender,
+        LAO_CHANNEL.subChannel(election.getId()),
+        message);
 
     assertEquals(key, election.getElectionKey());
   }
@@ -264,7 +279,11 @@ public class ElectionHandlerTest extends TestCase {
     MessageGeneral message1 = new MessageGeneral(SENDER_KEY, electionVote, GSON);
     // Test the whole process
     messageHandler.handleMessage(
-        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message1);
+        messageRepository,
+        laoRepository,
+        messageSender,
+        LAO_CHANNEL.subChannel(election.getId()),
+        message1);
     List<String> listOfVoteIds = new ArrayList<>();
     // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
     // messageIds
@@ -292,7 +311,11 @@ public class ElectionHandlerTest extends TestCase {
     // Test the handling, it no error are thrown it means that the validation happened without
     // problems
     messageHandler.handleMessage(
-        laoRepository, messageSender, LAO_CHANNEL.subChannel(electionEncrypted.getId()), message2);
+        messageRepository,
+        laoRepository,
+        messageSender,
+        LAO_CHANNEL.subChannel(electionEncrypted.getId()),
+        message2);
     List<String> listOfVoteIds2 = new ArrayList<>();
     listOfVoteIds2.add(electionEncryptedVote2.getId());
     listOfVoteIds2.add(electionEncryptedVote1.getId());

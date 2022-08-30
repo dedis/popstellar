@@ -10,8 +10,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -52,6 +51,7 @@ public class RollCallHandlerTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
+  private MessageRepository messageRepository;
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
 
@@ -70,6 +70,7 @@ public class RollCallHandlerTest {
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
+    messageRepository = new MessageRepository();
     laoRepository = new LAORepository();
     messageHandler =
         new MessageHandler(
@@ -94,7 +95,7 @@ public class RollCallHandlerTest {
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
-    laoRepository.getMessageById().put(createLaoMessage.getMessageId(), createLaoMessage);
+    messageRepository.addMessage(createLaoMessage);
   }
 
   @Test
@@ -112,7 +113,8 @@ public class RollCallHandlerTest {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, createRollCall, GSON);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the new Roll Call is present with state CREATED and the correct ID
     Optional<RollCall> rollCallOpt =
@@ -142,7 +144,8 @@ public class RollCallHandlerTest {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, openRollCall, GSON);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state OPENED and the correct ID
     Optional<RollCall> rollCallOpt =
@@ -172,7 +175,8 @@ public class RollCallHandlerTest {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, GSON);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state CLOSED and the correct ID
     Optional<RollCall> rollCallOpt =

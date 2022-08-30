@@ -9,8 +9,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.socialmedia
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -61,6 +60,7 @@ public class ChirpHandlerTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
+  private MessageRepository messageRepository;
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
 
@@ -77,13 +77,15 @@ public class ChirpHandlerTest {
 
     Channel channel = Channel.getLaoChannel(LAO_ID);
 
+    messageRepository = new MessageRepository();
     laoRepository = new LAORepository();
     messageHandler =
         new MessageHandler(
             DataRegistryModule.provideDataRegistry(), keyManager, new ServerRepository());
 
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
-    messageHandler.handleMessage(laoRepository, messageSender, channel, createLaoMessage);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, channel, createLaoMessage);
 
     chirpChannel =
         laoRepository
@@ -96,7 +98,8 @@ public class ChirpHandlerTest {
   @Test
   public void testHandleAddChirp() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
-    messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, chirpChannel, message);
 
     LaoView laoView = laoRepository.getLaoView(LAO_ID);
     Lao updatedLao = laoView.createLaoCopy();
@@ -120,12 +123,14 @@ public class ChirpHandlerTest {
   @Test
   public void testHandleDeleteChirp() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
-    messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, chirpChannel, message);
 
     final DeleteChirp DELETE_CHIRP = new DeleteChirp(message.getMessageId(), DELETION_TIME);
 
     MessageGeneral message2 = new MessageGeneral(SENDER_KEY, DELETE_CHIRP, GSON);
-    messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message2);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, chirpChannel, message2);
 
     LaoView laoView = laoRepository.getLaoView(LAO_ID);
     Lao updatedLao = laoView.createLaoCopy();

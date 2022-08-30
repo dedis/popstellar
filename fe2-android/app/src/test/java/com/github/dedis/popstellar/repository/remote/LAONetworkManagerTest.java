@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.error.JsonRPCErrorException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
@@ -48,6 +49,7 @@ public class LAONetworkManagerTest {
   private final BehaviorSubject<WebSocket.Event> events = BehaviorSubject.create();
   private final BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
 
+  @Mock MessageRepository messageRepository;
   @Mock LAORepository laoRepository;
   @Mock MessageHandler handler;
   @Mock Connection connection;
@@ -78,6 +80,7 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
+            messageRepository,
             laoRepository,
             handler,
             connection,
@@ -118,6 +121,7 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
+            messageRepository,
             laoRepository,
             handler,
             connection,
@@ -153,6 +157,7 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
+            messageRepository,
             laoRepository,
             handler,
             connection,
@@ -190,6 +195,7 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
+            messageRepository,
             laoRepository,
             handler,
             connection,
@@ -233,6 +239,7 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
+            messageRepository,
             laoRepository,
             handler,
             connection,
@@ -275,6 +282,7 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
+            messageRepository,
             laoRepository,
             handler,
             connection,

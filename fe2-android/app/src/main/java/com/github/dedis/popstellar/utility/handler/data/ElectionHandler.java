@@ -184,7 +184,7 @@ public final class ElectionHandler {
       // Value
       long previousMessageCreation =
           previousMessageIdOption
-              .map(s -> messageRepository.getMessageById().get(s))
+              .map(messageRepository::getMessage)
               .map(MessageGeneral::getData)
               .map(CastVote.class::cast)
               .map(CastVote::getCreation)

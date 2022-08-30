@@ -20,11 +20,15 @@ public class MessageRepository {
 
   }
 
-  public Map<MessageID, MessageGeneral> getMessageById() {
-    return messageById;
+  public MessageGeneral getMessage(MessageID messageID) {
+    return messageById.get(messageID);
   }
 
   public void addMessage(MessageGeneral message) {
     messageById.put(message.getMessageId(), message);
+  }
+
+  public boolean isMessagePresent(MessageID messageID) {
+    return messageById.containsKey(messageID);
   }
 }

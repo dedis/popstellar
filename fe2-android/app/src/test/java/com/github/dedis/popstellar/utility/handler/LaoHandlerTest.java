@@ -8,8 +8,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -47,6 +46,7 @@ public class LaoHandlerTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
+  private MessageRepository messageRepository;
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
   private ServerRepository serverRepository;
@@ -68,6 +68,7 @@ public class LaoHandlerTest {
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
+    messageRepository = new MessageRepository();
     laoRepository = new LAORepository();
     serverRepository = new ServerRepository();
     messageHandler =
@@ -80,7 +81,7 @@ public class LaoHandlerTest {
 
     // Add the CreateLao message to the LAORepository
     createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
-    laoRepository.getMessageById().put(createLaoMessage.getMessageId(), createLaoMessage);
+    messageRepository.addMessage(createLaoMessage);
   }
 
   @Test
@@ -100,7 +101,8 @@ public class LaoHandlerTest {
         updateLaoNameWitnessMessage(message.getMessageId(), updateLao, new LaoView(lao));
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
@@ -126,7 +128,8 @@ public class LaoHandlerTest {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, stateLao, GSON);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the LAO last modification time and ID was updated
     assertEquals(
@@ -147,7 +150,8 @@ public class LaoHandlerTest {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, greetLao, GSON);
 
     // Call the handler
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check that the server repository contains the key of the server
     assertEquals(RANDOM_ADDRESS, serverRepository.getServerByLaoId(lao.getId()).getServerAddress());
@@ -163,6 +167,6 @@ public class LaoHandlerTest {
         IllegalArgumentException.class,
         () ->
             messageHandler.handleMessage(
-                laoRepository, messageSender, LAO_CHANNEL, message_invalid));
+                messageRepository, laoRepository, messageSender, LAO_CHANNEL, message_invalid));
   }
 }

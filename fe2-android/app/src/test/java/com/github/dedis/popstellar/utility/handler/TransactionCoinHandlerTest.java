@@ -9,8 +9,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cl
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -71,6 +70,8 @@ public class TransactionCoinHandlerTest {
 
   private Lao lao;
   private RollCall rollCall;
+
+  private MessageRepository messageRepository;
   private LAORepository laoRepository;
   private MessageHandler messageHandler;
   private Channel coinChannel;
@@ -89,7 +90,7 @@ public class TransactionCoinHandlerTest {
 
     postTransactionCoin = new PostTransactionCoin(TRANSACTION);
     laoRepository = new LAORepository();
-
+    messageRepository = new MessageRepository();
     messageHandler =
         new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
 
@@ -111,20 +112,21 @@ public class TransactionCoinHandlerTest {
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
-    laoRepository.getMessageById().put(createLaoMessage.getMessageId(), createLaoMessage);
+    messageRepository.addMessage(createLaoMessage);
 
     CloseRollCall closeRollCall =
         new CloseRollCall(
             CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, GSON);
-    laoRepository.getMessageById().put(message.getMessageId(), message);
+    messageRepository.addMessage(message);
     coinChannel = lao.getChannel().subChannel("coin").subChannel(SENDER.getEncoded());
   }
 
   @Test
   public void testHandlePostTransactionCoin() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, GSON);
-    messageHandler.handleMessage(laoRepository, messageSender, coinChannel, message);
+    messageHandler.handleMessage(
+        messageRepository, laoRepository, messageSender, coinChannel, message);
 
     Lao updatedLao = laoRepository.getLaoViewByChannel(lao.getChannel()).createLaoCopy();
 

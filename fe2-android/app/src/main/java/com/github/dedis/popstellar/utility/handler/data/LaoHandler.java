@@ -129,7 +129,7 @@ public final class LaoHandler {
     LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     Log.d(TAG, "Receive State Lao Broadcast " + stateLao.getName());
-    if (!messageRepository.getMessageById().containsKey(stateLao.getModificationId())) {
+    if (!messageRepository.isMessagePresent(stateLao.getModificationId())) {
       Log.d(TAG, "Can't find modification id : " + stateLao.getModificationId());
       // queue it if we haven't received the update message yet
       throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
