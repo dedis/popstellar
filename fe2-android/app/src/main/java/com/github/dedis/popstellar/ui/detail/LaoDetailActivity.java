@@ -131,11 +131,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   }
 
   private void openDigitalCashTab() {
-    startActivity(
-        DigitalCashActivity.newIntent(
-            this,
-            viewModel.getCurrentLaoValue().getId(),
-            viewModel.getCurrentLaoValue().getName()));
+    startActivity(DigitalCashActivity.newIntent(this, viewModel.getCurrentLaoValue().getId()));
   }
 
   private void openSocialMediaTab() {

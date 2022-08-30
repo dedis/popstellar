@@ -99,7 +99,17 @@ export function configureFeatures() {
     useRollCallTokenByRollCallId: rollCallConfiguration.hooks.useRollCallTokenByRollCallId,
   });
 
-  const socialConfiguration = social.configure(messageRegistry);
+  const socialConfiguration = social.configure({
+    messageRegistry,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useRollCallById: rollCallConfiguration.hooks.useRollCallById,
+    useRollCallAttendeesById: rollCallConfiguration.hooks.useRollCallAttendeesById,
+    generateToken: walletConfiguration.functions.generateToken,
+  });
+
   const witnessConfiguration = witness.configure({
     enabled: false,
     messageRegistry,
@@ -214,6 +224,7 @@ export function configureFeatures() {
       [rollCallConfiguration.identifier]: rollCallConfiguration.context,
       [witnessConfiguration.identifier]: witnessConfiguration.context,
       [digitalCashComposition.identifier]: digitalCashComposition.context,
+      [socialConfiguration.identifier]: socialConfiguration.context,
     },
   };
 }

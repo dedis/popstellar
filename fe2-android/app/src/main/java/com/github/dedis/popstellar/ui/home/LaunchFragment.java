@@ -1,13 +1,18 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaunchFragmentBinding;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -42,7 +47,18 @@ public final class LaunchFragment extends Fragment {
 
   private void setupLaunchButton() {
     binding.buttonLaunch.setOnClickListener(
-        v -> viewModel.launchLao(requireActivity(), binding.laoNameEntry.getText().toString()));
+        v -> {
+          Context ctx = requireContext();
+          viewModel.addDisposable(
+              viewModel
+                  .launchLao(binding.laoNameEntry.getText().toString())
+                  .subscribe(
+                      laoId -> {
+                        Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
+                        startActivity(LaoDetailActivity.newIntentForLao(ctx, laoId));
+                      },
+                      error -> ErrorUtils.logAndShow(ctx, TAG, error, R.string.error_create_lao)));
+        });
   }
 
   private void setupCancelButton() {

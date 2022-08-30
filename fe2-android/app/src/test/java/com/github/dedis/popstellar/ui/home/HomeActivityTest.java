@@ -15,10 +15,9 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.*;
 import static com.github.dedis.popstellar.ui.pages.home.LaunchPageObject.launchFragmentId;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.*;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletFragmentId;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -82,12 +81,5 @@ public class HomeActivityTest {
     initializeWallet();
     launchButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(launchFragmentId()))));
-  }
-
-  private void initializeWallet() {
-    walletButton().perform(click());
-    newWalletButton().perform(click());
-    confirmButton().perform(click());
-    dialogPositiveButton().performClick();
   }
 }

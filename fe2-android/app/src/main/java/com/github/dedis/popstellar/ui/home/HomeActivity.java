@@ -159,25 +159,16 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
     }
 
     // Check for the permission, if it is not granted, ask for it
-    if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-      requestCameraPermission();
-    } else {
+    if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
       setCurrentFragment(
           getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
+    } else {
+      setCurrentFragment(
+          getSupportFragmentManager(),
+          R.id.fragment_camera_perm,
+          () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
     }
     return true;
-  }
-
-  private void requestCameraPermission() {
-    // Setup result listener to open the connect tab once the permission is granted
-    getSupportFragmentManager()
-        .setFragmentResultListener(
-            CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> openConnectTab());
-
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_camera_perm,
-        () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
   }
 
   private boolean openLaunchTab() {

@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.util.Log;
@@ -16,7 +15,6 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
@@ -36,7 +34,9 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -88,6 +88,12 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
   }
 
   @Override
+  protected void onCleared() {
+    super.onCleared();
+    disposables.dispose();
+  }
+
+  @Override
   public int getScanDescription() {
     return R.string.qrcode_scanning_connect_lao;
   }
@@ -127,40 +133,24 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
     openConnecting(laoData.lao);
   }
 
-  /** onCleared is used to cancel all subscriptions to observables. */
-  @Override
-  protected void onCleared() {
-    super.onCleared();
-
-    disposables.dispose();
-  }
-
   /**
    * launchLao is invoked when the user tries to create a new LAO. The method creates a `CreateLAO`
    * message and publishes it to the root channel. It observers the response in the background and
    * switches to the home screen on success.
+   *
+   * @return a single containing the id of the launched lao if it was successful
    */
-  public void launchLao(Activity activity, String laoName) {
+  public Single<String> launchLao(String laoName) {
     Log.d(TAG, "creating lao with name " + laoName);
     CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey());
     Lao lao = new Lao(createLao.getId());
 
-    disposables.add(
-        networkManager
-            .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
-            .doOnComplete(
-                () -> Log.d(TAG, "got success result for create lao with id " + lao.getId()))
-            .andThen(networkManager.getMessageSender().subscribe(lao.getChannel()))
-            .subscribe(
-                () -> {
-                  String laoId = lao.getId();
-                  Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
-                  activity.startActivity(LaoDetailActivity.newIntentForLao(activity, laoId));
-                },
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_create_lao)));
+    return networkManager
+        .getMessageSender()
+        .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
+        .doOnComplete(() -> Log.d(TAG, "got success result for create lao with id " + lao.getId()))
+        .andThen(networkManager.getMessageSender().subscribe(lao.getChannel()))
+        .toSingleDefault(lao.getId());
   }
 
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {
@@ -208,5 +198,18 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
     intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
     intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
     getApplication().startActivity(intent);
+  }
+
+  /**
+   * This function should be used to add disposable object generated from subscription to sent
+   * messages flows
+   *
+   * <p>They will be disposed of when the view model is cleaned which ensures that the subscription
+   * stays relevant throughout the whole lifecycle of the activity and it is not bound to a fragment
+   *
+   * @param disposable to add
+   */
+  public void addDisposable(Disposable disposable) {
+    this.disposables.add(disposable);
   }
 }

@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.app.Application;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +31,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -39,7 +39,6 @@ import io.reactivex.disposables.Disposable;
 public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
-  private static final String PUBLISH_MESSAGE = "sending publish message";
   private static final String SOCIAL = "social";
   public static final Integer MAX_CHAR_NUMBERS = 300;
 
@@ -129,75 +128,49 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    * @param parentId the id of the chirp to which you replied
    * @param timestamp the time at which you sent the chirp
    */
-  public void sendChirp(String text, @Nullable MessageID parentId, long timestamp) {
+  public Single<MessageGeneral> sendChirp(
+      String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Single.error(new UnknownLaoException());
     }
 
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
-    try {
-      PoPToken token = keyManager.getValidPoPToken(lao);
-      Channel channel =
-          lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
-      Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(token, addChirp, gson);
+    return Single.fromCallable(() -> keyManager.getValidPoPToken(lao))
+        .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to send Chirp : " + token))
+        .flatMap(
+            token -> {
+              Channel channel =
+                  lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
+              MessageGeneral msg = new MessageGeneral(token, addChirp, gson);
 
-      Disposable disposable =
-          networkManager
-              .getMessageSender()
-              .publish(token, channel, addChirp)
-              .subscribe(
-                  () -> Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId()),
-                  error ->
-                      ErrorUtils.logAndShow(
-                          getApplication(), TAG, error, R.string.error_sending_chirp));
-      disposables.add(disposable);
-    } catch (KeyException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
-    }
+              return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
+            });
   }
 
-  public void deleteChirp(MessageID chirpId, long timestamp) {
+  public Single<MessageGeneral> deleteChirp(MessageID chirpId, long timestamp) {
     Log.d(TAG, "Deleting the chirp with id: " + chirpId);
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return;
+      return Single.error(new UnknownLaoException());
     }
 
     DeleteChirp deleteChirp = new DeleteChirp(chirpId, timestamp);
 
-    try {
-      PoPToken token = keyManager.getValidPoPToken(lao);
-      Channel channel =
-          lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
-      Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(token, deleteChirp, gson);
+    return Single.fromCallable(() -> keyManager.getValidPoPToken(lao))
+        .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to delete Chirp : " + token))
+        .flatMap(
+            token -> {
+              Channel channel =
+                  lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
+              MessageGeneral msg = new MessageGeneral(token, deleteChirp, gson);
 
-      Disposable disposable =
-          networkManager
-              .getMessageSender()
-              .publish(token, channel, deleteChirp)
-              .subscribe(
-                  () -> {
-                    Log.d(TAG, "Deleted chirp with messageId: " + msg.getMessageId());
-                    Toast.makeText(
-                            getApplication().getApplicationContext(),
-                            "Deleted chirp!",
-                            Toast.LENGTH_LONG)
-                        .show();
-                  },
-                  error ->
-                      ErrorUtils.logAndShow(
-                          getApplication(), TAG, error, R.string.error_delete_chirp));
-      disposables.add(disposable);
-    } catch (KeyException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
-    }
+              return networkManager.getMessageSender().publish(channel, msg).toSingleDefault(msg);
+            });
   }
 
   public List<Chirp> getChirpList(String laoId) {
@@ -227,6 +200,19 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
     }
+  }
+
+  /**
+   * This function should be used to add disposable object generated from subscription to sent
+   * messages flows
+   *
+   * <p>They will be disposed of when the view model is cleaned which ensures that the subscription
+   * stays relevant throughout the whole lifecycle of the activity and it is not bound to a fragment
+   *
+   * @param disposable to add
+   */
+  public void addDisposable(Disposable disposable) {
+    this.disposables.add(disposable);
   }
 
   public LaoView getLaoView(String laoId) throws UnknownLaoException {

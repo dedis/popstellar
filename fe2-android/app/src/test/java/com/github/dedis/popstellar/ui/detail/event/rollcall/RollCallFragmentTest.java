@@ -2,7 +2,10 @@ package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
+import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -11,12 +14,11 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.Constants;
-import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-import com.google.gson.Gson;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,18 +33,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.ui.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.ui.pages.detail.event.rollcall.RollCallFragmentPageObject.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
@@ -66,12 +68,11 @@ public class RollCallFragmentTest {
 
   private final RollCall ROLL_CALL = new RollCall(LAO.getId(), CREATION, ROLL_CALL_TITLE);
 
-  @Inject GlobalNetworkManager networkManager;
-  @Inject Gson gson;
-  @Inject MessageHandler messageHandler;
-
   @BindValue @Mock LAORepository repository;
+  @BindValue @Mock GlobalNetworkManager networkManager;
   @BindValue @Mock KeyManager keyManager;
+
+  MessageSenderHelper messageSenderHelper = new MessageSenderHelper();
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -92,6 +93,9 @@ public class RollCallFragmentTest {
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
+          when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
+          messageSenderHelper.setupMock();
+
           ROLL_CALL.setState(EventState.CLOSED);
           ROLL_CALL.setLocation(LOCATION);
           ROLL_CALL.setStart(ROLL_CALL_START);
@@ -99,6 +103,8 @@ public class RollCallFragmentTest {
           ROLL_CALL.setEnd(ROLL_CALL_END);
           ROLL_CALL.setDescription(ROLL_CALL_DESC);
           ROLL_CALL.setState(EventState.CREATED);
+
+          LAO.updateRollCall(ROLL_CALL.getId(), ROLL_CALL);
         }
       };
 
@@ -142,8 +148,16 @@ public class RollCallFragmentTest {
   }
 
   @Test
-  public void managementButtonCreatedTest() {
+  public void managementButtonOpensRollCallWhenCreated() {
     managementButton().check(matches(withText("OPEN")));
+    managementButton().perform(click());
+    // Wait for the main thread to finish executing the calls made above
+    // before asserting their effect
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    verify(messageSenderHelper.getMockedSender())
+        .publish(any(), eq(LAO.getChannel()), any(OpenRollCall.class));
+    messageSenderHelper.assertSubscriptions();
   }
 
   @Test
@@ -153,9 +167,20 @@ public class RollCallFragmentTest {
   }
 
   @Test
-  public void managementButtonOpenedTest() {
+  public void managementButtonCloseRollCallWhenOpened() {
+    // First, Open the rollcall
+    managementButton().perform(click());
+    // Mock the fact that the rollcall was successfully opened
     openRollCall();
     managementButton().check(matches(withText("CLOSE")));
+    managementButton().perform(click());
+    // Wait for the main thread to finish executing the calls made above
+    // before asserting their effect
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    verify(messageSenderHelper.getMockedSender())
+        .publish(any(), eq(LAO.getChannel()), any(CloseRollCall.class));
+    messageSenderHelper.assertSubscriptions();
   }
 
   @Test

@@ -11,6 +11,7 @@ import { PublicKey } from 'core/objects';
 import { gray } from 'core/styles/color';
 import STRINGS from 'resources/strings';
 
+import { SocialHooks } from '../hooks';
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
 import { Chirp } from '../objects';
 import { makeReactionsList } from '../reducer';
@@ -84,10 +85,14 @@ const styles = StyleSheet.create({
 const FOUR_SECONDS = 4000;
 
 const ChirpCard = (props: IPropTypes) => {
-  const { chirp } = props;
-  const { currentUserPublicKey } = props;
+  const { chirp, currentUserPublicKey } = props;
   const toast = useToast();
-  const reactionList = useMemo(makeReactionsList, []);
+  const laoId = SocialHooks.useCurrentLaoId();
+  if (laoId === undefined) {
+    throw new Error('Impossible to render chirp, current lao id is undefined');
+  }
+
+  const reactionList = useMemo(() => makeReactionsList(laoId.valueOf()), [laoId]);
   const reactions = useSelector(reactionList)[chirp.id.toString()];
 
   const zero = '  0';
@@ -98,7 +103,7 @@ const ChirpCard = (props: IPropTypes) => {
   const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false);
 
   const addReaction = (reaction_codepoint: string) => {
-    requestAddReaction(reaction_codepoint, chirp.id).catch((err) => {
+    requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
       toast.show(`Could not add reaction, error: ${err}`, {
         type: 'danger',
         placement: 'top',
@@ -111,7 +116,7 @@ const ChirpCard = (props: IPropTypes) => {
   const isSender = currentUserPublicKey.valueOf() === chirp.sender.valueOf();
 
   const deleteChirp = () => {
-    requestDeleteChirp(currentUserPublicKey, chirp.id).catch((err) => {
+    requestDeleteChirp(currentUserPublicKey, chirp.id, laoId).catch((err) => {
       toast.show(`Could not remove chirp, error: ${err}`, {
         type: 'danger',
         placement: 'top',

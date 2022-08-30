@@ -84,7 +84,7 @@ public class SocialMediaHomeFragment extends Fragment {
   private void setupListViewAdapter() {
     ListView listView = mSocialMediaHomeFragBinding.chirpsList;
     mChirpListAdapter =
-        new ChirpListAdapter(getActivity(), mSocialMediaViewModel, new ArrayList<>());
+        new ChirpListAdapter(requireActivity(), mSocialMediaViewModel, new ArrayList<>());
     listView.setAdapter(mChirpListAdapter);
   }
 

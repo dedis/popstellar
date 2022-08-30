@@ -20,6 +20,7 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 
@@ -165,7 +166,26 @@ public class DigitalCashSendFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      mViewModel.postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false);
+      mViewModel.addDisposable(
+          mViewModel
+              .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false)
+              .subscribe(
+                  () ->
+                      Toast.makeText(
+                              requireContext(),
+                              R.string.digital_cash_post_transaction,
+                              Toast.LENGTH_LONG)
+                          .show(),
+                  error -> {
+                    if (error instanceof KeyException
+                        || error instanceof GeneralSecurityException) {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                    } else {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_post_transaction);
+                    }
+                  }));
       mViewModel.updateLaoCoinEvent();
     }
   }

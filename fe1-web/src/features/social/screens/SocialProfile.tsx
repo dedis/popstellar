@@ -1,14 +1,16 @@
-import PropTypes from 'prop-types';
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { ProfileIcon, TextBlock } from 'core/components';
-import { PublicKey } from 'core/objects';
+import ScreenWrapper from 'core/components/ScreenWrapper';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
+import { SocialMediaContext } from '../context';
+import { SocialHooks } from '../hooks';
+import { SocialFeature } from '../interface';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
@@ -19,15 +21,20 @@ import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 
 const styles = socialMediaProfileStyles;
 
-const SocialProfile = (props: IPropTypes) => {
-  const { currentUserPublicKey } = props;
+const SocialProfile = () => {
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
+  const laoId = SocialHooks.useCurrentLaoId();
+  if (!laoId) {
+    throw new Error('Impossible to render Social Profile, current lao id is undefined');
+  }
+
   const userChirps = useMemo(
-    () => makeChirpsListOfUser(currentUserPublicKey),
-    [currentUserPublicKey],
+    () => makeChirpsListOfUser(laoId.valueOf())(currentUserPopTokenPublicKey),
+    [currentUserPopTokenPublicKey, laoId],
   );
   const userChirpList = useSelector(userChirps);
 
-  if (!currentUserPublicKey || currentUserPublicKey.valueOf() === '') {
+  if (!currentUserPopTokenPublicKey) {
     return (
       <View style={styles.textUnavailableView}>
         <TextBlock text={STRINGS.social_media_your_profile_unavailable} />
@@ -36,39 +43,36 @@ const SocialProfile = (props: IPropTypes) => {
   }
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPopTokenPublicKey} />
   );
 
   return (
-    <View style={styles.viewCenter}>
-      <View style={styles.topView}>
-        <ProfileIcon publicKey={currentUserPublicKey} size={8} scale={10} />
-        <View style={styles.textView}>
-          <Text style={styles.profileText}>{currentUserPublicKey.valueOf()}</Text>
-          <Text>{`${userChirpList.length} ${
-            userChirpList.length === 1 ? 'chirp' : 'chirps'
-          }`}</Text>
+    <ScreenWrapper>
+      <View style={styles.viewCenter}>
+        <View style={styles.topView}>
+          <ProfileIcon publicKey={currentUserPopTokenPublicKey} size={8} scale={10} />
+          <View style={styles.textView}>
+            <Text style={styles.profileText}>{currentUserPopTokenPublicKey.valueOf()}</Text>
+            <Text>{`${userChirpList.length} ${
+              userChirpList.length === 1 ? 'chirp' : 'chirps'
+            }`}</Text>
+          </View>
+        </View>
+        <View style={styles.userFeed}>
+          <FlatList
+            data={userChirpList}
+            renderItem={renderChirpState}
+            keyExtractor={(item) => item.id.toString()}
+          />
         </View>
       </View>
-      <View style={styles.userFeed}>
-        <FlatList
-          data={userChirpList}
-          renderItem={renderChirpState}
-          keyExtractor={(item) => item.id.toString()}
-        />
-      </View>
-    </View>
+    </ScreenWrapper>
   );
 };
 
-const propTypes = {
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-};
-
-SocialProfile.prototype = propTypes;
-
-type IPropTypes = {
-  currentUserPublicKey: PublicKey;
-};
-
 export default SocialProfile;
+
+export const SocialProfileScreen: SocialFeature.SocialScreen = {
+  id: STRINGS.social_media_navigation_tab_profile,
+  Component: SocialProfile,
+};
