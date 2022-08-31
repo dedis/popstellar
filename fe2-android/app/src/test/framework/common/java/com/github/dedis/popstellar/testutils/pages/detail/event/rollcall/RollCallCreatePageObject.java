@@ -9,6 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class RollCallCreatePageObject {
 
+  private RollCallCreatePageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction rollCallCreateTitle() {
     return onView(withId(R.id.roll_call_title_text));
   }

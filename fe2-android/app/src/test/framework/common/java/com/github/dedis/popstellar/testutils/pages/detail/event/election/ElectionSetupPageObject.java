@@ -11,6 +11,10 @@ import static org.hamcrest.Matchers.allOf;
 
 public class ElectionSetupPageObject {
 
+  private ElectionSetupPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction electionName() {
     return onView(
         allOf(

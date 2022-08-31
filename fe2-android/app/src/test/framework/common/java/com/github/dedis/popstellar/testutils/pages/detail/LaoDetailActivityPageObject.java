@@ -18,6 +18,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  */
 public class LaoDetailActivityPageObject {
 
+  private LaoDetailActivityPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction fragmentContainer() {
     return onView(withId(R.id.fragment_container_lao_detail));
   }

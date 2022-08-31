@@ -9,11 +9,15 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 /**
- * Page object of {@Link com.github.dedis.popstellar.ui.home.WalletFragment}
+ * Page object of {@link com.github.dedis.popstellar.ui.wallet.WalletFragment}
  *
  * <p>Creation : 26.03.2022
  */
 public class WalletPageObject {
+
+  private WalletPageObject() {
+    throw new IllegalStateException("Page object");
+  }
 
   @IdRes
   public static int walletFragmentId() {
@@ -76,9 +80,5 @@ public class WalletPageObject {
 
   public static ViewInteraction walletContentText2() {
     return onView(withId(R.id.wallet_content_text_2));
-  }
-
-  public static ViewInteraction logOutButton() {
-    return onView(withId(R.id.logout_button));
   }
 }

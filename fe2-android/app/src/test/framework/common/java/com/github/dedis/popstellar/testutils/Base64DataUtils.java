@@ -25,6 +25,10 @@ public class Base64DataUtils {
   private static final int MSG_ID_LENGTH = 32;
   private static final int SIGNATURE_LENGTH = 54;
 
+  private Base64DataUtils() {
+    throw new IllegalStateException("Utility class");
+  }
+
   /**
    * @return a pseudo randomly generated message id
    */

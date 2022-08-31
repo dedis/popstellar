@@ -15,6 +15,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  */
 public class HomePageObject {
 
+  private HomePageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction fragmentContainer() {
     return onView(withId(R.id.fragment_container_home));
   }

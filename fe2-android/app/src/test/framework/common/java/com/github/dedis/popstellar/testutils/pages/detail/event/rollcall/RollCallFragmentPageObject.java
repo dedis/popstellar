@@ -9,6 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class RollCallFragmentPageObject {
 
+  private RollCallFragmentPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction rollCallTitle() {
     return onView(withId(R.id.roll_call_fragment_title));
   }

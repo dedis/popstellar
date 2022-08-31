@@ -15,6 +15,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  */
 public class CameraPermissionPageObject {
 
+  private CameraPermissionPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction allowCameraButton() {
     return onView(withId(R.id.allow_camera_button));
   }

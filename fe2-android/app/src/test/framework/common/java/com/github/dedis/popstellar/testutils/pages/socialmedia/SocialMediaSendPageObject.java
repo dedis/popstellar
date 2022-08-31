@@ -15,6 +15,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  */
 public class SocialMediaSendPageObject {
 
+  private SocialMediaSendPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction sendChirpButton() {
     return onView(withId(R.id.send_chirp_button));
   }

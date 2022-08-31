@@ -9,6 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class WitnessFragmentPageObject {
 
+  private WitnessFragmentPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction addWitnessButton() {
     return onView(withId(R.id.add_witness_button));
   }

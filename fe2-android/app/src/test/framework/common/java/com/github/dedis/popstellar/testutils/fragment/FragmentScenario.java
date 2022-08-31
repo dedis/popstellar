@@ -189,7 +189,7 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
    */
   public static <A extends AppCompatActivity, F extends Fragment> FragmentScenario<A, F> launchIn(
       @NonNull Class<A> activityClass,
-      @Nullable Bundle activityArgs,
+      @NonNull Bundle activityArgs,
       @IdRes int contentId,
       @NonNull Class<F> fragmentClass,
       @Nullable FragmentFactory factory,

@@ -9,11 +9,15 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 /**
- * Page object of {@Link DigitalCashMainActivity}
+ * Page object of {@link com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity}
  *
  * <p>Creation : 20.05.2022
  */
 public class DigitalCashPageObject {
+
+  private DigitalCashPageObject() {
+    throw new IllegalStateException("Page object");
+  }
 
   public static ViewInteraction fragmentContainer() {
     return onView(withId(R.id.fragment_container_digital_cash));

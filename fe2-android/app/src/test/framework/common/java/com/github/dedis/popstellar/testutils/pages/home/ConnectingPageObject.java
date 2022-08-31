@@ -9,6 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class ConnectingPageObject {
 
+  private ConnectingPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction connectingText() {
     return onView(withId(R.id.connecting_text));
   }

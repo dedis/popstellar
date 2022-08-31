@@ -9,6 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class SettingsPageObject {
 
+  private SettingsPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction pageTitle() {
     return onView(withId(R.id.server_url_title));
   }

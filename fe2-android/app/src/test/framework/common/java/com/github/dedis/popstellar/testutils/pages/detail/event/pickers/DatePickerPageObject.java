@@ -4,6 +4,10 @@ import com.github.dedis.popstellar.ui.detail.event.pickers.PickerConstant;
 
 public class DatePickerPageObject {
 
+  private DatePickerPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static String getRequestKey() {
     return PickerConstant.REQUEST_KEY;
   }

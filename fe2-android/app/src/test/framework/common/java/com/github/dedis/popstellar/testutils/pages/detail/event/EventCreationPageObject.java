@@ -9,6 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class EventCreationPageObject {
 
+  private EventCreationPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction startDateView() {
     return onView(withId(R.id.start_date_edit_text));
   }

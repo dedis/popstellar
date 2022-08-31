@@ -9,6 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class LaoDetailFragmentPageObject {
 
+  private LaoDetailFragmentPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction titleTextView() {
     return onView(withId(R.id.lao_detail_title));
   }

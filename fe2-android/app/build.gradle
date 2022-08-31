@@ -187,6 +187,8 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['check']) {
         '**/Manifest*.*',
         '**/*Test*.*',
         'androidx/**/*.*',
+        // Exclude test framework from the coverage
+        'com/github/dedis/popstellar/testutils/**.*',
         // Exclude Hilt generated classes
         '*_*Factory.class',
         '*_ComponentTreeDeps.class',

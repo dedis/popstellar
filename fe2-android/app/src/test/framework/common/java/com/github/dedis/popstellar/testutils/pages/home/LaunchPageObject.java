@@ -15,6 +15,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  */
 public class LaunchPageObject {
 
+  private LaunchPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   @IdRes
   public static int launchFragmentId() {
     return R.id.fragment_launch;

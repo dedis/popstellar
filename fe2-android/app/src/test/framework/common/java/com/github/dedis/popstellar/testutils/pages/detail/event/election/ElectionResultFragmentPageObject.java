@@ -9,6 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class ElectionResultFragmentPageObject {
 
+  private ElectionResultFragmentPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction electionResultLaoTitle() {
     return onView(withId(R.id.election_result_lao_name));
   }

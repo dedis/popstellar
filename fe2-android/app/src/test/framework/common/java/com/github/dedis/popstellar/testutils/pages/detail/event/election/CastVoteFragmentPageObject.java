@@ -9,6 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class CastVoteFragmentPageObject {
 
+  private CastVoteFragmentPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction castVoteLaoTitle() {
     return onView(withId(R.id.cast_vote_lao_name));
   }

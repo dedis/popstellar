@@ -6,6 +6,10 @@ import org.hamcrest.*;
 
 public class MatcherUtils {
 
+  private MatcherUtils() {
+    throw new IllegalStateException("Utility class");
+  }
+
   public static Matcher<View> childAtPosition(
       final Matcher<View> parentMatcher, final int position) {
 

@@ -15,6 +15,10 @@ import static org.hamcrest.Matchers.is;
 
 public class ElectionStartPageObject {
 
+  private ElectionStartPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction electionTitle() {
     return onView(withId(R.id.election_title));
   }

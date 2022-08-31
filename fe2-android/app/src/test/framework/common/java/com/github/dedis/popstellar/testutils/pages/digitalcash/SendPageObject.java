@@ -9,6 +9,11 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public class SendPageObject {
+
+  private SendPageObject() {
+    throw new IllegalStateException("Page object");
+  }
+
   public static ViewInteraction sendButtonToReceipt() {
     return onView(withId(R.id.digital_cash_send_send));
   }
