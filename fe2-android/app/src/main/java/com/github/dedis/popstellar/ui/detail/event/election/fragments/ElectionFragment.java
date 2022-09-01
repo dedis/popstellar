@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.detail.event.election.fragments;
 import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -75,7 +76,7 @@ public class ElectionFragment extends Fragment {
     setupTime(view);
     managementButton.setOnClickListener(
         v -> {
-          EventState state = election.getState().getValue();
+          EventState state = election.getState();
           switch (state) {
             case CREATED:
               // When implemented across all subsystems go into start election fragment which
@@ -90,7 +91,9 @@ public class ElectionFragment extends Fragment {
                               laoDetailViewModel
                                   .openElection(election)
                                   .subscribe(
-                                      () -> {},
+                                      () -> {
+                                        Log.d(TAG, "opening election");
+                                      },
                                       error ->
                                           ErrorUtils.logAndShow(
                                               requireContext(),
@@ -130,7 +133,7 @@ public class ElectionFragment extends Fragment {
 
     actionButton.setOnClickListener(
         v -> {
-          EventState state = election.getState().getValue();
+          EventState state = election.getState();
           switch (state) {
             case OPENED:
               LaoDetailActivity.setCurrentFragment(
@@ -149,14 +152,24 @@ public class ElectionFragment extends Fragment {
                   "User should not be able to use the action button in this state :" + state);
           }
         });
-
-    election.getState().observe(getViewLifecycleOwner(), eventState -> setupElectionContent());
+    laoDetailViewModel
+        .getCurrentLao()
+        .observe(
+            getActivity(),
+            laoView -> {
+              Log.d(TAG, "lao updated");
+              setupElectionContent();
+            });
 
     return view;
   }
 
   private void setupElectionContent() {
-    EventState electionState = election.getState().getValue();
+    if (getContext() == null) {
+      return;
+    }
+    election = laoDetailViewModel.getCurrentElection();
+    EventState electionState = election.getState();
 
     TextView title = view.findViewById(R.id.election_fragment_title);
     title.setText(election.getName());
@@ -198,7 +211,7 @@ public class ElectionFragment extends Fragment {
   }
 
   private Drawable getDrawableFromContext(int id) {
-    return AppCompatResources.getDrawable(getContext(), id);
+    return AppCompatResources.getDrawable(requireContext(), id);
   }
 
   private void setButtonColor(View v, int colorId) {

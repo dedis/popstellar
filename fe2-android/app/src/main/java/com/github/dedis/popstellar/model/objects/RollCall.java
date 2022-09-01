@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.event.*;
@@ -18,7 +17,7 @@ public class RollCall extends Event implements Copyable<RollCall> {
   private long creation;
   private long start;
   private long end;
-  private final MutableLiveData<EventState> state;
+  private EventState state;
   private Set<PublicKey> attendees;
 
   private String location;
@@ -28,7 +27,6 @@ public class RollCall extends Event implements Copyable<RollCall> {
     this.id = id;
     this.persistentId = id;
     this.attendees = new HashSet<>();
-    this.state = new MutableLiveData<>();
   }
 
   public RollCall(String laoId, long creation, String name) {
@@ -47,7 +45,7 @@ public class RollCall extends Event implements Copyable<RollCall> {
     this.creation = rollCall.creation;
     this.start = rollCall.start;
     this.end = rollCall.end;
-    this.state = new MutableLiveData<>(rollCall.state.getValue());
+    this.state = rollCall.state;
     this.attendees = new HashSet<>(rollCall.attendees);
     this.location = rollCall.location;
     this.description = rollCall.description;
@@ -98,7 +96,7 @@ public class RollCall extends Event implements Copyable<RollCall> {
   }
 
   public void setState(EventState state) {
-    this.state.postValue(state);
+    this.state = state;
   }
 
   public Set<PublicKey> getAttendees() {
@@ -144,7 +142,7 @@ public class RollCall extends Event implements Copyable<RollCall> {
   }
 
   @Override
-  public MutableLiveData<EventState> getState() {
+  public EventState getState() {
     return state;
   }
 
@@ -191,7 +189,7 @@ public class RollCall extends Event implements Copyable<RollCall> {
    * @return true if the roll-call is closed, false otherwise
    */
   public boolean isClosed() {
-    return EventState.CLOSED.equals(state.getValue());
+    return EventState.CLOSED.equals(state);
   }
 
   @Override
@@ -219,7 +217,7 @@ public class RollCall extends Event implements Copyable<RollCall> {
         + ", end="
         + end
         + ", state="
-        + state.getValue()
+        + state
         + ", attendees="
         + Arrays.toString(attendees.toArray())
         + ", location='"

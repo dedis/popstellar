@@ -11,7 +11,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.dedis.popstellar.databinding.ElectionResultFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionResultPagerAdapter;
@@ -43,8 +43,8 @@ public class ElectionResultFragment extends Fragment {
     TextView electionNameView = mElectionResultFragBinding.electionResultElectionTitle;
 
     // Getting LAO
-    Lao lao = mLaoDetailViewModel.getCurrentLaoValue();
-    if (lao == null) {
+    LaoView laoView = mLaoDetailViewModel.getCurrentLaoValue();
+    if (laoView == null) {
       Log.e(TAG, "No LAO in view model");
       return null;
     }
@@ -57,7 +57,7 @@ public class ElectionResultFragment extends Fragment {
     }
 
     // Setting the Lao Name
-    laoNameView.setText(lao.getName());
+    laoNameView.setText(laoView.getName());
 
     // Setting election name
     electionNameView.setText(election.getName());

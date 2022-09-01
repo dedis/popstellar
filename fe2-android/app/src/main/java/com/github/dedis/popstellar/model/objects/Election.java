@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.model.objects;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
@@ -15,7 +14,7 @@ import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.*;
 
 public class Election extends Event implements Copyable<Election> {
-
+  private static String TAG = Election.class.getSimpleName();
   private Channel channel;
   private String id;
   private String name;
@@ -37,7 +36,10 @@ public class Election extends Event implements Copyable<Election> {
   // Map that associates each messageId to its sender
   private final Map<MessageID, PublicKey> messageMap;
 
-  private final MutableLiveData<EventState> state;
+  // Event state of the election. One is observable so as to be listened to. The other is so
+  // that the value is immediately updated
+  private EventState state;
+  //  private final EventState state;
 
   // Results of an election (associated to a question id)
   private final Map<String, List<QuestionResult>> results;
@@ -53,7 +55,6 @@ public class Election extends Event implements Copyable<Election> {
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     // At the start, the election key is null and is updated later with the handler
     this.electionVersion = electionVersion;
-    this.state = new MutableLiveData<>();
   }
 
   public Election(Election election) {
@@ -70,7 +71,8 @@ public class Election extends Event implements Copyable<Election> {
     this.encryptedVoteByPublicKey = Copyable.copyMapOfList(election.encryptedVoteByPublicKey);
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     messageMap.putAll(election.messageMap);
-    this.state = new MutableLiveData<>(election.state.getValue());
+    Log.d(TAG, "copying election state with value " + election.state);
+    this.state = election.state;
     this.results = Copyable.copyMapOfList(election.results);
   }
 
@@ -121,10 +123,10 @@ public class Election extends Event implements Copyable<Election> {
   }
 
   public void setEventState(EventState state) {
-    this.state.postValue(state);
+    this.state = state;
   }
 
-  public MutableLiveData<EventState> getState() {
+  public EventState getState() {
     return state;
   }
 

@@ -88,7 +88,7 @@ public class RollCallFragment extends Fragment {
 
     View.OnClickListener listener =
         v -> {
-          EventState state = rollCall.getState().getValue();
+          EventState state = rollCall.getState();
           switch (state) {
             case CLOSED:
             case CREATED:
@@ -123,8 +123,8 @@ public class RollCallFragment extends Fragment {
 
     managementButton.setOnClickListener(listener);
 
-    rollCall
-        .getState()
+    laoDetailViewModel
+        .getLaoEvents()
         .observe(getViewLifecycleOwner(), eventState -> setUpStateDependantContent());
 
     retrieveAndDisplayPublicKey(view);
@@ -146,9 +146,10 @@ public class RollCallFragment extends Fragment {
   }
 
   private void setUpStateDependantContent() {
+    rollCall = laoDetailViewModel.getCurrentRollCall();
     setupTime(); // Suggested time is updated in case of early/late close/open/reopen
 
-    EventState rcState = rollCall.getState().getValue();
+    EventState rcState = rollCall.getState();
     boolean isOrganizer = laoDetailViewModel.isOrganizer().getValue();
 
     title.setText(rollCall.getName());
