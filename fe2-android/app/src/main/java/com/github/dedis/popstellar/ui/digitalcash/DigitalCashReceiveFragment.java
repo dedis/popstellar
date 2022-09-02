@@ -10,9 +10,9 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashReceiveFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
@@ -56,16 +56,16 @@ public class DigitalCashReceiveFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     try {
-      Lao lao = mViewModel.getCurrentLaoValue();
-      PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+      LaoView laoView = mViewModel.getCurrentLaoValue();
+      PoPToken token = mViewModel.getKeyManager().getValidPoPToken(laoView);
 
       Bitmap myBitmap = QRCode.from(token.getPublicKey().getEncoded()).bitmap();
       mBinding.digitalCashReceiveQr.setImageBitmap(myBitmap);
 
-      if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
+      if (laoView.getTransactionByUser().containsKey(token.getPublicKey())) {
         TransactionObject transaction =
             TransactionObject.lastLockedTransactionObject(
-                Objects.requireNonNull(lao.getTransactionByUser().get(token.getPublicKey())));
+                Objects.requireNonNull(laoView.getTransactionByUser().get(token.getPublicKey())));
         String sender = transaction.getSendersTransaction().get(0).getEncoded();
 
         mBinding.digitalCashReceiveAddress.setText(String.format("Received from : %n %s", sender));

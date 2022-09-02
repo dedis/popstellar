@@ -146,7 +146,7 @@ public class DigitalCashIssueFragment extends Fragment {
         attendees.addAll(current.getAttendees());
       }
     } else if (radioGroup == selectAllRollCallAttendees) {
-      attendees = mViewModel.getAttendeesFromTheRollCall();
+      attendees = mViewModel.getAttendeesFromLastRollCall();
     } else if (radioGroup == selectAllLaoWitnesses) {
       attendees = Objects.requireNonNull(mViewModel.getCurrentLaoValue()).getWitnesses();
     }

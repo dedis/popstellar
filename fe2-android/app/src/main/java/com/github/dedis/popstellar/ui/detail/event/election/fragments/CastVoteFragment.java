@@ -14,7 +14,7 @@ import com.github.dedis.popstellar.databinding.CastVoteFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.CastVoteViewPagerAdapter;
@@ -108,9 +108,9 @@ public class CastVoteFragment extends Fragment {
     // setUp the cast Vote button
     voteButton = mCastVoteFragBinding.castVoteButton;
 
-    // Getting lao
-    Lao lao = mLaoDetailViewModel.getCurrentLao().getValue();
-    if (lao == null) {
+    // Getting laoView
+    LaoView laoView = mLaoDetailViewModel.getCurrentLao().getValue();
+    if (laoView == null) {
       Log.e(TAG, "The current LAO of the LaoDetailViewModel is null");
       return null;
     }
@@ -123,7 +123,7 @@ public class CastVoteFragment extends Fragment {
     }
 
     // Setting the Lao Name
-    laoNameView.setText(lao.getName());
+    laoNameView.setText(laoView.getName());
 
     // Setting election name
     electionNameView.setText(election.getName());

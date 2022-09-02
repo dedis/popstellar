@@ -130,9 +130,11 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
               .subscribe(
                   // Open the scanning fragment when everything is done
                   this::openScanning,
-                  error ->
-                      ErrorUtils.logAndShow(
-                          requireContext(), TAG, error, R.string.error_create_rollcall)));
+                  error -> {
+                    System.out.println("error in rc creation " + error);
+                    ErrorUtils.logAndShow(
+                        requireContext(), TAG, error, R.string.error_create_rollcall);
+                  }));
     } else {
       mLaoDetailViewModel.addDisposable(
           createRollCall.subscribe(

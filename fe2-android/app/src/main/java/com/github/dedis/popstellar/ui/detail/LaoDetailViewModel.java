@@ -425,6 +425,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param id the roll call id to open
    */
   public Completable openRollCall(String id) {
+    System.out.println("call openRollCall with id " + id);
+    System.out.println("in open rc " + getCurrentLao().getValue());
     Log.d(TAG, "call openRollCall with id" + id);
     LaoView laoView = getCurrentLaoValue();
     if (laoView == null) {
@@ -435,6 +437,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     long openedAt = Instant.now().getEpochSecond();
     Optional<RollCall> optRollCall = laoView.getRollCall(id);
     if (!optRollCall.isPresent()) {
+      System.out.println("exit there");
       Log.d(TAG, "failed to retrieve roll call with id " + id + "laoID: " + laoView.getId());
       return Completable.error(new NoRollCallException(laoView));
     }
@@ -444,7 +447,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         new OpenRollCall(laoView.getId(), id, openedAt, rollCall.getState());
 
     Channel channel = laoView.getChannel();
-
+    System.out.println("exiting open rc normally");
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, openRollCall)
@@ -706,6 +709,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
             .subscribe(
                 laoView -> {
                   Log.d(TAG, "got an update for lao: " + laoView.getName());
+                  System.out.println("got an update for lao: " + laoView);
+
                   mCurrentLao.postValue(laoView);
                   boolean isOrganizer =
                       laoView.getOrganizer().equals(keyManager.getMainPublicKey());

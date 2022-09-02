@@ -113,9 +113,9 @@ public final class Lao implements Copyable<Lao> {
     if (rollCall == null) {
       throw new IllegalArgumentException("The roll call is null");
     }
-
+    System.out.println("rc in Lao is " + rollCall);
     rollCalls.remove(prevId);
-    rollCalls.put(rollCall.getId(), rollCall);
+    rollCalls.put(prevId, rollCall);
   }
 
   public void updateElection(String prevId, Election election) {
@@ -249,6 +249,9 @@ public final class Lao implements Copyable<Lao> {
   }
 
   public Optional<RollCall> getRollCall(String id) {
+    System.out.println("id in get rc is " + id);
+    System.out.println("roll calls in get are " + rollCalls);
+    System.out.println("when get " + rollCalls.get(id));
     return Optional.ofNullable(rollCalls.get(id));
   }
 
