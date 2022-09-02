@@ -131,8 +131,10 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public Single<MessageGeneral> sendChirp(
       String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
-    Lao lao = getCurrentLao();
-    if (lao == null) {
+    final Lao lao;
+    try {
+      lao = getCurrentLao();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
@@ -153,8 +155,10 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
 
   public Single<MessageGeneral> deleteChirp(MessageID chirpId, long timestamp) {
     Log.d(TAG, "Deleting the chirp with id: " + chirpId);
-    Lao lao = getCurrentLao();
-    if (lao == null) {
+    final Lao lao;
+    try {
+      lao = getCurrentLao();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
@@ -173,7 +177,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
             });
   }
 
-  public List<Chirp> getChirpList(String laoId) {
+  public List<Chirp> getChirpList(String laoId) throws UnknownLaoException {
     Lao lao = getLao(laoId);
     if (lao == null) return Collections.emptyList();
     else return lao.getChirpsInOrder();
@@ -187,8 +191,11 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    */
   public boolean isOwner(String sender) {
     Log.d(TAG, "Testing if the sender is also the owner");
-    Lao lao = getCurrentLao();
-    if (lao == null) {
+
+    Lao lao;
+    try {
+      lao = getCurrentLao();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return false;
     }
@@ -220,17 +227,12 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   }
 
   @Nullable
-  public Lao getCurrentLao() {
+  public Lao getCurrentLao() throws UnknownLaoException {
     return getLao(getLaoId().getValue());
   }
 
   @Nullable
-  private Lao getLao(String laoId) {
-    // TODO Fully move to an LaoView here (and throw the exception further)
-    try {
-      return laoRepository.getLaoView(laoId).createLaoCopy();
-    } catch (UnknownLaoException e) {
-      return null;
-    }
+  private Lao getLao(String laoId) throws UnknownLaoException {
+    return laoRepository.getLaoView(laoId).createLaoCopy();
   }
 }

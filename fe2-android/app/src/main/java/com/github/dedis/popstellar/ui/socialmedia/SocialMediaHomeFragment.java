@@ -11,6 +11,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaHomeFragmentBinding;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.ArrayList;
 
@@ -19,6 +21,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 /** Fragment of the home feed of the social media */
 @AndroidEntryPoint
 public class SocialMediaHomeFragment extends Fragment {
+  public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
+
   private SocialMediaHomeFragmentBinding mSocialMediaHomeFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;
   private ChirpListAdapter mChirpListAdapter;
@@ -67,8 +71,12 @@ public class SocialMediaHomeFragment extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout = mSocialMediaHomeFragBinding.swipeRefreshChirps;
     swipeRefreshLayout.setOnRefreshListener(
         () -> {
-          mChirpListAdapter.replaceList(
-              mSocialMediaViewModel.getChirpList(mSocialMediaViewModel.getLaoId().getValue()));
+          try {
+            mChirpListAdapter.replaceList(
+                mSocialMediaViewModel.getChirpList(mSocialMediaViewModel.getLaoId().getValue()));
+          } catch (UnknownLaoException e) {
+            ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+          }
 
           final Handler handler = new Handler(Looper.getMainLooper());
           handler.postDelayed(
@@ -93,7 +101,12 @@ public class SocialMediaHomeFragment extends Fragment {
         .getLaoId()
         .observe(
             getViewLifecycleOwner(),
-            newLaoId ->
-                mChirpListAdapter.replaceList(mSocialMediaViewModel.getChirpList(newLaoId)));
+            newLaoId -> {
+              try {
+                mChirpListAdapter.replaceList(mSocialMediaViewModel.getChirpList(newLaoId));
+              } catch (UnknownLaoException e) {
+                ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+              }
+            });
   }
 }
