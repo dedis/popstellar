@@ -80,7 +80,6 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
                     // Creating a unique id using the index of the lao within the list
                     laosList.add(Menu.NONE, i, Menu.CATEGORY_CONTAINER, laoView.getName());
                   } catch (UnknownLaoException e) {
-                    e.printStackTrace();
                     throw new IllegalStateException(
                         "Lao with id " + laoId + " is supposed to be present");
                   }
@@ -106,7 +105,6 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         mViewModel.setLaoId(laoId);
         mViewModel.setLaoName(laoView.getName());
       } catch (UnknownLaoException e) {
-        e.printStackTrace();
         throw new IllegalStateException("Lao with id " + laoId + " is supposed to be present");
       }
       return true;
