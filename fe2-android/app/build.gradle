@@ -137,6 +137,8 @@ sonarqube {
         property "sonar.projectName", "PoP - Fe2-Android"
         property "sonar.organization", "dedis"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.sources", "src/main/"
+        property "sonar.tests", "src/test/"
         // Comma-separated paths to the various directories containing the *.xml JUnit report files. Each path may be absolute or relative to the project base directory.
         property "sonar.junit.reportPaths", "${project.buildDir}/test-results/testDebugUnitTest/"
         // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will have to be changed too.
