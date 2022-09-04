@@ -60,8 +60,8 @@ public class ChirpHandlerTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
-  private MessageRepository messageRepository;
-  private LAORepository laoRepository;
+  private MessageRepository messageRepo;
+  private LAORepository laoRepo;
   private MessageHandler messageHandler;
 
   @Mock MessageSender messageSender;
@@ -77,18 +77,17 @@ public class ChirpHandlerTest {
 
     Channel channel = Channel.getLaoChannel(LAO_ID);
 
-    messageRepository = new MessageRepository();
-    laoRepository = new LAORepository();
+    messageRepo = new MessageRepository();
+    laoRepo = new LAORepository();
     messageHandler =
         new MessageHandler(
             DataRegistryModule.provideDataRegistry(), keyManager, new ServerRepository());
 
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, channel, createLaoMessage);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, channel, createLaoMessage);
 
     chirpChannel =
-        laoRepository
+        laoRepo
             .getLaoView(LAO_ID)
             .getChannel()
             .subChannel("social")
@@ -98,10 +97,9 @@ public class ChirpHandlerTest {
   @Test
   public void testHandleAddChirp() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, chirpChannel, message);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, chirpChannel, message);
 
-    LaoView laoView = laoRepository.getLaoView(LAO_ID);
+    LaoView laoView = laoRepo.getLaoView(LAO_ID);
     Lao updatedLao = laoView.createLaoCopy();
 
     Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
@@ -123,16 +121,14 @@ public class ChirpHandlerTest {
   @Test
   public void testHandleDeleteChirp() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, chirpChannel, message);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, chirpChannel, message);
 
     final DeleteChirp DELETE_CHIRP = new DeleteChirp(message.getMessageId(), DELETION_TIME);
 
     MessageGeneral message2 = new MessageGeneral(SENDER_KEY, DELETE_CHIRP, GSON);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, chirpChannel, message2);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, chirpChannel, message2);
 
-    LaoView laoView = laoRepository.getLaoView(LAO_ID);
+    LaoView laoView = laoRepo.getLaoView(LAO_ID);
     Lao updatedLao = laoView.createLaoCopy();
 
     Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());

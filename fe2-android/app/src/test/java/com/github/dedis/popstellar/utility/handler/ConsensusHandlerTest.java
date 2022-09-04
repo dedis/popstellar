@@ -67,8 +67,8 @@ public class ConsensusHandlerTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
-  private MessageRepository messageRepository;
-  private LAORepository laoRepository;
+  private MessageRepository messageRepo;
+  private LAORepository laoRepo;
   private MessageHandler messageHandler;
 
   private MessageGeneral electMsg;
@@ -85,16 +85,15 @@ public class ConsensusHandlerTest {
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    messageRepository = new MessageRepository();
-    laoRepository = new LAORepository();
+    messageRepo = new MessageRepository();
+    laoRepo = new LAORepository();
     messageHandler =
         new MessageHandler(
             DataRegistryModule.provideDataRegistry(), keyManager, new ServerRepository());
 
     Channel channel = Channel.getLaoChannel(LAO_ID);
     MessageGeneral createLaoMessage = getMsg(ORGANIZER_KEY, CREATE_LAO);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, channel, createLaoMessage);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, channel, createLaoMessage);
 
     electMsg = getMsg(NODE_2_KEY, elect);
     messageId = electMsg.getMessageId();
@@ -127,13 +126,11 @@ public class ConsensusHandlerTest {
     ConsensusFailure failure = new ConsensusFailure(INSTANCE_ID, messageId, CREATION_TIME);
     MessageGeneral failureMsg = getMsg(ORGANIZER_KEY, failure);
 
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, CONSENSUS_CHANNEL, electMsg);
     messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, CONSENSUS_CHANNEL, electMsg);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, CONSENSUS_CHANNEL, failureMsg);
+        messageRepo, laoRepo, messageSender, CONSENSUS_CHANNEL, failureMsg);
 
-    Lao updatedLao =
-        laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
+    Lao updatedLao = laoRepo.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
 
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
@@ -148,11 +145,9 @@ public class ConsensusHandlerTest {
   // This should add an attempt from node2 to start a consensus (in this case for starting an
   // election)
   private void handleConsensusElectTest() throws DataHandlingException, UnknownLaoException {
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, CONSENSUS_CHANNEL, electMsg);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, CONSENSUS_CHANNEL, electMsg);
 
-    Lao updatedLao =
-        laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
+    Lao updatedLao = laoRepo.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
 
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
@@ -198,10 +193,9 @@ public class ConsensusHandlerTest {
     ConsensusElectAccept electAccept = new ConsensusElectAccept(INSTANCE_ID, messageId, true);
     MessageGeneral electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
     messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, CONSENSUS_CHANNEL, electAcceptMsg);
+        messageRepo, laoRepo, messageSender, CONSENSUS_CHANNEL, electAcceptMsg);
 
-    Lao updatedLao =
-        laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
+    Lao updatedLao = laoRepo.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
 
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
@@ -235,11 +229,9 @@ public class ConsensusHandlerTest {
     ConsensusLearn learn =
         new ConsensusLearn(INSTANCE_ID, messageId, CREATION_TIME, true, Collections.emptyList());
     MessageGeneral learnMsg = getMsg(NODE_3_KEY, learn);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, CONSENSUS_CHANNEL, learnMsg);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, CONSENSUS_CHANNEL, learnMsg);
 
-    Lao updatedLao =
-        laoRepository.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
+    Lao updatedLao = laoRepo.getLaoViewByChannel(Channel.getLaoChannel(LAO_ID)).createLaoCopy();
 
     Optional<ElectInstance> electInstanceOpt = updatedLao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
@@ -267,25 +259,17 @@ public class ConsensusHandlerTest {
         InvalidMessageIdException.class,
         () ->
             messageHandler.handleMessage(
-                messageRepository,
-                laoRepository,
-                messageSender,
-                CONSENSUS_CHANNEL,
-                electAcceptInvalidMsg));
+                messageRepo, laoRepo, messageSender, CONSENSUS_CHANNEL, electAcceptInvalidMsg));
     assertThrows(
         InvalidMessageIdException.class,
         () ->
             messageHandler.handleMessage(
-                messageRepository,
-                laoRepository,
-                messageSender,
-                CONSENSUS_CHANNEL,
-                learnInvalidMsg));
+                messageRepo, laoRepo, messageSender, CONSENSUS_CHANNEL, learnInvalidMsg));
     assertThrows(
         InvalidMessageIdException.class,
         () ->
             messageHandler.handleMessage(
-                messageRepository, laoRepository, messageSender, CONSENSUS_CHANNEL, failureMsg));
+                messageRepo, laoRepo, messageSender, CONSENSUS_CHANNEL, failureMsg));
   }
 
   @Test
@@ -304,25 +288,25 @@ public class ConsensusHandlerTest {
     ConsensusAccept accept = new ConsensusAccept(INSTANCE_ID, messageId, CREATION_TIME, 3, true);
 
     messageHandler.handleMessage(
-        messageRepository,
+        messageRepo,
         mockLAORepository,
         messageSender,
         CONSENSUS_CHANNEL,
         getMsg(ORGANIZER_KEY, prepare));
     messageHandler.handleMessage(
-        messageRepository,
+        messageRepo,
         mockLAORepository,
         messageSender,
         CONSENSUS_CHANNEL,
         getMsg(ORGANIZER_KEY, promise));
     messageHandler.handleMessage(
-        messageRepository,
+        messageRepo,
         mockLAORepository,
         messageSender,
         CONSENSUS_CHANNEL,
         getMsg(ORGANIZER_KEY, propose));
     messageHandler.handleMessage(
-        messageRepository,
+        messageRepo,
         mockLAORepository,
         messageSender,
         CONSENSUS_CHANNEL,

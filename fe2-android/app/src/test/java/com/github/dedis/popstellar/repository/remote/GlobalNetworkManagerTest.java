@@ -26,8 +26,8 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class GlobalNetworkManagerTest {
 
-  @Mock MessageRepository messageRepository;
-  @Mock LAORepository repository;
+  @Mock MessageRepository messageRepo;
+  @Mock LAORepository laoRepo;
   @Mock MessageHandler handler;
   @Mock Gson gson;
 
@@ -44,8 +44,7 @@ public class GlobalNetworkManagerTest {
     when(factory.createConnection(anyString())).thenReturn(firstConnection);
 
     GlobalNetworkManager networkManager =
-        new GlobalNetworkManager(
-            messageRepository, repository, handler, factory, gson, schedulerProvider);
+        new GlobalNetworkManager(messageRepo, laoRepo, handler, factory, gson, schedulerProvider);
     verify(factory).createConnection(anyString());
 
     Completable sendMessage = networkManager.getMessageSender().unsubscribe(Channel.ROOT);
@@ -70,7 +69,7 @@ public class GlobalNetworkManagerTest {
 
     GlobalNetworkManager networkManager =
         new GlobalNetworkManager(
-            messageRepository, repository, handler, factory, gson, new TestSchedulerProvider());
+            messageRepo, laoRepo, handler, factory, gson, new TestSchedulerProvider());
     verify(factory).createConnection(anyString());
 
     Connection secondConnection = mock(Connection.class);

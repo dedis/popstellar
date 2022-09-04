@@ -62,9 +62,9 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class ElectionStartFragmentTest {
 
-  @Inject MessageRepository messageRepository;
+  @Inject MessageRepository messageRepo;
   @Inject KeyManager keyManager;
-  @Inject LAORepository laoRepository;
+  @Inject LAORepository laoRepo;
   @Inject MessageHandler messageHandler;
   @Inject Gson gson;
 
@@ -119,8 +119,8 @@ public class ElectionStartFragmentTest {
               node3Pos = i;
             }
           }
-          laoRepository.updateLao(lao);
-          laoRepository.updateNodes(lao.getChannel());
+          laoRepo.updateLao(lao);
+          laoRepo.updateNodes(lao.getChannel());
 
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
 
@@ -197,14 +197,12 @@ public class ElectionStartFragmentTest {
 
     // Nodes 3 try to start
     MessageGeneral elect3Msg = createMsg(node3KeyPair, elect);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, consensusChannel, elect3Msg);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, elect3Msg);
     nodeAssertions(grid, node3Pos, "Approve Start by\n" + node3, true);
 
     // We try to start (it should disable the start button)
     MessageGeneral elect1Msg = createMsg(mainKeyPair, elect);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, consensusChannel, elect1Msg);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, elect1Msg);
     displayAssertions(STATUS_READY, START_START, false);
     nodeAssertions(grid, ownPos, "Approve Start by\n" + publicKey, true);
 
@@ -212,8 +210,7 @@ public class ElectionStartFragmentTest {
     ConsensusElectAccept electAccept3 =
         new ConsensusElectAccept(INSTANCE_ID, elect3Msg.getMessageId(), true);
     MessageGeneral accept3Msg = createMsg(mainKeyPair, electAccept3);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, consensusChannel, accept3Msg);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, accept3Msg);
     nodeAssertions(grid, node3Pos, "Approve Start by\n" + node3, false);
 
     // Receive a learn message => node3 was accepted and has started the election
@@ -221,8 +218,7 @@ public class ElectionStartFragmentTest {
         new ConsensusLearn(
             INSTANCE_ID, elect3Msg.getMessageId(), PAST_TIME, true, Collections.emptyList());
     MessageGeneral learn3Msg = createMsg(node3KeyPair, learn3);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, consensusChannel, learn3Msg);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, learn3Msg);
     displayAssertions(STATUS_STARTED, START_STARTED, false);
     nodeAssertions(grid, node3Pos, "Started by\n" + node3, false);
   }
@@ -280,8 +276,7 @@ public class ElectionStartFragmentTest {
 
     // Nodes 3 try to start
     MessageGeneral elect3Msg = createMsg(node3KeyPair, elect);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, consensusChannel, elect3Msg);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, elect3Msg);
 
     // We try to accept node3
     nodesGrid().atPosition(node3Pos).perform(ViewActions.click());
@@ -302,25 +297,23 @@ public class ElectionStartFragmentTest {
 
     // Nodes 3 try to start and failed
     MessageGeneral elect3Msg = createMsg(node3KeyPair, elect);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, consensusChannel, elect3Msg);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, elect3Msg);
     ConsensusFailure failure3 =
         new ConsensusFailure(INSTANCE_ID, elect3Msg.getMessageId(), PAST_TIME);
     MessageGeneral failure3Msg = createMsg(node3KeyPair, failure3);
     messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, consensusChannel, failure3Msg);
+        messageRepo, laoRepo, messageSender, consensusChannel, failure3Msg);
 
     nodeAssertions(nodesGrid(), node3Pos, "Start Failed\n" + node3, false);
 
     // We try to start and failed
     MessageGeneral elect1Msg = createMsg(mainKeyPair, elect);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, consensusChannel, elect1Msg);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, elect1Msg);
     ConsensusFailure failure1 =
         new ConsensusFailure(INSTANCE_ID, elect1Msg.getMessageId(), PAST_TIME);
     MessageGeneral failure1Msg = createMsg(mainKeyPair, failure1);
     messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, consensusChannel, failure1Msg);
+        messageRepo, laoRepo, messageSender, consensusChannel, failure1Msg);
 
     displayAssertions(STATUS_READY, START_START, true);
     nodeAssertions(nodesGrid(), ownPos, "Start Failed\n" + publicKey, false);

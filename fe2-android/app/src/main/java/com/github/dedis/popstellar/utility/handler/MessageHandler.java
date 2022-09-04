@@ -36,21 +36,21 @@ public final class MessageHandler {
   /**
    * Send messages to the corresponding handler.
    *
-   * @param laoRepository the repository to access the messages and LAOs
+   * @param laoRepo the repository to access the messages and LAOs
    * @param messageSender the service used to send messages to the backend
    * @param channel the channel on which the message was received
    * @param message the message that was received
    */
   public void handleMessage(
-      MessageRepository messageRepository,
-      LAORepository laoRepository,
+      MessageRepository messageRepo,
+      LAORepository laoRepo,
       MessageSender messageSender,
       Channel channel,
       MessageGeneral message)
       throws DataHandlingException, UnknownLaoException {
     Log.d(TAG, "handle incoming message");
     // Put the message in the state
-    messageRepository.addMessage(message);
+    messageRepo.addMessage(message);
 
     Data data = message.getData();
     Log.d(TAG, "data with class: " + data.getClass());
@@ -59,13 +59,7 @@ public final class MessageHandler {
 
     registry.handle(
         new HandlerContext(
-            messageRepository,
-            laoRepository,
-            keyManager,
-            messageSender,
-            channel,
-            message,
-            serverRepository),
+            messageRepo, laoRepo, keyManager, messageSender, channel, message, serverRepository),
         data,
         dataObj,
         dataAction);

@@ -71,8 +71,8 @@ public class TransactionCoinHandlerTest {
   private Lao lao;
   private RollCall rollCall;
 
-  private MessageRepository messageRepository;
-  private LAORepository laoRepository;
+  private MessageRepository messageRepo;
+  private LAORepository laoRepo;
   private MessageHandler messageHandler;
   private Channel coinChannel;
 
@@ -89,8 +89,8 @@ public class TransactionCoinHandlerTest {
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
     postTransactionCoin = new PostTransactionCoin(TRANSACTION);
-    laoRepository = new LAORepository();
-    messageRepository = new MessageRepository();
+    laoRepo = new LAORepository();
+    messageRepo = new MessageRepository();
     messageHandler =
         new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
 
@@ -108,27 +108,26 @@ public class TransactionCoinHandlerTest {
         });
 
     // Add the LAO to the LAORepository
-    laoRepository.updateLao(lao);
+    laoRepo.updateLao(lao);
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
-    messageRepository.addMessage(createLaoMessage);
+    messageRepo.addMessage(createLaoMessage);
 
     CloseRollCall closeRollCall =
         new CloseRollCall(
             CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, GSON);
-    messageRepository.addMessage(message);
+    messageRepo.addMessage(message);
     coinChannel = lao.getChannel().subChannel("coin").subChannel(SENDER.getEncoded());
   }
 
   @Test
   public void testHandlePostTransactionCoin() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, GSON);
-    messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, coinChannel, message);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, coinChannel, message);
 
-    Lao updatedLao = laoRepository.getLaoViewByChannel(lao.getChannel()).createLaoCopy();
+    Lao updatedLao = laoRepo.getLaoViewByChannel(lao.getChannel()).createLaoCopy();
 
     assertEquals(1, updatedLao.getTransactionByUser().size());
     assertEquals(1, updatedLao.getTransactionHistoryByUser().size());

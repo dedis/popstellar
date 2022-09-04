@@ -12,8 +12,8 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 
 public final class HandlerContext {
 
-  private final MessageRepository messageRepository;
-  private final LAORepository laoRepository;
+  private final MessageRepository messageRepo;
+  private final LAORepository laoRepo;
   private final KeyManager keyManager;
   private final MessageSender messageSender;
   private final Channel channel;
@@ -21,15 +21,15 @@ public final class HandlerContext {
   private final ServerRepository serverRepository;
 
   public HandlerContext(
-      @NonNull MessageRepository messageRepository,
-      @NonNull LAORepository laoRepository,
+      @NonNull MessageRepository messageRepo,
+      @NonNull LAORepository laoRepo,
       @NonNull KeyManager keyManager,
       @NonNull MessageSender messageSender,
       @NonNull Channel channel,
       @NonNull MessageGeneral message,
       @NonNull ServerRepository serverRepository) {
-    this.messageRepository = messageRepository;
-    this.laoRepository = laoRepository;
+    this.messageRepo = messageRepo;
+    this.laoRepo = laoRepo;
     this.keyManager = keyManager;
     this.messageSender = messageSender;
     this.channel = channel;
@@ -38,11 +38,11 @@ public final class HandlerContext {
   }
 
   public MessageRepository getMessageRepository() {
-    return messageRepository;
+    return messageRepo;
   }
 
   public LAORepository getLaoRepository() {
-    return laoRepository;
+    return laoRepo;
   }
 
   public KeyManager getKeyManager() {
