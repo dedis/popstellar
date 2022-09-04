@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -69,7 +70,6 @@ public class LaoDetailFragmentTest {
   private static final PoPToken POP_TOKEN = Base64DataUtils.generatePoPToken();
   private static final PublicKey PK = KEY_PAIR.getPublicKey();
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
-  private static LaoView laoView = new LaoView(LAO);
   private static final String LAO_ID = LAO.getId();
   private static final String RC_NAME = "Roll-Call Title";
   private static final String ELECTION_NAME = "an election name";
@@ -77,7 +77,8 @@ public class LaoDetailFragmentTest {
   private static final String BALLOT_1 = "ballot 1";
   private static final String BALLOT_2 = "ballot 2";
   private static final BehaviorSubject<LaoView> laoViewSubject =
-      BehaviorSubject.createDefault(laoView);
+      BehaviorSubject.createDefault(new LaoView(LAO));
+
   @Inject Gson gson;
 
   @BindValue @Mock GlobalNetworkManager networkManager;
@@ -97,16 +98,14 @@ public class LaoDetailFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException {
+        protected void before() throws KeyException, UnknownLaoException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString())).thenReturn(laoViewSubject);
-
+          when(repository.getLaoView(anyString())).thenAnswer(invocation -> new LaoView(LAO));
           when(keyManager.getMainPublicKey()).thenReturn(PK);
-          when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);
           when(keyManager.getPoPToken(any(), any())).thenReturn(POP_TOKEN);
           when(networkManager.getMessageSender()).thenReturn(messageSender);
-          when(messageSender.subscribe(any())).then(args -> Completable.complete());
-          when(messageSender.publish(any(), any())).then(args -> Completable.complete());
+
           when(messageSender.publish(any(), any(), any()))
               .then(
                   args -> {
@@ -114,11 +113,8 @@ public class LaoDetailFragmentTest {
                     if (obj instanceof CreateRollCall) {
                       CreateRollCall createRollCall = (CreateRollCall) obj;
                       LAO.updateRollCall(createRollCall.getId(), buildRcFromCreate(createRollCall));
-                      laoViewSubject.onNext(new LaoView(LAO));
-                      System.out.println("update done in test " + laoView);
                     }
-
-                    return laoViewSubject.ignoreElements();
+                    return Completable.complete();
                   });
         }
       };
@@ -188,7 +184,6 @@ public class LaoDetailFragmentTest {
     setupViewModel();
     goToRollCallCreationAndEnterTitle();
     rollCreateOpenButton().perform(click());
-    System.out.println("behaviour " + laoViewSubject.getValue());
     fragmentContainer().check(matches(withChild(withId(cameraPermissionId()))));
   }
 
@@ -286,12 +281,8 @@ public class LaoDetailFragmentTest {
     rollCall.setEnd(createRollCall.getProposedEnd());
     rollCall.setName(createRollCall.getName());
     rollCall.setLocation(createRollCall.getLocation());
-
     rollCall.setLocation(createRollCall.getLocation());
     rollCall.setDescription(createRollCall.getDescription().orElse(""));
-    System.out.println("create rc " + createRollCall);
-    System.out.println(
-        "roll call id is " + rollCall.getId() + " persistent " + rollCall.getPersistentId());
     return rollCall;
   }
 }
