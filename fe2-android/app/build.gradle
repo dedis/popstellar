@@ -183,30 +183,22 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['check']) {
     def fileFilter = [
         '**/R.class',
         '**/R$*.class',
+        '**/BR.class',
         '**/BuildConfig.*',
         '**/Manifest*.*',
         '**/*Test*.*',
         'androidx/**/*.*',
+        '**/databinding/*Binding*.class',
         // Exclude test framework from the coverage
-        'com/github/dedis/popstellar/testutils/**.*',
+        'com/github/dedis/popstellar/testutils/**',
         // Exclude Hilt generated classes
-        '*_*Factory.class',
-        '*_ComponentTreeDeps.class',
-        '*_Factory.class',
-        '*_GeneratedInjector.class',
-        '*_HiltComponents.class',
-        '*_HiltModules.class',
-        '*_HiltModules_BindsModule.class',
-        '*_HiltModules_KeyModule.class',
-        '*_MembersInjector.class',
-        '*_ProvideFactory.class',
-        '*_SingletonC.class',
-        '*_TestComponentDataSupplier.class',
-        'BR.class',
-        'BuildConfig.class',
-        'DataBinderMapperImpl.class',
-        'Hilt_*.class',
-        '_test_*.class'
+        'com/github/dedis/popstellar/DataBind*',
+        '**/*Hilt*.*',
+        'hilt_aggregated_deps/**',
+        '**/*_Factory**',
+        '**/*_MembersInjector.class',
+        'dagger/**',
+        '**/*_ComponentTreeDeps.class',
     ]
     def debugTree = fileTree(dir: "$project.buildDir/intermediates/asm_instrumented_project_classes/debug", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/java"
