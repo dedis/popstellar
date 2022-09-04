@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.*;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.gson.Gson;
 
 import org.junit.Rule;
@@ -53,8 +54,9 @@ public class LaoDetailActivityTest {
   private final TestRule setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           hiltAndroidRule.inject();
+          when(laoRepository.getLaoView(anyString())).thenAnswer(invocation -> new LaoView(LAO));
 
           when(laoRepository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));

@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.junit.*;
@@ -89,10 +90,11 @@ public class ElectionResultFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
+          when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
           initializeElection();
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
