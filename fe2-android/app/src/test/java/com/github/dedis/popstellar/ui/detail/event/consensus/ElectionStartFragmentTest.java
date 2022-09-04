@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -357,7 +358,7 @@ public class ElectionStartFragmentTest {
               LaoDetailViewModel laoDetailViewModel =
                   LaoDetailActivity.obtainViewModel(fragmentActivity);
               laoDetailViewModel.setCurrentElection(election);
-              laoDetailViewModel.setCurrentLao(lao);
+              laoDetailViewModel.setCurrentLao(new LaoView(lao));
             });
     // Recreate the fragment because the viewModel needed to be modified before start
     fragmentRule.getScenario().recreate();

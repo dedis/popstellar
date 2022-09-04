@@ -71,7 +71,7 @@ public class LaunchFragmentTest {
         protected void before() throws UnknownLaoException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(LAO));
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
           when(repository.getAllLaoIds())
               .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO.getId())));
           when(repository.getLaoView(anyString())).thenReturn(new LaoView(LAO));

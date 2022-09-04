@@ -160,7 +160,7 @@ public class ElectionHandlerTest extends TestCase {
         laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(electionSetupOpenBallot.getId());
     assertTrue(electionOpt.isPresent());
 
-    assertEquals(EventState.CREATED, electionOpt.get().getState().getValue());
+    assertEquals(EventState.CREATED, electionOpt.get().getState());
     assertEquals(electionSetupOpenBallot.getId(), electionOpt.get().getId());
 
     // Check that the election version has been successfully set
@@ -201,7 +201,7 @@ public class ElectionHandlerTest extends TestCase {
     Optional<Election> electionOpt =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(election.getId());
     assertTrue(electionOpt.isPresent());
-    assertEquals(EventState.RESULTS_READY, electionOpt.get().getState().getValue());
+    assertEquals(EventState.RESULTS_READY, electionOpt.get().getState());
     assertEquals(
         Collections.singletonList(questionResult), electionOpt.get().getResultsForQuestionId("id"));
   }
@@ -224,7 +224,7 @@ public class ElectionHandlerTest extends TestCase {
     Optional<Election> electionOpt =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(election.getId());
     assertTrue(electionOpt.isPresent());
-    assertEquals(EventState.CLOSED, electionOpt.get().getState().getValue());
+    assertEquals(EventState.CLOSED, electionOpt.get().getState());
   }
 
   @Test
@@ -238,10 +238,10 @@ public class ElectionHandlerTest extends TestCase {
           messageRepository, laoRepository, messageSender, election.getChannel(), message);
       if (state == EventState.CREATED) {
         // Test for current TimeStamp
-        assertEquals(EventState.OPENED, election.getState().getValue());
+        assertEquals(EventState.OPENED, election.getState());
         assertEquals(Instant.now().getEpochSecond(), election.getStartTimestamp());
       } else {
-        assertEquals(state, election.getState().getValue());
+        assertEquals(state, election.getState());
       }
     }
   }

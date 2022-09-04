@@ -7,6 +7,7 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
@@ -60,7 +61,8 @@ public class WitnessingFragmentWithPermissionTest {
       new ExternalResource() {
         @Override
         protected void before() {
-          when(repository.getLaoObservable(any())).thenReturn(BehaviorSubject.createDefault(LAO));
+          when(repository.getLaoObservable(any()))
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
         }
       };
 

@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
@@ -95,7 +96,7 @@ public class ElectionFragmentTest {
         protected void before() {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(LAO));
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 

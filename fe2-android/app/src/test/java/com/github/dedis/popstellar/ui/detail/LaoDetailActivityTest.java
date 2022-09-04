@@ -5,6 +5,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.*;
@@ -56,7 +57,7 @@ public class LaoDetailActivityTest {
           hiltAndroidRule.inject();
 
           when(laoRepository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(LAO));
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
         }
       };
   // Activity scenario rule that starts the activity.

@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
@@ -91,7 +92,7 @@ public class ElectionResultFragmentTest {
         protected void before() {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(LAO));
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
 
           initializeElection();
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
@@ -116,7 +117,7 @@ public class ElectionResultFragmentTest {
             fragment -> {
               FragmentActivity fragmentActivity = fragment.requireActivity();
               LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
-              viewModel.setCurrentLao(LAO);
+              viewModel.setCurrentLao(new LaoView(LAO));
               viewModel.setCurrentElection(election);
             });
     fragmentRule.getScenario().recreate();

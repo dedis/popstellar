@@ -9,6 +9,7 @@ import androidx.test.filters.LargeTest;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
@@ -111,7 +112,8 @@ public class ElectionSetupFragmentTest {
           // Injection with hilt
           hiltRule.inject();
 
-          when(repository.getLaoObservable(any())).thenReturn(BehaviorSubject.createDefault(LAO));
+          when(repository.getLaoObservable(any()))
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
 
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());

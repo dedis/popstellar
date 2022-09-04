@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
@@ -95,7 +96,7 @@ public class CastVoteFragmentTest {
         protected void before() throws KeyException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(LAO));
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
           initializeElection();
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
           when(keyManager.getValidPoPToken(any())).thenReturn(generatePoPToken());
@@ -125,7 +126,7 @@ public class CastVoteFragmentTest {
             fragment -> {
               FragmentActivity fragmentActivity = fragment.requireActivity();
               LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
-              viewModel.setCurrentLao(LAO);
+              viewModel.setCurrentLao(new LaoView(LAO));
               viewModel.setCurrentElection(election);
             });
     fragmentRule.getScenario().recreate();

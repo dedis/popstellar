@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.PublicKeySign;
@@ -84,7 +85,7 @@ public class KeyManagerTest {
     lao.updateRollCall(rollCall2.getId(), rollCall2);
 
     KeyManager manager = new KeyManager(androidKeysetManager, wallet);
-    assertEquals(token, manager.getValidPoPToken(lao));
+    assertEquals(token, manager.getValidPoPToken(new LaoView(lao)));
     assertEquals(token, manager.getValidPoPToken(lao.getId(), rollCall1));
 
     // make sure that rollcall1 was taken and not rollcall2 as the oldest is rollcall 1
@@ -106,17 +107,18 @@ public class KeyManagerTest {
     // Test with every possible errors
     when(wallet.recoverKey(any(), any(), any()))
         .thenThrow(new KeyGenerationException(new GeneralSecurityException()));
-    assertThrows(KeyGenerationException.class, () -> manager.getValidPoPToken(lao));
+    assertThrows(KeyGenerationException.class, () -> manager.getValidPoPToken(new LaoView(lao)));
     verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.getId()), any());
     reset(wallet);
 
     when(wallet.recoverKey(any(), any(), any())).thenThrow(new UninitializedWalletException());
-    assertThrows(UninitializedWalletException.class, () -> manager.getValidPoPToken(lao));
+    assertThrows(
+        UninitializedWalletException.class, () -> manager.getValidPoPToken(new LaoView(lao)));
     verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.getId()), any());
     reset(wallet);
 
     when(wallet.recoverKey(any(), any(), any())).thenThrow(new InvalidPoPTokenException(token));
-    assertThrows(InvalidPoPTokenException.class, () -> manager.getValidPoPToken(lao));
+    assertThrows(InvalidPoPTokenException.class, () -> manager.getValidPoPToken(new LaoView(lao)));
     verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.getId()), any());
   }
 
@@ -126,6 +128,6 @@ public class KeyManagerTest {
     Lao lao = new Lao("lao", Base64DataUtils.generatePublicKey(), 54213424);
 
     KeyManager manager = new KeyManager(androidKeysetManager, wallet);
-    assertThrows(NoRollCallException.class, () -> manager.getValidPoPToken(lao));
+    assertThrows(NoRollCallException.class, () -> manager.getValidPoPToken(new LaoView(lao)));
   }
 }
