@@ -46,9 +46,11 @@ exports[`CheckBoxList renders correctly 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": false,
         }
       }
       accessible={true}
+      collapsable={false}
       focusable={true}
       onClick={[Function]}
       onResponderGrant={[Function]}
@@ -101,9 +103,11 @@ exports[`CheckBoxList renders correctly 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": false,
         }
       }
       accessible={true}
+      collapsable={false}
       focusable={true}
       onClick={[Function]}
       onResponderGrant={[Function]}
@@ -156,9 +160,11 @@ exports[`CheckBoxList renders correctly 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": false,
         }
       }
       accessible={true}
+      collapsable={false}
       focusable={true}
       onClick={[Function]}
       onResponderGrant={[Function]}
@@ -256,9 +262,11 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": true,
         }
       }
       accessible={true}
+      collapsable={false}
       focusable={true}
       onClick={[Function]}
       onResponderGrant={[Function]}
@@ -292,6 +300,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       >
         <Text
           allowFontScaling={false}
+          selectable={false}
           style={
             Array [
               Object {
@@ -332,9 +341,11 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": true,
         }
       }
       accessible={true}
+      collapsable={false}
       focusable={true}
       onClick={[Function]}
       onResponderGrant={[Function]}
@@ -368,6 +379,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       >
         <Text
           allowFontScaling={false}
+          selectable={false}
           style={
             Array [
               Object {
@@ -408,9 +420,11 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": true,
         }
       }
       accessible={true}
+      collapsable={false}
       focusable={true}
       onClick={[Function]}
       onResponderGrant={[Function]}
@@ -444,6 +458,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       >
         <Text
           allowFontScaling={false}
+          selectable={false}
           style={
             Array [
               Object {

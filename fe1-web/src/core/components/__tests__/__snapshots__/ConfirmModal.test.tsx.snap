@@ -9,6 +9,9 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
 >
   <RNGestureHandlerButton
     collapsable={false}
+    exclusive={true}
+    handlerTag={9}
+    handlerType="NativeViewGestureHandler"
     onGestureEvent={[Function]}
     onGestureHandlerEvent={[Function]}
     onGestureHandlerStateChange={[Function]}
@@ -26,14 +29,18 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
         "top": 0,
       }
     }
+    touchSoundDisabled={false}
   >
     <View
       accessible={true}
+      collapsable={false}
       style={Object {}}
     />
   </RNGestureHandlerButton>
   <RCTScrollView
     collapsable={false}
+    handlerTag={10}
+    handlerType="NativeViewGestureHandler"
     onGestureHandlerEvent={[Function]}
     onGestureHandlerStateChange={[Function]}
     style={
@@ -93,6 +100,9 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={11}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
@@ -104,9 +114,11 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
                 "right": 0,
               }
             }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
+              collapsable={false}
               style={
                 Object {
                   "opacity": 1,
@@ -165,6 +177,9 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          exclusive={true}
+          handlerTag={12}
+          handlerType="NativeViewGestureHandler"
           onGestureEvent={[Function]}
           onGestureHandlerEvent={[Function]}
           onGestureHandlerStateChange={[Function]}
@@ -175,9 +190,11 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
               "marginBottom": 16,
             }
           }
+          touchSoundDisabled={false}
         >
           <View
             accessible={true}
+            collapsable={false}
             style={
               Object {
                 "opacity": 1,
@@ -235,6 +252,9 @@ exports[`ConfirmModal renders correctly 1`] = `
 >
   <RNGestureHandlerButton
     collapsable={false}
+    exclusive={true}
+    handlerTag={1}
+    handlerType="NativeViewGestureHandler"
     onGestureEvent={[Function]}
     onGestureHandlerEvent={[Function]}
     onGestureHandlerStateChange={[Function]}
@@ -252,14 +272,18 @@ exports[`ConfirmModal renders correctly 1`] = `
         "top": 0,
       }
     }
+    touchSoundDisabled={false}
   >
     <View
       accessible={true}
+      collapsable={false}
       style={Object {}}
     />
   </RNGestureHandlerButton>
   <RCTScrollView
     collapsable={false}
+    handlerTag={2}
+    handlerType="NativeViewGestureHandler"
     onGestureHandlerEvent={[Function]}
     onGestureHandlerStateChange={[Function]}
     style={
@@ -319,6 +343,9 @@ exports[`ConfirmModal renders correctly 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={3}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
@@ -330,9 +357,11 @@ exports[`ConfirmModal renders correctly 1`] = `
                 "right": 0,
               }
             }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
+              collapsable={false}
               style={
                 Object {
                   "opacity": 1,
@@ -391,6 +420,9 @@ exports[`ConfirmModal renders correctly 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          exclusive={true}
+          handlerTag={4}
+          handlerType="NativeViewGestureHandler"
           onGestureEvent={[Function]}
           onGestureHandlerEvent={[Function]}
           onGestureHandlerStateChange={[Function]}
@@ -401,9 +433,11 @@ exports[`ConfirmModal renders correctly 1`] = `
               "marginBottom": 16,
             }
           }
+          touchSoundDisabled={false}
         >
           <View
             accessible={true}
+            collapsable={false}
             style={
               Object {
                 "opacity": 1,
@@ -461,6 +495,9 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
 >
   <RNGestureHandlerButton
     collapsable={false}
+    exclusive={true}
+    handlerTag={5}
+    handlerType="NativeViewGestureHandler"
     onGestureEvent={[Function]}
     onGestureHandlerEvent={[Function]}
     onGestureHandlerStateChange={[Function]}
@@ -478,14 +515,18 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         "top": 0,
       }
     }
+    touchSoundDisabled={false}
   >
     <View
       accessible={true}
+      collapsable={false}
       style={Object {}}
     />
   </RNGestureHandlerButton>
   <RCTScrollView
     collapsable={false}
+    handlerTag={6}
+    handlerType="NativeViewGestureHandler"
     onGestureHandlerEvent={[Function]}
     onGestureHandlerStateChange={[Function]}
     style={
@@ -545,6 +586,9 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={7}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
@@ -556,9 +600,11 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
                 "right": 0,
               }
             }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
+              collapsable={false}
               style={
                 Object {
                   "opacity": 1,
@@ -604,11 +650,9 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         }
       >
         <TextInput
-          allowFontScaling={true}
           editable={true}
           onChangeText={[Function]}
           placeholder=""
-          rejectResponderTermination={true}
           style={
             Array [
               Object {
@@ -630,7 +674,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
             ]
           }
           testID="confirm-modal-input"
-          underlineColorAndroid="transparent"
           value=""
         />
       </View>
@@ -656,6 +699,9 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          exclusive={true}
+          handlerTag={8}
+          handlerType="NativeViewGestureHandler"
           onGestureEvent={[Function]}
           onGestureHandlerEvent={[Function]}
           onGestureHandlerStateChange={[Function]}
@@ -666,9 +712,11 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
               "marginBottom": 16,
             }
           }
+          touchSoundDisabled={false}
         >
           <View
             accessible={true}
+            collapsable={false}
             style={
               Object {
                 "opacity": 1,

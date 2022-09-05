@@ -31,6 +31,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -60,6 +62,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             }
           >
             <View
+              collapsable={false}
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -77,6 +80,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             />
           </View>
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -107,6 +111,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -120,6 +125,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -133,6 +139,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
+                  collapsable={false}
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -147,6 +154,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -173,7 +181,16 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -248,6 +265,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             }
           >
             <View
+              collapsable={false}
               pointerEvents="box-none"
               style={
                 Object {
@@ -258,6 +276,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={3}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -308,6 +328,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={4}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -552,6 +574,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     >
                                       <Text
                                         allowFontScaling={false}
+                                        selectable={false}
                                         style={
                                           Array [
                                             Object {
@@ -716,6 +739,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                   }
                                 />
                                 <View
+                                  collapsable={false}
                                   style={
                                     Object {
                                       "transform": Array [
@@ -745,6 +769,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -773,6 +798,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                               </View>
                             </View>
                             <View
+                              collapsable={false}
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -786,532 +812,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                             onRequestClose={[Function]}
                             transparent={true}
                             visible={false}
-                          >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              style={
-                                Object {
-                                  "backgroundColor": "rgba(0,0,0,0.25)",
-                                  "bottom": 0,
-                                  "flex": 1,
-                                  "left": 0,
-                                  "padding": 32,
-                                  "position": "absolute",
-                                  "right": 0,
-                                  "top": 0,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                style={Object {}}
-                              />
-                            </RNGestureHandlerButton>
-                            <RCTScrollView
-                              collapsable={false}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              style={
-                                Object {
-                                  "backgroundColor": "rgb(242, 242, 242)",
-                                  "borderRadius": 16,
-                                  "margin": 32,
-                                  "padding": 32,
-                                }
-                              }
-                            >
-                              <View>
-                                <View
-                                  style={
-                                    Object {
-                                      "alignItems": "center",
-                                      "flexDirection": "row",
-                                      "justifyContent": "center",
-                                      "marginBottom": 16,
-                                      "width": "100%",
-                                    }
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "fontWeight": "500",
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      }
-                                    }
-                                  >
-                                    Transaction
-                                  </Text>
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    focusable={true}
-                                    onBlur={[Function]}
-                                    onClick={[Function]}
-                                    onFocus={[Function]}
-                                    onResponderGrant={[Function]}
-                                    onResponderMove={[Function]}
-                                    onResponderRelease={[Function]}
-                                    onResponderTerminate={[Function]}
-                                    onResponderTerminationRequest={[Function]}
-                                    onStartShouldSetResponder={[Function]}
-                                    style={
-                                      Object {
-                                        "position": "absolute",
-                                        "right": 0,
-                                      }
-                                    }
-                                    testID="modal-header-close"
-                                  >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      style={
-                                        Object {
-                                          "position": "absolute",
-                                          "right": 0,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        accessible={true}
-                                        style={
-                                          Object {
-                                            "opacity": 1,
-                                          }
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            Object {
-                                              "color": "#3742fa",
-                                              "fontSize": 20,
-                                              "fontWeight": "500",
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            }
-                                          }
-                                        >
-                                          Done
-                                        </Text>
-                                      </View>
-                                    </RNGestureHandlerButton>
-                                  </View>
-                                </View>
-                                <View
-                                  style={
-                                    Object {
-                                      "borderRadius": 16,
-                                      "marginBottom": 16,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    accessible={true}
-                                    focusable={true}
-                                    onClick={[Function]}
-                                    onResponderGrant={[Function]}
-                                    onResponderMove={[Function]}
-                                    onResponderRelease={[Function]}
-                                    onResponderTerminate={[Function]}
-                                    onResponderTerminationRequest={[Function]}
-                                    onStartShouldSetResponder={[Function]}
-                                    style={
-                                      Object {
-                                        "backgroundColor": "rgb(242, 242, 242)",
-                                        "paddingLeft": 0,
-                                        "paddingRight": 0,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        Object {
-                                          "alignItems": "center",
-                                          "backgroundColor": "rgb(242, 242, 242)",
-                                          "borderColor": "#bcbbc1",
-                                          "flexDirection": "row",
-                                          "padding": 14,
-                                          "paddingLeft": 0,
-                                          "paddingRight": 0,
-                                        }
-                                      }
-                                      testID="padView"
-                                    >
-                                      <View
-                                        style={
-                                          Array [
-                                            Object {
-                                              "alignItems": "flex-start",
-                                              "flex": 1,
-                                              "justifyContent": "center",
-                                            },
-                                            undefined,
-                                          ]
-                                        }
-                                        theme={
-                                          Object {
-                                            "colors": Object {
-                                              "black": "#242424",
-                                              "disabled": "hsl(208, 8%, 90%)",
-                                              "divider": "#bcbbc1",
-                                              "error": "#ff190c",
-                                              "grey0": "#393e42",
-                                              "grey1": "#43484d",
-                                              "grey2": "#5e6977",
-                                              "grey3": "#86939e",
-                                              "grey4": "#bdc6cf",
-                                              "grey5": "#e1e8ee",
-                                              "greyOutline": "#bbb",
-                                              "platform": Object {
-                                                "android": Object {
-                                                  "error": "#f44336",
-                                                  "grey": "rgba(0, 0, 0, 0.54)",
-                                                  "primary": "#2196f3",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#9C27B0",
-                                                  "success": "#4caf50",
-                                                  "warning": "#ffeb3b",
-                                                },
-                                                "default": Object {
-                                                  "error": "#ff3b30",
-                                                  "grey": "#7d7d7d",
-                                                  "primary": "#007aff",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#5856d6",
-                                                  "success": "#4cd964",
-                                                  "warning": "#ffcc00",
-                                                },
-                                                "ios": Object {
-                                                  "error": "#ff3b30",
-                                                  "grey": "#7d7d7d",
-                                                  "primary": "#007aff",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#5856d6",
-                                                  "success": "#4cd964",
-                                                  "warning": "#ffcc00",
-                                                },
-                                                "web": Object {
-                                                  "error": "#ff190c",
-                                                  "grey": "#393e42",
-                                                  "primary": "#2089dc",
-                                                  "searchBg": "#303337",
-                                                  "secondary": "#ca71eb",
-                                                  "success": "#52c41a",
-                                                  "warning": "#faad14",
-                                                },
-                                              },
-                                              "primary": "#2089dc",
-                                              "searchBg": "#303337",
-                                              "secondary": "#ca71eb",
-                                              "success": "#52c41a",
-                                              "warning": "#faad14",
-                                              "white": "#ffffff",
-                                            },
-                                          }
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            Object {
-                                              "backgroundColor": "transparent",
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "fontWeight": "bold",
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            }
-                                          }
-                                          testID="listItemTitle"
-                                        >
-                                          Inputs
-                                           (
-                                          )
-                                        </Text>
-                                      </View>
-                                      <View
-                                        style={
-                                          Object {
-                                            "paddingLeft": 16,
-                                          }
-                                        }
-                                      />
-                                      <View
-                                        style={
-                                          Object {
-                                            "transform": Array [
-                                              Object {
-                                                "rotate": "0deg",
-                                              },
-                                            ],
-                                          }
-                                        }
-                                      >
-                                        <View
-                                          style={
-                                            Object {
-                                              "overflow": "hidden",
-                                            }
-                                          }
-                                        >
-                                          <View>
-                                            <View
-                                              style={
-                                                Object {
-                                                  "alignItems": "center",
-                                                  "backgroundColor": "transparent",
-                                                  "justifyContent": "center",
-                                                }
-                                              }
-                                            >
-                                              <Text
-                                                allowFontScaling={false}
-                                                style={
-                                                  Array [
-                                                    Object {
-                                                      "color": undefined,
-                                                      "fontSize": 24,
-                                                    },
-                                                    Object {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                    Object {
-                                                      "fontFamily": "material-community",
-                                                      "fontStyle": "normal",
-                                                      "fontWeight": "normal",
-                                                    },
-                                                    Object {},
-                                                  ]
-                                                }
-                                                testID="iconIcon"
-                                              >
-                                                󰅀
-                                              </Text>
-                                            </View>
-                                          </View>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
-                                  <View
-                                    style={
-                                      Object {
-                                        "maxHeight": "0%",
-                                        "opacity": 0,
-                                      }
-                                    }
-                                  />
-                                  <View
-                                    accessible={true}
-                                    focusable={true}
-                                    onClick={[Function]}
-                                    onResponderGrant={[Function]}
-                                    onResponderMove={[Function]}
-                                    onResponderRelease={[Function]}
-                                    onResponderTerminate={[Function]}
-                                    onResponderTerminationRequest={[Function]}
-                                    onStartShouldSetResponder={[Function]}
-                                    style={
-                                      Object {
-                                        "backgroundColor": "rgb(242, 242, 242)",
-                                        "paddingLeft": 0,
-                                        "paddingRight": 0,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        Object {
-                                          "alignItems": "center",
-                                          "backgroundColor": "rgb(242, 242, 242)",
-                                          "borderColor": "#bcbbc1",
-                                          "flexDirection": "row",
-                                          "padding": 14,
-                                          "paddingLeft": 0,
-                                          "paddingRight": 0,
-                                        }
-                                      }
-                                      testID="padView"
-                                    >
-                                      <View
-                                        style={
-                                          Array [
-                                            Object {
-                                              "alignItems": "flex-start",
-                                              "flex": 1,
-                                              "justifyContent": "center",
-                                            },
-                                            undefined,
-                                          ]
-                                        }
-                                        theme={
-                                          Object {
-                                            "colors": Object {
-                                              "black": "#242424",
-                                              "disabled": "hsl(208, 8%, 90%)",
-                                              "divider": "#bcbbc1",
-                                              "error": "#ff190c",
-                                              "grey0": "#393e42",
-                                              "grey1": "#43484d",
-                                              "grey2": "#5e6977",
-                                              "grey3": "#86939e",
-                                              "grey4": "#bdc6cf",
-                                              "grey5": "#e1e8ee",
-                                              "greyOutline": "#bbb",
-                                              "platform": Object {
-                                                "android": Object {
-                                                  "error": "#f44336",
-                                                  "grey": "rgba(0, 0, 0, 0.54)",
-                                                  "primary": "#2196f3",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#9C27B0",
-                                                  "success": "#4caf50",
-                                                  "warning": "#ffeb3b",
-                                                },
-                                                "default": Object {
-                                                  "error": "#ff3b30",
-                                                  "grey": "#7d7d7d",
-                                                  "primary": "#007aff",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#5856d6",
-                                                  "success": "#4cd964",
-                                                  "warning": "#ffcc00",
-                                                },
-                                                "ios": Object {
-                                                  "error": "#ff3b30",
-                                                  "grey": "#7d7d7d",
-                                                  "primary": "#007aff",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#5856d6",
-                                                  "success": "#4cd964",
-                                                  "warning": "#ffcc00",
-                                                },
-                                                "web": Object {
-                                                  "error": "#ff190c",
-                                                  "grey": "#393e42",
-                                                  "primary": "#2089dc",
-                                                  "searchBg": "#303337",
-                                                  "secondary": "#ca71eb",
-                                                  "success": "#52c41a",
-                                                  "warning": "#faad14",
-                                                },
-                                              },
-                                              "primary": "#2089dc",
-                                              "searchBg": "#303337",
-                                              "secondary": "#ca71eb",
-                                              "success": "#52c41a",
-                                              "warning": "#faad14",
-                                              "white": "#ffffff",
-                                            },
-                                          }
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            Object {
-                                              "backgroundColor": "transparent",
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "fontWeight": "bold",
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            }
-                                          }
-                                          testID="listItemTitle"
-                                        >
-                                          Ouputs
-                                           (
-                                          )
-                                        </Text>
-                                      </View>
-                                      <View
-                                        style={
-                                          Object {
-                                            "paddingLeft": 16,
-                                          }
-                                        }
-                                      />
-                                      <View
-                                        style={
-                                          Object {
-                                            "transform": Array [
-                                              Object {
-                                                "rotate": "0deg",
-                                              },
-                                            ],
-                                          }
-                                        }
-                                      >
-                                        <View
-                                          style={
-                                            Object {
-                                              "overflow": "hidden",
-                                            }
-                                          }
-                                        >
-                                          <View>
-                                            <View
-                                              style={
-                                                Object {
-                                                  "alignItems": "center",
-                                                  "backgroundColor": "transparent",
-                                                  "justifyContent": "center",
-                                                }
-                                              }
-                                            >
-                                              <Text
-                                                allowFontScaling={false}
-                                                style={
-                                                  Array [
-                                                    Object {
-                                                      "color": undefined,
-                                                      "fontSize": 24,
-                                                    },
-                                                    Object {
-                                                      "backgroundColor": "transparent",
-                                                    },
-                                                    Object {
-                                                      "fontFamily": "material-community",
-                                                      "fontStyle": "normal",
-                                                      "fontWeight": "normal",
-                                                    },
-                                                    Object {},
-                                                  ]
-                                                }
-                                                testID="iconIcon"
-                                              >
-                                                󰅀
-                                              </Text>
-                                            </View>
-                                          </View>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
-                                  <View
-                                    style={
-                                      Object {
-                                        "maxHeight": "0%",
-                                        "opacity": 0,
-                                      }
-                                    }
-                                  />
-                                </View>
-                              </View>
-                            </RCTScrollView>
-                          </Modal>
+                          />
                         </View>
                       </RCTScrollView>
                     </View>
@@ -1358,6 +859,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -1373,6 +875,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -1387,6 +890,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             }
           >
             <View
+              collapsable={false}
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1404,6 +908,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             />
           </View>
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -1434,6 +939,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1447,6 +953,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1460,6 +967,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
+                  collapsable={false}
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1474,6 +982,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1500,7 +1009,16 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -1575,6 +1093,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             }
           >
             <View
+              collapsable={false}
               pointerEvents="box-none"
               style={
                 Object {
@@ -1585,6 +1104,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1635,6 +1156,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={2}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -2205,6 +1728,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   }
                                 />
                                 <View
+                                  collapsable={false}
                                   style={
                                     Object {
                                       "transform": Array [
@@ -2240,6 +1764,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                               </View>
                             </View>
                             <View
+                              collapsable={false}
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -2253,488 +1778,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                             onRequestClose={[Function]}
                             transparent={true}
                             visible={false}
-                          >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              style={
-                                Object {
-                                  "backgroundColor": "rgba(0,0,0,0.25)",
-                                  "bottom": 0,
-                                  "flex": 1,
-                                  "left": 0,
-                                  "padding": 32,
-                                  "position": "absolute",
-                                  "right": 0,
-                                  "top": 0,
-                                }
-                              }
-                            >
-                              <View
-                                accessible={true}
-                                style={Object {}}
-                              />
-                            </RNGestureHandlerButton>
-                            <RCTScrollView
-                              collapsable={false}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              style={
-                                Object {
-                                  "backgroundColor": "rgb(242, 242, 242)",
-                                  "borderRadius": 16,
-                                  "margin": 32,
-                                  "padding": 32,
-                                }
-                              }
-                            >
-                              <View>
-                                <View
-                                  style={
-                                    Object {
-                                      "alignItems": "center",
-                                      "flexDirection": "row",
-                                      "justifyContent": "center",
-                                      "marginBottom": 16,
-                                      "width": "100%",
-                                    }
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "fontWeight": "500",
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      }
-                                    }
-                                  >
-                                    Transaction
-                                  </Text>
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    focusable={true}
-                                    onBlur={[Function]}
-                                    onClick={[Function]}
-                                    onFocus={[Function]}
-                                    onResponderGrant={[Function]}
-                                    onResponderMove={[Function]}
-                                    onResponderRelease={[Function]}
-                                    onResponderTerminate={[Function]}
-                                    onResponderTerminationRequest={[Function]}
-                                    onStartShouldSetResponder={[Function]}
-                                    style={
-                                      Object {
-                                        "position": "absolute",
-                                        "right": 0,
-                                      }
-                                    }
-                                    testID="modal-header-close"
-                                  >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      style={
-                                        Object {
-                                          "position": "absolute",
-                                          "right": 0,
-                                        }
-                                      }
-                                    >
-                                      <View
-                                        accessible={true}
-                                        style={
-                                          Object {
-                                            "opacity": 1,
-                                          }
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            Object {
-                                              "color": "#3742fa",
-                                              "fontSize": 20,
-                                              "fontWeight": "500",
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            }
-                                          }
-                                        >
-                                          Done
-                                        </Text>
-                                      </View>
-                                    </RNGestureHandlerButton>
-                                  </View>
-                                </View>
-                                <View
-                                  style={
-                                    Object {
-                                      "borderRadius": 16,
-                                      "marginBottom": 16,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    accessible={true}
-                                    focusable={true}
-                                    onClick={[Function]}
-                                    onResponderGrant={[Function]}
-                                    onResponderMove={[Function]}
-                                    onResponderRelease={[Function]}
-                                    onResponderTerminate={[Function]}
-                                    onResponderTerminationRequest={[Function]}
-                                    onStartShouldSetResponder={[Function]}
-                                    style={
-                                      Object {
-                                        "backgroundColor": "rgb(242, 242, 242)",
-                                        "paddingLeft": 0,
-                                        "paddingRight": 0,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        Object {
-                                          "alignItems": "center",
-                                          "backgroundColor": "rgb(242, 242, 242)",
-                                          "borderColor": "#bcbbc1",
-                                          "flexDirection": "row",
-                                          "padding": 14,
-                                          "paddingLeft": 0,
-                                          "paddingRight": 0,
-                                        }
-                                      }
-                                      testID="padView"
-                                    >
-                                      <View
-                                        style={
-                                          Array [
-                                            Object {
-                                              "alignItems": "flex-start",
-                                              "flex": 1,
-                                              "justifyContent": "center",
-                                            },
-                                            undefined,
-                                          ]
-                                        }
-                                        theme={
-                                          Object {
-                                            "colors": Object {
-                                              "black": "#242424",
-                                              "disabled": "hsl(208, 8%, 90%)",
-                                              "divider": "#bcbbc1",
-                                              "error": "#ff190c",
-                                              "grey0": "#393e42",
-                                              "grey1": "#43484d",
-                                              "grey2": "#5e6977",
-                                              "grey3": "#86939e",
-                                              "grey4": "#bdc6cf",
-                                              "grey5": "#e1e8ee",
-                                              "greyOutline": "#bbb",
-                                              "platform": Object {
-                                                "android": Object {
-                                                  "error": "#f44336",
-                                                  "grey": "rgba(0, 0, 0, 0.54)",
-                                                  "primary": "#2196f3",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#9C27B0",
-                                                  "success": "#4caf50",
-                                                  "warning": "#ffeb3b",
-                                                },
-                                                "default": Object {
-                                                  "error": "#ff3b30",
-                                                  "grey": "#7d7d7d",
-                                                  "primary": "#007aff",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#5856d6",
-                                                  "success": "#4cd964",
-                                                  "warning": "#ffcc00",
-                                                },
-                                                "ios": Object {
-                                                  "error": "#ff3b30",
-                                                  "grey": "#7d7d7d",
-                                                  "primary": "#007aff",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#5856d6",
-                                                  "success": "#4cd964",
-                                                  "warning": "#ffcc00",
-                                                },
-                                                "web": Object {
-                                                  "error": "#ff190c",
-                                                  "grey": "#393e42",
-                                                  "primary": "#2089dc",
-                                                  "searchBg": "#303337",
-                                                  "secondary": "#ca71eb",
-                                                  "success": "#52c41a",
-                                                  "warning": "#faad14",
-                                                },
-                                              },
-                                              "primary": "#2089dc",
-                                              "searchBg": "#303337",
-                                              "secondary": "#ca71eb",
-                                              "success": "#52c41a",
-                                              "warning": "#faad14",
-                                              "white": "#ffffff",
-                                            },
-                                          }
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            Object {
-                                              "backgroundColor": "transparent",
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "fontWeight": "bold",
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            }
-                                          }
-                                          testID="listItemTitle"
-                                        >
-                                          Inputs
-                                           (
-                                          )
-                                        </Text>
-                                      </View>
-                                      <View
-                                        style={
-                                          Object {
-                                            "paddingLeft": 16,
-                                          }
-                                        }
-                                      />
-                                      <View
-                                        style={
-                                          Object {
-                                            "transform": Array [
-                                              Object {
-                                                "rotate": "0deg",
-                                              },
-                                            ],
-                                          }
-                                        }
-                                      >
-                                        <View
-                                          style={
-                                            Object {
-                                              "overflow": "hidden",
-                                            }
-                                          }
-                                        >
-                                          <View>
-                                            <View
-                                              style={
-                                                Object {
-                                                  "alignItems": "center",
-                                                  "backgroundColor": "transparent",
-                                                  "justifyContent": "center",
-                                                }
-                                              }
-                                            >
-                                              <Text />
-                                            </View>
-                                          </View>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
-                                  <View
-                                    style={
-                                      Object {
-                                        "maxHeight": "0%",
-                                        "opacity": 0,
-                                      }
-                                    }
-                                  />
-                                  <View
-                                    accessible={true}
-                                    focusable={true}
-                                    onClick={[Function]}
-                                    onResponderGrant={[Function]}
-                                    onResponderMove={[Function]}
-                                    onResponderRelease={[Function]}
-                                    onResponderTerminate={[Function]}
-                                    onResponderTerminationRequest={[Function]}
-                                    onStartShouldSetResponder={[Function]}
-                                    style={
-                                      Object {
-                                        "backgroundColor": "rgb(242, 242, 242)",
-                                        "paddingLeft": 0,
-                                        "paddingRight": 0,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        Object {
-                                          "alignItems": "center",
-                                          "backgroundColor": "rgb(242, 242, 242)",
-                                          "borderColor": "#bcbbc1",
-                                          "flexDirection": "row",
-                                          "padding": 14,
-                                          "paddingLeft": 0,
-                                          "paddingRight": 0,
-                                        }
-                                      }
-                                      testID="padView"
-                                    >
-                                      <View
-                                        style={
-                                          Array [
-                                            Object {
-                                              "alignItems": "flex-start",
-                                              "flex": 1,
-                                              "justifyContent": "center",
-                                            },
-                                            undefined,
-                                          ]
-                                        }
-                                        theme={
-                                          Object {
-                                            "colors": Object {
-                                              "black": "#242424",
-                                              "disabled": "hsl(208, 8%, 90%)",
-                                              "divider": "#bcbbc1",
-                                              "error": "#ff190c",
-                                              "grey0": "#393e42",
-                                              "grey1": "#43484d",
-                                              "grey2": "#5e6977",
-                                              "grey3": "#86939e",
-                                              "grey4": "#bdc6cf",
-                                              "grey5": "#e1e8ee",
-                                              "greyOutline": "#bbb",
-                                              "platform": Object {
-                                                "android": Object {
-                                                  "error": "#f44336",
-                                                  "grey": "rgba(0, 0, 0, 0.54)",
-                                                  "primary": "#2196f3",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#9C27B0",
-                                                  "success": "#4caf50",
-                                                  "warning": "#ffeb3b",
-                                                },
-                                                "default": Object {
-                                                  "error": "#ff3b30",
-                                                  "grey": "#7d7d7d",
-                                                  "primary": "#007aff",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#5856d6",
-                                                  "success": "#4cd964",
-                                                  "warning": "#ffcc00",
-                                                },
-                                                "ios": Object {
-                                                  "error": "#ff3b30",
-                                                  "grey": "#7d7d7d",
-                                                  "primary": "#007aff",
-                                                  "searchBg": "#dcdce1",
-                                                  "secondary": "#5856d6",
-                                                  "success": "#4cd964",
-                                                  "warning": "#ffcc00",
-                                                },
-                                                "web": Object {
-                                                  "error": "#ff190c",
-                                                  "grey": "#393e42",
-                                                  "primary": "#2089dc",
-                                                  "searchBg": "#303337",
-                                                  "secondary": "#ca71eb",
-                                                  "success": "#52c41a",
-                                                  "warning": "#faad14",
-                                                },
-                                              },
-                                              "primary": "#2089dc",
-                                              "searchBg": "#303337",
-                                              "secondary": "#ca71eb",
-                                              "success": "#52c41a",
-                                              "warning": "#faad14",
-                                              "white": "#ffffff",
-                                            },
-                                          }
-                                        }
-                                      >
-                                        <Text
-                                          style={
-                                            Object {
-                                              "backgroundColor": "transparent",
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "fontWeight": "bold",
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            }
-                                          }
-                                          testID="listItemTitle"
-                                        >
-                                          Ouputs
-                                           (
-                                          )
-                                        </Text>
-                                      </View>
-                                      <View
-                                        style={
-                                          Object {
-                                            "paddingLeft": 16,
-                                          }
-                                        }
-                                      />
-                                      <View
-                                        style={
-                                          Object {
-                                            "transform": Array [
-                                              Object {
-                                                "rotate": "0deg",
-                                              },
-                                            ],
-                                          }
-                                        }
-                                      >
-                                        <View
-                                          style={
-                                            Object {
-                                              "overflow": "hidden",
-                                            }
-                                          }
-                                        >
-                                          <View>
-                                            <View
-                                              style={
-                                                Object {
-                                                  "alignItems": "center",
-                                                  "backgroundColor": "transparent",
-                                                  "justifyContent": "center",
-                                                }
-                                              }
-                                            >
-                                              <Text />
-                                            </View>
-                                          </View>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
-                                  <View
-                                    style={
-                                      Object {
-                                        "maxHeight": "0%",
-                                        "opacity": 0,
-                                      }
-                                    }
-                                  />
-                                </View>
-                              </View>
-                            </RCTScrollView>
-                          </Modal>
+                          />
                         </View>
                       </RCTScrollView>
                     </View>

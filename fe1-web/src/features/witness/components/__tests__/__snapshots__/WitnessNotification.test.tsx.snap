@@ -27,6 +27,9 @@ exports[`WitnessNotification renders correctly 1`] = `
   >
     <RNGestureHandlerButton
       collapsable={false}
+      exclusive={true}
+      handlerTag={1}
+      handlerType="NativeViewGestureHandler"
       onGestureEvent={[Function]}
       onGestureHandlerEvent={[Function]}
       onGestureHandlerStateChange={[Function]}
@@ -37,9 +40,11 @@ exports[`WitnessNotification renders correctly 1`] = `
           "marginBottom": 16,
         }
       }
+      touchSoundDisabled={false}
     >
       <View
         accessible={true}
+        collapsable={false}
         style={
           Object {
             "opacity": 1,
@@ -104,6 +109,9 @@ exports[`WitnessNotification renders correctly 1`] = `
   >
     <RNGestureHandlerButton
       collapsable={false}
+      exclusive={true}
+      handlerTag={2}
+      handlerType="NativeViewGestureHandler"
       onGestureEvent={[Function]}
       onGestureHandlerEvent={[Function]}
       onGestureHandlerStateChange={[Function]}
@@ -114,9 +122,11 @@ exports[`WitnessNotification renders correctly 1`] = `
           "marginBottom": 16,
         }
       }
+      touchSoundDisabled={false}
     >
       <View
         accessible={true}
+        collapsable={false}
         style={
           Object {
             "opacity": 1,

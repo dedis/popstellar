@@ -1,3 +1,4 @@
+import { AsyncStorageStatic } from '@react-native-async-storage/async-storage';
 import { AnyAction, Reducer } from 'redux';
 
 /**
@@ -7,7 +8,10 @@ import { AnyAction, Reducer } from 'redux';
  * @param reducers
  * @param storage
  */
-export function wrapWithClearStorageReducer(reducers: Reducer, storage: AsyncStorage): Reducer {
+export function wrapWithClearStorageReducer(
+  reducers: Reducer,
+  storage: AsyncStorageStatic,
+): Reducer {
   return (state: any, action: AnyAction) => {
     // clears the local cached storage as well as the state of the storage
     let newState = state;

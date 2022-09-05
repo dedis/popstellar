@@ -88,6 +88,9 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          exclusive={true}
+          handlerTag={2}
+          handlerType="NativeViewGestureHandler"
           onGestureEvent={[Function]}
           onGestureHandlerEvent={[Function]}
           onGestureHandlerStateChange={[Function]}
@@ -98,9 +101,11 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
               "marginBottom": 16,
             }
           }
+          touchSoundDisabled={false}
         >
           <View
             accessible={true}
+            collapsable={false}
             style={
               Object {
                 "opacity": 1,
@@ -237,6 +242,9 @@ exports[`DismissModal renders correctly 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          exclusive={true}
+          handlerTag={1}
+          handlerType="NativeViewGestureHandler"
           onGestureEvent={[Function]}
           onGestureHandlerEvent={[Function]}
           onGestureHandlerStateChange={[Function]}
@@ -247,9 +255,11 @@ exports[`DismissModal renders correctly 1`] = `
               "marginBottom": 16,
             }
           }
+          touchSoundDisabled={false}
         >
           <View
             accessible={true}
+            collapsable={false}
             style={
               Object {
                 "opacity": 1,

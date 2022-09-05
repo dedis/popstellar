@@ -31,6 +31,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -60,6 +62,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
             }
           >
             <View
+              collapsable={false}
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -77,6 +80,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
             />
           </View>
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -107,6 +111,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -120,6 +125,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -133,6 +139,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                 <Text
                   accessibilityRole="header"
                   aria-level="1"
+                  collapsable={false}
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -147,6 +154,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -173,7 +181,16 @@ exports[`ConnectNavigation renders correctly 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -248,6 +265,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
             }
           >
             <View
+              collapsable={false}
               pointerEvents="box-none"
               style={
                 Object {
@@ -258,6 +276,8 @@ exports[`ConnectNavigation renders correctly 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -308,6 +328,8 @@ exports[`ConnectNavigation renders correctly 1`] = `
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={2}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -352,11 +374,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               }
                             >
                               <TextInput
-                                allowFontScaling={true}
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="Server URI"
-                                rejectResponderTermination={true}
                                 style={
                                   Array [
                                     Object {
@@ -377,7 +397,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     },
                                   ]
                                 }
-                                underlineColorAndroid="transparent"
                                 value="ws://localhost:9000/organizer/client"
                               />
                             </View>
@@ -408,11 +427,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               }
                             >
                               <TextInput
-                                allowFontScaling={true}
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="LAO ID"
-                                rejectResponderTermination={true}
                                 style={
                                   Array [
                                     Object {
@@ -433,7 +450,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     },
                                   ]
                                 }
-                                underlineColorAndroid="transparent"
                                 value=""
                               />
                             </View>
@@ -459,6 +475,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                             >
                               <RNGestureHandlerButton
                                 collapsable={false}
+                                exclusive={true}
+                                handlerTag={3}
+                                handlerType="NativeViewGestureHandler"
                                 onGestureEvent={[Function]}
                                 onGestureHandlerEvent={[Function]}
                                 onGestureHandlerStateChange={[Function]}
@@ -469,9 +488,11 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     "marginBottom": 16,
                                   }
                                 }
+                                touchSoundDisabled={false}
                               >
                                 <View
                                   accessible={true}
+                                  collapsable={false}
                                   style={
                                     Object {
                                       "opacity": 1,
