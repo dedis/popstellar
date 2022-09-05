@@ -36,12 +36,10 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
     }
   >
     <TextInput
-      allowFontScaling={true}
       multiline={true}
       numberOfLines={5}
       onChangeText={[Function]}
       placeholder="Your chirp"
-      rejectResponderTermination={true}
       selectTextOnFocus={true}
       style={
         Object {
@@ -53,7 +51,6 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
           "width": 520,
         }
       }
-      underlineColorAndroid="transparent"
       value=""
     />
     <View
@@ -80,8 +77,13 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
       </Text>
       <View
         accessibilityRole="button"
-        accessibilityState={Object {}}
+        accessibilityState={
+          Object {
+            "disabled": false,
+          }
+        }
         accessible={true}
+        collapsable={false}
         focusable={true}
         onClick={[Function]}
         onResponderGrant={[Function]}
@@ -161,12 +163,10 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
     }
   >
     <TextInput
-      allowFontScaling={true}
       multiline={true}
       numberOfLines={5}
       onChangeText={[Function]}
       placeholder="Your chirp"
-      rejectResponderTermination={true}
       selectTextOnFocus={true}
       style={
         Object {
@@ -178,7 +178,6 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
           "width": 520,
         }
       }
-      underlineColorAndroid="transparent"
       value=""
     />
     <View
@@ -211,6 +210,7 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
           }
         }
         accessible={true}
+        collapsable={false}
         focusable={true}
         onClick={[Function]}
         onResponderGrant={[Function]}
@@ -294,12 +294,10 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
     }
   >
     <TextInput
-      allowFontScaling={true}
       multiline={true}
       numberOfLines={5}
       onChangeText={[Function]}
       placeholder="Placeholder"
-      rejectResponderTermination={true}
       selectTextOnFocus={true}
       style={
         Object {
@@ -311,7 +309,6 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
           "width": 520,
         }
       }
-      underlineColorAndroid="transparent"
       value=""
     />
     <View
@@ -344,6 +341,7 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
           }
         }
         accessible={true}
+        collapsable={false}
         focusable={true}
         onClick={[Function]}
         onResponderGrant={[Function]}
@@ -421,12 +419,10 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
     }
   >
     <TextInput
-      allowFontScaling={true}
       multiline={true}
       numberOfLines={5}
       onChangeText={[Function]}
       placeholder="Your chirp"
-      rejectResponderTermination={true}
       selectTextOnFocus={true}
       style={
         Object {
@@ -438,7 +434,6 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
           "width": 520,
         }
       }
-      underlineColorAndroid="transparent"
       value=""
     />
     <View
@@ -471,6 +466,7 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
           }
         }
         accessible={true}
+        collapsable={false}
         focusable={true}
         onClick={[Function]}
         onResponderGrant={[Function]}
@@ -603,7 +599,6 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
         accessible={true}
         collapsable={false}
         focusable={true}
-        nativeID="animatedComponent"
         onClick={[Function]}
         onResponderGrant={[Function]}
         onResponderMove={[Function]}
