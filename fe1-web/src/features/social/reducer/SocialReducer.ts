@@ -224,15 +224,12 @@ export const getSocialState = (state: any): SocialLaoReducerState => state[SOCIA
 
 // Selector helper functions
 const selectSocialState = (state: any) => getSocialState(state);
-const selectCurrentLaoId = (state: any) => getLaosState(state).currentId;
 
-export const makeChirpsList = () =>
+export const makeChirpsList = (laoId: string | undefined) =>
   createSelector(
     // First input: Get all chirps across all LAOs
     selectSocialState,
-    // Second input: Get the current LAO id,
-    selectCurrentLaoId,
-    (chirpList: SocialLaoReducerState, laoId: string | undefined): ChirpState[] => {
+    (chirpList: SocialLaoReducerState): ChirpState[] => {
       if (!laoId) {
         return [];
       }
@@ -246,24 +243,15 @@ export const makeChirpsList = () =>
     },
   );
 
-export const makeChirpsListOfUser = (user: PublicKey | string | undefined) => {
-  const userPublicKey = user?.valueOf();
-  return createSelector(
-    // First input: Get all chirps across all LAOs
-    selectSocialState,
-    // Second input: Get the current LAO id,
-    selectCurrentLaoId,
-    (chirpList: SocialLaoReducerState, laoId: string | undefined): ChirpState[] => {
-      if (!laoId || !userPublicKey) {
-        return [];
-      }
-      const laoChirps = chirpList.byLaoId[laoId];
-      if (laoChirps) {
-        const allUserChirps: ChirpState[] = [];
-        const userChirps = laoChirps.byUser[userPublicKey];
-        if (userChirps) {
-          userChirps.forEach((id: string) => allUserChirps.push(chirpList.byLaoId[laoId].byId[id]));
-          return allUserChirps;
+export const makeChirpsListOfUser =
+  (laoId: string | undefined) => (user: PublicKey | string | undefined) => {
+    const userPublicKey = user?.valueOf();
+    return createSelector(
+      // First input: Get all chirps across all LAOs
+      selectSocialState,
+      (chirpList: SocialLaoReducerState): ChirpState[] => {
+        if (!laoId || !userPublicKey) {
+          return [];
         }
         const laoChirps = chirpList.byLaoId[laoId];
         if (laoChirps) {
@@ -290,11 +278,7 @@ const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
 export const makeReactionsList = (laoId: string | undefined) =>
   createSelector(
     selectSocialState,
-    selectCurrentLaoId,
-    (
-      list: SocialLaoReducerState,
-      laoId: string | undefined,
-    ): Record<string, Record<string, number>> => {
+    (list: SocialLaoReducerState): Record<string, Record<string, number>> => {
       if (!laoId) {
         return {};
       }
