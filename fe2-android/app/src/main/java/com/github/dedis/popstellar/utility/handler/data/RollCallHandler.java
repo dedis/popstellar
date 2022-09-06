@@ -8,9 +8,9 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.InvalidDataException;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.InvalidPoPTokenException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
@@ -34,13 +34,14 @@ public final class RollCallHandler {
    * @param context the HandlerContext of the message
    * @param createRollCall the message that was received
    */
-  public static void handleCreateRollCall(HandlerContext context, CreateRollCall createRollCall) {
+  public static void handleCreateRollCall(HandlerContext context, CreateRollCall createRollCall)
+      throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     RollCall rollCall = new RollCall(createRollCall.getId());
     rollCall.setCreation(createRollCall.getCreation());
@@ -49,13 +50,14 @@ public final class RollCallHandler {
     rollCall.setEnd(createRollCall.getProposedEnd());
     rollCall.setName(createRollCall.getName());
     rollCall.setLocation(createRollCall.getLocation());
-
     rollCall.setLocation(createRollCall.getLocation());
     rollCall.setDescription(createRollCall.getDescription().orElse(""));
 
+    Lao lao = laoView.createLaoCopy();
     lao.updateRollCall(rollCall.getId(), rollCall);
-
     lao.updateWitnessMessage(messageId, createRollCallWitnessMessage(messageId, rollCall));
+
+    laoRepository.updateLao(lao);
   }
 
   /**
@@ -65,18 +67,18 @@ public final class RollCallHandler {
    * @param openRollCall the message that was received
    */
   public static void handleOpenRollCall(HandlerContext context, OpenRollCall openRollCall)
-      throws DataHandlingException {
+      throws DataHandlingException, UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     String updateId = openRollCall.getUpdateId();
     String opens = openRollCall.getOpens();
 
-    Optional<RollCall> rollCallOptional = lao.getRollCall(opens);
+    Optional<RollCall> rollCallOptional = laoView.getRollCall(opens);
     if (!rollCallOptional.isPresent()) {
       Log.w(TAG, "Cannot find roll call to open : " + opens);
       throw new InvalidDataException(openRollCall, "open id", opens);
@@ -85,12 +87,13 @@ public final class RollCallHandler {
     RollCall rollCall = rollCallOptional.get();
     rollCall.setStart(openRollCall.getOpenedAt());
     rollCall.setState(EventState.OPENED);
-
     rollCall.setId(updateId);
 
+    Lao lao = laoView.createLaoCopy();
     lao.updateRollCall(opens, rollCall);
-
     lao.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
+
+    laoRepository.updateLao(lao);
   }
 
   /**
@@ -101,18 +104,18 @@ public final class RollCallHandler {
    */
   @SuppressLint("CheckResult")
   public static void handleCloseRollCall(HandlerContext context, CloseRollCall closeRollCall)
-      throws DataHandlingException {
+      throws DataHandlingException, UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCloseRollCall: " + channel);
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
 
     String updateId = closeRollCall.getUpdateId();
     String closes = closeRollCall.getCloses();
 
-    Optional<RollCall> rollCallOptional = lao.getRollCall(closes);
+    Optional<RollCall> rollCallOptional = laoView.getRollCall(closes);
     if (!rollCallOptional.isPresent()) {
       Log.w(TAG, "Cannot find roll call to close : " + closes);
       throw new InvalidDataException(closeRollCall, "close id", closes);
@@ -124,6 +127,7 @@ public final class RollCallHandler {
     rollCall.getAttendees().addAll(closeRollCall.getAttendees());
     rollCall.setState(EventState.CLOSED);
 
+    Lao lao = laoView.createLaoCopy();
     lao.updateRollCall(closes, rollCall);
     lao.updateTransactionHashMap(closeRollCall.getAttendees());
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
@@ -131,7 +135,7 @@ public final class RollCallHandler {
     // Subscribe to the social media channels
     // Subscribe to the digital cash channels
     try {
-      PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
+      PoPToken token = context.getKeyManager().getValidPoPToken(laoView.getId(), rollCall);
       context
           .getMessageSender()
           .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
@@ -147,6 +151,8 @@ public final class RollCallHandler {
           "Could not retrieve your PoP Token to subscribe you to your social media channel",
           e);
     }
+
+    laoRepository.updateLao(lao);
   }
 
   public static WitnessMessage createRollCallWitnessMessage(

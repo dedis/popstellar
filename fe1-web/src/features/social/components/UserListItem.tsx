@@ -7,7 +7,7 @@ import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useDispatch } from 'react-redux';
 
-import { ProfileIcon, PoPTextButton } from 'core/components';
+import { PoPTextButton, ProfileIcon } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
@@ -68,7 +68,7 @@ type NavigationProps = CompositeScreenProps<
 
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
-  const { currentUserPublicKey, laoId, publicKey } = props;
+  const { laoId, publicKey } = props;
 
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
@@ -91,8 +91,7 @@ const UserListItem = (props: IPropTypes) => {
 
   const goToUserProfile = () => {
     navigation.navigate(STRINGS.social_media_navigation_tab_user_profile, {
-      currentUserPublicKey: currentUserPublicKey,
-      userPublicKey: publicKey,
+      userPkString: publicKey.valueOf(),
     });
   };
 
@@ -131,7 +130,6 @@ UserListItem.prototype = propTypes;
 type IPropTypes = {
   laoId: Hash;
   publicKey: PublicKey;
-  currentUserPublicKey: PublicKey;
 };
 
 export default UserListItem;

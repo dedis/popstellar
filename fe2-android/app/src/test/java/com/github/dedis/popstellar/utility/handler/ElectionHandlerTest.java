@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublic
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -133,7 +134,7 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void testHandleElectionSetup() throws DataHandlingException {
+  public void testHandleElectionSetup() throws DataHandlingException, UnknownLaoException {
     // Create the setup Election message
     ElectionSetup electionSetupOpenBallot =
         new ElectionSetup(
@@ -176,7 +177,7 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void testHandleElectionResult() throws DataHandlingException {
+  public void testHandleElectionResult() throws DataHandlingException, UnknownLaoException {
     // Create the result Election message
     QuestionResult questionResult =
         new QuestionResult(electionQuestion.getBallotOptions().get(0), 2);
@@ -200,7 +201,7 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void testHandleElectionEnd() throws DataHandlingException {
+  public void testHandleElectionEnd() throws DataHandlingException, UnknownLaoException {
     // Create the end Election message
     ElectionEnd electionEnd = new ElectionEnd(election.getId(), lao.getId(), "");
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionEnd, GSON);
@@ -217,7 +218,7 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void testHandleElectionOpen() throws DataHandlingException {
+  public void testHandleElectionOpen() throws DataHandlingException, UnknownLaoException {
     OpenElection openElection = new OpenElection(lao.getId(), election.getId(), openedAt);
     MessageGeneral message = new MessageGeneral(SENDER_KEY, openElection, GSON);
 
@@ -235,7 +236,7 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void testElectionKey() throws DataHandlingException {
+  public void testElectionKey() throws DataHandlingException, UnknownLaoException {
     // Create the election key message
     String key = "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ";
     ElectionKey electionKey = new ElectionKey(election.getId(), key);
@@ -249,14 +250,14 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void testHandleCastVote() throws DataHandlingException {
+  public void testHandleCastVote() throws DataHandlingException, UnknownLaoException {
     // Here we test if the handling can both an Open Ballot cast vote and
     // an Secret Ballot vote
 
     // First test the Open Ballot version
     // Set up a open ballot election
     ElectionVote electionVote1 = new ElectionVote("1", 1, false, null, election.getId());
-    List<ElectionVote> electionVotes = Arrays.asList(electionVote1);
+    List<ElectionVote> electionVotes = Collections.singletonList(electionVote1);
     CastVote<ElectionVote> electionVote =
         new CastVote<>(electionVotes, election.getId(), CREATE_LAO.getId());
 
@@ -296,7 +297,10 @@ public class ElectionHandlerTest extends TestCase {
     listOfVoteIds2.add(electionEncryptedVote2.getId());
     listOfVoteIds2.add(electionEncryptedVote1.getId());
     String expectedHash2 = Hash.hash(listOfVoteIds2.toArray(new String[0]));
-    System.out.println(listOfVoteIds);
-    assertEquals(expectedHash2, electionEncrypted.computerRegisteredVotes());
+    assertEquals(
+        expectedHash2,
+        laoRepository
+            .getElectionByChannel(electionEncrypted.getChannel())
+            .computerRegisteredVotes());
   }
 }

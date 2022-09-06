@@ -1,12 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import com.github.dedis.popstellar.model.Immutable;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+@Immutable
 public final class ConsensusPropose extends Data {
 
   @SerializedName("instance_id")
@@ -45,7 +47,7 @@ public final class ConsensusPropose extends Data {
     this.messageId = messageId;
     this.creation = creation;
     this.proposeValue = new ProposeValue(proposedTry, proposedValue);
-    this.acceptorSignatures = acceptorSignatures;
+    this.acceptorSignatures = new ArrayList<>(acceptorSignatures);
   }
 
   @Override
@@ -75,7 +77,7 @@ public final class ConsensusPropose extends Data {
   }
 
   public List<String> getAcceptorSignatures() {
-    return acceptorSignatures;
+    return new ArrayList<>(acceptorSignatures);
   }
 
   @Override

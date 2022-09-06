@@ -1,5 +1,6 @@
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
+import { SocialConfiguration } from '../interface';
 import {
   handleAddChirpMessage,
   handleDeleteChirpMessage,
@@ -13,19 +14,29 @@ import { handleAddReactionMessage } from './ReactionHandler';
 /**
  * Configures the network callbacks in a MessageRegistry.
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param configuration - The configuration object for the social media feature.
  */
-export function configureNetwork(registry: MessageRegistry) {
+export function configureNetwork(configuration: SocialConfiguration) {
   // Chirp
-  registry.add(ObjectType.CHIRP, ActionType.ADD, handleAddChirpMessage, AddChirp.fromJson);
-  registry.add(ObjectType.CHIRP, ActionType.DELETE, handleDeleteChirpMessage, DeleteChirp.fromJson);
-  registry.add(
+  configuration.messageRegistry.add(
+    ObjectType.CHIRP,
+    ActionType.ADD,
+    handleAddChirpMessage(configuration.getCurrentLaoId),
+    AddChirp.fromJson,
+  );
+  configuration.messageRegistry.add(
+    ObjectType.CHIRP,
+    ActionType.DELETE,
+    handleDeleteChirpMessage(configuration.getCurrentLaoId),
+    DeleteChirp.fromJson,
+  );
+  configuration.messageRegistry.add(
     ObjectType.CHIRP,
     ActionType.NOTIFY_ADD,
     handleNotifyAddChirpMessage,
     NotifyAddChirp.fromJson,
   );
-  registry.add(
+  configuration.messageRegistry.add(
     ObjectType.CHIRP,
     ActionType.NOTIFY_DELETE,
     handleNotifyDeleteChirpMessage,
@@ -33,5 +44,10 @@ export function configureNetwork(registry: MessageRegistry) {
   );
 
   // Reaction
-  registry.add(ObjectType.REACTION, ActionType.ADD, handleAddReactionMessage, AddReaction.fromJson);
+  configuration.messageRegistry.add(
+    ObjectType.REACTION,
+    ActionType.ADD,
+    handleAddReactionMessage(configuration.getCurrentLaoId),
+    AddReaction.fromJson,
+  );
 }

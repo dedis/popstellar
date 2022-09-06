@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.annotation.NonNull;
+
+import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -7,7 +10,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import java.util.*;
 
 /** Class representing a Node for consensus. */
-public final class ConsensusNode {
+public final class ConsensusNode implements Copyable<ConsensusNode> {
 
   private final PublicKey publicKey;
   // contains messageId of Elect that this node has accepted
@@ -19,6 +22,19 @@ public final class ConsensusNode {
     this.publicKey = publicKey;
     this.electInstances = new HashSet<>();
     this.acceptedMessageIds = new HashSet<>();
+  }
+
+  public ConsensusNode(ConsensusNode consensusNode) {
+    this.publicKey = consensusNode.publicKey;
+    this.acceptedMessageIds = consensusNode.acceptedMessageIds;
+    // TODO adapt the codebase so this isn't used by reference
+
+    //
+    // consensusNode.acceptedMessageIds.stream().map(MessageID::new).collect(Collectors.toSet());
+    this.electInstances = consensusNode.electInstances;
+    // TODO adapt the codebase so this isn't used by reference
+    //
+    // consensusNode.electInstances.stream().map(ElectInstance::new).collect(Collectors.toSet());
   }
 
   public PublicKey getPublicKey() {
@@ -81,6 +97,12 @@ public final class ConsensusNode {
     this.acceptedMessageIds.add(electMessageId);
   }
 
+  @Override
+  public ConsensusNode copy() {
+    return new ConsensusNode(this);
+  }
+
+  @NonNull
   @Override
   public String toString() {
     return String.format(

@@ -1,10 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import androidx.annotation.NonNull;
+
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
+@Immutable
 public class ElectionQuestion {
 
   private final String id;
@@ -28,7 +32,7 @@ public class ElectionQuestion {
       String electionId) {
 
     this.question = question;
-    this.ballotOptions = ballotOptions;
+    this.ballotOptions = Collections.unmodifiableList(ballotOptions);
     this.writeIn = writeIn;
     this.votingMethod = votingMethod;
     this.id = Election.generateElectionQuestionId(electionId, question);
@@ -47,7 +51,7 @@ public class ElectionQuestion {
   }
 
   public List<String> getBallotOptions() {
-    return Collections.unmodifiableList(ballotOptions);
+    return ballotOptions;
   }
 
   public String getVotingMethod() {
@@ -76,6 +80,7 @@ public class ElectionQuestion {
         getId(), getVotingMethod(), getWriteIn(), getBallotOptions(), getQuestion());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "ElectionQuestion{"

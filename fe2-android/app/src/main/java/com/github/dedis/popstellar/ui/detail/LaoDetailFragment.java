@@ -21,6 +21,8 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.*;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
@@ -65,10 +67,10 @@ public class LaoDetailFragment extends Fragment {
     FloatingActionButton addButton = mLaoDetailFragBinding.addEvent;
     addButton.setOnClickListener(fabListener);
 
-    mLaoDetailFragBinding.addElection.setOnClickListener(addEventLister(EventType.ELECTION));
-    mLaoDetailFragBinding.addElectionText.setOnClickListener(addEventLister(EventType.ELECTION));
-    mLaoDetailFragBinding.addRollCall.setOnClickListener(addEventLister(EventType.ROLL_CALL));
-    mLaoDetailFragBinding.addRollCallText.setOnClickListener(addEventLister(EventType.ROLL_CALL));
+    mLaoDetailFragBinding.addElection.setOnClickListener(openCreateEvent(EventType.ELECTION));
+    mLaoDetailFragBinding.addElectionText.setOnClickListener(openCreateEvent(EventType.ELECTION));
+    mLaoDetailFragBinding.addRollCall.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
+    mLaoDetailFragBinding.addRollCallText.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
 
     return mLaoDetailFragBinding.getRoot();
   }
@@ -94,8 +96,23 @@ public class LaoDetailFragment extends Fragment {
         }
       };
 
-  private View.OnClickListener addEventLister(EventType type) {
-    return v -> mLaoDetailViewModel.chooseEventType(type);
+  private View.OnClickListener openCreateEvent(EventType type) {
+    switch (type) {
+      case ROLL_CALL:
+        return v ->
+            LaoDetailActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_create_roll_call_event,
+                RollCallCreationFragment::newInstance);
+      case ELECTION:
+        return v ->
+            LaoDetailActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_setup_election_event,
+                ElectionSetupFragment::newInstance);
+      default:
+        return v -> Log.d(TAG, "unknown event type: " + type);
+    }
   }
 
   @Override
@@ -105,20 +122,6 @@ public class LaoDetailFragment extends Fragment {
     setUpQrCloseButton();
     setupEventListAdapter();
     setupEventListUpdates();
-
-    // TODO: Add witness handler
-
-    // Subscribe to "show/hide properties" event
-    mLaoDetailViewModel
-        .getShowPropertiesEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean action = booleanEvent.getContentIfNotHandled();
-              if (action != null) {
-                showHideProperties(action);
-              }
-            });
 
     mLaoDetailViewModel
         .getLaoEvents()
@@ -142,19 +145,19 @@ public class LaoDetailFragment extends Fragment {
 
   private void setupQrCodeIconButton() {
     ImageView propertiesButton = requireActivity().findViewById(R.id.qr_code_icon);
-    propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
+    propertiesButton.setOnClickListener(clicked -> toggleProperties());
   }
 
   private void setUpQrCloseButton() {
     ImageView closeButton = requireActivity().findViewById(R.id.qr_icon_close);
-    closeButton.setOnClickListener(view -> mLaoDetailViewModel.toggleShowHideProperties());
+    closeButton.setOnClickListener(view -> toggleProperties());
   }
 
   private void setupEventListAdapter() {
     RecyclerView eventList = mLaoDetailFragBinding.eventList;
 
     mEventListViewEventAdapter =
-        new EventListAdapter(new ArrayList<>(), mLaoDetailViewModel, getActivity());
+        new EventListAdapter(new ArrayList<>(), mLaoDetailViewModel, requireActivity());
     Log.d(TAG, "created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
@@ -180,14 +183,16 @@ public class LaoDetailFragment extends Fragment {
             });
   }
 
-  private void showHideProperties(Boolean show) {
+  private void toggleProperties() {
     ConstraintLayout laoDetailQrLayout = mLaoDetailFragBinding.laoDetailQrLayout;
-    if (Boolean.TRUE.equals(show)) {
+    if (Boolean.FALSE.equals(mLaoDetailViewModel.getShowProperties().getValue())) {
       LaoDetailAnimation.fadeIn(laoDetailQrLayout, 0.0f, 1.0f, 500);
       laoDetailQrLayout.setVisibility(View.VISIBLE);
+      mLaoDetailViewModel.setShowProperties(true);
     } else {
       LaoDetailAnimation.fadeOut(laoDetailQrLayout, 1.0f, 0.0f, 500);
       laoDetailQrLayout.setVisibility(View.GONE);
+      mLaoDetailViewModel.setShowProperties(false);
     }
   }
 }

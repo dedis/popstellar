@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.socialmedi
 
 import androidx.annotation.Nullable;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
@@ -9,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Optional;
 
 /** Data sent to add a Chirp to the user channel */
+@Immutable
 public class AddChirp extends Data {
 
   private static final int MAX_CHIRP_CHARS = 300;

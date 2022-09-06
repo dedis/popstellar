@@ -7,7 +7,8 @@ import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.pubsub.MessageRegistry.RegisterEntry
 import ch.epfl.pop.pubsub.graph.{GraphMessage, JsonString, MessageDecoder}
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 import scala.util.{Success, Try}
 

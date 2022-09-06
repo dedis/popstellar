@@ -7,9 +7,10 @@ import com.github.dedis.popstellar.model.network.method.message.data.socialmedia
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.Optional;
 
@@ -28,14 +29,15 @@ public final class ChirpHandler {
    * @param context the HandlerContext of the message
    * @param addChirp the data of the message that was received
    */
-  public static void handleChirpAdd(HandlerContext context, AddChirp addChirp) {
+  public static void handleChirpAdd(HandlerContext context, AddChirp addChirp)
+      throws UnknownLaoException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
-    Lao lao = laoRepository.getLaoByChannel(channel);
-
+    Log.d(TAG, "handleChirpAdd: " + channel + " id " + addChirp.getParentId());
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
     Chirp chirp = new Chirp(messageId);
 
     chirp.setChannel(channel);
@@ -44,7 +46,9 @@ public final class ChirpHandler {
     chirp.setTimestamp(addChirp.getTimestamp());
     chirp.setParentId(addChirp.getParentId().orElse(new MessageID("")));
 
-    lao.updateAllChirps(messageId, chirp);
+    Lao lao = laoView.createLaoCopy();
+    lao.updateChirpList(messageId, chirp);
+    laoRepository.updateLao(lao);
   }
 
   /**
@@ -54,19 +58,19 @@ public final class ChirpHandler {
    * @param deleteChirp the data of the message that was received
    */
   public static void handleDeleteChirp(HandlerContext context, DeleteChirp deleteChirp)
-      throws DataHandlingException {
+      throws UnknownLaoException, InvalidMessageIdException {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
-    Lao lao = laoRepository.getLaoByChannel(channel);
+    Log.d(TAG, "handleDeleteChirp: " + channel + " id " + deleteChirp.getChirpId());
 
-    Optional<Chirp> chirpOptional = lao.getChirp(deleteChirp.getChirpId());
-    Chirp chirp;
+    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+    Optional<Chirp> chirpOptional = laoView.getChirp(deleteChirp.getChirpId());
 
     if (!chirpOptional.isPresent()) {
       throw new InvalidMessageIdException(deleteChirp, deleteChirp.getChirpId());
     }
-    chirp = chirpOptional.get();
+    Chirp chirp = chirpOptional.get();
 
     if (chirp.getIsDeleted()) {
       Log.d(TAG, "The chirp is already deleted");
@@ -74,5 +78,9 @@ public final class ChirpHandler {
       chirp.setIsDeleted(true);
       chirp.setText("");
     }
+
+    Lao lao = laoView.createLaoCopy();
+    lao.updateChirpList(chirp.getId(), chirp);
+    laoRepository.updateLao(lao);
   }
 }

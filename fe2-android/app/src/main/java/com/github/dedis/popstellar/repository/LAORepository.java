@@ -5,6 +5,8 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -115,5 +117,31 @@ public class LAORepository {
 
   public Map<MessageID, MessageGeneral> getMessageById() {
     return messageById;
+  }
+
+  public Optional<LaoView> getLao(String id) {
+    if (laoById.containsKey(id)) {
+      return Optional.of(new LaoView(laoById.get(id).getLao()));
+    }
+    return Optional.empty();
+  }
+
+  public LaoView getLaoViewByChannel(Channel channel) throws UnknownLaoException {
+    return getLao(channel.extractLaoId())
+        .orElseThrow(() -> new UnknownLaoException(channel.extractLaoId()));
+  }
+
+  public synchronized void updateLao(Lao lao) {
+    if (lao == null) {
+      throw new IllegalArgumentException();
+    }
+
+    if (laoById.containsKey(lao.getId())) {
+      // If the lao already exists, we can push the next update
+      laoById.get(lao.getId()).publish(lao);
+    } else {
+      // Otherwise, create the state
+      laoById.put(lao.getId(), new LAOState(lao));
+    }
   }
 }

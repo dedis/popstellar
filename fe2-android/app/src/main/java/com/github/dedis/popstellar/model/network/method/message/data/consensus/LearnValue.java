@@ -1,7 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import com.github.dedis.popstellar.model.Immutable;
+
 import java.util.Objects;
 
+@Immutable
 public final class LearnValue {
 
   private final boolean decision;

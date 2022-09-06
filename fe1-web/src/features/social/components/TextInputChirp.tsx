@@ -66,7 +66,7 @@ const TextInputChirp = (props: IPropTypes) => {
       <View style={styles.leftView}>
         {
           // If the current user public key is defined, show the profile picture accordingly
-          currentUserPublicKey.valueOf() === '' ? (
+          !currentUserPublicKey ? (
             <Ionicons name="person" size={40} color="black" />
           ) : (
             <ProfileIcon publicKey={currentUserPublicKey} />
@@ -108,7 +108,7 @@ const propTypes = {
   onPress: PropTypes.func.isRequired,
   onChangeText: PropTypes.func.isRequired,
   publishIsDisabledCond: PropTypes.bool,
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey),
   testID: PropTypes.string,
 };
 
@@ -118,6 +118,7 @@ TextInputChirp.defaultProps = {
   placeholder: STRINGS.your_chirp,
   numberOfLines: 5,
   publishIsDisabledCond: false,
+  currentUserPublicKey: undefined,
   testID: undefined,
 };
 

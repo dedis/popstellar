@@ -1,4 +1,4 @@
-// Package be1_go defines the logger.
+// Package popstellar defines the logger.
 //
 // This logger is inspired by the DEDIS Ledger Architecture global logger.
 // (https://github.com/dedis/dela/blob/master/mod.go)
@@ -6,10 +6,9 @@
 // be1-go is using a global logger with some default parameters. It is enabled by
 // default at information level. The level can be modified using an environment variable:
 //
-//   LLVL=error ./pop organizer --pk "<base64url encoded pk>" serve
-//   LLVL=warn ./pop organizer --pk "<base64url encoded pk>" serve
-//
-package be1_go
+//	LLVL=error ./pop organizer --pk "<base64url encoded pk>" serve
+//	LLVL=warn ./pop organizer --pk "<base64url encoded pk>" serve
+package popstellar
 
 import (
 	"os"

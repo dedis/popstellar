@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.digitalcash;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.google.gson.annotations.SerializedName;
 
+@Immutable
 public final class PostTransactionCoin extends Data {
 
   @SerializedName(value = "transaction_id")

@@ -3,7 +3,8 @@ package ch.epfl.pop.json
 import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
 import ch.epfl.pop.model.objects._
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 import scala.io.{BufferedSource, Source}
 import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction

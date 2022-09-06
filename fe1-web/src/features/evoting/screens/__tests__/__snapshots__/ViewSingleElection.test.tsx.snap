@@ -31,6 +31,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={34}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -371,6 +383,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -386,6 +399,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -401,7 +415,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -420,7 +433,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -451,6 +463,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -464,6 +477,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -478,7 +492,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -493,6 +506,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -519,7 +533,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -595,7 +618,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -606,6 +628,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={31}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -711,6 +735,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -726,6 +751,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -741,7 +767,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -760,7 +785,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -791,6 +815,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -804,6 +829,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -818,7 +844,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -833,6 +858,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -859,7 +885,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -935,7 +970,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -946,6 +980,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={36}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1051,6 +1087,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -1066,6 +1103,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -1081,7 +1119,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1100,7 +1137,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -1131,6 +1167,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1144,6 +1181,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1158,7 +1196,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1173,6 +1210,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1199,7 +1237,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -1275,7 +1322,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1286,6 +1332,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={32}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1391,6 +1439,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -1406,6 +1455,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -1421,7 +1471,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1440,7 +1489,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -1471,6 +1519,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1484,6 +1533,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1498,7 +1548,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1513,6 +1562,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1539,7 +1589,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -1615,7 +1674,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1626,6 +1684,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={33}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1731,6 +1791,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -1746,6 +1807,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -1761,7 +1823,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1780,7 +1841,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -1811,6 +1871,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1824,6 +1885,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1838,7 +1900,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1853,6 +1914,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1879,7 +1941,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -1955,7 +2026,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1966,6 +2036,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={35}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -2071,6 +2143,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -2086,6 +2159,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -2101,7 +2175,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -2120,7 +2193,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -2151,6 +2223,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -2164,6 +2237,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -2178,7 +2252,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -2193,6 +2266,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -2219,7 +2293,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -2295,7 +2378,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -2306,6 +2388,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={28}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -2411,6 +2495,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -2426,6 +2511,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -2441,7 +2527,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -2460,7 +2545,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -2491,6 +2575,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -2504,6 +2589,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -2518,7 +2604,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -2533,6 +2618,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -2559,7 +2645,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -2635,7 +2730,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -2646,6 +2740,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={25}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -2751,6 +2847,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -2766,6 +2863,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -2781,7 +2879,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -2800,7 +2897,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -2831,6 +2927,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -2844,6 +2941,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -2858,7 +2956,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -2873,6 +2970,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -2899,7 +2997,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -2975,7 +3082,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -2986,6 +3092,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={30}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -3091,6 +3199,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -3106,6 +3215,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -3121,7 +3231,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -3140,7 +3249,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -3171,6 +3279,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -3184,6 +3293,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -3198,7 +3308,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -3213,6 +3322,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -3239,7 +3349,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -3315,7 +3434,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -3326,6 +3444,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={26}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -3431,6 +3551,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -3446,6 +3567,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -3461,7 +3583,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -3480,7 +3601,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -3511,6 +3631,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -3524,6 +3645,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -3538,7 +3660,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -3553,6 +3674,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -3579,7 +3701,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -3655,7 +3786,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -3666,6 +3796,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={27}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -3771,6 +3903,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -3786,6 +3919,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -3801,7 +3935,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -3820,7 +3953,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -3851,6 +3983,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -3864,6 +3997,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -3878,7 +4012,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -3893,6 +4026,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -3919,7 +4053,16 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -3995,7 +4138,6 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -4006,6 +4148,8 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={29}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -4111,6 +4255,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -4126,6 +4271,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -4141,7 +4287,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -4160,7 +4305,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -4191,6 +4335,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -4204,6 +4349,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -4218,7 +4364,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -4233,6 +4378,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -4259,7 +4405,16 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -4335,7 +4490,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -4346,6 +4500,8 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={20}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -4396,6 +4552,8 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={21}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -4550,7 +4708,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -4580,6 +4737,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -4609,7 +4767,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -5039,7 +5196,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -5069,6 +5225,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -5098,7 +5255,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -5452,6 +5608,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -5467,6 +5624,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -5482,7 +5640,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -5501,7 +5658,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -5532,6 +5688,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -5545,6 +5702,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -5559,7 +5717,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -5574,6 +5731,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -5600,7 +5758,16 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -5676,7 +5843,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -5687,6 +5853,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={13}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -5737,6 +5905,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={14}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -5974,7 +6144,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -6004,6 +6173,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -6033,7 +6203,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -6434,7 +6603,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -6464,6 +6632,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -6493,7 +6662,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -6811,6 +6979,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -6826,6 +6995,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -6841,7 +7011,6 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -6860,7 +7029,6 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -6891,6 +7059,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -6904,6 +7073,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -6918,7 +7088,6 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -6933,6 +7102,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -6959,7 +7129,16 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -7035,7 +7214,6 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -7046,6 +7224,8 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={23}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -7096,6 +7276,8 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={24}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -7164,6 +7346,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -7179,6 +7362,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -7194,7 +7378,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -7213,7 +7396,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -7244,6 +7426,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -7257,6 +7440,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -7271,7 +7455,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -7286,6 +7469,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -7312,7 +7496,16 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -7388,7 +7581,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -7399,6 +7591,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={15}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -7449,6 +7643,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={16}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -7559,7 +7755,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 dateTime="2021-01-01T23:00:00.000Z"
                                 title="2021-01-01 23:00"
                               >
-                                2 years ago
+                                4 months ago
                               </time>
                             </Text>
                           </Text>
@@ -7717,7 +7913,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -7747,6 +7942,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -7776,7 +7972,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -7828,7 +8023,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       accessible={true}
                                       collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -7857,6 +8051,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -8021,7 +8216,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       accessible={true}
                                       collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -8050,6 +8244,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -8294,7 +8489,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -8324,6 +8518,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -8353,7 +8548,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -8405,7 +8599,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       accessible={true}
                                       collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -8434,6 +8627,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -8598,7 +8792,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       accessible={true}
                                       collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -8627,6 +8820,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -8771,6 +8965,9 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              exclusive={true}
+                              handlerTag={17}
+                              handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
                               onGestureHandlerStateChange={[Function]}
@@ -8781,11 +8978,11 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                   "marginBottom": 16,
                                 }
                               }
+                              touchSoundDisabled={false}
                             >
                               <View
                                 accessible={true}
                                 collapsable={false}
-                                nativeID="animatedComponent"
                                 style={
                                   Object {
                                     "opacity": 1,
@@ -8875,6 +9072,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -8890,6 +9088,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -8905,7 +9104,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -8924,7 +9122,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -8955,6 +9152,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -8968,6 +9166,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -8982,7 +9181,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -8997,6 +9195,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -9023,7 +9222,16 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -9099,7 +9307,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -9110,6 +9317,8 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={18}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -9160,6 +9369,8 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={19}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -9337,7 +9548,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -9367,6 +9577,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -9396,7 +9607,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -9797,7 +10007,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -9827,6 +10036,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -9856,7 +10066,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -10174,6 +10383,7 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -10189,6 +10399,7 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -10204,7 +10415,6 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -10223,7 +10433,6 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -10254,6 +10463,7 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -10267,6 +10477,7 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -10281,7 +10492,6 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -10296,6 +10506,7 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -10322,7 +10533,16 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -10398,7 +10618,6 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -10409,6 +10628,8 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={22}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -10500,6 +10721,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -10515,6 +10737,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -10530,7 +10753,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -10549,7 +10771,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -10580,6 +10801,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -10593,6 +10815,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -10607,7 +10830,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -10622,6 +10844,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -10648,7 +10871,16 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -10724,7 +10956,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -10735,6 +10966,8 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={8}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -10785,6 +11018,8 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={9}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -10939,7 +11174,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -10969,6 +11203,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -10998,7 +11233,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -11428,7 +11662,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -11458,6 +11691,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -11487,7 +11721,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -11841,6 +12074,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -11856,6 +12090,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -11871,7 +12106,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -11890,7 +12124,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -11921,6 +12154,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -11934,6 +12168,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -11948,7 +12183,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -11963,6 +12197,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -11989,7 +12224,16 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -12065,7 +12309,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -12076,6 +12319,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -12126,6 +12371,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={2}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -12363,7 +12610,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -12400,7 +12646,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -12801,7 +13046,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -12838,7 +13082,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -13156,6 +13399,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -13171,6 +13415,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -13186,7 +13431,6 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -13205,7 +13449,6 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -13236,6 +13479,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -13249,6 +13493,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -13263,7 +13508,6 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -13278,6 +13522,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -13304,7 +13549,16 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -13380,7 +13634,6 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -13391,6 +13644,8 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={11}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -13441,6 +13696,8 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={12}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -13509,6 +13766,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -13524,6 +13782,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -13539,7 +13798,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -13558,7 +13816,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -13589,6 +13846,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -13602,6 +13860,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -13616,7 +13875,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -13631,6 +13889,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -13657,7 +13916,16 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -13733,7 +14001,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -13744,6 +14011,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={3}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -13794,6 +14063,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={4}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -13904,7 +14175,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 dateTime="2021-01-01T23:00:00.000Z"
                                 title="2021-01-01 23:00"
                               >
-                                2 years ago
+                                4 months ago
                               </time>
                             </Text>
                           </Text>
@@ -14062,7 +14333,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -14092,6 +14362,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -14121,7 +14392,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -14173,7 +14443,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -14345,7 +14614,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -14597,7 +14865,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -14627,6 +14894,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -14656,7 +14924,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -14708,7 +14975,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -14880,7 +15146,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       focusable={true}
-                                      nativeID="animatedComponent"
                                       onClick={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
@@ -15032,6 +15297,9 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              exclusive={true}
+                              handlerTag={5}
+                              handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
                               onGestureHandlerStateChange={[Function]}
@@ -15042,11 +15310,11 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                   "marginBottom": 16,
                                 }
                               }
+                              touchSoundDisabled={false}
                             >
                               <View
                                 accessible={true}
                                 collapsable={false}
-                                nativeID="animatedComponent"
                                 style={
                                   Object {
                                     "opacity": 1,
@@ -15136,6 +15404,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -15151,6 +15420,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -15166,7 +15436,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -15185,7 +15454,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -15216,6 +15484,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -15229,6 +15498,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -15243,7 +15513,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -15258,6 +15527,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -15284,7 +15554,16 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -15360,7 +15639,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -15371,6 +15649,8 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={6}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -15421,6 +15701,8 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={7}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -15598,7 +15880,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -15628,6 +15909,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -15657,7 +15939,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -16058,7 +16339,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                 />
                                 <View
                                   collapsable={false}
-                                  nativeID="animatedComponent"
                                   style={
                                     Object {
                                       "transform": Array [
@@ -16088,6 +16368,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                       >
                                         <Text
                                           allowFontScaling={false}
+                                          selectable={false}
                                           style={
                                             Array [
                                               Object {
@@ -16117,7 +16398,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                             </View>
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "maxHeight": "0%",
@@ -16435,6 +16715,7 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -16450,6 +16731,7 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -16465,7 +16747,6 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -16484,7 +16765,6 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -16515,6 +16795,7 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -16528,6 +16809,7 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -16542,7 +16824,6 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -16557,6 +16838,7 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -16583,7 +16865,16 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -16659,7 +16950,6 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -16670,6 +16960,8 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={10}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}

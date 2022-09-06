@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.model.objects.security;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 /** Represents the id of a message */
+@Immutable
 public class MessageID extends Base64URLData {
 
   public MessageID(String data) {

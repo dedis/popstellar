@@ -18,16 +18,19 @@ exports[`CameraButton renders correctly 1`] = `
   >
     <RNGestureHandlerButton
       collapsable={false}
+      exclusive={true}
+      handlerTag={1}
+      handlerType="NativeViewGestureHandler"
       onGestureEvent={[Function]}
       onGestureHandlerEvent={[Function]}
       onGestureHandlerStateChange={[Function]}
       onHandlerStateChange={[Function]}
       rippleColor={0}
+      touchSoundDisabled={false}
     >
       <View
         accessible={true}
         collapsable={false}
-        nativeID="animatedComponent"
         style={
           Object {
             "alignContent": "center",

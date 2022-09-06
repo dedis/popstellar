@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -14,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /** Class modeling a Local Autonomous Organization (LAO) */
-public final class Lao {
+public final class Lao implements Copyable<Lao> {
 
   public static final String TAG = Lao.class.getSimpleName();
 
@@ -77,6 +78,35 @@ public final class Lao {
     this.organizer = organizer;
     this.creation = creation;
     pubKeyByHash.put(organizer.computeHash(), organizer);
+  }
+
+  /**
+   * Copy constructor
+   *
+   * @param lao the lao to be deep copied in a new object
+   */
+  public Lao(Lao lao) {
+    this.channel = lao.channel;
+    this.id = lao.id;
+    this.name = lao.name;
+    this.lastModified = lao.lastModified;
+    this.creation = lao.creation;
+    this.organizer = lao.organizer;
+    this.modificationId = lao.modificationId;
+    this.witnesses = new HashSet<>(lao.witnesses);
+    this.witnessMessages = new HashMap<>(lao.witnessMessages);
+    this.pendingUpdates = new HashSet<>(lao.pendingUpdates);
+    this.rollCalls = Copyable.copy(lao.rollCalls);
+    this.elections = Copyable.copy(lao.elections);
+    this.allChirps = Copyable.copy(lao.allChirps);
+    this.chirpsByUser = new HashMap<>(lao.chirpsByUser);
+    // FIXME We need to keep the ElectInstance because the current consensus relies on references
+    // (Gabriel Fleischer 11.08.22)
+    this.messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
+    this.keyToNode = Copyable.copy(lao.keyToNode);
+    this.pubKeyByHash = new HashMap<>(lao.pubKeyByHash);
+    this.transactionHistoryByUser = new HashMap<>(lao.transactionHistoryByUser);
+    this.transactionByUser = new HashMap<>(lao.transactionByUser);
   }
 
   public void updateRollCall(String prevId, RollCall rollCall) {
@@ -142,7 +172,7 @@ public final class Lao {
    * @param prevId the previous id of a chirp
    * @param chirp the chirp
    */
-  public void updateAllChirps(MessageID prevId, Chirp chirp) {
+  public void updateChirpList(MessageID prevId, Chirp chirp) {
     if (chirp == null) {
       throw new IllegalArgumentException("The chirp is null");
     }
@@ -350,6 +380,10 @@ public final class Lao {
     witnesses.forEach(w -> keyToNode.computeIfAbsent(w, ConsensusNode::new));
   }
 
+  public void addPendingUpdate(PendingUpdate pendingUpdate) {
+    pendingUpdates.add(pendingUpdate);
+  }
+
   public void setPendingUpdates(Set<PendingUpdate> pendingUpdates) {
     this.pendingUpdates = pendingUpdates;
   }
@@ -439,6 +473,11 @@ public final class Lao {
    */
   public static String generateLaoId(PublicKey organizer, long creation, String name) {
     return Hash.hash(organizer.getEncoded(), Long.toString(creation), name);
+  }
+
+  @Override
+  public Lao copy() {
+    return new Lao(this);
   }
 
   @NonNull

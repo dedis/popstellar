@@ -31,6 +31,7 @@ exports[`EventList renders correctly for attendees 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`EventList renders correctly for attendees 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`EventList renders correctly for attendees 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`EventList renders correctly for attendees 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`EventList renders correctly for attendees 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`EventList renders correctly for attendees 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`EventList renders correctly for attendees 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`EventList renders correctly for attendees 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`EventList renders correctly for attendees 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -455,7 +467,6 @@ exports[`EventList renders correctly for attendees 1`] = `
                             />
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "transform": Array [
@@ -492,7 +503,6 @@ exports[`EventList renders correctly for attendees 1`] = `
                         </View>
                         <View
                           collapsable={false}
-                          nativeID="animatedComponent"
                           style={
                             Object {
                               "maxHeight": "0%",
@@ -620,7 +630,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                               >
                                 Current
                                  (
-                                0
+                                1
                                 )
                               </Text>
                             </View>
@@ -633,7 +643,6 @@ exports[`EventList renders correctly for attendees 1`] = `
                             />
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "transform": Array [
@@ -670,14 +679,204 @@ exports[`EventList renders correctly for attendees 1`] = `
                         </View>
                         <View
                           collapsable={false}
-                          nativeID="animatedComponent"
                           style={
                             Object {
                               "maxHeight": "0%",
                               "opacity": 0,
                             }
                           }
-                        />
+                        >
+                          <View
+                            accessible={true}
+                            focusable={true}
+                            onClick={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={
+                              Array [
+                                Object {
+                                  "backgroundColor": "#fff",
+                                },
+                                Object {
+                                  "borderTopLeftRadius": 16,
+                                  "borderTopRightRadius": 16,
+                                },
+                                Object {
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
+                                },
+                              ]
+                            }
+                            testID="current_event_selector_0"
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "alignItems": "center",
+                                  "backgroundColor": "#fff",
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
+                                  "borderBottomWidth": 0.5,
+                                  "borderColor": "#bcbbc1",
+                                  "borderTopLeftRadius": 16,
+                                  "borderTopRightRadius": 16,
+                                  "flexDirection": "row",
+                                  "padding": 14,
+                                }
+                              }
+                              testID="padView"
+                            >
+                              <View
+                                style={
+                                  Object {
+                                    "marginRight": 16,
+                                  }
+                                }
+                              >
+                                <View>
+                                  {"name":"ios-hand-left","size":25,"color":"#000"}
+                                </View>
+                              </View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "alignItems": "flex-start",
+                                      "flex": 1,
+                                      "justifyContent": "center",
+                                    },
+                                    undefined,
+                                  ]
+                                }
+                                theme={
+                                  Object {
+                                    "colors": Object {
+                                      "black": "#242424",
+                                      "disabled": "hsl(208, 8%, 90%)",
+                                      "divider": "#bcbbc1",
+                                      "error": "#ff190c",
+                                      "grey0": "#393e42",
+                                      "grey1": "#43484d",
+                                      "grey2": "#5e6977",
+                                      "grey3": "#86939e",
+                                      "grey4": "#bdc6cf",
+                                      "grey5": "#e1e8ee",
+                                      "greyOutline": "#bbb",
+                                      "platform": Object {
+                                        "android": Object {
+                                          "error": "#f44336",
+                                          "grey": "rgba(0, 0, 0, 0.54)",
+                                          "primary": "#2196f3",
+                                          "searchBg": "#dcdce1",
+                                          "secondary": "#9C27B0",
+                                          "success": "#4caf50",
+                                          "warning": "#ffeb3b",
+                                        },
+                                        "default": Object {
+                                          "error": "#ff3b30",
+                                          "grey": "#7d7d7d",
+                                          "primary": "#007aff",
+                                          "searchBg": "#dcdce1",
+                                          "secondary": "#5856d6",
+                                          "success": "#4cd964",
+                                          "warning": "#ffcc00",
+                                        },
+                                        "ios": Object {
+                                          "error": "#ff3b30",
+                                          "grey": "#7d7d7d",
+                                          "primary": "#007aff",
+                                          "searchBg": "#dcdce1",
+                                          "secondary": "#5856d6",
+                                          "success": "#4cd964",
+                                          "warning": "#ffcc00",
+                                        },
+                                        "web": Object {
+                                          "error": "#ff190c",
+                                          "grey": "#393e42",
+                                          "primary": "#2089dc",
+                                          "searchBg": "#303337",
+                                          "secondary": "#ca71eb",
+                                          "success": "#52c41a",
+                                          "warning": "#faad14",
+                                        },
+                                      },
+                                      "primary": "#2089dc",
+                                      "searchBg": "#303337",
+                                      "secondary": "#ca71eb",
+                                      "success": "#52c41a",
+                                      "warning": "#faad14",
+                                      "white": "#ffffff",
+                                    },
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Object {
+                                      "backgroundColor": "transparent",
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    }
+                                  }
+                                  testID="listItemTitle"
+                                >
+                                  myRollCall
+                                </Text>
+                                <Text
+                                  style={
+                                    Object {
+                                      "backgroundColor": "transparent",
+                                      "color": "#242424",
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
+                                    }
+                                  }
+                                  testID="listItemTitle"
+                                >
+                                  Supposed to start
+                                   
+                                  <time
+                                    dateTime="2021-05-07T03:20:00.000Z"
+                                    title="2021-05-07 03:20"
+                                  >
+                                    1 day from now
+                                  </time>
+                                  ,
+                                   
+                                  location
+                                </Text>
+                              </View>
+                              <View
+                                style={
+                                  Object {
+                                    "alignSelf": "center",
+                                    "overflow": "hidden",
+                                  }
+                                }
+                              >
+                                <View>
+                                  <View
+                                    style={
+                                      Object {
+                                        "alignItems": "center",
+                                        "backgroundColor": "transparent",
+                                        "justifyContent": "center",
+                                      }
+                                    }
+                                  >
+                                    <Text />
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
                         <View
                           accessible={true}
                           focusable={true}
@@ -798,7 +997,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                               >
                                 Past
                                  (
-                                3
+                                2
                                 )
                               </Text>
                             </View>
@@ -811,7 +1010,6 @@ exports[`EventList renders correctly for attendees 1`] = `
                             />
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "transform": Array [
@@ -848,7 +1046,6 @@ exports[`EventList renders correctly for attendees 1`] = `
                         </View>
                         <View
                           collapsable={false}
-                          nativeID="animatedComponent"
                           style={
                             Object {
                               "maxHeight": "0%",
@@ -902,7 +1099,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  [name='how-to-vote' size='25' color='#000']
+                                  {"name":"how-to-vote","size":25,"color":"#000"}
                                 </View>
                               </View>
                               <View
@@ -1009,7 +1206,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                     dateTime="2020-12-31T23:00:00.000Z"
                                     title="2020-12-31 23:00"
                                   >
-                                    2 years ago
+                                    4 months ago
                                   </time>
                                 </Text>
                               </View>
@@ -1052,6 +1249,10 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 Object {
                                   "backgroundColor": "#fff",
                                 },
+                                Object {
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
+                                },
                               ]
                             }
                             testID="previous_event_selector_1"
@@ -1061,6 +1262,8 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 Object {
                                   "alignItems": "center",
                                   "backgroundColor": "#fff",
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
                                   "borderBottomWidth": 0.5,
                                   "borderColor": "#bcbbc1",
                                   "flexDirection": "row",
@@ -1077,7 +1280,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 }
                               >
                                 <View>
-                                  [name='ios-calendar' size='25' color='#000']
+                                  {"name":"ios-calendar","size":25,"color":"#000"}
                                 </View>
                               </View>
                               <View
@@ -1179,190 +1382,6 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   testID="listItemTitle"
                                 >
                                   Ended at 2022-05-28 00:00:00, on earth
-                                </Text>
-                              </View>
-                              <View
-                                style={
-                                  Object {
-                                    "alignSelf": "center",
-                                    "overflow": "hidden",
-                                  }
-                                }
-                              >
-                                <View>
-                                  <View
-                                    style={
-                                      Object {
-                                        "alignItems": "center",
-                                        "backgroundColor": "transparent",
-                                        "justifyContent": "center",
-                                      }
-                                    }
-                                  >
-                                    <Text />
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            accessible={true}
-                            focusable={true}
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Array [
-                                Object {
-                                  "backgroundColor": "#fff",
-                                },
-                                Object {
-                                  "borderBottomLeftRadius": 16,
-                                  "borderBottomRightRadius": 16,
-                                },
-                              ]
-                            }
-                            testID="previous_event_selector_2"
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignItems": "center",
-                                  "backgroundColor": "#fff",
-                                  "borderBottomLeftRadius": 16,
-                                  "borderBottomRightRadius": 16,
-                                  "borderBottomWidth": 0.5,
-                                  "borderColor": "#bcbbc1",
-                                  "flexDirection": "row",
-                                  "padding": 14,
-                                }
-                              }
-                              testID="padView"
-                            >
-                              <View
-                                style={
-                                  Object {
-                                    "marginRight": 16,
-                                  }
-                                }
-                              >
-                                <View>
-                                  [name='ios-hand-left' size='25' color='#000']
-                                </View>
-                              </View>
-                              <View
-                                style={
-                                  Array [
-                                    Object {
-                                      "alignItems": "flex-start",
-                                      "flex": 1,
-                                      "justifyContent": "center",
-                                    },
-                                    undefined,
-                                  ]
-                                }
-                                theme={
-                                  Object {
-                                    "colors": Object {
-                                      "black": "#242424",
-                                      "disabled": "hsl(208, 8%, 90%)",
-                                      "divider": "#bcbbc1",
-                                      "error": "#ff190c",
-                                      "grey0": "#393e42",
-                                      "grey1": "#43484d",
-                                      "grey2": "#5e6977",
-                                      "grey3": "#86939e",
-                                      "grey4": "#bdc6cf",
-                                      "grey5": "#e1e8ee",
-                                      "greyOutline": "#bbb",
-                                      "platform": Object {
-                                        "android": Object {
-                                          "error": "#f44336",
-                                          "grey": "rgba(0, 0, 0, 0.54)",
-                                          "primary": "#2196f3",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#9C27B0",
-                                          "success": "#4caf50",
-                                          "warning": "#ffeb3b",
-                                        },
-                                        "default": Object {
-                                          "error": "#ff3b30",
-                                          "grey": "#7d7d7d",
-                                          "primary": "#007aff",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#5856d6",
-                                          "success": "#4cd964",
-                                          "warning": "#ffcc00",
-                                        },
-                                        "ios": Object {
-                                          "error": "#ff3b30",
-                                          "grey": "#7d7d7d",
-                                          "primary": "#007aff",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#5856d6",
-                                          "success": "#4cd964",
-                                          "warning": "#ffcc00",
-                                        },
-                                        "web": Object {
-                                          "error": "#ff190c",
-                                          "grey": "#393e42",
-                                          "primary": "#2089dc",
-                                          "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
-                                          "success": "#52c41a",
-                                          "warning": "#faad14",
-                                        },
-                                      },
-                                      "primary": "#2089dc",
-                                      "searchBg": "#303337",
-                                      "secondary": "#ca71eb",
-                                      "success": "#52c41a",
-                                      "warning": "#faad14",
-                                      "white": "#ffffff",
-                                    },
-                                  }
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Object {
-                                      "backgroundColor": "transparent",
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "textAlign": "left",
-                                    }
-                                  }
-                                  testID="listItemTitle"
-                                >
-                                  myRollCall
-                                </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "backgroundColor": "transparent",
-                                      "color": "#242424",
-                                      "fontSize": 16,
-                                      "lineHeight": 20,
-                                    }
-                                  }
-                                  testID="listItemTitle"
-                                >
-                                  Supposed to start
-                                   
-                                  <time
-                                    dateTime="2021-05-07T03:20:00.000Z"
-                                    title="2021-05-07 03:20"
-                                  >
-                                    1 year ago
-                                  </time>
-                                  ,
-                                   
-                                  location
                                 </Text>
                               </View>
                               <View
@@ -1435,6 +1454,7 @@ exports[`EventList renders correctly for organizers 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -1450,6 +1470,7 @@ exports[`EventList renders correctly for organizers 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -1465,7 +1486,6 @@ exports[`EventList renders correctly for organizers 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1484,7 +1504,6 @@ exports[`EventList renders correctly for organizers 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -1515,6 +1534,7 @@ exports[`EventList renders correctly for organizers 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1528,6 +1548,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1542,7 +1563,6 @@ exports[`EventList renders correctly for organizers 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1557,6 +1577,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1583,7 +1604,16 @@ exports[`EventList renders correctly for organizers 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -1659,7 +1689,6 @@ exports[`EventList renders correctly for organizers 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1670,6 +1699,8 @@ exports[`EventList renders correctly for organizers 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={2}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1859,7 +1890,6 @@ exports[`EventList renders correctly for organizers 1`] = `
                             />
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "transform": Array [
@@ -1889,6 +1919,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   >
                                     <Text
                                       allowFontScaling={false}
+                                      selectable={false}
                                       style={
                                         Array [
                                           Object {
@@ -1918,7 +1949,6 @@ exports[`EventList renders correctly for organizers 1`] = `
                         </View>
                         <View
                           collapsable={false}
-                          nativeID="animatedComponent"
                           style={
                             Object {
                               "maxHeight": "0%",
@@ -2046,7 +2076,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                               >
                                 Current
                                  (
-                                0
+                                1
                                 )
                               </Text>
                             </View>
@@ -2059,7 +2089,6 @@ exports[`EventList renders correctly for organizers 1`] = `
                             />
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "transform": Array [
@@ -2089,6 +2118,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   >
                                     <Text
                                       allowFontScaling={false}
+                                      selectable={false}
                                       style={
                                         Array [
                                           Object {
@@ -2118,14 +2148,227 @@ exports[`EventList renders correctly for organizers 1`] = `
                         </View>
                         <View
                           collapsable={false}
-                          nativeID="animatedComponent"
                           style={
                             Object {
                               "maxHeight": "0%",
                               "opacity": 0,
                             }
                           }
-                        />
+                        >
+                          <View
+                            accessible={true}
+                            focusable={true}
+                            onClick={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={
+                              Array [
+                                Object {
+                                  "backgroundColor": "#fff",
+                                },
+                                Object {
+                                  "borderTopLeftRadius": 16,
+                                  "borderTopRightRadius": 16,
+                                },
+                                Object {
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
+                                },
+                              ]
+                            }
+                            testID="current_event_selector_0"
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "alignItems": "center",
+                                  "backgroundColor": "#fff",
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
+                                  "borderBottomWidth": 0.5,
+                                  "borderColor": "#bcbbc1",
+                                  "borderTopLeftRadius": 16,
+                                  "borderTopRightRadius": 16,
+                                  "flexDirection": "row",
+                                  "padding": 14,
+                                }
+                              }
+                              testID="padView"
+                            >
+                              <View
+                                style={
+                                  Object {
+                                    "marginRight": 16,
+                                  }
+                                }
+                              >
+                                <View>
+                                  {"name":"ios-hand-left","size":25,"color":"#000"}
+                                </View>
+                              </View>
+                              <View
+                                style={
+                                  Array [
+                                    Object {
+                                      "alignItems": "flex-start",
+                                      "flex": 1,
+                                      "justifyContent": "center",
+                                    },
+                                    undefined,
+                                  ]
+                                }
+                                theme={
+                                  Object {
+                                    "colors": Object {
+                                      "black": "#242424",
+                                      "disabled": "hsl(208, 8%, 90%)",
+                                      "divider": "#bcbbc1",
+                                      "error": "#ff190c",
+                                      "grey0": "#393e42",
+                                      "grey1": "#43484d",
+                                      "grey2": "#5e6977",
+                                      "grey3": "#86939e",
+                                      "grey4": "#bdc6cf",
+                                      "grey5": "#e1e8ee",
+                                      "greyOutline": "#bbb",
+                                      "platform": Object {
+                                        "android": Object {
+                                          "error": "#f44336",
+                                          "grey": "rgba(0, 0, 0, 0.54)",
+                                          "primary": "#2196f3",
+                                          "searchBg": "#dcdce1",
+                                          "secondary": "#9C27B0",
+                                          "success": "#4caf50",
+                                          "warning": "#ffeb3b",
+                                        },
+                                        "default": Object {
+                                          "error": "#ff3b30",
+                                          "grey": "#7d7d7d",
+                                          "primary": "#007aff",
+                                          "searchBg": "#dcdce1",
+                                          "secondary": "#5856d6",
+                                          "success": "#4cd964",
+                                          "warning": "#ffcc00",
+                                        },
+                                        "ios": Object {
+                                          "error": "#ff3b30",
+                                          "grey": "#7d7d7d",
+                                          "primary": "#007aff",
+                                          "searchBg": "#dcdce1",
+                                          "secondary": "#5856d6",
+                                          "success": "#4cd964",
+                                          "warning": "#ffcc00",
+                                        },
+                                        "web": Object {
+                                          "error": "#ff190c",
+                                          "grey": "#393e42",
+                                          "primary": "#2089dc",
+                                          "searchBg": "#303337",
+                                          "secondary": "#ca71eb",
+                                          "success": "#52c41a",
+                                          "warning": "#faad14",
+                                        },
+                                      },
+                                      "primary": "#2089dc",
+                                      "searchBg": "#303337",
+                                      "secondary": "#ca71eb",
+                                      "success": "#52c41a",
+                                      "warning": "#faad14",
+                                      "white": "#ffffff",
+                                    },
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Object {
+                                      "backgroundColor": "transparent",
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    }
+                                  }
+                                  testID="listItemTitle"
+                                >
+                                  myRollCall
+                                </Text>
+                                <Text
+                                  style={
+                                    Object {
+                                      "backgroundColor": "transparent",
+                                      "color": "#242424",
+                                      "fontSize": 16,
+                                      "lineHeight": 20,
+                                    }
+                                  }
+                                  testID="listItemTitle"
+                                >
+                                  Supposed to start
+                                   
+                                  <time
+                                    dateTime="2021-05-07T03:20:00.000Z"
+                                    title="2021-05-07 03:20"
+                                  >
+                                    1 day from now
+                                  </time>
+                                  ,
+                                   
+                                  location
+                                </Text>
+                              </View>
+                              <View
+                                style={
+                                  Object {
+                                    "alignSelf": "center",
+                                    "overflow": "hidden",
+                                  }
+                                }
+                              >
+                                <View>
+                                  <View
+                                    style={
+                                      Object {
+                                        "alignItems": "center",
+                                        "backgroundColor": "transparent",
+                                        "justifyContent": "center",
+                                      }
+                                    }
+                                  >
+                                    <Text
+                                      allowFontScaling={false}
+                                      selectable={false}
+                                      style={
+                                        Array [
+                                          Object {
+                                            "color": "#D1D1D6",
+                                            "fontSize": 16,
+                                          },
+                                          Object {
+                                            "backgroundColor": "transparent",
+                                          },
+                                          Object {
+                                            "fontFamily": "ionicons",
+                                            "fontStyle": "normal",
+                                            "fontWeight": "normal",
+                                          },
+                                          Object {},
+                                        ]
+                                      }
+                                      testID="iconIcon"
+                                    >
+                                      
+                                    </Text>
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
                         <View
                           accessible={true}
                           focusable={true}
@@ -2246,7 +2489,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                               >
                                 Past
                                  (
-                                3
+                                2
                                 )
                               </Text>
                             </View>
@@ -2259,7 +2502,6 @@ exports[`EventList renders correctly for organizers 1`] = `
                             />
                             <View
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "transform": Array [
@@ -2289,6 +2531,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   >
                                     <Text
                                       allowFontScaling={false}
+                                      selectable={false}
                                       style={
                                         Array [
                                           Object {
@@ -2318,7 +2561,6 @@ exports[`EventList renders correctly for organizers 1`] = `
                         </View>
                         <View
                           collapsable={false}
-                          nativeID="animatedComponent"
                           style={
                             Object {
                               "maxHeight": "0%",
@@ -2372,7 +2614,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  [name='how-to-vote' size='25' color='#000']
+                                  {"name":"how-to-vote","size":25,"color":"#000"}
                                 </View>
                               </View>
                               <View
@@ -2479,7 +2721,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                     dateTime="2020-12-31T23:00:00.000Z"
                                     title="2020-12-31 23:00"
                                   >
-                                    2 years ago
+                                    4 months ago
                                   </time>
                                 </Text>
                               </View>
@@ -2503,6 +2745,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   >
                                     <Text
                                       allowFontScaling={false}
+                                      selectable={false}
                                       style={
                                         Array [
                                           Object {
@@ -2544,6 +2787,10 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 Object {
                                   "backgroundColor": "#fff",
                                 },
+                                Object {
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
+                                },
                               ]
                             }
                             testID="previous_event_selector_1"
@@ -2553,6 +2800,8 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 Object {
                                   "alignItems": "center",
                                   "backgroundColor": "#fff",
+                                  "borderBottomLeftRadius": 16,
+                                  "borderBottomRightRadius": 16,
                                   "borderBottomWidth": 0.5,
                                   "borderColor": "#bcbbc1",
                                   "flexDirection": "row",
@@ -2569,7 +2818,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 }
                               >
                                 <View>
-                                  [name='ios-calendar' size='25' color='#000']
+                                  {"name":"ios-calendar","size":25,"color":"#000"}
                                 </View>
                               </View>
                               <View
@@ -2693,212 +2942,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   >
                                     <Text
                                       allowFontScaling={false}
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#D1D1D6",
-                                            "fontSize": 16,
-                                          },
-                                          Object {
-                                            "backgroundColor": "transparent",
-                                          },
-                                          Object {
-                                            "fontFamily": "ionicons",
-                                            "fontStyle": "normal",
-                                            "fontWeight": "normal",
-                                          },
-                                          Object {},
-                                        ]
-                                      }
-                                      testID="iconIcon"
-                                    >
-                                      
-                                    </Text>
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            accessible={true}
-                            focusable={true}
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Array [
-                                Object {
-                                  "backgroundColor": "#fff",
-                                },
-                                Object {
-                                  "borderBottomLeftRadius": 16,
-                                  "borderBottomRightRadius": 16,
-                                },
-                              ]
-                            }
-                            testID="previous_event_selector_2"
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignItems": "center",
-                                  "backgroundColor": "#fff",
-                                  "borderBottomLeftRadius": 16,
-                                  "borderBottomRightRadius": 16,
-                                  "borderBottomWidth": 0.5,
-                                  "borderColor": "#bcbbc1",
-                                  "flexDirection": "row",
-                                  "padding": 14,
-                                }
-                              }
-                              testID="padView"
-                            >
-                              <View
-                                style={
-                                  Object {
-                                    "marginRight": 16,
-                                  }
-                                }
-                              >
-                                <View>
-                                  [name='ios-hand-left' size='25' color='#000']
-                                </View>
-                              </View>
-                              <View
-                                style={
-                                  Array [
-                                    Object {
-                                      "alignItems": "flex-start",
-                                      "flex": 1,
-                                      "justifyContent": "center",
-                                    },
-                                    undefined,
-                                  ]
-                                }
-                                theme={
-                                  Object {
-                                    "colors": Object {
-                                      "black": "#242424",
-                                      "disabled": "hsl(208, 8%, 90%)",
-                                      "divider": "#bcbbc1",
-                                      "error": "#ff190c",
-                                      "grey0": "#393e42",
-                                      "grey1": "#43484d",
-                                      "grey2": "#5e6977",
-                                      "grey3": "#86939e",
-                                      "grey4": "#bdc6cf",
-                                      "grey5": "#e1e8ee",
-                                      "greyOutline": "#bbb",
-                                      "platform": Object {
-                                        "android": Object {
-                                          "error": "#f44336",
-                                          "grey": "rgba(0, 0, 0, 0.54)",
-                                          "primary": "#2196f3",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#9C27B0",
-                                          "success": "#4caf50",
-                                          "warning": "#ffeb3b",
-                                        },
-                                        "default": Object {
-                                          "error": "#ff3b30",
-                                          "grey": "#7d7d7d",
-                                          "primary": "#007aff",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#5856d6",
-                                          "success": "#4cd964",
-                                          "warning": "#ffcc00",
-                                        },
-                                        "ios": Object {
-                                          "error": "#ff3b30",
-                                          "grey": "#7d7d7d",
-                                          "primary": "#007aff",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#5856d6",
-                                          "success": "#4cd964",
-                                          "warning": "#ffcc00",
-                                        },
-                                        "web": Object {
-                                          "error": "#ff190c",
-                                          "grey": "#393e42",
-                                          "primary": "#2089dc",
-                                          "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
-                                          "success": "#52c41a",
-                                          "warning": "#faad14",
-                                        },
-                                      },
-                                      "primary": "#2089dc",
-                                      "searchBg": "#303337",
-                                      "secondary": "#ca71eb",
-                                      "success": "#52c41a",
-                                      "warning": "#faad14",
-                                      "white": "#ffffff",
-                                    },
-                                  }
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Object {
-                                      "backgroundColor": "transparent",
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "textAlign": "left",
-                                    }
-                                  }
-                                  testID="listItemTitle"
-                                >
-                                  myRollCall
-                                </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "backgroundColor": "transparent",
-                                      "color": "#242424",
-                                      "fontSize": 16,
-                                      "lineHeight": 20,
-                                    }
-                                  }
-                                  testID="listItemTitle"
-                                >
-                                  Supposed to start
-                                   
-                                  <time
-                                    dateTime="2021-05-07T03:20:00.000Z"
-                                    title="2021-05-07 03:20"
-                                  >
-                                    1 year ago
-                                  </time>
-                                  ,
-                                   
-                                  location
-                                </Text>
-                              </View>
-                              <View
-                                style={
-                                  Object {
-                                    "alignSelf": "center",
-                                    "overflow": "hidden",
-                                  }
-                                }
-                              >
-                                <View>
-                                  <View
-                                    style={
-                                      Object {
-                                        "alignItems": "center",
-                                        "backgroundColor": "transparent",
-                                        "justifyContent": "center",
-                                      }
-                                    }
-                                  >
-                                    <Text
-                                      allowFontScaling={false}
+                                      selectable={false}
                                       style={
                                         Array [
                                           Object {

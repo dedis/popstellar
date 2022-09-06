@@ -151,7 +151,7 @@ libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
 libraryDependencies += "ch.epfl.dedis" % "cothority" % "3.3.1"
 
 // Scala unit tests
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.9" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.12" % Test
 
 // Json Schema Validator w/ Jackson Databind
 libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"

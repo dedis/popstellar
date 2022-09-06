@@ -1,6 +1,7 @@
 package ch.epfl.pop.model.network
 
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
+import org.scalatest.matchers.should.Matchers
 
 class ResultObjectSuite extends FunSuite with Matchers {
   test("Int constructor works") {

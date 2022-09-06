@@ -100,7 +100,7 @@ export const getElectionKeyByElectionId = (
 export const makeElectionKeySelector = (electionId: string) =>
   createSelector(
     // First input: map of lao ids to servers
-    (state) => getElectionKeyState(state).byElectionId,
+    (state: any) => getElectionKeyState(state).byElectionId,
     // Selector: returns the election key associated to the given election id
     (byElectionId: ElectionKeyReducerState['byElectionId']): ElectionPublicKey | undefined => {
       if (electionId in byElectionId) {

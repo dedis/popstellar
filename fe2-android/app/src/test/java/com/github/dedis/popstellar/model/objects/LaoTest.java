@@ -67,7 +67,7 @@ public class LaoTest {
         new HashMap<String, RollCall>() {
           {
             put(rollCallId1, new RollCall(rollCallId1));
-            put(null, new RollCall(null));
+            put(null, new RollCall((String) null));
             put(rollCallId3, new RollCall(rollCallId3));
           }
         });
@@ -160,7 +160,7 @@ public class LaoTest {
   @Test
   public void createLaoNullParametersTest() {
     assertThrows(IllegalArgumentException.class, () -> new Lao(null, ORGANIZER, 2L));
-    assertThrows(IllegalArgumentException.class, () -> new Lao(null));
+    assertThrows(IllegalArgumentException.class, () -> new Lao((String) null));
   }
 
   @Test
@@ -293,7 +293,7 @@ public class LaoTest {
   @Test
   public void nullChirpUpdateThrowsException() {
     MessageID messageID = new MessageID("FOO");
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.updateAllChirps(messageID, null));
+    assertThrows(IllegalArgumentException.class, () -> LAO_1.updateChirpList(messageID, null));
   }
 
   @Test
@@ -363,8 +363,8 @@ public class LaoTest {
     chirp2.setSender(ORGANIZER);
     chirp2.setParentId(new MessageID("foobar"));
     chirp2.setTimestamp(2L);
-    LAO_1.updateAllChirps(id1, chirp1);
-    LAO_1.updateAllChirps(id2, chirp2);
+    LAO_1.updateChirpList(id1, chirp1);
+    LAO_1.updateChirpList(id2, chirp2);
 
     List<Chirp> orderedList = LAO_1.getChirpsInOrder();
     assertEquals(chirp2, orderedList.get(0));

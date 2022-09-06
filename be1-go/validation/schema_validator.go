@@ -41,6 +41,7 @@ const baseURL = "https://raw.githubusercontent.com/dedis/popstellar/master/"
 // outside the module we copy the schemas over right before invoking the build
 // or test commands in the Makefile. As a result, users may safely ignore the
 // warnings on this line.
+//
 //go:embed protocol
 var protocolFS embed.FS
 

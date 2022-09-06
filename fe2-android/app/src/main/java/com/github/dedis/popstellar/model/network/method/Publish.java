@@ -1,11 +1,13 @@
 package com.github.dedis.popstellar.model.network.method;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.Channel;
 
 import java.util.Objects;
 
 /** Publish a message on a channel */
+@Immutable
 public final class Publish extends Query {
 
   private final MessageGeneral message;

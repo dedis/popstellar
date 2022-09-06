@@ -1,9 +1,13 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import androidx.annotation.NonNull;
+
+import com.github.dedis.popstellar.model.Immutable;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
+@Immutable
 public class QuestionResult {
 
   @SerializedName(value = "ballot_option")
@@ -45,6 +49,7 @@ public class QuestionResult {
     return Objects.hash(ballotOption, count);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "QuestionResult{" + "ballotOption='" + ballotOption + '\'' + ", count=" + count + '}';

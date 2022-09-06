@@ -29,7 +29,7 @@ public class LaunchPageObject {
   }
 
   public static ViewInteraction laoNameEntry() {
-    return onView(withId(R.id.entry_box_launch));
+    return onView(withId(R.id.lao_name_entry));
   }
 
   public static ViewInteraction cancelButtonLaunch() {

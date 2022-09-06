@@ -11,8 +11,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.JsonRPCErrorException;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
@@ -168,6 +167,8 @@ public class LAONetworkManager implements MessageSender {
     } catch (DataHandlingException e) {
       Log.e(TAG, "Error while handling received message", e);
       unprocessed.onNext(broadcast);
+    } catch (UnknownLaoException e) {
+      Log.e(TAG, "Error while handling received message", e);
     }
   }
 
@@ -177,41 +178,42 @@ public class LAONetworkManager implements MessageSender {
         messageHandler.handleMessage(repository, this, channel, msg);
       } catch (DataHandlingException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
+      } catch (UnknownLaoException e) {
+        Log.e(TAG, "Error while handling received catchup message", e);
       }
     }
   }
 
   private Single<Answer> request(Query query) {
-    Single<Answer> answerSingle =
-        connection
-            .observeMessage() // Observe incoming messages
-            .filter(Answer.class::isInstance) // Filter the Answers
-            .map(Answer.class::cast)
-            // This specific request has an id, only let the related Answer pass
-            .filter(answer -> answer.getId() == query.getRequestId())
-            .doOnNext(answer -> Log.d(TAG, "request id: " + answer.getId()))
-            // Transform from an Observable to a Single
-            // This Means that we expect a result before the source is disposed and an error will be
-            // produced if no value is received.
-            .firstOrError()
-            // If we receive an error, transform the flow to a Failure
-            .flatMap(
-                answer -> {
-                  if (answer instanceof Error) {
-                    return Single.error(new JsonRPCErrorException((Error) answer));
-                  } else {
-                    return Single.just(answer);
-                  }
-                })
-            .subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.mainThread())
-            // Add a timeout to automatically dispose of the flow and end with a failure
-            .timeout(5, TimeUnit.SECONDS)
-            .cache();
-    // Only send the message after the single is created to make sure it is already waiting
-    // before the answer is received
-    connection.sendMessage(query);
-    return answerSingle;
+    return connection
+        .observeMessage() // Observe incoming messages
+        // Send the message upon subscription the the incoming messages. That way we are
+        // certain the reply will be processed and the message is only sent when an observer
+        // subscribes to the request answer.
+        .doOnSubscribe(d -> connection.sendMessage(query))
+        .filter(Answer.class::isInstance) // Filter for Answers
+        .map(Answer.class::cast)
+        // This specific request has an id, only let the related Answer pass
+        .filter(answer -> answer.getId() == query.getRequestId())
+        .doOnNext(answer -> Log.d(TAG, "request id: " + answer.getId()))
+        // Transform from an Observable to a Single
+        // This Means that we expect a result before the source is disposed and an error
+        // will be produced if no value is received.
+        .firstOrError()
+        // If we receive an error, transform the flow to a Failure
+        .flatMap(
+            answer -> {
+              if (answer instanceof Error) {
+                return Single.error(new JsonRPCErrorException((Error) answer));
+              } else {
+                return Single.just(answer);
+              }
+            })
+        .subscribeOn(schedulerProvider.io())
+        .observeOn(schedulerProvider.mainThread())
+        // Add a timeout to automatically dispose of the flow and end with a failure
+        .timeout(5, TimeUnit.SECONDS)
+        .cache();
   }
 
   @Override
