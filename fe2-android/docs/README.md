@@ -56,9 +56,18 @@ app/src
 │         │    
 │         └── utility           # module containg the utility classes
 │
-├── debug                       # module containing the debug files. Currently only an empty activity used for androidTest
-│
-└── test                        # unit tests, this contains both usual unit tests and thanks to robolectric, ui tests
+└── test                        # unit tests, this contains everything related to testing
+    │
+    ├── framework               # the utility code that are used by the tests
+    │     ├── common            # framework code used in common by both test types
+    │     ├── emulator          # framework code of the emulated tests
+    │     └── robolectric       # framework code of the robolectric tests
+    │
+    ├── ui/                     # UI tests
+    │     ├── emulator/         # tests executed on the emulator, those will not be ran on the CI
+    │     └── robolectric/      # tests executed in the robolectric framework
+    │
+    └── unit/                   # usual unit tests
 ```
 
 The letter `P` represents the project package: `com/github/dedis/popstellar`.
@@ -334,6 +343,29 @@ backend.
 To inject custom modules using Hilt,
 this [guide](https://developer.android.com/training/dependency-injection/hilt-testing) might help
 you.
+
+### Project Setup
+
+To execute test on the CI, we use a framework called [Robolectric](http://robolectric.org/),
+it execute the tests very fast compared to the emulator, but it has no visual interface and
+debugging a failing robolectric test can be very tricky.
+
+To address that, the project is setup in a way that UI tests can be executed on both the emulator
+and robolectric.
+
+It is decided by the directory in which the test is placed. All tests in `src/test/ui/emulator`
+will be executed on the emulator and will give a visual feedback. And all tests in `src/test/ui/robolectric`
+will be executed using the framework.
+
+Beware, only the robolectric tests are executed on the CI. You need to place your tests in the
+robolectric directory once you finished writing it.
+
+### Getting Started
+
+A template UI test has been written in the emulator directory. It is advised to take a look at it
+and use it as a basis when writing tests.used
+
+Also, a lot of test utility code has been written for the project, it can be found under `src/test/framework`.
 
 ## Debugging Tips
 
