@@ -183,7 +183,7 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
       - name: Setup JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: "zulu"
           java-version: "11"
@@ -200,19 +200,24 @@ jobs:
         run: |
           chmod +x ./gradlew
 
-      - name: Build App and Run Tests
+      - name: Assemble
         shell: bash
         run: |
-          # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
-          # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
-          ( set -o pipefail; ./gradlew build --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
+          # To run the CI with debug informations, add --info
+          ./gradlew assemble lint --parallel --build-cache
+      
+      - name: Run tests
+        shell: bash
+        run: |
+          # To run the CI with debug informations, add --info
+          ./gradlew check --parallel --build-cache
+
 
       - name: Generate Coverage Report
         shell: bash
         run: |
-          # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
-          # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
-          ( set -o pipefail; ./gradlew jacocoTestReport --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
+          # To run the CI with debug informations, add --info
+          ./gradlew jacocoTestReport --parallel --build-cache
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v2
@@ -226,9 +231,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FE2 }}
         run: |
-          # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
-          # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
-          ( set -o pipefail; ./gradlew sonarqube --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
+          # To run the CI with debug informations, add --info
+          ./gradlew sonarqube --parallel --build-cache
 
   be2-scala:
     name: Be2-Scala
