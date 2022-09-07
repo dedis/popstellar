@@ -1,5 +1,6 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import { BarCodeScanningResult } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -70,15 +71,15 @@ const ConnectOpenScan = () => {
     });
   }, [navigation]);
 
-  const handleScan = (data: string | null) => {
-    if (!data) {
+  const handleScan = (result: BarCodeScanningResult | null) => {
+    if (!result) {
       return;
     }
 
-    console.log('read', data);
+    console.log('read', result);
 
     try {
-      const obj = JSON.parse(data);
+      const obj = JSON.parse(result.data);
 
       const connectToLao = ConnectToLao.fromJson(obj);
 

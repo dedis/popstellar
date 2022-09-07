@@ -157,7 +157,7 @@ const RollCallOpened = () => {
     <>
       <QrCodeScanner
         showCamera={showScanner}
-        handleScan={(data) => {
+        handleScan={({ data }) => {
           if (data) {
             addAttendeePopTokenAndShowToast(data);
           }

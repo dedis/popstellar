@@ -14,6 +14,7 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { DigitalCashFeature } from '../interface';
+import { BarCodeScanningResult } from 'expo-camera';
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -70,10 +71,10 @@ const PoPTokenScanner = () => {
     });
   };
 
-  const onScanData = (data: string | null) => {
-    if (data) {
-      if (tokenMatcher.test(data)) {
-        goBack(data);
+  const onScanData = (result: BarCodeScanningResult | null) => {
+    if (result) {
+      if (tokenMatcher.test(result.data)) {
+        goBack(result.data);
       } else {
         toast.show(STRINGS.roll_call_invalid_token, {
           type: 'danger',
