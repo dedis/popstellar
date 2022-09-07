@@ -195,10 +195,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     }
 
     Channel channel = e.getChannel();
-    String laoId = laoView.getId();
+    String laoViewId = laoView.getId();
 
     // The time will have to be modified on the backend
-    OpenElection openElection = new OpenElection(laoId, e.getId(), e.getStartTimestamp());
+    OpenElection openElection = new OpenElection(laoViewId, e.getId(), e.getStartTimestamp());
 
     return networkManager
         .getMessageSender()
@@ -216,9 +216,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     }
 
     Channel channel = election.getChannel();
-    String laoId = laoView.getId();
+    String laoViewId = laoView.getId();
     ElectionEnd electionEnd =
-        new ElectionEnd(election.getId(), laoId, election.computerRegisteredVotes());
+        new ElectionEnd(election.getId(), laoViewId, election.computerRegisteredVotes());
 
     return networkManager
         .getMessageSender()

@@ -14,7 +14,6 @@ import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.*;
 
 public class Election extends Event implements Copyable<Election> {
-  private static String TAG = Election.class.getSimpleName();
   private Channel channel;
   private String id;
   private String name;
@@ -36,10 +35,7 @@ public class Election extends Event implements Copyable<Election> {
   // Map that associates each messageId to its sender
   private final Map<MessageID, PublicKey> messageMap;
 
-  // Event state of the election. One is observable so as to be listened to. The other is so
-  // that the value is immediately updated
   private EventState state;
-  //  private final EventState state;
 
   // Results of an election (associated to a question id)
   private final Map<String, List<QuestionResult>> results;

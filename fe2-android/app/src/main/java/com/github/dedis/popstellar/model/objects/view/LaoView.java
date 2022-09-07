@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects.view;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -108,8 +109,8 @@ public final class LaoView {
   }
 
   public Map<String, RollCall> getRollCalls() {
-    return lao.getRollCalls();
-    // return Copyable.copy(lao.getRollCalls());
+    // return lao.getRollCalls();
+    return Copyable.copy(lao.getRollCalls());
   }
 
   public Map<String, Election> getElections() {
