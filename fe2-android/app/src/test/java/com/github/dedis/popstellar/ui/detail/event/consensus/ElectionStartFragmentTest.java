@@ -4,6 +4,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -48,6 +49,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.Completable;
+import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
@@ -57,6 +59,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
@@ -65,18 +68,19 @@ public class ElectionStartFragmentTest {
 
   @Inject MessageRepository messageRepository;
   @Inject KeyManager keyManager;
-  @Inject LAORepository laoRepository;
   @Inject MessageHandler messageHandler;
   @Inject Gson gson;
 
   @BindValue @Mock GlobalNetworkManager globalNetworkManager;
   @Mock MessageSender messageSender;
+  @BindValue @Mock LAORepository laoRepository;
 
+  private LaoView laoView;
   // A custom rule to call setup and teardown before the fragment rule and after the mockito rule
   private final TestRule setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           // Injection with hilt
           hiltRule.inject();
           // Preload the data schema before the test run
@@ -120,11 +124,30 @@ public class ElectionStartFragmentTest {
               node3Pos = i;
             }
           }
-          laoRepository.updateLao(lao);
+          nodesSubject = BehaviorSubject.createDefault(nodes);
           laoRepository.updateNodes(lao.getChannel());
+          laoRepository.updateLao(lao);
+          laoView = new LaoView(lao);
 
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
-
+          when(laoRepository.getLaoView(any())).thenAnswer(invocation -> laoView);
+          when(laoRepository.getNodesByChannel(any())).thenReturn(nodesSubject);
+          when(laoRepository.getLaoViewByChannel(any())).thenAnswer(invocation -> laoView);
+          doAnswer(
+                  invocation -> {
+                    Lao update = invocation.getArgument(0);
+                    laoView = new LaoView(update);
+                    return null;
+                  })
+              .when(laoRepository)
+              .updateLao(any(Lao.class));
+          doAnswer(
+                  invocation -> {
+                    nodesSubject.onNext(lao.getNodes());
+                    return null;
+                  })
+              .when(laoRepository)
+              .updateNodes(any());
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());
           when(messageSender.subscribe(any())).then(args -> Completable.complete());
@@ -142,6 +165,8 @@ public class ElectionStartFragmentTest {
           .around(hiltRule)
           .around(setupRule)
           .around(fragmentRule);
+
+  private static BehaviorSubject<List<ConsensusNode>> nodesSubject;
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss z").withZone(ZoneId.systemDefault());
@@ -322,9 +347,12 @@ public class ElectionStartFragmentTest {
     MessageGeneral failure1Msg = createMsg(mainKeyPair, failure1);
     messageHandler.handleMessage(
         messageRepository, laoRepository, messageSender, consensusChannel, failure1Msg);
-
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     displayAssertions(STATUS_READY, START_START, true);
+    nodeAssertions(nodesGrid(), node3Pos, "Start Failed\n" + node3, false);
+    nodeAssertions(nodesGrid(), node2Pos, "Waiting\n" + node2, false);
     nodeAssertions(nodesGrid(), ownPos, "Start Failed\n" + publicKey, false);
+
   }
 
   private void displayAssertions(String expectedStatus, String expectedStart, boolean enabled) {

@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -108,14 +109,14 @@ public class ElectionSetupFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           // Injection with hilt
           hiltRule.inject();
 
           when(repository.getLaoObservable(any()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
-
+          when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());
           when(messageSender.subscribe(any())).then(args -> Completable.complete());
