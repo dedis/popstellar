@@ -31,7 +31,7 @@ public final class LaoHandler {
    */
   @SuppressLint("CheckResult") // for now concerns Consensus which is not a priority this semester
   public static void handleCreateLao(HandlerContext context, CreateLao createLao) {
-    LAORepository laoRepository = context.getLaoRepository();
+    LAORepository laoRepo = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
@@ -44,7 +44,7 @@ public final class LaoHandler {
     lao.setId(createLao.getId());
     lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
 
-    laoRepository.updateLao(lao);
+    laoRepo.updateLao(lao);
 
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
@@ -65,7 +65,7 @@ public final class LaoHandler {
             () -> Log.d(TAG, "subscription to the coin channel was a success"),
             error -> Log.d(TAG, "error while trying  to subscribe to coin channel"));
 
-    laoRepository.updateNodes(channel);
+    laoRepo.updateNodes(channel);
   }
 
   /**
@@ -76,12 +76,12 @@ public final class LaoHandler {
    */
   public static void handleUpdateLao(HandlerContext context, UpdateLao updateLao)
       throws DataHandlingException, UnknownLaoException {
-    LAORepository laoRepository = context.getLaoRepository();
+    LAORepository laoRepo = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
-    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     if (laoView.getLastModified() > updateLao.getLastModified()) {
       // the current state we have is more up to date
@@ -108,8 +108,8 @@ public final class LaoHandler {
       lao.addPendingUpdate(new PendingUpdate(updateLao.getLastModified(), messageId));
     }
 
-    laoRepository.updateNodes(channel);
-    laoRepository.updateLao(lao);
+    laoRepo.updateNodes(channel);
+    laoRepo.updateLao(lao);
   }
 
   /**
@@ -121,15 +121,15 @@ public final class LaoHandler {
   @SuppressLint("CheckResult")
   public static void handleStateLao(HandlerContext context, StateLao stateLao)
       throws DataHandlingException, UnknownLaoException {
-    MessageRepository messageRepository = context.getMessageRepository();
-    LAORepository laoRepository = context.getLaoRepository();
+    MessageRepository messageRepo = context.getMessageRepository();
+    LAORepository laoRepo = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
-    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     Log.d(TAG, "Receive State Lao Broadcast " + stateLao.getName());
-    if (!messageRepository.isMessagePresent(stateLao.getModificationId())) {
+    if (!messageRepo.isMessagePresent(stateLao.getModificationId())) {
       Log.d(TAG, "Can't find modification id : " + stateLao.getModificationId());
       // queue it if we haven't received the update message yet
       throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
@@ -170,8 +170,8 @@ public final class LaoHandler {
     lao.getPendingUpdates()
         .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
 
-    laoRepository.updateLao(lao);
-    laoRepository.updateNodes(channel);
+    laoRepo.updateLao(lao);
+    laoRepo.updateNodes(channel);
   }
 
   public static WitnessMessage updateLaoNameWitnessMessage(
@@ -209,11 +209,11 @@ public final class LaoHandler {
 
   public static void handleGreetLao(HandlerContext context, GreetLao greetLao)
       throws UnknownLaoException {
-    LAORepository laoRepository = context.getLaoRepository();
+    LAORepository laoRepo = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleGreetLao: channel " + channel + ", msg=" + greetLao);
-    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     // Check the correctness of the LAO id
     if (!laoView.getId().equals(greetLao.getId())) {

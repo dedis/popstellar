@@ -135,8 +135,4 @@ public class LAORepository {
     channelToNodesSubject.putIfAbsent(channel, BehaviorSubject.create());
     channelToNodesSubject.get(channel).onNext(nodes);
   }
-
-  //  public Map<MessageID, MessageGeneral> getMessageById() {
-  //    return messageById;
-  //  }
 }

@@ -69,7 +69,6 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
       LaoView laoView = homeViewModel.getLaoView(laoId);
       laoTitle.setText(laoView.getName());
     } catch (UnknownLaoException e) {
-      e.printStackTrace();
       throw new IllegalStateException("Lao with id " + laoId + " is supposed to be present");
     }
   }

@@ -33,8 +33,8 @@ public class LAONetworkManager implements MessageSender {
 
   private static final String TAG = LAONetworkManager.class.getSimpleName();
 
-  private final MessageRepository messageRepository;
-  private final LAORepository laoRepository;
+  private final MessageRepository messageRepo;
+  private final LAORepository laoRepo;
   private final MessageHandler messageHandler;
   private final Connection connection;
   public final AtomicInteger requestCounter = new AtomicInteger();
@@ -47,14 +47,14 @@ public class LAONetworkManager implements MessageSender {
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   public LAONetworkManager(
-      MessageRepository messageRepository,
-      LAORepository laoRepository,
+      MessageRepository messageRepo,
+      LAORepository laoRepo,
       MessageHandler messageHandler,
       Connection connection,
       Gson gson,
       SchedulerProvider schedulerProvider) {
-    this.messageRepository = messageRepository;
-    this.laoRepository = laoRepository;
+    this.messageRepo = messageRepo;
+    this.laoRepo = laoRepo;
     this.messageHandler = messageHandler;
     this.connection = connection;
     this.gson = gson;
@@ -174,7 +174,7 @@ public class LAONetworkManager implements MessageSender {
     Log.d(TAG, "handling broadcast msg : " + broadcast);
     try {
       messageHandler.handleMessage(
-          messageRepository, laoRepository, this, broadcast.getChannel(), broadcast.getMessage());
+          messageRepo, laoRepo, this, broadcast.getChannel(), broadcast.getMessage());
     } catch (DataHandlingException | UnknownLaoException e) {
       Log.e(TAG, "Error while handling received message", e);
       unprocessed.onNext(broadcast);
@@ -184,7 +184,7 @@ public class LAONetworkManager implements MessageSender {
   private void handleMessages(List<MessageGeneral> messages, Channel channel) {
     for (MessageGeneral msg : messages) {
       try {
-        messageHandler.handleMessage(messageRepository, laoRepository, this, channel, msg);
+        messageHandler.handleMessage(messageRepo, laoRepo, this, channel, msg);
       } catch (DataHandlingException | UnknownLaoException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
       }
