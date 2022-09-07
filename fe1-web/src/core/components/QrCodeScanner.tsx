@@ -1,3 +1,4 @@
+import { Camera, CameraType } from 'expo-camera';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
@@ -5,11 +6,6 @@ import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { getNavigator } from 'core/platform/Navigator';
 import { Border, Color, Icon, Spacing } from 'core/styles';
 
-// FIXME: Remove CSS imports in order to support native apps
-// At the time of writing expo-camera nor expo-barcode-scanner work in web builds
-// because they load an external dependency (jsQR) that somehow does not properly load
-// outside the examples expo provides
-import '../platform/web-styles/qr-code-scanner.css';
 import PoPIcon from './PoPIcon';
 import PoPTouchableOpacity from './PoPTouchableOpacity';
 
@@ -54,12 +50,17 @@ const styles = StyleSheet.create({
   },
 });
 
-// TODO: Fix react-qr-reader
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
-  // const toast = useToast();
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
+  const [hasPermission, setHasPermission] = useState(null as unknown as boolean);
+  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
   const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
 
   useEffect(() => {
     try {
@@ -77,30 +78,24 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
     }
   }, []);
 
-  /*
-  const handleError = (err: string | Error) => {
-    console.error(err);
-    toast.show(err.toString(), {
-      type: 'danger',
-      placement: 'top',
-      duration: FOUR_SECONDS,
-    });
-  };
-  */
+  if (hasPermission === null) {
+    return <Text>Requesting for camera permission</Text>;
+  }
+
+  if (!hasPermission) {
+    return <Text>Permission for camera denied</Text>;
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.camera}>
         {showCamera && (
-          <Text>No QR reader</Text>
-          /* <QrReader
-            delay={300}
-            onError={handleError}
-            onScan={handleScan}
-            facingMode={facingMode}
-            className="qr-code-scanner"
+          <Camera
+            barCodeScannerSettings={{
+              barCodeTypes: ['qr'],
+            }}
+            onBarCodeScanned={handleScan}
           />
-        */
         )}
       </View>
       <View style={styles.uiContainer}>
@@ -111,7 +106,9 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
               <PoPTouchableOpacity
                 style={styles.flipButton}
                 onPress={() => {
-                  setFacingMode(facingMode === 'user' ? 'environment' : 'user');
+                  setCameraType(
+                    cameraType === CameraType.back ? CameraType.front : CameraType.back,
+                  );
                 }}>
                 <PoPIcon name="cameraReverse" color={Color.accent} size={Icon.size} />
               </PoPTouchableOpacity>

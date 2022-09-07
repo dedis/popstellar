@@ -70,10 +70,10 @@ const PoPTokenScanner = () => {
     });
   };
 
-  const onScanData = (popToken: string | null) => {
-    if (popToken) {
-      if (tokenMatcher.test(popToken)) {
-        goBack(popToken);
+  const onScanData = (data: string | null) => {
+    if (data) {
+      if (tokenMatcher.test(data)) {
+        goBack(data);
       } else {
         toast.show(STRINGS.roll_call_invalid_token, {
           type: 'danger',
