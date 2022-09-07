@@ -51,7 +51,6 @@ public final class CameraPermissionFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     super.onCreateView(inflater, container, savedInstanceState);
-    System.out.println("Opening perm");
 
     mCameraPermFragBinding = QrcodeCameraPermFragmentBinding.inflate(inflater, container, false);
     mCameraPermFragBinding.setLifecycleOwner(getViewLifecycleOwner());
