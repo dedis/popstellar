@@ -101,24 +101,23 @@ public final class LaoView {
   }
 
   public RollCall getMostRecentRollCall() throws NoRollCallException {
-    return lao.lastRollCallClosed();
+    return new RollCall(lao.lastRollCallClosed());
   }
 
   public List<Chirp> getChirpsInOrder() {
-    return lao.getChirpsInOrder();
+    return new ArrayList<>(lao.getChirpsInOrder());
   }
 
   public Map<String, RollCall> getRollCalls() {
-    // return lao.getRollCalls();
     return Copyable.copy(lao.getRollCalls());
   }
 
   public Map<String, Election> getElections() {
-    return lao.getElections();
+    return Copyable.copy(lao.getElections());
   }
 
   public Map<MessageID, WitnessMessage> getWitnessMessages() {
-    return lao.getWitnessMessages();
+    return Copyable.copy(lao.getWitnessMessages());
   }
 
   public List<ConsensusNode> getNodes() {
@@ -134,11 +133,11 @@ public final class LaoView {
   }
 
   public Map<PublicKey, List<TransactionObject>> getTransactionHistoryByUser() {
-    return lao.getTransactionHistoryByUser();
+    return Copyable.copyMapOfList(lao.getTransactionHistoryByUser());
   }
 
   public Map<PublicKey, List<TransactionObject>> getTransactionByUser() {
-    return lao.getTransactionByUser();
+    return Copyable.copyMapOfList(lao.getTransactionByUser());
   }
 
   @NonNull
