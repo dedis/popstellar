@@ -94,12 +94,13 @@ public class RollCallFragmentTest {
         protected void before() throws UnknownLaoException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
+          when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
           messageSenderHelper.setupMock();
-          when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
+
           ROLL_CALL.setState(EventState.CLOSED);
           ROLL_CALL.setLocation(LOCATION);
           ROLL_CALL.setStart(ROLL_CALL_START);
@@ -143,6 +144,7 @@ public class RollCallFragmentTest {
     Date endTime = new Date(ROLL_CALL.getEndTimestampInMillis());
     String startTimeText = DATE_FORMAT.format(startTime);
     String endTimeText = DATE_FORMAT.format(endTime);
+
     setupViewModel();
     rollCallStartTime().check(matches(withText(startTimeText)));
     rollCallEndTime().check(matches(withText(endTimeText)));

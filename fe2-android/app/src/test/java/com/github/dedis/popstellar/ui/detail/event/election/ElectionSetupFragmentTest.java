@@ -115,8 +115,9 @@ public class ElectionSetupFragmentTest {
 
           when(repository.getLaoObservable(any()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
-          when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
+
+          when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());
           when(messageSender.subscribe(any())).then(args -> Completable.complete());

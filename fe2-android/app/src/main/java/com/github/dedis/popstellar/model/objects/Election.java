@@ -71,7 +71,6 @@ public class Election extends Event implements Copyable<Election> {
     this.encryptedVoteByPublicKey = Copyable.copyMapOfList(election.encryptedVoteByPublicKey);
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     messageMap.putAll(election.messageMap);
-    Log.d(TAG, "copying election state with value " + election.state);
     this.state = election.state;
     this.results = Copyable.copyMapOfList(election.results);
   }

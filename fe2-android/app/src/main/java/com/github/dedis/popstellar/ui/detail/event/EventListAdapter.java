@@ -298,14 +298,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
   @SuppressLint("NotifyDataSetChanged") // warranted by our implementation
   private void setList(List<Event> events) {
-    //    for (EventCategory category : EventCategory.values()) {
-    //      for (Event event : eventsMap.get(category)) {
-    //        // When we get new events we remove observers of old ones
-    //        event.getState().removeObservers(activity);
-    //      }
-    //    }
-    //    events.forEach( // Adding a listener to each event's state, when changed we update the UI
-    //        event -> event.getState().observe(activity, eventState -> notifyDataSetChanged()));
     putEventsInMap(events);
     notifyDataSetChanged();
   }

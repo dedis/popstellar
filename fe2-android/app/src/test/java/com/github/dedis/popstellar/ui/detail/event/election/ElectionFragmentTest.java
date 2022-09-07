@@ -280,7 +280,6 @@ public class ElectionFragmentTest {
 
   private void receiveResults() {
     election.setEventState(RESULTS_READY);
-    //   LAO.getElections().put(election.getId(), election);
   }
 
   private void setupViewModel() {

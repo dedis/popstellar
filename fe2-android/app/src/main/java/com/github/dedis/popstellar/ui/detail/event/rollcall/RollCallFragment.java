@@ -96,15 +96,10 @@ public class RollCallFragment extends Fragment {
                   laoDetailViewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
-                          () -> {
-                            System.out.println("opening scanning");
-                            openScanning();
-                          },
-                          error -> {
-                            System.out.println("fail open result");
-                            ErrorUtils.logAndShow(
-                                requireContext(), TAG, error, R.string.error_open_rollcall);
-                          }));
+                          this::openScanning,
+                          error ->
+                              ErrorUtils.logAndShow(
+                                  requireContext(), TAG, error, R.string.error_open_rollcall)));
               break;
             case OPENED:
               // will add the scan to this fragment in the future

@@ -100,11 +100,7 @@ public final class LaoView {
   }
 
   public RollCall getMostRecentRollCall() throws NoRollCallException {
-    // Find the latest closed RollCall
-    return lao.getRollCalls().values().stream()
-        .filter(RollCall::isClosed)
-        .max(Comparator.comparing(RollCall::getEnd))
-        .orElseThrow(() -> new NoRollCallException(lao));
+    return lao.lastRollCallClosed();
   }
 
   public List<Chirp> getChirpsInOrder() {
