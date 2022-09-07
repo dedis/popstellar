@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -90,7 +91,13 @@ public class ElectionStartFragment extends Fragment {
 
     setupButtonListeners(mLaoDetailViewModel, electionId);
 
-    LaoView laoView = mLaoDetailViewModel.getCurrentLaoValue();
+    LaoView laoView;
+    try {
+      laoView = mLaoDetailViewModel.getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      return null;
+    }
     List<ConsensusNode> nodes = laoView.getNodes();
     ownNode = laoView.getNode(mLaoDetailViewModel.getPublicKey());
 
@@ -110,17 +117,22 @@ public class ElectionStartFragment extends Fragment {
       updateStartAndStatus(nodes, election, instanceId);
     }
 
-    mLaoDetailViewModel
-        .getNodes()
-        .observe(
-            getViewLifecycleOwner(),
-            consensusNodes -> {
-              Log.d(TAG, "got an update for nodes : " + consensusNodes);
-              adapter.setList(consensusNodes);
-              if (isElectionStartTimePassed(election)) {
-                updateStartAndStatus(consensusNodes, election, instanceId);
-              }
-            });
+    try {
+      mLaoDetailViewModel
+          .getNodes()
+          .observe(
+              getViewLifecycleOwner(),
+              consensusNodes -> {
+                Log.d(TAG, "got an update for nodes : " + consensusNodes);
+                adapter.setList(consensusNodes);
+                if (isElectionStartTimePassed(election)) {
+                  updateStartAndStatus(consensusNodes, election, instanceId);
+                }
+              });
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      return null;
+    }
 
     binding.setLifecycleOwner(getViewLifecycleOwner());
 

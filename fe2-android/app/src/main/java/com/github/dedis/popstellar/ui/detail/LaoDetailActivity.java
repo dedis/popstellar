@@ -12,6 +12,7 @@ import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
@@ -20,6 +21,8 @@ import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -131,15 +134,16 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   }
 
   private void openDigitalCashTab() {
-    startActivity(DigitalCashActivity.newIntent(this, viewModel.getCurrentLaoValue().getId()));
+    startActivity(DigitalCashActivity.newIntent(this, viewModel.getLaoId()));
   }
 
   private void openSocialMediaTab() {
-    startActivity(
-        SocialMediaActivity.newIntent(
-            this,
-            viewModel.getCurrentLaoValue().getId(),
-            viewModel.getCurrentLaoValue().getName()));
+    try {
+      LaoView laoView = viewModel.getCurrentLaoValue();
+      startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId(), laoView.getName()));
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(this, TAG, R.string.error_no_lao);
+    }
   }
 
   private void setupLaoWalletFragment() {

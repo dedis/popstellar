@@ -91,9 +91,7 @@ public class ElectionFragment extends Fragment {
                               laoDetailViewModel
                                   .openElection(election)
                                   .subscribe(
-                                      () -> {
-                                        Log.d(TAG, "opening election");
-                                      },
+                                      () -> Log.d(TAG, "opening election"),
                                       error ->
                                           ErrorUtils.logAndShow(
                                               requireContext(),
@@ -169,6 +167,9 @@ public class ElectionFragment extends Fragment {
       return;
     }
     election = laoDetailViewModel.getCurrentElection();
+    if (election == null) {
+      return;
+    }
     EventState electionState = election.getState();
 
     TextView title = view.findViewById(R.id.election_fragment_title);
@@ -200,6 +201,11 @@ public class ElectionFragment extends Fragment {
   }
 
   private void setupTime(View view) {
+    if (election == null) {
+      System.out.println("election null in election fragment");
+      return;
+    }
+    System.out.println("election not null in elec fragment " + election);
     TextView startTimeDisplay = view.findViewById(R.id.election_fragment_start_time);
     TextView endTimeDisplay = view.findViewById(R.id.election_fragment_end_time);
 

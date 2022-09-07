@@ -12,9 +12,12 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.AttendeesListFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -49,7 +52,16 @@ public class AttendeesListFragment extends Fragment {
     LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     String id = requireArguments().getString(EXTRA_ID);
-    Optional<RollCall> optRollCall = mLaoDetailViewModel.getCurrentLaoValue().getRollCall(id);
+
+    LaoView laoView;
+    try {
+      laoView = mLaoDetailViewModel.getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      return null;
+    }
+
+    Optional<RollCall> optRollCall = laoView.getRollCall(id);
     if (!optRollCall.isPresent()) {
       Log.d(TAG, "failed to retrieve roll call with id " + id);
       LaoDetailActivity.setCurrentFragment(

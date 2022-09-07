@@ -14,9 +14,12 @@ import com.github.dedis.popstellar.databinding.RollCallTokenFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import net.glxn.qrgen.android.QRCode;
@@ -57,9 +60,16 @@ public class RollCallTokenFragment extends Fragment {
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
+    LaoView laoView;
+    try {
+      laoView = mLaoDetailViewModel.getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      return null;
+    }
+
     String rollCallId = requireArguments().getString(EXTRA_ID);
-    Optional<RollCall> optRollCall =
-        mLaoDetailViewModel.getCurrentLao().getValue().getRollCall(rollCallId);
+    Optional<RollCall> optRollCall = laoView.getRollCall(rollCallId);
     if (!optRollCall.isPresent()) {
       Log.d(TAG, "failed to retrieve roll call with id " + rollCallId);
       LaoDetailActivity.setCurrentFragment(
@@ -68,7 +78,7 @@ public class RollCallTokenFragment extends Fragment {
       rollCall = optRollCall.get();
     }
 
-    String firstLaoId = mLaoDetailViewModel.getCurrentLaoValue().getId();
+    String firstLaoId = mLaoDetailViewModel.getLaoId();
     String pk = "";
     Log.d(TAG, "rollcall: " + rollCallId);
     try {

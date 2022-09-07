@@ -119,6 +119,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private Election currentElection = null;
   private RollCall currentRollCall = null;
   private String currentRollCallId = "";
+  private String laoId;
   // used to know which roll call to close
   private final Set<PublicKey> attendees = new HashSet<>();
   // used to dynamically update the set of witnesses when WR code scanned
@@ -185,8 +186,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    */
   public Completable openElection(Election e) {
     Log.d(TAG, "opening election with name : " + e.getName());
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+    LaoView laoView;
+    try {
+      laoView = getCurrentLaoValue();
+    } catch (UnknownLaoException unknownLaoException) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
@@ -204,8 +207,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public Completable endElection(Election election) {
     Log.d(TAG, "ending election with name : " + election.getName());
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+    LaoView laoView;
+    try {
+      laoView = getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
@@ -241,8 +246,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
             + election
             + " with election start time"
             + election.getStartTimestamp());
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+
+    final LaoView laoView;
+    try {
+      laoView = getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
@@ -297,8 +305,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       List<String> question) {
     Log.d(TAG, "creating a new election with name " + name);
 
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+    LaoView laoView;
+    try {
+      laoView = getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
@@ -337,8 +347,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   public Single<String> createNewRollCall(
       String title, String description, long creation, long proposedStart, long proposedEnd) {
     Log.d(TAG, "creating a new roll call with title " + title);
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+
+    LaoView laoView;
+    try {
+      laoView = getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
@@ -373,11 +386,15 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         String.format(
             "creating a new consensus for type: %s, property: %s, value: %s",
             type, property, value));
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+
+    LaoView laoView;
+    try {
+      laoView = getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
+
     Channel channel = laoView.getChannel().subChannel("consensus");
     ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
 
@@ -403,12 +420,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
             + " with value "
             + accept);
 
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
-      Log.d(TAG, LAO_FAILURE_MESSAGE);
-      return Completable.error(new UnknownLaoException());
-    }
-
     ConsensusElectAccept consensusElectAccept =
         new ConsensusElectAccept(electInstance.getInstanceId(), messageId, accept);
 
@@ -425,11 +436,12 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param id the roll call id to open
    */
   public Completable openRollCall(String id) {
-    System.out.println("call openRollCall with id " + id);
-    System.out.println("in open rc " + getCurrentLao().getValue());
     Log.d(TAG, "call openRollCall with id" + id);
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+
+    LaoView laoView;
+    try {
+      laoView = getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
@@ -477,8 +489,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    */
   public Completable closeRollCall() {
     Log.d(TAG, "call closeRollCall");
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+
+    LaoView laoView;
+    try {
+      laoView = getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
@@ -501,8 +516,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public Completable signMessage(WitnessMessage witnessMessage) {
     Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId());
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+    final LaoView laoView;
+    try {
+      laoView = getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
@@ -544,13 +561,17 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mCurrentLao;
   }
 
-  public LaoView getCurrentLaoValue() {
-    return mCurrentLao.getValue();
+  public String getLaoId() {
+    return laoId;
+  }
+
+  public LaoView getCurrentLaoValue() throws UnknownLaoException {
+    return laoRepository.getLaoView(laoId);
   }
 
   @VisibleForTesting
   public void setCurrentLao(LaoView laoView) {
-    mCurrentLao.setValue(laoView);
+    mCurrentLao.postValue(laoView);
   }
 
   public LiveData<String> getCurrentLaoName() {
@@ -561,7 +582,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mIsOrganizer;
   }
 
-  public LiveData<Boolean> isWitness() {
+  public LiveData<Boolean> isWitness() throws UnknownLaoException {
     boolean isWitness = getCurrentLaoValue().getWitnesses().contains(keyManager.getMainPublicKey());
     Log.d(TAG, "isWitness: " + isWitness);
     mIsWitness.setValue(isWitness);
@@ -591,7 +612,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mNbAttendees;
   }
 
-  public LiveData<List<ConsensusNode>> getNodes() {
+  public LiveData<List<ConsensusNode>> getNodes() throws UnknownLaoException {
     return LiveDataReactiveStreams.fromPublisher(
         laoRepository
             .getNodesByChannel(getCurrentLaoValue().getChannel())
@@ -630,6 +651,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     currentRollCall = rc;
   }
 
+  public void setCurrentRollCallId(String rollCallId) {
+    currentRollCallId = rollCallId;
+  }
+
   public void setCurrentElectionVotes(List<Integer> currentElectionVotes) {
     if (currentElectionVotes == null) {
       throw new IllegalArgumentException();
@@ -659,8 +684,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   public Completable updateLaoWitnesses() {
     Log.d(TAG, "Updating lao witnesses ");
 
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+    LaoView laoView;
+    try {
+      laoView = getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
@@ -701,6 +728,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public void subscribeToLao(String laoId) {
+    this.laoId = laoId;
     disposables.add(
         laoRepository
             .getLaoObservable(laoId)
@@ -721,14 +749,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   private void updateCurrentObjects(LaoView laoView) {
-    //    if (currentRollCall != null) {
-    //      Optional<RollCall> rcOption = laoView.getRollCall(currentRollCall.getId());
-    //      if (!rcOption.isPresent()) {
-    //        throw new IllegalStateException("Roll call must be present if in current id");
-    //      }
-    //      currentRollCall = rcOption.get();
-    //    }
-
     if (currentElection != null) {
       Optional<Election> electionOption = laoView.getElection(currentElection.getId());
       if (!electionOption.isPresent()) {
@@ -738,7 +758,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     }
   }
 
-  public PoPToken getCurrentPopToken() throws KeyException {
+  public PoPToken getCurrentPopToken() throws KeyException, UnknownLaoException {
     return keyManager.getPoPToken(getCurrentLaoValue(), currentRollCall);
   }
 

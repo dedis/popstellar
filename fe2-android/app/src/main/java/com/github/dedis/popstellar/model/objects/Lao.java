@@ -115,7 +115,7 @@ public final class Lao implements Copyable<Lao> {
     }
     System.out.println("rc in Lao is " + rollCall);
     rollCalls.remove(prevId);
-    rollCalls.put(prevId, rollCall);
+    rollCalls.put(rollCall.getId(), rollCall);
   }
 
   public void updateElection(String prevId, Election election) {

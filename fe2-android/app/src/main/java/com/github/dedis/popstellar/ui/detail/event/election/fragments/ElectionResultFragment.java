@@ -9,12 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionResultFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionResultPagerAdapter;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
@@ -43,9 +46,11 @@ public class ElectionResultFragment extends Fragment {
     TextView electionNameView = mElectionResultFragBinding.electionResultElectionTitle;
 
     // Getting LAO
-    LaoView laoView = mLaoDetailViewModel.getCurrentLaoValue();
-    if (laoView == null) {
-      Log.e(TAG, "No LAO in view model");
+    LaoView laoView;
+    try {
+      laoView = mLaoDetailViewModel.getCurrentLaoValue();
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return null;
     }
 

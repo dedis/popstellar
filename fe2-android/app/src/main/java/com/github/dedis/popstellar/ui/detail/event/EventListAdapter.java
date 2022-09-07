@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.*;
@@ -178,6 +179,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     () -> RollCallFragment.newInstance(token.getPublicKey()));
               } catch (KeyException e) {
                 ErrorUtils.logAndShow(activity, TAG, e, R.string.key_generation_exception);
+              } catch (UnknownLaoException e) {
+                ErrorUtils.logAndShow(activity, TAG, e, R.string.error_no_lao);
               }
             } else {
               showWalletNotSetupWarning();
