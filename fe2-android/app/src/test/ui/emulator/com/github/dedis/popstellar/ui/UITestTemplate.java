@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.gson.Gson;
 
 import org.junit.Rule;
@@ -15,12 +16,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import java.util.HashMap;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -80,11 +80,12 @@ public class UITestTemplate {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           // This line is needed by the hilt rule to inject the fields annotated with @inject
           hiltRule.inject();
           // Place the mock definition here
-          when(laoRepo.getLaoById()).thenReturn(new HashMap<>());
+          when(laoRepo.getLaoView(anyString()))
+              .thenReturn(null); // Put the LaoView object in the return
         }
       };
 
