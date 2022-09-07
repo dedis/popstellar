@@ -80,7 +80,6 @@
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1",
     "websocket": "^1.0.32",
-    "expo-barcode-scanner": "~11.4.0",
     "expo-camera": "~12.3.0"
   },
   "devDependencies": {
