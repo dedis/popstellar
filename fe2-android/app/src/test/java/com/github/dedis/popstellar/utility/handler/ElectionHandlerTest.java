@@ -73,8 +73,6 @@ public class ElectionHandlerTest extends TestCase {
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
-    laoRepo = new LAORepository();
-
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     messageRepo = new MessageRepository();

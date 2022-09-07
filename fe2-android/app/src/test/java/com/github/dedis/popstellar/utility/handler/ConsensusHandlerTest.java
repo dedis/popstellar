@@ -276,8 +276,6 @@ public class ConsensusHandlerTest {
   public void handleConsensusDoNothingOnBackendMessageTest()
       throws DataHandlingException, UnknownLaoException {
     LAORepository mockLAORepository = mock(LAORepository.class);
-    Map<MessageID, MessageGeneral> messageById = new HashMap<>();
-    // when(mockLAORepository.getMessageById()).thenReturn(messageById);
 
     ConsensusPrepare prepare = new ConsensusPrepare(INSTANCE_ID, messageId, CREATION_TIME, 3);
     ConsensusPromise promise =
