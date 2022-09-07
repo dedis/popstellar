@@ -16,6 +16,7 @@ import dagger.hilt.android.testing.HiltTestApplication;
  * <p>For more information : <a
  * href="https://developer.android.com/training/dependency-injection/hilt-testing">https://developer.android.com/training/dependency-injection/hilt-testing</a>
  */
+// This is automatically used when running instrumented tests
 @SuppressWarnings("unused")
 public final class HiltTestRunner extends AndroidJUnitRunner {
 

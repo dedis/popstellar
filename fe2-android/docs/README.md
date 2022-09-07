@@ -363,7 +363,7 @@ robolectric directory once you finished writing it.
 ### Getting Started
 
 A template UI test has been written in the emulator directory. It is advised to take a look at it
-and use it as a basis when writing tests.used
+and use it as a basis when writing tests.
 
 Also, a lot of test utility code has been written for the project, it can be found under `src/test/framework`.
 
