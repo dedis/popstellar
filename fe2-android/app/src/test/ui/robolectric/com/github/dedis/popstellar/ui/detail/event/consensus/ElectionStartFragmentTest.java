@@ -73,7 +73,7 @@ public class ElectionStartFragmentTest {
 
   @BindValue @Mock GlobalNetworkManager globalNetworkManager;
   @Mock MessageSender messageSender;
-  @BindValue @Mock LAORepository laoRepository;
+  @BindValue @Mock LAORepository laoRepo;
 
   private LaoView laoView;
   // A custom rule to call setup and teardown before the fragment rule and after the mockito rule
@@ -125,28 +125,28 @@ public class ElectionStartFragmentTest {
             }
           }
           nodesSubject = BehaviorSubject.createDefault(nodes);
-          laoRepository.updateNodes(lao.getChannel());
-          laoRepository.updateLao(lao);
+          laoRepo.updateNodes(lao.getChannel());
+          laoRepo.updateLao(lao);
           laoView = new LaoView(lao);
 
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
-          when(laoRepository.getLaoView(any())).thenAnswer(invocation -> laoView);
-          when(laoRepository.getNodesByChannel(any())).thenReturn(nodesSubject);
-          when(laoRepository.getLaoViewByChannel(any())).thenAnswer(invocation -> laoView);
+          when(laoRepo.getLaoView(any())).thenAnswer(invocation -> laoView);
+          when(laoRepo.getNodesByChannel(any())).thenReturn(nodesSubject);
+          when(laoRepo.getLaoViewByChannel(any())).thenAnswer(invocation -> laoView);
           doAnswer(
                   invocation -> {
                     Lao update = invocation.getArgument(0);
                     laoView = new LaoView(update);
                     return null;
                   })
-              .when(laoRepository)
+              .when(laoRepo)
               .updateLao(any(Lao.class));
           doAnswer(
                   invocation -> {
                     nodesSubject.onNext(lao.getNodes());
                     return null;
                   })
-              .when(laoRepository)
+              .when(laoRepo)
               .updateNodes(any());
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());
@@ -339,7 +339,7 @@ public class ElectionStartFragmentTest {
         new ConsensusFailure(INSTANCE_ID, elect1Msg.getMessageId(), PAST_TIME);
     MessageGeneral failure1Msg = createMsg(mainKeyPair, failure1);
     messageHandler.handleMessage(
-        messageRepository, laoRepository, messageSender, consensusChannel, failure1Msg);
+        messageRepo, laoRepo, messageSender, consensusChannel, failure1Msg);
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     displayAssertions(STATUS_READY, START_START, true);
     nodeAssertions(nodesGrid(), node3Pos, "Start Failed\n" + node3, false);
