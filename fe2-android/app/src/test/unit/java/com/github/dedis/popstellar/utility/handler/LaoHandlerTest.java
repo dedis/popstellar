@@ -46,7 +46,8 @@ public class LaoHandlerTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
-  private LAORepository laoRepository;
+  private MessageRepository messageRepo;
+  private LAORepository laoRepo;
   private MessageHandler messageHandler;
   private ServerRepository serverRepository;
 
@@ -67,7 +68,8 @@ public class LaoHandlerTest {
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    laoRepository = new LAORepository();
+    messageRepo = new MessageRepository();
+    laoRepo = new LAORepository();
     serverRepository = new ServerRepository();
     messageHandler =
         new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
@@ -75,12 +77,11 @@ public class LaoHandlerTest {
     // Create one LAO and add it to the LAORepository
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
     lao.setLastModified(lao.getCreation());
-    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
-    laoRepository.setAllLaoSubject();
+    laoRepo.updateLao(lao);
 
     // Add the CreateLao message to the LAORepository
     createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
-    laoRepository.getMessageById().put(createLaoMessage.getMessageId(), createLaoMessage);
+    messageRepo.addMessage(createLaoMessage);
   }
 
   @Test
@@ -100,11 +101,11 @@ public class LaoHandlerTest {
         updateLaoNameWitnessMessage(message.getMessageId(), updateLao, new LaoView(lao));
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, LAO_CHANNEL, message);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
-        laoRepository.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
+        laoRepo.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
     assertTrue(witnessMessage.isPresent());
     assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
     assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
@@ -126,15 +127,13 @@ public class LaoHandlerTest {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, stateLao, GSON);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, LAO_CHANNEL, message);
 
     // Check the LAO last modification time and ID was updated
     assertEquals(
-        (Long) stateLao.getLastModified(),
-        laoRepository.getLaoByChannel(LAO_CHANNEL).getLastModified());
+        (Long) stateLao.getLastModified(), laoRepo.getLaoByChannel(LAO_CHANNEL).getLastModified());
     assertEquals(
-        stateLao.getModificationId(),
-        laoRepository.getLaoByChannel(LAO_CHANNEL).getModificationId());
+        stateLao.getModificationId(), laoRepo.getLaoByChannel(LAO_CHANNEL).getModificationId());
   }
 
   @Test()
@@ -147,7 +146,7 @@ public class LaoHandlerTest {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, greetLao, GSON);
 
     // Call the handler
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, LAO_CHANNEL, message);
 
     // Check that the server repository contains the key of the server
     assertEquals(RANDOM_ADDRESS, serverRepository.getServerByLaoId(lao.getId()).getServerAddress());
@@ -163,6 +162,6 @@ public class LaoHandlerTest {
         IllegalArgumentException.class,
         () ->
             messageHandler.handleMessage(
-                laoRepository, messageSender, LAO_CHANNEL, message_invalid));
+                messageRepo, laoRepo, messageSender, LAO_CHANNEL, message_invalid));
   }
 }

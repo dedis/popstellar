@@ -39,8 +39,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import java.util.Collections;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
@@ -100,8 +98,6 @@ public class LaoDetailFragmentTest {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(LAO));
-          when(repository.getAllLaos())
-              .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
 
           when(keyManager.getMainPublicKey()).thenReturn(PK);
           when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);

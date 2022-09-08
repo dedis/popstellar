@@ -92,8 +92,7 @@ public class ElectionResultFragmentTest {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(LAO));
-          when(repository.getAllLaos())
-              .thenReturn(BehaviorSubject.createDefault(singletonList(LAO)));
+
           initializeElection();
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 

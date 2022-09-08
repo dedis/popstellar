@@ -55,8 +55,6 @@ public class EventListAdapterTest {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(LAO));
-          when(repository.getAllLaos())
-              .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
         }
       };
 

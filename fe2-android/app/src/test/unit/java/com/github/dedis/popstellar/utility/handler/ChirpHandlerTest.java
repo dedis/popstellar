@@ -9,8 +9,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.socialmedia
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -41,7 +40,6 @@ import static org.mockito.Mockito.when;
 @HiltAndroidTest
 @RunWith(MockitoJUnitRunner.class)
 public class ChirpHandlerTest {
-  public static final String TAG = ChirpHandlerTest.class.getSimpleName();
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
@@ -50,7 +48,6 @@ public class ChirpHandlerTest {
   private static final long DELETION_TIME = 1642244760;
   private static final String LAO_NAME = "laoName";
   private static final String LAO_ID = Lao.generateLaoId(SENDER, CREATION_TIME, LAO_NAME);
-  private static Lao lao;
   private static Channel chirpChannel;
 
   private static final String TEXT = "textOfTheChirp";
@@ -63,9 +60,9 @@ public class ChirpHandlerTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
-  private LAORepository laoRepository;
+  private MessageRepository messageRepo;
+  private LAORepository laoRepo;
   private MessageHandler messageHandler;
-  private ServerRepository serverRepository;
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
@@ -80,25 +77,30 @@ public class ChirpHandlerTest {
 
     Channel channel = Channel.getLaoChannel(LAO_ID);
 
-    laoRepository = new LAORepository();
+    messageRepo = new MessageRepository();
+    laoRepo = new LAORepository();
     messageHandler =
-        new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
+        new MessageHandler(
+            DataRegistryModule.provideDataRegistry(), keyManager, new ServerRepository());
 
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
-    messageHandler.handleMessage(laoRepository, messageSender, channel, createLaoMessage);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, channel, createLaoMessage);
 
-    lao = laoRepository.getLaoById().get(LAO_ID).getLao();
-    chirpChannel = lao.getChannel().subChannel("social").subChannel(SENDER.getEncoded());
+    chirpChannel =
+        laoRepo
+            .getLaoView(LAO_ID)
+            .getChannel()
+            .subChannel("social")
+            .subChannel(SENDER.getEncoded());
   }
 
   @Test
   public void testHandleAddChirp() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
-    messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, chirpChannel, message);
 
-    Optional<LaoView> laoOpt = laoRepository.getLao(lao.getId());
-    assertTrue(laoOpt.isPresent());
-    Lao updatedLao = laoOpt.get().createLaoCopy();
+    LaoView laoView = laoRepo.getLaoView(LAO_ID);
+    Lao updatedLao = laoView.createLaoCopy();
 
     Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
     assertTrue(chirpOpt.isPresent());
@@ -119,16 +121,15 @@ public class ChirpHandlerTest {
   @Test
   public void testHandleDeleteChirp() throws DataHandlingException, UnknownLaoException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
-    messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, chirpChannel, message);
 
     final DeleteChirp DELETE_CHIRP = new DeleteChirp(message.getMessageId(), DELETION_TIME);
 
     MessageGeneral message2 = new MessageGeneral(SENDER_KEY, DELETE_CHIRP, GSON);
-    messageHandler.handleMessage(laoRepository, messageSender, chirpChannel, message2);
+    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, chirpChannel, message2);
 
-    Optional<LaoView> laoOpt = laoRepository.getLao(lao.getId());
-    assertTrue(laoOpt.isPresent());
-    Lao updatedLao = laoOpt.get().createLaoCopy();
+    LaoView laoView = laoRepo.getLaoView(LAO_ID);
+    Lao updatedLao = laoView.createLaoCopy();
 
     Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
     assertTrue(chirpOpt.isPresent());

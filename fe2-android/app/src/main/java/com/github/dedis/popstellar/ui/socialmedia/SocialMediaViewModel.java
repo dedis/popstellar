@@ -14,8 +14,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.socialmedia
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -46,7 +46,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    * LiveData objects for capturing events
    */
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
-  private final LiveData<List<Lao>> mLAOs;
+  private final LiveData<List<String>> laoIdList;
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
@@ -73,9 +73,9 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     this.keyManager = keyManager;
     disposables = new CompositeDisposable();
 
-    mLAOs =
+    laoIdList =
         LiveDataReactiveStreams.fromPublisher(
-            this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+            this.laoRepository.getAllLaoIds().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   @Override
@@ -91,8 +91,8 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     return mNumberCharsLeft;
   }
 
-  public LiveData<List<Lao>> getLAOs() {
-    return mLAOs;
+  public LiveData<List<String>> getLaoIdList() {
+    return laoIdList;
   }
 
   public LiveData<String> getLaoId() {
@@ -131,8 +131,10 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public Single<MessageGeneral> sendChirp(
       String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
-    Lao lao = getCurrentLao();
-    if (lao == null) {
+    final Lao lao;
+    try {
+      lao = getCurrentLao();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
@@ -153,8 +155,10 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
 
   public Single<MessageGeneral> deleteChirp(MessageID chirpId, long timestamp) {
     Log.d(TAG, "Deleting the chirp with id: " + chirpId);
-    Lao lao = getCurrentLao();
-    if (lao == null) {
+    final Lao lao;
+    try {
+      lao = getCurrentLao();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
@@ -173,7 +177,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
             });
   }
 
-  public List<Chirp> getChirpList(String laoId) {
+  public List<Chirp> getChirpList(String laoId) throws UnknownLaoException {
     Lao lao = getLao(laoId);
     if (lao == null) return Collections.emptyList();
     else return lao.getChirpsInOrder();
@@ -187,8 +191,11 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    */
   public boolean isOwner(String sender) {
     Log.d(TAG, "Testing if the sender is also the owner");
-    Lao lao = getCurrentLao();
-    if (lao == null) {
+
+    Lao lao;
+    try {
+      lao = getCurrentLao();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return false;
     }
@@ -215,16 +222,17 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     this.disposables.add(disposable);
   }
 
+  public LaoView getLaoView(String laoId) throws UnknownLaoException {
+    return laoRepository.getLaoView(laoId);
+  }
+
   @Nullable
-  public Lao getCurrentLao() {
+  public Lao getCurrentLao() throws UnknownLaoException {
     return getLao(getLaoId().getValue());
   }
 
   @Nullable
-  private Lao getLao(String laoId) {
-    LAOState laoState = laoRepository.getLaoById().get(laoId);
-    if (laoState == null) return null;
-
-    return laoState.getLao();
+  private Lao getLao(String laoId) throws UnknownLaoException {
+    return laoRepository.getLaoView(laoId).createLaoCopy();
   }
 }
