@@ -153,7 +153,7 @@ public class ElectionFragment extends Fragment {
     laoDetailViewModel
         .getCurrentLao()
         .observe(
-            getActivity(),
+            getViewLifecycleOwner(),
             laoView -> {
               Log.d(TAG, "lao updated");
               setupElectionContent();
