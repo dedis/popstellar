@@ -42,13 +42,13 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String SOCIAL = "social";
   public static final Integer MAX_CHAR_NUMBERS = 300;
+  private String laoId;
 
   /*
    * LiveData objects for capturing events
    */
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
   private final LiveData<List<String>> laoIdList;
-  private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
   /*
@@ -96,10 +96,6 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     return laoIdList;
   }
 
-  public LiveData<String> getLaoId() {
-    return mLaoId;
-  }
-
   public LiveData<String> getLaoName() {
     return mLaoName;
   }
@@ -113,7 +109,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   }
 
   public void setLaoId(String laoId) {
-    mLaoId.setValue(laoId);
+    this.laoId = laoId;
   }
 
   public void setLaoName(String laoName) {
@@ -205,7 +201,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public boolean isOwner(String sender) {
     Log.d(TAG, "Testing if the sender is also the owner");
 
-    LaoView laoView = null;
+    LaoView laoView;
     try {
       laoView = getCurrentLaoView();
     } catch (UnknownLaoException e) {
@@ -240,6 +236,10 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   }
 
   public LaoView getCurrentLaoView() throws UnknownLaoException {
-    return getLaoView(getLaoId().getValue());
+    return getLaoView(laoId);
+  }
+
+  public String getLaoId() {
+    return laoId;
   }
 }

@@ -52,7 +52,6 @@ public class SocialMediaHomeFragment extends Fragment {
 
     setupSendButton();
     setupListViewAdapter();
-    setupListUpdate();
     setupSwipeRefresh();
   }
 
@@ -70,7 +69,7 @@ public class SocialMediaHomeFragment extends Fragment {
     swipeRefreshLayout.setOnRefreshListener(
         () -> {
           mChirpListAdapter.replaceList(
-              mSocialMediaViewModel.getChirpList(mSocialMediaViewModel.getLaoId().getValue()));
+              mSocialMediaViewModel.getChirpList(mSocialMediaViewModel.getLaoId()));
 
           final Handler handler = new Handler(Looper.getMainLooper());
           handler.postDelayed(
@@ -88,14 +87,5 @@ public class SocialMediaHomeFragment extends Fragment {
     mChirpListAdapter =
         new ChirpListAdapter(requireActivity(), mSocialMediaViewModel, new ArrayList<>());
     listView.setAdapter(mChirpListAdapter);
-  }
-
-  private void setupListUpdate() {
-    mSocialMediaViewModel
-        .getLaoId()
-        .observe(
-            getViewLifecycleOwner(),
-            newLaoId ->
-                mChirpListAdapter.replaceList(mSocialMediaViewModel.getChirpList(newLaoId)));
   }
 }
