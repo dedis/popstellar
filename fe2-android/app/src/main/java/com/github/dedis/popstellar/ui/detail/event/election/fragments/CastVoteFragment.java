@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.CastVoteViewPagerAdapter;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,9 +110,11 @@ public class CastVoteFragment extends Fragment {
     voteButton = mCastVoteFragBinding.castVoteButton;
 
     // Getting laoView
-    LaoView laoView = mLaoDetailViewModel.getCurrentLao().getValue();
-    if (laoView == null) {
-      Log.e(TAG, "The current LAO of the LaoDetailViewModel is null");
+    LaoView laoView;
+    try {
+      laoView = mLaoDetailViewModel.getLaoView();
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return null;
     }
 
