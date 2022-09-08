@@ -48,7 +48,7 @@ public class ElectionResultFragment extends Fragment {
     // Getting LAO
     LaoView laoView;
     try {
-      laoView = mLaoDetailViewModel.getCurrentLaoValue();
+      laoView = mLaoDetailViewModel.getLaoView();
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return null;

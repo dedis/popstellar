@@ -62,7 +62,7 @@ public class RollCallTokenFragment extends Fragment {
 
     LaoView laoView;
     try {
-      laoView = mLaoDetailViewModel.getCurrentLaoValue();
+      laoView = mLaoDetailViewModel.getLaoView();
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return null;

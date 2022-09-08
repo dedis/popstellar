@@ -188,7 +188,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Log.d(TAG, "opening election with name : " + e.getName());
     LaoView laoView;
     try {
-      laoView = getCurrentLaoValue();
+      laoView = getLaoView();
     } catch (UnknownLaoException unknownLaoException) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -209,7 +209,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Log.d(TAG, "ending election with name : " + election.getName());
     LaoView laoView;
     try {
-      laoView = getCurrentLaoValue();
+      laoView = getLaoView();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -249,7 +249,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     final LaoView laoView;
     try {
-      laoView = getCurrentLaoValue();
+      laoView = getLaoView();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -307,7 +307,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getCurrentLaoValue();
+      laoView = getLaoView();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -350,7 +350,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getCurrentLaoValue();
+      laoView = getLaoView();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
@@ -389,7 +389,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getCurrentLaoValue();
+      laoView = getLaoView();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
@@ -440,7 +440,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getCurrentLaoValue();
+      laoView = getLaoView();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -490,7 +490,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getCurrentLaoValue();
+      laoView = getLaoView();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -516,7 +516,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId());
     final LaoView laoView;
     try {
-      laoView = getCurrentLaoValue();
+      laoView = getLaoView();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -563,7 +563,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return laoId;
   }
 
-  public LaoView getCurrentLaoValue() throws UnknownLaoException {
+  public LaoView getLaoView() throws UnknownLaoException {
     return laoRepository.getLaoView(laoId);
   }
 
@@ -581,7 +581,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public LiveData<Boolean> isWitness() throws UnknownLaoException {
-    boolean isWitness = getCurrentLaoValue().getWitnesses().contains(keyManager.getMainPublicKey());
+    boolean isWitness = getLaoView().getWitnesses().contains(keyManager.getMainPublicKey());
     Log.d(TAG, "isWitness: " + isWitness);
     mIsWitness.setValue(isWitness);
     return mIsWitness;
@@ -613,7 +613,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   public LiveData<List<ConsensusNode>> getNodes() throws UnknownLaoException {
     return LiveDataReactiveStreams.fromPublisher(
         laoRepository
-            .getNodesByChannel(getCurrentLaoValue().getChannel())
+            .getNodesByChannel(getLaoView().getChannel())
             .toFlowable(BackpressureStrategy.LATEST));
   }
 
@@ -684,7 +684,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getCurrentLaoValue();
+      laoView = getLaoView();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -756,7 +756,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public PoPToken getCurrentPopToken() throws KeyException, UnknownLaoException {
-    return keyManager.getPoPToken(getCurrentLaoValue(), currentRollCall);
+    return keyManager.getPoPToken(getLaoView(), currentRollCall);
   }
 
   public boolean isWalletSetup() {

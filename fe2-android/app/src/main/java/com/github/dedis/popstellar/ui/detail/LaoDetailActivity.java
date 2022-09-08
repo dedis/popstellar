@@ -139,7 +139,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
 
   private void openSocialMediaTab() {
     try {
-      LaoView laoView = viewModel.getCurrentLaoValue();
+      LaoView laoView = viewModel.getLaoView();
       startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId(), laoView.getName()));
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(this, TAG, R.string.error_no_lao);
