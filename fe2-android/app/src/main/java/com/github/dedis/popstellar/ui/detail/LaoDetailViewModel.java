@@ -569,6 +569,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   @VisibleForTesting
   public void setCurrentLao(LaoView laoView) {
+    laoId = laoView.getId();
     mCurrentLao.postValue(laoView);
   }
 
