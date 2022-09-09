@@ -1,7 +1,8 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLaoId } from '__tests__/utils';
@@ -11,7 +12,7 @@ import { digitalCashReducer } from 'features/digital-cash/reducer';
 import { mockDigitalCashContextValue } from '../../__tests__/utils';
 import DigitalCashWallet from '../DigitalCashWallet';
 
-const mockStore = createStore(combineReducers({ ...digitalCashReducer }));
+const mockStore = configureStore({ reducer: combineReducers({ ...digitalCashReducer }) });
 
 describe('DigitalCashWallet', () => {
   it('renders correctly for organizers', () => {

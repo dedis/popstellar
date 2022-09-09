@@ -1,7 +1,8 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import {
   configureTestFeatures,
@@ -24,9 +25,9 @@ import {
   notificationReducer,
 } from 'features/notification/reducer';
 import {
-  WitnessReactContext,
-  WitnessFeature,
   WITNESS_FEATURE_IDENTIFIER,
+  WitnessFeature,
+  WitnessReactContext,
 } from 'features/witness/interface';
 import { addMessageToWitness, witnessReducer } from 'features/witness/reducer';
 
@@ -40,9 +41,13 @@ configureTestFeatures();
 const timestamp = new Timestamp(1607277600);
 
 // set up mock store
-const mockStore = createStore(
-  combineReducers({ ...notificationReducer, ...witnessReducer, ...messageReducer }),
-);
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...notificationReducer,
+    ...witnessReducer,
+    ...messageReducer,
+  }),
+});
 const mockNotification = {
   id: 0,
   laoId: mockLaoId,
@@ -55,7 +60,12 @@ const mockNotification = {
 
 const msg = ExtendedMessage.fromMessage(
   ExtendedMessage.fromData(
-    { object: ObjectType.CHIRP, action: ActionType.ADD, text: 'hi', timestamp } as MessageData,
+    {
+      object: ObjectType.CHIRP,
+      action: ActionType.ADD,
+      text: 'hi',
+      timestamp,
+    } as MessageData,
     mockKeyPair,
     mockChannel,
   ),
