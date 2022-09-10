@@ -25,12 +25,7 @@ public class SocialMediaRepository {
 
   private static final String TAG = SocialMediaRepository.class.getSimpleName();
 
-  // Data of the repository
-  private final Map<MessageID, Chirp> chirpById = new HashMap<>();
-  private final Map<String, Set<MessageID>> chirpByLao = new HashMap<>();
-  // Observables of the data
-  private final Map<MessageID, Subject<Chirp>> chirpSubjects = new HashMap<>();
-  private final Map<String, Subject<Set<MessageID>>> chirpsByLaoSubjects = new HashMap<>();
+  private final Map<String, LaoChirps> chirpsByLao = new HashMap<>();
 
   @Inject
   public SocialMediaRepository() {
@@ -45,78 +40,29 @@ public class SocialMediaRepository {
    * @param laoId id of the lao the chirp was sent on
    * @param chirp to add
    */
-  public synchronized void addChirp(String laoId, Chirp chirp) {
+  public void addChirp(String laoId, Chirp chirp) {
     Log.d(TAG, "Adding new chirp on lao " + laoId + " : " + chirp);
-    MessageID id = chirp.getId();
-
-    Chirp old = chirpById.get(chirp.getId());
-    if (old != null) {
-      Log.w(TAG, "A chirp with id " + id + " already exist : " + old);
-    }
-
-    // Update repository data
-    chirpById.put(id, chirp);
-    Set<MessageID> ids = setOf(chirpByLao.get(laoId), id);
-    chirpByLao.put(laoId, ids);
-
-    // Publish new values
-    chirpSubjects.put(id, BehaviorSubject.createDefault(chirp));
-    chirpsByLaoSubjects.compute(
-        laoId,
-        (lao, subject) -> {
-          if (subject == null) {
-            // Create subject if it was not present
-            return BehaviorSubject.createDefault(ids);
-          } else {
-            // else, simply publish
-            subject.onNext(ids);
-            return subject;
-          }
-        });
-  }
-
-  private Set<MessageID> setOf(Set<MessageID> ids, MessageID id) {
-    Set<MessageID> newValue = new HashSet<>();
-    if (ids != null) newValue.addAll(ids);
-    newValue.add(id);
-
-    return newValue;
+    // Retrieve Lao data and add the chirp to it
+    getOrCreateLaoChirps(laoId).add(chirp);
   }
 
   /**
    * Delete a chirp based on its id
    *
    * @param id of the chirp to delete
-   * @return true is a chirp with given id existed
+   * @return true if a chirp with given id existed
    */
-  public synchronized boolean deleteChirp(MessageID id) {
-    Chirp chirp = chirpById.get(id);
-    if (chirp == null) {
-      return false;
-    }
-
-    if (chirp.getIsDeleted()) {
-      Log.d(TAG, "The chirp with id " + id + " is already deleted");
-    } else {
-      chirp.setIsDeleted(true);
-      Subject<Chirp> subject = chirpSubjects.get(id);
-      if (subject == null) {
-        throw new IllegalStateException("A chirp exist but has no associated subject with it");
-      }
-
-      subject.onNext(chirp);
-    }
-    return true;
+  public boolean deleteChirp(String laoId, MessageID id) {
+    Log.d(TAG, "Deleting chirp on lao " + laoId + " with id " + id);
+    return getOrCreateLaoChirps(laoId).delete(id);
   }
 
   /**
    * @return the observable of a specific chirp
    */
   @NonNull
-  public synchronized Observable<Chirp> getChirps(MessageID id) throws UnknownChirpException {
-    Observable<Chirp> observable = chirpSubjects.get(id);
-    if (observable == null) throw new UnknownChirpException(id);
-    return observable;
+  public Observable<Chirp> getChirp(String laoId, MessageID id) throws UnknownChirpException {
+    return getOrCreateLaoChirps(laoId).getChirp(id);
   }
 
   /**
@@ -125,14 +71,74 @@ public class SocialMediaRepository {
    *     given lao
    */
   @NonNull
-  public synchronized Observable<Set<MessageID>> getChirpsOfLao(String laoId) {
-    Subject<Set<MessageID>> subject = chirpsByLaoSubjects.get(laoId);
-    if (subject == null) {
-      // Create the subject even if the lao has no chirp yet
-      subject = BehaviorSubject.createDefault(new HashSet<>());
-      chirpsByLaoSubjects.put(laoId, subject);
+  public Observable<Set<MessageID>> getChirpsOfLao(String laoId) {
+    return getOrCreateLaoChirps(laoId).getChirpsSubject();
+  }
+
+  @NonNull
+  private synchronized LaoChirps getOrCreateLaoChirps(String laoId) {
+    LaoChirps laoChirps = chirpsByLao.get(laoId);
+    if (laoChirps == null) {
+      laoChirps = new LaoChirps();
+      chirpsByLao.put(laoId, laoChirps);
+    }
+    return laoChirps;
+  }
+
+  private static final class LaoChirps {
+
+    private final Map<MessageID, Chirp> chirps = new HashMap<>();
+    private final Map<MessageID, Subject<Chirp>> chirpSubjects = new HashMap<>();
+    private final Subject<Set<MessageID>> chirpsSubject =
+        BehaviorSubject.createDefault(Collections.emptySet());
+
+    public synchronized void add(Chirp chirp) {
+      MessageID id = chirp.getId();
+      Chirp old = chirps.get(id);
+      if (old != null) {
+        Log.w(TAG, "A chirp with id " + id + " already exist : " + old);
+        return;
+      }
+
+      // Update repository data
+      chirps.put(id, chirp);
+
+      // Publish new values on subjects
+      chirpSubjects.put(id, BehaviorSubject.createDefault(chirp));
+      chirpsSubject.onNext(chirps.keySet());
     }
 
-    return subject;
+    public synchronized boolean delete(MessageID id) {
+      Chirp chirp = chirps.get(id);
+      if (chirp == null) {
+        return false;
+      }
+
+      if (chirp.getIsDeleted()) {
+        Log.d(TAG, "The chirp with id " + id + " is already deleted");
+      } else {
+        chirp.setIsDeleted(true);
+        Subject<Chirp> subject = chirpSubjects.get(id);
+        if (subject == null) {
+          throw new IllegalStateException("A chirp exist but has no associated subject with it");
+        }
+
+        subject.onNext(chirp);
+      }
+      return true;
+    }
+
+    public Observable<Set<MessageID>> getChirpsSubject() {
+      return chirpsSubject;
+    }
+
+    public Observable<Chirp> getChirp(MessageID id) throws UnknownChirpException {
+      Observable<Chirp> observable = chirpSubjects.get(id);
+      if (observable == null) {
+        throw new UnknownChirpException(id);
+      } else {
+        return observable;
+      }
+    }
   }
 }
