@@ -13,17 +13,17 @@ beforeEach(() => {
 describe('BackButton', () => {
   it('renders correctly', () => {
     const component = render(
-      <BackButton navigationTabName={STRINGS.social_media_navigation_tab_search} />,
+      <BackButton navigationTabName={STRINGS.social_media_navigation_tab_attendee_list} />,
     ).toJSON();
     expect(component).toMatchSnapshot();
   });
 
   it('navigates correctly', () => {
     const button = render(
-      <BackButton navigationTabName={STRINGS.social_media_navigation_tab_search} />,
+      <BackButton navigationTabName={STRINGS.social_media_navigation_tab_attendee_list} />,
     ).getByTestId('backButton');
     fireEvent.press(button);
-    expect(mockNavigate).toHaveBeenCalledWith(STRINGS.social_media_navigation_tab_search);
+    expect(mockNavigate).toHaveBeenCalledWith(STRINGS.social_media_navigation_tab_attendee_list);
     expect(mockNavigate).toHaveBeenCalledTimes(1);
   });
 });
