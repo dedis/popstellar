@@ -15,8 +15,7 @@ import io.reactivex.observers.TestObserver;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static java.util.Collections.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SocialMediaRepositoryTest {
 
@@ -112,6 +111,12 @@ public class SocialMediaRepositoryTest {
   public void deletingAChirpDoesNotChangeTheIdSet() {
     SocialMediaRepository repo = new SocialMediaRepository();
     assertFalse(repo.deleteChirp(LAO_ID, CHIRP_1.getId()));
+  }
+
+  @Test
+  public void observingAnInvalidChirpThrowsAnError() {
+    SocialMediaRepository repo = new SocialMediaRepository();
+    assertThrows(UnknownChirpException.class, () -> repo.getChirp(LAO_ID, CHIRP_1.getId()));
   }
 
   @SafeVarargs
