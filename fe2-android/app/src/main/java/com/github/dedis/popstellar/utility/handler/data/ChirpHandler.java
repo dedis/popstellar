@@ -72,15 +72,13 @@ public final class ChirpHandler {
     }
     Chirp chirp = chirpOptional.get();
 
-    if (chirp.getIsDeleted()) {
+    if (chirp.isDeleted()) {
       Log.d(TAG, "The chirp is already deleted");
-    } else {
-      chirp.setIsDeleted(true);
-      chirp.setText("");
+      return;
     }
 
     Lao lao = laoView.createLaoCopy();
-    lao.updateChirpList(chirp.getId(), chirp);
+    lao.updateChirpList(chirp.getId(), chirp.deleted());
     laoRepository.updateLao(lao);
   }
 }

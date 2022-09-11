@@ -110,16 +110,17 @@ public class SocialMediaRepository {
         return false;
       }
 
-      if (chirp.getIsDeleted()) {
+      if (chirp.isDeleted()) {
         Log.d(TAG, "The chirp with id " + id + " is already deleted");
       } else {
-        chirp.setIsDeleted(true);
         Subject<Chirp> subject = chirpSubjects.get(id);
         if (subject == null) {
           throw new IllegalStateException("A chirp exist but has no associated subject with it");
         }
 
-        subject.onNext(chirp);
+        Chirp deleted = chirp.deleted();
+        chirps.put(id, deleted);
+        subject.onNext(deleted);
       }
       return true;
     }

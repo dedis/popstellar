@@ -350,17 +350,9 @@ public class LaoTest {
   @Test
   public void getChirpsInOrderTest() {
     MessageID id1 = new MessageID("foo");
-    Chirp chirp1 = new Chirp(id1);
-    chirp1.setTimestamp(1L);
-    chirp1.setText("text");
-    chirp1.setSender(ORGANIZER);
-    chirp1.setParentId(new MessageID("foobar"));
+    Chirp chirp1 = new Chirp(id1, ORGANIZER, "text", 1L, new MessageID("foobar"));
     MessageID id2 = new MessageID("bar");
-    Chirp chirp2 = new Chirp(id2);
-    chirp2.setText("text");
-    chirp2.setSender(ORGANIZER);
-    chirp2.setParentId(new MessageID("foobar"));
-    chirp2.setTimestamp(2L);
+    Chirp chirp2 = new Chirp(id2, ORGANIZER, "text", 2L, new MessageID("foobar"));
     LAO_1.updateChirpList(id1, chirp1);
     LAO_1.updateChirpList(id2, chirp2);
 

@@ -1,81 +1,71 @@
 package com.github.dedis.popstellar.model.objects;
 
 import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import org.junit.Test;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 public class ChirpTest {
-  private static final MessageID ID = generateMessageID();
 
-  private static final Chirp CHIRP = new Chirp(ID);
+  // By definition, a chirp having no parent has an empty message id as parent
   private static final MessageID EMPTY_MESSAGE_ID = new MessageID("");
+  private static final Chirp CHIRP =
+      new Chirp(
+          generateMessageID(), generatePublicKey(), "This is a chirp !", 10000, EMPTY_MESSAGE_ID);
 
   @Test
-  public void createChirpWithNullId() {
-    assertThrows(IllegalArgumentException.class, () -> new Chirp((MessageID) null));
+  public void createChirpWithEmptyIdFails() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new Chirp(
+                EMPTY_MESSAGE_ID,
+                CHIRP.getSender(),
+                CHIRP.getText(),
+                CHIRP.getTimestamp(),
+                CHIRP.getParentId()));
   }
 
   @Test
-  public void createChirpWithEmptyId() {
-    assertThrows(IllegalArgumentException.class, () -> new Chirp(EMPTY_MESSAGE_ID));
+  public void createChirpWithNegativeTimestampFails() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new Chirp(CHIRP.getId(), CHIRP.getSender(), CHIRP.getText(), -5, CHIRP.getParentId()));
   }
 
   @Test
-  public void setAndGetIdTest() {
-    MessageID newId = generateMessageID();
-    CHIRP.setId(newId);
-    assertEquals(newId, CHIRP.getId());
-
-    assertThrows(IllegalArgumentException.class, () -> CHIRP.setId(null));
-    assertThrows(IllegalArgumentException.class, () -> CHIRP.setId(EMPTY_MESSAGE_ID));
-  }
-
-  @Test
-  public void setAndGetSenderTest() {
-    PublicKey sender = generatePublicKey();
-    CHIRP.setSender(sender);
-    assertEquals(sender, CHIRP.getSender());
-  }
-
-  @Test
-  public void setAndGetTextTest() {
-    String text = "Hello everyone, hope you enjoy your day";
-    CHIRP.setText(text);
-    assertEquals(text, CHIRP.getText());
-
+  public void createChirpWithTooManyCharactersFails() {
     String textTooLong =
         "This text should be way over three hundred characters which is the current limit of the"
             + " text within a chirp, and if I try to set the chirp's text to this, it  should"
             + " throw and IllegalArgumentException() so I hope it does otherwise I might have"
             + " screwed something up. But normally it is not that hard to write enough to reach"
             + " the threshold.";
-    assertThrows(IllegalArgumentException.class, () -> CHIRP.setText(textTooLong));
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new Chirp(
+                CHIRP.getId(),
+                CHIRP.getSender(),
+                textTooLong,
+                CHIRP.getTimestamp(),
+                CHIRP.getParentId()));
   }
 
   @Test
-  public void setAndGetTimestampTest() {
-    long timestamp = 1631280815;
-    CHIRP.setTimestamp(timestamp);
-    assertEquals(timestamp, CHIRP.getTimestamp());
-  }
+  public void deletedChirpProducesASimilarChirpWithEmptyTextAndDeletedProperty() {
+    Chirp deleted = CHIRP.deleted();
 
-  @Test
-  public void setAndGetIsDeletedTest() {
-    boolean isDeleted = true;
-    CHIRP.setIsDeleted(isDeleted);
-    assertEquals(isDeleted, CHIRP.getIsDeleted());
-  }
-
-  @Test
-  public void setAndGetParentId() {
-    MessageID parentId = generateMessageID();
-    CHIRP.setParentId(parentId);
-    assertEquals(parentId, CHIRP.getParentId());
+    assertEquals(CHIRP.getId(), deleted.getId());
+    assertEquals(CHIRP.getSender(), deleted.getSender());
+    assertEquals("", deleted.getText());
+    assertEquals(CHIRP.getTimestamp(), deleted.getTimestamp());
+    assertEquals(CHIRP.getParentId(), deleted.getParentId());
+    assertTrue(deleted.isDeleted());
   }
 }
