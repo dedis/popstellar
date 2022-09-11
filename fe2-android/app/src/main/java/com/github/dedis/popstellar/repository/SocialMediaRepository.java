@@ -115,6 +115,7 @@ public class SocialMediaRepository {
       } else {
         Subject<Chirp> subject = chirpSubjects.get(id);
         if (subject == null) {
+          // This should really never occurs
           throw new IllegalStateException("A chirp exist but has no associated subject with it");
         }
 
