@@ -107,7 +107,6 @@ public class ChirpHandlerTest {
     Chirp chirp = chirpOpt.get();
 
     assertEquals(message.getMessageId(), chirp.getId());
-    assertEquals(chirpChannel, chirp.getChannel());
     assertEquals(SENDER, chirp.getSender());
     assertEquals(TEXT, chirp.getText());
     assertEquals(CREATION_TIME, chirp.getTimestamp());
@@ -136,7 +135,6 @@ public class ChirpHandlerTest {
     Chirp chirp = chirpOpt.get();
 
     assertEquals(message.getMessageId(), chirp.getId());
-    assertEquals(chirpChannel, chirp.getChannel());
     assertEquals(SENDER, chirp.getSender());
     assertEquals(EMPTY_STRING, chirp.getText());
     assertEquals(CREATION_TIME, chirp.getTimestamp());

@@ -37,13 +37,6 @@ public class ChirpTest {
   }
 
   @Test
-  public void setAndGetChannelTest() {
-    Channel channel = Channel.fromString("/root/laoId/social/myChannel");
-    CHIRP.setChannel(channel);
-    assertEquals(channel, CHIRP.getChannel());
-  }
-
-  @Test
   public void setAndGetSenderTest() {
     PublicKey sender = generatePublicKey();
     CHIRP.setSender(sender);

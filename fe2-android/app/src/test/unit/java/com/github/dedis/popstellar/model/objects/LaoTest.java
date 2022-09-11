@@ -353,13 +353,11 @@ public class LaoTest {
     Chirp chirp1 = new Chirp(id1);
     chirp1.setTimestamp(1L);
     chirp1.setText("text");
-    chirp1.setChannel(Channel.ROOT);
     chirp1.setSender(ORGANIZER);
     chirp1.setParentId(new MessageID("foobar"));
     MessageID id2 = new MessageID("bar");
     Chirp chirp2 = new Chirp(id2);
     chirp2.setText("text");
-    chirp2.setChannel(Channel.ROOT);
     chirp2.setSender(ORGANIZER);
     chirp2.setParentId(new MessageID("foobar"));
     chirp2.setTimestamp(2L);

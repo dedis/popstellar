@@ -38,13 +38,13 @@ public final class ChirpHandler {
 
     Log.d(TAG, "handleChirpAdd: " + channel + " id " + addChirp.getParentId());
     LaoView laoView = laoRepository.getLaoViewByChannel(channel);
-    Chirp chirp = new Chirp(messageId);
-
-    chirp.setChannel(channel);
-    chirp.setSender(senderPk);
-    chirp.setText(addChirp.getText());
-    chirp.setTimestamp(addChirp.getTimestamp());
-    chirp.setParentId(addChirp.getParentId().orElse(new MessageID("")));
+    Chirp chirp =
+        new Chirp(
+            messageId,
+            senderPk,
+            addChirp.getText(),
+            addChirp.getTimestamp(),
+            addChirp.getParentId().orElse(new MessageID("")));
 
     Lao lao = laoView.createLaoCopy();
     lao.updateChirpList(messageId, chirp);

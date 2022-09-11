@@ -12,8 +12,6 @@ public class Chirp implements Copyable<Chirp> {
   private static final int MAX_CHIRP_CHARS = 300;
 
   private MessageID id;
-  private Channel channel;
-
   private PublicKey sender;
   private String text;
   private long timestamp;
@@ -31,12 +29,19 @@ public class Chirp implements Copyable<Chirp> {
 
   public Chirp(Chirp chirp) {
     this.id = chirp.id;
-    this.channel = chirp.channel;
     this.sender = chirp.sender;
     this.text = chirp.text;
     this.timestamp = chirp.timestamp;
     this.isDeleted = chirp.isDeleted;
     this.parentId = chirp.parentId;
+  }
+
+  public Chirp(MessageID id, PublicKey sender, String text, long timestamp, MessageID parentId) {
+    this.id = id;
+    this.sender = sender;
+    this.text = text;
+    this.timestamp = timestamp;
+    this.parentId = parentId;
   }
 
   public MessageID getId() {
@@ -50,14 +55,6 @@ public class Chirp implements Copyable<Chirp> {
       throw new IllegalArgumentException("The id of the Chirp is empty");
     }
     this.id = id;
-  }
-
-  public Channel getChannel() {
-    return channel;
-  }
-
-  public void setChannel(@NonNull Channel channel) {
-    this.channel = channel;
   }
 
   public PublicKey getSender() {
@@ -112,7 +109,7 @@ public class Chirp implements Copyable<Chirp> {
   @Override
   public String toString() {
     return String.format(
-        "Chirp{id='%s', channel='%s', sender='%s', text='%s', timestamp='%s', isDeleted='%s', parentId='%s'",
-        id.getEncoded(), channel, sender, text, timestamp, isDeleted, parentId.getEncoded());
+        "Chirp{id='%s', sender='%s', text='%s', timestamp='%s', isDeleted='%s', parentId='%s'",
+        id.getEncoded(), sender, text, timestamp, isDeleted, parentId.getEncoded());
   }
 }

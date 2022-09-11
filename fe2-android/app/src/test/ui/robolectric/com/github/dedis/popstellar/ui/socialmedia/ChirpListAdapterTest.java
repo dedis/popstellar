@@ -66,8 +66,8 @@ public class ChirpListAdapterTest {
 
   @Test
   public void replaceListTest() {
-    setupChirp(CHIRP_1, CHIRP_CHANNEL_1, SENDER_1, TEXT_1, TIMESTAMP_1, false);
-    setupChirp(CHIRP_2, CHIRP_CHANNEL_2, SENDER_2, TEXT_2, TIMESTAMP_2, true);
+    setupChirp(CHIRP_1, SENDER_1, TEXT_1, TIMESTAMP_1, false);
+    setupChirp(CHIRP_2, SENDER_2, TEXT_2, TIMESTAMP_2, true);
     List<Chirp> chirps = createChirpList();
 
     activityScenarioRule
@@ -85,8 +85,8 @@ public class ChirpListAdapterTest {
 
   @Test
   public void getCountTest() {
-    setupChirp(CHIRP_1, CHIRP_CHANNEL_1, SENDER_1, TEXT_1, TIMESTAMP_1, false);
-    setupChirp(CHIRP_2, CHIRP_CHANNEL_2, SENDER_2, TEXT_2, TIMESTAMP_2, true);
+    setupChirp(CHIRP_1, SENDER_1, TEXT_1, TIMESTAMP_1, false);
+    setupChirp(CHIRP_2, SENDER_2, TEXT_2, TIMESTAMP_2, true);
     List<Chirp> chirps = createChirpList();
 
     activityScenarioRule
@@ -105,8 +105,8 @@ public class ChirpListAdapterTest {
 
   @Test
   public void getItemTest() {
-    setupChirp(CHIRP_1, CHIRP_CHANNEL_1, SENDER_1, TEXT_1, TIMESTAMP_1, false);
-    setupChirp(CHIRP_2, CHIRP_CHANNEL_2, SENDER_2, TEXT_2, TIMESTAMP_2, true);
+    setupChirp(CHIRP_1, SENDER_1, TEXT_1, TIMESTAMP_1, false);
+    setupChirp(CHIRP_2, SENDER_2, TEXT_2, TIMESTAMP_2, true);
     List<Chirp> chirps = createChirpList();
 
     activityScenarioRule
@@ -124,8 +124,8 @@ public class ChirpListAdapterTest {
 
   @Test
   public void getItemIdTest() {
-    setupChirp(CHIRP_1, CHIRP_CHANNEL_1, SENDER_1, TEXT_1, TIMESTAMP_1, false);
-    setupChirp(CHIRP_2, CHIRP_CHANNEL_2, SENDER_2, TEXT_2, TIMESTAMP_2, true);
+    setupChirp(CHIRP_1, SENDER_1, TEXT_1, TIMESTAMP_1, false);
+    setupChirp(CHIRP_2, SENDER_2, TEXT_2, TIMESTAMP_2, true);
     List<Chirp> chirps = createChirpList();
 
     activityScenarioRule
@@ -142,13 +142,7 @@ public class ChirpListAdapterTest {
   }
 
   private void setupChirp(
-      Chirp chirp,
-      Channel channel,
-      PublicKey sender,
-      String text,
-      long timestamp,
-      boolean isDeleted) {
-    chirp.setChannel(channel);
+      Chirp chirp, PublicKey sender, String text, long timestamp, boolean isDeleted) {
     chirp.setSender(sender);
     chirp.setText(text);
     chirp.setTimestamp(timestamp);

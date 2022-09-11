@@ -43,7 +43,7 @@ public class SocialMediaRepository {
   public void addChirp(String laoId, Chirp chirp) {
     Log.d(TAG, "Adding new chirp on lao " + laoId + " : " + chirp);
     // Retrieve Lao data and add the chirp to it
-    getOrCreateLaoChirps(laoId).add(chirp);
+    getLaoChirps(laoId).add(chirp);
   }
 
   /**
@@ -54,7 +54,7 @@ public class SocialMediaRepository {
    */
   public boolean deleteChirp(String laoId, MessageID id) {
     Log.d(TAG, "Deleting chirp on lao " + laoId + " with id " + id);
-    return getOrCreateLaoChirps(laoId).delete(id);
+    return getLaoChirps(laoId).delete(id);
   }
 
   /**
@@ -62,7 +62,7 @@ public class SocialMediaRepository {
    */
   @NonNull
   public Observable<Chirp> getChirp(String laoId, MessageID id) throws UnknownChirpException {
-    return getOrCreateLaoChirps(laoId).getChirp(id);
+    return getLaoChirps(laoId).getChirp(id);
   }
 
   /**
@@ -72,17 +72,13 @@ public class SocialMediaRepository {
    */
   @NonNull
   public Observable<Set<MessageID>> getChirpsOfLao(String laoId) {
-    return getOrCreateLaoChirps(laoId).getChirpsSubject();
+    return getLaoChirps(laoId).getChirpsSubject();
   }
 
   @NonNull
-  private synchronized LaoChirps getOrCreateLaoChirps(String laoId) {
-    LaoChirps laoChirps = chirpsByLao.get(laoId);
-    if (laoChirps == null) {
-      laoChirps = new LaoChirps();
-      chirpsByLao.put(laoId, laoChirps);
-    }
-    return laoChirps;
+  private synchronized LaoChirps getLaoChirps(String laoId) {
+    // Create the lao chirps object if it is not present yet
+    return chirpsByLao.computeIfAbsent(laoId, lao -> new LaoChirps());
   }
 
   private static final class LaoChirps {
