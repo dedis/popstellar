@@ -50,16 +50,16 @@ const styles = StyleSheet.create({
 });
 
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
-  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [permissions, requestPermissions] = Camera.useCameraPermissions();
   const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
   const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
   const [hasCamera, setHasCamera] = useState(true);
 
   useEffect(() => {
     (async () => {
-      await requestPermission();
+      await requestPermissions();
     })();
-  }, [requestPermission]);
+  }, [requestPermissions]);
 
   useEffect(() => {
     Camera.isAvailableAsync().then((isAvailable) => {
@@ -76,12 +76,12 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
     return <Text>Camera unavailable</Text>;
   }
 
-  if (!permission) {
-    return <Text>Requesting for camera permission</Text>;
+  if (!permissions) {
+    return <Text>Requesting for camera permissions</Text>;
   }
 
-  if (!permission.granted) {
-    return <Text>Permission for camera denied</Text>;
+  if (!permissions.granted) {
+    return <Text>Permissions for camera denied</Text>;
   }
 
   // Scan each code only once

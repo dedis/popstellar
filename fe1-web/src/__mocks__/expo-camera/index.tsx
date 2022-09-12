@@ -11,12 +11,26 @@ export enum CameraType {
   back = 'back',
 }
 
+export type BarCodeScanningResult = {
+  data: string;
+};
+
 const Camera = (props: IPropTypes) => {
   ({ onBarCodeScanned } = props);
   return <View />;
 };
 
-Camera.requestCameraPermissionsAsync = () => Promise.resolve({ status: 'granted' });
+// To match the PermissionResponse interface
+const response = {
+  canAskAgain: true,
+  expires: 'never',
+  granted: true,
+  status: 'granted',
+};
+
+Camera.useCameraPermissions = () => [response, Promise.resolve(response)];
+Camera.isAvailableAsync = () => Promise.resolve(true);
+Camera.getAvailableCameraTypesAsync = () => Promise.resolve([CameraType.front, CameraType.back]);
 
 const propTypes = {
   onBarCodeScanned: PropTypes.func,
