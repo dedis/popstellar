@@ -1,5 +1,6 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import { BarCodeScanningResult } from 'expo-camera';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -159,7 +160,7 @@ const RollCallOpened = () => {
     <>
       <QrCodeScanner
         showCamera={showScanner}
-        handleScan={({ data }) => {
+        handleScan={({ data }: BarCodeScanningResult) => {
           if (data) {
             delay(1000).then(() => addAttendeePopTokenAndShowToast(data));
           }

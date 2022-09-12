@@ -71,15 +71,13 @@ const ConnectOpenScan = () => {
     });
   }, [navigation]);
 
-  const handleScan = (result: BarCodeScanningResult | null) => {
-    if (!result) {
+  const handleScan = ({ data }: BarCodeScanningResult) => {
+    if (!data) {
       return;
     }
 
-    console.log('read', result);
-
     try {
-      const obj = JSON.parse(result.data);
+      const obj = JSON.parse(data);
 
       const connectToLao = ConnectToLao.fromJson(obj);
 

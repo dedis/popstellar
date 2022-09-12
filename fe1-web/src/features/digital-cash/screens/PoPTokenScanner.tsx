@@ -1,5 +1,6 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import { BarCodeScanningResult } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -14,7 +15,6 @@ import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { DigitalCashFeature } from '../interface';
-import { BarCodeScanningResult } from 'expo-camera';
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -71,10 +71,10 @@ const PoPTokenScanner = () => {
     });
   };
 
-  const onScanData = (result: BarCodeScanningResult | null) => {
-    if (result) {
-      if (tokenMatcher.test(result.data)) {
-        goBack(result.data);
+  const onScanData = ({ data }: BarCodeScanningResult) => {
+    if (data) {
+      if (tokenMatcher.test(data)) {
+        goBack(data);
       } else {
         toast.show(STRINGS.roll_call_invalid_token, {
           type: 'danger',
