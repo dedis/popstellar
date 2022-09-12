@@ -1,9 +1,8 @@
-import { Camera, CameraType } from 'expo-camera';
+import { BarCodeScanningResult, Camera, CameraType } from 'expo-camera';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { getNavigator } from 'core/platform/Navigator';
 import { Border, Color, Icon, Spacing } from 'core/styles';
 
 import PoPIcon from './PoPIcon';
@@ -51,40 +50,47 @@ const styles = StyleSheet.create({
 });
 
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
-  const [hasPermission, setHasPermission] = useState(null as unknown as boolean);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
   const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
   const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
+  const [hasCamera, setHasCamera] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
+      await requestPermission();
     })();
-  }, []);
+  }, [requestPermission]);
 
   useEffect(() => {
-    try {
-      getNavigator()
-        .mediaDevices.enumerateDevices()
-        .then((devices) => {
-          console.log(devices.filter((device) => device.kind === 'videoinput'));
-          if (devices.filter((device) => device.kind === 'videoinput').length > 1) {
-            setHasMultipleCameras(true);
-          }
-        })
-        .catch(console.error);
-    } catch (e) {
-      // the browser might not support this api
-    }
+    Camera.isAvailableAsync().then((isAvailable) => {
+      setHasCamera(isAvailable);
+      if (isAvailable) {
+        Camera.getAvailableCameraTypesAsync().then((types) =>
+          setHasMultipleCameras(types.length === 2),
+        );
+      }
+    });
   }, []);
 
-  if (hasPermission === null) {
+  if (!hasCamera) {
+    return <Text>Camera unavailable</Text>;
+  }
+
+  if (!permission) {
     return <Text>Requesting for camera permission</Text>;
   }
 
-  if (!hasPermission) {
+  if (!permission.granted) {
     return <Text>Permission for camera denied</Text>;
   }
+
+  // Scan each code only once
+  let lastValue: string;
+  const onBarCodeScanned = (result: BarCodeScanningResult) => {
+    if (lastValue && lastValue === result.data) return;
+    handleScan(result);
+    lastValue = result.data;
+  };
 
   return (
     <View style={styles.container}>
@@ -94,7 +100,8 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
             barCodeScannerSettings={{
               barCodeTypes: ['qr'],
             }}
-            onBarCodeScanned={handleScan}
+            onBarCodeScanned={onBarCodeScanned}
+            type={cameraType}
           />
         )}
       </View>

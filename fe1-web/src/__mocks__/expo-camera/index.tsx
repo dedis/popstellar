@@ -16,6 +16,8 @@ const Camera = (props: IPropTypes) => {
   return <View />;
 };
 
+Camera.requestCameraPermissionsAsync = () => Promise.resolve({ status: 'granted' });
+
 const propTypes = {
   onBarCodeScanned: PropTypes.func,
 };
