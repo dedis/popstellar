@@ -50,37 +50,47 @@ const styles = StyleSheet.create({
 });
 
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
-  const [permissions, requestPermissions] = Camera.useCameraPermissions();
+  const [permission, requestPermission] = Camera.useCameraPermissions();
   const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
   const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
   const [hasCamera, setHasCamera] = useState(true);
 
   useEffect(() => {
     (async () => {
-      await requestPermissions();
+      if (permission && !permission.granted) {
+        await requestPermission();
+      }
     })();
-  }, [requestPermissions]);
+  }, [permission, requestPermission]);
 
   useEffect(() => {
-    Camera.isAvailableAsync().then((isAvailable) => {
-      setHasCamera(isAvailable);
-      if (isAvailable) {
-        Camera.getAvailableCameraTypesAsync().then((types) =>
-          setHasMultipleCameras(types.length === 2),
-        );
+    let isMounted = true;
+    (async () => {
+      const isAvailable = await Camera.isAvailableAsync();
+      if (isMounted) {
+        setHasCamera(isAvailable);
+      } else {
+        return;
       }
-    });
+      if (isAvailable) {
+        const types = await Camera.getAvailableCameraTypesAsync();
+        if (isMounted) setHasMultipleCameras(types.length > 1);
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (!hasCamera) {
     return <Text>Camera unavailable</Text>;
   }
 
-  if (!permissions) {
+  if (!permission) {
     return <Text>Requesting for camera permissions</Text>;
   }
 
-  if (!permissions.granted) {
+  if (!permission.granted) {
     return <Text>Permissions for camera denied</Text>;
   }
 
