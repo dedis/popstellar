@@ -164,6 +164,10 @@ public class ElectionFragment extends Fragment {
 
   private void setupElectionContent() {
     if (getContext() == null) {
+      // Because of the current implementation (12.09.2022), an update is triggered whenever any
+      // of the whole Lao object is modified. This can occur when this fragment is not displayed
+      // and this would trigger the listeners. This check ensures that the fragment is displayed
+      // before going ahead.
       return;
     }
     election = laoDetailViewModel.getCurrentElection();
