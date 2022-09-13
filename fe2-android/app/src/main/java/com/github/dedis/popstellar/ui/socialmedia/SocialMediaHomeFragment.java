@@ -11,8 +11,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaHomeFragmentBinding;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.ArrayList;
 
@@ -54,7 +52,6 @@ public class SocialMediaHomeFragment extends Fragment {
 
     setupSendButton();
     setupListViewAdapter();
-    setupListUpdate();
     setupSwipeRefresh();
   }
 
@@ -71,12 +68,8 @@ public class SocialMediaHomeFragment extends Fragment {
     SwipeRefreshLayout swipeRefreshLayout = mSocialMediaHomeFragBinding.swipeRefreshChirps;
     swipeRefreshLayout.setOnRefreshListener(
         () -> {
-          try {
-            mChirpListAdapter.replaceList(
-                mSocialMediaViewModel.getChirpList(mSocialMediaViewModel.getLaoId().getValue()));
-          } catch (UnknownLaoException e) {
-            ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
-          }
+          mChirpListAdapter.replaceList(
+              mSocialMediaViewModel.getChirpList(mSocialMediaViewModel.getLaoId()));
 
           final Handler handler = new Handler(Looper.getMainLooper());
           handler.postDelayed(
@@ -94,19 +87,5 @@ public class SocialMediaHomeFragment extends Fragment {
     mChirpListAdapter =
         new ChirpListAdapter(requireActivity(), mSocialMediaViewModel, new ArrayList<>());
     listView.setAdapter(mChirpListAdapter);
-  }
-
-  private void setupListUpdate() {
-    mSocialMediaViewModel
-        .getLaoId()
-        .observe(
-            getViewLifecycleOwner(),
-            newLaoId -> {
-              try {
-                mChirpListAdapter.replaceList(mSocialMediaViewModel.getChirpList(newLaoId));
-              } catch (UnknownLaoException e) {
-                ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
-              }
-            });
   }
 }

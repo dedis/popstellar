@@ -45,8 +45,12 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
       String laoId = getIntent().getExtras().getString(LAO_ID);
       String laoName = getIntent().getExtras().getString(LAO_NAME);
 
-      if (laoId != null) mViewModel.setLaoId(laoId);
-      if (laoName != null) mViewModel.setLaoName(laoName);
+      if (laoId != null) {
+        mViewModel.setLaoId(laoId);
+      }
+      if (laoName != null) {
+        mViewModel.setLaoName(laoName);
+      }
     }
 
     setupNavigationBar(findViewById(R.id.social_media_nav_bar));

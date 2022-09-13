@@ -9,6 +9,7 @@ import androidx.test.filters.LargeTest;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
@@ -16,6 +17,7 @@ import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -107,13 +109,15 @@ public class ElectionSetupFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           // Injection with hilt
           hiltRule.inject();
 
-          when(repository.getLaoObservable(any())).thenReturn(BehaviorSubject.createDefault(LAO));
-          when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
+          when(repository.getLaoObservable(any()))
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
+          when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
+          when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());
           when(messageSender.subscribe(any())).then(args -> Completable.complete());

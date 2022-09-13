@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.*;
@@ -64,7 +65,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     this.eventsMap.get(PRESENT).clear();
 
     for (Event event : events) {
-      switch (event.getState().getValue()) {
+      switch (event.getState()) {
         case CREATED:
           eventsMap.get(FUTURE).add(event);
           break;
@@ -178,6 +179,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     () -> RollCallFragment.newInstance(token.getPublicKey()));
               } catch (KeyException e) {
                 ErrorUtils.logAndShow(activity, TAG, e, R.string.key_generation_exception);
+              } catch (UnknownLaoException e) {
+                ErrorUtils.logAndShow(activity, TAG, e, R.string.error_no_lao);
               }
             } else {
               showWalletNotSetupWarning();
@@ -295,14 +298,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
   @SuppressLint("NotifyDataSetChanged") // warranted by our implementation
   private void setList(List<Event> events) {
-    for (EventCategory category : EventCategory.values()) {
-      for (Event event : eventsMap.get(category)) {
-        // When we get new events we remove observers of old ones
-        event.getState().removeObservers(activity);
-      }
-    }
-    events.forEach( // Adding a listener to each event's state, when changed we update the UI
-        event -> event.getState().observe(activity, eventState -> notifyDataSetChanged()));
     putEventsInMap(events);
     notifyDataSetChanged();
   }

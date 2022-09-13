@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.List;
 
@@ -79,8 +80,16 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     Context context = parent.getContext();
     View.OnClickListener listener =
         v -> {
+          boolean isWitness;
+          try {
+            isWitness = viewModel.isWitness().getValue();
+          } catch (UnknownLaoException e) {
+            ErrorUtils.logAndShow(context, TAG, R.string.error_no_lao);
+            return;
+          }
+
           AlertDialog.Builder adb = new AlertDialog.Builder(context);
-          boolean isWitness = viewModel.isWitness().getValue();
+
           if (isWitness) {
             adb.setTitle("Sign Message");
             adb.setMessage(

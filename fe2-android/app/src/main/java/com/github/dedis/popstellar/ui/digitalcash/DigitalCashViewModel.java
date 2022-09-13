@@ -12,9 +12,9 @@ import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
@@ -71,7 +71,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   private final MutableLiveData<SingleEvent<String>> updateReceiptAmountEvent =
       new MutableLiveData<>();
 
-  private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
+  private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
 
   private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
   private final LiveData<List<TransactionObject>> mTransactionHistory;
@@ -101,12 +101,13 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     mTransactionHistory =
         Transformations.map(
             mCurrentLao,
-            lao -> {
+            laoView -> {
               try {
-                if (lao == null) return new ArrayList<>();
+                if (laoView == null) return new ArrayList<>();
                 List<TransactionObject> historyList =
-                    lao.getTransactionHistoryByUser()
-                        .get(keyManager.getValidPoPToken(lao).getPublicKey());
+                    laoView
+                        .getTransactionHistoryByUser()
+                        .get(keyManager.getValidPoPToken(laoView).getPublicKey());
                 if (historyList == null) {
                   return new ArrayList<>();
                 }
@@ -176,7 +177,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
    * Methods that modify the state or post an Event to update the UI.
    */
   public PublicKey getPublicKeyOutString(String encodedPub) throws NoRollCallException {
-    for (PublicKey current : getAttendeesFromTheRollCall()) {
+    for (PublicKey current : getAttendeesFromLastRollCall()) {
       if (current.getEncoded().equals(encodedPub)) {
         return current;
       }
@@ -208,21 +209,21 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
       Map<String, String> receiverValues, long lockTime, boolean coinBase) {
 
     /* Check if a Lao exist */
-    Lao lao = getCurrentLaoValue();
-    if (lao == null) {
+    LaoView laoView = getCurrentLaoValue();
+    if (laoView == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
 
     // Find correct keypair
     return Single.fromCallable(
-            () -> coinBase ? keyManager.getMainKeyPair() : keyManager.getValidPoPToken(lao))
+            () -> coinBase ? keyManager.getMainKeyPair() : keyManager.getValidPoPToken(laoView))
         .flatMapCompletable(
             keyPair -> {
               PostTransactionCoin postTxn =
                   createPostTransaction(keyPair, receiverValues, lockTime, coinBase);
               MessageGeneral msg = new MessageGeneral(keyPair, postTxn, gson);
-              Channel channel = lao.getChannel().subChannel(COIN);
+              Channel channel = laoView.getChannel().subChannel(COIN);
               return networkManager
                   .getMessageSender()
                   .publish(channel, msg)
@@ -301,8 +302,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   }
 
   @Nullable
-  public Set<PublicKey> getAttendeesFromTheRollCall() throws NoRollCallException {
-    return getCurrentLaoValue().lastRollCallClosed().getAttendees();
+  public Set<PublicKey> getAttendeesFromLastRollCall() throws NoRollCallException {
+    return getCurrentLaoValue().getMostRecentRollCall().getAttendees();
   }
 
   @Nullable
@@ -312,16 +313,16 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   @Nullable
   public List<String> getAttendeesFromTheRollCallList() throws NoRollCallException {
-    return getAttendeesFromTheRollCall().stream()
+    return getAttendeesFromLastRollCall().stream()
         .map(Base64URLData::getEncoded)
         .collect(Collectors.toList());
   }
 
-  public MutableLiveData<Lao> getCurrentLao() {
+  public MutableLiveData<LaoView> getCurrentLao() {
     return mCurrentLao;
   }
 
-  public Lao getCurrentLaoValue() {
+  public LaoView getCurrentLaoValue() {
     return mCurrentLao.getValue();
   }
 

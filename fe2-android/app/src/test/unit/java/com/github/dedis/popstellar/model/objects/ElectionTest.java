@@ -86,7 +86,7 @@ public class ElectionTest {
   @Test
   public void settingAndGettingReturnsCorrespondingState() {
     election.setEventState(OPENED);
-    assertThat(election.getState().getValue(), is(OPENED));
+    assertThat(election.getState(), is(OPENED));
   }
 
   @Test

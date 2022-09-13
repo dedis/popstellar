@@ -17,11 +17,13 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -74,6 +76,8 @@ public class LaoDetailFragmentTest {
   private static final String QUESTION = "question";
   private static final String BALLOT_1 = "ballot 1";
   private static final String BALLOT_2 = "ballot 2";
+  private static final BehaviorSubject<LaoView> laoViewSubject =
+      BehaviorSubject.createDefault(new LaoView(LAO));
 
   @Inject Gson gson;
 
@@ -94,17 +98,14 @@ public class LaoDetailFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException {
+        protected void before() throws KeyException, UnknownLaoException {
           hiltRule.inject();
-          when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(LAO));
-
+          when(repository.getLaoObservable(anyString())).thenReturn(laoViewSubject);
+          when(repository.getLaoView(anyString())).thenAnswer(invocation -> new LaoView(LAO));
           when(keyManager.getMainPublicKey()).thenReturn(PK);
-          when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);
           when(keyManager.getPoPToken(any(), any())).thenReturn(POP_TOKEN);
           when(networkManager.getMessageSender()).thenReturn(messageSender);
-          when(messageSender.subscribe(any())).then(args -> Completable.complete());
-          when(messageSender.publish(any(), any())).then(args -> Completable.complete());
+
           when(messageSender.publish(any(), any(), any()))
               .then(
                   args -> {
@@ -266,7 +267,7 @@ public class LaoDetailFragmentTest {
         .onActivity(
             activity -> {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
-              laoDetailViewModel.setCurrentLao(LAO);
+              laoDetailViewModel.setCurrentLao(new LaoView(LAO));
             });
     // Recreate the fragment because the viewModel needed to be modified before start
     activityScenarioRule.getScenario().recreate();
@@ -280,7 +281,6 @@ public class LaoDetailFragmentTest {
     rollCall.setEnd(createRollCall.getProposedEnd());
     rollCall.setName(createRollCall.getName());
     rollCall.setLocation(createRollCall.getLocation());
-
     rollCall.setLocation(createRollCall.getLocation());
     rollCall.setDescription(createRollCall.getDescription().orElse(""));
     return rollCall;

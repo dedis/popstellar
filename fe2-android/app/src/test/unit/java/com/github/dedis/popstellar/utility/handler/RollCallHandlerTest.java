@@ -119,7 +119,7 @@ public class RollCallHandlerTest {
     Optional<RollCall> rollCallOpt =
         laoRepo.getLaoByChannel(LAO_CHANNEL).getRollCall(createRollCall.getId());
     assertTrue(rollCallOpt.isPresent());
-    assertEquals(EventState.CREATED, rollCallOpt.get().getState().getValue());
+    assertEquals(EventState.CREATED, rollCallOpt.get().getState());
     assertEquals(createRollCall.getId(), rollCallOpt.get().getId());
 
     // Check the WitnessMessage has been created
@@ -149,7 +149,7 @@ public class RollCallHandlerTest {
     Optional<RollCall> rollCallOpt =
         laoRepo.getLaoByChannel(LAO_CHANNEL).getRollCall(openRollCall.getUpdateId());
     assertTrue(rollCallOpt.isPresent());
-    assertEquals(EventState.OPENED, rollCallOpt.get().getState().getValue());
+    assertEquals(EventState.OPENED, rollCallOpt.get().getState());
     assertEquals(openRollCall.getUpdateId(), rollCallOpt.get().getId());
 
     // Check the WitnessMessage has been created
@@ -179,7 +179,7 @@ public class RollCallHandlerTest {
     Optional<RollCall> rollCallOpt =
         laoRepo.getLaoByChannel(LAO_CHANNEL).getRollCall(closeRollCall.getUpdateId());
     assertTrue(rollCallOpt.isPresent());
-    assertEquals(EventState.CLOSED, rollCallOpt.get().getState().getValue());
+    assertEquals(EventState.CLOSED, rollCallOpt.get().getState());
     assertTrue(rollCallOpt.get().isClosed());
     assertEquals(closeRollCall.getUpdateId(), rollCallOpt.get().getId());
 

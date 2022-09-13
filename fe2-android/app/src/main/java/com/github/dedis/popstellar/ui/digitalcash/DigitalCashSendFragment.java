@@ -11,10 +11,10 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -73,10 +73,10 @@ public class DigitalCashSendFragment extends Fragment {
                     String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
                 if (mViewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
                   try {
-                    Lao lao = mViewModel.getCurrentLaoValue();
-                    PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+                    LaoView laoView = mViewModel.getCurrentLaoValue();
+                    PoPToken token = mViewModel.getKeyManager().getValidPoPToken(laoView);
                     if (canPostTransaction(
-                        lao, token.getPublicKey(), Integer.parseInt(currentAmount))) {
+                        laoView, token.getPublicKey(), Integer.parseInt(currentAmount))) {
                       postTransaction(
                           Collections.singletonMap(currentPublicKeySelected, currentAmount));
                       mViewModel.updateReceiptAddressEvent(currentPublicKeySelected);
@@ -105,7 +105,7 @@ public class DigitalCashSendFragment extends Fragment {
     }
   }
 
-  public boolean canPostTransaction(Lao lao, PublicKey publicKey, int currentAmount) {
+  public boolean canPostTransaction(LaoView lao, PublicKey publicKey, int currentAmount) {
     Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
     if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
       Toast.makeText(requireContext(), R.string.digital_cash_warning_no_money, Toast.LENGTH_SHORT)
