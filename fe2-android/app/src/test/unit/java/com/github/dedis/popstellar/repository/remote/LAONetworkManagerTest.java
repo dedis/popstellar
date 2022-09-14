@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.repository.remote;
 
-import com.github.dedis.popstellar.di.DataRegistryModule;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Error;
@@ -11,8 +11,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.error.JsonRPCErrorException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
@@ -49,8 +47,6 @@ public class LAONetworkManagerTest {
   private final BehaviorSubject<WebSocket.Event> events = BehaviorSubject.create();
   private final BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
 
-  @Mock MessageRepository messageRepo;
-  @Mock LAORepository laoRepo;
   @Mock MessageHandler handler;
   @Mock Connection connection;
 
@@ -80,11 +76,9 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
-            messageRepo,
-            laoRepo,
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModule.provideDataRegistry()),
+            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider);
 
     Answer<?> answer =
@@ -117,11 +111,9 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
-            messageRepo,
-            laoRepo,
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModule.provideDataRegistry()),
+            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider);
 
     Answer<?> answer =
@@ -153,11 +145,9 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
-            messageRepo,
-            laoRepo,
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModule.provideDataRegistry()),
+            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider);
 
     Answer<?> answer =
@@ -191,11 +181,9 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
-            messageRepo,
-            laoRepo,
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModule.provideDataRegistry()),
+            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider);
 
     ErrorCode error = new ErrorCode(3, "error");
@@ -235,11 +223,9 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
-            messageRepo,
-            laoRepo,
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModule.provideDataRegistry()),
+            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider);
 
     networkManager.subscribe(CHANNEL).subscribe(); // First subscribe
@@ -278,11 +264,9 @@ public class LAONetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     LAONetworkManager networkManager =
         new LAONetworkManager(
-            messageRepo,
-            laoRepo,
             handler,
             connection,
-            JsonModule.provideGson(DataRegistryModule.provideDataRegistry()),
+            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider);
 
     // Set a response that stores requested ids

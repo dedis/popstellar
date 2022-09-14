@@ -29,7 +29,7 @@ public final class ElectionHandler {
   private final MessageRepository messageRepo;
 
   @Inject
-  public ElectionHandler(LAORepository laoRepo, MessageRepository messageRepo) {
+  public ElectionHandler(MessageRepository messageRepo, LAORepository laoRepo) {
     this.laoRepo = laoRepo;
     this.messageRepo = messageRepo;
   }
@@ -207,7 +207,7 @@ public final class ElectionHandler {
     laoRepo.updateLao(lao);
   }
 
-  public WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {
+  public static WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("New Election Setup");
     message.setDescription(

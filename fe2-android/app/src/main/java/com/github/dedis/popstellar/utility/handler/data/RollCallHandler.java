@@ -31,7 +31,7 @@ public final class RollCallHandler {
   private final KeyManager keyManager;
 
   @Inject
-  public RollCallHandler(LAORepository laoRepo, KeyManager keyManager) {
+  public RollCallHandler(KeyManager keyManager, LAORepository laoRepo) {
     this.laoRepo = laoRepo;
     this.keyManager = keyManager;
   }

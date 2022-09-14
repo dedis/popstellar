@@ -29,9 +29,9 @@ public final class LaoHandler {
 
   @Inject
   public LaoHandler(
+      KeyManager keyManager,
       MessageRepository messageRepo,
       LAORepository laoRepo,
-      KeyManager keyManager,
       ServerRepository serverRepo) {
     this.messageRepo = messageRepo;
     this.laoRepo = laoRepo;
