@@ -106,7 +106,7 @@ public class DigitalCashSendFragment extends Fragment {
   }
 
   public boolean canPostTransaction(LaoView lao, PublicKey publicKey, int currentAmount) {
-    Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
+    Map<PublicKey, Set<TransactionObject>> transactionByUser = lao.getTransactionByUser();
     if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
       Toast.makeText(requireContext(), R.string.digital_cash_warning_no_money, Toast.LENGTH_SHORT)
           .show();

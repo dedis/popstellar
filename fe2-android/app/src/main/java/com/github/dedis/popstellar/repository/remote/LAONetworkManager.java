@@ -52,7 +52,8 @@ public class LAONetworkManager implements MessageSender {
       MessageHandler messageHandler,
       Connection connection,
       Gson gson,
-      SchedulerProvider schedulerProvider) {
+      SchedulerProvider schedulerProvider,
+      Set<Channel> subscribedChannels) {
     this.messageRepo = messageRepo;
     this.laoRepo = laoRepo;
     this.messageHandler = messageHandler;

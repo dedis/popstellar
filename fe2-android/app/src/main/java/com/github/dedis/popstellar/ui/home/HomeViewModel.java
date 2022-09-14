@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,7 +20,6 @@ import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
@@ -39,6 +38,8 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 @HiltViewModel
 public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCodeScanningViewModel {

@@ -76,7 +76,7 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
     SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
 
     // Adding all currently opened lao name to the submenu
-    mViewModel
+    viewModel
         .getLaoIdList()
         .observe(
             this,
@@ -86,7 +86,7 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
                 for (int i = 0; i < idList.size(); ++i) {
                   String laoId = idList.get(i);
                   try {
-                    LaoView laoView = mViewModel.getLaoView(laoId);
+                    LaoView laoView = viewModel.getLaoView(laoId);
                     // Creating a unique id using the index of the lao within the list
                     laosList.add(Menu.NONE, i, Menu.CATEGORY_CONTAINER, laoView.getName());
                   } catch (UnknownLaoException e) {
@@ -105,15 +105,15 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
   public boolean onOptionsItemSelected(MenuItem item) {
     // Retrieve the index of the lao within the list
     int i = item.getItemId();
-    List<String> laoIdList = mViewModel.getLaoIdList().getValue();
+    List<String> laoIdList = viewModel.getLaoIdList().getValue();
 
     if (laoIdList != null && i >= 0 && i < laoIdList.size()) {
       String laoId = laoIdList.get(i);
 
       try {
-        LaoView laoView = mViewModel.getLaoView(laoId);
-        mViewModel.setLaoId(laoId);
-        mViewModel.setLaoName(laoView.getName());
+        LaoView laoView = viewModel.getLaoView(laoId);
+        viewModel.setLaoId(laoId);
+        viewModel.setLaoName(laoView.getName());
       } catch (UnknownLaoException e) {
         throw new IllegalStateException("Lao with id " + laoId + " is supposed to be present");
       }

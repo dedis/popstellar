@@ -62,7 +62,13 @@ public class GlobalNetworkManager implements Disposable {
     Connection connection = connectionFactory.createConnection(url);
     networkManager =
         new LAONetworkManager(
-            messageRepo, laoRepo, messageHandler, connection, gson, schedulerProvider);
+            messageRepo,
+            laoRepo,
+            messageHandler,
+            connection,
+            gson,
+            schedulerProvider,
+            subscriptions);
     currentURL = url;
   }
 

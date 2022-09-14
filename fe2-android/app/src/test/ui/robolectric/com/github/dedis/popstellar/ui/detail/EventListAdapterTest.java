@@ -55,9 +55,7 @@ public class EventListAdapterTest {
         protected void before() {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefaultnew LaoView(LAO)));
-          when(repository.getAllLaos())
-              .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(LAO)));
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
 
           when(wallet.exportSeed())
               .thenReturn(

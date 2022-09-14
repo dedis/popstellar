@@ -12,16 +12,15 @@ import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -103,8 +102,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     this.gson = gson;
     this.keyManager = keyManager;
     this.wallet = wallet;
-
-    disposables = new CompositeDisposable();
 
     mTransactionHistory =
         Transformations.map(
@@ -382,9 +379,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
       throws GeneralSecurityException {
     int index;
     String transactionHash;
-    List<TransactionObject> transactions =
+    Set<TransactionObject> transactions =
         getCurrentLaoValue().getTransactionByUser().get(keyPair.getPublicKey());
-    Set<TransactionObject> transactions = getCurrentLaoValue().getTransactionByUser().get(pubK);
 
     long amountSender =
         TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, keyPair.getPublicKey())
