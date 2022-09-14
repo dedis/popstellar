@@ -260,7 +260,7 @@ public final class Lao implements Copyable<Lao> {
       throw new IllegalStateException(
           "There should only be one roll call object with persistent id " + id);
     }
-    return Optional.ofNullable(filtered.size() == 0 ? null : filtered.get(0));
+    return Optional.ofNullable(filtered.isEmpty() ? null : filtered.get(0));
   }
 
   public Optional<Election> getElection(String id) {
