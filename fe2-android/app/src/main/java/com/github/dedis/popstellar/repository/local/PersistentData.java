@@ -43,8 +43,8 @@ public class PersistentData implements Serializable {
   @Override
   public String toString() {
     return "PersistentData{"
-        + "walletSeed="
-        + walletSeed
+        + "walletSeed size="
+        + walletSeed.size()
         + ", serverAddress='"
         + serverAddress
         + '\''
