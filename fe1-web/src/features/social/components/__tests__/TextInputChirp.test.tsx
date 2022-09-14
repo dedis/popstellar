@@ -20,6 +20,12 @@ beforeEach(() => {
 });
 
 describe('TextInputChirp', () => {
+  it('renders correctly with undefined public key', () => {
+    const { toJSON } = render(
+      <TextInputChirp value={text} onChangeText={onChangeText} onPress={onPress} />,
+    );
+    expect(toJSON()).toMatchSnapshot();
+  });
   it('renders correctly without placeholder', () => {
     const { toJSON } = render(
       <TextInputChirp

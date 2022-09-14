@@ -6,17 +6,20 @@ import android.widget.BaseAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ConsensusNodeLayoutBinding;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.List;
 import java.util.Optional;
 
 public class NodesAcceptorAdapter extends BaseAdapter {
 
+  private static final String TAG = NodesAcceptorAdapter.class.getSimpleName();
   private List<ConsensusNode> nodes;
   private final ConsensusNode ownNode;
   private final String instanceId;
@@ -100,8 +103,18 @@ public class NodesAcceptorAdapter extends BaseAdapter {
     lastElectInstance.ifPresent(
         electInstance ->
             binding.nodeButton.setOnClickListener(
-                clicked -> laoDetailViewModel.sendConsensusElectAccept(electInstance, true)));
-
+                clicked ->
+                    laoDetailViewModel.addDisposable(
+                        laoDetailViewModel
+                            .sendConsensusElectAccept(electInstance, true)
+                            .subscribe(
+                                () -> {},
+                                error ->
+                                    ErrorUtils.logAndShow(
+                                        parent.getContext(),
+                                        TAG,
+                                        error,
+                                        R.string.error_consensus_accept)))));
     binding.setLifecycleOwner(lifecycleOwner);
     binding.executePendingBindings();
 

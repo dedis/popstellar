@@ -12,9 +12,10 @@ import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.List;
 import java.util.Objects;
@@ -44,8 +45,12 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
       String laoId = getIntent().getExtras().getString(LAO_ID);
       String laoName = getIntent().getExtras().getString(LAO_NAME);
 
-      if (laoId != null) viewModel.setLaoId(laoId);
-      if (laoName != null) viewModel.setLaoName(laoName);
+      if (laoId != null){
+        viewModel.setLaoId(laoId);
+      }
+      if (laoName != null){
+        viewModel.setLaoName(laoName);
+      }
     }
 
     setupNavigationBar(findViewById(R.id.social_media_nav_bar));
@@ -71,16 +76,23 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
     SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
 
     // Adding all currently opened lao name to the submenu
-    viewModel
-        .getLAOs()
+    mViewModel
+        .getLaoIdList()
         .observe(
             this,
-            list -> {
-              if (list != null) {
+            idList -> {
+              if (idList != null) {
                 laosList.clear();
-                for (int i = 0; i < list.size(); ++i) {
-                  // Creating a unique id using the index of the lao within the list
-                  laosList.add(Menu.NONE, i, Menu.CATEGORY_CONTAINER, list.get(i).getName());
+                for (int i = 0; i < idList.size(); ++i) {
+                  String laoId = idList.get(i);
+                  try {
+                    LaoView laoView = mViewModel.getLaoView(laoId);
+                    // Creating a unique id using the index of the lao within the list
+                    laosList.add(Menu.NONE, i, Menu.CATEGORY_CONTAINER, laoView.getName());
+                  } catch (UnknownLaoException e) {
+                    throw new IllegalStateException(
+                        "Lao with id " + laoId + " is supposed to be present");
+                  }
                 }
               }
             });
@@ -93,11 +105,18 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
   public boolean onOptionsItemSelected(MenuItem item) {
     // Retrieve the index of the lao within the list
     int i = item.getItemId();
-    List<Lao> laos = viewModel.getLAOs().getValue();
-    if (laos != null && i >= 0 && i < laos.size()) {
-      Lao lao = laos.get(i);
-      viewModel.setLaoId(lao.getId());
-      viewModel.setLaoName(lao.getName());
+    List<String> laoIdList = mViewModel.getLaoIdList().getValue();
+
+    if (laoIdList != null && i >= 0 && i < laoIdList.size()) {
+      String laoId = laoIdList.get(i);
+
+      try {
+        LaoView laoView = mViewModel.getLaoView(laoId);
+        mViewModel.setLaoId(laoId);
+        mViewModel.setLaoName(laoView.getName());
+      } catch (UnknownLaoException e) {
+        throw new IllegalStateException("Lao with id " + laoId + " is supposed to be present");
+      }
       return true;
     }
     return super.onOptionsItemSelected(item);

@@ -14,8 +14,11 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 
@@ -27,9 +30,12 @@ import dagger.hilt.android.AndroidEntryPoint;
  */
 @AndroidEntryPoint
 public class DigitalCashIssueFragment extends Fragment {
+
+  public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
+
   private DigitalCashIssueFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
-  public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
+
   private int selectOneMember;
   private int selectAllLaoMembers;
   private int selectAllRollCallAttendees;
@@ -140,7 +146,7 @@ public class DigitalCashIssueFragment extends Fragment {
         attendees.addAll(current.getAttendees());
       }
     } else if (radioGroup == selectAllRollCallAttendees) {
-      attendees = mViewModel.getAttendeesFromTheRollCall();
+      attendees = mViewModel.getAttendeesFromLastRollCall();
     } else if (radioGroup == selectAllLaoWitnesses) {
       attendees = Objects.requireNonNull(mViewModel.getCurrentLaoValue()).getWitnesses();
     }
@@ -185,7 +191,26 @@ public class DigitalCashIssueFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      mViewModel.postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true);
+      mViewModel.addDisposable(
+          mViewModel
+              .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true)
+              .subscribe(
+                  () ->
+                      Toast.makeText(
+                              requireContext(),
+                              R.string.digital_cash_post_transaction,
+                              Toast.LENGTH_LONG)
+                          .show(),
+                  error -> {
+                    if (error instanceof KeyException
+                        || error instanceof GeneralSecurityException) {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                    } else {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_post_transaction);
+                    }
+                  }));
       mViewModel.updateLaoCoinEvent();
     }
   }

@@ -113,7 +113,6 @@ public final class Lao implements Copyable<Lao> {
     if (rollCall == null) {
       throw new IllegalArgumentException("The roll call is null");
     }
-
     rollCalls.remove(prevId);
     rollCalls.put(rollCall.getId(), rollCall);
   }

@@ -17,6 +17,7 @@ import {
   socialReduce,
 } from '../SocialReducer';
 
+// region test data
 let chirp0DeletedFake: ChirpState;
 let chirp0: ChirpState;
 let chirp1: ChirpState;
@@ -515,6 +516,7 @@ const initialiseData = () => {
     },
   };
 };
+// endregion
 
 beforeEach(() => {
   initialiseData();
@@ -582,23 +584,23 @@ describe('SocialReducer', () => {
 
   describe('chirp selector', () => {
     it('should return an empty list of chirpState when no lao is opened', () => {
-      expect(makeChirpsList().resultFunc(emptyState, undefined)).toEqual([]);
+      expect(makeChirpsList(mockLaoId).resultFunc(emptyState)).toEqual([]);
     });
 
     it('should return an empty list', () => {
-      expect(makeChirpsList().resultFunc(emptyState, mockLaoId)).toEqual([]);
+      expect(makeChirpsList(mockLaoId).resultFunc(emptyState)).toEqual([]);
     });
 
     it('should return the first chirp state', () => {
-      expect(makeChirpsList().resultFunc(chirpFilledState1, mockLaoId)).toEqual([chirp1]);
+      expect(makeChirpsList(mockLaoId).resultFunc(chirpFilledState1)).toEqual([chirp1]);
     });
 
     it('should return the newer chirp before the first chirp', () => {
-      expect(makeChirpsList().resultFunc(chirpFilledState2, mockLaoId)).toEqual([chirp2, chirp1]);
+      expect(makeChirpsList(mockLaoId).resultFunc(chirpFilledState2)).toEqual([chirp2, chirp1]);
     });
 
     it('should add the newer chirp after the second chirp', () => {
-      expect(makeChirpsList().resultFunc(chirpFilledState3, mockLaoId)).toEqual([
+      expect(makeChirpsList(mockLaoId).resultFunc(chirpFilledState3)).toEqual([
         chirp2,
         chirp3,
         chirp1,
@@ -606,7 +608,7 @@ describe('SocialReducer', () => {
     });
 
     it('should return the newest chirp on top', () => {
-      expect(makeChirpsList().resultFunc(chirpFilledState4, mockLaoId)).toEqual([
+      expect(makeChirpsList(mockLaoId).resultFunc(chirpFilledState4)).toEqual([
         chirp4,
         chirp2,
         chirp3,
@@ -615,20 +617,20 @@ describe('SocialReducer', () => {
     });
 
     it('should return the correct chirps list for an active user', () => {
-      expect(makeChirpsListOfUser(chirp1.sender).resultFunc(chirpFilledState3, mockLaoId)).toEqual([
+      expect(makeChirpsListOfUser(mockLaoId)(chirp1.sender).resultFunc(chirpFilledState3)).toEqual([
         chirp3,
         chirp1,
       ]);
     });
 
     it('should return an empty list for an inactive user', () => {
-      expect(makeChirpsListOfUser(chirp2.sender).resultFunc(chirpFilledState1, mockLaoId)).toEqual(
+      expect(makeChirpsListOfUser(mockLaoId)(chirp2.sender).resultFunc(chirpFilledState1)).toEqual(
         [],
       );
     });
 
     it('should return an empty list for an undefined lao', () => {
-      expect(makeChirpsListOfUser(chirp2.sender).resultFunc(chirpFilledState1, undefined)).toEqual(
+      expect(makeChirpsListOfUser(mockLaoId)(chirp2.sender).resultFunc(chirpFilledState1)).toEqual(
         [],
       );
     });
@@ -668,45 +670,69 @@ describe('SocialReducer', () => {
 
   describe('reaction selector', () => {
     it('should return an empty record of reactionState when no lao is opened', () => {
-      expect(makeReactionsList().resultFunc(emptyState, undefined)).toEqual({});
+      expect(makeReactionsList(mockLaoId).resultFunc(emptyState)).toEqual({});
     });
 
     it('should return an empty record', () => {
-      expect(makeReactionsList().resultFunc(emptyState, mockLaoId)).toEqual({});
+      expect(makeReactionsList(mockLaoId).resultFunc(emptyState)).toEqual({});
     });
 
     it('should return an empty record for non-stored chirp', () => {
-      expect(makeReactionsList().resultFunc(reactionFilledState1, mockLaoId)).toEqual({});
+      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState1)).toEqual({});
     });
 
     it('should return the first reaction state', () => {
-      expect(makeReactionsList().resultFunc(reactionFilledState11, mockLaoId)).toEqual({
-        [mockChirpId1.toString()]: { '👍': 1, '👎': 0, '❤️': 0 },
+      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState11)).toEqual({
+        [mockChirpId1.toString()]: {
+          '👍': 1,
+          '👎': 0,
+          '❤️': 0,
+        },
       });
     });
 
     it('should add reaction count correctly', () => {
-      expect(makeReactionsList().resultFunc(reactionFilledState22, mockLaoId)).toEqual({
-        [mockChirpId1.toString()]: { '👍': 1, '👎': 0, '❤️': 1 },
+      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState22)).toEqual({
+        [mockChirpId1.toString()]: {
+          '👍': 1,
+          '👎': 0,
+          '❤️': 1,
+        },
       });
     });
 
     it('should increment counter for new sender', () => {
-      expect(makeReactionsList().resultFunc(reactionFilledState33, mockLaoId)).toEqual({
-        [mockChirpId1.toString()]: { '👍': 2, '👎': 0, '❤️': 1 },
+      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState33)).toEqual({
+        [mockChirpId1.toString()]: {
+          '👍': 2,
+          '👎': 0,
+          '❤️': 1,
+        },
       });
     });
 
     it('should not count a sender twice for a reaction', () => {
-      expect(makeReactionsList().resultFunc(reactionFilledState33, mockLaoId)).toEqual({
-        [mockChirpId1.toString()]: { '👍': 2, '👎': 0, '❤️': 1 },
+      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState33)).toEqual({
+        [mockChirpId1.toString()]: {
+          '👍': 2,
+          '👎': 0,
+          '❤️': 1,
+        },
       });
     });
 
     it('should return state of two reaction', () => {
-      expect(makeReactionsList().resultFunc(reactionFilledState44, mockLaoId)).toEqual({
-        [mockChirpId1.toString()]: { '👍': 1, '👎': 0, '❤️': 0 },
-        [mockChirpId2.toString()]: { '👍': 1, '👎': 0, '❤️': 0 },
+      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState44)).toEqual({
+        [mockChirpId1.toString()]: {
+          '👍': 1,
+          '👎': 0,
+          '❤️': 0,
+        },
+        [mockChirpId2.toString()]: {
+          '👍': 1,
+          '👎': 0,
+          '❤️': 0,
+        },
       });
     });
   });

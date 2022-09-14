@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
@@ -32,7 +33,8 @@ public class LAONetworkManager implements MessageSender {
 
   private static final String TAG = LAONetworkManager.class.getSimpleName();
 
-  private final LAORepository repository;
+  private final MessageRepository messageRepo;
+  private final LAORepository laoRepo;
   private final MessageHandler messageHandler;
   private final Connection connection;
   public final AtomicInteger requestCounter = new AtomicInteger();
@@ -45,13 +47,14 @@ public class LAONetworkManager implements MessageSender {
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   public LAONetworkManager(
-      LAORepository repository,
+      MessageRepository messageRepo,
+      LAORepository laoRepo,
       MessageHandler messageHandler,
       Connection connection,
       Gson gson,
-      SchedulerProvider schedulerProvider,
-      Set<Channel> subscribedChannels) {
-    this.repository = repository;
+      SchedulerProvider schedulerProvider) {
+    this.messageRepo = messageRepo;
+    this.laoRepo = laoRepo;
     this.messageHandler = messageHandler;
     this.connection = connection;
     this.gson = gson;
@@ -116,9 +119,10 @@ public class LAONetworkManager implements MessageSender {
     return request(catchup)
         .map(ResultMessages.class::cast)
         .map(ResultMessages::getMessages)
-        .doOnSuccess(messages -> Log.d(TAG, "Catchup on " + channel + " retrieved : " + messages))
-        .doOnSuccess(messages -> handleMessages(messages, channel))
         .doOnError(error -> Log.d(TAG, "Error in catchup :" + error))
+        .doOnSuccess(
+            msgs -> Log.d(TAG, "Received catchup response on " + channel + ", retrieved : " + msgs))
+        .doOnSuccess(messages -> handleMessages(messages, channel))
         .ignoreElement();
   }
 
@@ -131,7 +135,9 @@ public class LAONetworkManager implements MessageSender {
   public Completable publish(Channel channel, MessageGeneral msg) {
     Log.d(TAG, "sending a publish " + msg.getData().getClass() + " to the channel " + channel);
     Publish publish = new Publish(channel, requestCounter.incrementAndGet(), msg);
-    return request(publish).ignoreElement();
+    return request(publish)
+        .ignoreElement()
+        .doOnComplete(() -> Log.d(TAG, "Successfully published " + msg));
   }
 
   @Override
@@ -149,7 +155,9 @@ public class LAONetworkManager implements MessageSender {
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
         // and catchup are completed
-        .flatMapCompletable(answer -> catchup(channel));
+        .flatMapCompletable(answer -> catchup(channel))
+        .doOnComplete(
+            () -> Log.d(TAG, "Successfully subscribed and catchup to channel " + channel));
   }
 
   @Override
@@ -181,22 +189,18 @@ public class LAONetworkManager implements MessageSender {
     Log.d(TAG, "handling broadcast msg : " + broadcast);
     try {
       messageHandler.handleMessage(
-          repository, this, broadcast.getChannel(), broadcast.getMessage());
-    } catch (DataHandlingException e) {
+          messageRepo, laoRepo, this, broadcast.getChannel(), broadcast.getMessage());
+    } catch (DataHandlingException | UnknownLaoException e) {
       Log.e(TAG, "Error while handling received message", e);
       unprocessed.onNext(broadcast);
-    } catch (UnknownLaoException e) {
-      Log.e(TAG, "Error while handling received message", e);
     }
   }
 
   private void handleMessages(List<MessageGeneral> messages, Channel channel) {
     for (MessageGeneral msg : messages) {
       try {
-        messageHandler.handleMessage(repository, this, channel, msg);
-      } catch (DataHandlingException e) {
-        Log.e(TAG, "Error while handling received catchup message", e);
-      } catch (UnknownLaoException e) {
+        messageHandler.handleMessage(messageRepo, laoRepo, this, channel, msg);
+      } catch (DataHandlingException | UnknownLaoException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
       }
     }

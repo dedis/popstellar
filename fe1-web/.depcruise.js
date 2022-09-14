@@ -1,5 +1,5 @@
 const collapseAliases = '^(\.\.\/protocol|\.\.\/tests\/data)';
-const collapseTests =  `__tests__|__mocks__`;
+const collapseTests = `__tests__|__mocks__`;
 
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
@@ -13,17 +13,17 @@ module.exports = {
         'your solution (i.e. use dependency inversion, make sure the modules have a single responsibility) ',
       from: {},
       to: {
-        circular: true
-      }
+        circular: true,
+      },
     },
     {
       name: 'no-orphans',
       comment:
-        "This is an orphan module - it's likely not used (anymore?). Either use it or " +
-        "remove it. If it's logical this module is an orphan (i.e. it's a config file), " +
-        "add an exception for it in your dependency-cruiser configuration. By default " +
-        "this rule does not scrutinize dotfiles (e.g. .eslintrc.js), TypeScript declaration " +
-        "files (.d.ts), tsconfig.json and some of the babel and webpack configs.",
+        'This is an orphan module - it\'s likely not used (anymore?). Either use it or ' +
+        'remove it. If it\'s logical this module is an orphan (i.e. it\'s a config file), ' +
+        'add an exception for it in your dependency-cruiser configuration. By default ' +
+        'this rule does not scrutinize dotfiles (e.g. .eslintrc.js), TypeScript declaration ' +
+        'files (.d.ts), tsconfig.json and some of the babel and webpack configs.',
       severity: 'warn',
       from: {
         orphan: true,
@@ -31,8 +31,8 @@ module.exports = {
           '(^|/)\\.[^/]+\\.(js|cjs|mjs|ts|json)$', // dot files
           '\\.d\\.ts$',                            // TypeScript declaration files
           '(^|/)tsconfig\\.json$',                 // TypeScript config
-          '(^|/)(babel|webpack)\\.config\\.(js|cjs|mjs|ts|json)$' // other configs
-        ]
+          '(^|/)(babel|webpack)\\.config\\.(js|cjs|mjs|ts|json)$', // other configs
+        ],
       },
       to: {},
     },
@@ -40,12 +40,12 @@ module.exports = {
       name: 'no-deprecated-core',
       comment:
         'A module depends on a node core module that has been deprecated. Find an alternative - these are ' +
-        "bound to exist - node doesn't deprecate lightly.",
+        'bound to exist - node doesn\'t deprecate lightly.',
       severity: 'warn',
       from: {},
       to: {
         dependencyTypes: [
-          'core'
+          'core',
         ],
         path: [
           '^(v8\/tools\/codemap)$',
@@ -68,9 +68,9 @@ module.exports = {
           '^(constants)$',
           '^(sys)$',
           '^(_linklist)$',
-          '^(_stream_wrap)$'
+          '^(_stream_wrap)$',
         ],
-      }
+      },
     },
     {
       name: 'not-to-deprecated',
@@ -81,48 +81,48 @@ module.exports = {
       from: {},
       to: {
         dependencyTypes: [
-          'deprecated'
-        ]
-      }
+          'deprecated',
+        ],
+      },
     },
     {
       name: 'no-non-package-json',
       severity: 'error',
       comment:
-        "This module depends on an npm package that isn't in the 'dependencies' section of your package.json. " +
-        "That's problematic as the package either (1) won't be available on live (2 - worse) will be " +
-        "available on live with an non-guaranteed version. Fix it by adding the package to the dependencies " +
-        "in your package.json.",
+        'This module depends on an npm package that isn\'t in the \'dependencies\' section of your package.json. ' +
+        'That\'s problematic as the package either (1) won\'t be available on live (2 - worse) will be ' +
+        'available on live with an non-guaranteed version. Fix it by adding the package to the dependencies ' +
+        'in your package.json.',
       from: {},
       to: {
         dependencyTypes: [
           'npm-no-pkg',
-          'npm-unknown'
-        ]
-      }
+          'npm-unknown',
+        ],
+      },
     },
     {
       name: 'not-to-unresolvable',
       comment:
-        "This module depends on a module that cannot be found ('resolved to disk'). If it's an npm " +
+        'This module depends on a module that cannot be found (\'resolved to disk\'). If it\'s an npm ' +
         'module: add it to your package.json. In all other cases you likely already know what to do.',
       severity: 'error',
       from: {},
       to: {
-        couldNotResolve: true
-      }
+        couldNotResolve: true,
+      },
     },
     {
       name: 'no-duplicate-dep-types',
       comment:
-        "Likeley this module depends on an external ('npm') package that occurs more than once " +
-        "in your package.json i.e. bot as a devDependencies and in dependencies. This will cause " +
-        "maintenance problems later on.",
+        'Likeley this module depends on an external (\'npm\') package that occurs more than once ' +
+        'in your package.json i.e. bot as a devDependencies and in dependencies. This will cause ' +
+        'maintenance problems later on.',
       severity: 'warn',
       from: {},
       to: {
-        moreThanOneDependencyType: true
-      }
+        moreThanOneDependencyType: true,
+      },
     },
 
     /* rules you might want to tweak for your specific situation: */
@@ -130,62 +130,62 @@ module.exports = {
       name: 'not-to-spec',
       comment:
         'This module depends on a spec (test) file. The sole responsibility of a spec file is to test code. ' +
-        "If there's something in a spec that's of use to other modules, it doesn't have that single " +
+        'If there\'s something in a spec that\'s of use to other modules, it doesn\'t have that single ' +
         'responsibility anymore. Factor it out into (e.g.) a separate utility/ helper or a mock.',
       severity: 'error',
       from: {},
       to: {
-        path: '\\.(spec|test)\\.(js|ts|jsx|tsx)$'
-      }
+        path: '\\.(spec|test)\\.(js|ts|jsx|tsx)$',
+      },
     },
     {
       name: 'not-to-dev-dep',
       severity: 'error',
       comment:
-        "This module depends on an npm package from the 'devDependencies' section of your " +
+        'This module depends on an npm package from the \'devDependencies\' section of your ' +
         'package.json. It looks like something that ships to production, though. To prevent problems ' +
-        "with npm packages that aren't there on production declare it (only!) in the 'dependencies'" +
+        'with npm packages that aren\'t there on production declare it (only!) in the \'dependencies\'' +
         'section of your package.json. If this module is development only - add it to the ' +
         'from.pathNot re of the not-to-dev-dep rule in the dependency-cruiser configuration',
       from: {
         path: '^(src)',
-        pathNot: '\\.(spec|test)\\.(js|ts|jsx|tsx)$'
+        pathNot: '\\.(spec|test)\\.(js|ts|jsx|tsx)$',
       },
       to: {
         dependencyTypes: [
-          'npm-dev'
-        ]
-      }
+          'npm-dev',
+        ],
+      },
     },
     {
       name: 'optional-deps-used',
       severity: 'info',
       comment:
-        "This module depends on an npm package that is declared as an optional dependency " +
-        "in your package.json. As this makes sense in limited situations only, it's flagged here. " +
-        "If you're using an optional dependency here by design - add an exception to your" +
-        "depdency-cruiser configuration.",
+        'This module depends on an npm package that is declared as an optional dependency ' +
+        'in your package.json. As this makes sense in limited situations only, it\'s flagged here. ' +
+        'If you\'re using an optional dependency here by design - add an exception to your' +
+        'depdency-cruiser configuration.',
       from: {},
       to: {
         dependencyTypes: [
-          'npm-optional'
-        ]
-      }
+          'npm-optional',
+        ],
+      },
     },
     {
       name: 'peer-deps-used',
       comment:
-        "This module depends on an npm package that is declared as a peer dependency " +
-        "in your package.json. This makes sense if your package is e.g. a plugin, but in " +
-        "other cases - maybe not so much. If the use of a peer dependency is intentional " +
-        "add an exception to your dependency-cruiser configuration.",
+        'This module depends on an npm package that is declared as a peer dependency ' +
+        'in your package.json. This makes sense if your package is e.g. a plugin, but in ' +
+        'other cases - maybe not so much. If the use of a peer dependency is intentional ' +
+        'add an exception to your dependency-cruiser configuration.',
       severity: 'warn',
       from: {},
       to: {
         dependencyTypes: [
-          'npm-peer'
-        ]
-      }
+          'npm-peer',
+        ],
+      },
     },
 
     /* rules specific to the PoP project: */
@@ -193,17 +193,17 @@ module.exports = {
       name: 'not-among-features',
       comment:
         'This PoP feature depends on another PoP feature. A feature should only depend on the ' +
-        "`core` and on the APIs it requires for its initialization. If there's something '" +
+        '`core` and on the APIs it requires for its initialization. If there\'s something \'' +
         'it needs from another feature, factor it out and integrate it in the feature API, ' +
         'using dependency injection to initialize the feature with the required external callbacks',
-      severity: 'warn',
+      severity: 'error',
       from: {
-        path: '^src/features/([^/]+)/.+'
+        path: '^src/features/([^/]+)/.+',
       },
       to: {
         path: '^src/features/([^/]+)/.+',
-        pathNot: '^src/features/$1/.+'
-      }
+        pathNot: '^src/features/$1/.+',
+      },
     },
 
     {
@@ -211,16 +211,16 @@ module.exports = {
       comment:
         'The core module should not depend on features. The sole responsibility of the core ' +
         'module is to provide the foundations on which the features can be built. ' +
-        "If there's something in a feature that you need to access as part of the app's core, " +
+        'If there\'s something in a feature that you need to access as part of the app\'s core, ' +
         'e.g. for initialization, consider using dependency injection instead.',
       severity: 'error',
       from: {
-        path: '^src/core/([^/]+)/.+'
+        path: '^src/core/([^/]+)/.+',
       },
       to: {
         path: '^src/features/([^/]+)/.+',
-      }
-    }
+      },
+    },
   ],
   options: {
 
@@ -237,8 +237,8 @@ module.exports = {
         'npm-optional',
         'npm-peer',
         'npm-bundled',
-        'npm-no-pkg'
-      ]
+        'npm-no-pkg',
+      ],
     },
 
     /* conditions specifying which dependencies to exclude
@@ -246,7 +246,7 @@ module.exports = {
        - dynamic: a boolean indicating whether to ignore dynamic (true) or static (false) dependencies.
           leave out if you want to exclude neither (recommended!)
     */
-    exclude : {
+    exclude: {
       path: 'node_modules|__tests__|__mocks__|resources',
     },
 
@@ -297,7 +297,7 @@ module.exports = {
        defaults to './tsconfig.json'.
      */
     tsConfig: {
-      fileName: './tsconfig.json'
+      fileName: './tsconfig.json',
     },
 
     /* Webpack configuration to use to get resolve options from.
@@ -347,7 +347,7 @@ module.exports = {
         If you have an `exportsFields` attribute in your webpack config, that one
          will have precedence over the one specified here.
       */
-      exportsFields: ["exports"],
+      exportsFields: ['exports'],
       /* List of conditions to check for in the exports field. e.g. use ['imports']
          if you're only interested in exposed es6 modules, ['require'] for commonjs,
          or all conditions at once `(['import', 'require', 'node', 'default']`)
@@ -357,7 +357,7 @@ module.exports = {
         If you have a 'conditionNames' attribute in your webpack config, that one will
         have precedence over the one specified here.
       */
-      conditionNames: ["import", "require", "node", "default"]
+      conditionNames: ['import', 'require', 'node', 'default'],
     },
     reporterOptions: {
       dot: {
@@ -431,8 +431,8 @@ module.exports = {
          */
         // theme: {
         // },
-      }
-    }
-  }
+      },
+    },
+  },
 };
 // generated: dependency-cruiser@11.3.1 on 2022-02-18T15:41:18.624Z

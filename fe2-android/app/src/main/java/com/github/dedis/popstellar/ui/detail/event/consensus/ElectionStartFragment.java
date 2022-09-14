@@ -12,8 +12,11 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionStartFragmentBinding;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -88,9 +91,15 @@ public class ElectionStartFragment extends Fragment {
 
     setupButtonListeners(mLaoDetailViewModel, electionId);
 
-    Lao lao = mLaoDetailViewModel.getCurrentLaoValue();
-    List<ConsensusNode> nodes = lao.getNodes();
-    ownNode = lao.getNode(mLaoDetailViewModel.getPublicKey());
+    LaoView laoView;
+    try {
+      laoView = mLaoDetailViewModel.getLaoView();
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      return null;
+    }
+    List<ConsensusNode> nodes = laoView.getNodes();
+    ownNode = laoView.getNode(mLaoDetailViewModel.getPublicKey());
 
     if (ownNode == null) {
       // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
@@ -108,17 +117,22 @@ public class ElectionStartFragment extends Fragment {
       updateStartAndStatus(nodes, election, instanceId);
     }
 
-    mLaoDetailViewModel
-        .getNodes()
-        .observe(
-            getViewLifecycleOwner(),
-            consensusNodes -> {
-              Log.d(TAG, "got an update for nodes : " + consensusNodes);
-              adapter.setList(consensusNodes);
-              if (isElectionStartTimePassed(election)) {
-                updateStartAndStatus(consensusNodes, election, instanceId);
-              }
-            });
+    try {
+      mLaoDetailViewModel
+          .getNodes()
+          .observe(
+              getViewLifecycleOwner(),
+              consensusNodes -> {
+                Log.d(TAG, "got an update for nodes : " + consensusNodes);
+                adapter.setList(consensusNodes);
+                if (isElectionStartTimePassed(election)) {
+                  updateStartAndStatus(consensusNodes, election, instanceId);
+                }
+              });
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      return null;
+    }
 
     binding.setLifecycleOwner(getViewLifecycleOwner());
 
@@ -168,8 +182,15 @@ public class ElectionStartFragment extends Fragment {
   private void setupButtonListeners(LaoDetailViewModel mLaoDetailViewModel, String electionId) {
     electionStart.setOnClickListener(
         clicked ->
-            mLaoDetailViewModel.sendConsensusElect(
-                Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
+            mLaoDetailViewModel.addDisposable(
+                mLaoDetailViewModel
+                    .sendConsensusElect(
+                        Instant.now().getEpochSecond(), electionId, "election", "state", "started")
+                    .subscribe(
+                        msg -> {},
+                        error ->
+                            ErrorUtils.logAndShow(
+                                requireContext(), TAG, error, R.string.error_start_election))));
   }
 
   private void updateStartAndStatus(

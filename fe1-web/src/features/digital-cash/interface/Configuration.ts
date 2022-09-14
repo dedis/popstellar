@@ -88,7 +88,7 @@ export interface DigitalCashCompositionConfiguration {
 }
 
 /**
- * The type of the context that is provided to react witness components
+ * The type of the context that is provided to react digital cash components
  */
 export type DigitalCashReactContext = Pick<
   DigitalCashCompositionConfiguration,
@@ -106,7 +106,7 @@ export type DigitalCashReactContext = Pick<
 >;
 
 /**
- * The interface the witness feature exposes
+ * The interface the digital cash feature exposes
  */
 export interface DigitalCashInterface extends FeatureInterface {
   walletItemGenerators: DigitalCashFeature.WalletItemGenerator[];

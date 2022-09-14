@@ -1,21 +1,16 @@
 package com.github.dedis.popstellar.utility.error;
 
-import androidx.annotation.Nullable;
-
 import com.github.dedis.popstellar.R;
 
+/** An exception that indicates the lao with the specified id is not known to the app */
 public class UnknownLaoException extends GenericException {
 
-  private final String laoId;
-
   public UnknownLaoException(String laoId) {
-    this.laoId = laoId;
+    super("Lao with id " + laoId + " is unknown");
   }
 
-  @Nullable
-  @Override
-  public String getMessage() {
-    return "Lao with id " + laoId + " is unknown";
+  public UnknownLaoException() {
+    super("Could not find a valid Lao");
   }
 
   @Override

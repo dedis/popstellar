@@ -11,15 +11,16 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 
@@ -72,10 +73,10 @@ public class DigitalCashSendFragment extends Fragment {
                     String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
                 if (mViewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
                   try {
-                    Lao lao = mViewModel.getCurrentLaoValue();
-                    PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+                    LaoView laoView = mViewModel.getCurrentLaoValue();
+                    PoPToken token = mViewModel.getKeyManager().getValidPoPToken(laoView);
                     if (canPostTransaction(
-                        lao, token.getPublicKey(), Integer.parseInt(currentAmount))) {
+                        laoView, token.getPublicKey(), Integer.parseInt(currentAmount))) {
                       postTransaction(
                           Collections.singletonMap(currentPublicKeySelected, currentAmount));
                       mViewModel.updateReceiptAddressEvent(currentPublicKeySelected);
@@ -104,8 +105,8 @@ public class DigitalCashSendFragment extends Fragment {
     }
   }
 
-  public boolean canPostTransaction(Lao lao, PublicKey publicKey, int currentAmount) {
-    Map<PublicKey, Set<TransactionObject>> transactionByUser = lao.getTransactionByUser();
+  public boolean canPostTransaction(LaoView lao, PublicKey publicKey, int currentAmount) {
+    Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
     if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
       Toast.makeText(requireContext(), R.string.digital_cash_warning_no_money, Toast.LENGTH_SHORT)
           .show();
@@ -165,7 +166,26 @@ public class DigitalCashSendFragment extends Fragment {
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      mViewModel.postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false);
+      mViewModel.addDisposable(
+          mViewModel
+              .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false)
+              .subscribe(
+                  () ->
+                      Toast.makeText(
+                              requireContext(),
+                              R.string.digital_cash_post_transaction,
+                              Toast.LENGTH_LONG)
+                          .show(),
+                  error -> {
+                    if (error instanceof KeyException
+                        || error instanceof GeneralSecurityException) {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                    } else {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_post_transaction);
+                    }
+                  }));
       mViewModel.updateLaoCoinEvent();
     }
   }

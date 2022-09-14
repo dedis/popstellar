@@ -8,6 +8,7 @@ import android.widget.*;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.time.Instant;
 import java.util.List;
@@ -16,15 +17,19 @@ import static android.text.format.DateUtils.getRelativeTimeSpanString;
 
 public class ChirpListAdapter extends BaseAdapter {
 
+  private static final String TAG = ChirpListAdapter.class.getSimpleName();
+
   private final SocialMediaViewModel socialMediaViewModel;
-  private List<Chirp> chirps;
+  private final Context context;
   private final LayoutInflater layoutInflater;
+  private List<Chirp> chirps;
 
   public ChirpListAdapter(
-      Context context, SocialMediaViewModel socialMediaViewModel, List<Chirp> chirps) {
+      Context ctx, SocialMediaViewModel socialMediaViewModel, List<Chirp> chirps) {
+    this.context = ctx;
     this.socialMediaViewModel = socialMediaViewModel;
     this.chirps = chirps;
-    layoutInflater = LayoutInflater.from(context);
+    layoutInflater = LayoutInflater.from(ctx);
   }
 
   public void replaceList(List<Chirp> chirps) {
@@ -50,7 +55,7 @@ public class ChirpListAdapter extends BaseAdapter {
   @Override
   public View getView(int position, View chirpView, ViewGroup viewGroup) {
     if (chirpView == null) {
-      chirpView = layoutInflater.inflate(R.layout.chirp_card, null);
+      chirpView = layoutInflater.inflate(R.layout.chirp_card, viewGroup);
     }
 
     Chirp chirp = getItem(position);
@@ -69,7 +74,16 @@ public class ChirpListAdapter extends BaseAdapter {
       ImageButton deleteChirp = chirpView.findViewById(R.id.delete_chirp_button);
       deleteChirp.setVisibility(View.VISIBLE);
       deleteChirp.setOnClickListener(
-          v -> socialMediaViewModel.deleteChirp(chirp.getId(), Instant.now().getEpochSecond()));
+          v ->
+              socialMediaViewModel.addDisposable(
+                  socialMediaViewModel
+                      .deleteChirp(chirp.getId(), Instant.now().getEpochSecond())
+                      .subscribe(
+                          msg ->
+                              Toast.makeText(context, "Deleted chirp!", Toast.LENGTH_LONG).show(),
+                          error ->
+                              ErrorUtils.logAndShow(
+                                  context, TAG, error, R.string.error_delete_chirp))));
     }
 
     if (chirp.getIsDeleted()) {

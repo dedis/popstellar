@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.utility.error;
 
 import com.github.dedis.popstellar.R;
 
+/** Exception to be used when not a single Lao can be found */
 public class NoLAOException extends GenericException {
 
   @Override
