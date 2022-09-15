@@ -129,9 +129,6 @@ public class TransactionCoinHandlerTest {
     messageHandler.handleMessage(messageRepo, laoRepo, messageSender, coinChannel, message);
 
     Lao updatedLao = laoRepo.getLaoViewByChannel(lao.getChannel()).createLaoCopy();
-//TODO investigate that
-    //    messageHandler.handleMessage(laoRepository, messageSender, coinChannel, message);
-//    Lao updatedLao = laoRepository.getLaoViewByChannel(lao.getChannel()).createLaoCopy();
 
     assertEquals(1, updatedLao.getTransactionByUser().size());
     assertEquals(1, updatedLao.getTransactionHistoryByUser().size());
