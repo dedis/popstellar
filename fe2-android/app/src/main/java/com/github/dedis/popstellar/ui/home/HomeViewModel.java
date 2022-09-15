@@ -149,7 +149,7 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
       try {
         importSeed(appended);
       } catch (GeneralSecurityException | SeedValidationException e) {
-        Log.e(TAG, "error importing seed from memory");
+        Log.e(TAG, "error importing seed from storage");
         return;
       }
     }
