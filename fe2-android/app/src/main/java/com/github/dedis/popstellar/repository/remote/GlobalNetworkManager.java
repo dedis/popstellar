@@ -3,8 +3,6 @@ package com.github.dedis.popstellar.repository.remote;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
@@ -54,7 +52,8 @@ public class GlobalNetworkManager implements Disposable {
     if (networkManager != null) networkManager.dispose();
 
     Connection connection = connectionFactory.createConnection(url);
-    networkManager = new LAONetworkManager(messageHandler, connection, gson, schedulerProvider);
+    networkManager =
+        new LAONetworkManager(messageHandler, connection, gson, schedulerProvider, subscriptions);
     currentURL = url;
   }
 
