@@ -321,6 +321,7 @@
   <string name="error_public_key_receiver">Error on the receiver s public key\n%1$s</string>
   <string name="error_storing_data">An error occurred while storing data</string>
   <string name="error_loading_data">An error occurred while loading data</string>
+  <string name="error_storage_wallet">An error occurred during the storage of the wallet seed</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>

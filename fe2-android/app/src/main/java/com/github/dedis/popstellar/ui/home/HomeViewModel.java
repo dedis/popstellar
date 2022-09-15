@@ -165,7 +165,7 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
             ConnectingActivity.newIntentForHome(getApplication().getApplicationContext()));
   }
 
-  public void savePersistentData() {
+  public void savePersistentData() throws GeneralSecurityException {
     ActivityUtils.activitySavingRoutine(
         networkManager, wallet, getApplication().getApplicationContext());
   }

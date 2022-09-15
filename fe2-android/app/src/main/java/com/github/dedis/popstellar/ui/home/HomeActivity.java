@@ -27,6 +27,7 @@ import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -64,7 +65,14 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
   @Override
   public void onStop() {
     super.onStop();
-    viewModel.savePersistentData();
+
+    try {
+      viewModel.savePersistentData();
+    } catch (GeneralSecurityException e) {
+      // We do not display the security error to the user
+      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
+    }
   }
 
   /** Setup the listeners that changes the navigation bar menus */

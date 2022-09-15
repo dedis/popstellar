@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.io.*;
+import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -81,7 +82,8 @@ public class ActivityUtils {
   }
 
   public static boolean activitySavingRoutine(
-      GlobalNetworkManager networkManager, Wallet wallet, Context context) {
+      GlobalNetworkManager networkManager, Wallet wallet, Context context)
+      throws GeneralSecurityException {
     String serverAddress = networkManager.getCurrentUrl();
     if (serverAddress == null) {
       return false;

@@ -34,6 +34,7 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -786,7 +787,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return handleAttendeeAddition(data);
   }
 
-  public void savePersistentData() {
+  public void savePersistentData() throws GeneralSecurityException {
     ActivityUtils.activitySavingRoutine(
         networkManager, wallet, getApplication().getApplicationContext());
   }

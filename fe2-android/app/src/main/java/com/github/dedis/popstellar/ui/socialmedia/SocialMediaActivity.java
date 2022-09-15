@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
+import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.fragment.app.*;
@@ -17,6 +18,7 @@ import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -45,10 +47,10 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
       String laoId = getIntent().getExtras().getString(LAO_ID);
       String laoName = getIntent().getExtras().getString(LAO_NAME);
 
-      if (laoId != null){
+      if (laoId != null) {
         viewModel.setLaoId(laoId);
       }
-      if (laoName != null){
+      if (laoName != null) {
         viewModel.setLaoName(laoName);
       }
     }
@@ -61,7 +63,14 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
   @Override
   public void onStop() {
     super.onStop();
-    viewModel.savePersistentData();
+
+    try {
+      viewModel.savePersistentData();
+    } catch (GeneralSecurityException e) {
+      // We do not display the security error to the user
+      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
+    }
   }
 
   public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {

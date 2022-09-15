@@ -369,7 +369,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     }
   }
 
-  public void savePersistentData() {
+  public void savePersistentData() throws GeneralSecurityException {
     ActivityUtils.activitySavingRoutine(
         networkManager, wallet, getApplication().getApplicationContext());
   }

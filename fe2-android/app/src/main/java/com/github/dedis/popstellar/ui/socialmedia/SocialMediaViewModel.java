@@ -25,6 +25,7 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 
@@ -222,7 +223,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     }
   }
 
-  public void savePersistentData() {
+  public void savePersistentData() throws GeneralSecurityException {
     ActivityUtils.activitySavingRoutine(
         networkManager, wallet, getApplication().getApplicationContext());
   }

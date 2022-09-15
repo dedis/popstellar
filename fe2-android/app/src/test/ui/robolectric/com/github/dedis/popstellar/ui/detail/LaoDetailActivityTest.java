@@ -22,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 
+import java.security.GeneralSecurityException;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
@@ -56,7 +58,7 @@ public class LaoDetailActivityTest {
   private final TestRule setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws UnknownLaoException {
+        protected void before() throws UnknownLaoException, GeneralSecurityException {
           hiltAndroidRule.inject();
           when(laoRepository.getLaoView(anyString())).thenAnswer(invocation -> new LaoView(LAO));
 

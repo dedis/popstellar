@@ -12,11 +12,10 @@ import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.Aead;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 
-import net.i2p.crypto.eddsa.Utils;
-
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.*;
@@ -38,8 +37,8 @@ public class Wallet {
   private static final String TAG = Wallet.class.getSimpleName();
   private static final String PURPOSE = "888";
   private static final String ACCOUNT = "0";
-  private byte[] seed;
-  private String[] mnemonic;
+  private byte[] encryptedSeed;
+  private byte[] encryptedMnemonic;
   private final Aead aead;
 
   /** Class constructor, initialize the wallet keyset. */
@@ -103,11 +102,14 @@ public class Wallet {
   /**
    * @return the list of mnemonic words associated with the seed
    */
-  public String[] exportSeed() {
-    if (mnemonic == null) {
+  public String[] exportSeed() throws GeneralSecurityException {
+    if (encryptedMnemonic == null) {
       return new String[0];
     }
-    return mnemonic.clone();
+    byte[] decryptedBytes = aead.decrypt(encryptedMnemonic, new byte[0]);
+    String words = new String(decryptedBytes, StandardCharsets.UTF_8);
+    Log.d(TAG, "Mnemonic words successfully decrypted for export");
+    return words.split(" ");
   }
 
   /**
@@ -126,9 +128,8 @@ public class Wallet {
         | UnexpectedWhiteSpaceException e) {
       throw new SeedValidationException(e);
     }
-    mnemonic = words.split(" ");
-    seed = aead.encrypt(new SeedCalculator().calculateSeed(words, ""), new byte[0]);
-    Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
+    storeEncrypted(words);
+    Log.d(TAG, "Mnemonic words were successfully imported");
   }
 
   /**
@@ -137,34 +138,33 @@ public class Wallet {
    * @return true if wallet has been set up, false otherwise
    */
   public boolean isSetUp() {
-    return seed != null;
+    return encryptedSeed != null;
   }
 
   /** Logout the wallet by replacing the seed by a random one */
   public void logout() {
-    seed = null;
+    encryptedSeed = null;
   }
 
   /** Initialized the wallet with a new random seed */
   public void newSeed() throws GeneralSecurityException {
-    SecureRandom random = new SecureRandom();
-    byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
 
-    List<CharSequence> words = new LinkedList<>();
-    MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
-    generator.createMnemonic(entropy, words::add);
+    StringBuilder sb = new StringBuilder();
+    byte[] entropy = new byte[Words.TWELVE.byteLength()];
+    new SecureRandom().nextBytes(entropy);
+    new MnemonicGenerator(English.INSTANCE).createMnemonic(entropy, sb::append);
 
-    mnemonic =
-        words.stream()
-            .filter(s -> !s.equals(" ")) // Filter out spaces
-            .map(CharSequence::toString)
-            .toArray(String[]::new);
+    String mnemonicWords = sb.toString();
+    storeEncrypted(mnemonicWords);
+    Log.d(TAG, "Mnemonic words and seed were successfully generated");
+  }
 
-    Log.d(TAG, "the array of word generated:" + Arrays.toString(mnemonic));
-
-    seed =
-        aead.encrypt(new SeedCalculator().calculateSeed(String.join("", words), ""), new byte[0]);
-    Log.d(TAG, "Wallet initialized with a new random seed: " + Utils.bytesToHex(seed));
+  private void storeEncrypted(String mnemonicWords) throws GeneralSecurityException {
+    encryptedMnemonic = aead.encrypt(mnemonicWords.getBytes(StandardCharsets.UTF_8), new byte[0]);
+    encryptedSeed =
+        aead.encrypt(
+            new SeedCalculator().calculateSeed(String.join("", mnemonicWords), ""), new byte[0]);
+    Log.d(TAG, "Mnemonic words and seed successfully encrypted");
   }
 
   /**
@@ -224,7 +224,7 @@ public class Wallet {
     try {
       // derive private and public key
       byte[] privateKey =
-          SLIP10.deriveEd25519PrivateKey(aead.decrypt(seed, new byte[0]), pathValueInt);
+          SLIP10.deriveEd25519PrivateKey(aead.decrypt(encryptedSeed, new byte[0]), pathValueInt);
 
       Ed25519PrivateKeyParameters prK = new Ed25519PrivateKeyParameters(privateKey, 0);
       Ed25519PublicKeyParameters puK = prK.generatePublicKey();
