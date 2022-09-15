@@ -747,6 +747,14 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   private void updateCurrentObjects(LaoView laoView) {
+    if (currentRollCall != null) {
+      Optional<RollCall> rcOption =
+          laoView.getRollCallWithPersistentId(currentRollCall.getPersistentId());
+      if (!rcOption.isPresent()) {
+        throw new IllegalStateException("Roll call must be present if in current id");
+      }
+      currentRollCall = rcOption.get();
+    }
     if (currentElection != null) {
       Optional<Election> electionOption = laoView.getElection(currentElection.getId());
       if (!electionOption.isPresent()) {
