@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.github.dedis.popstellar.di.DataRegistryModule;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.google.gson.Gson;
@@ -23,7 +23,7 @@ public class CastVoteTest {
   private final boolean writeInEnabled = false;
   private final long timestamp = 10;
   private final String write_in = "My write in ballot option";
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
 
   // Set up a open ballot election
   private final ElectionVote electionVote1 =

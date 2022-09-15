@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.repository.remote;
 
 import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.gson.Gson;
@@ -26,8 +24,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class GlobalNetworkManagerTest {
 
-  @Mock MessageRepository messageRepo;
-  @Mock LAORepository laoRepo;
   @Mock MessageHandler handler;
   @Mock Gson gson;
 
@@ -44,7 +40,7 @@ public class GlobalNetworkManagerTest {
     when(factory.createConnection(anyString())).thenReturn(firstConnection);
 
     GlobalNetworkManager networkManager =
-        new GlobalNetworkManager(messageRepo, laoRepo, handler, factory, gson, schedulerProvider);
+        new GlobalNetworkManager(handler, factory, gson, schedulerProvider);
     verify(factory).createConnection(anyString());
 
     Completable sendMessage = networkManager.getMessageSender().unsubscribe(Channel.ROOT);
@@ -68,8 +64,7 @@ public class GlobalNetworkManagerTest {
     when(factory.createConnection(anyString())).thenReturn(firstConnection);
 
     GlobalNetworkManager networkManager =
-        new GlobalNetworkManager(
-            messageRepo, laoRepo, handler, factory, gson, new TestSchedulerProvider());
+        new GlobalNetworkManager(handler, factory, gson, new TestSchedulerProvider());
     verify(factory).createConnection(anyString());
 
     Connection secondConnection = mock(Connection.class);

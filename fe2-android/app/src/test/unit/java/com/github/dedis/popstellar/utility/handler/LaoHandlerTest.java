@@ -1,8 +1,9 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import com.github.dedis.popstellar.di.DataRegistryModule;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -44,12 +45,10 @@ public class LaoHandlerTest {
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
   private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
 
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
-
-  private MessageRepository messageRepo;
   private LAORepository laoRepo;
   private MessageHandler messageHandler;
   private ServerRepository serverRepository;
+  private Gson gson;
 
   public static final String RANDOM_KEY = "oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm8";
   public static final String RANDOM_ADDRESS = "ws://10.0.2.2:9000/organizer/client";
@@ -68,11 +67,14 @@ public class LaoHandlerTest {
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    messageRepo = new MessageRepository();
     laoRepo = new LAORepository();
     serverRepository = new ServerRepository();
-    messageHandler =
-        new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
+    MessageRepository messageRepo = new MessageRepository();
+
+    DataRegistry dataRegistry =
+        DataRegistryModuleHelper.buildRegistry(laoRepo, messageRepo, keyManager, serverRepository);
+    gson = JsonModule.provideGson(dataRegistry);
+    messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
     // Create one LAO and add it to the LAORepository
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -80,7 +82,7 @@ public class LaoHandlerTest {
     laoRepo.updateLao(lao);
 
     // Add the CreateLao message to the LAORepository
-    createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
+    createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
     messageRepo.addMessage(createLaoMessage);
   }
 
@@ -94,14 +96,14 @@ public class LaoHandlerTest {
             "new name",
             Instant.now().getEpochSecond(),
             new HashSet<>());
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, updateLao, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, updateLao, gson);
 
     // Create the expected WitnessMessage
     WitnessMessage expectedMessage =
         updateLaoNameWitnessMessage(message.getMessageId(), updateLao, new LaoView(lao));
 
     // Call the message handler
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
@@ -124,10 +126,10 @@ public class LaoHandlerTest {
             createLaoMessage.getMessageId(),
             new HashSet<>(),
             new ArrayList<>());
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, stateLao, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, stateLao, gson);
 
     // Call the message handler
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check the LAO last modification time and ID was updated
     assertEquals(
@@ -143,10 +145,10 @@ public class LaoHandlerTest {
         new GreetLao(
             lao.getId(), RANDOM_KEY, RANDOM_ADDRESS, Collections.singletonList(RANDOM_PEER));
 
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, greetLao, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, greetLao, gson);
 
     // Call the handler
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check that the server repository contains the key of the server
     assertEquals(RANDOM_ADDRESS, serverRepository.getServerByLaoId(lao.getId()).getServerAddress());
@@ -157,11 +159,9 @@ public class LaoHandlerTest {
     // Test for invalid LAO Id
     GreetLao greetLao_invalid =
         new GreetLao("123", RANDOM_KEY, RANDOM_ADDRESS, Collections.singletonList(RANDOM_PEER));
-    MessageGeneral message_invalid = new MessageGeneral(SENDER_KEY, greetLao_invalid, GSON);
+    MessageGeneral message_invalid = new MessageGeneral(SENDER_KEY, greetLao_invalid, gson);
     assertThrows(
         IllegalArgumentException.class,
-        () ->
-            messageHandler.handleMessage(
-                messageRepo, laoRepo, messageSender, LAO_CHANNEL, message_invalid));
+        () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL, message_invalid));
   }
 }

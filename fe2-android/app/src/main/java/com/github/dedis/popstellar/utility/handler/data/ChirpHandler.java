@@ -14,13 +14,18 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 /** Chirp messages handler class */
 public final class ChirpHandler {
 
   public static final String TAG = ChirpHandler.class.getSimpleName();
 
-  private ChirpHandler() {
-    throw new IllegalArgumentException("Utility class");
+  private final LAORepository laoRepo;
+
+  @Inject
+  public ChirpHandler(LAORepository laoRepo) {
+    this.laoRepo = laoRepo;
   }
 
   /**
@@ -29,15 +34,13 @@ public final class ChirpHandler {
    * @param context the HandlerContext of the message
    * @param addChirp the data of the message that was received
    */
-  public static void handleChirpAdd(HandlerContext context, AddChirp addChirp)
-      throws UnknownLaoException {
-    LAORepository laoRepository = context.getLaoRepository();
+  public void handleChirpAdd(HandlerContext context, AddChirp addChirp) throws UnknownLaoException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
     Log.d(TAG, "handleChirpAdd: " + channel + " id " + addChirp.getParentId());
-    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
     Chirp chirp = new Chirp(messageId);
 
     chirp.setChannel(channel);
@@ -48,7 +51,7 @@ public final class ChirpHandler {
 
     Lao lao = laoView.createLaoCopy();
     lao.updateChirpList(messageId, chirp);
-    laoRepository.updateLao(lao);
+    laoRepo.updateLao(lao);
   }
 
   /**
@@ -57,14 +60,12 @@ public final class ChirpHandler {
    * @param context the HandlerContext of the message
    * @param deleteChirp the data of the message that was received
    */
-  public static void handleDeleteChirp(HandlerContext context, DeleteChirp deleteChirp)
+  public void handleDeleteChirp(HandlerContext context, DeleteChirp deleteChirp)
       throws UnknownLaoException, InvalidMessageIdException {
-    LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleDeleteChirp: " + channel + " id " + deleteChirp.getChirpId());
-
-    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
     Optional<Chirp> chirpOptional = laoView.getChirp(deleteChirp.getChirpId());
 
     if (!chirpOptional.isPresent()) {
@@ -81,6 +82,6 @@ public final class ChirpHandler {
 
     Lao lao = laoView.createLaoCopy();
     lao.updateChirpList(chirp.getId(), chirp);
-    laoRepository.updateLao(lao);
+    laoRepo.updateLao(lao);
   }
 }

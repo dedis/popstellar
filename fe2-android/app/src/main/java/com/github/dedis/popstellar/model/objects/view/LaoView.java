@@ -72,6 +72,12 @@ public final class LaoView {
     // returns optional with copy of retrieved RollCall
   }
 
+  public Optional<RollCall> getRollCallWithPersistentId(String persistentId) {
+    Optional<RollCall> optional = lao.getRollCallWithPersistentId(persistentId);
+    return optional.map(RollCall::new); // If empty returns empty optional, if not
+    // returns optional with copy of retrieved RollCall
+  }
+
   public Optional<Election> getElection(String id) {
     Optional<Election> electionOption = lao.getElection(id);
     return electionOption.map(Election::new); // If empty returns empty optional, if not

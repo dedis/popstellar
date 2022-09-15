@@ -1,15 +1,17 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import com.github.dedis.popstellar.di.DataRegistryModule;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -37,7 +39,6 @@ public class TransactionCoinHandlerTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
   // Version
   private static final int VERSION = 1;
@@ -72,14 +73,12 @@ public class TransactionCoinHandlerTest {
   private Lao lao;
   private RollCall rollCall;
 
-  private MessageRepository messageRepo;
   private LAORepository laoRepo;
   private MessageHandler messageHandler;
   private Channel coinChannel;
+  private Gson gson;
 
   private PostTransactionCoin postTransactionCoin;
-
-  private ServerRepository serverRepository;
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
@@ -90,10 +89,12 @@ public class TransactionCoinHandlerTest {
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
     postTransactionCoin = new PostTransactionCoin(TRANSACTION);
+
     laoRepo = new LAORepository();
-    messageRepo = new MessageRepository();
-    messageHandler =
-        new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager, serverRepository);
+    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
+    MessageRepository messageRepo = new MessageRepository();
+    gson = JsonModule.provideGson(dataRegistry);
+    messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
     // Create one LAO
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -112,21 +113,21 @@ public class TransactionCoinHandlerTest {
     laoRepo.updateLao(lao);
 
     // Add the CreateLao message to the LAORepository
-    MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
+    MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
     messageRepo.addMessage(createLaoMessage);
 
     CloseRollCall closeRollCall =
         new CloseRollCall(
             CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, gson);
     messageRepo.addMessage(message);
     coinChannel = lao.getChannel().subChannel("coin").subChannel(SENDER.getEncoded());
   }
 
   @Test
   public void testHandlePostTransactionCoin() throws DataHandlingException, UnknownLaoException {
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, GSON);
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, coinChannel, message);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, gson);
+    messageHandler.handleMessage(messageSender, coinChannel, message);
 
     Lao updatedLao = laoRepo.getLaoViewByChannel(lao.getChannel()).createLaoCopy();
 

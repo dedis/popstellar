@@ -250,6 +250,18 @@ public final class Lao implements Copyable<Lao> {
     return Optional.ofNullable(rollCalls.get(id));
   }
 
+  public Optional<RollCall> getRollCallWithPersistentId(String persistentId) {
+    List<RollCall> filtered =
+        rollCalls.values().stream()
+            .filter(value -> value.getPersistentId().equals(persistentId))
+            .collect(Collectors.toList());
+    if (filtered.size() > 1) {
+      throw new IllegalStateException(
+          "There should only be one roll call object with persistent id " + id);
+    }
+    return Optional.ofNullable(filtered.isEmpty() ? null : filtered.get(0));
+  }
+
   public Optional<Election> getElection(String id) {
     return Optional.ofNullable(elections.get(id));
   }

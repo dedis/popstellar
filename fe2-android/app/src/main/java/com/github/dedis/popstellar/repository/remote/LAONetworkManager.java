@@ -10,8 +10,6 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
@@ -33,8 +31,6 @@ public class LAONetworkManager implements MessageSender {
 
   private static final String TAG = LAONetworkManager.class.getSimpleName();
 
-  private final MessageRepository messageRepo;
-  private final LAORepository laoRepo;
   private final MessageHandler messageHandler;
   private final Connection connection;
   public final AtomicInteger requestCounter = new AtomicInteger();
@@ -47,15 +43,12 @@ public class LAONetworkManager implements MessageSender {
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   public LAONetworkManager(
-      MessageRepository messageRepo,
-      LAORepository laoRepo,
       MessageHandler messageHandler,
       Connection connection,
       Gson gson,
       SchedulerProvider schedulerProvider,
       Set<Channel> subscribedChannels) {
-    this.messageRepo = messageRepo;
-    this.laoRepo = laoRepo;
+
     this.messageHandler = messageHandler;
     this.connection = connection;
     this.gson = gson;
@@ -186,8 +179,7 @@ public class LAONetworkManager implements MessageSender {
   private void handleBroadcast(Broadcast broadcast) {
     Log.d(TAG, "handling broadcast msg : " + broadcast);
     try {
-      messageHandler.handleMessage(
-          messageRepo, laoRepo, this, broadcast.getChannel(), broadcast.getMessage());
+      messageHandler.handleMessage(this, broadcast.getChannel(), broadcast.getMessage());
     } catch (DataHandlingException | UnknownLaoException e) {
       Log.e(TAG, "Error while handling received message", e);
       unprocessed.onNext(broadcast);
@@ -197,7 +189,7 @@ public class LAONetworkManager implements MessageSender {
   private void handleMessages(List<MessageGeneral> messages, Channel channel) {
     for (MessageGeneral msg : messages) {
       try {
-        messageHandler.handleMessage(messageRepo, laoRepo, this, channel, msg);
+        messageHandler.handleMessage(this, channel, msg);
       } catch (DataHandlingException | UnknownLaoException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
       }
