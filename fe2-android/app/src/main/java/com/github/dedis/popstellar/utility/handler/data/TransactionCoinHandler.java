@@ -11,11 +11,15 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
 
+import javax.inject.Inject;
+
 public class TransactionCoinHandler {
   public static final String TAG = TransactionCoinHandler.class.getSimpleName();
+  private final LAORepository laoRepo;
 
-  private TransactionCoinHandler() {
-    throw new IllegalArgumentException("Utility class");
+  @Inject
+  public TransactionCoinHandler(LAORepository laoRepo) {
+    this.laoRepo = laoRepo;
   }
 
   /**
@@ -24,14 +28,13 @@ public class TransactionCoinHandler {
    * @param context the HandlerContext of the message
    * @param postTransactionCoin the data of the message that was received
    */
-  public static void handlePostTransactionCoin(
+  public void handlePostTransactionCoin(
       HandlerContext context, PostTransactionCoin postTransactionCoin) throws UnknownLaoException {
-    LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
 
-    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
     TransactionObjectBuilder builder = new TransactionObjectBuilder();
 
     // inputs and outputs for the creation
@@ -87,6 +90,6 @@ public class TransactionCoinHandler {
 
     // lao update the history / lao update the last transaction per public key
     lao.updateTransactionMaps(builder.build());
-    laoRepository.updateLao(lao);
+    laoRepo.updateLao(lao);
   }
 }

@@ -16,6 +16,8 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import java.time.Instant;
 import java.util.*;
 
+import javax.inject.Inject;
+
 import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
 /** Election messages handler class */
@@ -23,8 +25,13 @@ public final class ElectionHandler {
 
   public static final String TAG = ElectionHandler.class.getSimpleName();
 
-  private ElectionHandler() {
-    throw new IllegalStateException("Utility class");
+  private final LAORepository laoRepo;
+  private final MessageRepository messageRepo;
+
+  @Inject
+  public ElectionHandler(MessageRepository messageRepo, LAORepository laoRepo) {
+    this.laoRepo = laoRepo;
+    this.messageRepo = messageRepo;
   }
 
   /**
@@ -33,9 +40,8 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param electionSetup the message that was received
    */
-  public static void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup)
+  public void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup)
       throws UnknownLaoException {
-    LAORepository laoRepo = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -74,9 +80,8 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param electionResult the message that was received
    */
-  public static void handleElectionResult(HandlerContext context, ElectionResult electionResult)
+  public void handleElectionResult(HandlerContext context, ElectionResult electionResult)
       throws UnknownLaoException, DataHandlingException {
-    LAORepository laoRepo = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handling election result");
@@ -105,9 +110,8 @@ public final class ElectionHandler {
    * @param openElection the message that was received
    */
   @SuppressWarnings("unused")
-  public static void handleElectionOpen(HandlerContext context, OpenElection openElection)
+  public void handleElectionOpen(HandlerContext context, OpenElection openElection)
       throws UnknownLaoException {
-    LAORepository laoRepo = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleOpenElection: channel " + channel);
@@ -136,9 +140,8 @@ public final class ElectionHandler {
    * @param electionEnd the message that was received
    */
   @SuppressWarnings("unused")
-  public static void handleElectionEnd(HandlerContext context, ElectionEnd electionEnd)
+  public void handleElectionEnd(HandlerContext context, ElectionEnd electionEnd)
       throws UnknownLaoException {
-    LAORepository laoRepo = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleElectionEnd: channel " + channel);
@@ -159,10 +162,8 @@ public final class ElectionHandler {
    * @param castVote the message that was received
    */
   @SuppressWarnings("unchecked") // Because of the way CastVote is designed, this must be done
-  public static void handleCastVote(HandlerContext context, CastVote<?> castVote)
+  public void handleCastVote(HandlerContext context, CastVote<?> castVote)
       throws UnknownLaoException {
-    LAORepository laoRepo = context.getLaoRepository();
-    MessageRepository messageRepo = context.getMessageRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
@@ -230,8 +231,7 @@ public final class ElectionHandler {
    * @param context context
    * @param electionKey key to add
    */
-  public static void handleElectionKey(HandlerContext context, ElectionKey electionKey) {
-    LAORepository laoRepo = context.getLaoRepository();
+  public void handleElectionKey(HandlerContext context, ElectionKey electionKey) {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleElectionKey: channel " + channel);

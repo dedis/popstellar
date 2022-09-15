@@ -5,12 +5,11 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
-import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,32 +20,23 @@ public final class MessageHandler {
 
   public static final String TAG = MessageHandler.class.getSimpleName();
 
+  private final MessageRepository messageRepo;
   private final DataRegistry registry;
-  private final KeyManager keyManager;
-  private final ServerRepository serverRepository;
 
   @Inject
-  public MessageHandler(
-      DataRegistry registry, KeyManager keyManager, ServerRepository serverRepository) {
+  public MessageHandler(MessageRepository messageRepo, DataRegistry registry) {
+    this.messageRepo = messageRepo;
     this.registry = registry;
-    this.keyManager = keyManager;
-    this.serverRepository = serverRepository;
   }
 
   /**
    * Send messages to the corresponding handler.
    *
-   * @param laoRepo the repository to access the messages and LAOs
    * @param messageSender the service used to send messages to the backend
    * @param channel the channel on which the message was received
    * @param message the message that was received
    */
-  public void handleMessage(
-      MessageRepository messageRepo,
-      LAORepository laoRepo,
-      MessageSender messageSender,
-      Channel channel,
-      MessageGeneral message)
+  public void handleMessage(MessageSender messageSender, Channel channel, MessageGeneral message)
       throws DataHandlingException, UnknownLaoException {
     Log.d(TAG, "handle incoming message");
     // Put the message in the state
@@ -58,8 +48,7 @@ public final class MessageHandler {
     Action dataAction = Action.find(data.getAction());
 
     registry.handle(
-        new HandlerContext(
-            messageRepo, laoRepo, keyManager, messageSender, channel, message, serverRepository),
+        new HandlerContext(message.getMessageId(), message.getSender(), channel, messageSender),
         data,
         dataObj,
         dataAction);

@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message;
 
-import com.github.dedis.popstellar.di.DataRegistryModule;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 public class MessageGeneralTest {
 
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
 
   private static final PublicKey ORGANIZER =
       new PublicKey("Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");
