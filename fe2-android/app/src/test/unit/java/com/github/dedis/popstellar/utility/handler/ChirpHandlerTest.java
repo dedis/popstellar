@@ -25,7 +25,6 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @HiltAndroidTest
@@ -73,7 +72,7 @@ public class ChirpHandlerTest {
 
     handler.handleChirpAdd(ctx, ADD_CHIRP);
 
-    verify(socialMediaRepo).addChirp(eq(LAO_ID), eq(CHIRP));
+    verify(socialMediaRepo).addChirp(LAO_ID, CHIRP);
     verifyNoMoreInteractions(socialMediaRepo);
   }
 
@@ -85,7 +84,7 @@ public class ChirpHandlerTest {
 
     handler.handleDeleteChirp(ctx, DELETE_CHIRP);
 
-    verify(socialMediaRepo).deleteChirp(eq(LAO_ID), eq(CHIRP_ID));
+    verify(socialMediaRepo).deleteChirp(LAO_ID, CHIRP_ID);
     verifyNoMoreInteractions(socialMediaRepo);
   }
 
@@ -98,7 +97,7 @@ public class ChirpHandlerTest {
     assertThrows(
         InvalidMessageIdException.class, () -> handler.handleDeleteChirp(ctx, DELETE_CHIRP));
 
-    verify(socialMediaRepo).deleteChirp(eq(LAO_ID), eq(CHIRP_ID));
+    verify(socialMediaRepo).deleteChirp(LAO_ID, CHIRP_ID);
     verifyNoMoreInteractions(socialMediaRepo);
   }
 }
