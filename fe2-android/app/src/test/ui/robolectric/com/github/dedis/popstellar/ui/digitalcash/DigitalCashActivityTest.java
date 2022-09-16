@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
@@ -123,7 +124,7 @@ public class DigitalCashActivityTest {
 
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(LAO));
+              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
           when(keyManager.getValidPoPToken(any())).thenReturn(POP_TOKEN);
           when(keyManager.getMainPublicKey()).thenReturn(POP_TOKEN.getPublicKey());
           when(networkManager.getMessageSender()).thenReturn(messageSender);

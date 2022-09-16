@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
@@ -17,6 +18,7 @@ import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRu
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
@@ -67,12 +69,12 @@ public class CastVoteFragmentTest {
   private static final String ELECTION_BALLOT_TEXT21 = "random 1";
   private static final String ELECTION_BALLOT_TEXT22 = "random 2";
   private static final String PLURALITY = "Plurality";
+  private static final BehaviorSubject<LaoView> laoSubject =
+      BehaviorSubject.createDefault(new LaoView(LAO));
 
   private static Election election;
 
   ElectionQuestion electionQuestion1;
-
-  private ElectionQuestion electionQuestion2;
 
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock KeyManager keyManager;
@@ -92,14 +94,13 @@ public class CastVoteFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException {
+        protected void before() throws KeyException, UnknownLaoException {
           hiltRule.inject();
-          when(repository.getLaoObservable(anyString()))
-              .thenReturn(BehaviorSubject.createDefault(LAO));
+          when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           initializeElection();
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
           when(keyManager.getValidPoPToken(any())).thenReturn(generatePoPToken());
-
+          when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
           messageSenderHelper.setupMock();
         }
@@ -125,7 +126,7 @@ public class CastVoteFragmentTest {
             fragment -> {
               FragmentActivity fragmentActivity = fragment.requireActivity();
               LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
-              viewModel.setCurrentLao(LAO);
+              viewModel.setCurrentLao(new LaoView(LAO));
               viewModel.setCurrentElection(election);
             });
     fragmentRule.getScenario().recreate();
@@ -187,7 +188,7 @@ public class CastVoteFragmentTest {
             false,
             Arrays.asList(ELECTION_BALLOT_TEXT11, ELECTION_BALLOT_TEXT12, ELECTION_BALLOT_TEXT13),
             election.getId());
-    electionQuestion2 =
+    ElectionQuestion electionQuestion2 =
         new ElectionQuestion(
             ELECTION_QUESTION_TEXT2,
             PLURALITY,

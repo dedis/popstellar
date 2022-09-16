@@ -4,6 +4,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -12,6 +13,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -47,6 +49,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.Completable;
+import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
@@ -56,6 +59,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
@@ -64,18 +68,19 @@ public class ElectionStartFragmentTest {
 
   @Inject MessageRepository messageRepo;
   @Inject KeyManager keyManager;
-  @Inject LAORepository laoRepo;
   @Inject MessageHandler messageHandler;
   @Inject Gson gson;
 
   @BindValue @Mock GlobalNetworkManager globalNetworkManager;
   @Mock MessageSender messageSender;
+  @BindValue @Mock LAORepository laoRepo;
 
+  private LaoView laoView;
   // A custom rule to call setup and teardown before the fragment rule and after the mockito rule
   private final TestRule setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           // Injection with hilt
           hiltRule.inject();
           // Preload the data schema before the test run
@@ -119,11 +124,30 @@ public class ElectionStartFragmentTest {
               node3Pos = i;
             }
           }
-          laoRepo.updateLao(lao);
+          nodesSubject = BehaviorSubject.createDefault(nodes);
           laoRepo.updateNodes(lao.getChannel());
+          laoRepo.updateLao(lao);
+          laoView = new LaoView(lao);
 
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
-
+          when(laoRepo.getLaoView(any())).thenAnswer(invocation -> laoView);
+          when(laoRepo.getNodesByChannel(any())).thenReturn(nodesSubject);
+          when(laoRepo.getLaoViewByChannel(any())).thenAnswer(invocation -> laoView);
+          doAnswer(
+                  invocation -> {
+                    Lao update = invocation.getArgument(0);
+                    laoView = new LaoView(update);
+                    return null;
+                  })
+              .when(laoRepo)
+              .updateLao(any(Lao.class));
+          doAnswer(
+                  invocation -> {
+                    nodesSubject.onNext(lao.getNodes());
+                    return null;
+                  })
+              .when(laoRepo)
+              .updateNodes(any());
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());
           when(messageSender.subscribe(any())).then(args -> Completable.complete());
@@ -141,6 +165,8 @@ public class ElectionStartFragmentTest {
           .around(hiltRule)
           .around(setupRule)
           .around(fragmentRule);
+
+  private static BehaviorSubject<List<ConsensusNode>> nodesSubject;
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss z").withZone(ZoneId.systemDefault());
@@ -197,12 +223,12 @@ public class ElectionStartFragmentTest {
 
     // Nodes 3 try to start
     MessageGeneral elect3Msg = createMsg(node3KeyPair, elect);
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, elect3Msg);
+    messageHandler.handleMessage(messageSender, consensusChannel, elect3Msg);
     nodeAssertions(grid, node3Pos, "Approve Start by\n" + node3, true);
 
     // We try to start (it should disable the start button)
     MessageGeneral elect1Msg = createMsg(mainKeyPair, elect);
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, elect1Msg);
+    messageHandler.handleMessage(messageSender, consensusChannel, elect1Msg);
     displayAssertions(STATUS_READY, START_START, false);
     nodeAssertions(grid, ownPos, "Approve Start by\n" + publicKey, true);
 
@@ -210,7 +236,7 @@ public class ElectionStartFragmentTest {
     ConsensusElectAccept electAccept3 =
         new ConsensusElectAccept(INSTANCE_ID, elect3Msg.getMessageId(), true);
     MessageGeneral accept3Msg = createMsg(mainKeyPair, electAccept3);
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, accept3Msg);
+    messageHandler.handleMessage(messageSender, consensusChannel, accept3Msg);
     nodeAssertions(grid, node3Pos, "Approve Start by\n" + node3, false);
 
     // Receive a learn message => node3 was accepted and has started the election
@@ -218,7 +244,7 @@ public class ElectionStartFragmentTest {
         new ConsensusLearn(
             INSTANCE_ID, elect3Msg.getMessageId(), PAST_TIME, true, Collections.emptyList());
     MessageGeneral learn3Msg = createMsg(node3KeyPair, learn3);
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, learn3Msg);
+    messageHandler.handleMessage(messageSender, consensusChannel, learn3Msg);
     displayAssertions(STATUS_STARTED, START_STARTED, false);
     nodeAssertions(grid, node3Pos, "Started by\n" + node3, false);
   }
@@ -276,7 +302,7 @@ public class ElectionStartFragmentTest {
 
     // Nodes 3 try to start
     MessageGeneral elect3Msg = createMsg(node3KeyPair, elect);
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, elect3Msg);
+    messageHandler.handleMessage(messageSender, consensusChannel, elect3Msg);
 
     // We try to accept node3
     nodesGrid().atPosition(node3Pos).perform(ViewActions.click());
@@ -297,25 +323,25 @@ public class ElectionStartFragmentTest {
 
     // Nodes 3 try to start and failed
     MessageGeneral elect3Msg = createMsg(node3KeyPair, elect);
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, elect3Msg);
+    messageHandler.handleMessage(messageSender, consensusChannel, elect3Msg);
     ConsensusFailure failure3 =
         new ConsensusFailure(INSTANCE_ID, elect3Msg.getMessageId(), PAST_TIME);
     MessageGeneral failure3Msg = createMsg(node3KeyPair, failure3);
-    messageHandler.handleMessage(
-        messageRepo, laoRepo, messageSender, consensusChannel, failure3Msg);
+    messageHandler.handleMessage(messageSender, consensusChannel, failure3Msg);
 
     nodeAssertions(nodesGrid(), node3Pos, "Start Failed\n" + node3, false);
 
     // We try to start and failed
     MessageGeneral elect1Msg = createMsg(mainKeyPair, elect);
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, consensusChannel, elect1Msg);
+    messageHandler.handleMessage(messageSender, consensusChannel, elect1Msg);
     ConsensusFailure failure1 =
         new ConsensusFailure(INSTANCE_ID, elect1Msg.getMessageId(), PAST_TIME);
     MessageGeneral failure1Msg = createMsg(mainKeyPair, failure1);
-    messageHandler.handleMessage(
-        messageRepo, laoRepo, messageSender, consensusChannel, failure1Msg);
-
+    messageHandler.handleMessage(messageSender, consensusChannel, failure1Msg);
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     displayAssertions(STATUS_READY, START_START, true);
+    nodeAssertions(nodesGrid(), node3Pos, "Start Failed\n" + node3, false);
+    nodeAssertions(nodesGrid(), node2Pos, "Waiting\n" + node2, false);
     nodeAssertions(nodesGrid(), ownPos, "Start Failed\n" + publicKey, false);
   }
 
@@ -350,7 +376,7 @@ public class ElectionStartFragmentTest {
               LaoDetailViewModel laoDetailViewModel =
                   LaoDetailActivity.obtainViewModel(fragmentActivity);
               laoDetailViewModel.setCurrentElection(election);
-              laoDetailViewModel.setCurrentLao(lao);
+              laoDetailViewModel.setCurrentLao(new LaoView(lao));
             });
     // Recreate the fragment because the viewModel needed to be modified before start
     fragmentRule.getScenario().recreate();

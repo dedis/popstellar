@@ -2,15 +2,17 @@ package com.github.dedis.popstellar.utility.handler;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
-import com.github.dedis.popstellar.di.DataRegistryModule;
+import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -49,11 +51,9 @@ public class RollCallHandlerTest {
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
   private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
 
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
-
-  private MessageRepository messageRepo;
   private LAORepository laoRepo;
   private MessageHandler messageHandler;
+  private Gson gson;
 
   private RollCall rollCall;
 
@@ -70,11 +70,11 @@ public class RollCallHandlerTest {
 
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
-    messageRepo = new MessageRepository();
     laoRepo = new LAORepository();
-    messageHandler =
-        new MessageHandler(
-            DataRegistryModule.provideDataRegistry(), keyManager, new ServerRepository());
+    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
+    MessageRepository messageRepo = new MessageRepository();
+    gson = JsonModule.provideGson(dataRegistry);
+    messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
     // Create one LAO
     Lao lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -94,7 +94,7 @@ public class RollCallHandlerTest {
     laoRepo.updateLao(lao);
 
     // Add the CreateLao message to the LAORepository
-    MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
+    MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
     messageRepo.addMessage(createLaoMessage);
   }
 
@@ -110,16 +110,16 @@ public class RollCallHandlerTest {
             rollCall.getLocation(),
             rollCall.getDescription(),
             CREATE_LAO.getId());
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, createRollCall, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, createRollCall, gson);
 
     // Call the message handler
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check the new Roll Call is present with state CREATED and the correct ID
     Optional<RollCall> rollCallOpt =
         laoRepo.getLaoByChannel(LAO_CHANNEL).getRollCall(createRollCall.getId());
     assertTrue(rollCallOpt.isPresent());
-    assertEquals(EventState.CREATED, rollCallOpt.get().getState().getValue());
+    assertEquals(EventState.CREATED, rollCallOpt.get().getState());
     assertEquals(createRollCall.getId(), rollCallOpt.get().getId());
 
     // Check the WitnessMessage has been created
@@ -140,16 +140,16 @@ public class RollCallHandlerTest {
     OpenRollCall openRollCall =
         new OpenRollCall(
             CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, openRollCall, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, openRollCall, gson);
 
     // Call the message handler
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state OPENED and the correct ID
     Optional<RollCall> rollCallOpt =
         laoRepo.getLaoByChannel(LAO_CHANNEL).getRollCall(openRollCall.getUpdateId());
     assertTrue(rollCallOpt.isPresent());
-    assertEquals(EventState.OPENED, rollCallOpt.get().getState().getValue());
+    assertEquals(EventState.OPENED, rollCallOpt.get().getState());
     assertEquals(openRollCall.getUpdateId(), rollCallOpt.get().getId());
 
     // Check the WitnessMessage has been created
@@ -170,16 +170,16 @@ public class RollCallHandlerTest {
     CloseRollCall closeRollCall =
         new CloseRollCall(
             CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, gson);
 
     // Call the message handler
-    messageHandler.handleMessage(messageRepo, laoRepo, messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state CLOSED and the correct ID
     Optional<RollCall> rollCallOpt =
         laoRepo.getLaoByChannel(LAO_CHANNEL).getRollCall(closeRollCall.getUpdateId());
     assertTrue(rollCallOpt.isPresent());
-    assertEquals(EventState.CLOSED, rollCallOpt.get().getState().getValue());
+    assertEquals(EventState.CLOSED, rollCallOpt.get().getState());
     assertTrue(rollCallOpt.get().isClosed());
     assertEquals(closeRollCall.getUpdateId(), rollCallOpt.get().getId());
 

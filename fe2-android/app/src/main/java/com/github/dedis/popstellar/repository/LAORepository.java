@@ -21,7 +21,7 @@ public class LAORepository {
   private static final String TAG = LAORepository.class.getSimpleName();
 
   private final Map<String, Lao> laoById = new HashMap<>();
-  private final Map<String, Subject<Lao>> subjectById = new HashMap<>();
+  private final Map<String, Subject<LaoView>> subjectById = new HashMap<>();
   private final BehaviorSubject<List<String>> laosSubject = BehaviorSubject.create();
 
   // ============ Lao Unrelated data ===============
@@ -70,7 +70,7 @@ public class LAORepository {
     return laosSubject;
   }
 
-  public Observable<Lao> getLaoObservable(String laoId) {
+  public Observable<LaoView> getLaoObservable(String laoId) {
     subjectById.computeIfAbsent(laoId, id -> BehaviorSubject.create());
     return subjectById.get(laoId);
   }
@@ -89,24 +89,26 @@ public class LAORepository {
   }
 
   public synchronized void updateLao(Lao lao) {
+    Log.d(TAG, "updating Lao " + lao);
     if (lao == null) {
       throw new IllegalArgumentException();
     }
+    LaoView laoView = new LaoView(lao);
 
     if (laoById.containsKey(lao.getId())) {
       // If the lao already exists, we can push the next update
       laoById.put(lao.getId(), lao);
       // Update observer if present
-      Subject<Lao> subject = subjectById.get(lao.getId());
+      Subject<LaoView> subject = subjectById.get(lao.getId());
       if (subject != null) {
-        subject.onNext(lao);
+        subject.onNext(laoView);
       }
     } else {
       // Otherwise, create the entry
       laoById.put(lao.getId(), lao);
       // Update lao list
       laosSubject.onNext(new ArrayList<>(laoById.keySet()));
-      subjectById.put(lao.getId(), BehaviorSubject.createDefault(lao));
+      subjectById.put(lao.getId(), BehaviorSubject.createDefault(laoView));
     }
   }
 
