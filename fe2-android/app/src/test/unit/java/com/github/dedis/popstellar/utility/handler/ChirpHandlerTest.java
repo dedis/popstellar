@@ -1,22 +1,15 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
-import com.github.dedis.popstellar.di.JsonModule;
-import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MessageRepository;
+import com.github.dedis.popstellar.repository.SocialMediaRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.security.KeyManager;
-import com.google.gson.Gson;
+import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.handler.data.ChirpHandler;
+import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,18 +19,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.*;
 
 import dagger.hilt.android.testing.HiltAndroidTest;
-import io.reactivex.Completable;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @HiltAndroidTest
 @RunWith(MockitoJUnitRunner.class)
@@ -48,100 +37,68 @@ public class ChirpHandlerTest {
 
   private static final long CREATION_TIME = 1631280815;
   private static final long DELETION_TIME = 1642244760;
-  private static final String LAO_NAME = "laoName";
-  private static final String LAO_ID = Lao.generateLaoId(SENDER, CREATION_TIME, LAO_NAME);
-  private static Channel chirpChannel;
+
+  private static final Lao LAO = new Lao("laoName", SENDER, CREATION_TIME);
+  private static final String LAO_ID = LAO.getId();
+
+  private static final Channel CHIRP_CHANNEL =
+      LAO.getChannel().subChannel("social").subChannel(SENDER.getEncoded());
 
   private static final String TEXT = "textOfTheChirp";
-  private static final String EMPTY_STRING = "";
   private static final MessageID PARENT_ID = generateMessageID();
 
-  private static final CreateLao CREATE_LAO =
-      new CreateLao(LAO_ID, LAO_NAME, CREATION_TIME, SENDER, new ArrayList<>());
-  private static final AddChirp ADD_CHIRP = new AddChirp(TEXT, PARENT_ID, CREATION_TIME);
+  private static final MessageID CHIRP_ID = generateMessageID();
+  private static final Chirp CHIRP = new Chirp(CHIRP_ID, SENDER, TEXT, CREATION_TIME, PARENT_ID);
 
-  private LAORepository laoRepo;
-  private MessageHandler messageHandler;
-  private Gson gson;
+  private static final AddChirp ADD_CHIRP = new AddChirp(TEXT, PARENT_ID, CREATION_TIME);
+  private static final DeleteChirp DELETE_CHIRP = new DeleteChirp(CHIRP_ID, DELETION_TIME);
+
+  private ChirpHandler handler;
 
   @Mock MessageSender messageSender;
-  @Mock KeyManager keyManager;
+  @Mock SocialMediaRepository socialMediaRepo;
 
   @Before
   public void setup()
       throws GeneralSecurityException, DataHandlingException, IOException, UnknownLaoException {
-    lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
-    lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
-
-    when(messageSender.subscribe(any())).then(args -> Completable.complete());
-
-    Channel channel = Channel.getLaoChannel(LAO_ID);
-
-    laoRepo = new LAORepository();
-    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
-    MessageRepository messageRepo = new MessageRepository();
-    gson = JsonModule.provideGson(dataRegistry);
-    messageHandler = new MessageHandler(messageRepo, dataRegistry);
-
-    MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
-    messageHandler.handleMessage(messageSender, channel, createLaoMessage);
-
-    chirpChannel =
-        laoRepo
-            .getLaoView(LAO_ID)
-            .getChannel()
-            .subChannel("social")
-            .subChannel(SENDER.getEncoded());
+    // Instantiate the dependencies here such that they are reset for each test
+    LAORepository laoRepo = new LAORepository();
+    laoRepo.updateLao(LAO);
+    handler = new ChirpHandler(laoRepo, socialMediaRepo);
   }
 
   @Test
-  public void testHandleAddChirp() throws DataHandlingException, UnknownLaoException {
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, gson);
-    messageHandler.handleMessage(messageSender, chirpChannel, message);
+  public void testHandleAddChirp() throws UnknownLaoException {
+    HandlerContext ctx = new HandlerContext(CHIRP_ID, SENDER, CHIRP_CHANNEL, messageSender);
 
-    LaoView laoView = laoRepo.getLaoView(LAO_ID);
-    Lao updatedLao = laoView.createLaoCopy();
+    handler.handleChirpAdd(ctx, ADD_CHIRP);
 
-    Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
-    assertTrue(chirpOpt.isPresent());
-    Chirp chirp = chirpOpt.get();
-
-    assertEquals(message.getMessageId(), chirp.getId());
-    assertEquals(SENDER, chirp.getSender());
-    assertEquals(TEXT, chirp.getText());
-    assertEquals(CREATION_TIME, chirp.getTimestamp());
-    assertEquals(PARENT_ID, chirp.getParentId());
-
-    Map<MessageID, Chirp> chirps = updatedLao.getAllChirps();
-    assertEquals(1, chirps.size());
-    assertEquals(chirp, chirps.get(chirp.getId()));
+    verify(socialMediaRepo).addChirp(eq(LAO_ID), eq(CHIRP));
+    verifyNoMoreInteractions(socialMediaRepo);
   }
 
   @Test
-  public void testHandleDeleteChirp() throws DataHandlingException, UnknownLaoException {
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, gson);
-    messageHandler.handleMessage(messageSender, chirpChannel, message);
+  public void testHandleDeleteChirp() throws UnknownLaoException, InvalidMessageIdException {
+    // Act as if chirp exist
+    when(socialMediaRepo.deleteChirp(any(), any())).thenReturn(true);
+    HandlerContext ctx = new HandlerContext(CHIRP_ID, SENDER, CHIRP_CHANNEL, messageSender);
 
-    final DeleteChirp DELETE_CHIRP = new DeleteChirp(message.getMessageId(), DELETION_TIME);
+    handler.handleDeleteChirp(ctx, DELETE_CHIRP);
 
-    MessageGeneral message2 = new MessageGeneral(SENDER_KEY, DELETE_CHIRP, gson);
-    messageHandler.handleMessage(messageSender, chirpChannel, message2);
+    verify(socialMediaRepo).deleteChirp(eq(LAO_ID), eq(CHIRP_ID));
+    verifyNoMoreInteractions(socialMediaRepo);
+  }
 
-    LaoView laoView = laoRepo.getLaoView(LAO_ID);
-    Lao updatedLao = laoView.createLaoCopy();
+  @Test
+  public void testUnorderedDeleteChirp() {
+    // Act as if chirp does not exist
+    when(socialMediaRepo.deleteChirp(anyString(), any())).thenReturn(false);
+    HandlerContext ctx = new HandlerContext(CHIRP_ID, SENDER, CHIRP_CHANNEL, messageSender);
 
-    Optional<Chirp> chirpOpt = updatedLao.getChirp(message.getMessageId());
-    assertTrue(chirpOpt.isPresent());
-    Chirp chirp = chirpOpt.get();
+    assertThrows(
+        InvalidMessageIdException.class, () -> handler.handleDeleteChirp(ctx, DELETE_CHIRP));
 
-    assertEquals(message.getMessageId(), chirp.getId());
-    assertEquals(SENDER, chirp.getSender());
-    assertEquals(EMPTY_STRING, chirp.getText());
-    assertEquals(CREATION_TIME, chirp.getTimestamp());
-    assertEquals(PARENT_ID, chirp.getParentId());
-
-    Map<MessageID, Chirp> chirps = updatedLao.getAllChirps();
-    assertEquals(1, chirps.size());
-    assertEquals(chirp, chirps.get(chirp.getId()));
+    verify(socialMediaRepo).deleteChirp(eq(LAO_ID), eq(CHIRP_ID));
+    verifyNoMoreInteractions(socialMediaRepo);
   }
 }
