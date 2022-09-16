@@ -24,12 +24,13 @@ public class ChirpListAdapter extends BaseAdapter {
   private final LayoutInflater layoutInflater;
   private List<Chirp> chirps;
 
-  public ChirpListAdapter(
-      Context ctx, SocialMediaViewModel socialMediaViewModel, List<Chirp> chirps) {
+  public ChirpListAdapter(Context ctx, SocialMediaViewModel socialMediaViewModel) {
     this.context = ctx;
     this.socialMediaViewModel = socialMediaViewModel;
-    this.chirps = chirps;
     layoutInflater = LayoutInflater.from(ctx);
+
+    socialMediaViewModel.addDisposable(
+        socialMediaViewModel.getChirps().subscribe(this::replaceList));
   }
 
   public void replaceList(List<Chirp> chirps) {

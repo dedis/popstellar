@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.SocialMediaRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -25,14 +26,14 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Single;
+import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -55,6 +56,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    * Dependencies for this class
    */
   private final LAORepository laoRepository;
+  private final SocialMediaRepository socialMediaRepository;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
@@ -64,11 +66,13 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public SocialMediaViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      SocialMediaRepository socialMediaRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
       KeyManager keyManager) {
     super(application);
     this.laoRepository = laoRepository;
+    this.socialMediaRepository = socialMediaRepository;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
@@ -182,14 +186,27 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
             });
   }
 
-  public List<Chirp> getChirpList(String laoId) {
-    LaoView laoView;
-    try {
-      laoView = getLaoView(laoId);
-    } catch (UnknownLaoException e) {
-      return Collections.emptyList();
-    }
-    return laoView.getChirpsInOrder();
+  public Observable<List<Chirp>> getChirps() {
+    return socialMediaRepository
+        .getChirpsOfLao(laoId)
+        // Retrieve chirp subjects per id
+        .map(
+            ids -> {
+              List<Observable<Chirp>> chirps = new ArrayList<>(ids.size());
+              for (MessageID id : ids) {
+                chirps.add(socialMediaRepository.getChirp(laoId, id));
+              }
+              return chirps;
+            })
+        // Zip the subjects together to a sorted list
+        .flatMap(
+            observables ->
+                Observable.zip(
+                    observables,
+                    chirps ->
+                        Arrays.stream((Chirp[]) chirps)
+                            .sorted(Comparator.comparing(Chirp::getTimestamp).reversed())
+                            .collect(Collectors.toList())));
   }
 
   /**
