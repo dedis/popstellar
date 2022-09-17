@@ -41,13 +41,13 @@ public final class ChirpHandler {
 
     Log.d(TAG, "handleChirpAdd: " + channel + " id " + addChirp.getParentId());
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
-    Chirp chirp = new Chirp(messageId);
-
-    chirp.setChannel(channel);
-    chirp.setSender(senderPk);
-    chirp.setText(addChirp.getText());
-    chirp.setTimestamp(addChirp.getTimestamp());
-    chirp.setParentId(addChirp.getParentId().orElse(new MessageID("")));
+    Chirp chirp =
+        new Chirp(
+            messageId,
+            senderPk,
+            addChirp.getText(),
+            addChirp.getTimestamp(),
+            addChirp.getParentId().orElse(new MessageID("")));
 
     Lao lao = laoView.createLaoCopy();
     lao.updateChirpList(messageId, chirp);
@@ -73,15 +73,13 @@ public final class ChirpHandler {
     }
     Chirp chirp = chirpOptional.get();
 
-    if (chirp.getIsDeleted()) {
+    if (chirp.isDeleted()) {
       Log.d(TAG, "The chirp is already deleted");
-    } else {
-      chirp.setIsDeleted(true);
-      chirp.setText("");
+      return;
     }
 
     Lao lao = laoView.createLaoCopy();
-    lao.updateChirpList(chirp.getId(), chirp);
+    lao.updateChirpList(chirp.getId(), chirp.deleted());
     laoRepo.updateLao(lao);
   }
 }

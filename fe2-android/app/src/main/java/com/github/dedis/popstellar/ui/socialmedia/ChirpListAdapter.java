@@ -86,7 +86,7 @@ public class ChirpListAdapter extends BaseAdapter {
                                   context, TAG, error, R.string.error_delete_chirp))));
     }
 
-    if (chirp.getIsDeleted()) {
+    if (chirp.isDeleted()) {
       text = "Chirp is deleted.";
       ImageButton deleteChirp = chirpView.findViewById(R.id.delete_chirp_button);
       deleteChirp.setVisibility(View.GONE);
