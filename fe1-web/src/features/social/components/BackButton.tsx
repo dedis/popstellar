@@ -22,6 +22,7 @@ type NavigationProps = CompositeScreenProps<
     >
   >
 >;
+
 /**
  * UI button to go back in navigation. You can specify the string corresponding to where it should
  * navigate along with its size in its properties.
@@ -48,9 +49,7 @@ const propTypes = {
 };
 
 type IPropTypes = {
-  navigationTabName:
-    | typeof STRINGS.social_media_navigation_tab_search
-    | typeof STRINGS.social_media_navigation_tab_attendee_list;
+  navigationTabName: typeof STRINGS.social_media_navigation_tab_attendee_list;
   size: number;
   testID: string;
 };
