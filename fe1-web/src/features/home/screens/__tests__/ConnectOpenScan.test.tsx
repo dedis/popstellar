@@ -1,8 +1,9 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 // @ts-ignore
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
@@ -72,7 +73,7 @@ const contextValue = {
   } as HomeReactContext,
 };
 
-const mockStore = createStore(combineReducers(laoReducer));
+const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
 mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
 // TODO: Fix react-qr-reader for commented tests to work

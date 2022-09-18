@@ -1,13 +1,14 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockKeyPair, mockLao, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { getEventById } from 'features/events/functions';
-import { EventReactContext, EVENT_FEATURE_IDENTIFIER } from 'features/events/interface';
+import { EVENT_FEATURE_IDENTIFIER, EventReactContext } from 'features/events/interface';
 import {
   addEvent,
   eventReducer,
@@ -16,34 +17,34 @@ import {
 } from 'features/events/reducer';
 import { mockElectionNotStarted } from 'features/evoting/__tests__/utils';
 import { ElectionEventType } from 'features/evoting/components';
-import { EvotingReactContext, EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
+import { EVOTING_FEATURE_IDENTIFIER, EvotingReactContext } from 'features/evoting/interface';
 import { Election } from 'features/evoting/objects';
 import { addElection, electionReducer } from 'features/evoting/reducer';
 import { mockMeeting } from 'features/meeting/__tests__/utils';
 import { MeetingEventType } from 'features/meeting/components';
-import { MeetingReactContext, MEETING_FEATURE_IDENTIFIER } from 'features/meeting/interface';
+import { MEETING_FEATURE_IDENTIFIER, MeetingReactContext } from 'features/meeting/interface';
 import { Meeting } from 'features/meeting/objects';
 import { addMeeting, meetingReducer } from 'features/meeting/reducer';
 import { mockRollCall } from 'features/rollCall/__tests__/utils';
 import { RollCallEventType } from 'features/rollCall/components';
-import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
+import { ROLLCALL_FEATURE_IDENTIFIER, RollCallReactContext } from 'features/rollCall/interface';
 import { RollCall } from 'features/rollCall/objects';
 import { addRollCall, rollCallReducer } from 'features/rollCall/reducer';
-import { WalletReactContext, WALLET_FEATURE_IDENTIFIER } from 'features/wallet/interface';
+import { WALLET_FEATURE_IDENTIFIER, WalletReactContext } from 'features/wallet/interface';
 import { generateToken } from 'features/wallet/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
 
 import EventList from '../EventList';
 
-const mockStore = createStore(
-  combineReducers({
+const mockStore = configureStore({
+  reducer: combineReducers({
     ...eventReducer,
     ...electionReducer,
     ...meetingReducer,
     ...rollCallReducer,
     ...walletReducer,
   }),
-);
+});
 
 const getContextValue = (isOrganizer: boolean) => ({
   [EVENT_FEATURE_IDENTIFIER]: {

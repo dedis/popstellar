@@ -1,4 +1,5 @@
-import { combineReducers, createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 
 import {
   configureTestFeatures,
@@ -23,15 +24,15 @@ import { LaoServer } from 'features/lao/objects/LaoServer';
 import {
   addServer,
   addUnhandledGreetLaoMessage,
-  setCurrentLao,
   greetLaoReducer,
   handleGreetLaoMessage,
   laoReducer,
   serverReducer,
+  setCurrentLao,
 } from 'features/lao/reducer';
 import { WitnessMessage } from 'features/witness/network/messages';
 
-import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from '../LaoGreetWatcher';
+import { makeLaoGreetStoreWatcher, storeBackendAndConnectToPeers } from '../LaoGreetWatcher';
 import { GreetLao } from '../messages/GreetLao';
 
 const mockHandleLaoGreetSignature = jest.fn();
@@ -41,9 +42,14 @@ const mockChannel: Channel = `${ROOT_CHANNEL}/${mockLaoId}`;
 // setup the test features to enable ExtendedMessage.fromData
 configureTestFeatures();
 
-const mockStore = createStore(
-  combineReducers({ ...messageReducer, ...greetLaoReducer, ...laoReducer, ...serverReducer }),
-);
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...messageReducer,
+    ...greetLaoReducer,
+    ...laoReducer,
+    ...serverReducer,
+  }),
+});
 
 beforeEach(() => {
   jest.clearAllMocks();
