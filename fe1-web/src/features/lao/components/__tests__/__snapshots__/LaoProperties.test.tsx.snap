@@ -31,6 +31,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={7}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -456,9 +468,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                           </Text>
                           
 
-                          <Text>
-                            
-                          </Text>
+                          <Text />
                         </Text>
                         <View
                           accessible={true}
@@ -481,6 +491,9 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            exclusive={true}
+                            handlerTag={8}
+                            handlerType="NativeViewGestureHandler"
                             onGestureEvent={[Function]}
                             onGestureHandlerEvent={[Function]}
                             onGestureHandlerStateChange={[Function]}
@@ -491,11 +504,11 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                                 "marginBottom": 16,
                               }
                             }
+                            touchSoundDisabled={false}
                           >
                             <View
                               accessible={true}
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "opacity": 1,
@@ -560,6 +573,9 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            exclusive={true}
+                            handlerTag={9}
+                            handlerType="NativeViewGestureHandler"
                             onGestureEvent={[Function]}
                             onGestureHandlerEvent={[Function]}
                             onGestureHandlerStateChange={[Function]}
@@ -570,11 +586,11 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                                 "marginBottom": 16,
                               }
                             }
+                            touchSoundDisabled={false}
                           >
                             <View
                               accessible={true}
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "opacity": 1,
@@ -663,6 +679,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -678,6 +695,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -693,7 +711,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -712,7 +729,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -743,6 +759,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -756,6 +773,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -770,7 +788,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -785,6 +802,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -811,7 +829,16 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -887,7 +914,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -898,6 +924,8 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1088,9 +1116,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                           </Text>
                           
 
-                          <Text>
-                            
-                          </Text>
+                          <Text />
                         </Text>
                         <View
                           accessible={true}
@@ -1113,6 +1139,9 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            exclusive={true}
+                            handlerTag={2}
+                            handlerType="NativeViewGestureHandler"
                             onGestureEvent={[Function]}
                             onGestureHandlerEvent={[Function]}
                             onGestureHandlerStateChange={[Function]}
@@ -1123,11 +1152,11 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                                 "marginBottom": 16,
                               }
                             }
+                            touchSoundDisabled={false}
                           >
                             <View
                               accessible={true}
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "opacity": 1,
@@ -1192,6 +1221,9 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            exclusive={true}
+                            handlerTag={3}
+                            handlerType="NativeViewGestureHandler"
                             onGestureEvent={[Function]}
                             onGestureHandlerEvent={[Function]}
                             onGestureHandlerStateChange={[Function]}
@@ -1202,11 +1234,11 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                                 "marginBottom": 16,
                               }
                             }
+                            touchSoundDisabled={false}
                           >
                             <View
                               accessible={true}
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "opacity": 1,
@@ -1295,6 +1327,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -1310,6 +1343,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -1325,7 +1359,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1344,7 +1377,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -1375,6 +1407,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1388,6 +1421,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1402,7 +1436,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1417,6 +1450,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1443,7 +1477,16 @@ exports[`LaoProperties renders correctly as witness 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -1519,7 +1562,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1530,6 +1572,8 @@ exports[`LaoProperties renders correctly as witness 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={4}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1720,9 +1764,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                           </Text>
                           
 
-                          <Text>
-                            
-                          </Text>
+                          <Text />
                         </Text>
                         <View
                           accessible={true}
@@ -1745,6 +1787,9 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            exclusive={true}
+                            handlerTag={5}
+                            handlerType="NativeViewGestureHandler"
                             onGestureEvent={[Function]}
                             onGestureHandlerEvent={[Function]}
                             onGestureHandlerStateChange={[Function]}
@@ -1755,11 +1800,11 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                                 "marginBottom": 16,
                               }
                             }
+                            touchSoundDisabled={false}
                           >
                             <View
                               accessible={true}
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "opacity": 1,
@@ -1824,6 +1869,9 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            exclusive={true}
+                            handlerTag={6}
+                            handlerType="NativeViewGestureHandler"
                             onGestureEvent={[Function]}
                             onGestureHandlerEvent={[Function]}
                             onGestureHandlerStateChange={[Function]}
@@ -1834,11 +1882,11 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                                 "marginBottom": 16,
                               }
                             }
+                            touchSoundDisabled={false}
                           >
                             <View
                               accessible={true}
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "opacity": 1,

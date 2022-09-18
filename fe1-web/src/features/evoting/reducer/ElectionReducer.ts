@@ -83,7 +83,7 @@ export const makeElectionSelector = (electionId: Hash | string) => {
 
   return createSelector(
     // First input: a map of ids to elections
-    (state) => getElectionState(state).byId,
+    (state: any) => getElectionState(state).byId,
     // Selector: returns the selected election
     (electionById: Record<string, ElectionState>): Election | undefined => {
       if (!(electionIdString in electionById)) {

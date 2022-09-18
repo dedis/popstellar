@@ -73,7 +73,7 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default RollCallListItem;
 
-export const RollCallEventType: RollCallInterface['eventTypes']['0'] = {
+export const RollCallEventType: RollCallInterface['eventTypes'][0] = {
   eventType: RollCall.EVENT_TYPE,
   eventName: STRINGS.roll_call_event_name,
   navigationNames: {

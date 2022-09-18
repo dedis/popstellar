@@ -32,6 +32,7 @@ export interface DigitalCashReducerState {
    */
   transactionsByPubHash: Record<string, string[]>;
 }
+
 export interface DigitalCashLaoReducerState {
   byLaoId: Record<string, DigitalCashReducerState>;
 }
@@ -129,7 +130,7 @@ export const getDigitalCashState = (state: any): DigitalCashLaoReducerState =>
  */
 export const makeBalancesSelector = (laoId: Hash | string) =>
   createSelector(
-    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
     (laoState: DigitalCashReducerState | undefined) => {
       return laoState?.balances || {};
     },
@@ -142,7 +143,7 @@ export const makeBalancesSelector = (laoId: Hash | string) =>
  */
 export const makeBalanceSelector = (laoId: Hash | string, publicKey: string) =>
   createSelector(
-    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
     (laoState: DigitalCashReducerState | undefined) => {
       return laoState?.balances[Hash.fromPublicKey(publicKey).valueOf()] || 0;
     },
@@ -154,8 +155,8 @@ export const makeBalanceSelector = (laoId: Hash | string, publicKey: string) =>
  */
 export const makeTransactionsSelector = (laoId: Hash | string) =>
   createSelector(
-    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.allTransactionsHash,
-    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.allTransactionsHash,
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
     (
       transactionHashes: string[] | undefined,
       transactionsByHash: Record<string, TransactionState> | undefined,
@@ -173,7 +174,7 @@ export const makeTransactionsSelector = (laoId: Hash | string) =>
  */
 export const makeTransactionsByHashSelector = (laoId: Hash | string) =>
   createSelector(
-    (state) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
     (transactionsByHash: Record<string, TransactionState> | undefined) => {
       return transactionsByHash || {};
     },

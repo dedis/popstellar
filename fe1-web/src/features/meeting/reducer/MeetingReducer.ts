@@ -83,7 +83,7 @@ export const makeMeetingSelector = (meetingId: Hash | string) => {
 
   return createSelector(
     // First input: map from ids to meetings
-    (state) => getMeetingState(state).byId,
+    (state: any) => getMeetingState(state).byId,
     // Selector: returns the selected meeting
     (meetingById: Record<string, MeetingState>): Meeting | undefined => {
       if (!(meetingIdString in meetingById)) {

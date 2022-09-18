@@ -75,6 +75,9 @@ exports[`UserListItem renders correctly 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={5}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
@@ -85,11 +88,11 @@ exports[`UserListItem renders correctly 1`] = `
                 "marginBottom": 16,
               }
             }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -162,6 +165,9 @@ exports[`UserListItem renders correctly 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={6}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
@@ -172,11 +178,11 @@ exports[`UserListItem renders correctly 1`] = `
                 "marginBottom": 16,
               }
             }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -305,6 +311,9 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={7}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
@@ -315,9 +324,11 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
                 "marginBottom": 16,
               }
             }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
+              collapsable={false}
               style={
                 Object {
                   "opacity": 1,
@@ -394,6 +405,9 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={8}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
@@ -404,9 +418,11 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
                 "marginBottom": 16,
               }
             }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
+              collapsable={false}
               style={
                 Object {
                   "opacity": 1,
