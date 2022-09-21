@@ -1,5 +1,6 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import { BarCodeScanningResult } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -70,10 +71,10 @@ const PoPTokenScanner = () => {
     });
   };
 
-  const onScanData = (popToken: string | null) => {
-    if (popToken) {
-      if (tokenMatcher.test(popToken)) {
-        goBack(popToken);
+  const onScanData = ({ data }: BarCodeScanningResult) => {
+    if (data) {
+      if (tokenMatcher.test(data)) {
+        goBack(data);
       } else {
         toast.show(STRINGS.roll_call_invalid_token, {
           type: 'danger',
