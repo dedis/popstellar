@@ -1,10 +1,10 @@
+import * as Clipboard from 'expo-clipboard';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Pressable } from 'react-native';
 
 import { Color } from 'core/styles';
 
-import { getNavigator } from '../platform/Navigator';
 import PoPIcon from './PoPIcon';
 
 /**
@@ -12,8 +12,12 @@ import PoPIcon from './PoPIcon';
  */
 
 function CopyButton({ data, negative }: IPropTypes) {
+  const copyToClipBoard = async () => {
+    await Clipboard.setStringAsync(data);
+  };
+
   return (
-    <Pressable onPress={() => getNavigator().clipboard.writeText(data)}>
+    <Pressable onPress={copyToClipBoard}>
       <PoPIcon name="copy" color={negative ? Color.contrast : Color.primary} size={26} />
     </Pressable>
   );
