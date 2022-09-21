@@ -46,7 +46,6 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
       String id = getIntent().getExtras().getString(Constants.LAO_ID_EXTRA, "");
       viewModel.subscribeToLao(id);
       viewModel.setLaoId(id);
-      viewModel.setLaoName(getIntent().getExtras().getString(Constants.LAO_NAME, ""));
       viewModel.setRollCallId(getIntent().getExtras().getString(Constants.ROLL_CALL_ID, ""));
     }
   }
@@ -160,10 +159,9 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
     return true;
   }
 
-  public static Intent newIntent(Context ctx, String laoId, String laoName) {
+  public static Intent newIntent(Context ctx, String laoId) {
     Intent intent = new Intent(ctx, DigitalCashActivity.class);
     intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.putExtra(Constants.LAO_NAME, laoName);
     return intent;
   }
 

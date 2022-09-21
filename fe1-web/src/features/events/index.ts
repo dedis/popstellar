@@ -14,8 +14,6 @@ import { addEvent, clearAllEvents, eventReducer, removeEvent, updateEvent } from
 export function configure(): EventInterface {
   return {
     identifier: EVENT_FEATURE_IDENTIFIER,
-    // FIXME: Use correct typing
-    // @ts-ignore
     functions,
     components: publicComponents,
     actionCreators: {

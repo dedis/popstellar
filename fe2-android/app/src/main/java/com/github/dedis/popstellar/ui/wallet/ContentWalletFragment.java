@@ -16,8 +16,6 @@ import com.github.dedis.popstellar.databinding.WalletContentFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.*;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -86,15 +84,15 @@ public class ContentWalletFragment extends Fragment {
 
   private void setupListUpdates() {
     mHomeViewModel
-        .getLAOs()
+        .getLaoIdList()
         .observe(
             requireActivity(),
-            laos -> {
+            laoIdList -> {
               Log.d(TAG, "Got a list update");
 
-              mListAdapter.setList(laos);
+              mListAdapter.setList(laoIdList);
 
-              if (!laos.isEmpty()) {
+              if (!laoIdList.isEmpty()) {
                 mWalletContentBinding.welcomeScreen.setVisibility(View.GONE);
                 mWalletContentBinding.listScreen.setVisibility(View.VISIBLE);
               }
@@ -105,7 +103,7 @@ public class ContentWalletFragment extends Fragment {
     RecyclerView recyclerView = mWalletContentBinding.laoList;
 
     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-    mListAdapter = new LAOListAdapter(new ArrayList<>(0), requireActivity(), false);
+    mListAdapter = new LAOListAdapter(mHomeViewModel, requireActivity(), false);
 
     recyclerView.setAdapter(mListAdapter);
   }

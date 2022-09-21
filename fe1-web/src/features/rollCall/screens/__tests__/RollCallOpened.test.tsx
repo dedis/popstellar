@@ -1,11 +1,12 @@
 import { useNavigation } from '@react-navigation/core';
+import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 // @ts-ignore
 import { fireScan as fakeQrReaderScan } from 'expo-camera';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { act } from 'react-test-renderer';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils/TestUtils';
@@ -65,9 +66,14 @@ const mockRollCall = RollCall.fromState({
 const rollCallId = mockRollCallWithAlias.id.valueOf();
 
 // set up mock store
-const mockStore = createStore(
-  combineReducers({ ...laoReducer, ...eventReducer, ...rollCallReducer, ...walletReducer }),
-);
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...laoReducer,
+    ...eventReducer,
+    ...rollCallReducer,
+    ...walletReducer,
+  }),
+});
 mockStore.dispatch(setCurrentLao(mockLao.toState()));
 mockStore.dispatch(addRollCall(mockRollCall.toState()));
 

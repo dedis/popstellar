@@ -2,51 +2,37 @@ package com.github.dedis.popstellar.repository;
 
 import android.util.Log;
 
-import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.*;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.Subject;
 
 @Singleton
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
 
-  // State for LAO
-  private final Map<String, LAOState> laoById;
+  private final HashMap<String, Lao> laoById = new HashMap<>();
+  private final HashMap<String, Subject<LaoView>> subjectById = new HashMap<>();
+  private final BehaviorSubject<List<String>> laosSubject = BehaviorSubject.create();
 
+  // ============ Lao Unrelated data ===============
   // State for Messages
-  private final Map<MessageID, MessageGeneral> messageById;
-
-  // Observable for view models that need access to all LAO Names
-  private final BehaviorSubject<List<Lao>> allLaoSubject;
-
   // Observable for view models that need access to all Nodes
-  private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject;
+  private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject =
+      new HashMap<>();
 
   @Inject
   public LAORepository() {
-    laoById = new HashMap<>();
-    messageById = new HashMap<>();
-    allLaoSubject = BehaviorSubject.create();
-    channelToNodesSubject = new HashMap<>();
-  }
-
-  /** Set allLaoSubject to contain all LAOs */
-  public void setAllLaoSubject() {
-    Log.d(TAG, "posted allLaos to allLaoSubject");
-    allLaoSubject.onNext(
-        laoById.values().stream().map(LAOState::getLao).collect(Collectors.toList()));
+    // Constructor required by Hilt
   }
 
   /**
@@ -77,21 +63,56 @@ public class LAORepository {
    */
   public Lao getLaoByChannel(Channel channel) {
     Log.d(TAG, "querying lao for channel " + channel);
-    return laoById.get(channel.extractLaoId()).getLao();
+    return laoById.get(channel.extractLaoId());
   }
 
-  public Observable<List<Lao>> getAllLaos() {
-    return allLaoSubject;
+  public Observable<List<String>> getAllLaoIds() {
+    return laosSubject;
   }
 
-  public Observable<Lao> getLaoObservable(String laoId) {
-    Log.d(TAG, "LaoIds we have are: " + laoById.keySet());
-    return laoById.get(laoId).getObservable();
+  public Observable<LaoView> getLaoObservable(String laoId) {
+    subjectById.computeIfAbsent(laoId, id -> BehaviorSubject.create());
+    return subjectById.get(laoId);
   }
 
-  public Map<String, LAOState> getLaoById() {
-    return laoById;
+  public LaoView getLaoView(String id) throws UnknownLaoException {
+    Lao lao = laoById.get(id);
+    if (lao == null) {
+      throw new UnknownLaoException(id);
+    }
+
+    return new LaoView(lao);
   }
+
+  public LaoView getLaoViewByChannel(Channel channel) throws UnknownLaoException {
+    return getLaoView(channel.extractLaoId());
+  }
+
+  public synchronized void updateLao(Lao lao) {
+    Log.d(TAG, "updating Lao " + lao);
+    if (lao == null) {
+      throw new IllegalArgumentException();
+    }
+    LaoView laoView = new LaoView(lao);
+
+    if (laoById.containsKey(lao.getId())) {
+      // If the lao already exists, we can push the next update
+      laoById.put(lao.getId(), lao);
+      // Update observer if present
+      Subject<LaoView> subject = subjectById.get(lao.getId());
+      if (subject != null) {
+        subject.onNext(laoView);
+      }
+    } else {
+      // Otherwise, create the entry
+      laoById.put(lao.getId(), lao);
+      // Update lao list
+      laosSubject.onNext(new ArrayList<>(laoById.keySet()));
+      subjectById.put(lao.getId(), BehaviorSubject.createDefault(laoView));
+    }
+  }
+
+  // ============ Lao Unrelated functions ===============
 
   /**
    * Return an Observable to the list of nodes in a given channel.
@@ -113,35 +134,5 @@ public class LAORepository {
     List<ConsensusNode> nodes = getLaoByChannel(channel).getNodes();
     channelToNodesSubject.putIfAbsent(channel, BehaviorSubject.create());
     channelToNodesSubject.get(channel).onNext(nodes);
-  }
-
-  public Map<MessageID, MessageGeneral> getMessageById() {
-    return messageById;
-  }
-
-  public Optional<LaoView> getLao(String id) {
-    if (laoById.containsKey(id)) {
-      return Optional.of(new LaoView(laoById.get(id).getLao()));
-    }
-    return Optional.empty();
-  }
-
-  public LaoView getLaoViewByChannel(Channel channel) throws UnknownLaoException {
-    return getLao(channel.extractLaoId())
-        .orElseThrow(() -> new UnknownLaoException(channel.extractLaoId()));
-  }
-
-  public synchronized void updateLao(Lao lao) {
-    if (lao == null) {
-      throw new IllegalArgumentException();
-    }
-
-    if (laoById.containsKey(lao.getId())) {
-      // If the lao already exists, we can push the next update
-      laoById.get(lao.getId()).publish(lao);
-    } else {
-      // Otherwise, create the state
-      laoById.put(lao.getId(), new LAOState(lao));
-    }
   }
 }

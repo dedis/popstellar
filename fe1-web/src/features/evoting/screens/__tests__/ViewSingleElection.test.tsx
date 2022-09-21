@@ -1,15 +1,16 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import {
-  mockLao,
-  mockLaoIdHash,
   messageRegistryInstance,
-  mockReduxAction,
+  mockLao,
   mockLaoId,
+  mockLaoIdHash,
+  mockReduxAction,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { addEvent } from 'features/events/reducer';
@@ -37,7 +38,12 @@ const undefinedElection = Election.fromState({
 });
 
 // mocks
-const mockStore = createStore(combineReducers({ ...electionReducer, ...electionKeyReducer }));
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...electionReducer,
+    ...electionKeyReducer,
+  }),
+});
 mockStore.dispatch(
   addEvent(mockLaoId, {
     eventType: Election.EVENT_TYPE,
@@ -69,7 +75,10 @@ describe('ViewSingleElection', () => {
         <FeatureContext.Provider value={contextValue}>
           <MockNavigator
             component={ViewSingleElection}
-            params={{ eventId: election.id.valueOf(), isOrganizer }}
+            params={{
+              eventId: election.id.valueOf(),
+              isOrganizer,
+            }}
           />
         </FeatureContext.Provider>
       </Provider>,
@@ -110,7 +119,10 @@ describe('ViewSinglRollCallScreenRightHeader', () => {
         <FeatureContext.Provider value={contextValue}>
           <MockNavigator
             component={ViewSingleElectionScreenHeader}
-            params={{ eventId: election.id.valueOf(), isOrganizer }}
+            params={{
+              eventId: election.id.valueOf(),
+              isOrganizer,
+            }}
           />
         </FeatureContext.Provider>
       </Provider>,

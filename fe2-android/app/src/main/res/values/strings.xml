@@ -303,7 +303,6 @@
   <string name="error_close_rollcall">Could not close the rollcall\n%1$s</string>
   <string name="error_sign_message">Could not send message signature\n%1$s</string>
   <string name="error_update_lao">Could not update the LAO\n%1$s</string>
-  <string name="error_state_lao">Could not send the state of the LAO\n%1$s</string>
   <string name="error_subscribe_lao">Could not subscribe to the LAO channel\n%1$s</string>
   <string name="error_create_lao">Could not create the LAO\n%1$s</string>
   <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
@@ -322,5 +321,6 @@
   <string name="seed_validation_exception">Unable to validate seed</string>
   <string name="uninitialized_wallet_exception">The wallet is not initialized</string>
   <string name="unknown_lao_exception">Unknown Lao</string>
+  <string name="unknown_election_exception">Unknown election</string>
 
 </resources>

@@ -9,19 +9,34 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.ServerRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.util.*;
+
+import javax.inject.Inject;
 
 /** Lao messages handler class */
 public final class LaoHandler {
 
   public static final String TAG = LaoHandler.class.getSimpleName();
 
-  private LaoHandler() {
-    throw new IllegalStateException("Utility class");
+  private final MessageRepository messageRepo;
+  private final LAORepository laoRepo;
+  private final KeyManager keyManager;
+  private final ServerRepository serverRepo;
+
+  @Inject
+  public LaoHandler(
+      KeyManager keyManager,
+      MessageRepository messageRepo,
+      LAORepository laoRepo,
+      ServerRepository serverRepo) {
+    this.messageRepo = messageRepo;
+    this.laoRepo = laoRepo;
+    this.keyManager = keyManager;
+    this.serverRepo = serverRepo;
   }
 
   /**
@@ -31,8 +46,7 @@ public final class LaoHandler {
    * @param createLao the message that was received
    */
   @SuppressLint("CheckResult") // for now concerns Consensus which is not a priority this semester
-  public static void handleCreateLao(HandlerContext context, CreateLao createLao) {
-    LAORepository laoRepository = context.getLaoRepository();
+  public void handleCreateLao(HandlerContext context, CreateLao createLao) {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
@@ -45,11 +59,9 @@ public final class LaoHandler {
     lao.setId(createLao.getId());
     lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
 
-    // Adding the newly created LAO to the repository
-    laoRepository.updateLao(lao);
-    laoRepository.setAllLaoSubject();
+    laoRepo.updateLao(lao);
 
-    PublicKey publicKey = context.getKeyManager().getMainPublicKey();
+    PublicKey publicKey = keyManager.getMainPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
       context
           .getMessageSender()
@@ -57,7 +69,7 @@ public final class LaoHandler {
           .subscribe( // For now if we receive an error, we assume that it is because the server
               // running is the scala one which does not implement consensus
               () -> Log.d(TAG, "subscription to consensus channel was a success"),
-              error -> Log.d(TAG, "error while trying to subscribe to consensus channel"));
+              error -> Log.d(TAG, "error while trying to subscribe to consensus channel", error));
     }
 
     /* Creation channel coin*/
@@ -66,9 +78,9 @@ public final class LaoHandler {
         .subscribe(channel.subChannel("coin"))
         .subscribe(
             () -> Log.d(TAG, "subscription to the coin channel was a success"),
-            error -> Log.d(TAG, "error while trying  to subscribe to coin channel"));
+            error -> Log.d(TAG, "error while trying  to subscribe to coin channel", error));
 
-    laoRepository.updateNodes(channel);
+    laoRepo.updateNodes(channel);
   }
 
   /**
@@ -77,14 +89,13 @@ public final class LaoHandler {
    * @param context the HandlerContext of the message
    * @param updateLao the message that was received
    */
-  public static void handleUpdateLao(HandlerContext context, UpdateLao updateLao)
+  public void handleUpdateLao(HandlerContext context, UpdateLao updateLao)
       throws DataHandlingException, UnknownLaoException {
-    LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
-    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     if (laoView.getLastModified() > updateLao.getLastModified()) {
       // the current state we have is more up to date
@@ -111,8 +122,8 @@ public final class LaoHandler {
       lao.addPendingUpdate(new PendingUpdate(updateLao.getLastModified(), messageId));
     }
 
-    laoRepository.updateNodes(channel);
-    laoRepository.updateLao(lao);
+    laoRepo.updateNodes(channel);
+    laoRepo.updateLao(lao);
   }
 
   /**
@@ -122,16 +133,15 @@ public final class LaoHandler {
    * @param stateLao the message that was received
    */
   @SuppressLint("CheckResult")
-  public static void handleStateLao(HandlerContext context, StateLao stateLao)
+  public void handleStateLao(HandlerContext context, StateLao stateLao)
       throws DataHandlingException, UnknownLaoException {
-    LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
     Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
-    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     Log.d(TAG, "Receive State Lao Broadcast " + stateLao.getName());
-    if (!laoRepository.getMessageById().containsKey(stateLao.getModificationId())) {
+    if (!messageRepo.isMessagePresent(stateLao.getModificationId())) {
       Log.d(TAG, "Can't find modification id : " + stateLao.getModificationId());
       // queue it if we haven't received the update message yet
       throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
@@ -156,9 +166,8 @@ public final class LaoHandler {
     lao.setLastModified(stateLao.getLastModified());
     lao.setModificationId(stateLao.getModificationId());
 
-    PublicKey publicKey = context.getKeyManager().getMainPublicKey();
+    PublicKey publicKey = keyManager.getMainPublicKey();
     if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
-
       context
           .getMessageSender()
           .subscribe(laoView.getChannel().subChannel("consensus"))
@@ -172,8 +181,8 @@ public final class LaoHandler {
     lao.getPendingUpdates()
         .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
 
-    laoRepository.updateLao(lao);
-    laoRepository.updateNodes(channel);
+    laoRepo.updateLao(lao);
+    laoRepo.updateNodes(channel);
   }
 
   public static WitnessMessage updateLaoNameWitnessMessage(
@@ -192,7 +201,7 @@ public final class LaoHandler {
     return message;
   }
 
-  public static WitnessMessage updateLaoWitnessesWitnessMessage(
+  public WitnessMessage updateLaoWitnessesWitnessMessage(
       MessageID messageId, UpdateLao updateLao, LaoView laoView) {
     WitnessMessage message = new WitnessMessage(messageId);
     List<PublicKey> tempList = new ArrayList<>(updateLao.getWitnesses());
@@ -209,13 +218,11 @@ public final class LaoHandler {
     return message;
   }
 
-  public static void handleGreetLao(HandlerContext context, GreetLao greetLao)
-      throws UnknownLaoException {
-    LAORepository laoRepository = context.getLaoRepository();
+  public void handleGreetLao(HandlerContext context, GreetLao greetLao) throws UnknownLaoException {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleGreetLao: channel " + channel + ", msg=" + greetLao);
-    LaoView laoView = laoRepository.getLaoViewByChannel(channel);
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     // Check the correctness of the LAO id
     if (!laoView.getId().equals(greetLao.getId())) {
@@ -234,8 +241,7 @@ public final class LaoHandler {
     Server server = new Server(greetLao.getAddress(), greetLao.getFrontendKey());
 
     Log.d(TAG, "Adding the server to the repository for lao id : " + laoView.getId());
-    ServerRepository serverRepository = context.getServerRepository();
-    serverRepository.addServer(greetLao.getId(), server);
+    serverRepo.addServer(greetLao.getId(), server);
 
     // In the future, implement automatic connection to all the peers contained in the peers
     // message

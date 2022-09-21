@@ -1,7 +1,8 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import { mockNavigate } from '__mocks__/useNavigationMock';
 import { subscribeToChannel } from 'core/network/CommunicationApi';
@@ -23,7 +24,7 @@ beforeEach(() => {
   mockNavigate.mockClear();
 });
 
-const mockStore = createStore(combineReducers({}));
+const mockStore = configureStore({ reducer: combineReducers({}) });
 
 describe('UserListItem', () => {
   it('calls subscribeToChannel correctly when clicking on follow', () => {
