@@ -346,9 +346,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                             }
                           }
                         >
-                          <Text>
-                            No QR reader
-                          </Text>
+                          <View />
                         </View>
                         <View
                           style={
@@ -483,6 +481,68 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                     </RNGestureHandlerButton>
                                   </View>
                                 </View>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={
+                              Object {
+                                "flexDirection": "column",
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "alignSelf": "flex-end",
+                                  "backgroundColor": "#fff",
+                                  "borderRadius": 16,
+                                  "padding": 8,
+                                }
+                              }
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
+                                <RNGestureHandlerButton
+                                  collapsable={false}
+                                  exclusive={true}
+                                  handlerTag={4}
+                                  handlerType="NativeViewGestureHandler"
+                                  onGestureEvent={[Function]}
+                                  onGestureHandlerEvent={[Function]}
+                                  onGestureHandlerStateChange={[Function]}
+                                  onHandlerStateChange={[Function]}
+                                  rippleColor={0}
+                                  touchSoundDisabled={false}
+                                >
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    style={
+                                      Object {
+                                        "alignSelf": "flex-end",
+                                        "marginLeft": "auto",
+                                        "opacity": 1,
+                                      }
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+                                    </View>
+                                  </View>
+                                </RNGestureHandlerButton>
                               </View>
                             </View>
                           </View>
@@ -783,7 +843,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={2}
+                handlerTag={5}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -833,9 +893,228 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                         }
                       }
                     >
-                      <Text>
-                        Requesting for camera permission
-                      </Text>
+                      <View
+                        style={
+                          Object {
+                            "flex": 1,
+                            "overflow": "hidden",
+                          }
+                        }
+                      >
+                        <View
+                          style={
+                            Object {
+                              "bottom": 0,
+                              "left": 0,
+                              "position": "absolute",
+                              "right": 0,
+                              "top": 0,
+                              "zIndex": 0,
+                            }
+                          }
+                        >
+                          <View />
+                        </View>
+                        <View
+                          style={
+                            Object {
+                              "flex": 1,
+                              "flexDirection": "column",
+                              "margin": 16,
+                            }
+                          }
+                        >
+                          <View
+                            style={
+                              Object {
+                                "bottom": 0,
+                                "flex": 1,
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                  "justifyContent": "space-between",
+                                }
+                              }
+                            >
+                              <View>
+                                <View
+                                  style={
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 16,
+                                      "padding": 8,
+                                    }
+                                  }
+                                >
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    focusable={true}
+                                    onBlur={[Function]}
+                                    onClick={[Function]}
+                                    onFocus={[Function]}
+                                    onResponderGrant={[Function]}
+                                    onResponderMove={[Function]}
+                                    onResponderRelease={[Function]}
+                                    onResponderTerminate={[Function]}
+                                    onResponderTerminationRequest={[Function]}
+                                    onStartShouldSetResponder={[Function]}
+                                    testID="roll_call_open_stop_scanning"
+                                  >
+                                    <RNGestureHandlerButton
+                                      collapsable={false}
+                                      exclusive={true}
+                                      handlerTag={6}
+                                      handlerType="NativeViewGestureHandler"
+                                      onGestureEvent={[Function]}
+                                      onGestureHandlerEvent={[Function]}
+                                      onGestureHandlerStateChange={[Function]}
+                                      onHandlerStateChange={[Function]}
+                                      rippleColor={0}
+                                      touchSoundDisabled={false}
+                                    >
+                                      <View
+                                        accessible={true}
+                                        collapsable={false}
+                                        style={
+                                          Object {
+                                            "opacity": 1,
+                                          }
+                                        }
+                                      >
+                                        <View>
+                                          {"name":"ios-close","size":25,"color":"#3742fa"}
+                                        </View>
+                                      </View>
+                                    </RNGestureHandlerButton>
+                                  </View>
+                                </View>
+                              </View>
+                              <View>
+                                <View
+                                  style={
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderRadius": 16,
+                                      "padding": 8,
+                                    }
+                                  }
+                                >
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    focusable={true}
+                                    onBlur={[Function]}
+                                    onClick={[Function]}
+                                    onFocus={[Function]}
+                                    onResponderGrant={[Function]}
+                                    onResponderMove={[Function]}
+                                    onResponderRelease={[Function]}
+                                    onResponderTerminate={[Function]}
+                                    onResponderTerminationRequest={[Function]}
+                                    onStartShouldSetResponder={[Function]}
+                                    testID="roll_call_open_add_manually"
+                                  >
+                                    <RNGestureHandlerButton
+                                      collapsable={false}
+                                      exclusive={true}
+                                      handlerTag={7}
+                                      handlerType="NativeViewGestureHandler"
+                                      onGestureEvent={[Function]}
+                                      onGestureHandlerEvent={[Function]}
+                                      onGestureHandlerStateChange={[Function]}
+                                      onHandlerStateChange={[Function]}
+                                      rippleColor={0}
+                                      touchSoundDisabled={false}
+                                    >
+                                      <View
+                                        accessible={true}
+                                        collapsable={false}
+                                        style={
+                                          Object {
+                                            "opacity": 1,
+                                          }
+                                        }
+                                      >
+                                        <View>
+                                          {"name":"ios-person-add","size":25,"color":"#3742fa"}
+                                        </View>
+                                      </View>
+                                    </RNGestureHandlerButton>
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={
+                              Object {
+                                "flexDirection": "column",
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "alignSelf": "flex-end",
+                                  "backgroundColor": "#fff",
+                                  "borderRadius": 16,
+                                  "padding": 8,
+                                }
+                              }
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
+                                <RNGestureHandlerButton
+                                  collapsable={false}
+                                  exclusive={true}
+                                  handlerTag={8}
+                                  handlerType="NativeViewGestureHandler"
+                                  onGestureEvent={[Function]}
+                                  onGestureHandlerEvent={[Function]}
+                                  onGestureHandlerStateChange={[Function]}
+                                  onHandlerStateChange={[Function]}
+                                  rippleColor={0}
+                                  touchSoundDisabled={false}
+                                >
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    style={
+                                      Object {
+                                        "alignSelf": "flex-end",
+                                        "marginLeft": "auto",
+                                        "opacity": 1,
+                                      }
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+                                    </View>
+                                  </View>
+                                </RNGestureHandlerButton>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      </View>
                       <Modal
                         hardwareAccelerated={false}
                         onRequestClose={[Function]}

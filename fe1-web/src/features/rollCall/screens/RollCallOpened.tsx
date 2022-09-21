@@ -142,8 +142,6 @@ const RollCallOpened = () => {
     }
   };
 
-  const delay = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
-
   // This will run only when the state changes
   useEffect(() => {
     if (!laoId) {
@@ -160,11 +158,9 @@ const RollCallOpened = () => {
     <>
       <QrCodeScanner
         showCamera={showScanner}
-        handleScan={({ data }: BarCodeScanningResult) => {
-          if (data) {
-            delay(1000).then(() => addAttendeePopTokenAndShowToast(data));
-          }
-        }}>
+        handleScan={({ data }: BarCodeScanningResult) =>
+          data && addAttendeePopTokenAndShowToast(data)
+        }>
         <View style={styles.buttonContainer}>
           <View>
             <View style={styles.leftButtons}>

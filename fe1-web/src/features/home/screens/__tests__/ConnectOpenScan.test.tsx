@@ -108,11 +108,13 @@ describe('ConnectOpenScan', () => {
 
     act(didFocus);
 
-    fakeQrReaderScan(
-      new ConnectToLao({
-        lao: mockLaoId,
-        servers: [mockAddress],
-      }).toJson(),
+    act(() =>
+      fakeQrReaderScan(
+        new ConnectToLao({
+          lao: mockLaoId,
+          servers: [mockAddress],
+        }).toJson(),
+      ),
     );
 
     await waitFor(() => {

@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
-  const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
+  const [hasMultipleCameras, setHasMultipleCameras] = useState(true);
   const [hasCamera, setHasCamera] = useState(true);
 
   useEffect(() => {
@@ -83,15 +83,30 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   }, []);
 
   if (!hasCamera) {
-    return <Text>Camera unavailable</Text>;
+    return (
+      <>
+        <Text>Camera unavailable</Text>
+        <View style={styles.children}>{children}</View>
+      </>
+    );
   }
 
   if (!permission) {
-    return <Text>Requesting for camera permissions</Text>;
+    return (
+      <>
+        <Text>Requesting for camera permissions</Text>
+        <View style={styles.children}>{children}</View>
+      </>
+    );
   }
 
   if (!permission.granted) {
-    return <Text>Permissions for camera denied</Text>;
+    return (
+      <>
+        <Text>Permissions for camera denied</Text>
+        <View style={styles.children}>{children}</View>
+      </>
+    );
   }
 
   // Scan each code only once

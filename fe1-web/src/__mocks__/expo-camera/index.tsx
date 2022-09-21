@@ -4,12 +4,15 @@ import { View } from 'react-native';
 
 let onBarCodeScanned: Function | null | undefined = null;
 
-export const fireScan = (result: BarCodeScanningResult) =>
-  onBarCodeScanned && onBarCodeScanned(result);
+export const fireScan = (data: string) => onBarCodeScanned && onBarCodeScanned({ data });
 
 export enum CameraType {
   front = 'front',
   back = 'back',
+}
+
+export enum PermissionStatus {
+  DENIED = 'denied',
 }
 
 export type BarCodeScanningResult = {
