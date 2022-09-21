@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
+import android.Manifest;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -16,9 +17,11 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.*;
+import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
+import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.Constants;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -27,6 +30,9 @@ import java.util.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 
 @AndroidEntryPoint
@@ -82,15 +88,33 @@ public class RollCallFragment extends Fragment {
 
     View.OnClickListener listener =
         v -> {
-          EventState state = rollCall.getState().getValue();
+          EventState state = rollCall.getState();
           switch (state) {
             case CLOSED:
             case CREATED:
-              laoDetailViewModel.openRollCall(requireActivity(), rollCall.getId());
+              laoDetailViewModel.addDisposable(
+                  laoDetailViewModel
+                      .openRollCall(rollCall.getId())
+                      .subscribe(
+                          this::openScanning,
+                          error ->
+                              ErrorUtils.logAndShow(
+                                  requireContext(), TAG, error, R.string.error_open_rollcall)));
               break;
             case OPENED:
               // will add the scan to this fragment in the future
-              laoDetailViewModel.closeRollCall(getParentFragmentManager());
+              laoDetailViewModel.addDisposable(
+                  laoDetailViewModel
+                      .closeRollCall()
+                      .subscribe(
+                          () ->
+                              setCurrentFragment(
+                                  getParentFragmentManager(),
+                                  R.id.fragment_lao_detail,
+                                  LaoDetailFragment::newInstance),
+                          error ->
+                              ErrorUtils.logAndShow(
+                                  requireContext(), TAG, error, R.string.error_close_rollcall)));
               break;
             default:
               throw new IllegalStateException("Roll-Call should not be in a " + state + " state");
@@ -99,8 +123,8 @@ public class RollCallFragment extends Fragment {
 
     managementButton.setOnClickListener(listener);
 
-    rollCall
-        .getState()
+    laoDetailViewModel
+        .getLaoEvents()
         .observe(getViewLifecycleOwner(), eventState -> setUpStateDependantContent());
 
     retrieveAndDisplayPublicKey(view);
@@ -108,10 +132,27 @@ public class RollCallFragment extends Fragment {
     return view;
   }
 
+  private void openScanning() {
+    if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PERMISSION_GRANTED) {
+      setCurrentFragment(
+          getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new);
+    } else {
+      setCurrentFragment(
+          getParentFragmentManager(),
+          R.id.fragment_camera_perm,
+          () ->
+              CameraPermissionFragment.newInstance(requireActivity().getActivityResultRegistry()));
+    }
+  }
+
   private void setUpStateDependantContent() {
+    rollCall = laoDetailViewModel.getCurrentRollCall();
+    if (rollCall == null) {
+      return;
+    }
     setupTime(); // Suggested time is updated in case of early/late close/open/reopen
 
-    EventState rcState = rollCall.getState().getValue();
+    EventState rcState = rollCall.getState();
     boolean isOrganizer = laoDetailViewModel.isOrganizer().getValue();
 
     title.setText(rollCall.getName());
@@ -134,6 +175,9 @@ public class RollCallFragment extends Fragment {
   }
 
   private void setupTime() {
+    if (rollCall == null) {
+      return;
+    }
     Date startTime = new Date(rollCall.getStartTimestampInMillis());
     Date endTime = new Date(rollCall.getEndTimestampInMillis());
 

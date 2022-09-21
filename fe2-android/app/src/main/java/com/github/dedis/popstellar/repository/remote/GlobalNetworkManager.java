@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.repository.remote;
 
 import androidx.annotation.NonNull;
 
-import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
@@ -19,7 +18,6 @@ public class GlobalNetworkManager implements Disposable {
 
   private static final String DEFAULT_URL = "ws://10.0.2.2:9000/organizer/client";
 
-  private final LAORepository laoRepository;
   private final MessageHandler messageHandler;
   private final ConnectionFactory connectionFactory;
   private final Gson gson;
@@ -30,12 +28,10 @@ public class GlobalNetworkManager implements Disposable {
 
   @Inject
   public GlobalNetworkManager(
-      LAORepository laoRepository,
       MessageHandler messageHandler,
       ConnectionFactory connectionFactory,
       Gson gson,
       SchedulerProvider schedulerProvider) {
-    this.laoRepository = laoRepository;
     this.messageHandler = messageHandler;
     this.connectionFactory = connectionFactory;
     this.gson = gson;
@@ -48,8 +44,7 @@ public class GlobalNetworkManager implements Disposable {
     if (networkManager != null) networkManager.dispose();
 
     Connection connection = connectionFactory.createConnection(url);
-    networkManager =
-        new LAONetworkManager(laoRepository, messageHandler, connection, gson, schedulerProvider);
+    networkManager = new LAONetworkManager(messageHandler, connection, gson, schedulerProvider);
     currentURL = url;
   }
 

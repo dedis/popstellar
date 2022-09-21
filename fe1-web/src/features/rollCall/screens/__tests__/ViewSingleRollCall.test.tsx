@@ -1,16 +1,17 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoIdHash, mockLao, mockLaoId } from '__tests__/utils';
+import { mockLao, mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, Timestamp } from 'core/objects';
 import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
-import { setCurrentLao, laoReducer } from 'features/lao/reducer';
+import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 import { mockRollCall } from 'features/rollCall/__tests__/utils';
-import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
+import { ROLLCALL_FEATURE_IDENTIFIER, RollCallReactContext } from 'features/rollCall/interface';
 import { addRollCall, rollCallReducer, updateRollCall } from 'features/rollCall/reducer';
 import { generateToken } from 'features/wallet/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
@@ -47,9 +48,14 @@ const mockRollCallReopened = RollCall.fromState(createStateWithStatus(RollCallSt
 const mockRollCallClosed = RollCall.fromState(createStateWithStatus(RollCallStatus.CLOSED));
 
 // set up mock store
-const mockStore = createStore(
-  combineReducers({ ...laoReducer, ...eventReducer, ...rollCallReducer, ...walletReducer }),
-);
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...laoReducer,
+    ...eventReducer,
+    ...rollCallReducer,
+    ...walletReducer,
+  }),
+});
 mockStore.dispatch(setCurrentLao(mockLao.toState()));
 const mockRollCallState = mockRollCallCreated.toState();
 
@@ -86,7 +92,10 @@ describe('EventRollCall', () => {
           <FeatureContext.Provider value={contextValue}>
             <MockNavigator
               component={ViewSingleRollCall}
-              params={{ eventId: rollCall.id.valueOf(), isOrganizer }}
+              params={{
+                eventId: rollCall.id.valueOf(),
+                isOrganizer,
+              }}
             />
           </FeatureContext.Provider>
         </Provider>,
@@ -121,7 +130,10 @@ describe('ViewSinglRollCallScreenRightHeader', () => {
           <FeatureContext.Provider value={contextValue}>
             <MockNavigator
               component={ViewSinglRollCallScreenRightHeader}
-              params={{ eventId: mockRollCallCreated.id.valueOf(), isOrganizer }}
+              params={{
+                eventId: mockRollCallCreated.id.valueOf(),
+                isOrganizer,
+              }}
             />
           </FeatureContext.Provider>
         </Provider>,

@@ -1,14 +1,15 @@
 import { describe } from '@jest/globals';
+import { configureStore } from '@reduxjs/toolkit';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import { mockLao, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { HomeFeature, HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
+import { HOME_FEATURE_IDENTIFIER, HomeFeature, HomeReactContext } from 'features/home/interface';
 import { LaoHooks } from 'features/lao/hooks';
-import { setCurrentLao, laoReducer } from 'features/lao/reducer';
+import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import { HomeHooks } from '../index';
 
@@ -20,7 +21,12 @@ const LaoList = jest.fn();
 const hasSeed = jest.fn();
 const resubscribeToLao = jest.fn();
 const homeNavigationScreens: HomeFeature.HomeScreen[] = [
-  { Component: LaoList, id: 'x' as HomeFeature.HomeScreen['id'], title: 'X', order: 2 },
+  {
+    Component: LaoList,
+    id: 'x' as HomeFeature.HomeScreen['id'],
+    title: 'X',
+    order: 2,
+  },
 ];
 
 const contextValue = {
@@ -41,7 +47,7 @@ const contextValue = {
 };
 
 // setup mock store
-const mockStore = createStore(combineReducers(laoReducer));
+const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
 mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
 const wrapper = ({ children }: { children: React.ReactChildren }) => (

@@ -61,10 +61,8 @@ const WalletHome = () => {
                   [laoId]: !isLaoExpanded[laoId],
                 })
               }>
-              {walletItemGenerators.map((Generator, idx) => (
-                // FIXME: Do not use index in key
-                // eslint-disable-next-line react/no-array-index-key
-                <Generator.ListItems key={idx.toString()} laoId={laoIdHash} />
+              {walletItemGenerators.map((Generator) => (
+                <Generator.ListItems key={Generator.order.toString()} laoId={laoIdHash} />
               ))}
             </ListItem.Accordion>
           );

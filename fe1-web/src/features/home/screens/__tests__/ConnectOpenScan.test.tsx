@@ -1,10 +1,11 @@
 import { useNavigation } from '@react-navigation/core';
+import { configureStore } from '@reduxjs/toolkit';
 import { act, render, waitFor } from '@testing-library/react-native';
 // @ts-ignore
 import { fireScan as fakeQrReaderScan } from 'expo-camera';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import {
@@ -81,7 +82,7 @@ const contextValue = {
   } as HomeReactContext,
 };
 
-const mockStore = createStore(combineReducers(laoReducer));
+const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
 mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
 describe('ConnectOpenScan', () => {

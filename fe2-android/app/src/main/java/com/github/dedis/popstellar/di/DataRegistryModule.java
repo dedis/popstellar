@@ -30,15 +30,21 @@ public abstract class DataRegistryModule {
 
   @Provides
   @Singleton
-  public static DataRegistry provideDataRegistry() {
+  public static DataRegistry provideDataRegistry(
+      LaoHandler laoHandler,
+      RollCallHandler rollCallHandler,
+      ElectionHandler electionHandler,
+      ConsensusHandler consensusHandler,
+      ChirpHandler chirpHandler,
+      TransactionCoinHandler transactionCoinHandler) {
     DataRegistry.Builder builder = new DataRegistry.Builder();
 
     // Lao
     builder
-        .add(LAO, CREATE, CreateLao.class, LaoHandler::handleCreateLao)
-        .add(LAO, UPDATE, UpdateLao.class, LaoHandler::handleUpdateLao)
-        .add(LAO, STATE, StateLao.class, LaoHandler::handleStateLao)
-        .add(LAO, GREET, GreetLao.class, LaoHandler::handleGreetLao);
+        .add(LAO, CREATE, CreateLao.class, laoHandler::handleCreateLao)
+        .add(LAO, UPDATE, UpdateLao.class, laoHandler::handleUpdateLao)
+        .add(LAO, STATE, StateLao.class, laoHandler::handleStateLao)
+        .add(LAO, GREET, GreetLao.class, laoHandler::handleGreetLao);
 
     // Meeting
     builder
@@ -50,40 +56,40 @@ public abstract class DataRegistryModule {
 
     // Roll Call
     builder
-        .add(ROLL_CALL, CREATE, CreateRollCall.class, RollCallHandler::handleCreateRollCall)
-        .add(ROLL_CALL, OPEN, OpenRollCall.class, RollCallHandler::handleOpenRollCall)
-        .add(ROLL_CALL, REOPEN, OpenRollCall.class, RollCallHandler::handleOpenRollCall)
-        .add(ROLL_CALL, CLOSE, CloseRollCall.class, RollCallHandler::handleCloseRollCall);
+        .add(ROLL_CALL, CREATE, CreateRollCall.class, rollCallHandler::handleCreateRollCall)
+        .add(ROLL_CALL, OPEN, OpenRollCall.class, rollCallHandler::handleOpenRollCall)
+        .add(ROLL_CALL, REOPEN, OpenRollCall.class, rollCallHandler::handleOpenRollCall)
+        .add(ROLL_CALL, CLOSE, CloseRollCall.class, rollCallHandler::handleCloseRollCall);
 
     // Election
     builder
-        .add(ELECTION, SETUP, ElectionSetup.class, ElectionHandler::handleElectionSetup)
-        .add(ELECTION, OPEN, OpenElection.class, ElectionHandler::handleElectionOpen)
-        .add(ELECTION, CAST_VOTE, CastVote.class, ElectionHandler::handleCastVote)
-        .add(ELECTION, END, ElectionEnd.class, ElectionHandler::handleElectionEnd)
-        .add(ELECTION, RESULT, ElectionResult.class, ElectionHandler::handleElectionResult)
-        .add(ELECTION, KEY, ElectionKey.class, ElectionHandler::handleElectionKey);
+        .add(ELECTION, SETUP, ElectionSetup.class, electionHandler::handleElectionSetup)
+        .add(ELECTION, OPEN, OpenElection.class, electionHandler::handleElectionOpen)
+        .add(ELECTION, CAST_VOTE, CastVote.class, electionHandler::handleCastVote)
+        .add(ELECTION, END, ElectionEnd.class, electionHandler::handleElectionEnd)
+        .add(ELECTION, RESULT, ElectionResult.class, electionHandler::handleElectionResult)
+        .add(ELECTION, KEY, ElectionKey.class, electionHandler::handleElectionKey);
 
     // Consensus
     builder
-        .add(CONSENSUS, ELECT, ConsensusElect.class, ConsensusHandler::handleElect)
+        .add(CONSENSUS, ELECT, ConsensusElect.class, consensusHandler::handleElect)
         .add(
             CONSENSUS,
             ELECT_ACCEPT,
             ConsensusElectAccept.class,
-            ConsensusHandler::handleElectAccept)
-        .add(CONSENSUS, PREPARE, ConsensusPrepare.class, ConsensusHandler::handleBackend)
-        .add(CONSENSUS, PROMISE, ConsensusPromise.class, ConsensusHandler::handleBackend)
-        .add(CONSENSUS, PROPOSE, ConsensusPropose.class, ConsensusHandler::handleBackend)
-        .add(CONSENSUS, ACCEPT, ConsensusAccept.class, ConsensusHandler::handleBackend)
-        .add(CONSENSUS, LEARN, ConsensusLearn.class, ConsensusHandler::handleLearn)
-        .add(CONSENSUS, FAILURE, ConsensusFailure.class, ConsensusHandler::handleConsensusFailure);
+            consensusHandler::handleElectAccept)
+        .add(CONSENSUS, PREPARE, ConsensusPrepare.class, consensusHandler::handleBackend)
+        .add(CONSENSUS, PROMISE, ConsensusPromise.class, consensusHandler::handleBackend)
+        .add(CONSENSUS, PROPOSE, ConsensusPropose.class, consensusHandler::handleBackend)
+        .add(CONSENSUS, ACCEPT, ConsensusAccept.class, consensusHandler::handleBackend)
+        .add(CONSENSUS, LEARN, ConsensusLearn.class, consensusHandler::handleLearn)
+        .add(CONSENSUS, FAILURE, ConsensusFailure.class, consensusHandler::handleConsensusFailure);
 
     // Social Media
     builder
-        .add(CHIRP, ADD, AddChirp.class, ChirpHandler::handleChirpAdd)
+        .add(CHIRP, ADD, AddChirp.class, chirpHandler::handleChirpAdd)
         .add(CHIRP, NOTIFY_ADD, NotifyAddChirp.class, null)
-        .add(CHIRP, DELETE, DeleteChirp.class, ChirpHandler::handleDeleteChirp)
+        .add(CHIRP, DELETE, DeleteChirp.class, chirpHandler::handleDeleteChirp)
         .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null);
 
     // Digital Cash
@@ -91,7 +97,7 @@ public abstract class DataRegistryModule {
         COIN,
         POST_TRANSACTION,
         PostTransactionCoin.class,
-        TransactionCoinHandler::handlePostTransactionCoin);
+        transactionCoinHandler::handlePostTransactionCoin);
 
     return builder.build();
   }

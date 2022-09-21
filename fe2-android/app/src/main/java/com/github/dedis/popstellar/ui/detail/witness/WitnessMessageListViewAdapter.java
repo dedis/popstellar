@@ -6,28 +6,32 @@ import android.view.*;
 import android.widget.BaseAdapter;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.LifecycleOwner;
+import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.List;
 
 /** Adapter to show the messages that have to be signed by the witnesses */
 public class WitnessMessageListViewAdapter extends BaseAdapter {
 
+  private static final String TAG = WitnessMessageListViewAdapter.class.getSimpleName();
   private final LaoDetailViewModel viewModel;
 
   private List<WitnessMessage> messages;
 
-  private final LifecycleOwner lifecycleOwner;
+  private final FragmentActivity activity;
 
   public WitnessMessageListViewAdapter(
-      List<WitnessMessage> messages, LaoDetailViewModel viewModel, LifecycleOwner activity) {
+      List<WitnessMessage> messages, LaoDetailViewModel viewModel, FragmentActivity activity) {
     this.viewModel = viewModel;
+    this.activity = activity;
     setList(messages);
-    lifecycleOwner = activity;
   }
 
   public void replaceList(List<WitnessMessage> messages) {
@@ -76,8 +80,16 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     Context context = parent.getContext();
     View.OnClickListener listener =
         v -> {
+          boolean isWitness;
+          try {
+            isWitness = viewModel.isWitness().getValue();
+          } catch (UnknownLaoException e) {
+            ErrorUtils.logAndShow(context, TAG, R.string.error_no_lao);
+            return;
+          }
+
           AlertDialog.Builder adb = new AlertDialog.Builder(context);
-          boolean isWitness = viewModel.isWitness().getValue();
+
           if (isWitness) {
             adb.setTitle("Sign Message");
             adb.setMessage(
@@ -85,7 +97,16 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                     + messages.get(position).getMessageId());
             adb.setNegativeButton("Cancel", null);
             adb.setPositiveButton(
-                "Confirm", (dialog, which) -> viewModel.signMessage(messages.get(position)));
+                "Confirm",
+                (dialog, which) ->
+                    viewModel.addDisposable(
+                        viewModel
+                            .signMessage(messages.get(position))
+                            .subscribe(
+                                () -> {},
+                                error ->
+                                    ErrorUtils.logAndShow(
+                                        activity, TAG, error, R.string.error_sign_message))));
           } else {
             adb.setTitle("You are not a witness");
             adb.setMessage("You need to be a witness in order to sign this message");
@@ -98,7 +119,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
 
     binding.setMessage(messages.get(position));
     binding.setViewmodel(viewModel);
-    binding.setLifecycleOwner(lifecycleOwner);
+    binding.setLifecycleOwner(activity);
 
     binding.executePendingBindings();
 

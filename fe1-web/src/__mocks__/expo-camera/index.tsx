@@ -4,8 +4,8 @@ import { View } from 'react-native';
 
 let onBarCodeScanned: Function | null | undefined = null;
 
-// TODO: Use correct type
-export const fireScan = (x: any) => onBarCodeScanned && onBarCodeScanned(x);
+export const fireScan = (result: BarCodeScanningResult) =>
+  onBarCodeScanned && onBarCodeScanned(result);
 
 export enum CameraType {
   front = 'front',

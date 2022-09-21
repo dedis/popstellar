@@ -1,15 +1,16 @@
 import { describe } from '@jest/globals';
+import { configureStore } from '@reduxjs/toolkit';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore, Store } from 'redux';
+import { combineReducers, Store } from 'redux';
 
 import { mockKeyPair, mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
 import { encodeLaoConnectionForQRCode } from 'features/home/functions';
-import { LaoFeature, LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
-import { setCurrentLao, laoReducer } from 'features/lao/reducer';
+import { LAO_FEATURE_IDENTIFIER, LaoFeature, LaoReactContext } from 'features/lao/interface';
+import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import { LaoHooks } from '../LaoHooks';
 
@@ -30,11 +31,16 @@ const contextValue = {
 };
 
 // setup mock store
-const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer }));
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...laoReducer,
+    ...keyPairReducer,
+  }),
+});
 mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
 // setup mock store
-const emptyMockStore = createStore(combineReducers(laoReducer));
+const emptyMockStore = configureStore({ reducer: combineReducers(laoReducer) });
 
 const wrapper =
   (store: Store) =>

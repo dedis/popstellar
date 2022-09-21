@@ -1,8 +1,13 @@
 package com.github.dedis.popstellar.model.objects.view;
 
+import androidx.annotation.NonNull;
+
+import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.util.*;
 
@@ -67,6 +72,18 @@ public final class LaoView {
     // returns optional with copy of retrieved RollCall
   }
 
+  public Optional<RollCall> getRollCallWithPersistentId(String persistentId) {
+    Optional<RollCall> optional = lao.getRollCallWithPersistentId(persistentId);
+    return optional.map(RollCall::new); // If empty returns empty optional, if not
+    // returns optional with copy of retrieved RollCall
+  }
+
+  public Optional<Election> getElection(String id) {
+    Optional<Election> electionOption = lao.getElection(id);
+    return electionOption.map(Election::new); // If empty returns empty optional, if not
+    // returns optional with copy of retrieved Election
+  }
+
   public Optional<Chirp> getChirp(MessageID messageID) {
     Optional<Chirp> optional = lao.getChirp(messageID);
     return optional.map(Chirp::new); // If empty returns empty optional, if not
@@ -87,5 +104,51 @@ public final class LaoView {
     //    return optional.map(ElectInstance::new); // If empty returns empty optional, if not
     // returns optional with copy of retrieved ElectInstance
     return lao.getElectInstance(messageId);
+  }
+
+  public RollCall getMostRecentRollCall() throws NoRollCallException {
+    return new RollCall(lao.lastRollCallClosed());
+  }
+
+  public List<Chirp> getChirpsInOrder() {
+    return new ArrayList<>(lao.getChirpsInOrder());
+  }
+
+  public Map<String, RollCall> getRollCalls() {
+    return Copyable.copy(lao.getRollCalls());
+  }
+
+  public Map<String, Election> getElections() {
+    return Copyable.copy(lao.getElections());
+  }
+
+  public Map<MessageID, WitnessMessage> getWitnessMessages() {
+    return Copyable.copy(lao.getWitnessMessages());
+  }
+
+  public List<ConsensusNode> getNodes() {
+    return lao.getNodes();
+  }
+
+  public ConsensusNode getNode(@NonNull PublicKey key) {
+    return lao.getNode(key);
+  }
+
+  public long getCreation() {
+    return lao.getCreation();
+  }
+
+  public Map<PublicKey, List<TransactionObject>> getTransactionHistoryByUser() {
+    return Copyable.copyMapOfList(lao.getTransactionHistoryByUser());
+  }
+
+  public Map<PublicKey, List<TransactionObject>> getTransactionByUser() {
+    return Copyable.copyMapOfList(lao.getTransactionByUser());
+  }
+
+  @NonNull
+  @Override
+  public String toString() {
+    return lao.toString();
   }
 }

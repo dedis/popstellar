@@ -113,7 +113,6 @@ public final class Lao implements Copyable<Lao> {
     if (rollCall == null) {
       throw new IllegalArgumentException("The roll call is null");
     }
-
     rollCalls.remove(prevId);
     rollCalls.put(rollCall.getId(), rollCall);
   }
@@ -250,6 +249,18 @@ public final class Lao implements Copyable<Lao> {
 
   public Optional<RollCall> getRollCall(String id) {
     return Optional.ofNullable(rollCalls.get(id));
+  }
+
+  public Optional<RollCall> getRollCallWithPersistentId(String persistentId) {
+    List<RollCall> filtered =
+        rollCalls.values().stream()
+            .filter(value -> value.getPersistentId().equals(persistentId))
+            .collect(Collectors.toList());
+    if (filtered.size() > 1) {
+      throw new IllegalStateException(
+          "There should only be one roll call object with persistent id " + id);
+    }
+    return Optional.ofNullable(filtered.isEmpty() ? null : filtered.get(0));
   }
 
   public Optional<Election> getElection(String id) {
