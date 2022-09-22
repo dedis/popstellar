@@ -201,10 +201,12 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
         // Zip the subjects together to a sorted list
         .flatMap(
             observables ->
-                Observable.zip(
+                Observable.combineLatest(
                     observables,
                     chirps ->
-                        Arrays.stream((Chirp[]) chirps)
+                        Arrays.stream(chirps)
+                            .map(Chirp.class::cast)
+                            .filter(Objects::nonNull)
                             .sorted(Comparator.comparing(Chirp::getTimestamp).reversed())
                             .collect(Collectors.toList())));
   }

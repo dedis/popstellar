@@ -30,7 +30,11 @@ public class ChirpListAdapter extends BaseAdapter {
     layoutInflater = LayoutInflater.from(ctx);
 
     socialMediaViewModel.addDisposable(
-        socialMediaViewModel.getChirps().subscribe(this::replaceList));
+        socialMediaViewModel
+            .getChirps()
+            .subscribe(
+                this::replaceList,
+                err -> ErrorUtils.logAndShow(context, TAG, err, R.string.unknown_chirp_exception)));
   }
 
   public void replaceList(List<Chirp> chirps) {
@@ -56,7 +60,7 @@ public class ChirpListAdapter extends BaseAdapter {
   @Override
   public View getView(int position, View chirpView, ViewGroup viewGroup) {
     if (chirpView == null) {
-      chirpView = layoutInflater.inflate(R.layout.chirp_card, viewGroup);
+      chirpView = layoutInflater.inflate(R.layout.chirp_card, viewGroup, false);
     }
 
     Chirp chirp = getItem(position);
