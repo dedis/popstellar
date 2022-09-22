@@ -65,7 +65,6 @@
     "react-native-tab-view": "^3.1.1",
     "react-native-toast-notifications": "^3.3.1",
     "react-native-web": "~0.18.7",
-    "react-navigation": "^4.4.1",
     "react-qr-code": "^2.0.3",
     "react-redux": "^7.2.8",
     "react-timeago": "^6.2.1",
