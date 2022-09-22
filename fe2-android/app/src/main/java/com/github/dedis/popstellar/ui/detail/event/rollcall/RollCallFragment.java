@@ -37,7 +37,9 @@ import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
+
   public static final String TAG = RollCallFragment.class.getSimpleName();
+
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoDetailViewModel laoDetailViewModel;
@@ -134,15 +136,23 @@ public class RollCallFragment extends Fragment {
 
   private void openScanning() {
     if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PERMISSION_GRANTED) {
-      setCurrentFragment(
-          getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new);
+      openScanningFragment();
     } else {
+      // Setup result listener to open the scanning tab once the permission is granted
+      getParentFragmentManager().setFragmentResultListener(
+          CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> openScanningFragment());
+
       setCurrentFragment(
           getParentFragmentManager(),
           R.id.fragment_camera_perm,
           () ->
               CameraPermissionFragment.newInstance(requireActivity().getActivityResultRegistry()));
     }
+  }
+
+  private void openScanningFragment() {
+    setCurrentFragment(
+        getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new);
   }
 
   private void setUpStateDependantContent() {

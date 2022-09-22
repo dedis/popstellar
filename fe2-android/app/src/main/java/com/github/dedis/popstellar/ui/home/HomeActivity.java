@@ -160,15 +160,23 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
 
     // Check for the permission, if it is not granted, ask for it
     if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-      setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
+      openScanningFragment();
     } else {
+      // Setup result listener to open the scanning tab once the permission is granted
+      getSupportFragmentManager().setFragmentResultListener(
+          CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> openScanningFragment());
+
       setCurrentFragment(
           getSupportFragmentManager(),
           R.id.fragment_camera_perm,
           () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
     }
     return true;
+  }
+
+  private void openScanningFragment() {
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
   }
 
   private boolean openLaunchTab() {

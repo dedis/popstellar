@@ -149,14 +149,22 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
   private void openScanning() {
     if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PERMISSION_GRANTED) {
-      setCurrentFragment(
-          getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new);
+      openScanningFragment();
     } else {
+      // Setup result listener to open the scanning tab once the permission is granted
+      getParentFragmentManager().setFragmentResultListener(
+          CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> openScanningFragment());
+
       setCurrentFragment(
           getParentFragmentManager(),
           R.id.fragment_camera_perm,
           () ->
               CameraPermissionFragment.newInstance(requireActivity().getActivityResultRegistry()));
     }
+  }
+
+  private void openScanningFragment() {
+    setCurrentFragment(
+        getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new);
   }
 }
