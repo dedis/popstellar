@@ -68,6 +68,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
         startActivity(HomeActivity.newIntent(this));
       } else {
         viewModel.setCurrentTab(LaoTab.EVENTS);
+        openEventsTab();
       }
       return true;
     }
