@@ -73,7 +73,9 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       containerStyle={listStyle}
       style={listStyle}
       onPress={reconnectToLao}
-      bottomDivider>
+      bottomDivider
+      hasTVPreferredFocus
+      tvParallaxProperties>
       <ListItem.Content>
         <ListItem.Title style={Typography.base}>{lao.name}</ListItem.Title>
         <ListItem.Subtitle style={Typography.small}>
@@ -83,7 +85,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
           {lao.server_addresses.join(', ')}
         </ListItem.Subtitle>
       </ListItem.Content>
-      <ListItem.Chevron />
+      <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
     </ListItem>
   );
 };

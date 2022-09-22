@@ -37,7 +37,9 @@ const DigitalCashWalletItems = ({ laoId }: IPropTypes) => {
           navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet, {
             laoId: laoId.valueOf(),
           })
-        }>
+        }
+        hasTVPreferredFocus
+        tvParallaxProperties>
         <View style={List.icon}>
           <PoPIcon name="digitalCash" color={Color.primary} size={Icon.size} />
         </View>
@@ -47,7 +49,7 @@ const DigitalCashWalletItems = ({ laoId }: IPropTypes) => {
             {STRINGS.digital_cash_account_balance}: ${balance.toString()}
           </ListItem.Subtitle>
         </ListItem.Content>
-        <ListItem.Chevron />
+        <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
       </ListItem>
     </>
   );

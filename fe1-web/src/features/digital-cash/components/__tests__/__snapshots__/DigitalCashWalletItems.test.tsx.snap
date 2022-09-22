@@ -329,6 +329,7 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                       <View
                         accessible={true}
                         focusable={true}
+                        hasTVPreferredFocus={true}
                         onClick={[Function]}
                         onResponderGrant={[Function]}
                         onResponderMove={[Function]}
@@ -498,7 +499,10 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {

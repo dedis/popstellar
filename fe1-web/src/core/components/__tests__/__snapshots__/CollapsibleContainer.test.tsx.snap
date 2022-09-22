@@ -5,6 +5,7 @@ Array [
   <View
     accessible={true}
     focusable={true}
+    hasTVPreferredFocus={true}
     onClick={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}
@@ -213,6 +214,7 @@ Array [
   <View
     accessible={true}
     focusable={true}
+    hasTVPreferredFocus={true}
     onClick={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}
@@ -391,6 +393,7 @@ Array [
   <View
     accessible={true}
     focusable={true}
+    hasTVPreferredFocus={true}
     onClick={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}

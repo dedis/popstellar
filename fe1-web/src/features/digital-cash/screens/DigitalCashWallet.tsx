@@ -56,7 +56,9 @@ const DigitalCashWallet = () => {
                 laoId,
                 isCoinbase: true,
               });
-            }}>
+            }}
+            hasTVPreferredFocus
+            tvParallaxProperties>
             <ListItem.Content>
               <ListItem.Title style={Typography.base}>
                 {STRINGS.digital_cash_coin_issuance}
@@ -66,7 +68,7 @@ const DigitalCashWallet = () => {
               </ListItem.Subtitle>
             </ListItem.Content>
             <ListItem.Title style={Typography.base}>{STRINGS.digital_cash_infinity}</ListItem.Title>
-            <ListItem.Chevron />
+            <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
           </ListItem>
         )}
 
@@ -88,7 +90,9 @@ const DigitalCashWallet = () => {
                   rollCallId: rollCallToken.rollCallId.valueOf(),
                   isCoinbase: false,
                 });
-              }}>
+              }}
+              hasTVPreferredFocus
+              tvParallaxProperties>
               <ListItem.Content>
                 <ListItem.Title style={Typography.base}>
                   {rollCallToken.rollCallName}
@@ -100,7 +104,7 @@ const DigitalCashWallet = () => {
               <ListItem.Title style={Typography.base}>
                 ${balances[Hash.fromPublicKey(rollCallToken.token.publicKey).valueOf()] || 0}
               </ListItem.Title>
-              <ListItem.Chevron />
+              <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
             </ListItem>
           );
         })}

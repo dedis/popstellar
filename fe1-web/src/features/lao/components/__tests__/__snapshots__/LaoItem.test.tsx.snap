@@ -329,6 +329,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                       <View
                         accessible={true}
                         focusable={true}
+                        hasTVPreferredFocus={true}
                         onClick={[Function]}
                         onResponderGrant={[Function]}
                         onResponderMove={[Function]}
@@ -486,7 +487,10 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {
@@ -867,6 +871,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                       <View
                         accessible={true}
                         focusable={true}
+                        hasTVPreferredFocus={true}
                         onClick={[Function]}
                         onResponderGrant={[Function]}
                         onResponderMove={[Function]}
@@ -1024,7 +1029,10 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {
@@ -1382,6 +1390,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                       <View
                         accessible={true}
                         focusable={true}
+                        hasTVPreferredFocus={true}
                         onClick={[Function]}
                         onResponderGrant={[Function]}
                         onResponderMove={[Function]}
@@ -1539,7 +1548,10 @@ exports[`LaoItem renders correctly as witness 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {

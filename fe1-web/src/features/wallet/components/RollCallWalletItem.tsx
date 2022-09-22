@@ -34,7 +34,9 @@ const RollCallWalletItem = ({ rollCallToken, isFirstItem, isLastItem }: IPropTyp
           rollCallName: rollCallToken.rollCallName,
           rollCallTokenPublicKey: rollCallToken.token.publicKey.valueOf(),
         })
-      }>
+      }
+      hasTVPreferredFocus
+      tvParallaxProperties>
       <View style={List.icon}>
         <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
       </View>
@@ -44,7 +46,7 @@ const RollCallWalletItem = ({ rollCallToken, isFirstItem, isLastItem }: IPropTyp
           {STRINGS.wallet_home_rollcall_pop_token}
         </ListItem.Subtitle>
       </ListItem.Content>
-      <ListItem.Chevron />
+      <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
     </ListItem>
   );
 };

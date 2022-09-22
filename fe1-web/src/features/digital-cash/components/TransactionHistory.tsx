@@ -43,7 +43,9 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
             </ListItem.Content>
           }
           isExpanded={showTransactionHistory}
-          onPress={() => setShowTransactionHistory(!showTransactionHistory)}>
+          onPress={() => setShowTransactionHistory(!showTransactionHistory)}
+          hasTVPreferredFocus
+          tvParallaxProperties>
           {transactions
             .map((transaction, idx) => {
               const listStyle = List.getListItemStyles(idx === transactions.length - 1, idx === 0);
@@ -61,7 +63,9 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                     setShowInputs(true);
                     setShowOutputs(true);
                     setShowModal(true);
-                  }}>
+                  }}
+                  hasTVPreferredFocus
+                  tvParallaxProperties>
                   <ListItem.Content>
                     <ListItem.Title style={Typography.base} numberOfLines={1}>
                       {transaction.transactionId.valueOf()}
@@ -73,7 +77,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                     </ListItem.Subtitle>
                   </ListItem.Content>
                   <ListItem.Title style={Typography.base}>${amount}</ListItem.Title>
-                  <ListItem.Chevron />
+                  <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
                 </ListItem>
               );
             })
@@ -112,7 +116,9 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                 </ListItem.Content>
               }
               isExpanded={showInputs}
-              onPress={() => setShowInputs(!showInputs)}>
+              onPress={() => setShowInputs(!showInputs)}
+              hasTVPreferredFocus
+              tvParallaxProperties>
               {selectedTransaction &&
                 selectedTransaction.inputs.map((input, idx) => {
                   const listStyle = List.getListItemStyles(
@@ -125,7 +131,9 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                       key={input.txOutHash.valueOf().concat(input.txOutIndex.toString(10))}
                       containerStyle={listStyle}
                       style={listStyle}
-                      bottomDivider>
+                      bottomDivider
+                      hasTVPreferredFocus
+                      tvParallaxProperties>
                       <ListItem.Content>
                         <ListItem.Title style={Typography.base} numberOfLines={1}>
                           {input.script.publicKey.valueOf()}
@@ -159,7 +167,9 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                 </ListItem.Content>
               }
               isExpanded={showOutputs}
-              onPress={() => setShowOutputs(!showOutputs)}>
+              onPress={() => setShowOutputs(!showOutputs)}
+              hasTVPreferredFocus
+              tvParallaxProperties>
               {selectedTransaction &&
                 selectedTransaction.outputs.map((output, idx) => {
                   const listStyle = List.getListItemStyles(
@@ -172,7 +182,9 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                       key={output.script.publicKeyHash.valueOf()}
                       containerStyle={listStyle}
                       style={listStyle}
-                      bottomDivider>
+                      bottomDivider
+                      hasTVPreferredFocus
+                      tvParallaxProperties>
                       <ListItem.Content>
                         <ListItem.Title style={Typography.base} numberOfLines={1}>
                           {output.script.publicKeyHash.valueOf()}

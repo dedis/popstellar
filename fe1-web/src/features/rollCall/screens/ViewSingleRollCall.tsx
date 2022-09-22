@@ -182,12 +182,19 @@ const ViewSingleRollCall = () => {
                 </ListItem.Title>
               </ListItem.Content>
             }
-            isExpanded>
+            isExpanded
+            hasTVPreferredFocus
+            tvParallaxProperties>
             {popTokens.map((token, idx) => {
               const listStyle = List.getListItemStyles(idx === 0, idx === popTokens.length - 1);
 
               return (
-                <ListItem key={token.valueOf()} containerStyle={listStyle} style={listStyle}>
+                <ListItem
+                  key={token.valueOf()}
+                  containerStyle={listStyle}
+                  style={listStyle}
+                  hasTVPreferredFocus
+                  tvParallaxProperties>
                   <View style={List.icon}>
                     <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
                   </View>

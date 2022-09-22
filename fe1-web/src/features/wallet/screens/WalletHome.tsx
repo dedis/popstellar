@@ -60,7 +60,9 @@ const WalletHome = () => {
                   ...isLaoExpanded,
                   [laoId]: !isLaoExpanded[laoId],
                 })
-              }>
+              }
+              hasTVPreferredFocus
+              tvParallaxProperties>
               {walletItemGenerators.map((Generator) => (
                 <Generator.ListItems key={Generator.order.toString()} laoId={laoIdHash} />
               ))}

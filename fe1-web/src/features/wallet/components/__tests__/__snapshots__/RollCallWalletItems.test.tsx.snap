@@ -327,6 +327,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                       }
                     >
                       <View
+                        hasTVPreferredFocus={true}
                         style={
                           Array [
                             Object {
@@ -338,6 +339,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                             },
                           ]
                         }
+                        tvParallaxProperties={true}
                       >
                         <View
                           style={
@@ -814,6 +816,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                       }
                     >
                       <View
+                        hasTVPreferredFocus={true}
                         style={
                           Array [
                             Object {
@@ -825,6 +828,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                             },
                           ]
                         }
+                        tvParallaxProperties={true}
                       >
                         <View
                           style={

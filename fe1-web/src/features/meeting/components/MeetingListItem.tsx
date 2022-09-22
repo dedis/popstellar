@@ -53,7 +53,7 @@ const MeetingListItem = (props: IPropTypes) => {
         <ListItem.Title style={Typography.base}>{meeting.name}</ListItem.Title>
         <ListItem.Subtitle style={Typography.small}>{getSubtitle(meeting)}</ListItem.Subtitle>
       </ListItem.Content>
-      <ListItem.Chevron />
+      <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
     </>
   );
 };

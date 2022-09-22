@@ -422,7 +422,10 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {
@@ -602,6 +605,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                               }
                             >
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -613,6 +617,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -738,6 +743,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                 </View>
                               </View>
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -749,6 +755,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -1350,7 +1357,10 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {
@@ -1530,6 +1540,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                               }
                             >
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -1541,6 +1552,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -1666,6 +1678,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                 </View>
                               </View>
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -1677,6 +1690,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -2223,7 +2237,10 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {
@@ -2403,6 +2420,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                               }
                             >
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -2414,6 +2432,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -2539,6 +2558,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                 </View>
                               </View>
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -2550,6 +2570,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -3096,7 +3117,10 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {
@@ -3276,6 +3300,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                               }
                             >
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -3287,6 +3312,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -3412,6 +3438,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                 </View>
                               </View>
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -3423,6 +3450,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -3986,7 +4014,10 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {
@@ -4166,6 +4197,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                               }
                             >
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -4177,6 +4209,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -4302,6 +4335,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                 </View>
                               </View>
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -4313,6 +4347,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -4914,7 +4949,10 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {
@@ -5071,6 +5109,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                               }
                             >
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -5082,6 +5121,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -5207,6 +5247,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                 </View>
                               </View>
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -5218,6 +5259,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -5760,7 +5802,10 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {
@@ -5940,6 +5985,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                               }
                             >
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -5951,6 +5997,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -6076,6 +6123,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                 </View>
                               </View>
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -6087,6 +6135,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -6629,7 +6678,10 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                               }
                             }
                           >
-                            <View>
+                            <View
+                              hasTVPreferredFocus={true}
+                              tvParallaxProperties={true}
+                            >
                               <View
                                 style={
                                   Object {
@@ -6809,6 +6861,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                               }
                             >
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -6820,6 +6873,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -6945,6 +6999,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                 </View>
                               </View>
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -6956,6 +7011,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={

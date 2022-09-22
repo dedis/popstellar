@@ -35,7 +35,11 @@ const RollCallWalletItems = ({ laoId }: IPropTypes) => {
   const listStyles = List.getListItemStyles(false, true);
 
   return (
-    <ListItem containerStyle={listStyles} style={listStyles}>
+    <ListItem
+      containerStyle={listStyles}
+      style={listStyles}
+      hasTVPreferredFocus
+      tvParallaxProperties>
       <View style={List.icon}>
         <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
       </View>

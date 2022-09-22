@@ -17,7 +17,9 @@ const CollapsibleContainer = ({ title, isInitiallyOpen, children }: IPropTypes) 
         </ListItem.Content>
       }
       isExpanded={showChildren}
-      onPress={() => setShowChildren(!showChildren)}>
+      onPress={() => setShowChildren(!showChildren)}
+      hasTVPreferredFocus
+      tvParallaxProperties>
       {showChildren && children}
     </ListItem.Accordion>
   );

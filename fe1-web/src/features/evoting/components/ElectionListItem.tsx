@@ -59,7 +59,7 @@ const ElectionListItem = (props: IPropTypes) => {
         <ListItem.Title style={Typography.base}>{election.name}</ListItem.Title>
         <Subtitle election={election} />
       </ListItem.Content>
-      <ListItem.Chevron />
+      <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
     </>
   );
 };

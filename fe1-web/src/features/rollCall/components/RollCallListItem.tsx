@@ -59,7 +59,7 @@ const RollCallListItem = (props: IPropTypes) => {
           <Subtitle rollCall={rollCall} />
         </ListItem.Subtitle>
       </ListItem.Content>
-      <ListItem.Chevron />
+      <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
     </>
   );
 };

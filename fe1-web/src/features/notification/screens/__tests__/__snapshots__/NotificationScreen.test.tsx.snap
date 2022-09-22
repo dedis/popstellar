@@ -357,6 +357,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                             <View
                               accessible={true}
                               focusable={true}
+                              hasTVPreferredFocus={true}
                               onClick={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
@@ -523,6 +524,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                               <View
                                 accessible={true}
                                 focusable={true}
+                                hasTVPreferredFocus={true}
                                 onClick={[Function]}
                                 onResponderGrant={[Function]}
                                 onResponderMove={[Function]}
@@ -692,6 +694,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                             <View
                               accessible={true}
                               focusable={true}
+                              hasTVPreferredFocus={true}
                               onClick={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
@@ -858,6 +861,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                               <View
                                 accessible={true}
                                 focusable={true}
+                                hasTVPreferredFocus={true}
                                 onClick={[Function]}
                                 onResponderGrant={[Function]}
                                 onResponderMove={[Function]}

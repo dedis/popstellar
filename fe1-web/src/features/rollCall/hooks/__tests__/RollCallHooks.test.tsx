@@ -94,7 +94,7 @@ mockStore.dispatch(addRollCall(mockRollCall3.toState()));
 
 // endregion
 
-const wrapper = ({ children }: { children: React.ReactChildren }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) => (
   <Provider store={mockStore}>
     <FeatureContext.Provider value={contextValue}>{children}</FeatureContext.Provider>
   </Provider>

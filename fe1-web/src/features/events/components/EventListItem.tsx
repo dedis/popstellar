@@ -51,11 +51,17 @@ const EventListItem = (props: IPropTypes) => {
             },
           },
         })
-      }>
+      }
+      hasTVPreferredFocus
+      tvParallaxProperties>
       <EventType.ListItemComponent eventId={eventId} isOrganizer={isOrganizer} />
     </ListItem>
   ) : (
-    <ListItem containerStyle={[List.item, List.firstItem, List.lastItem]} bottomDivider>
+    <ListItem
+      containerStyle={[List.item, List.firstItem, List.lastItem]}
+      bottomDivider
+      hasTVPreferredFocus
+      tvParallaxProperties>
       <ListItem.Content>
         <ListItem.Title
           style={Typography.base}>{`Event type '${eventType}' was not registered!`}</ListItem.Title>

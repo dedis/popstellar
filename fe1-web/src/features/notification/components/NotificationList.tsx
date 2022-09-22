@@ -32,7 +32,9 @@ const NotificationList = ({ title, notifications }: IPropTypes) => {
         </ListItem.Content>
       }
       onPress={() => setShowNotifications(!showNotifications)}
-      isExpanded={showNotifications}>
+      isExpanded={showNotifications}
+      hasTVPreferredFocus
+      tvParallaxProperties>
       {notifications.map((notification, idx) => {
         const NotificationType = notificationTypes.find((t) => t.isOfType(notification));
 
@@ -55,7 +57,9 @@ const NotificationList = ({ title, notifications }: IPropTypes) => {
                   notificationId: notification.id,
                 },
               )
-            }>
+            }
+            hasTVPreferredFocus
+            tvParallaxProperties>
             <View style={List.icon}>
               <NotificationType.Icon size={Icon.size} color={Color.primary} />
             </View>

@@ -337,6 +337,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                         <View
                           accessible={true}
                           focusable={true}
+                          hasTVPreferredFocus={true}
                           onClick={[Function]}
                           onResponderGrant={[Function]}
                           onResponderMove={[Function]}
@@ -513,6 +514,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                         <View
                           accessible={true}
                           focusable={true}
+                          hasTVPreferredFocus={true}
                           onClick={[Function]}
                           onResponderGrant={[Function]}
                           onResponderMove={[Function]}
@@ -689,6 +691,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                           <View
                             accessible={true}
                             focusable={true}
+                            hasTVPreferredFocus={true}
                             onClick={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
@@ -860,7 +863,10 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   }
                                 }
                               >
-                                <View>
+                                <View
+                                  hasTVPreferredFocus={true}
+                                  tvParallaxProperties={true}
+                                >
                                   <View
                                     style={
                                       Object {
@@ -880,6 +886,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                         <View
                           accessible={true}
                           focusable={true}
+                          hasTVPreferredFocus={true}
                           onClick={[Function]}
                           onResponderGrant={[Function]}
                           onResponderMove={[Function]}
@@ -1056,6 +1063,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                           <View
                             accessible={true}
                             focusable={true}
+                            hasTVPreferredFocus={true}
                             onClick={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
@@ -1218,7 +1226,10 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   }
                                 }
                               >
-                                <View>
+                                <View
+                                  hasTVPreferredFocus={true}
+                                  tvParallaxProperties={true}
+                                >
                                   <View
                                     style={
                                       Object {
@@ -1237,6 +1248,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                           <View
                             accessible={true}
                             focusable={true}
+                            hasTVPreferredFocus={true}
                             onClick={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
@@ -1392,7 +1404,10 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   }
                                 }
                               >
-                                <View>
+                                <View
+                                  hasTVPreferredFocus={true}
+                                  tvParallaxProperties={true}
+                                >
                                   <View
                                     style={
                                       Object {
@@ -1760,6 +1775,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                         <View
                           accessible={true}
                           focusable={true}
+                          hasTVPreferredFocus={true}
                           onClick={[Function]}
                           onResponderGrant={[Function]}
                           onResponderMove={[Function]}
@@ -1959,6 +1975,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                         <View
                           accessible={true}
                           focusable={true}
+                          hasTVPreferredFocus={true}
                           onClick={[Function]}
                           onResponderGrant={[Function]}
                           onResponderMove={[Function]}
@@ -2158,6 +2175,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                           <View
                             accessible={true}
                             focusable={true}
+                            hasTVPreferredFocus={true}
                             onClick={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
@@ -2329,7 +2347,10 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   }
                                 }
                               >
-                                <View>
+                                <View
+                                  hasTVPreferredFocus={true}
+                                  tvParallaxProperties={true}
+                                >
                                   <View
                                     style={
                                       Object {
@@ -2372,6 +2393,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                         <View
                           accessible={true}
                           focusable={true}
+                          hasTVPreferredFocus={true}
                           onClick={[Function]}
                           onResponderGrant={[Function]}
                           onResponderMove={[Function]}
@@ -2571,6 +2593,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                           <View
                             accessible={true}
                             focusable={true}
+                            hasTVPreferredFocus={true}
                             onClick={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
@@ -2733,7 +2756,10 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   }
                                 }
                               >
-                                <View>
+                                <View
+                                  hasTVPreferredFocus={true}
+                                  tvParallaxProperties={true}
+                                >
                                   <View
                                     style={
                                       Object {
@@ -2775,6 +2801,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                           <View
                             accessible={true}
                             focusable={true}
+                            hasTVPreferredFocus={true}
                             onClick={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
@@ -2930,7 +2957,10 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   }
                                 }
                               >
-                                <View>
+                                <View
+                                  hasTVPreferredFocus={true}
+                                  tvParallaxProperties={true}
+                                >
                                   <View
                                     style={
                                       Object {

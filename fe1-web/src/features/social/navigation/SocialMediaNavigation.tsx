@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { PublicKey } from 'core/objects';
@@ -72,11 +72,15 @@ const SocialMediaNavigation = () => {
       /* noop */
     });
 
+  const contextValue = useMemo(
+    () => ({
+      currentUserPopTokenPublicKey,
+    }),
+    [currentUserPopTokenPublicKey],
+  );
+
   return (
-    <SocialMediaContext.Provider
-      value={{
-        currentUserPopTokenPublicKey,
-      }}>
+    <SocialMediaContext.Provider value={contextValue}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: iconSelector(route.name),

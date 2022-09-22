@@ -148,7 +148,9 @@ const ElectionOpened = ({ election }: IPropTypes) => {
             onPress={() =>
               setIsQuestionOpen({ ...isQuestionOpen, [question.id]: !isQuestionOpen[question.id] })
             }
-            isExpanded={!!isQuestionOpen[question.id]}>
+            isExpanded={!!isQuestionOpen[question.id]}
+            hasTVPreferredFocus
+            tvParallaxProperties>
             {question.ballot_options.map((ballotOption, ballotOptionIndex) => {
               const listStyle = List.getListItemStyles(
                 ballotOptionIndex === 0,
@@ -160,7 +162,12 @@ const ElectionOpened = ({ election }: IPropTypes) => {
               }
 
               return (
-                <ListItem key={ballotOption} containerStyle={listStyle} style={listStyle}>
+                <ListItem
+                  key={ballotOption}
+                  containerStyle={listStyle}
+                  style={listStyle}
+                  hasTVPreferredFocus
+                  tvParallaxProperties>
                   <View style={List.icon}>
                     <ListItem.CheckBox
                       testID={`questions_${questionIndex}_ballots_option_${ballotOptionIndex}_checkbox`}

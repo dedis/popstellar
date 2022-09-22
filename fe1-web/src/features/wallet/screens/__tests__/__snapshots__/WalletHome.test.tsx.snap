@@ -357,6 +357,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                             <View
                               accessible={true}
                               focusable={true}
+                              hasTVPreferredFocus={true}
                               onClick={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
@@ -553,6 +554,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                               <View
                                 accessible={true}
                                 focusable={true}
+                                hasTVPreferredFocus={true}
                                 onClick={[Function]}
                                 onResponderGrant={[Function]}
                                 onResponderMove={[Function]}
@@ -720,7 +722,10 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                       }
                                     }
                                   >
-                                    <View>
+                                    <View
+                                      hasTVPreferredFocus={true}
+                                      tvParallaxProperties={true}
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -1110,6 +1115,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                             <View
                               accessible={true}
                               focusable={true}
+                              hasTVPreferredFocus={true}
                               onClick={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
@@ -1281,6 +1287,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                               }
                             >
                               <View
+                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -1292,6 +1299,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                     },
                                   ]
                                 }
+                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={

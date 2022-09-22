@@ -65,7 +65,9 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
                       [question.id]: !isQuestionOpen[question.id],
                     })
                   }
-                  isExpanded={!!isQuestionOpen[question.id]}>
+                  isExpanded={!!isQuestionOpen[question.id]}
+                  hasTVPreferredFocus
+                  tvParallaxProperties>
                   {
                     // create a copy since sort() mutates the original object but the election but be immutable
                     [...questionResult.result]
@@ -81,7 +83,9 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
                           <ListItem
                             key={ballotOption.ballotOption}
                             containerStyle={listStyles}
-                            style={listStyles}>
+                            style={listStyles}
+                            hasTVPreferredFocus
+                            tvParallaxProperties>
                             <View style={List.iconPlaceholder} />
                             <ListItem.Content style={styles.ballotOptionResult}>
                               <ListItem.Title style={Typography.base}>
@@ -127,7 +131,9 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
                 [question.id]: !isQuestionOpen[question.id],
               })
             }
-            isExpanded={!!isQuestionOpen[question.id]}>
+            isExpanded={!!isQuestionOpen[question.id]}
+            hasTVPreferredFocus
+            tvParallaxProperties>
             {question.ballot_options.map((ballotOption, idx) => {
               const listStyles = List.getListItemStyles(
                 idx === 0,
@@ -135,7 +141,12 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
               );
 
               return (
-                <ListItem key={ballotOption} containerStyle={listStyles} style={listStyles}>
+                <ListItem
+                  key={ballotOption}
+                  containerStyle={listStyles}
+                  style={listStyles}
+                  hasTVPreferredFocus
+                  tvParallaxProperties>
                   <View style={List.iconPlaceholder} />
                   <ListItem.Content>
                     <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>

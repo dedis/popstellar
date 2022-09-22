@@ -96,7 +96,9 @@ const EventList = () => {
           </ListItem.Content>
         }
         isExpanded={showUpcoming}
-        onPress={() => setShowUpcoming(!showUpcoming)}>
+        onPress={() => setShowUpcoming(!showUpcoming)}
+        hasTVPreferredFocus
+        tvParallaxProperties>
         {futureEvents.map((event, idx) => (
           <EventListItem
             key={event.id}
@@ -119,7 +121,9 @@ const EventList = () => {
           </ListItem.Content>
         }
         isExpanded={showCurrent}
-        onPress={() => setShowCurrent(!showCurrent)}>
+        onPress={() => setShowCurrent(!showCurrent)}
+        hasTVPreferredFocus
+        tvParallaxProperties>
         {currentEvents.map((event, idx) => (
           <EventListItem
             key={event.id}
@@ -142,7 +146,9 @@ const EventList = () => {
           </ListItem.Content>
         }
         isExpanded={showPast}
-        onPress={() => setShowPast(!showPast)}>
+        onPress={() => setShowPast(!showPast)}
+        hasTVPreferredFocus
+        tvParallaxProperties>
         {pastEvents.map((event, idx) => (
           <EventListItem
             key={event.id}
