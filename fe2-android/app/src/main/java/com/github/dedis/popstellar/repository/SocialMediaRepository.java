@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.utility.error.UnknownChirpException;
 import java.util.*;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
@@ -21,6 +22,7 @@ import io.reactivex.subjects.Subject;
  *
  * <p>Its main purpose is to store chirps and publish updates
  */
+@Singleton
 public class SocialMediaRepository {
 
   private static final String TAG = SocialMediaRepository.class.getSimpleName();
@@ -81,6 +83,12 @@ public class SocialMediaRepository {
     return chirpsByLao.computeIfAbsent(laoId, lao -> new LaoChirps());
   }
 
+  /**
+   * This class holds the social media data of a specific lao
+   *
+   * <p>Its purpose is to hold data in a way that it is easier to handle and understand. It is also
+   * a way to avoid any conflict between laos.
+   */
   private static final class LaoChirps {
 
     private final Map<MessageID, Chirp> chirps = new HashMap<>();
