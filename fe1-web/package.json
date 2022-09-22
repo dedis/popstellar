@@ -44,6 +44,7 @@
     "base64url": "^3.0.1",
     "bip39": "^3.0.3",
     "ed25519-hd-key": "^1.2.0",
+    "eslint-config-airbnb": "^19.0.4",
     "expect": "^26.6.2",
     "expo": "^46.0.10",
     "expo-status-bar": "~1.4.0",
