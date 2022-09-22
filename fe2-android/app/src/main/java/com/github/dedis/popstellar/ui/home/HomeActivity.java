@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,13 +10,14 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
-import androidx.fragment.app.*;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
-import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
@@ -26,9 +25,9 @@ import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.function.Supplier;
-
 import dagger.hilt.android.AndroidEntryPoint;
+
+import java.util.function.Supplier;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
@@ -158,25 +157,9 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
       return false;
     }
 
-    // Check for the permission, if it is not granted, ask for it
-    if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-      openScanningFragment();
-    } else {
-      // Setup result listener to open the scanning tab once the permission is granted
-      getSupportFragmentManager().setFragmentResultListener(
-          CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> openScanningFragment());
-
-      setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_camera_perm,
-          () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
-    }
-    return true;
-  }
-
-  private void openScanningFragment() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
+    return true;
   }
 
   private boolean openLaunchTab() {
