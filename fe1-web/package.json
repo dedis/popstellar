@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "prebuild-web": "node node_modules/expo-optimize/build/index.js",
-    "build-web": "expo build:web",
+    "build-web": "npx expo export:web",
     "postbuild-web": "zip-build web-build -t fe1.zip && node build/web-postbuild.js",
     "eject": "expo eject",
     "startServer": "node __tests__/utils/LocalMockServer.js",
