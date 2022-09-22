@@ -1,6 +1,9 @@
 package com.github.dedis.popstellar.ui.detail.witness;
 
+import android.Manifest;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -34,11 +37,11 @@ import static org.mockito.Mockito.when;
 /**
  * Test for the Witnesses fragment
  *
- * <p>The test suite handles the cases where the camera permission is not granted at startup
+ * <p>The test suite handles the cases where the camera permission is granted at startup
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
-public class WitnessingFragmentNoPermissionTest {
+public class WitnessingFragmentTest {
 
   private static final String LAO_NAME = "LAO";
   private static final PublicKey ORGANIZER = Base64DataUtils.generatePublicKey();
@@ -75,9 +78,12 @@ public class WitnessingFragmentNoPermissionTest {
           WitnessesFragment.class,
           WitnessesFragment::newInstance);
 
+  @Rule(order = 4)
+  public final GrantPermissionRule rule = GrantPermissionRule.grant(Manifest.permission.CAMERA);
+
   @Test
   public void addWitnessOpenScanningNoPermission() {
     addWitnessButton().perform(click());
-    fragmentContainer().check(matches(withChild(withId(cameraPermissionId()))));
+    fragmentContainer().check(matches(withChild(withId(qrCodeFragmentId()))));
   }
 }
