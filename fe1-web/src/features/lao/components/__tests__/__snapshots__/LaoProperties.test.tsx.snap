@@ -491,6 +491,8 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            delayLongPress={600}
+                            enabled={true}
                             exclusive={true}
                             handlerTag={8}
                             handlerType="NativeViewGestureHandler"
@@ -573,6 +575,8 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            delayLongPress={600}
+                            enabled={true}
                             exclusive={true}
                             handlerTag={9}
                             handlerType="NativeViewGestureHandler"
@@ -1139,6 +1143,8 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            delayLongPress={600}
+                            enabled={true}
                             exclusive={true}
                             handlerTag={2}
                             handlerType="NativeViewGestureHandler"
@@ -1221,6 +1227,8 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            delayLongPress={600}
+                            enabled={true}
                             exclusive={true}
                             handlerTag={3}
                             handlerType="NativeViewGestureHandler"
@@ -1787,6 +1795,8 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            delayLongPress={600}
+                            enabled={true}
                             exclusive={true}
                             handlerTag={5}
                             handlerType="NativeViewGestureHandler"
@@ -1869,6 +1879,8 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            delayLongPress={600}
+                            enabled={true}
                             exclusive={true}
                             handlerTag={6}
                             handlerType="NativeViewGestureHandler"

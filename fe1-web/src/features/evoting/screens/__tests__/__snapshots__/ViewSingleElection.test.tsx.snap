@@ -4561,6 +4561,13 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                             "padding": 16,
                           }
                         }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
+                        }
                       >
                         <View>
                           <Text
@@ -5913,6 +5920,13 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                           Object {
                             "padding": 16,
                           }
+                        }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
                         }
                       >
                         <View>
@@ -7285,6 +7299,13 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                             "padding": 16,
                           }
                         }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
+                        }
                       >
                         <View>
                           <Text
@@ -7651,6 +7672,13 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                           Object {
                             "padding": 16,
                           }
+                        }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
                         }
                       >
                         <View>
@@ -8965,6 +8993,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={17}
                               handlerType="NativeViewGestureHandler"
@@ -9377,6 +9407,13 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                           Object {
                             "padding": 16,
                           }
+                        }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
                         }
                       >
                         <View>
@@ -11027,6 +11064,13 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                             "padding": 16,
                           }
                         }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
+                        }
                       >
                         <View>
                           <Text
@@ -12380,6 +12424,13 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                             "padding": 16,
                           }
                         }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
+                        }
                       >
                         <View>
                           <Text
@@ -13705,6 +13756,13 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                             "padding": 16,
                           }
                         }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
+                        }
                       >
                         <View>
                           <Text
@@ -14071,6 +14129,13 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                           Object {
                             "padding": 16,
                           }
+                        }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
                         }
                       >
                         <View>
@@ -15297,6 +15362,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={5}
                               handlerType="NativeViewGestureHandler"
@@ -15709,6 +15776,13 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                           Object {
                             "padding": 16,
                           }
+                        }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
                         }
                       >
                         <View>

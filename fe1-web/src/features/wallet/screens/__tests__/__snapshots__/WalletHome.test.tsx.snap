@@ -337,6 +337,13 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                             "padding": 16,
                           }
                         }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
+                        }
                       >
                         <View>
                           <View
@@ -1082,6 +1089,13 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                           Object {
                             "padding": 16,
                           }
+                        }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
                         }
                       >
                         <View>

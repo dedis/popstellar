@@ -337,6 +337,13 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                             "padding": 16,
                           }
                         }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
+                        }
                       >
                         <View>
                           <Text
@@ -715,6 +722,13 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
                             "padding": 16,
                           }
                         }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
+                        }
                       >
                         <View>
                           <Text
@@ -1092,6 +1106,13 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                           Object {
                             "padding": 16,
                           }
+                        }
+                        waitFor={
+                          Array [
+                            Object {
+                              "current": null,
+                            },
+                          ]
                         }
                       >
                         <View>

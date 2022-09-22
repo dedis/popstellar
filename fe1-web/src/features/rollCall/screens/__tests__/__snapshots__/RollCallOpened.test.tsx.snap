@@ -403,6 +403,8 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
+                                      delayLongPress={600}
+                                      enabled={true}
                                       exclusive={true}
                                       handlerTag={2}
                                       handlerType="NativeViewGestureHandler"
@@ -457,6 +459,8 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
+                                      delayLongPress={600}
+                                      enabled={true}
                                       exclusive={true}
                                       handlerTag={3}
                                       handlerType="NativeViewGestureHandler"

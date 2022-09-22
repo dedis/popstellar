@@ -9,6 +9,8 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
 >
   <RNGestureHandlerButton
     collapsable={false}
+    delayLongPress={600}
+    enabled={true}
     exclusive={true}
     handlerTag={9}
     handlerType="NativeViewGestureHandler"
@@ -50,6 +52,13 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
         "margin": 32,
         "padding": 32,
       }
+    }
+    waitFor={
+      Array [
+        Object {
+          "current": null,
+        },
+      ]
     }
   >
     <View>
@@ -100,6 +109,8 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            delayLongPress={600}
+            enabled={true}
             exclusive={true}
             handlerTag={11}
             handlerType="NativeViewGestureHandler"
@@ -177,6 +188,8 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={12}
           handlerType="NativeViewGestureHandler"
@@ -252,6 +265,8 @@ exports[`ConfirmModal renders correctly 1`] = `
 >
   <RNGestureHandlerButton
     collapsable={false}
+    delayLongPress={600}
+    enabled={true}
     exclusive={true}
     handlerTag={1}
     handlerType="NativeViewGestureHandler"
@@ -293,6 +308,13 @@ exports[`ConfirmModal renders correctly 1`] = `
         "margin": 32,
         "padding": 32,
       }
+    }
+    waitFor={
+      Array [
+        Object {
+          "current": null,
+        },
+      ]
     }
   >
     <View>
@@ -343,6 +365,8 @@ exports[`ConfirmModal renders correctly 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            delayLongPress={600}
+            enabled={true}
             exclusive={true}
             handlerTag={3}
             handlerType="NativeViewGestureHandler"
@@ -420,6 +444,8 @@ exports[`ConfirmModal renders correctly 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={4}
           handlerType="NativeViewGestureHandler"
@@ -495,6 +521,8 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
 >
   <RNGestureHandlerButton
     collapsable={false}
+    delayLongPress={600}
+    enabled={true}
     exclusive={true}
     handlerTag={5}
     handlerType="NativeViewGestureHandler"
@@ -536,6 +564,13 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         "margin": 32,
         "padding": 32,
       }
+    }
+    waitFor={
+      Array [
+        Object {
+          "current": null,
+        },
+      ]
     }
   >
     <View>
@@ -586,6 +621,8 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            delayLongPress={600}
+            enabled={true}
             exclusive={true}
             handlerTag={7}
             handlerType="NativeViewGestureHandler"
@@ -699,6 +736,8 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={8}
           handlerType="NativeViewGestureHandler"
