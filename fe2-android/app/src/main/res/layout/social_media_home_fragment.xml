@@ -30,6 +30,17 @@
         android:dividerHeight="@dimen/social_media_divider_height"
         tools:listitem="@layout/chirp_card" />
 
+      <ImageButton
+        android:id="@+id/social_media_send_fragment_button"
+        android:layout_width="@dimen/round_button_size"
+        android:layout_height="@dimen/round_button_size"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/margin_top"
+        android:layout_marginBottom="@dimen/margin_top"
+        android:background="@drawable/round_button"
+        android:contentDescription="@string/send_button_desc"
+        android:src="@drawable/ic_social_media_send_foreground" />
     </RelativeLayout>
 
   </androidx.constraintlayout.widget.ConstraintLayout>
