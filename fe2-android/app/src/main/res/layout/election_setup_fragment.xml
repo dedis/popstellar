@@ -89,7 +89,7 @@
         android:id="@+id/election_setup_view_pager2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/election_cancel_button"
+        app:layout_constraintBottom_toTopOf="@+id/election_submit_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/election_setup_swipe_indicator">
 
@@ -104,18 +104,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/election_setup_time" />
-
-      <Button
-        android:id="@+id/election_cancel_button"
-        style="@style/Theme.AppCompat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/inter_buttons_margin"
-        android:backgroundTint="@color/gray"
-        android:clickable="true"
-        android:text="@string/cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/election_submit_button" />
 
       <Button
         android:id="@+id/election_submit_button"
