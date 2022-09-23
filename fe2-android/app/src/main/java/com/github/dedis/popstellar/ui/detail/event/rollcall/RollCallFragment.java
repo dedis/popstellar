@@ -167,7 +167,7 @@ public class RollCallFragment extends Fragment {
         getResources().getColor(statusColorMap.getOrDefault(rcState, ID_NULL), null));
 
     // Show scanning button only if the current state is Opened
-    if (rcState == EventState.OPENED) {
+    if (rcState == EventState.OPENED && isOrganizer) {
       binding.rollCallScanningButton.setVisibility(View.VISIBLE);
     } else {
       binding.rollCallScanningButton.setVisibility(View.GONE);
