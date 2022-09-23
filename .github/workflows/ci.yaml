@@ -55,7 +55,7 @@ jobs:
 
       - name: Setup npm dependencies
         run: |
-          npm install --legacy-peer-deps
+          npm install
 
       - name: Check npm security issues
         run: npm audit fix
