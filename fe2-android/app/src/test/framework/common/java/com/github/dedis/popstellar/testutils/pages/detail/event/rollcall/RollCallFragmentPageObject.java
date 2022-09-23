@@ -32,4 +32,8 @@ public class RollCallFragmentPageObject {
   public static ViewInteraction managementButton() {
     return onView(withId(R.id.roll_call_management_button));
   }
+
+  public static ViewInteraction rollCallScanButton() {
+    return onView(withId(R.id.roll_call_scanning_button));
+  }
 }
