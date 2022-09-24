@@ -337,13 +337,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                             "padding": 16,
                           }
                         }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
-                        }
                       >
                         <View>
                           <Text
@@ -1176,13 +1169,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                           Object {
                             "padding": 16,
                           }
-                        }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
                         }
                       >
                         <View>

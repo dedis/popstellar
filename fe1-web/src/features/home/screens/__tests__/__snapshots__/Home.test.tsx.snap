@@ -337,13 +337,6 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                             "padding": 16,
                           }
                         }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
-                        }
                       >
                         <View>
                           <Text
@@ -737,13 +730,6 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                           Object {
                             "padding": 16,
                           }
-                        }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
                         }
                       >
                         <View>

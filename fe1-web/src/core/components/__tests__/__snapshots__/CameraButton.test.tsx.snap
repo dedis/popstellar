@@ -18,8 +18,6 @@ exports[`CameraButton renders correctly 1`] = `
   >
     <RNGestureHandlerButton
       collapsable={false}
-      delayLongPress={600}
-      enabled={true}
       exclusive={true}
       handlerTag={1}
       handlerType="NativeViewGestureHandler"

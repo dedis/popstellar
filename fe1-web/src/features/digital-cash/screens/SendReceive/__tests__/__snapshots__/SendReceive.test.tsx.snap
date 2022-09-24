@@ -337,13 +337,6 @@ exports[`SendReceive renders correctly 1`] = `
                             "padding": 16,
                           }
                         }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
-                        }
                       >
                         <View>
                           <Text
@@ -469,8 +462,6 @@ exports[`SendReceive renders correctly 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={3}
                                     handlerType="NativeViewGestureHandler"
@@ -592,8 +583,6 @@ exports[`SendReceive renders correctly 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
                               exclusive={true}
                               handlerTag={4}
                               handlerType="NativeViewGestureHandler"
@@ -1011,13 +1000,6 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                             "padding": 16,
                           }
                         }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
-                        }
                       >
                         <View>
                           <Text
@@ -1143,8 +1125,6 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={7}
                                     handlerType="NativeViewGestureHandler"
@@ -1266,8 +1246,6 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
                               exclusive={true}
                               handlerTag={8}
                               handlerType="NativeViewGestureHandler"

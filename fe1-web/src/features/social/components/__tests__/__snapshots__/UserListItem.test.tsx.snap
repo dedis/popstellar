@@ -75,8 +75,6 @@ exports[`UserListItem renders correctly 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
-            delayLongPress={600}
-            enabled={true}
             exclusive={true}
             handlerTag={5}
             handlerType="NativeViewGestureHandler"
@@ -167,8 +165,6 @@ exports[`UserListItem renders correctly 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
-            delayLongPress={600}
-            enabled={true}
             exclusive={true}
             handlerTag={6}
             handlerType="NativeViewGestureHandler"
@@ -315,8 +311,6 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
-            delayLongPress={600}
-            enabled={true}
             exclusive={true}
             handlerTag={7}
             handlerType="NativeViewGestureHandler"
@@ -411,8 +405,6 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
-            delayLongPress={600}
-            enabled={true}
             exclusive={true}
             handlerTag={8}
             handlerType="NativeViewGestureHandler"

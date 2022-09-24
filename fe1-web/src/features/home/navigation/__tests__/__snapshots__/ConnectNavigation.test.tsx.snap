@@ -586,8 +586,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                         >
                                                           <RNGestureHandlerButton
                                                             collapsable={false}
-                                                            delayLongPress={600}
-                                                            enabled={true}
                                                             exclusive={true}
                                                             handlerTag={3}
                                                             handlerType="NativeViewGestureHandler"
@@ -642,8 +640,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                         >
                                                           <RNGestureHandlerButton
                                                             collapsable={false}
-                                                            delayLongPress={600}
-                                                            enabled={true}
                                                             exclusive={true}
                                                             handlerTag={4}
                                                             handlerType="NativeViewGestureHandler"
@@ -686,8 +682,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                         >
                                                           <RNGestureHandlerButton
                                                             collapsable={false}
-                                                            delayLongPress={600}
-                                                            enabled={true}
                                                             exclusive={true}
                                                             handlerTag={5}
                                                             handlerType="NativeViewGestureHandler"

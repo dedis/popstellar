@@ -337,13 +337,6 @@ exports[`CreateElection renders correctly 1`] = `
                             "padding": 16,
                           }
                         }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
-                        }
                       >
                         <View>
                           <Text
@@ -608,8 +601,6 @@ exports[`CreateElection renders correctly 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={3}
                                     handlerType="NativeViewGestureHandler"
@@ -665,8 +656,6 @@ exports[`CreateElection renders correctly 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
                               exclusive={true}
                               handlerTag={4}
                               handlerType="NativeViewGestureHandler"
@@ -750,8 +739,6 @@ exports[`CreateElection renders correctly 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
                               exclusive={true}
                               handlerTag={5}
                               handlerType="NativeViewGestureHandler"

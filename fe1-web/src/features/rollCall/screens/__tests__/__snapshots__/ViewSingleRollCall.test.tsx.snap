@@ -337,13 +337,6 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                             "padding": 16,
                           }
                         }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
-                        }
                       >
                         <View>
                           <Text
@@ -1233,13 +1226,6 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                           Object {
                             "padding": 16,
                           }
-                        }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
                         }
                       >
                         <View>
@@ -2169,13 +2155,6 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                             "padding": 16,
                           }
                         }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
-                        }
                       >
                         <View>
                           <Text
@@ -3049,13 +3028,6 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                             "padding": 16,
                           }
                         }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
-                        }
                       >
                         <View>
                           <Text
@@ -3928,13 +3900,6 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                           Object {
                             "padding": 16,
                           }
-                        }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
                         }
                       >
                         <View>
@@ -4825,13 +4790,6 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                           Object {
                             "padding": 16,
                           }
-                        }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
                         }
                       >
                         <View>
@@ -5738,13 +5696,6 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                             "padding": 16,
                           }
                         }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
-                        }
                       >
                         <View>
                           <Text
@@ -6613,13 +6564,6 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                           Object {
                             "padding": 16,
                           }
-                        }
-                        waitFor={
-                          Array [
-                            Object {
-                              "current": null,
-                            },
-                          ]
                         }
                       >
                         <View>
@@ -8848,8 +8792,6 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers closed r
                       >
                         <RNGestureHandlerButton
                           collapsable={false}
-                          delayLongPress={600}
-                          enabled={true}
                           exclusive={true}
                           handlerTag={24}
                           handlerType="NativeViewGestureHandler"
@@ -9231,8 +9173,6 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers created 
                       >
                         <RNGestureHandlerButton
                           collapsable={false}
-                          delayLongPress={600}
-                          enabled={true}
                           exclusive={true}
                           handlerTag={18}
                           handlerType="NativeViewGestureHandler"
@@ -9614,8 +9554,6 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers opened r
                       >
                         <RNGestureHandlerButton
                           collapsable={false}
-                          delayLongPress={600}
-                          enabled={true}
                           exclusive={true}
                           handlerTag={20}
                           handlerType="NativeViewGestureHandler"
@@ -9997,8 +9935,6 @@ exports[`ViewSinglRollCallScreenRightHeader render correctly organizers re-opene
                       >
                         <RNGestureHandlerButton
                           collapsable={false}
-                          delayLongPress={600}
-                          enabled={true}
                           exclusive={true}
                           handlerTag={22}
                           handlerType="NativeViewGestureHandler"

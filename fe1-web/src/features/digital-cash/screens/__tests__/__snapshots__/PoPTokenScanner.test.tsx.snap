@@ -388,8 +388,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={4}
                                     handlerType="NativeViewGestureHandler"
@@ -821,8 +819,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={2}
                                     handlerType="NativeViewGestureHandler"
