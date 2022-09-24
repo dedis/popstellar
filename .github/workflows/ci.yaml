@@ -58,7 +58,7 @@ jobs:
           npm install --legacy-peer-deps
 
       - name: Check npm security issues
-        run: npm audit fix
+        run: npm audit fix --legacy-peer-deps
         continue-on-error: true
 
       - name: Run lint
