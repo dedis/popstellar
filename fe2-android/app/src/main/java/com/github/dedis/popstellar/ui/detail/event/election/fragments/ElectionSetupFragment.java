@@ -91,39 +91,39 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-    ElectionSetupFragmentBinding setupElectionFragBinding =
+    ElectionSetupFragmentBinding binding =
         ElectionSetupFragmentBinding.inflate(inflater, container, false);
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     // Set the view for the date and time
-    setDateAndTimeView(setupElectionFragBinding.getRoot());
+    setDateAndTimeView(binding.getRoot());
     // Make the textWatcher listen to changes in the start and end date/time
     addEndDateAndTimeListener(submitTextWatcher);
     addStartDateAndTimeListener(submitTextWatcher);
 
-    submitButton = setupElectionFragBinding.electionSubmitButton;
-    electionNameText = setupElectionFragBinding.electionSetupName;
+    submitButton = binding.electionSubmitButton;
+    electionNameText = binding.electionSetupName;
 
     // Add text watchers on the fields that need to be filled
     electionNameText.addTextChangedListener(submitTextWatcher);
 
     // Set the text widget in layout to current LAO name
-    TextView laoNameTextView = setupElectionFragBinding.electionSetupLaoName;
+    TextView laoNameTextView = binding.electionSetupLaoName;
     laoNameTextView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
 
     // Set viewPager adapter
     viewPagerAdapter = new ElectionSetupViewPagerAdapter(mLaoDetailViewModel);
 
     // Set ViewPager
-    ViewPager2 viewPager2 = setupElectionFragBinding.electionSetupViewPager2;
+    ViewPager2 viewPager2 = binding.electionSetupViewPager2;
     viewPager2.setAdapter(viewPagerAdapter);
 
     // Sets animation on swipe
     viewPager2.setPageTransformer(new ZoomOutTransformer());
 
     // This sets the indicator of which page we are on
-    CircleIndicator3 circleIndicator = setupElectionFragBinding.electionSetupSwipeIndicator;
+    CircleIndicator3 circleIndicator = binding.electionSetupSwipeIndicator;
     circleIndicator.setViewPager(viewPager2);
 
     // This observes if at least one of the question has the minimal information
@@ -133,7 +133,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
             getViewLifecycleOwner(),
             aBoolean -> submitButton.setEnabled(aBoolean && isElectionLevelInputValid()));
 
-    Button addQuestion = setupElectionFragBinding.addQuestion;
+    Button addQuestion = binding.addQuestion;
     addQuestion.setOnClickListener(
         v -> {
           addQuestion.setEnabled(false);
@@ -154,7 +154,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
     // Create a listener that updates the user's choice for election (by default it's OPEN_BALLOT)
     // Then it set's up the spinner
-    Spinner versionSpinner = setupElectionFragBinding.electionSetupModeSpinner;
+    Spinner versionSpinner = binding.electionSetupModeSpinner;
     OnItemSelectedListener listener =
         new OnItemSelectedListener() {
           @Override
@@ -173,9 +173,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
         };
     setUpElectionVersionSpinner(versionSpinner, listener);
 
-    setupElectionFragBinding.setLifecycleOwner(getActivity());
+    binding.setLifecycleOwner(getActivity());
 
-    return setupElectionFragBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
