@@ -211,7 +211,7 @@ public class RollCallFragmentTest {
     setupViewModel();
 
     rollCallScanButton().perform(click());
-    fragmentContainer().check(matches(withChild(withId(cameraPermissionId()))));
+    fragmentContainer().check(matches(withChild(withId(qrCodeFragmentId()))));
   }
 
   @Test

@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
-import android.Manifest;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.*;
-import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -32,8 +30,6 @@ import java.util.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static androidx.core.content.ContextCompat.checkSelfPermission;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 
@@ -88,7 +84,8 @@ public class RollCallFragment extends Fragment {
                   viewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
-                          this::openScanning,
+                          () -> setCurrentFragment(
+                              getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new),
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_open_rollcall)));
@@ -122,19 +119,6 @@ public class RollCallFragment extends Fragment {
     retrieveAndDisplayPublicKey();
 
     return binding.getRoot();
-  }
-
-  private void openScanning() {
-    if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PERMISSION_GRANTED) {
-      setCurrentFragment(
-          getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new);
-    } else {
-      setCurrentFragment(
-          getParentFragmentManager(),
-          R.id.fragment_camera_perm,
-          () ->
-              CameraPermissionFragment.newInstance(requireActivity().getActivityResultRegistry()));
-    }
   }
 
   private void setUpStateDependantContent() {
