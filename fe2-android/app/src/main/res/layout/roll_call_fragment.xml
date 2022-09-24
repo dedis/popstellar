@@ -20,16 +20,17 @@
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/roll_call_scanning_button"
       android:layout_width="wrap_content"
-      android:layout_height="@dimen/event_button_height"
+      android:layout_height="wrap_content"
       android:layout_margin="@dimen/event_button_margin"
       android:backgroundTint="@color/colorPrimary"
-      android:drawableStart="@drawable/ic_unlock"
-      android:text="@string/scan"
+      android:scaleType="center"
+      android:src="@drawable/ic_scan"
+      android:tintMode="@color/white"
+      android:contentDescription="@string/scan"
       android:textColor="@color/white"
-      android:textSize="@dimen/event_button_text_size"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintStart_toStartOf="parent" />
 
