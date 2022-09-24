@@ -89,10 +89,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-
     setupConfirmButton();
     setupOpenButton();
-    setupCancelButton();
   }
 
   private void setupConfirmButton() {
@@ -101,11 +99,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
   private void setupOpenButton() {
     openButton.setOnClickListener(v -> createRollCall(true));
-  }
-
-  private void setupCancelButton() {
-    mFragBinding.rollCallCancel.setOnClickListener(
-        v -> mLaoDetailViewModel.setCurrentTab(LaoTab.EVENTS));
   }
 
   private void createRollCall(boolean open) {

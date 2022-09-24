@@ -72,15 +72,6 @@
       app:layout_constraintRight_toRightOf="parent">
 
       <Button
-        android:id="@+id/roll_call_cancel"
-        style="@style/AppTheme"
-        android:layout_width="wrap_content"
-        android:layout_marginHorizontal="@dimen/inter_buttons_margin"
-        android:backgroundTint="@color/gray"
-        android:layout_height="wrap_content"
-        android:text="@string/cancel" />
-
-      <Button
         android:id="@+id/roll_call_confirm"
         style="@style/Theme.AppCompat"
         android:layout_width="wrap_content"
