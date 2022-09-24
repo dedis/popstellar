@@ -62,8 +62,10 @@
         <TextView
           android:id="@+id/lao_detail_title"
           style="@style/title_style"
+          android:maxWidth="@dimen/title_max_width"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:singleLine="false"
           android:text="@{view_model.getCurrentLaoName}"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
