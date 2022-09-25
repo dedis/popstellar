@@ -31,8 +31,6 @@ import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import java.util.function.Supplier;
-
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
 public class HomeActivity extends NavigationActivity<HomeTab> {
