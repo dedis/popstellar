@@ -13,15 +13,7 @@ public class PersistentData implements Serializable {
   private final String serverAddress;
   private final Set<Channel> subscriptions;
 
-  public PersistentData(String[] walletSeed, String serverAddress, Set<Channel> subscription) {
-    if (walletSeed == null) {
-      throw new IllegalArgumentException("Null walletSeed");
-    } else if (subscription == null) {
-      throw new IllegalArgumentException("Null subscriptions");
-    } else if (serverAddress == null) {
-      throw new IllegalArgumentException("Null server address");
-    }
-
+  public PersistentData(@NonNull String[] walletSeed, @NonNull String serverAddress, @NonNull Set<Channel> subscription) {
     this.walletSeed = Collections.unmodifiableList(Arrays.asList(walletSeed));
     this.serverAddress = serverAddress;
     this.subscriptions = new HashSet<>(subscription);
