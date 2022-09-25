@@ -40,6 +40,12 @@ public class ActivityUtils {
     transaction.commit();
   }
 
+    /**
+     * Store data in the phone's persistent storage
+     * @param context of the UI
+     * @param data the data to store
+     * @return true if the storage process was a success; false otherwise
+     */
   public static boolean storePersistentData(Context context, PersistentData data) {
     Log.d(TAG, "Initiating storage of " + data);
 
@@ -55,6 +61,11 @@ public class ActivityUtils {
     return true;
   }
 
+    /**
+     * Load the persistent data from the phone's persistent storage
+     * @param context of the UI
+     * @return the data if found, null otherwise
+     */
   public static PersistentData loadPersistentData(Context context) {
     Log.d(TAG, "Initiating loading of data");
 
@@ -74,6 +85,11 @@ public class ActivityUtils {
     return persistentData;
   }
 
+    /**
+     * Clear the phone's persistent storage for the PoP app
+     * @param context of the UI
+     * @return true if the clearing was a success; false otherwise
+     */
   public static boolean clearStorage(Context context) {
     Log.d(TAG, "clearing data");
 
@@ -81,6 +97,14 @@ public class ActivityUtils {
     return file.delete();
   }
 
+    /**
+     * This performs the steps of getting and storing persistently the needed data
+     * @param networkManager, the singleton used across the app
+     * @param wallet, the singleton used across the app
+     * @param context of the UI
+     * @return true if the saving process was a success; false otherwise
+     * @throws GeneralSecurityException
+     */
   public static boolean activitySavingRoutine(
       GlobalNetworkManager networkManager, Wallet wallet, Context context)
       throws GeneralSecurityException {
