@@ -13,6 +13,7 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.databinding.SettingsActivityBinding;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -28,14 +29,14 @@ public class SettingsActivity extends AppCompatActivity {
 
   @Inject GlobalNetworkManager networkManager;
 
-  private Button applyButton;
+  private SettingsActivityBinding binding;
   private String initialUrl;
-  private EditText entryBoxServerUrl;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.settings_activity);
+    binding = SettingsActivityBinding.inflate(getLayoutInflater());
+    setContentView(binding.getRoot());
 
     initialUrl = networkManager.getCurrentUrl();
 
@@ -45,9 +46,8 @@ public class SettingsActivity extends AppCompatActivity {
   }
 
   private void setupEntryBox() {
-    entryBoxServerUrl = findViewById(R.id.entry_box_server_url);
-    entryBoxServerUrl.setText(initialUrl);
-    entryBoxServerUrl.addTextChangedListener(
+    binding.entryBoxServerUrl.setText(initialUrl);
+    binding.entryBoxServerUrl.addTextChangedListener(
         new TextWatcher() {
           @Override
           public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -62,25 +62,24 @@ public class SettingsActivity extends AppCompatActivity {
           @Override
           public void afterTextChanged(Editable editable) {
             String newAddress = editable.toString();
-            applyButton.setEnabled(newAddress.length() > 0 && !newAddress.equals(initialUrl));
+            binding.buttonApply.setEnabled(
+                newAddress.length() > 0 && !newAddress.equals(initialUrl));
           }
         });
   }
 
   private void setupApplyButton() {
-    applyButton = findViewById(R.id.button_apply);
-    applyButton.setOnClickListener(v -> applyChanges());
+    binding.buttonApply.setOnClickListener(v -> applyChanges());
   }
 
   private void applyChanges() {
-    networkManager.connect(entryBoxServerUrl.getText().toString());
+    networkManager.connect(binding.entryBoxServerUrl.getText().toString());
     Log.d(TAG, "Trying to open home");
     startActivity(HomeActivity.newIntent(this));
   }
 
   private void setupClearButton() {
-    Button clearButton = findViewById(R.id.settings_clear_button);
-    clearButton.setOnClickListener(clearListener);
+    binding.settingsClearButton.setOnClickListener(clearListener);
   }
 
   private final View.OnClickListener clearListener =
