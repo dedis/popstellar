@@ -142,7 +142,7 @@ public class LAONetworkManager implements MessageSender {
               Log.d(TAG, "Adding " + channel + " to subscriptions");
               subscribedChannels.add(channel);
             })
-        .doOnError(error -> Log.d(TAG, "error in subscribe : " + error))
+        .doOnError(error -> Log.d(TAG, "error in subscribe : ", error))
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
         // and catchup are completed
@@ -162,7 +162,7 @@ public class LAONetworkManager implements MessageSender {
               Log.d(TAG, "Removing " + channel + " from subscriptions");
               subscribedChannels.remove(channel);
             })
-        .doOnError(error -> Log.d(TAG, "error unsubscribing : " + error))
+        .doOnError(error -> Log.d(TAG, "error unsubscribing : ", error))
         .ignoreElement();
   }
 
