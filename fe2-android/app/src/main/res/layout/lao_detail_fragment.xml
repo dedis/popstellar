@@ -33,10 +33,10 @@
         android:layout_width="@dimen/channel_qr_code_size"
         android:layout_height="@dimen/channel_qr_code_size"
         android:contentDescription="@string/qr_code_image_description"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"/>
 
       <ImageView
         android:id="@+id/qr_icon_close"
