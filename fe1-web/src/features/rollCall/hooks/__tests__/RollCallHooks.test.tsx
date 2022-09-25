@@ -1,16 +1,17 @@
 import { describe } from '@jest/globals';
+import { configureStore } from '@reduxjs/toolkit';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import { mockLao, mockLaoId, mockLaoIdHash, org } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, Timestamp } from 'core/objects';
 import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
-import { setCurrentLao, laoReducer } from 'features/lao/reducer';
+import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 import { mockRollCall, mockRollCallState } from 'features/rollCall/__tests__/utils';
-import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
+import { ROLLCALL_FEATURE_IDENTIFIER, RollCallReactContext } from 'features/rollCall/interface';
 import { CreateRollCall } from 'features/rollCall/network/messages';
 import { RollCall, RollCallStatus } from 'features/rollCall/objects';
 import { addRollCall, rollCallReducer } from 'features/rollCall/reducer';
@@ -63,9 +64,13 @@ const contextValue = {
   } as RollCallReactContext,
 };
 
-const mockStore = createStore(
-  combineReducers({ ...laoReducer, ...eventReducer, ...rollCallReducer }),
-);
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...laoReducer,
+    ...eventReducer,
+    ...rollCallReducer,
+  }),
+});
 mockStore.dispatch(setCurrentLao(mockLao.toState()));
 mockStore.dispatch(
   addEvent(mockLaoId, {

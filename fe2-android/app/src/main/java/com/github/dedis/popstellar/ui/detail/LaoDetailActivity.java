@@ -78,7 +78,13 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
       if (fragment instanceof LaoDetailFragment) {
         startActivity(HomeActivity.newIntent(this));
       } else {
-        viewModel.setCurrentTab(LaoTab.EVENTS);
+        if (viewModel.getCurrentTab().getValue() == LaoTab.EVENTS){
+            // On reselection the navigation is supposed to do nothing to prevent loops, so we
+            // manually change the fragment
+            openEventsTab();
+        } else {
+          viewModel.setCurrentTab(LaoTab.EVENTS);
+        }
       }
       return true;
     }

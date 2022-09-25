@@ -1,12 +1,13 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockChannel, mockLao, mockLaoIdHash, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
+import { HOME_FEATURE_IDENTIFIER, HomeReactContext } from 'features/home/interface';
 import { LaoList } from 'features/lao/components';
 import { addLao, laoReducer, selectLaosList } from 'features/lao/reducer';
 
@@ -57,7 +58,7 @@ describe('Home', () => {
 
   it('renders correctly with an non-empty list of LAOs', () => {
     // setup mock store
-    const mockStore = createStore(combineReducers(laoReducer));
+    const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
     mockStore.dispatch(addLao(mockLao.toState()));
     // ensure the mock store contains the mock lao
     expect(selectLaosList(mockStore.getState())).toEqual([mockLao]);

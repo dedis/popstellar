@@ -131,6 +131,7 @@ Array [
         }
       />
       <View
+        collapsable={false}
         style={
           Object {
             "transform": Array [
@@ -160,6 +161,7 @@ Array [
             >
               <Text
                 allowFontScaling={false}
+                selectable={false}
                 style={
                   Array [
                     Object {
@@ -188,6 +190,7 @@ Array [
     </View>
   </View>,
   <View
+    collapsable={false}
     style={
       Object {
         "maxHeight": "0%",
@@ -337,7 +340,6 @@ Array [
       />
       <View
         collapsable={false}
-        nativeID="animatedComponent"
         style={
           Object {
             "transform": Array [
@@ -374,7 +376,6 @@ Array [
   </View>,
   <View
     collapsable={false}
-    nativeID="animatedComponent"
     style={
       Object {
         "maxHeight": "0%",
@@ -517,7 +518,6 @@ Array [
       />
       <View
         collapsable={false}
-        nativeID="animatedComponent"
         style={
           Object {
             "transform": Array [
@@ -547,6 +547,7 @@ Array [
             >
               <Text
                 allowFontScaling={false}
+                selectable={false}
                 style={
                   Array [
                     Object {
@@ -576,7 +577,6 @@ Array [
   </View>,
   <View
     collapsable={false}
-    nativeID="animatedComponent"
     style={
       Object {
         "maxHeight": "0%",

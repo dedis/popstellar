@@ -111,9 +111,9 @@ export const makeRollCallSelector = (rollCallId: Hash | string | undefined) => {
 
   return createSelector(
     // First input: map from ids to rollcalls
-    (state) => getRollCallState(state).byId,
+    (state: any) => getRollCallState(state).byId,
     // Second input: Alias for the given event id
-    (state) => getRollCallState(state).idAlias[rollCallIdString],
+    (state: any) => getRollCallState(state).idAlias[rollCallIdString],
     // Selector: returns the selected rollcall
     (
       rollcallById: Record<string, RollCallState>,
@@ -146,7 +146,7 @@ export const makeRollCallSelector = (rollCallId: Hash | string | undefined) => {
 export const makeRollCallByIdSelector = (rollCallIds: string[]) =>
   createSelector(
     // First input: map from ids to rollcalls
-    (state) => getRollCallState(state).byId,
+    (state: any) => getRollCallState(state).byId,
     // Selector: returns the selected rollcall
     (rollCallById: Record<string, RollCallState>): Record<string, RollCall> => {
       return (
@@ -204,7 +204,7 @@ export const makeRollCallAttendeesListSelector = (rollCallId: Hash | string | un
 
   return createSelector(
     // First input: Get all events across all LAOs
-    (state) => getRollCallState(state),
+    (state: any) => getRollCallState(state),
     // Selector: returns a map of ids -> LaoEvents
     (eventMap: RollCallReducerState): PublicKey[] => {
       if (!rollCallIdString || !(rollCallIdString in eventMap.byId)) {

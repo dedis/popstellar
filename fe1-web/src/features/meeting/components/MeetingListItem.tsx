@@ -67,7 +67,7 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default MeetingListItem;
 
-export const MeetingEventType: MeetingInterface['eventTypes']['0'] = {
+export const MeetingEventType: MeetingInterface['eventTypes'][0] = {
   eventType: Meeting.EVENT_TYPE,
   eventName: STRINGS.meeting_event_name,
   navigationNames: {

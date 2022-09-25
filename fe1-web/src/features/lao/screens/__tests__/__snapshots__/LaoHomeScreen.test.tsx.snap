@@ -31,6 +31,7 @@ exports[`LaoHomeScreen renders correctly 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`LaoHomeScreen renders correctly 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`LaoHomeScreen renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`LaoHomeScreen renders correctly 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`LaoHomeScreen renders correctly 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`LaoHomeScreen renders correctly 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`LaoHomeScreen renders correctly 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`LaoHomeScreen renders correctly 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`LaoHomeScreen renders correctly 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`LaoHomeScreen renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`LaoHomeScreen renders correctly 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -316,6 +328,8 @@ exports[`LaoHomeScreen renders correctly 1`] = `
                     >
                       <RCTScrollView
                         collapsable={false}
+                        handlerTag={2}
+                        handlerType="NativeViewGestureHandler"
                         onGestureHandlerEvent={[Function]}
                         onGestureHandlerStateChange={[Function]}
                         style={
@@ -335,7 +349,6 @@ exports[`LaoHomeScreen renders correctly 1`] = `
                             accessible={true}
                             collapsable={false}
                             focusable={true}
-                            nativeID="animatedComponent"
                             onClick={[Function]}
                             onResponderGrant={[Function]}
                             onResponderMove={[Function]}
@@ -729,6 +742,7 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -744,6 +758,7 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -759,7 +774,6 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -778,7 +792,6 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -809,6 +822,7 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -822,6 +836,7 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -836,7 +851,6 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -851,6 +865,7 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -877,7 +892,16 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -953,7 +977,6 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -964,6 +987,8 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={3}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1028,16 +1053,19 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
                       >
                         <RNGestureHandlerButton
                           collapsable={false}
+                          exclusive={true}
+                          handlerTag={4}
+                          handlerType="NativeViewGestureHandler"
                           onGestureEvent={[Function]}
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
                           onHandlerStateChange={[Function]}
                           rippleColor={0}
+                          touchSoundDisabled={false}
                         >
                           <View
                             accessible={true}
                             collapsable={false}
-                            nativeID="animatedComponent"
                             style={
                               Object {
                                 "alignItems": "center",
@@ -1079,442 +1107,7 @@ exports[`LaoHomeScreenHeader renders correctly 1`] = `
                         onRequestClose={[Function]}
                         transparent={true}
                         visible={false}
-                      >
-                        <RNGestureHandlerButton
-                          collapsable={false}
-                          onGestureEvent={[Function]}
-                          onGestureHandlerEvent={[Function]}
-                          onGestureHandlerStateChange={[Function]}
-                          onHandlerStateChange={[Function]}
-                          rippleColor={0}
-                          style={
-                            Object {
-                              "backgroundColor": "rgba(0,0,0,0.25)",
-                              "bottom": 0,
-                              "flex": 1,
-                              "left": 0,
-                              "padding": 32,
-                              "position": "absolute",
-                              "right": 0,
-                              "top": 0,
-                            }
-                          }
-                        >
-                          <View
-                            accessible={true}
-                            collapsable={false}
-                            nativeID="animatedComponent"
-                            style={Object {}}
-                          />
-                        </RNGestureHandlerButton>
-                        <RCTScrollView
-                          collapsable={false}
-                          onGestureHandlerEvent={[Function]}
-                          onGestureHandlerStateChange={[Function]}
-                          style={
-                            Object {
-                              "backgroundColor": "rgb(242, 242, 242)",
-                              "borderRadius": 16,
-                              "margin": 32,
-                              "padding": 32,
-                            }
-                          }
-                        >
-                          <View>
-                            <View
-                              style={
-                                Object {
-                                  "alignItems": "center",
-                                  "flexDirection": "row",
-                                  "justifyContent": "center",
-                                  "marginBottom": 16,
-                                  "width": "100%",
-                                }
-                              }
-                            >
-                              <Text
-                                style={
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "fontWeight": "500",
-                                    "lineHeight": 26,
-                                    "textAlign": "left",
-                                  }
-                                }
-                              >
-                                MyLao
-                              </Text>
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Object {
-                                    "position": "absolute",
-                                    "right": 0,
-                                  }
-                                }
-                                testID="modal-header-close"
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  style={
-                                    Object {
-                                      "position": "absolute",
-                                      "right": 0,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    nativeID="animatedComponent"
-                                    style={
-                                      Object {
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <Text
-                                      style={
-                                        Object {
-                                          "color": "#3742fa",
-                                          "fontSize": 20,
-                                          "fontWeight": "500",
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        }
-                                      }
-                                    >
-                                      Done
-                                    </Text>
-                                  </View>
-                                </RNGestureHandlerButton>
-                              </View>
-                            </View>
-                            <View>
-                              <Text
-                                style={
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  }
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "fontWeight": "bold",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Identifier
-                                </Text>
-                                
-
-                                <Text>
-                                  -
-                                  M
-                                  2
-                                  5
-                                  9
-                                  c
-                                  5
-                                  J
-                                  l
-                                  a
-                                  k
-                                  L
-                                  V
-                                  l
-                                  X
-                                  B
-                                  R
-                                  a
-                                  8
-                                  9
-                                  3
-                                  p
-                                  c
-                                  E
-                                  -
-                                  4
-                                  s
-                                  7
-                                  s
-                                  s
-                                  O
-                                  8
-                                  J
-                                  v
-                                  5
-                                  g
-                                  X
-                                  O
-                                  v
-                                  t
-                                  r
-                                  e
-                                  E
-                                  =
-                                </Text>
-                              </Text>
-                              <Text
-                                style={
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  }
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "fontWeight": "bold",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Your role
-                                </Text>
-                                
-
-                                <Text>
-                                  Attendee
-                                </Text>
-                              </Text>
-                              <Text
-                                style={
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  }
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "fontWeight": "bold",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  You are currently connected to
-                                </Text>
-                                
-
-                                <Text>
-                                  
-                                </Text>
-                              </Text>
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Object {
-                                    "marginBottom": 16,
-                                  }
-                                }
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  style={
-                                    Object {
-                                      "marginBottom": 16,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    nativeID="animatedComponent"
-                                    style={
-                                      Object {
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      <Text
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        Add connection
-                                      </Text>
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
-                              </View>
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Object {
-                                    "marginBottom": 16,
-                                  }
-                                }
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  style={
-                                    Object {
-                                      "marginBottom": 16,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    nativeID="animatedComponent"
-                                    style={
-                                      Object {
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      <Text
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        Disconnect
-                                      </Text>
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
-                              </View>
-                            </View>
-                          </View>
-                        </RCTScrollView>
-                      </Modal>
+                      />
                     </View>
                   </View>
                 </View>
@@ -1559,6 +1152,7 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -1574,6 +1168,7 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -1589,7 +1184,6 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1608,7 +1202,6 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -1639,6 +1232,7 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1652,6 +1246,7 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1666,7 +1261,6 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1681,6 +1275,7 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1707,7 +1302,16 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -1783,7 +1387,6 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1794,6 +1397,8 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={5}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1867,16 +1472,19 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            exclusive={true}
+                            handlerTag={6}
+                            handlerType="NativeViewGestureHandler"
                             onGestureEvent={[Function]}
                             onGestureHandlerEvent={[Function]}
                             onGestureHandlerStateChange={[Function]}
                             onHandlerStateChange={[Function]}
                             rippleColor={0}
+                            touchSoundDisabled={false}
                           >
                             <View
                               accessible={true}
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "opacity": 1,
@@ -1910,6 +1518,9 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            exclusive={true}
+                            handlerTag={7}
+                            handlerType="NativeViewGestureHandler"
                             onGestureEvent={[Function]}
                             onGestureHandlerEvent={[Function]}
                             onGestureHandlerStateChange={[Function]}
@@ -1920,11 +1531,11 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                                 "marginLeft": 16,
                               }
                             }
+                            touchSoundDisabled={false}
                           >
                             <View
                               accessible={true}
                               collapsable={false}
-                              nativeID="animatedComponent"
                               style={
                                 Object {
                                   "opacity": 1,
@@ -1942,143 +1553,7 @@ exports[`LaoHomeScreenHeaderRight renders correctly 1`] = `
                           onRequestClose={[Function]}
                           transparent={true}
                           visible={false}
-                        >
-                          <RNGestureHandlerButton
-                            collapsable={false}
-                            onGestureEvent={[Function]}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            onHandlerStateChange={[Function]}
-                            rippleColor={0}
-                            style={
-                              Object {
-                                "backgroundColor": "rgba(0,0,0,0.25)",
-                                "bottom": 0,
-                                "flex": 1,
-                                "left": 0,
-                                "padding": 32,
-                                "position": "absolute",
-                                "right": 0,
-                                "top": 0,
-                              }
-                            }
-                          >
-                            <View
-                              accessible={true}
-                              collapsable={false}
-                              nativeID="animatedComponent"
-                              style={Object {}}
-                            />
-                          </RNGestureHandlerButton>
-                          <RCTScrollView
-                            collapsable={false}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            style={
-                              Object {
-                                "backgroundColor": "rgb(242, 242, 242)",
-                                "borderRadius": 16,
-                                "margin": 32,
-                                "padding": 32,
-                              }
-                            }
-                          >
-                            <View>
-                              <View
-                                style={
-                                  Object {
-                                    "alignItems": "center",
-                                    "flexDirection": "row",
-                                    "justifyContent": "center",
-                                    "marginBottom": 16,
-                                    "width": "100%",
-                                  }
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "fontWeight": "500",
-                                      "lineHeight": 26,
-                                      "textAlign": "left",
-                                    }
-                                  }
-                                >
-                                  Connection QR Code
-                                </Text>
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
-                                  style={
-                                    Object {
-                                      "position": "absolute",
-                                      "right": 0,
-                                    }
-                                  }
-                                  testID="modal-header-close"
-                                >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    style={
-                                      Object {
-                                        "position": "absolute",
-                                        "right": 0,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      nativeID="animatedComponent"
-                                      style={
-                                        Object {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <Text
-                                        style={
-                                          Object {
-                                            "color": "#3742fa",
-                                            "fontSize": 20,
-                                            "fontWeight": "500",
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          }
-                                        }
-                                      >
-                                        Done
-                                      </Text>
-                                    </View>
-                                  </RNGestureHandlerButton>
-                                </View>
-                              </View>
-                              <View>
-                                <qrcode
-                                  value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
-                                  visibility={true}
-                                />
-                              </View>
-                            </View>
-                          </RCTScrollView>
-                        </Modal>
+                        />
                       </View>
                     </View>
                   </View>

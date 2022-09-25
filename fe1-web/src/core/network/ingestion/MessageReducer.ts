@@ -138,7 +138,7 @@ export function getMessage(
 export const makeMessageSelector = (messageId: string) =>
   createSelector(
     // First input: map of message ids to messages
-    (state) => getMessagesState(state).byId,
+    (state: any) => getMessagesState(state).byId,
     (byId: Record<string, ExtendedMessageState>): ExtendedMessage | undefined => {
       if (messageId in byId) {
         return ExtendedMessage.fromState(byId[messageId]);
