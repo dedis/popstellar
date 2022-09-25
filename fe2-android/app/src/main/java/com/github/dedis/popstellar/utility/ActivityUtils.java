@@ -96,8 +96,8 @@ public class ActivityUtils {
     String[] seed = wallet.exportSeed();
     Log.d(
         TAG,
-        "seed "
-            + Arrays.toString(seed)
+        "seed length"
+            + seed.length
             + " address "
             + serverAddress
             + " subscriptions "
