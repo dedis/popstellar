@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -56,6 +57,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    * Dependencies for this class
    */
   private final LAORepository laoRepository;
+  private final SchedulerProvider schedulerProvider;
   private final SocialMediaRepository socialMediaRepository;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
@@ -66,12 +68,14 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public SocialMediaViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      SchedulerProvider schedulerProvider,
       SocialMediaRepository socialMediaRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
       KeyManager keyManager) {
     super(application);
     this.laoRepository = laoRepository;
+    this.schedulerProvider = schedulerProvider;
     this.socialMediaRepository = socialMediaRepository;
     this.networkManager = networkManager;
     this.gson = gson;
@@ -189,12 +193,16 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public Observable<List<Chirp>> getChirps() {
     return socialMediaRepository
         .getChirpsOfLao(laoId)
+        .observeOn(schedulerProvider.mainThread())
         // Retrieve chirp subjects per id
         .map(
             ids -> {
               List<Observable<Chirp>> chirps = new ArrayList<>(ids.size());
               for (MessageID id : ids) {
-                chirps.add(socialMediaRepository.getChirp(laoId, id));
+                chirps.add(
+                    socialMediaRepository
+                        .getChirp(laoId, id)
+                        .observeOn(schedulerProvider.mainThread()));
               }
               return chirps;
             })
