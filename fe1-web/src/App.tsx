@@ -1,7 +1,6 @@
 import 'react-native-gesture-handler';
 
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { useReduxDevToolsExtension } from '@react-navigation/devtools';
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { registerRootComponent } from 'expo';
 import React from 'react';
@@ -36,7 +35,6 @@ persist.persist();
  */
 function App() {
   const navigationRef = useNavigationContainerRef();
-  useReduxDevToolsExtension(navigationRef);
 
   return (
     <Provider store={store}>
