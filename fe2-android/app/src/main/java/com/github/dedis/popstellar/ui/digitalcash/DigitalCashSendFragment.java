@@ -34,8 +34,8 @@ import io.reactivex.disposables.Disposable;
  */
 public class DigitalCashSendFragment extends Fragment {
   private static final String TAG = DigitalCashSendFragment.class.getSimpleName();
-  private DigitalCashSendFragmentBinding mBinding;
-  private DigitalCashViewModel mViewModel;
+  private DigitalCashSendFragmentBinding binding;
+  private DigitalCashViewModel viewModel;
 
   public DigitalCashSendFragment() {
     // Required empty constructor
@@ -53,11 +53,11 @@ public class DigitalCashSendFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
-    mBinding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
+    viewModel = DigitalCashActivity.obtainViewModel(getActivity());
+    binding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
     // Inflate the layout for this fragment
-    return mBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
@@ -65,20 +65,20 @@ public class DigitalCashSendFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     setupSendCoinButton();
 
-    mViewModel
+    viewModel
         .getPostTransactionEvent()
         .observe(
             getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                String currentAmount = mBinding.digitalCashSendAmount.getText().toString();
+                String currentAmount = binding.digitalCashSendAmount.getText().toString();
                 String currentPublicKeySelected =
-                    String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
-                if (mViewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
+                    String.valueOf(binding.digitalCashSendSpinner.getEditText().getText());
+                if (viewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
                   try {
-                    LaoView laoView = mViewModel.getCurrentLaoValue();
-                    PoPToken token = mViewModel.getKeyManager().getValidPoPToken(laoView);
+                    LaoView laoView = viewModel.getCurrentLaoValue();
+                    PoPToken token = viewModel.getKeyManager().getValidPoPToken(laoView);
                     if (canPostTransaction(
                         laoView, token.getPublicKey(), Integer.parseInt(currentAmount))) {
                       Disposable disposable =
@@ -86,14 +86,15 @@ public class DigitalCashSendFragment extends Fragment {
                                   Collections.singletonMap(currentPublicKeySelected, currentAmount))
                               .subscribe(
                                   () -> {
-                                    mViewModel.updateReceiptAddressEvent(currentPublicKeySelected);
-                                    mViewModel.updateReceiptAmountEvent(currentAmount);
+                                    viewModel.updateReceiptAddressEvent(currentPublicKeySelected);
+                                    viewModel.updateReceiptAmountEvent(currentAmount);
                                     DigitalCashActivity.setCurrentFragment(
                                         requireActivity().getSupportFragmentManager(),
                                         R.id.fragment_digital_cash_receipt,
                                         DigitalCashReceiptFragment::newInstance);
                                   },
                                   error -> Log.d(TAG, "error posting transaction", error));
+                      viewModel.addDisposable(disposable);
                     }
 
                   } catch (KeyException keyException) {
@@ -139,9 +140,9 @@ public class DigitalCashSendFragment extends Fragment {
     /* Roll Call attendees to which we can send*/
     List<String> myArray;
     try {
-      myArray = mViewModel.getAttendeesFromTheRollCallList();
+      myArray = viewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      mViewModel.setCurrentTab(DigitalCashTab.HOME);
+      viewModel.setCurrentTab(DigitalCashTab.HOME);
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
           .show();
@@ -149,17 +150,17 @@ public class DigitalCashSendFragment extends Fragment {
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-    KeyManager km = mViewModel.getKeyManager();
-    mBinding
+    KeyManager km = viewModel.getKeyManager();
+    binding
         .digitalCashSendSpinner
         .getEditText()
-        .setText(km.getValidPoPToken(mViewModel.getCurrentLaoValue()).getPublicKey().getEncoded());
-    mBinding.digitalCashSendSpinnerTv.setAdapter(adapter);
+        .setText(km.getValidPoPToken(viewModel.getCurrentLaoValue()).getPublicKey().getEncoded());
+    binding.digitalCashSendSpinnerTv.setAdapter(adapter);
   }
 
   /** Function that setup the Button */
   private void setupSendCoinButton() {
-    mBinding.digitalCashSendSend.setOnClickListener(v -> mViewModel.postTransactionEvent());
+    binding.digitalCashSendSend.setOnClickListener(v -> viewModel.postTransactionEvent());
   }
 
   /**
@@ -170,13 +171,13 @@ public class DigitalCashSendFragment extends Fragment {
    */
   private Completable postTransaction(Map<String, String> publicKeyAmount) {
     // Add some check if have money
-    if (mViewModel.getLaoId().getValue() == null) {
+    if (viewModel.getLaoId().getValue() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
       return Completable.error(new UnknownLaoException());
     } else {
-      return mViewModel
+      return viewModel
           .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false)
           .doOnComplete(
               () ->
