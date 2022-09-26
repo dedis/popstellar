@@ -1,9 +1,9 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import ReactTimeago from 'react-timeago';
 
 import { NotificationParamList } from 'core/navigation/typing/NotificationParamList';
@@ -32,9 +32,7 @@ const NotificationList = ({ title, notifications }: IPropTypes) => {
         </ListItem.Content>
       }
       onPress={() => setShowNotifications(!showNotifications)}
-      isExpanded={showNotifications}
-      hasTVPreferredFocus
-      tvParallaxProperties>
+      isExpanded={showNotifications}>
       {notifications.map((notification, idx) => {
         const NotificationType = notificationTypes.find((t) => t.isOfType(notification));
 
@@ -57,9 +55,7 @@ const NotificationList = ({ title, notifications }: IPropTypes) => {
                   notificationId: notification.id,
                 },
               )
-            }
-            hasTVPreferredFocus
-            tvParallaxProperties>
+            }>
             <View style={List.icon}>
               <NotificationType.Icon size={Icon.size} color={Color.primary} />
             </View>

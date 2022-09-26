@@ -1,9 +1,9 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 
 import { PoPIcon } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -34,9 +34,7 @@ const RollCallWalletItem = ({ rollCallToken, isFirstItem, isLastItem }: IPropTyp
           rollCallName: rollCallToken.rollCallName,
           rollCallTokenPublicKey: rollCallToken.token.publicKey.valueOf(),
         })
-      }
-      hasTVPreferredFocus
-      tvParallaxProperties>
+      }>
       <View style={List.icon}>
         <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
       </View>
@@ -46,7 +44,7 @@ const RollCallWalletItem = ({ rollCallToken, isFirstItem, isLastItem }: IPropTyp
           {STRINGS.wallet_home_rollcall_pop_token}
         </ListItem.Subtitle>
       </ListItem.Content>
-      <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
+      <ListItem.Chevron />
     </ListItem>
   );
 };

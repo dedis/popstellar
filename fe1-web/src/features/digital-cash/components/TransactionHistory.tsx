@@ -1,7 +1,7 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Modal, View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 import ModalHeader from 'core/components/ModalHeader';
@@ -43,9 +43,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
             </ListItem.Content>
           }
           isExpanded={showTransactionHistory}
-          onPress={() => setShowTransactionHistory(!showTransactionHistory)}
-          hasTVPreferredFocus
-          tvParallaxProperties>
+          onPress={() => setShowTransactionHistory(!showTransactionHistory)}>
           {transactions
             .map((transaction, idx) => {
               const listStyle = List.getListItemStyles(idx === transactions.length - 1, idx === 0);
@@ -63,9 +61,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                     setShowInputs(true);
                     setShowOutputs(true);
                     setShowModal(true);
-                  }}
-                  hasTVPreferredFocus
-                  tvParallaxProperties>
+                  }}>
                   <ListItem.Content>
                     <ListItem.Title style={Typography.base} numberOfLines={1}>
                       {transaction.transactionId.valueOf()}
@@ -77,7 +73,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                     </ListItem.Subtitle>
                   </ListItem.Content>
                   <ListItem.Title style={Typography.base}>${amount}</ListItem.Title>
-                  <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
+                  <ListItem.Chevron />
                 </ListItem>
               );
             })
@@ -116,9 +112,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                 </ListItem.Content>
               }
               isExpanded={showInputs}
-              onPress={() => setShowInputs(!showInputs)}
-              hasTVPreferredFocus
-              tvParallaxProperties>
+              onPress={() => setShowInputs(!showInputs)}>
               {selectedTransaction &&
                 selectedTransaction.inputs.map((input, idx) => {
                   const listStyle = List.getListItemStyles(
@@ -131,9 +125,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                       key={input.txOutHash.valueOf().concat(input.txOutIndex.toString(10))}
                       containerStyle={listStyle}
                       style={listStyle}
-                      bottomDivider
-                      hasTVPreferredFocus
-                      tvParallaxProperties>
+                      bottomDivider>
                       <ListItem.Content>
                         <ListItem.Title style={Typography.base} numberOfLines={1}>
                           {input.script.publicKey.valueOf()}
@@ -167,9 +159,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                 </ListItem.Content>
               }
               isExpanded={showOutputs}
-              onPress={() => setShowOutputs(!showOutputs)}
-              hasTVPreferredFocus
-              tvParallaxProperties>
+              onPress={() => setShowOutputs(!showOutputs)}>
               {selectedTransaction &&
                 selectedTransaction.outputs.map((output, idx) => {
                   const listStyle = List.getListItemStyles(
@@ -182,9 +172,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                       key={output.script.publicKeyHash.valueOf()}
                       containerStyle={listStyle}
                       style={listStyle}
-                      bottomDivider
-                      hasTVPreferredFocus
-                      tvParallaxProperties>
+                      bottomDivider>
                       <ListItem.Content>
                         <ListItem.Title style={Typography.base} numberOfLines={1}>
                           {output.script.publicKeyHash.valueOf()}

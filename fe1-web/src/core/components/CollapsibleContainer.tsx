@@ -1,6 +1,6 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { ListItem } from 'react-native-elements';
 
 import { List, Typography } from '../styles';
 
@@ -17,9 +17,7 @@ const CollapsibleContainer = ({ title, isInitiallyOpen, children }: IPropTypes) 
         </ListItem.Content>
       }
       isExpanded={showChildren}
-      onPress={() => setShowChildren(!showChildren)}
-      hasTVPreferredFocus
-      tvParallaxProperties>
+      onPress={() => setShowChildren(!showChildren)}>
       {showChildren && children}
     </ListItem.Accordion>
   );

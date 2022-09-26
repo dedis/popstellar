@@ -349,9 +349,11 @@ exports[`NotificationScreen renders correctly 1`] = `
                           >
                             <View
                               accessible={true}
+                              collapsable={false}
                               focusable={true}
-                              hasTVPreferredFocus={true}
+                              onBlur={[Function]}
                               onClick={[Function]}
+                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -371,7 +373,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -387,6 +389,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -438,15 +441,23 @@ exports[`NotificationScreen renders correctly 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -480,6 +491,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -487,8 +499,20 @@ exports[`NotificationScreen renders correctly 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -497,6 +521,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text />
                                       </View>
@@ -509,16 +534,18 @@ exports[`NotificationScreen renders correctly 1`] = `
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 accessible={true}
+                                collapsable={false}
                                 focusable={true}
-                                hasTVPreferredFocus={true}
+                                onBlur={[Function]}
                                 onClick={[Function]}
+                                onFocus={[Function]}
                                 onResponderGrant={[Function]}
                                 onResponderMove={[Function]}
                                 onResponderRelease={[Function]}
@@ -555,7 +582,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -589,6 +616,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -640,15 +668,23 @@ exports[`NotificationScreen renders correctly 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -663,6 +699,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                       another notification
                                     </Text>
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -686,9 +723,11 @@ exports[`NotificationScreen renders correctly 1`] = `
                             </View>
                             <View
                               accessible={true}
+                              collapsable={false}
                               focusable={true}
-                              hasTVPreferredFocus={true}
+                              onBlur={[Function]}
                               onClick={[Function]}
+                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -708,7 +747,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -724,6 +763,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -775,15 +815,23 @@ exports[`NotificationScreen renders correctly 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -817,6 +865,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -824,8 +873,20 @@ exports[`NotificationScreen renders correctly 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -834,6 +895,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text />
                                       </View>
@@ -846,16 +908,18 @@ exports[`NotificationScreen renders correctly 1`] = `
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 accessible={true}
+                                collapsable={false}
                                 focusable={true}
-                                hasTVPreferredFocus={true}
+                                onBlur={[Function]}
                                 onClick={[Function]}
+                                onFocus={[Function]}
                                 onResponderGrant={[Function]}
                                 onResponderMove={[Function]}
                                 onResponderRelease={[Function]}
@@ -892,7 +956,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -926,6 +990,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -977,15 +1042,23 @@ exports[`NotificationScreen renders correctly 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -1000,6 +1073,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                                       a notification
                                     </Text>
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",

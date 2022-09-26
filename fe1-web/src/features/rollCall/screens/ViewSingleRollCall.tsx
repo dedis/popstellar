@@ -1,9 +1,9 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
@@ -182,19 +182,12 @@ const ViewSingleRollCall = () => {
                 </ListItem.Title>
               </ListItem.Content>
             }
-            isExpanded
-            hasTVPreferredFocus
-            tvParallaxProperties>
+            isExpanded>
             {popTokens.map((token, idx) => {
               const listStyle = List.getListItemStyles(idx === 0, idx === popTokens.length - 1);
 
               return (
-                <ListItem
-                  key={token.valueOf()}
-                  containerStyle={listStyle}
-                  style={listStyle}
-                  hasTVPreferredFocus
-                  tvParallaxProperties>
+                <ListItem key={token.valueOf()} containerStyle={listStyle} style={listStyle}>
                   <View style={List.icon}>
                     <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
                   </View>

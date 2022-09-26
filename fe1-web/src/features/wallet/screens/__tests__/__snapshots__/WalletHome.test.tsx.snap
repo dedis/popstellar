@@ -349,9 +349,11 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                           >
                             <View
                               accessible={true}
+                              collapsable={false}
                               focusable={true}
-                              hasTVPreferredFocus={true}
+                              onBlur={[Function]}
                               onClick={[Function]}
+                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -378,7 +380,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -394,6 +396,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -445,15 +448,23 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -487,6 +498,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -494,8 +506,20 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -504,6 +528,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text
                                           allowFontScaling={false}
@@ -511,7 +536,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                           style={
                                             Array [
                                               Object {
-                                                "color": undefined,
+                                                "color": "#242424",
                                                 "fontSize": 24,
                                               },
                                               Object {
@@ -525,7 +550,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                               Object {},
                                             ]
                                           }
-                                          testID="iconIcon"
+                                          testID="RNE__ICON__Component"
                                         >
                                           󰅀
                                         </Text>
@@ -539,16 +564,18 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 accessible={true}
+                                collapsable={false}
                                 focusable={true}
-                                hasTVPreferredFocus={true}
+                                onBlur={[Function]}
                                 onClick={[Function]}
+                                onFocus={[Function]}
                                 onResponderGrant={[Function]}
                                 onResponderMove={[Function]}
                                 onResponderRelease={[Function]}
@@ -579,7 +606,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -613,6 +640,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -664,15 +692,23 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -687,6 +723,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                       myRollCall
                                     </Text>
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -714,10 +751,19 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
                                     <View
-                                      hasTVPreferredFocus={true}
-                                      tvParallaxProperties={true}
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
                                     >
                                       <View
                                         style={
@@ -727,6 +773,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text />
                                       </View>
@@ -1100,9 +1147,11 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                           >
                             <View
                               accessible={true}
+                              collapsable={false}
                               focusable={true}
-                              hasTVPreferredFocus={true}
+                              onBlur={[Function]}
                               onClick={[Function]}
+                              onFocus={[Function]}
                               onResponderGrant={[Function]}
                               onResponderMove={[Function]}
                               onResponderRelease={[Function]}
@@ -1129,7 +1178,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -1145,6 +1194,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -1196,15 +1246,23 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -1238,6 +1296,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -1245,8 +1304,20 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -1255,6 +1326,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text />
                                       </View>
@@ -1267,13 +1339,12 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
-                                hasTVPreferredFocus={true}
                                 style={
                                   Array [
                                     Object {
@@ -1285,7 +1356,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                     },
                                   ]
                                 }
-                                tvParallaxProperties={true}
                               >
                                 <View
                                   style={
@@ -1299,7 +1369,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -1333,6 +1403,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -1384,15 +1455,23 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -1407,6 +1486,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                       No PoP tokens
                                     </Text>
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",

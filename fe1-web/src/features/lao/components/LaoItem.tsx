@@ -1,9 +1,9 @@
 import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
-import { ListItem } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -73,9 +73,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       containerStyle={listStyle}
       style={listStyle}
       onPress={reconnectToLao}
-      bottomDivider
-      hasTVPreferredFocus
-      tvParallaxProperties>
+      bottomDivider>
       <ListItem.Content>
         <ListItem.Title style={Typography.base}>{lao.name}</ListItem.Title>
         <ListItem.Subtitle style={Typography.small}>
@@ -85,7 +83,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
           {lao.server_addresses.join(', ')}
         </ListItem.Subtitle>
       </ListItem.Content>
-      <ListItem.Chevron hasTVPreferredFocus tvParallaxProperties />
+      <ListItem.Chevron />
     </ListItem>
   );
 };

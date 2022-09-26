@@ -1,7 +1,7 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
@@ -148,9 +148,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
             onPress={() =>
               setIsQuestionOpen({ ...isQuestionOpen, [question.id]: !isQuestionOpen[question.id] })
             }
-            isExpanded={!!isQuestionOpen[question.id]}
-            hasTVPreferredFocus
-            tvParallaxProperties>
+            isExpanded={!!isQuestionOpen[question.id]}>
             {question.ballot_options.map((ballotOption, ballotOptionIndex) => {
               const listStyle = List.getListItemStyles(
                 ballotOptionIndex === 0,
@@ -162,12 +160,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
               }
 
               return (
-                <ListItem
-                  key={ballotOption}
-                  containerStyle={listStyle}
-                  style={listStyle}
-                  hasTVPreferredFocus
-                  tvParallaxProperties>
+                <ListItem key={ballotOption} containerStyle={listStyle} style={listStyle}>
                   <View style={List.icon}>
                     <ListItem.CheckBox
                       testID={`questions_${questionIndex}_ballots_option_${ballotOptionIndex}_checkbox`}

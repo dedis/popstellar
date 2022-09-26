@@ -1,7 +1,7 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 
 import { PoPIcon } from 'core/components';
 import { Hash } from 'core/objects';
@@ -35,11 +35,7 @@ const RollCallWalletItems = ({ laoId }: IPropTypes) => {
   const listStyles = List.getListItemStyles(false, true);
 
   return (
-    <ListItem
-      containerStyle={listStyles}
-      style={listStyles}
-      hasTVPreferredFocus
-      tvParallaxProperties>
+    <ListItem containerStyle={listStyles} style={listStyles}>
       <View style={List.icon}>
         <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
       </View>

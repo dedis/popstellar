@@ -327,7 +327,6 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                       }
                     >
                       <View
-                        hasTVPreferredFocus={true}
                         style={
                           Array [
                             Object {
@@ -339,7 +338,6 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                             },
                           ]
                         }
-                        tvParallaxProperties={true}
                       >
                         <View
                           style={
@@ -353,7 +351,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                               "padding": 14,
                             }
                           }
-                          testID="padView"
+                          testID="RNE__LISTITEM__padView"
                         >
                           <View
                             style={
@@ -387,6 +385,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                             theme={
                               Object {
                                 "colors": Object {
+                                  "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
                                   "divider": "#bcbbc1",
@@ -438,15 +437,23 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#ca71eb",
+                                  "secondary": "#03dac4",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
+                                },
+                                "spacing": Object {
+                                  "lg": 12,
+                                  "md": 8,
+                                  "sm": 4,
+                                  "xl": 24,
+                                  "xs": 2,
                                 },
                               }
                             }
                           >
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -461,6 +468,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                               No PoP tokens
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -816,7 +824,6 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                       }
                     >
                       <View
-                        hasTVPreferredFocus={true}
                         style={
                           Array [
                             Object {
@@ -828,7 +835,6 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                             },
                           ]
                         }
-                        tvParallaxProperties={true}
                       >
                         <View
                           style={
@@ -842,7 +848,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                               "padding": 14,
                             }
                           }
-                          testID="padView"
+                          testID="RNE__LISTITEM__padView"
                         >
                           <View
                             style={
@@ -876,6 +882,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                             theme={
                               Object {
                                 "colors": Object {
+                                  "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
                                   "divider": "#bcbbc1",
@@ -927,15 +934,23 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#ca71eb",
+                                  "secondary": "#03dac4",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
+                                },
+                                "spacing": Object {
+                                  "lg": 12,
+                                  "md": 8,
+                                  "sm": 4,
+                                  "xl": 24,
+                                  "xs": 2,
                                 },
                               }
                             }
                           >
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -950,6 +965,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                               No PoP tokens
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
