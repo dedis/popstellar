@@ -1,7 +1,15 @@
 import { configureStore, ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { Action, AnyAction, applyMiddleware, Store } from 'redux';
-import { composeWithDevTools } from '@redux-devtools/extension';
-import { FLUSH, PAUSE, PERSIST, Persistor, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  Persistor,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from 'redux-persist';
 import thunkMiddleware from 'redux-thunk';
 
 // Core storage module for the React app
