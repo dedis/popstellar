@@ -142,6 +142,8 @@ public class ChirpListAdapterTest {
 
   private ChirpListAdapter createChirpListAdapter(
       FragmentActivity activity, SocialMediaViewModel socialMediaViewModel, List<Chirp> chirps) {
-    return new ChirpListAdapter(activity, socialMediaViewModel, chirps);
+    ChirpListAdapter adapter = new ChirpListAdapter(activity, socialMediaViewModel);
+    adapter.replaceList(chirps);
+    return adapter;
   }
 }

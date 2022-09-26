@@ -72,7 +72,11 @@ public class SocialMediaSendFragment extends Fragment {
                   null,
                   Instant.now().getEpochSecond())
               .subscribe(
-                  msg -> {},
+                  msg ->
+                      SocialMediaActivity.setCurrentFragment(
+                          getParentFragmentManager(),
+                          R.id.fragment_social_media_home,
+                          SocialMediaHomeFragment::newInstance),
                   error -> {
                     if (error instanceof KeyException
                         || error instanceof GeneralSecurityException) {
