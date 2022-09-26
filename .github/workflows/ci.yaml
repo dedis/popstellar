@@ -55,10 +55,10 @@ jobs:
 
       - name: Setup npm dependencies
         run: |
-          npm install --legacy-peer-deps
+          npm install
 
       - name: Check npm security issues
-        run: npm audit fix --legacy-peer-deps
+        run: npm audit fix
         continue-on-error: true
 
       - name: Run lint
@@ -106,10 +106,10 @@ jobs:
         working-directory: ./be1-go
 
     steps:
-      - name: Use go >= 1.19  
+      - name: Use go >= 1.19
         uses: actions/setup-go@v3
         with:
-          go-version: '>=1.19'
+          go-version: ">=1.19"
 
       - name: Setup repo
         uses: actions/checkout@v3
@@ -205,13 +205,12 @@ jobs:
         run: |
           # To run the CI with debug informations, add --info
           ./gradlew assemble lint --parallel --build-cache
-      
+
       - name: Run tests
         shell: bash
         run: |
           # To run the CI with debug informations, add --info
           ./gradlew check --parallel --build-cache
-
 
       - name: Generate Coverage Report
         shell: bash
