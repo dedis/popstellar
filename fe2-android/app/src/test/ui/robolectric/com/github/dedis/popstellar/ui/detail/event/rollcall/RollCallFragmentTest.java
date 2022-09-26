@@ -206,7 +206,7 @@ public class RollCallFragmentTest {
   }
 
   @Test
-  public void scanButtonOPenScanningTest() {
+  public void scanButtonOpenScanningTest() {
     openRollCall();
     setupViewModel();
 
