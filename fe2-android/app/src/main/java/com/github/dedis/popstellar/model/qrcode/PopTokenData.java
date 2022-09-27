@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.qrcode;
 
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -12,9 +13,9 @@ import com.google.gson.annotations.SerializedName;
 public class PopTokenData {
 
     @SerializedName("pop_token")
-    private final String popToken;
+    private final PublicKey popToken;
 
-    public PopTokenData(String popToken){
+    public PopTokenData(PublicKey popToken){
         this.popToken = popToken;
     }
 
@@ -31,7 +32,7 @@ public class PopTokenData {
         return gson.fromJson(json, PopTokenData.class);
     }
 
-    public String getPopToken(){
+    public PublicKey getPopToken(){
         return popToken;
     }
 }

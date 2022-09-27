@@ -193,7 +193,7 @@ public class RollCallFragment extends Fragment {
     ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
     Log.d(TAG, "key displayed is " + pk);
 
-    PopTokenData data = new PopTokenData(pk);
+    PopTokenData data = new PopTokenData(new PublicKey(pk));
     Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
     qrCode.setImageBitmap(myBitmap);
     qrCode.setVisibility(

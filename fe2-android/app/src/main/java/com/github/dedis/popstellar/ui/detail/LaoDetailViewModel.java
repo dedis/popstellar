@@ -824,7 +824,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     }
     PublicKey publicKey;
     try {
-      publicKey = new PublicKey(tokenData.getPopToken());
+      publicKey = tokenData.getPopToken();
     } catch (IllegalArgumentException e) {
       mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
       return false;
@@ -851,7 +851,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     }
     PublicKey publicKey;
     try {
-      publicKey = new PublicKey(pkData.getPublicKey());
+      publicKey = pkData.getPublicKey();
     } catch (IllegalArgumentException e) {
       mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
       return false;

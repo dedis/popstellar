@@ -87,7 +87,7 @@ public class IdentityFragment extends Fragment {
     String pk = this.requireArguments().getString(PUBLIC_KEY);
     identityNameEditText.setText(pk);
 
-    MainPublicKeyData data = new MainPublicKeyData(pk);
+    MainPublicKeyData data = new MainPublicKeyData(new PublicKey(pk));
     Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
     qrCode.setImageBitmap(myBitmap);
 

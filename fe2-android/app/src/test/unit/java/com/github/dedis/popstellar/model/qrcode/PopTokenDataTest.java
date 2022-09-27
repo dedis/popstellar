@@ -4,23 +4,24 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.Gson;
 
 public class PopTokenDataTest {
-  Gson gson = new Gson();
+
+  private final Gson gson = new Gson();
+  private final PublicKey pk = Base64DataUtils.generatePublicKey();
 
   @Test
   public void constructorAndGetterAreCoherent() {
-    String string = "fooBar";
-    PopTokenData data = new PopTokenData(string);
-    assertEquals(string, data.getPopToken());
+    PopTokenData data = new PopTokenData(pk);
+    assertEquals(pk, data.getPopToken());
   }
 
   @Test
   public void extractDataTest() {
-    String popToken = Base64DataUtils.generatePublicKey().getEncoded();
-    String jsonFormat = gson.toJson(new PopTokenData(popToken));
-    assertEquals(popToken, PopTokenData.extractFrom(gson, jsonFormat).getPopToken());
+    String jsonFormat = gson.toJson(new PopTokenData(pk));
+    assertEquals(pk, PopTokenData.extractFrom(gson, jsonFormat).getPopToken());
   }
 }

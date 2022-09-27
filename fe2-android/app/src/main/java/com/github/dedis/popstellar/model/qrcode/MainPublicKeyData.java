@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.qrcode;
 
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,13 +10,13 @@ import com.google.gson.annotations.SerializedName;
 public class MainPublicKeyData {
 
     @SerializedName("main_public_key")
-    private final String publicKey;
+    private final PublicKey publicKey;
 
-    public MainPublicKeyData(String publicKey) {
+    public MainPublicKeyData(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
 
-    public String getPublicKey(){
+    public PublicKey getPublicKey(){
         return publicKey;
     }
 
