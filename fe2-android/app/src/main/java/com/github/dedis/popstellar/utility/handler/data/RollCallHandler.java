@@ -132,6 +132,8 @@ public final class RollCallHandler {
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
 
     // Subscribe to the social media channels
+    // (this is not the expected behavior as users should be able to choose who to subscribe to. But
+    // as this part is not implemented, currently, it subscribes to everyone)
     rollCall
         .getAttendees()
         .forEach(

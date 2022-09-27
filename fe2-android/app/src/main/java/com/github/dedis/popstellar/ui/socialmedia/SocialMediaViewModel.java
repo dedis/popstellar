@@ -193,16 +193,12 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public Observable<List<Chirp>> getChirps() {
     return socialMediaRepository
         .getChirpsOfLao(laoId)
-        .observeOn(schedulerProvider.mainThread())
         // Retrieve chirp subjects per id
         .map(
             ids -> {
               List<Observable<Chirp>> chirps = new ArrayList<>(ids.size());
               for (MessageID id : ids) {
-                chirps.add(
-                    socialMediaRepository
-                        .getChirp(laoId, id)
-                        .observeOn(schedulerProvider.mainThread()));
+                chirps.add(socialMediaRepository.getChirp(laoId, id));
               }
               return chirps;
             })
@@ -214,9 +210,13 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
                     chirps ->
                         Arrays.stream(chirps)
                             .map(Chirp.class::cast)
-                            .filter(Objects::nonNull)
-                            .sorted(Comparator.comparing(Chirp::getTimestamp).reversed())
-                            .collect(Collectors.toList())));
+                            .sorted(
+                                Comparator.comparing(
+                                    (Chirp chirp) -> chirp != null ? -chirp.getTimestamp() : 0))
+                            .collect(Collectors.toList())))
+        // We want to observe these changes on the main thread such that any modification done to
+        // the view are done on the thread. Otherwise, the app might crash
+        .observeOn(schedulerProvider.mainThread());
   }
 
   /**
