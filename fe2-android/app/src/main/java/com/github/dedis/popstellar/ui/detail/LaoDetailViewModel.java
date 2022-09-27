@@ -846,7 +846,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       pkData = MainPublicKeyData.extractFrom(gson, data);
     } catch (Exception e) {
       ErrorUtils.logAndShow(
-          getApplication().getApplicationContext(), TAG, R.string.qr_code_not_pop_token);
+          getApplication().getApplicationContext(), TAG, R.string.qr_code_not_main_pk);
       return false;
     }
     PublicKey publicKey;

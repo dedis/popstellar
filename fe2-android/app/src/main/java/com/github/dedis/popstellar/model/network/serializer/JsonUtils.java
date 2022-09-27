@@ -31,6 +31,7 @@ public final class JsonUtils {
   public static final String CONNECT_TO_LAO_SCHEMA = "protocol/qrcode/connect_to_lao.json";
   public static final String POP_TOKEN_SCHEME = "protocol/qrcode/pop_token.json";
   public static final String MAIN_PK_SCHEME = "protocol/qrcode/main_public_key.json";
+
   private static final Map<String, JsonSchema> schemas = new ConcurrentHashMap<>();
 
   private JsonUtils() {}

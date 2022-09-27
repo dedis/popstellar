@@ -68,9 +68,6 @@ public class DigitalCashReceiveFragment extends Fragment {
     try {
       LaoView laoView = mViewModel.getCurrentLaoValue();
       PoPToken token = mViewModel.getKeyManager().getValidPoPToken(laoView);
-      if (gson == null) {
-        Log.d(TAG, "gson is null");
-      }
       PopTokenData tokenData = new PopTokenData(token.getPublicKey().getEncoded());
       Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
       mBinding.digitalCashReceiveQr.setImageBitmap(myBitmap);

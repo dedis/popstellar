@@ -1,9 +1,11 @@
 package com.github.dedis.popstellar.model.qrcode;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+@Immutable
 public class MainPublicKeyData {
 
     @SerializedName("main_public_key")

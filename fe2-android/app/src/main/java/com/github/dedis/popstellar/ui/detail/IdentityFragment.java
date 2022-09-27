@@ -87,6 +87,7 @@ public class IdentityFragment extends Fragment {
     // TODO: In the future use Wallet with user's token
     String pk = this.requireArguments().getString(PUBLIC_KEY);
     identityNameEditText.setText(pk);
+
     MainPublicKeyData data = new MainPublicKeyData(pk);
     Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
     qrCode.setImageBitmap(myBitmap);
