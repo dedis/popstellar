@@ -826,15 +826,19 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     try {
       publicKey = tokenData.getPopToken();
     } catch (IllegalArgumentException e) {
+      Log.d(TAG, "invalid key format ", e);
       mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
       return false;
     }
     if (attendees.contains(publicKey)) {
+      Log.d(TAG, "Attendee was already scanned");
       mScanWarningEvent.postValue(
           new SingleEvent<>("This attendee key has already been scanned. Please try again."));
       return false;
     }
+
     attendees.add(publicKey);
+    Log.d(TAG, "Attendee " + publicKey + " sucessfully added");
     mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
     mNbAttendees.postValue(attendees.size());
     return true;
@@ -853,16 +857,19 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     try {
       publicKey = pkData.getPublicKey();
     } catch (IllegalArgumentException e) {
+      Log.d(TAG, "invalid key format ", e);
       mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
       return false;
     }
     if (witnesses.contains(publicKey)) {
+      Log.d(TAG, "Witness was already scanned");
       mScanWarningEvent.postValue(
           new SingleEvent<>("This attendee key has already been scanned. Please try again."));
       return false;
     }
 
     witnesses.add(publicKey);
+    Log.d(TAG, "Added witness " + publicKey + " successfully");
     mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
     disposables.add(
         updateLaoWitnesses()
