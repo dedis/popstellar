@@ -335,5 +335,6 @@
   <string name="seed_generation_error">Error generating the seed</string>
   <string name="unknown_lao_exception">Unknown Lao</string>
   <string name="unknown_election_exception">Unknown election</string>
+  <string name="scan">Scan</string>
 
 </resources>
