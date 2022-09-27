@@ -138,12 +138,12 @@ public final class LaoView {
     return lao.getCreation();
   }
 
-  public Map<PublicKey, List<TransactionObject>> getTransactionHistoryByUser() {
-    return Copyable.copyMapOfList(lao.getTransactionHistoryByUser());
+  public Map<PublicKey, Set<TransactionObject>> getTransactionHistoryByUser() {
+    return Copyable.copyMapOfSet(lao.getTransactionHistoryByUser());
   }
 
-  public Map<PublicKey, List<TransactionObject>> getTransactionByUser() {
-    return Copyable.copyMapOfList(lao.getTransactionByUser());
+  public Map<PublicKey, Set<TransactionObject>> getTransactionByUser() {
+    return Copyable.copyMapOfSet(lao.getTransactionByUser());
   }
 
   @NonNull
