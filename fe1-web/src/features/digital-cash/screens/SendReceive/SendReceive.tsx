@@ -17,6 +17,7 @@ import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Hash, PublicKey } from 'core/objects';
+import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { getNavigator } from 'core/platform/Navigator';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -254,7 +255,7 @@ export const SendReceiveHeaderRight = () => {
 
   const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId || '');
 
-  const publicKey = useMemo(() => rollCallToken?.token.publicKey.valueOf() || '', [rollCallToken]);
+  const popToken = useMemo(() => rollCallToken?.token.publicKey.valueOf() || '', [rollCallToken]);
 
   if (isCoinbase) {
     return null;
@@ -284,11 +285,11 @@ export const SendReceiveHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={publicKey} visibility />
+            <QRCode value={ScannablePopToken.encodePopToken({ pop_token: popToken })} visibility />
           </View>
 
-          <Text style={[Typography.small, styles.publicKey]}>{publicKey}</Text>
-          <PoPTextButton onPress={() => getNavigator().clipboard.writeText(publicKey)}>
+          <Text style={[Typography.small, styles.publicKey]}>{popToken}</Text>
+          <PoPTextButton onPress={() => getNavigator().clipboard.writeText(popToken)}>
             {STRINGS.wallet_single_roll_call_copy_pop_token}
           </PoPTextButton>
         </ScrollView>
