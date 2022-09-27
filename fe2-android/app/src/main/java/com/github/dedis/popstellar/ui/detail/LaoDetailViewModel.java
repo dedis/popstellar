@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
@@ -800,9 +801,18 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @return true if an attendee was added false otherwise
    */
   private boolean handleAttendeeAddition(String data) {
+    Log.d(TAG, "data scanned " + data);
+    PopTokenData tokenData;
+    try {
+      tokenData = PopTokenData.extractFrom(gson, data);
+    } catch (Exception e) {
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(), TAG, R.string.qr_code_not_pop_token);
+      return false;
+    }
     PublicKey publicKey;
     try {
-      publicKey = new PublicKey(data);
+      publicKey = new PublicKey(tokenData.getPopToken());
     } catch (IllegalArgumentException e) {
       mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
       return false;

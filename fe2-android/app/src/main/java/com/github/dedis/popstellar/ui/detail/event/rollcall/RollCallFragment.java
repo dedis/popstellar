@@ -16,10 +16,12 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -31,10 +33,14 @@ import dagger.hilt.android.AndroidEntryPoint;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 
+import javax.inject.Inject;
+
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
 
   public static final String TAG = RollCallFragment.class.getSimpleName();
+
+  @Inject Gson gson;
 
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
@@ -94,8 +100,11 @@ public class RollCallFragment extends Fragment {
                   laoDetailViewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
-                          () -> setCurrentFragment(
-                              getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new),
+                          () ->
+                              setCurrentFragment(
+                                  getParentFragmentManager(),
+                                  R.id.add_attendee_layout,
+                                  QRCodeScanningFragment::new),
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_open_rollcall)));
@@ -183,7 +192,9 @@ public class RollCallFragment extends Fragment {
     String pk = requireArguments().getString(Constants.RC_PK_EXTRA);
     ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
     Log.d(TAG, "key displayed is " + pk);
-    Bitmap myBitmap = QRCode.from(pk).bitmap();
+
+    PopTokenData data = new PopTokenData(pk);
+    Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
     qrCode.setImageBitmap(myBitmap);
     qrCode.setVisibility(
         Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue())
