@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
-import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;

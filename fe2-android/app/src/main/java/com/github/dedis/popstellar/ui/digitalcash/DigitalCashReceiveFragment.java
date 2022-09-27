@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
