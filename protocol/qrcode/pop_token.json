@@ -6,11 +6,11 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "poptoken": {
+    "pop_token": {
       "type": "string",
       "contentEncoding": "base64",
       "description": "The pop token"
     }
   },
-  "required": ["poptoken"]
+  "required": ["pop_token"]
 }
