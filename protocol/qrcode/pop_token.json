@@ -1,16 +1,16 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "resource:/protocol/qrcode/pop_token.json",
-  "title": "QRCode data for pop tokens",
-  "description": "Match a data contained in a qrcode encoding a pop token",
-  "type": "object",
-  "additionalProperties": false,
-  "properties": {
-    "poptoken": {
-      "type": "string",
-      "contentEncoding": "base64",
-      "description": "The pop token"
-    }
-  },
-  "required": ["poptoken"]
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "resource:/protocol/qrcode/pop_token.json",
+    "title": "QRCode data for pop tokens",
+    "description": "Match a data contained in a qrcode encoding a pop token",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "poptoken": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "description": "The pop token"
+        }
+    },
+    "required": ["poptoken"]
 }
