@@ -19,6 +19,14 @@ trait MessageHandler extends AskPatternConstants {
     */
   def dbActor: AskableActorRef = DbActor.getInstance
 
+  def checkParameters(rpcRequest: JsonRpcRequest, error: String): Future[GraphMessage] = {
+    rpcRequest.getParamsMessage match {
+      case Some(_) => Future(Left(rpcRequest))
+      case _       => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, error, rpcRequest.id)))
+
+    }
+  }
+
   /** Asks the database to store the message contained in <rpcMessage> (or the provided message)
     *
     * @param rpcRequest
