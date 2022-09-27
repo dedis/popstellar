@@ -34,7 +34,6 @@ jest.mock('@react-navigation/core', () => {
 });
 
 // Is mocked
-
 // const { navigate: mockNavigate, addListener } = useNavigation();
 
 /*

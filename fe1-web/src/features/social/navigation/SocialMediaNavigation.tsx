@@ -72,6 +72,9 @@ const SocialMediaNavigation = () => {
       /* noop */
     });
 
+  // prevents unnecessary re-renders in components using this react context
+  // react by default only performs shallow equality checks which means
+  // it will be a different object (try ({a: 1} == {a: 1})) and trigger a re-render
   const contextValue = useMemo(
     () => ({
       currentUserPopTokenPublicKey,
