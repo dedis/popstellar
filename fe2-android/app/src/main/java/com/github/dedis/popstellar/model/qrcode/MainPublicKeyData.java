@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class MainPublicKeyData {
 
-    @SerializedName("identity")
+    @SerializedName("main_public_key")
     private final String publicKey;
 
     public MainPublicKeyData(String publicKey) {

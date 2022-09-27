@@ -11,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
 @Immutable
 public class PopTokenData {
 
-    @SerializedName("poptoken")
+    @SerializedName("pop_token")
     private final String popToken;
 
     public PopTokenData(String popToken){
