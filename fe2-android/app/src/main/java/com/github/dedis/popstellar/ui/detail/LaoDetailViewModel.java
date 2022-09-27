@@ -786,13 +786,13 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    handleAttendeeAddition(barcode.rawValue);
+    handleInputData(barcode.rawValue);
   }
 
   @Override
   public boolean addManually(String data) {
     Log.d(TAG, "Key manually submitted with value: " + data);
-    return handleAttendeeAddition(data);
+    return handleInputData(data);
   }
 
   /**
@@ -801,7 +801,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param data the textual representation of the key
    * @return true if an attendee was added false otherwise
    */
-  private boolean handleAttendeeAddition(String data) {
+  private boolean handleInputData(String data) {
     Log.d(TAG, "data scanned " + data);
     if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
       return handleRollCallAddition(data);
