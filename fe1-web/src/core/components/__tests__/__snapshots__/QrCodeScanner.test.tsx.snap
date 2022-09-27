@@ -231,7 +231,7 @@ Array [
 exports[`QrCodeScanner renders correctly when requesting for permissions 1`] = `
 Array [
   <Text>
-    Requesting for camera permissions
+    Requesting camera permissions
   </Text>,
   <View
     style={

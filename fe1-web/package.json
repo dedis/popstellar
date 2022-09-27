@@ -81,7 +81,7 @@
     "redux-thunk": "^2.3.0",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1",
-    "websocket": "^1.0.32",
+    "websocket": "^1.0.32"
   },
   "devDependencies": {
     "@babel/core": "^7.19.0",
