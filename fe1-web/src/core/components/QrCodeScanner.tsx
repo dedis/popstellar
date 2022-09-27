@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { Border, Color, Icon, Spacing } from 'core/styles';
+import STRINGS from 'resources/strings';
 
 import PoPIcon from './PoPIcon';
 import PoPTouchableOpacity from './PoPTouchableOpacity';
@@ -74,7 +75,9 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
       }
       if (isAvailable) {
         const types = await Camera.getAvailableCameraTypesAsync();
-        if (isMounted) setHasMultipleCameras(types.length > 1);
+        if (isMounted) {
+          setHasMultipleCameras(types.length > 1);
+        }
       }
     })();
     return () => {
@@ -85,7 +88,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   if (!hasCamera) {
     return (
       <>
-        <Text>Camera unavailable</Text>
+        <Text>{STRINGS.camera_unavailable}</Text>
         <View style={styles.children}>{children}</View>
       </>
     );
@@ -94,7 +97,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   if (!permission) {
     return (
       <>
-        <Text>Requesting for camera permissions</Text>
+        <Text>{STRINGS.requesting_camera_permissions}</Text>
         <View style={styles.children}>{children}</View>
       </>
     );
@@ -103,7 +106,7 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   if (!permission.granted) {
     return (
       <>
-        <Text>Permissions for camera denied</Text>
+        <Text>{STRINGS.camera_permissions_denied}</Text>
         <View style={styles.children}>{children}</View>
       </>
     );
@@ -112,8 +115,10 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   // Scan each code only once
   let lastValue: string;
   const onBarCodeScanned = (result: BarCodeScanningResult) => {
-    if (lastValue && lastValue === result.data) return;
-    handleScan(result);
+    if (lastValue && lastValue === result.data) {
+      return;
+    }
+    handleScan(result.data);
     lastValue = result.data;
   };
 
