@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ import com.google.gson.Gson;
 import net.glxn.qrgen.android.QRCode;
 
 import java.util.Objects;
+import dagger.hilt.android.AndroidEntryPoint;
 
 import javax.inject.Inject;
 
@@ -28,11 +30,11 @@ import javax.inject.Inject;
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiveFragment#newInstance}
  * factory method to create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class DigitalCashReceiveFragment extends Fragment {
   public static final String TAG = DigitalCashReceiveFragment.class.getSimpleName();
 
-  @Inject
-  Gson gson;
+  @Inject Gson gson;
 
   private DigitalCashReceiveFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
@@ -66,8 +68,10 @@ public class DigitalCashReceiveFragment extends Fragment {
     try {
       LaoView laoView = mViewModel.getCurrentLaoValue();
       PoPToken token = mViewModel.getKeyManager().getValidPoPToken(laoView);
-
-        PopTokenData tokenData = new PopTokenData(token.getPublicKey().getEncoded());
+      if (gson == null) {
+        Log.d(TAG, "gson is null");
+      }
+      PopTokenData tokenData = new PopTokenData(token.getPublicKey().getEncoded());
       Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
       mBinding.digitalCashReceiveQr.setImageBitmap(myBitmap);
 
