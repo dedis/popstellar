@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -56,6 +57,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    * Dependencies for this class
    */
   private final LAORepository laoRepository;
+  private final SchedulerProvider schedulerProvider;
   private final SocialMediaRepository socialMediaRepository;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
@@ -66,12 +68,14 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public SocialMediaViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      SchedulerProvider schedulerProvider,
       SocialMediaRepository socialMediaRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
       KeyManager keyManager) {
     super(application);
     this.laoRepository = laoRepository;
+    this.schedulerProvider = schedulerProvider;
     this.socialMediaRepository = socialMediaRepository;
     this.networkManager = networkManager;
     this.gson = gson;
@@ -206,9 +210,13 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
                     chirps ->
                         Arrays.stream(chirps)
                             .map(Chirp.class::cast)
-                            .filter(Objects::nonNull)
-                            .sorted(Comparator.comparing(Chirp::getTimestamp).reversed())
-                            .collect(Collectors.toList())));
+                            .sorted(
+                                Comparator.comparing(
+                                    (Chirp chirp) -> chirp != null ? -chirp.getTimestamp() : 0))
+                            .collect(Collectors.toList())))
+        // We want to observe these changes on the main thread such that any modification done to
+        // the view are done on the thread. Otherwise, the app might crash
+        .observeOn(schedulerProvider.mainThread());
   }
 
   /**
