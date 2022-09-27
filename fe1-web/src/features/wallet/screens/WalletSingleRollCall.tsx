@@ -62,10 +62,6 @@ export const WalletSingleHeaderRight = () => {
   const route = useRoute<NavigationProps['route']>();
   const { rollCallTokenPublicKey } = route.params;
 
-  const copyTokenPkToClipBoard = async () => {
-    await Clipboard.setStringAsync(rollCallTokenPublicKey);
-  };
-
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -97,7 +93,7 @@ export const WalletSingleHeaderRight = () => {
 
           <Text style={[Typography.small, styles.publicKey]}>{rollCallTokenPublicKey}</Text>
 
-          <PoPTextButton onPress={copyTokenPkToClipBoard}>
+          <PoPTextButton onPress={() => Clipboard.setStringAsync(rollCallTokenPublicKey)}>
             {STRINGS.wallet_single_roll_call_copy_pop_token}
           </PoPTextButton>
         </ScrollView>

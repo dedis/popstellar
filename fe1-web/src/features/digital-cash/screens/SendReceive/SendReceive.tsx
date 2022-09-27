@@ -256,10 +256,6 @@ export const SendReceiveHeaderRight = () => {
 
   const publicKey = useMemo(() => rollCallToken?.token.publicKey.valueOf() || '', [rollCallToken]);
 
-  const copyPkToClipBoard = async () => {
-    await Clipboard.setStringAsync(publicKey);
-  };
-
   if (isCoinbase) {
     return null;
   }
@@ -292,7 +288,7 @@ export const SendReceiveHeaderRight = () => {
           </View>
 
           <Text style={[Typography.small, styles.publicKey]}>{publicKey}</Text>
-          <PoPTextButton onPress={copyPkToClipBoard}>
+          <PoPTextButton onPress={() => Clipboard.setStringAsync(publicKey)}>
             {STRINGS.wallet_single_roll_call_copy_pop_token}
           </PoPTextButton>
         </ScrollView>
