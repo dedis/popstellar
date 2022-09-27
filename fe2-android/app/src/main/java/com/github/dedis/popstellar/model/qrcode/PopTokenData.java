@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.qrcode;
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Represent the data held in a QRCode used to display roll call tokens
@@ -10,10 +11,11 @@ import com.google.gson.Gson;
 @Immutable
 public class PopTokenData {
 
-    private final String poptoken;
+    @SerializedName("poptoken")
+    private final String popToken;
 
     public PopTokenData(String popToken){
-        this.poptoken = popToken;
+        this.popToken = popToken;
     }
 
     /**
@@ -30,7 +32,6 @@ public class PopTokenData {
     }
 
     public String getPopToken(){
-        return poptoken;
+        return popToken;
     }
-
 }

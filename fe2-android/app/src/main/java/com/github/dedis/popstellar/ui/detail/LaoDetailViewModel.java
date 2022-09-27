@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -802,6 +803,17 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    */
   private boolean handleAttendeeAddition(String data) {
     Log.d(TAG, "data scanned " + data);
+    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+      return handleRollCallAddition(data);
+    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
+      return handleWitnessAddition(data);
+    } else {
+      throw new IllegalStateException(
+          "The scanning action should either be to add witnesses or rc attendees");
+    }
+  }
+
+  public boolean handleRollCallAddition(String data) {
     PopTokenData tokenData;
     try {
       tokenData = PopTokenData.extractFrom(gson, data);
@@ -817,26 +829,49 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
       return false;
     }
-    if (attendees.contains(publicKey) || witnesses.contains(publicKey)) {
+    if (attendees.contains(publicKey)) {
       mScanWarningEvent.postValue(
           new SingleEvent<>("This attendee key has already been scanned. Please try again."));
       return false;
     }
-    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      attendees.add(publicKey);
-      mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
-      mNbAttendees.postValue(attendees.size());
-    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-      witnesses.add(publicKey);
-      mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
-      disposables.add(
-          updateLaoWitnesses()
-              .subscribe(
-                  () -> Log.d(TAG, "Witness " + publicKey + " added"),
-                  error ->
-                      ErrorUtils.logAndShow(
-                          getApplication(), TAG, error, R.string.error_update_lao)));
+    attendees.add(publicKey);
+    mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
+    mNbAttendees.postValue(attendees.size());
+    return true;
+  }
+
+  public boolean handleWitnessAddition(String data) {
+    MainPublicKeyData pkData;
+    try {
+      pkData = MainPublicKeyData.extractFrom(gson, data);
+    } catch (Exception e) {
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(), TAG, R.string.qr_code_not_pop_token);
+      return false;
     }
+    PublicKey publicKey;
+    try {
+      publicKey = new PublicKey(pkData.getPublicKey());
+    } catch (IllegalArgumentException e) {
+      mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
+      return false;
+    }
+    if (witnesses.contains(publicKey)) {
+      mScanWarningEvent.postValue(
+          new SingleEvent<>("This attendee key has already been scanned. Please try again."));
+      return false;
+    }
+
+    witnesses.add(publicKey);
+    mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
+    disposables.add(
+        updateLaoWitnesses()
+            .subscribe(
+                () -> Log.d(TAG, "Witness " + publicKey + " added"),
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_update_lao)));
+
     return true;
   }
 

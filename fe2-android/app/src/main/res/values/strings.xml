@@ -311,6 +311,7 @@
   <string name="error_no_rollcall_closed_in_LAO">Error no RollCall closed in the LAO\n%1$s</string>
   <string name="error_public_key_receiver">Error on the receiver s public key\n%1$s</string>
   <string name="qr_code_not_pop_token">Error, this QR code is not your pop token</string>
+  <string name="qr_code_not_main_pk">Error, this QR code is not your main public key</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
