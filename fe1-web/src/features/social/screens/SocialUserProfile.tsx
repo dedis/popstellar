@@ -59,7 +59,7 @@ const SocialUserProfile = () => {
       <View style={socialMediaProfileStyles.topView}>
         <View style={styles.userInnerView}>
           <BackButton
-            navigationTabName={STRINGS.social_media_navigation_tab_search}
+            navigationTabName={STRINGS.social_media_navigation_tab_attendee_list}
             testID="backButtonUserProfile"
           />
         </View>

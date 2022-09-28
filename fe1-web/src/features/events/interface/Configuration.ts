@@ -6,7 +6,7 @@ import FeatureInterface from 'core/objects/FeatureInterface';
 import STRINGS from 'resources/strings';
 
 import { EventState } from '../objects';
-import { EventReducerState, EVENT_REDUCER_PATH } from '../reducer';
+import { EVENT_REDUCER_PATH, EventReducerState } from '../reducer';
 
 export const EVENT_FEATURE_IDENTIFIER = 'event';
 
@@ -32,7 +32,7 @@ export interface EventInterface extends FeatureInterface {
     makeEventByTypeSelector: (
       laoId: string,
       eventType: string,
-    ) => (state: unknown) => Record<string, EventState>;
+    ) => (state: any) => Record<string, EventState>;
 
     /**
      * Creates a selector to return a specific event for given lao and event ids
@@ -43,7 +43,7 @@ export interface EventInterface extends FeatureInterface {
     makeEventSelector: (
       laoId: Hash | string,
       eventId: Hash | string,
-    ) => (state: unknown) => EventState | undefined;
+    ) => (state: any) => EventState | undefined;
   };
 
   components: {

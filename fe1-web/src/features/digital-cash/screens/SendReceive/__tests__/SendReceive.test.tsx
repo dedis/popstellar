@@ -1,7 +1,8 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLaoId } from '__tests__/utils';
@@ -11,7 +12,7 @@ import { mockDigitalCashContextValue, mockRollCall } from '../../../__tests__/ut
 import { digitalCashReducer } from '../../../reducer';
 import SendReceive from '../SendReceive';
 
-const mockStore = createStore(combineReducers({ ...digitalCashReducer }));
+const mockStore = configureStore({ reducer: combineReducers({ ...digitalCashReducer }) });
 
 describe('SendReceive', () => {
   it('renders correctly', () => {
@@ -20,7 +21,10 @@ describe('SendReceive', () => {
         <FeatureContext.Provider value={mockDigitalCashContextValue(true)}>
           <MockNavigator
             component={SendReceive}
-            params={{ laoId: mockLaoId, rollCallId: mockRollCall.id.valueOf() }}
+            params={{
+              laoId: mockLaoId,
+              rollCallId: mockRollCall.id.valueOf(),
+            }}
           />
         </FeatureContext.Provider>
       </Provider>,

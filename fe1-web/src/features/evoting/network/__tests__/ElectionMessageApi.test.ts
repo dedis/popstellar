@@ -1,6 +1,6 @@
 import 'jest-extended';
-
-import { combineReducers, createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 
 import { mockChannel, mockLaoIdHash } from '__tests__/utils';
 import { publish } from 'core/network';
@@ -32,7 +32,12 @@ jest.mock('core/objects', () => {
   };
 });
 
-const mockStore = createStore(combineReducers({ ...messageReducer, ...electionKeyReducer }));
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...messageReducer,
+    ...electionKeyReducer,
+  }),
+});
 
 jest.mock('core/redux', () => {
   return {
@@ -123,7 +128,10 @@ describe('openElection', () => {
 
 describe('castVote', () => {
   it('works as expected using a valid set of parameters (open ballot)', () => {
-    const selectedBallots: SelectedBallots = { 0: 0, 1: 1 };
+    const selectedBallots: SelectedBallots = {
+      0: 0,
+      1: 1,
+    };
 
     castVote(mockElectionNotStarted, undefined, selectedBallots);
 
@@ -152,7 +160,10 @@ describe('castVote', () => {
   });
 
   it('works as expected using a valid set of parameters (secret ballot)', () => {
-    const selectedBallots: SelectedBallots = { 0: 3, 1: 7 };
+    const selectedBallots: SelectedBallots = {
+      0: 3,
+      1: 7,
+    };
     const keyPair = ElectionKeyPair.generate();
 
     castVote(mockSecretBallotElectionNotStarted, keyPair.publicKey, selectedBallots);

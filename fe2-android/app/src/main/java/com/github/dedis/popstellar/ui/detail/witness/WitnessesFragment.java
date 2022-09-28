@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.witness;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.*;
 
@@ -12,10 +10,10 @@ import androidx.recyclerview.widget.*;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.ui.qrcode.*;
+import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import static androidx.core.content.ContextCompat.checkSelfPermission;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 public class WitnessesFragment extends Fragment {
@@ -60,21 +58,7 @@ public class WitnessesFragment extends Fragment {
   private void openAddWitness() {
     FragmentManager manager = getParentFragmentManager();
 
-    if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-        == PackageManager.PERMISSION_GRANTED) {
-
-      viewModel.setScanningAction(ScanningAction.ADD_WITNESS);
-      setCurrentFragment(manager, R.id.add_witness_button, QRCodeScanningFragment::new);
-    } else {
-      // Setup result listener to open the scanning tab once the permission is granted
-      manager.setFragmentResultListener(
-          CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> openAddWitness());
-
-      setCurrentFragment(
-          manager,
-          R.id.fragment_camera_perm,
-          () ->
-              CameraPermissionFragment.newInstance(requireActivity().getActivityResultRegistry()));
-    }
+    viewModel.setScanningAction(ScanningAction.ADD_WITNESS);
+    setCurrentFragment(manager, R.id.add_witness_button, QRCodeScanningFragment::new);
   }
 }

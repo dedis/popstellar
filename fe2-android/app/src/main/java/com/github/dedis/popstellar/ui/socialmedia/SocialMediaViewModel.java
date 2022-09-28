@@ -11,8 +11,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Chirp;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
@@ -20,6 +19,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.SocialMediaRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -27,6 +27,7 @@ import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   private final Gson gson;
   private final KeyManager keyManager;
   private final CompositeDisposable disposables;
+  private final Wallet wallet;
 
   @Inject
   public SocialMediaViewModel(
@@ -72,7 +74,8 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
       SocialMediaRepository socialMediaRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
-      KeyManager keyManager) {
+      KeyManager keyManager,
+      Wallet wallet) {
     super(application);
     this.laoRepository = laoRepository;
     this.schedulerProvider = schedulerProvider;
@@ -80,6 +83,8 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
+    this.wallet = wallet;
+
     disposables = new CompositeDisposable();
 
     laoIdList =
@@ -243,6 +248,11 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
     }
+  }
+
+  public void savePersistentData() throws GeneralSecurityException {
+    ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
   }
 
   /**

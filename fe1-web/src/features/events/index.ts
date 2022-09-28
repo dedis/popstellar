@@ -1,12 +1,12 @@
 import { publicComponents } from './components';
 import * as functions from './functions';
 import {
+  EVENT_FEATURE_IDENTIFIER,
   EventCompositionConfiguration,
   EventCompositionInterface,
   EventInterface,
-  EVENT_FEATURE_IDENTIFIER,
 } from './interface';
-import { eventReducer, addEvent, updateEvent, removeEvent, clearAllEvents } from './reducer';
+import { addEvent, clearAllEvents, eventReducer, removeEvent, updateEvent } from './reducer';
 
 /**
  * Configures the events feature

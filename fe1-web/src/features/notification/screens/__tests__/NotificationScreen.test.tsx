@@ -1,14 +1,15 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import {
-  NotificationReactContext,
   NOTIFICATION_FEATURE_IDENTIFIER,
+  NotificationReactContext,
 } from 'features/notification/interface/Configuration';
 import {
   addNotification,
@@ -28,7 +29,7 @@ const contextValue = {
 };
 
 // set up mock store
-const mockStore = createStore(combineReducers({ ...notificationReducer }));
+const mockStore = configureStore({ reducer: combineReducers({ ...notificationReducer }) });
 mockStore.dispatch(
   addNotification({
     laoId: mockLaoId,
@@ -45,7 +46,12 @@ mockStore.dispatch(
     type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   }),
 );
-mockStore.dispatch(markNotificationAsRead({ laoId: mockLaoId, notificationId: 0 }));
+mockStore.dispatch(
+  markNotificationAsRead({
+    laoId: mockLaoId,
+    notificationId: 0,
+  }),
+);
 
 describe('NotificationScreen', () => {
   it('renders correctly', () => {

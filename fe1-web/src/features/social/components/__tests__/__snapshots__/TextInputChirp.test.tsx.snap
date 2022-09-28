@@ -83,6 +83,7 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
           }
         }
         accessible={true}
+        collapsable={false}
         focusable={true}
         onClick={[Function]}
         onResponderGrant={[Function]}
@@ -209,6 +210,7 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
           }
         }
         accessible={true}
+        collapsable={false}
         focusable={true}
         onClick={[Function]}
         onResponderGrant={[Function]}
@@ -341,7 +343,6 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
         accessible={true}
         collapsable={false}
         focusable={true}
-        nativeID="animatedComponent"
         onClick={[Function]}
         onResponderGrant={[Function]}
         onResponderMove={[Function]}
@@ -467,7 +468,6 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
         accessible={true}
         collapsable={false}
         focusable={true}
-        nativeID="animatedComponent"
         onClick={[Function]}
         onResponderGrant={[Function]}
         onResponderMove={[Function]}
@@ -599,7 +599,6 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
         accessible={true}
         collapsable={false}
         focusable={true}
-        nativeID="animatedComponent"
         onClick={[Function]}
         onResponderGrant={[Function]}
         onResponderMove={[Function]}

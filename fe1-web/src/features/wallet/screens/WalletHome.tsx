@@ -7,6 +7,7 @@ import { List, Typography } from 'core/styles';
 
 import { rollCallWalletItemGenerator } from '../components/RollCallWalletItems';
 import { WalletHooks } from '../hooks';
+
 /**
  * Wallet UI once the wallet is synced
  */
@@ -25,7 +26,10 @@ const WalletHome = () => {
 
   useEffect(() => {
     if (currentLaoId) {
-      setIsLaoExpanded((oldValue) => ({ ...oldValue, [currentLaoId.valueOf()]: true }));
+      setIsLaoExpanded((oldValue) => ({
+        ...oldValue,
+        [currentLaoId.valueOf()]: true,
+      }));
     }
   }, [currentLaoId]);
 
@@ -52,10 +56,13 @@ const WalletHome = () => {
               }
               isExpanded={!!isLaoExpanded[laoId]}
               onPress={() =>
-                setIsLaoExpanded({ ...isLaoExpanded, [laoId]: !isLaoExpanded[laoId] })
+                setIsLaoExpanded({
+                  ...isLaoExpanded,
+                  [laoId]: !isLaoExpanded[laoId],
+                })
               }>
-              {walletItemGenerators.map((Generator, idx) => (
-                <Generator.ListItems key={idx.toString()} laoId={laoIdHash} />
+              {walletItemGenerators.map((Generator) => (
+                <Generator.ListItems key={Generator.order.toString()} laoId={laoIdHash} />
               ))}
             </ListItem.Accordion>
           );

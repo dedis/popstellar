@@ -174,7 +174,7 @@ export const getNotificationState = (state: any): NotificationReducerState =>
 export const makeUnreadNotificationCountSelector = (laoId: string) =>
   createSelector(
     // First input: all notification ids
-    (state) => getNotificationState(state).byLaoId[laoId]?.unreadIds,
+    (state: any) => getNotificationState(state).byLaoId[laoId]?.unreadIds,
     // Selector: returns the number of unread notifications
     (unreadIds: number[] | undefined): number => {
       if (!unreadIds) {
@@ -193,9 +193,9 @@ export const makeUnreadNotificationCountSelector = (laoId: string) =>
 export const makeUnreadNotificationsSelector = (laoId: string) =>
   createSelector(
     // First input: a map containing all notifications
-    (state) => getNotificationState(state).byLaoId[laoId]?.byId,
+    (state: any) => getNotificationState(state).byLaoId[laoId]?.byId,
     // Second input: all ids of unread notifications
-    (state) => getNotificationState(state).byLaoId[laoId]?.unreadIds,
+    (state: any) => getNotificationState(state).byLaoId[laoId]?.unreadIds,
     // Selector: returns all unread notifications for a specific lao
     (
       notificationMap: Record<string, NotificationState> | undefined,
@@ -222,9 +222,9 @@ export const makeUnreadNotificationsSelector = (laoId: string) =>
 export const makeReadNotificationsSelector = (laoId: string) =>
   createSelector(
     // First input: a map containing all notifications
-    (state) => getNotificationState(state).byLaoId[laoId]?.byId,
+    (state: any) => getNotificationState(state).byLaoId[laoId]?.byId,
     // Second input: all ids of read notifications
-    (state) => getNotificationState(state).byLaoId[laoId]?.readIds,
+    (state: any) => getNotificationState(state).byLaoId[laoId]?.readIds,
     // Selector: returns all read notifications for a specific lao
     (
       notificationMap: Record<string, NotificationState> | undefined,
@@ -252,7 +252,7 @@ export const makeReadNotificationsSelector = (laoId: string) =>
 export const makeNotificationSelector = (laoId: string, notificationId: number) =>
   createSelector(
     // First input: a map containing all notifications
-    (state) => getNotificationState(state),
+    (state: any) => getNotificationState(state),
     // Selector: returns the notification for a specific lao and notification id
     (notificationState: NotificationReducerState): NotificationState | undefined =>
       notificationState.byLaoId[laoId]?.byId[notificationId],

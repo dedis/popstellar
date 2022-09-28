@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.utility;
 
+import com.github.dedis.popstellar.ui.home.ConnectingActivity;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
+
 public class Constants {
 
   /** The extra key given by the home activity to LaoDetailActivity and Connecting Activity */
@@ -22,6 +25,12 @@ public class Constants {
 
   /** The extra value given to the RollCallFragment when opened */
   public static final String RC_PK_EXTRA = "pk";
+
+  /** The extra key given to indicate the activity to open for {@link ConnectingActivity} */
+  public static final String ACTIVITY_TO_OPEN_EXTRA = "activity_to_open";
+
+  /** The extra value given to {@link ConnectingActivity} to open {@link HomeActivity} */
+  public static final String HOME_EXTRA = "home";
 
   /** Using the Resources class constant would require a min API of 29 */
   public static final int ID_NULL = 0;

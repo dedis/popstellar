@@ -33,6 +33,7 @@
   <string name="allow_camera_text">Please allow the camera to be used by the app</string>
   <string name="allow_camera_button">Allow camera</string>
   <string name="connecting">Connecting to</string>
+  <string name="stored_channels">stored channels</string>
 
   <!-- Launch -->
   <string name="text_title_launch">To launch a new organization, please enter a name for the organization.</string>
@@ -128,6 +129,7 @@
   <string name="roll_call_add_manually_hint">Add key manually</string>
   <string name="scan_all_attendees_question">Are you sure you have scanned all attendees ?</string>
   <string name="roll_call_title_required">Roll-Call Title required</string>
+  <string name="scan">Scan</string>
   <string name="close_roll_call">Close Roll-Call</string>
 
   <!--  Witnessing-->
@@ -272,6 +274,14 @@
   <string name="delete_button">delete button</string>
   <string name="social_media_title">popstellar - %s</string>
 
+  <!--  Storage-->
+  <string name="nothing_stored">no stored data found</string>
+  <string name="clear_text">clear</string>
+  <string name="storage_title">Storage</string>
+  <string name="clear_confirmation_text">Are you sure you want to clear stored data ? This action is irreversible</string>
+  <string name="clear_success">Clearing was successful</string>
+  <string name="clear_failure">Clearing was unsuccessful</string>
+
   <!--  Content description -->
   <string name="qr_code_description">Open Qr code image</string>
   <string name="qr_code_image_description">Qr code image to display LAO connecting information</string>
@@ -310,6 +320,9 @@
   <string name="error_post_transaction">Could not post a transaction\n%1$s</string>
   <string name="error_no_rollcall_closed_in_LAO">Error no RollCall closed in the LAO\n%1$s</string>
   <string name="error_public_key_receiver">Error on the receiver s public key\n%1$s</string>
+  <string name="error_storing_data">An error occurred while storing data</string>
+  <string name="error_loading_data">An error occurred while loading data</string>
+  <string name="error_storage_wallet">An error occurred during the storage of the wallet seed</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
@@ -320,8 +333,8 @@
   <string name="no_rollcall_exception">No rollcall exist in the LAO</string>
   <string name="seed_validation_exception">Unable to validate seed</string>
   <string name="uninitialized_wallet_exception">The wallet is not initialized</string>
+  <string name="seed_generation_error">Error generating the seed</string>
   <string name="unknown_lao_exception">Unknown Lao</string>
   <string name="unknown_election_exception">Unknown election</string>
   <string name="unknown_chirp_exception">Unknown Chirp</string>
-
 </resources>

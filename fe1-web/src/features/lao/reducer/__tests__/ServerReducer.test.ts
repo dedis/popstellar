@@ -1,4 +1,5 @@
-import { AnyAction, combineReducers, createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { AnyAction, combineReducers } from 'redux';
 
 import {
   mockAddress,
@@ -67,7 +68,10 @@ describe('ServerReducer', () => {
         byLaoId: {
           [mockLaoId]: {
             allAddresses: [otherAddress, mockAddress],
-            byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
+            byAddress: {
+              [mockAddress]: mockServerState,
+              [otherAddress]: otherMockServerState,
+            },
             backendKeyByFrontendKey: {
               [mockPublicKey]: mockPublicKey2,
               [mockPublicKey2]: mockPublicKey,
@@ -106,7 +110,10 @@ describe('ServerReducer', () => {
             byLaoId: {
               [mockLaoId]: {
                 allAddresses: [otherAddress, mockAddress],
-                byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
+                byAddress: {
+                  [mockAddress]: mockServerState,
+                  [otherAddress]: otherMockServerState,
+                },
                 backendKeyByFrontendKey: {
                   [mockPublicKey]: mockPublicKey2,
                   [mockPublicKey2]: mockPublicKey,
@@ -114,14 +121,20 @@ describe('ServerReducer', () => {
               },
             },
           } as ServerReducerState,
-          updateServer({ ...mockServerState, serverPublicKey: mockPublicKey2 }),
+          updateServer({
+            ...mockServerState,
+            serverPublicKey: mockPublicKey2,
+          }),
         ),
       ).toEqual({
         byLaoId: {
           [mockLaoId]: {
             allAddresses: [otherAddress, mockAddress],
             byAddress: {
-              [mockAddress]: { ...mockServerState, serverPublicKey: mockPublicKey2 },
+              [mockAddress]: {
+                ...mockServerState,
+                serverPublicKey: mockPublicKey2,
+              },
               [otherAddress]: otherMockServerState,
             },
             backendKeyByFrontendKey: {
@@ -142,7 +155,10 @@ describe('ServerReducer', () => {
             byLaoId: {
               [mockLaoId]: {
                 allAddresses: [mockAddress, otherAddress],
-                byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
+                byAddress: {
+                  [mockAddress]: mockServerState,
+                  [otherAddress]: otherMockServerState,
+                },
                 backendKeyByFrontendKey: {
                   [mockPublicKey]: mockPublicKey2,
                   [mockPublicKey2]: mockPublicKey,
@@ -150,7 +166,10 @@ describe('ServerReducer', () => {
               },
             },
           } as ServerReducerState,
-          removeServer({ laoId: mockLaoId, address: otherAddress }),
+          removeServer({
+            laoId: mockLaoId,
+            address: otherAddress,
+          }),
         ),
       ).toEqual({
         byLaoId: {
@@ -174,7 +193,10 @@ describe('ServerReducer', () => {
             byLaoId: {
               [mockLaoId]: {
                 allAddresses: [mockAddress, otherAddress],
-                byAddress: { [mockAddress]: mockServerState, [otherAddress]: otherMockServerState },
+                byAddress: {
+                  [mockAddress]: mockServerState,
+                  [otherAddress]: otherMockServerState,
+                },
                 backendKeyByFrontendKey: {
                   [mockPublicKey]: mockPublicKey2,
                   [mockPublicKey2]: mockPublicKey,
@@ -190,7 +212,12 @@ describe('ServerReducer', () => {
 
   describe('makeLaoOrganizerBackendPublicKeySelector', () => {
     it('should return the correct value if a lao and server entry exist', () => {
-      const mockStore = createStore(combineReducers({ ...laoReducer, ...serverReducer }));
+      const mockStore = configureStore({
+        reducer: combineReducers({
+          ...laoReducer,
+          ...serverReducer,
+        }),
+      });
       mockStore.dispatch(setCurrentLao(mockLaoState));
 
       mockStore.dispatch(
@@ -208,8 +235,12 @@ describe('ServerReducer', () => {
     });
 
     it('should return undefined if there is no lao entry for the given id', () => {
-      const mockStore = createStore(combineReducers({ ...laoReducer, ...serverReducer }));
-
+      const mockStore = configureStore({
+        reducer: combineReducers({
+          ...laoReducer,
+          ...serverReducer,
+        }),
+      });
       mockStore.dispatch(
         addServer({
           address: mockAddress,
@@ -225,7 +256,12 @@ describe('ServerReducer', () => {
     });
 
     it('should return undefined if there is no server entry for the organizer public key', () => {
-      const mockStore = createStore(combineReducers({ ...laoReducer, ...serverReducer }));
+      const mockStore = configureStore({
+        reducer: combineReducers({
+          ...laoReducer,
+          ...serverReducer,
+        }),
+      });
       mockStore.dispatch(setCurrentLao(mockLaoState));
       // add the organizers public key but for a *different* lao
       mockStore.dispatch(
