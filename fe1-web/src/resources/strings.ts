@@ -17,6 +17,11 @@ namespace STRINGS {
   export const general_closed = 'Closed';
   export const general_ongoing = 'Ongoing';
 
+  /* --- QR code scanner strings --- */
+  export const camera_unavailable = 'Camera unavailable';
+  export const requesting_camera_permissions = 'Requesting camera permissions';
+  export const camera_permissions_denied = 'Permissions for camera denied';
+
   /* --- User Roles --- */
   export const user_role = 'Role';
   export const user_role_attendee = 'Attendee';
