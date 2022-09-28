@@ -1,5 +1,6 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import * as Clipboard from 'expo-clipboard';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Modal, StyleSheet, Text, TextStyle, View } from 'react-native';
 import {
@@ -17,7 +18,6 @@ import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Hash, PublicKey } from 'core/objects';
-import { getNavigator } from 'core/platform/Navigator';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -288,7 +288,7 @@ export const SendReceiveHeaderRight = () => {
           </View>
 
           <Text style={[Typography.small, styles.publicKey]}>{publicKey}</Text>
-          <PoPTextButton onPress={() => getNavigator().clipboard.writeText(publicKey)}>
+          <PoPTextButton onPress={() => Clipboard.setStringAsync(publicKey)}>
             {STRINGS.wallet_single_roll_call_copy_pop_token}
           </PoPTextButton>
         </ScrollView>
