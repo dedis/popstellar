@@ -14,10 +14,12 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
@@ -129,7 +131,43 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
 
     // Establish connection with new address
     networkManager.connect(laoData.server);
-    openConnecting(laoData.lao);
+    getApplication()
+        .startActivity(
+            ConnectingActivity.newIntentForDetail(
+                getApplication().getApplicationContext(), laoData.lao));
+  }
+
+  protected void restoreConnections(PersistentData data) {
+    if (data == null) {
+      return;
+    }
+    Log.d(TAG, "Saved state found : " + data);
+
+    if (!isWalletSetUp()) {
+      Log.d(TAG, "Restoring wallet");
+      String appended = String.join(" ", data.getWalletSeed());
+      try {
+        importSeed(appended);
+      } catch (GeneralSecurityException | SeedValidationException e) {
+        Log.e(TAG, "error importing seed from storage");
+        return;
+      }
+    }
+
+    if (data.getSubscriptions().equals(networkManager.getMessageSender().getSubscriptions())) {
+      Log.d(TAG, "current state is up to date");
+      return;
+    }
+    Log.d(TAG, "restoring connections");
+    networkManager.connect(data.getServerAddress(), data.getSubscriptions());
+    getApplication()
+        .startActivity(
+            ConnectingActivity.newIntentForHome(getApplication().getApplicationContext()));
+  }
+
+  public void savePersistentData() throws GeneralSecurityException {
+    ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
   }
 
   /**
@@ -157,7 +195,7 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
     setIsWalletSetUp(true);
   }
 
-  public void newSeed() {
+  public void newSeed() throws GeneralSecurityException {
     wallet.newSeed();
   }
 

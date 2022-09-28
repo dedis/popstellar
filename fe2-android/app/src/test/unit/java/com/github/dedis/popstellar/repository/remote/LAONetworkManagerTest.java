@@ -79,7 +79,8 @@ public class LAONetworkManagerTest {
             handler,
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
-            schedulerProvider);
+            schedulerProvider,
+            new HashSet<>());
 
     Answer<?> answer =
         args -> {
@@ -114,7 +115,8 @@ public class LAONetworkManagerTest {
             handler,
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
-            schedulerProvider);
+            schedulerProvider,
+            new HashSet<>());
 
     Answer<?> answer =
         args -> {
@@ -148,7 +150,8 @@ public class LAONetworkManagerTest {
             handler,
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
-            schedulerProvider);
+            schedulerProvider,
+            new HashSet<>());
 
     Answer<?> answer =
         args -> {
@@ -184,7 +187,8 @@ public class LAONetworkManagerTest {
             handler,
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
-            schedulerProvider);
+            schedulerProvider,
+            new HashSet<>());
 
     ErrorCode error = new ErrorCode(3, "error");
 
@@ -226,7 +230,8 @@ public class LAONetworkManagerTest {
             handler,
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
-            schedulerProvider);
+            schedulerProvider,
+            new HashSet<>());
 
     networkManager.subscribe(CHANNEL).subscribe(); // First subscribe
     testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
@@ -267,7 +272,8 @@ public class LAONetworkManagerTest {
             handler,
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
-            schedulerProvider);
+            schedulerProvider,
+            new HashSet<>());
 
     // Set a response that stores requested ids
     Set<Integer> requests = new HashSet<>();

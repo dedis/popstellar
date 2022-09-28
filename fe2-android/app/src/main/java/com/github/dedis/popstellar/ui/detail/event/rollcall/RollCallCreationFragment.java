@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
-import android.Manifest;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,15 +14,12 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallCreateFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
-import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Single;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static androidx.core.content.ContextCompat.checkSelfPermission;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */
@@ -93,10 +89,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-
     setupConfirmButton();
     setupOpenButton();
-    setupCancelButton();
   }
 
   private void setupConfirmButton() {
@@ -105,11 +99,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
   private void setupOpenButton() {
     openButton.setOnClickListener(v -> createRollCall(true));
-  }
-
-  private void setupCancelButton() {
-    mFragBinding.rollCallCancel.setOnClickListener(
-        v -> mLaoDetailViewModel.setCurrentTab(LaoTab.EVENTS));
   }
 
   private void createRollCall(boolean open) {
@@ -129,7 +118,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
               .flatMapCompletable(mLaoDetailViewModel::openRollCall)
               .subscribe(
                   // Open the scanning fragment when everything is done
-                  this::openScanning,
+                  () -> setCurrentFragment(
+                      getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new),
                   error ->
                       ErrorUtils.logAndShow(
                           requireContext(), TAG, error, R.string.error_create_rollcall)));
@@ -147,16 +137,4 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     }
   }
 
-  private void openScanning() {
-    if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PERMISSION_GRANTED) {
-      setCurrentFragment(
-          getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new);
-    } else {
-      setCurrentFragment(
-          getParentFragmentManager(),
-          R.id.fragment_camera_perm,
-          () ->
-              CameraPermissionFragment.newInstance(requireActivity().getActivityResultRegistry()));
-    }
-  }
 }

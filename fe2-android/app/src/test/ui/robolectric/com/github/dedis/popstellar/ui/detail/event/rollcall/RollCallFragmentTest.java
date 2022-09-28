@@ -41,8 +41,7 @@ import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.rollcall.RollCallFragmentPageObject.*;
@@ -156,6 +155,12 @@ public class RollCallFragmentTest {
   }
 
   @Test
+  public void scanButtonIsNotDisplayedWhenCreatedTest() {
+    setupViewModel();
+    rollCallScanButton().check(matches(withEffectiveVisibility(Visibility.GONE)));
+  }
+
+  @Test
   public void managementButtonOpensRollCallWhenCreated() {
     setupViewModel();
     managementButton().check(matches(withText("OPEN")));
@@ -177,6 +182,13 @@ public class RollCallFragmentTest {
   }
 
   @Test
+  public void scanButtonIsDisplayedWhenOpenedTest() {
+    openRollCall();
+    setupViewModel();
+    rollCallScanButton().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+  }
+
+  @Test
   public void managementButtonCloseRollCallWhenOpened() {
     openRollCall();
     setupViewModel();
@@ -194,9 +206,25 @@ public class RollCallFragmentTest {
   }
 
   @Test
+  public void scanButtonOpenScanningTest() {
+    openRollCall();
+    setupViewModel();
+
+    rollCallScanButton().perform(click());
+    fragmentContainer().check(matches(withChild(withId(qrCodeFragmentId()))));
+  }
+
+  @Test
   public void statusClosedTest() {
     closeRollCall();
     rollCallStatusText().check(matches(withText("Closed")));
+  }
+
+  @Test
+  public void scanButtonIsNotDisplayedWhenClosedTest() {
+    closeRollCall();
+    setupViewModel();
+    rollCallScanButton().check(matches(withEffectiveVisibility(Visibility.GONE)));
   }
 
   @Test

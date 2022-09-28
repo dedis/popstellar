@@ -18,18 +18,22 @@ public class RollCallFragmentPageObject {
   }
 
   public static ViewInteraction rollCallStatusText() {
-    return onView(withId(R.id.roll_call_fragment_status));
+    return onView(withId(R.id.roll_call_status));
   }
 
   public static ViewInteraction rollCallStartTime() {
-    return onView(withId(R.id.roll_call_fragment_start_time));
+    return onView(withId(R.id.roll_call_start_time));
   }
 
   public static ViewInteraction rollCallEndTime() {
-    return onView(withId(R.id.roll_call_fragment_end_time));
+    return onView(withId(R.id.roll_call_end_time));
   }
 
   public static ViewInteraction managementButton() {
     return onView(withId(R.id.roll_call_management_button));
+  }
+
+  public static ViewInteraction rollCallScanButton() {
+    return onView(withId(R.id.roll_call_scanning_button));
   }
 }

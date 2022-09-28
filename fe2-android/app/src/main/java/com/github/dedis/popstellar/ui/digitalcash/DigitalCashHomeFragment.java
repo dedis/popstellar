@@ -16,7 +16,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
-import java.util.List;
+import java.util.Set;
 
 import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity.TAG;
 
@@ -72,8 +72,7 @@ public class DigitalCashHomeFragment extends Fragment {
                   PublicKey publicKey = token.getPublicKey();
                   mBinding.digitalCashHomeAddress.setText(publicKey.getEncoded());
                   if (lao.getTransactionByUser().containsKey(publicKey)) {
-                    List<TransactionObject> transactions =
-                        lao.getTransactionByUser().get(publicKey);
+                    Set<TransactionObject> transactions = lao.getTransactionByUser().get(publicKey);
                     long totalAmount =
                         TransactionObject.getMiniLaoPerReceiverSetTransaction(
                             transactions, publicKey);

@@ -1,18 +1,22 @@
 package com.github.dedis.popstellar.ui.settings;
 
+import android.app.*;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.databinding.SettingsActivityBinding;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import javax.inject.Inject;
 
@@ -25,25 +29,25 @@ public class SettingsActivity extends AppCompatActivity {
 
   @Inject GlobalNetworkManager networkManager;
 
-  private Button applyButton;
+  private SettingsActivityBinding binding;
   private String initialUrl;
-  private EditText entryBoxServerUrl;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.settings_activity);
+    binding = SettingsActivityBinding.inflate(getLayoutInflater());
+    setContentView(binding.getRoot());
 
     initialUrl = networkManager.getCurrentUrl();
 
     setupApplyButton();
     setupEntryBox();
+    setupClearButton();
   }
 
   private void setupEntryBox() {
-    entryBoxServerUrl = findViewById(R.id.entry_box_server_url);
-    entryBoxServerUrl.setText(initialUrl);
-    entryBoxServerUrl.addTextChangedListener(
+    binding.entryBoxServerUrl.setText(initialUrl);
+    binding.entryBoxServerUrl.addTextChangedListener(
         new TextWatcher() {
           @Override
           public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -58,19 +62,52 @@ public class SettingsActivity extends AppCompatActivity {
           @Override
           public void afterTextChanged(Editable editable) {
             String newAddress = editable.toString();
-            applyButton.setEnabled(newAddress.length() > 0 && !newAddress.equals(initialUrl));
+            binding.buttonApply.setEnabled(
+                newAddress.length() > 0 && !newAddress.equals(initialUrl));
           }
         });
   }
 
   private void setupApplyButton() {
-    applyButton = findViewById(R.id.button_apply);
-    applyButton.setOnClickListener(v -> applyChanges());
+    binding.buttonApply.setOnClickListener(v -> applyChanges());
   }
 
   private void applyChanges() {
-    networkManager.connect(entryBoxServerUrl.getText().toString());
+    networkManager.connect(binding.entryBoxServerUrl.getText().toString());
     Log.d(TAG, "Trying to open home");
     startActivity(HomeActivity.newIntent(this));
+  }
+
+  private void setupClearButton() {
+    binding.settingsClearButton.setOnClickListener(clearListener);
+  }
+
+  private final View.OnClickListener clearListener =
+      v ->
+          new AlertDialog.Builder(this)
+              .setTitle(R.string.confirm_title)
+              .setMessage(R.string.clear_confirmation_text)
+              .setPositiveButton(
+                  R.string.yes,
+                  (dialogInterface, i) -> {
+                    boolean success = ActivityUtils.clearStorage(this);
+                    Toast.makeText(
+                            this,
+                            success ? R.string.clear_success : R.string.clear_failure,
+                            Toast.LENGTH_LONG)
+                        .show();
+
+                    restartAndroidApp();
+                  })
+              .setNegativeButton(R.string.no, null)
+              .show();
+
+  private void restartAndroidApp() {
+    Intent homeIntent = HomeActivity.newIntent(this);
+    PendingIntent mPendingIntent =
+        PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_IMMUTABLE);
+    AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+    System.exit(0);
   }
 }
