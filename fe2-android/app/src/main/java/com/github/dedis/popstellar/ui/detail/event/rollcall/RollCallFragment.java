@@ -5,14 +5,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
-import android.widget.*;
+import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -44,14 +46,11 @@ public class RollCallFragment extends Fragment {
 
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
-  private LaoDetailViewModel laoDetailViewModel;
+
+  private RollCallFragmentBinding binding;
+
+  private LaoDetailViewModel viewModel;
   private RollCall rollCall;
-  private Button managementButton;
-  private TextView title;
-  private TextView statusText;
-  private ImageView statusIcon;
-  private TextView startTimeDisplay;
-  private TextView endTimeDisplay;
 
   private final EnumMap<EventState, Integer> managementTextMap = buildManagementTextMap();
   private final EnumMap<EventState, Integer> statusTextMap = buildStatusTextMap();
@@ -73,31 +72,22 @@ public class RollCallFragment extends Fragment {
 
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    View view = inflater.inflate(R.layout.roll_call_fragment, container, false);
-
-    laoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    if (rollCall == null) {
-      rollCall = laoDetailViewModel.getCurrentRollCall();
-    }
-    managementButton = view.findViewById(R.id.roll_call_management_button);
-    title = view.findViewById(R.id.roll_call_fragment_title);
-    statusText = view.findViewById(R.id.roll_call_fragment_status);
-    statusIcon = view.findViewById(R.id.roll_call_fragment_status_icon);
-    startTimeDisplay = view.findViewById(R.id.roll_call_fragment_start_time);
-    endTimeDisplay = view.findViewById(R.id.roll_call_fragment_end_time);
+    binding = RollCallFragmentBinding.inflate(inflater, container, false);
+    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    rollCall = viewModel.getCurrentRollCall();
 
     setUpStateDependantContent();
 
-    View.OnClickListener listener =
+    binding.rollCallManagementButton.setOnClickListener(
         v -> {
           EventState state = rollCall.getState();
           switch (state) {
             case CLOSED:
             case CREATED:
-              laoDetailViewModel.addDisposable(
-                  laoDetailViewModel
+              viewModel.addDisposable(
+                  viewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
                           () ->
@@ -111,8 +101,8 @@ public class RollCallFragment extends Fragment {
               break;
             case OPENED:
               // will add the scan to this fragment in the future
-              laoDetailViewModel.addDisposable(
-                  laoDetailViewModel
+              viewModel.addDisposable(
+                  viewModel
                       .closeRollCall()
                       .subscribe(
                           () ->
@@ -127,46 +117,57 @@ public class RollCallFragment extends Fragment {
             default:
               throw new IllegalStateException("Roll-Call should not be in a " + state + " state");
           }
-        };
+        });
 
-    managementButton.setOnClickListener(listener);
+    binding.rollCallScanningButton.setOnClickListener(
+        b ->
+            setCurrentFragment(
+                getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new));
 
-    laoDetailViewModel
+    viewModel
         .getLaoEvents()
         .observe(getViewLifecycleOwner(), eventState -> setUpStateDependantContent());
 
-    retrieveAndDisplayPublicKey(view);
+    retrieveAndDisplayPublicKey();
 
-    return view;
+    return binding.getRoot();
   }
 
   private void setUpStateDependantContent() {
-    rollCall = laoDetailViewModel.getCurrentRollCall();
+    rollCall = viewModel.getCurrentRollCall();
     if (rollCall == null) {
       return;
     }
     setupTime(); // Suggested time is updated in case of early/late close/open/reopen
 
     EventState rcState = rollCall.getState();
-    boolean isOrganizer = laoDetailViewModel.isOrganizer().getValue();
+    boolean isOrganizer = Boolean.TRUE.equals(viewModel.isOrganizer().getValue());
 
-    title.setText(rollCall.getName());
-    managementButton.setVisibility(isOrganizer ? View.VISIBLE : View.GONE);
+    binding.rollCallFragmentTitle.setText(rollCall.getName());
+    binding.rollCallManagementButton.setVisibility(isOrganizer ? View.VISIBLE : View.GONE);
 
-    managementButton.setText(managementTextMap.getOrDefault(rcState, ID_NULL));
+    binding.rollCallManagementButton.setText(managementTextMap.getOrDefault(rcState, ID_NULL));
 
     Drawable imgManagement =
         AppCompatResources.getDrawable(
-            getContext(), managementIconMap.getOrDefault(rcState, ID_NULL));
-    managementButton.setCompoundDrawablesWithIntrinsicBounds(imgManagement, null, null, null);
+            requireContext(), managementIconMap.getOrDefault(rcState, ID_NULL));
+    binding.rollCallManagementButton.setCompoundDrawablesWithIntrinsicBounds(
+        imgManagement, null, null, null);
 
     Drawable imgStatus = getDrawableFromContext(statusIconMap.getOrDefault(rcState, ID_NULL));
-    statusIcon.setImageDrawable(imgStatus);
-    setImageColor(statusIcon, statusColorMap.getOrDefault(rcState, ID_NULL));
+    binding.rollCallStatusIcon.setImageDrawable(imgStatus);
+    setImageColor(binding.rollCallStatusIcon, statusColorMap.getOrDefault(rcState, ID_NULL));
 
-    statusText.setText(statusTextMap.getOrDefault(rcState, ID_NULL));
-    statusText.setTextColor(
+    binding.rollCallStatus.setText(statusTextMap.getOrDefault(rcState, ID_NULL));
+    binding.rollCallStatus.setTextColor(
         getResources().getColor(statusColorMap.getOrDefault(rcState, ID_NULL), null));
+
+    // Show scanning button only if the current state is Opened
+    if (rcState == EventState.OPENED && isOrganizer) {
+      binding.rollCallScanningButton.setVisibility(View.VISIBLE);
+    } else {
+      binding.rollCallScanningButton.setVisibility(View.GONE);
+    }
   }
 
   private void setupTime() {
@@ -176,27 +177,26 @@ public class RollCallFragment extends Fragment {
     Date startTime = new Date(rollCall.getStartTimestampInMillis());
     Date endTime = new Date(rollCall.getEndTimestampInMillis());
 
-    startTimeDisplay.setText(dateFormat.format(startTime));
-    endTimeDisplay.setText(dateFormat.format(endTime));
+    binding.rollCallStartTime.setText(dateFormat.format(startTime));
+    binding.rollCallEndTime.setText(dateFormat.format(endTime));
   }
 
   private Drawable getDrawableFromContext(int id) {
-    return AppCompatResources.getDrawable(getContext(), id);
+    return AppCompatResources.getDrawable(requireContext(), id);
   }
 
   private void setImageColor(ImageView imageView, int colorId) {
     ImageViewCompat.setImageTintList(imageView, getResources().getColorStateList(colorId, null));
   }
 
-  private void retrieveAndDisplayPublicKey(View view) {
+  private void retrieveAndDisplayPublicKey() {
     String pk = requireArguments().getString(Constants.RC_PK_EXTRA);
-    ImageView qrCode = view.findViewById(R.id.roll_call_pk_qr_code);
     Log.d(TAG, "key displayed is " + pk);
 
     PopTokenData data = new PopTokenData(new PublicKey(pk));
     Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
-    qrCode.setImageBitmap(myBitmap);
-    qrCode.setVisibility(
+      binding.rollCallPkQrCode.setImageBitmap(myBitmap);
+      binding.rollCallPkQrCode.setVisibility(
         Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue())
             ? View.INVISIBLE
             : View.VISIBLE);

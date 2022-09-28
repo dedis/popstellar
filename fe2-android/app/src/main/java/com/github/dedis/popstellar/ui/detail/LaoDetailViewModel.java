@@ -29,12 +29,14 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -793,6 +795,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   public boolean addManually(String data) {
     Log.d(TAG, "Key manually submitted with value: " + data);
     return handleInputData(data);
+  }
+
+  public void savePersistentData() throws GeneralSecurityException {
+    ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
   }
 
   /**

@@ -26,15 +26,16 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
   Set<PublicKey> ownPublicKeys;
   Set<String> ownPublicKeysHash;
 
-  public HistoryListAdapter(List<TransactionObject> transactionObjects, Set<PoPToken> ownTokens) {
+  public HistoryListAdapter(Set<TransactionObject> transactionObjects, Set<PoPToken> ownTokens) {
     if (transactionObjects == null) {
-      transactionObjects = new ArrayList<>();
+      transactionObjects = new HashSet<>();
     }
+    List<TransactionObject> transactionList = new ArrayList<>(transactionObjects);
     this.ownPublicKeys = getPksFromTokens(ownTokens);
     this.ownPublicKeysHash =
         ownPublicKeys.parallelStream().map(PublicKey::computeHash).collect(Collectors.toSet());
 
-    this.transactions = buildTransactionList(transactionObjects);
+    this.transactions = buildTransactionList(transactionList);
     expandMap = new HashMap<>();
     transactions.forEach(
         transactionHistoryElement -> expandMap.put(transactionHistoryElement.id, false));
@@ -89,8 +90,8 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     return transactions.size();
   }
 
-  public void replaceList(List<TransactionObject> transactions, Set<PoPToken> tokens) {
-    setList(transactions, tokens);
+  public void replaceList(Set<TransactionObject> transactions, Set<PoPToken> tokens) {
+    setList(new ArrayList<>(transactions), tokens);
   }
 
   @SuppressLint("NotifyDataSetChanged") // Because our current implementation warrants it

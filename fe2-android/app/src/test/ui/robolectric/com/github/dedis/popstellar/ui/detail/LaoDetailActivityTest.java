@@ -5,6 +5,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -20,6 +21,8 @@ import org.junit.rules.*;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
+
+import java.security.GeneralSecurityException;
 
 import javax.inject.Inject;
 
@@ -47,6 +50,7 @@ public class LaoDetailActivityTest {
   @Inject Gson gson;
 
   @BindValue @Mock LAORepository laoRepository;
+  @BindValue @Mock Wallet wallet;
 
   // Hilt rule
   private final HiltAndroidRule hiltAndroidRule = new HiltAndroidRule(this);
@@ -54,12 +58,29 @@ public class LaoDetailActivityTest {
   private final TestRule setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws UnknownLaoException {
+        protected void before() throws UnknownLaoException, GeneralSecurityException {
           hiltAndroidRule.inject();
           when(laoRepository.getLaoView(anyString())).thenAnswer(invocation -> new LaoView(LAO));
 
           when(laoRepository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
+
+          when(wallet.exportSeed())
+              .thenReturn(
+                  new String[] {
+                    "jar",
+                    "together",
+                    "minor",
+                    "alley",
+                    "glow",
+                    "hybrid",
+                    "village",
+                    "creek",
+                    "meadow",
+                    "atom",
+                    "travel",
+                    "bracket"
+                  });
         }
       };
   // Activity scenario rule that starts the activity.
