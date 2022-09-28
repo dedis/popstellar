@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.*;
 import androidx.appcompat.app.ActionBar;
@@ -24,6 +25,7 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
+import java.security.GeneralSecurityException;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -35,10 +37,6 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private static final String TAG = LaoDetailActivity.class.getSimpleName();
 
   private LaoDetailViewModel viewModel;
-
-  public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
-    return new ViewModelProvider(activity).get(LaoDetailViewModel.class);
-  }
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +54,19 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
         .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
         .equals(Constants.LAO_DETAIL_EXTRA)) {
       setupLaoWalletFragment();
+    }
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+
+    try {
+      viewModel.savePersistentData();
+    } catch (GeneralSecurityException e) {
+      // We do not display the security error to the user
+      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
     }
   }
 
@@ -155,6 +166,10 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private void setupLaoWalletFragment() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
+  }
+
+  public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
+    return new ViewModelProvider(activity).get(LaoDetailViewModel.class);
   }
 
   /**

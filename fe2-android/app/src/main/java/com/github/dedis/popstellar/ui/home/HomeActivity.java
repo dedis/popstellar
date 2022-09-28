@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
+import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
@@ -25,9 +26,10 @@ import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import dagger.hilt.android.AndroidEntryPoint;
-
+import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
@@ -55,6 +57,21 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
     BottomNavigationView navbar = findViewById(R.id.home_nav_bar);
     setupNavigationBar(navbar);
     setupMenuAvailabilityListeners(navbar);
+
+    restoreStoredState();
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+
+    try {
+      viewModel.savePersistentData();
+    } catch (GeneralSecurityException e) {
+      // We do not display the security error to the user
+      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
+    }
   }
 
   /** Setup the listeners that changes the navigation bar menus */
@@ -186,6 +203,11 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
 
     Log.d(HomeViewModel.TAG, "Opening social media activity");
     startActivity(SocialMediaActivity.newIntent(this));
+  }
+
+  private void restoreStoredState() {
+    PersistentData data = ActivityUtils.loadPersistentData(this);
+    viewModel.restoreConnections(data);
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
