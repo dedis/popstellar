@@ -33,7 +33,7 @@ import java.util.*;
 import dagger.hilt.android.AndroidEntryPoint;
 
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
-import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
+import static com.github.dedis.popstellar.utility.Constants.*;
 
 import javax.inject.Inject;
 
@@ -195,11 +195,9 @@ public class RollCallFragment extends Fragment {
 
     PopTokenData data = new PopTokenData(new PublicKey(pk));
     Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
-      binding.rollCallPkQrCode.setImageBitmap(myBitmap);
-      binding.rollCallPkQrCode.setVisibility(
-        Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue())
-            ? View.INVISIBLE
-            : View.VISIBLE);
+    binding.rollCallPkQrCode.setImageBitmap(myBitmap);
+    binding.rollCallPkQrCode.setVisibility(
+        Boolean.TRUE.equals(viewModel.isOrganizer().getValue()) ? View.INVISIBLE : View.VISIBLE);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {
