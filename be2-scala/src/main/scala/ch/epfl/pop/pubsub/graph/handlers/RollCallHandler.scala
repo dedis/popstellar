@@ -19,18 +19,15 @@ object RollCallHandler extends MessageHandler {
   final lazy val handlerInstance = new RollCallHandler(super.dbActor)
 
   def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCreateRollCall(rpcMessage)
-
   def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleOpenRollCall(rpcMessage)
-
   def handleReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleReopenRollCall(rpcMessage)
-
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCloseRollCall(rpcMessage)
 }
 
 /** Implementation of the RollCallHandler that provides a testable interface
  *
  * @param dbRef
- * reference of the db actor
+ *   reference of the db actor
  */
 class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
@@ -38,6 +35,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
    */
   override final val dbActor: AskableActorRef = dbRef
 
+  private val unknownAnswer: String = "Database actor returned an unknown answer"
   private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
 
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
@@ -49,7 +47,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         // we are using the rollcall id instead of the message_id at rollcall creation
         rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         laoId: Hash = rpcRequest.extractLaoId
-        //do not see how to NOT use the transformWith function except if create other function, i.e. the inverse of CHannelExists
+        // do not see how to NOT use the transformWith function except if create other function, i.e. the inverse of CHannelExists
         _ <- dbActor ? DbActor.ChannelExists(rollCallChannel) transformWith {
           case Success(_) => Future {
             throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "rollCall already exists in db")
@@ -64,21 +62,21 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
       } yield ()
 
     Await.ready(ask, duration).value match {
-      case Some(Success(_)) => Left(rpcRequest)
+      case Some(Success(_))                        => Left(rpcRequest)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCreateRollCall failed : ${ex.message}", rpcRequest.getId))
-      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
     }
   }
 
   def handleOpenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        _ <- checkParameters(rpcRequest, serverUnexpectedAnswer) //if it fails, throw an error
+        _ <- checkParameters(rpcRequest, serverUnexpectedAnswer) // if it fails, throw an error
         message: Message = rpcRequest.getParamsMessage.get // this line is not executed if the first fails
         channel: Channel = rpcRequest.getParamsChannel
         laoId: Hash = rpcRequest.extractLaoId
         // check if the roll call already exists to open it
-        //no need for the transform with, message of error thrown by the CHannelExists
+        // no need for the transform with, message of error thrown by the CHannelExists
         _ <- dbActor ? DbActor.ChannelExists(channel)
         _ <- dbAskWritePropagate(rpcRequest)
         // creates a RollCallData
@@ -86,9 +84,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
       } yield ()
 
     Await.ready(ask, duration).value match {
-      case Some(Success(_)) => Left(rpcRequest)
+      case Some(Success(_))                        => Left(rpcRequest)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleOpenRollCall failed : ${ex.message}", rpcRequest.getId))
-      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
     }
   }
 
@@ -102,9 +100,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     } yield ()
 
     Await.ready(ask, duration).value match {
-      case Some(Success(_)) => Left(rpcRequest)
+      case Some(Success(_))                        => Left(rpcRequest)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleReOpenRollCall failed : ${ex.message}", rpcRequest.getId))
-      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleRepenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleRepenRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
     }
   }
 
@@ -126,9 +124,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         } yield ()
 
         Await.ready(combined, duration).value match {
-          case Some(Success(_)) => createAttendeeChannels(rpcRequest)
+          case Some(Success(_))                        => createAttendeeChannels(rpcRequest)
           case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcRequest.getId))
-          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+          case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
         }
     }
   }
@@ -146,9 +144,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val askCreateChannels = dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)
 
     Await.ready(askCreateChannels, duration).value match {
-      case Some(Success(_)) => Left(rpcRequest)
+      case Some(Success(_))                        => Left(rpcRequest)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcRequest.getId))
-      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
     }
   }
 }
