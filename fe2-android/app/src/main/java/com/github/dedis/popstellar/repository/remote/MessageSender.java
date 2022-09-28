@@ -6,6 +6,8 @@ import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.tinder.scarlet.WebSocket;
 
+import java.util.Set;
+
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
@@ -67,4 +69,9 @@ public interface MessageSender extends Disposable {
    * @return an Observable of WebSocket events of the underlying connection
    */
   Observable<WebSocket.Event> getConnectEvents();
+
+  /**
+   * @return the list of channels we subscribed to
+   */
+  Set<Channel> getSubscriptions();
 }
