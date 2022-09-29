@@ -129,6 +129,7 @@
   <string name="roll_call_add_manually_hint">Add key manually</string>
   <string name="scan_all_attendees_question">Are you sure you have scanned all attendees ?</string>
   <string name="roll_call_title_required">Roll-Call Title required</string>
+  <string name="scan">Scan</string>
   <string name="close_roll_call">Close Roll-Call</string>
 
   <!--  Witnessing-->
@@ -335,6 +336,5 @@
   <string name="seed_generation_error">Error generating the seed</string>
   <string name="unknown_lao_exception">Unknown Lao</string>
   <string name="unknown_election_exception">Unknown election</string>
-  <string name="scan">Scan</string>
-
+  <string name="unknown_chirp_exception">Unknown Chirp</string>
 </resources>

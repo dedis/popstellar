@@ -1,18 +1,15 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
-import android.os.*;
+import android.os.Bundle;
 import android.view.*;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaHomeFragmentBinding;
-
-import java.util.ArrayList;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -23,7 +20,6 @@ public class SocialMediaHomeFragment extends Fragment {
 
   private SocialMediaHomeFragmentBinding mSocialMediaHomeFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;
-  private ChirpListAdapter mChirpListAdapter;
 
   public static SocialMediaHomeFragment newInstance() {
     return new SocialMediaHomeFragment();
@@ -52,7 +48,6 @@ public class SocialMediaHomeFragment extends Fragment {
 
     setupSendButton();
     setupListViewAdapter();
-    setupSwipeRefresh();
   }
 
   private void setupSendButton() {
@@ -64,28 +59,10 @@ public class SocialMediaHomeFragment extends Fragment {
                 SocialMediaSendFragment::newInstance));
   }
 
-  private void setupSwipeRefresh() {
-    SwipeRefreshLayout swipeRefreshLayout = mSocialMediaHomeFragBinding.swipeRefreshChirps;
-    swipeRefreshLayout.setOnRefreshListener(
-        () -> {
-          mChirpListAdapter.replaceList(
-              mSocialMediaViewModel.getChirpList(mSocialMediaViewModel.getLaoId()));
-
-          final Handler handler = new Handler(Looper.getMainLooper());
-          handler.postDelayed(
-              () -> {
-                if (swipeRefreshLayout.isRefreshing()) {
-                  swipeRefreshLayout.setRefreshing(false);
-                }
-              },
-              1000);
-        });
-  }
-
   private void setupListViewAdapter() {
     ListView listView = mSocialMediaHomeFragBinding.chirpsList;
-    mChirpListAdapter =
-        new ChirpListAdapter(requireActivity(), mSocialMediaViewModel, new ArrayList<>());
+    ChirpListAdapter mChirpListAdapter =
+        new ChirpListAdapter(requireActivity(), mSocialMediaViewModel);
     listView.setAdapter(mChirpListAdapter);
   }
 }

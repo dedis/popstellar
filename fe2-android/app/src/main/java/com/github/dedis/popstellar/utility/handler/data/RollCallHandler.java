@@ -7,13 +7,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.*;
-import com.github.dedis.popstellar.utility.error.keys.InvalidPoPTokenException;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
-import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.util.Optional;
 
@@ -28,12 +24,10 @@ public final class RollCallHandler {
   private static final String MESSAGE_ID = "Message ID : ";
 
   private final LAORepository laoRepo;
-  private final KeyManager keyManager;
 
   @Inject
-  public RollCallHandler(KeyManager keyManager, LAORepository laoRepo) {
+  public RollCallHandler(LAORepository laoRepo) {
     this.laoRepo = laoRepo;
-    this.keyManager = keyManager;
   }
 
   /**
@@ -138,23 +132,18 @@ public final class RollCallHandler {
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
 
     // Subscribe to the social media channels
-    try {
-      PoPToken token = keyManager.getValidPoPToken(laoView.getId(), rollCall);
-      context
-          .getMessageSender()
-          .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
-          .subscribe(
-              () -> Log.d(TAG, "subscription a success"),
-              error -> Log.d(TAG, "subscription error"));
-
-    } catch (InvalidPoPTokenException e) {
-      Log.i(TAG, "Received a close roll-call that you did not attend");
-    } catch (KeyException e) {
-      Log.e(
-          TAG,
-          "Could not retrieve your PoP Token to subscribe you to your social media channel",
-          e);
-    }
+    // (this is not the expected behavior as users should be able to choose who to subscribe to. But
+    // as this part is not implemented, currently, it subscribes to everyone)
+    rollCall
+        .getAttendees()
+        .forEach(
+            token ->
+                context
+                    .getMessageSender()
+                    .subscribe(channel.subChannel("social").subChannel(token.getEncoded()))
+                    .subscribe(
+                        () -> Log.d(TAG, "subscription a success"),
+                        error -> Log.d(TAG, "subscription error")));
 
     laoRepo.updateLao(lao);
   }

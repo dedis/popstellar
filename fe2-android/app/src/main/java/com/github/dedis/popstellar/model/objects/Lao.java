@@ -36,8 +36,6 @@ public final class Lao implements Copyable<Lao> {
 
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
-  private Map<MessageID, Chirp> allChirps;
-  private Map<PublicKey, List<MessageID>> chirpsByUser;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
   // Some useful map for the digital cash
@@ -58,8 +56,6 @@ public final class Lao implements Copyable<Lao> {
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
-    this.allChirps = new HashMap<>();
-    this.chirpsByUser = new HashMap<>();
     this.keyToNode = new HashMap<>();
     this.messageIdToElectInstance = new HashMap<>();
     this.witnessMessages = new HashMap<>();
@@ -98,8 +94,6 @@ public final class Lao implements Copyable<Lao> {
     this.pendingUpdates = new HashSet<>(lao.pendingUpdates);
     this.rollCalls = Copyable.copy(lao.rollCalls);
     this.elections = Copyable.copy(lao.elections);
-    this.allChirps = Copyable.copy(lao.allChirps);
-    this.chirpsByUser = new HashMap<>(lao.chirpsByUser);
     // FIXME We need to keep the ElectInstance because the current consensus relies on references
     // (Gabriel Fleischer 11.08.22)
     this.messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
@@ -113,6 +107,7 @@ public final class Lao implements Copyable<Lao> {
     if (rollCall == null) {
       throw new IllegalArgumentException("The roll call is null");
     }
+
     rollCalls.remove(prevId);
     rollCalls.put(rollCall.getId(), rollCall);
   }
@@ -162,24 +157,6 @@ public final class Lao implements Copyable<Lao> {
   public void updateWitnessMessage(MessageID prevId, WitnessMessage witnessMessage) {
     witnessMessages.remove(prevId);
     witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
-  }
-
-  /**
-   * Update the list of chirps that have been sent in the lao. If the list of chirps contain one
-   * with Id prevId, it will remove it from the list then add the new chirp into it.
-   *
-   * @param prevId the previous id of a chirp
-   * @param chirp the chirp
-   */
-  public void updateChirpList(MessageID prevId, Chirp chirp) {
-    if (chirp == null) {
-      throw new IllegalArgumentException("The chirp is null");
-    }
-    allChirps.remove(prevId);
-    allChirps.put(chirp.getId(), chirp);
-
-    PublicKey user = chirp.getSender();
-    chirpsByUser.computeIfAbsent(user, key -> new ArrayList<>()).add(prevId);
   }
 
   /**
@@ -272,10 +249,6 @@ public final class Lao implements Copyable<Lao> {
 
   public Optional<WitnessMessage> getWitnessMessage(MessageID id) {
     return Optional.ofNullable(witnessMessages.get(id));
-  }
-
-  public Optional<Chirp> getChirp(MessageID id) {
-    return Optional.ofNullable(allChirps.get(id));
   }
 
   /**
@@ -429,12 +402,6 @@ public final class Lao implements Copyable<Lao> {
     return witnessMessages;
   }
 
-  public List<Chirp> getChirpsInOrder() {
-    return allChirps.values().stream()
-        .sorted(Comparator.comparingLong(Chirp::getTimestamp).reversed())
-        .collect(Collectors.toList());
-  }
-
   public Map<PublicKey, Set<TransactionObject>> getTransactionHistoryByUser() {
     return transactionHistoryByUser;
   }
@@ -445,10 +412,6 @@ public final class Lao implements Copyable<Lao> {
 
   public Map<String, PublicKey> getPubKeyByHash() {
     return pubKeyByHash;
-  }
-
-  public Map<MessageID, Chirp> getAllChirps() {
-    return allChirps;
   }
 
   public void setRollCalls(Map<String, RollCall> rollCalls) {
