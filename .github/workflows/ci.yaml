@@ -38,7 +38,7 @@ jobs:
       - name: Setup expo action
         uses: expo/expo-github-action@v5
         with:
-          expo-version: 4.x
+          expo-version: 6.x
 
       - name: Setup node cache
         uses: actions/cache@v2
@@ -92,7 +92,7 @@ jobs:
 
       - name: Build expo web project
         run: |
-          expo build:web
+          npm run build:web
 
   be1-go:
     name: Be1-Go
