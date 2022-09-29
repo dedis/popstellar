@@ -1,7 +1,7 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';

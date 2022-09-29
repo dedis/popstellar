@@ -24,7 +24,7 @@ const contextValue = {
 
 // setup mock store
 
-const wrapper = ({ children }: { children: React.ReactChildren }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) => (
   <FeatureContext.Provider value={contextValue}>{children}</FeatureContext.Provider>
 );
 

@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { PublicKey } from 'core/objects';
@@ -72,11 +72,18 @@ const SocialMediaNavigation = () => {
       /* noop */
     });
 
+  // prevents unnecessary re-renders in components using this react context
+  // react by default only performs shallow equality checks which means
+  // it will be a different object (try ({a: 1} == {a: 1})) and trigger a re-render
+  const contextValue = useMemo(
+    () => ({
+      currentUserPopTokenPublicKey,
+    }),
+    [currentUserPopTokenPublicKey],
+  );
+
   return (
-    <SocialMediaContext.Provider
-      value={{
-        currentUserPopTokenPublicKey,
-      }}>
+    <SocialMediaContext.Provider value={contextValue}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: iconSelector(route.name),

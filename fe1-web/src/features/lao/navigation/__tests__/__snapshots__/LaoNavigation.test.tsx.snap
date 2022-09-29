@@ -411,12 +411,15 @@ exports[`LaoNavigation renders correctly 1`] = `
                                       accessibilityState={
                                         Object {
                                           "checked": true,
+                                          "disabled": false,
                                         }
                                       }
                                       accessible={true}
                                       collapsable={false}
                                       focusable={true}
+                                      onBlur={[Function]}
                                       onClick={[Function]}
+                                      onFocus={[Function]}
                                       onResponderGrant={[Function]}
                                       onResponderMove={[Function]}
                                       onResponderRelease={[Function]}
@@ -426,17 +429,15 @@ exports[`LaoNavigation renders correctly 1`] = `
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
-                                          "borderColor": "#ededed",
-                                          "borderRadius": 3,
+                                          "borderColor": "#ffffff",
                                           "borderWidth": 0,
                                           "margin": 5,
                                           "marginLeft": 0,
                                           "marginRight": 0,
-                                          "opacity": 1,
                                           "padding": 8,
                                         }
                                       }
-                                      testID="checkbox"
+                                      testID="RNE__CheckBox__Wrapper"
                                     >
                                       <View
                                         style={
@@ -448,6 +449,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                       >
                                         <Text />
                                         <Text
+                                          accessibilityRole="text"
                                           style={
                                             Object {
                                               "color": "#43484d",
@@ -456,7 +458,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                               "marginRight": 10,
                                             }
                                           }
-                                          testID="checkboxTitle"
+                                          testID="RNE__CheckBox__Title"
                                         >
                                           Anonymous
                                         </Text>

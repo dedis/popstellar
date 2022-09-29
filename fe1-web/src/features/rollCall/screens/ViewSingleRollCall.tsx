@@ -1,9 +1,9 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 

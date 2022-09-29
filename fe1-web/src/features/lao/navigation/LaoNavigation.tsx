@@ -23,7 +23,7 @@ const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
  * Navigation when connected to a lao
  */
 
-const LaoNavigation: React.FC = () => {
+const LaoNavigation: React.FC<unknown> = () => {
   const passedScreens = LaoHooks.useLaoNavigationScreens();
 
   // add the organizer or attendee screen depeding on the user

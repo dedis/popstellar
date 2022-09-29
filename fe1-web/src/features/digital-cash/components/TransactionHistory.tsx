@@ -1,7 +1,7 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Modal, View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 import ModalHeader from 'core/components/ModalHeader';

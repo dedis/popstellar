@@ -683,8 +683,11 @@ exports[`LaoList renders correctly with one item 1`] = `
                       >
                         <View
                           accessible={true}
+                          collapsable={false}
                           focusable={true}
+                          onBlur={[Function]}
                           onClick={[Function]}
+                          onFocus={[Function]}
                           onResponderGrant={[Function]}
                           onResponderMove={[Function]}
                           onResponderRelease={[Function]}
@@ -722,7 +725,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                                 "padding": 14,
                               }
                             }
-                            testID="padView"
+                            testID="RNE__LISTITEM__padView"
                           >
                             <View
                               style={
@@ -738,6 +741,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                               theme={
                                 Object {
                                   "colors": Object {
+                                    "background": "#ffffff",
                                     "black": "#242424",
                                     "disabled": "hsl(208, 8%, 90%)",
                                     "divider": "#bcbbc1",
@@ -789,15 +793,23 @@ exports[`LaoList renders correctly with one item 1`] = `
                                     },
                                     "primary": "#2089dc",
                                     "searchBg": "#303337",
-                                    "secondary": "#ca71eb",
+                                    "secondary": "#03dac4",
                                     "success": "#52c41a",
                                     "warning": "#faad14",
                                     "white": "#ffffff",
+                                  },
+                                  "spacing": Object {
+                                    "lg": 12,
+                                    "md": 8,
+                                    "sm": 4,
+                                    "xl": 24,
+                                    "xs": 2,
                                   },
                                 }
                               }
                             >
                               <Text
+                                accessibilityRole="text"
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
@@ -812,6 +824,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                                 MyLao
                               </Text>
                               <Text
+                                accessibilityRole="text"
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
@@ -827,6 +840,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                                 Attendee
                               </Text>
                               <Text
+                                accessibilityRole="text"
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
@@ -852,8 +866,20 @@ exports[`LaoList renders correctly with one item 1`] = `
                                   "overflow": "hidden",
                                 }
                               }
+                              testID="RNE__ICON__CONTAINER"
                             >
-                              <View>
+                              <View
+                                accessibilityRole="button"
+                                android_ripple={
+                                  Object {
+                                    "borderless": false,
+                                    "color": "rgba(0, 0, 0, 0.3)",
+                                    "radius": -5,
+                                  }
+                                }
+                                disabled={false}
+                                testID="RNE__ICON__CONTAINER_ACTION"
+                              >
                                 <View
                                   style={
                                     Object {
@@ -862,6 +888,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                                       "justifyContent": "center",
                                     }
                                   }
+                                  testID="RNE__ICON"
                                 >
                                   <Text />
                                 </View>

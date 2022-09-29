@@ -20,7 +20,7 @@ type NavigationProps = CompositeScreenProps<
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
  * is displayed, otherwise a list available previously connected LAOs is displayed instead
  */
-const Home: FunctionComponent = () => {
+const Home: FunctionComponent<unknown> = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const laos = HomeHooks.useLaoList();
   const LaoList = HomeHooks.useLaoListComponent();
