@@ -93,7 +93,7 @@ jobs:
 
       - name: Build expo web project
         run: |
-          npm run build:web
+          npm run build-web
 
   be1-go:
     name: Be1-Go
