@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletFragmentBinding;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 
 import java.security.GeneralSecurityException;
@@ -115,7 +116,11 @@ public class WalletFragment extends Fragment {
   private void setupNewWalletButton() {
     mWalletFragBinding.buttonNewWallet.setOnClickListener(
         v -> {
-          mHomeViewModel.newSeed();
+          try {
+            mHomeViewModel.newSeed();
+          } catch (GeneralSecurityException e) {
+            ErrorUtils.logAndShow(getContext(), TAG, e, R.string.seed_generation_error);
+          }
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::new);
         });

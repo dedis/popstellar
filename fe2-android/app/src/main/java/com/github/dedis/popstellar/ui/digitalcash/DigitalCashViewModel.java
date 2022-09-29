@@ -12,12 +12,14 @@ import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -74,7 +76,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
 
   private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
-  private final LiveData<List<TransactionObject>> mTransactionHistory;
+  private final LiveData<Set<TransactionObject>> mTransactionHistory;
 
   /*
    * Dependencies for this class
@@ -83,6 +85,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
+  private final Wallet wallet;
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   @Inject
@@ -91,27 +94,28 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
       LAORepository laoRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
-      KeyManager keyManager) {
+      KeyManager keyManager,
+      Wallet wallet) {
     super(application);
     this.laoRepository = laoRepository;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
+    this.wallet = wallet;
 
     mTransactionHistory =
         Transformations.map(
             mCurrentLao,
             laoView -> {
               try {
-                if (laoView == null) return new ArrayList<>();
-                List<TransactionObject> historyList =
-                    laoView
-                        .getTransactionHistoryByUser()
+                if (laoView == null) return new HashSet<>();
+                Set<TransactionObject> historySet =
+                    laoView.getTransactionHistoryByUser()
                         .get(keyManager.getValidPoPToken(laoView).getPublicKey());
-                if (historyList == null) {
-                  return new ArrayList<>();
+                if (historySet == null) {
+                  return new HashSet<>();
                 }
-                return new ArrayList<>(historyList);
+                return new HashSet<>(historySet);
               } catch (KeyException e) {
                 Log.d(TAG, "error retrieving token: " + e);
                 return null;
@@ -365,12 +369,17 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     }
   }
 
+  public void savePersistentData() throws GeneralSecurityException {
+    ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
+  }
+
   private void processNotCoinbaseTransaction(
       KeyPair keyPair, List<Output> outputs, long amountFromReceiver, List<Input> inputs)
       throws GeneralSecurityException {
     int index;
     String transactionHash;
-    List<TransactionObject> transactions =
+    Set<TransactionObject> transactions =
         getCurrentLaoValue().getTransactionByUser().get(keyPair.getPublicKey());
 
     long amountSender =
@@ -391,7 +400,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     }
   }
 
-  public LiveData<List<TransactionObject>> getTransactionHistory() {
+  public LiveData<Set<TransactionObject>> getTransactionHistory() {
     return mTransactionHistory;
   }
 

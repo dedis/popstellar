@@ -1,7 +1,15 @@
 import { configureStore, ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { Action, AnyAction, applyMiddleware, Store } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import { Persistor, persistStore } from 'redux-persist';
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  Persistor,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from 'redux-persist';
 import thunkMiddleware from 'redux-thunk';
 
 // Core storage module for the React app
@@ -22,14 +30,15 @@ const noopReducer = {
 };
 
 // Initialize the store and expose its configuration
-const composeEnhancers = composeWithDevTools({
-  trace: true,
-  traceLimit: 25,
-});
-const composedEnhancer = composeEnhancers(applyMiddleware(thunkMiddleware));
 export const store: Store = configureStore({
   reducer: makeRootReducer(noopReducer),
-  enhancers: [composedEnhancer],
+  enhancers: [applyMiddleware(thunkMiddleware)],
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
 /**

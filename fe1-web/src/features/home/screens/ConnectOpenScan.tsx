@@ -75,8 +75,6 @@ const ConnectOpenScan = () => {
       return;
     }
 
-    console.log('read', data);
-
     try {
       const obj = JSON.parse(data);
 

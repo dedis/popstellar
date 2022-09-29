@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -15,7 +16,7 @@ import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -24,14 +25,17 @@ import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 
+import io.reactivex.Completable;
+import io.reactivex.disposables.Disposable;
+
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashSendFragment#newInstance} factory
  * method to create an instance of this fragment.
  */
 public class DigitalCashSendFragment extends Fragment {
   private static final String TAG = DigitalCashSendFragment.class.getSimpleName();
-  private DigitalCashSendFragmentBinding mBinding;
-  private DigitalCashViewModel mViewModel;
+  private DigitalCashSendFragmentBinding binding;
+  private DigitalCashViewModel viewModel;
 
   public DigitalCashSendFragment() {
     // Required empty constructor
@@ -49,11 +53,11 @@ public class DigitalCashSendFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
-    mBinding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
+    viewModel = DigitalCashActivity.obtainViewModel(getActivity());
+    binding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
     // Inflate the layout for this fragment
-    return mBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
@@ -61,30 +65,36 @@ public class DigitalCashSendFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     setupSendCoinButton();
 
-    mViewModel
+    viewModel
         .getPostTransactionEvent()
         .observe(
             getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                String currentAmount = mBinding.digitalCashSendAmount.getText().toString();
+                String currentAmount = binding.digitalCashSendAmount.getText().toString();
                 String currentPublicKeySelected =
-                    String.valueOf(mBinding.digitalCashSendSpinner.getEditText().getText());
-                if (mViewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
+                    String.valueOf(binding.digitalCashSendSpinner.getEditText().getText());
+                if (viewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
                   try {
-                    LaoView laoView = mViewModel.getCurrentLaoValue();
-                    PoPToken token = mViewModel.getKeyManager().getValidPoPToken(laoView);
+                    LaoView laoView = viewModel.getCurrentLaoValue();
+                    PoPToken token = viewModel.getKeyManager().getValidPoPToken(laoView);
                     if (canPostTransaction(
                         laoView, token.getPublicKey(), Integer.parseInt(currentAmount))) {
-                      postTransaction(
-                          Collections.singletonMap(currentPublicKeySelected, currentAmount));
-                      mViewModel.updateReceiptAddressEvent(currentPublicKeySelected);
-                      mViewModel.updateReceiptAmountEvent(currentAmount);
-                      DigitalCashActivity.setCurrentFragment(
-                          requireActivity().getSupportFragmentManager(),
-                          R.id.fragment_digital_cash_receipt,
-                          DigitalCashReceiptFragment::newInstance);
+                      Disposable disposable =
+                          postTransaction(
+                                  Collections.singletonMap(currentPublicKeySelected, currentAmount))
+                              .subscribe(
+                                  () -> {
+                                    viewModel.updateReceiptAddressEvent(currentPublicKeySelected);
+                                    viewModel.updateReceiptAmountEvent(currentAmount);
+                                    DigitalCashActivity.setCurrentFragment(
+                                        requireActivity().getSupportFragmentManager(),
+                                        R.id.fragment_digital_cash_receipt,
+                                        DigitalCashReceiptFragment::newInstance);
+                                  },
+                                  error -> Log.d(TAG, "error posting transaction", error));
+                      viewModel.addDisposable(disposable);
                     }
 
                   } catch (KeyException keyException) {
@@ -106,7 +116,7 @@ public class DigitalCashSendFragment extends Fragment {
   }
 
   public boolean canPostTransaction(LaoView lao, PublicKey publicKey, int currentAmount) {
-    Map<PublicKey, List<TransactionObject>> transactionByUser = lao.getTransactionByUser();
+    Map<PublicKey, Set<TransactionObject>> transactionByUser = lao.getTransactionByUser();
     if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
       Toast.makeText(requireContext(), R.string.digital_cash_warning_no_money, Toast.LENGTH_SHORT)
           .show();
@@ -130,9 +140,9 @@ public class DigitalCashSendFragment extends Fragment {
     /* Roll Call attendees to which we can send*/
     List<String> myArray;
     try {
-      myArray = mViewModel.getAttendeesFromTheRollCallList();
+      myArray = viewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      mViewModel.setCurrentTab(DigitalCashTab.HOME);
+      viewModel.setCurrentTab(DigitalCashTab.HOME);
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
           .show();
@@ -140,17 +150,17 @@ public class DigitalCashSendFragment extends Fragment {
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-    KeyManager km = mViewModel.getKeyManager();
-    mBinding
+    KeyManager km = viewModel.getKeyManager();
+    binding
         .digitalCashSendSpinner
         .getEditText()
-        .setText(km.getValidPoPToken(mViewModel.getCurrentLaoValue()).getPublicKey().getEncoded());
-    mBinding.digitalCashSendSpinnerTv.setAdapter(adapter);
+        .setText(km.getValidPoPToken(viewModel.getCurrentLaoValue()).getPublicKey().getEncoded());
+    binding.digitalCashSendSpinnerTv.setAdapter(adapter);
   }
 
   /** Function that setup the Button */
   private void setupSendCoinButton() {
-    mBinding.digitalCashSendSend.setOnClickListener(v -> mViewModel.postTransactionEvent());
+    binding.digitalCashSendSend.setOnClickListener(v -> viewModel.postTransactionEvent());
   }
 
   /**
@@ -159,34 +169,33 @@ public class DigitalCashSendFragment extends Fragment {
    * @param publicKeyAmount Map<String, String> containing the Public Keys and the related amount to
    *     issue to
    */
-  private void postTransaction(Map<String, String> publicKeyAmount) {
+  private Completable postTransaction(Map<String, String> publicKeyAmount) {
     // Add some check if have money
-    if (mViewModel.getLaoId().getValue() == null) {
+    if (viewModel.getLaoId().getValue() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
+      return Completable.error(new UnknownLaoException());
     } else {
-      mViewModel.addDisposable(
-          mViewModel
-              .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false)
-              .subscribe(
-                  () ->
-                      Toast.makeText(
-                              requireContext(),
-                              R.string.digital_cash_post_transaction,
-                              Toast.LENGTH_LONG)
-                          .show(),
-                  error -> {
-                    if (error instanceof KeyException
-                        || error instanceof GeneralSecurityException) {
-                      ErrorUtils.logAndShow(
-                          requireContext(), TAG, error, R.string.error_retrieve_own_token);
-                    } else {
-                      ErrorUtils.logAndShow(
-                          requireContext(), TAG, error, R.string.error_post_transaction);
-                    }
-                  }));
-      mViewModel.updateLaoCoinEvent();
+      return viewModel
+          .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), false)
+          .doOnComplete(
+              () ->
+                  Toast.makeText(
+                          requireContext(),
+                          R.string.digital_cash_post_transaction,
+                          Toast.LENGTH_SHORT)
+                      .show())
+          .doOnError(
+              error -> {
+                if (error instanceof KeyException || error instanceof GeneralSecurityException) {
+                  ErrorUtils.logAndShow(
+                      requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                } else {
+                  ErrorUtils.logAndShow(
+                      requireContext(), TAG, error, R.string.error_post_transaction);
+                }
+              });
     }
   }
 }
