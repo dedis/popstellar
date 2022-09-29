@@ -89,6 +89,7 @@ jobs:
         if: ${{ always() }} # execute even if previous steps failed
         run: |
           expo doctor
+        continue-on-error: true
 
       - name: Build expo web project
         run: |
