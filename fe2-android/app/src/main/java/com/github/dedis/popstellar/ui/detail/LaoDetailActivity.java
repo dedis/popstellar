@@ -78,10 +78,10 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
       if (fragment instanceof LaoDetailFragment) {
         startActivity(HomeActivity.newIntent(this));
       } else {
-        if (viewModel.getCurrentTab().getValue() == LaoTab.EVENTS){
-            // On reselection the navigation is supposed to do nothing to prevent loops, so we
-            // manually change the fragment
-            openEventsTab();
+        if (viewModel.getCurrentTab().getValue() == LaoTab.EVENTS) {
+          // On reselection the navigation is supposed to do nothing to prevent loops, so we
+          // manually change the fragment
+          openEventsTab();
         } else {
           viewModel.setCurrentTab(LaoTab.EVENTS);
         }
@@ -109,23 +109,23 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     switch (tab) {
       case EVENTS:
         openEventsTab();
-        break;
+        return true;
       case IDENTITY:
         openIdentityTab();
-        break;
+        return true;
       case WITNESSING:
         openWitnessTab();
-        break;
+        return true;
       case DIGITAL_CASH:
         openDigitalCashTab();
-        break;
+        return false;
       case SOCIAL:
         openSocialMediaTab();
-        break;
+        return false;
       default:
         Log.w(TAG, "Unhandled tab type : " + tab);
+        return false;
     }
-    return true;
   }
 
   @Override
