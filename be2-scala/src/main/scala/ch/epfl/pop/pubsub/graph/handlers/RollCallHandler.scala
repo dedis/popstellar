@@ -10,11 +10,11 @@ import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Await
 import scala.util.{Failure, Success}
 
 /** RollCallHandler object uses the db instance from the MessageHandler (i.e PublishSubscribe)
- */
+  */
 object RollCallHandler extends MessageHandler {
   final lazy val handlerInstance = new RollCallHandler(super.dbActor)
 
@@ -25,14 +25,14 @@ object RollCallHandler extends MessageHandler {
 }
 
 /** Implementation of the RollCallHandler that provides a testable interface
- *
- * @param dbRef
- *   reference of the db actor
- */
+  *
+  * @param dbRef
+  *   reference of the db actor
+  */
 class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   /** Overrides default DbActor with provided parameter
-   */
+    */
   override final val dbActor: AskableActorRef = dbRef
 
   private val unknownAnswer: String = "Database actor returned an unknown answer"
@@ -48,12 +48,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         laoId: Hash = rpcRequest.extractLaoId
         // do not see how to NOT use the transformWith function except if create other function, i.e. the inverse of CHannelExists
-        _ <- dbActor ? DbActor.ChannelExists(rollCallChannel) transformWith {
-          case Success(_) => Future {
-            throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "rollCall already exists in db")
-          }
-          case _ => Future {}
-        }
+        _ <- dbActor ? DbActor.ChannelMissing(rollCallChannel)
         // we create a new channel to write uniquely the RollCall, this ensures then if the RollCall already exists or not
         // otherwise, we never write in this channel
         _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
@@ -107,27 +102,20 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   }
 
   def handleCloseRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
-    val laoChannel: Option[Hash] = rpcRequest.getParamsChannel.decodeChannelLaoId
-    laoChannel match {
-      case None => Right(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        s"There is an issue with the data of the LAO",
-        rpcRequest.id
-      ))
-      case Some(_) =>
-        val combined = for {
-          _ <- dbAskWritePropagate(rpcRequest)
-          _ <- checkParameters(rpcRequest, s"Unable to handle lao message $rpcRequest. Not a Publish/Broadcast message")
-          message: Message = rpcRequest.getParamsMessage.get
-          _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
-          _ <- dbActor ? DbActor.WriteRollCallData(laoChannel.get, message)
-        } yield ()
+    val combined = for {
+      _ <- checkLaoChannel(rpcRequest, s"There is an issue with the data of the LAO")
+      laoChannel: Option[Hash] = rpcRequest.getParamsChannel.decodeChannelLaoId
+      _ <- dbAskWritePropagate(rpcRequest)
+      _ <- checkParameters(rpcRequest, s"Unable to handle lao message $rpcRequest. Not a Publish/Broadcast message")
+      message: Message = rpcRequest.getParamsMessage.get
+      _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
+      _ <- dbActor ? DbActor.WriteRollCallData(laoChannel.get, message)
+    } yield ()
 
-        Await.ready(combined, duration).value match {
-          case Some(Success(_))                        => createAttendeeChannels(rpcRequest)
-          case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcRequest.getId))
-          case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
-        }
+    Await.ready(combined, duration).value match {
+      case Some(Success(_))                        => createAttendeeChannels(rpcRequest)
+      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcRequest.getId))
+      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
     }
   }
 

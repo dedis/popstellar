@@ -8,6 +8,7 @@ import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadLaoDataAck
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -19,11 +20,17 @@ trait MessageHandler extends AskPatternConstants {
     */
   def dbActor: AskableActorRef = DbActor.getInstance
 
-  def checkParameters(rpcRequest: JsonRpcRequest, error: String): Future[GraphMessage] = {
+  def checkParameters(rpcRequest: JsonRpcRequest, errorMsg: String): Future[GraphMessage] = {
     rpcRequest.getParamsMessage match {
       case Some(_) => Future(Left(rpcRequest))
-      case _       => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, error, rpcRequest.id)))
+      case _       => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)))
+    }
+  }
 
+  def checkLaoChannel(rpcRequest: JsonRpcRequest, errorMsg: String): Future[GraphMessage] = {
+    rpcRequest.getParamsChannel.decodeChannelLaoId match {
+      case Some(_) => Future(Left(rpcRequest))
+      case _       => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)))
     }
   }
 
