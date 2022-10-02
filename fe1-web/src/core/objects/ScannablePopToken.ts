@@ -26,7 +26,7 @@ export class ScannablePopToken {
     const { errors } = validateScannablePopToken(obj);
 
     if (errors !== null) {
-      throw new ProtocolError(`Invalid connection to lao\n\n${errors}`);
+      throw new ProtocolError(`Invalid pop token\n\n${errors}`);
     }
 
     return new ScannablePopToken({

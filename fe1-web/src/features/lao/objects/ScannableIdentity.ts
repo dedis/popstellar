@@ -26,7 +26,7 @@ export class ScannableIdentity {
     const { errors } = validateScannableMainPublicKey(obj);
 
     if (errors !== null) {
-      throw new ProtocolError(`Invalid connection to lao\n\n${errors}`);
+      throw new ProtocolError(`Invalid identity \n\n${errors}`);
     }
 
     return new ScannableIdentity({
