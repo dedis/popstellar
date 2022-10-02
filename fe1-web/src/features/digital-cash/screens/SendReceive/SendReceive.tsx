@@ -287,7 +287,9 @@ export const SendReceiveHeaderRight = () => {
             <QRCode value={publicKey} visibility />
           </View>
 
-          <Text style={[Typography.small, styles.publicKey]}>{publicKey}</Text>
+          <Text style={[Typography.small, styles.publicKey]} selectable>
+            {publicKey}
+          </Text>
           <PoPTextButton onPress={() => Clipboard.setStringAsync(publicKey)}>
             {STRINGS.wallet_single_roll_call_copy_pop_token}
           </PoPTextButton>

@@ -357,7 +357,9 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                           </Text>
                           
 
-                          <Text>
+                          <Text
+                            selectable={true}
+                          >
                             -
                             M
                             2
@@ -468,7 +470,9 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                           </Text>
                           
 
-                          <Text />
+                          <Text
+                            selectable={true}
+                          />
                         </Text>
                         <View
                           accessible={true}
@@ -1005,7 +1009,9 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                           </Text>
                           
 
-                          <Text>
+                          <Text
+                            selectable={true}
+                          >
                             -
                             M
                             2
@@ -1116,7 +1122,9 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                           </Text>
                           
 
-                          <Text />
+                          <Text
+                            selectable={true}
+                          />
                         </Text>
                         <View
                           accessible={true}
@@ -1653,7 +1661,9 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                           </Text>
                           
 
-                          <Text>
+                          <Text
+                            selectable={true}
+                          >
                             -
                             M
                             2
@@ -1764,7 +1774,9 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                           </Text>
                           
 
-                          <Text />
+                          <Text
+                            selectable={true}
+                          />
                         </Text>
                         <View
                           accessible={true}
