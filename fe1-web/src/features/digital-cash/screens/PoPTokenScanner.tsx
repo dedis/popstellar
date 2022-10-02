@@ -72,7 +72,7 @@ const PoPTokenScanner = () => {
   const onScanData = (popToken: string | null) => {
     if (popToken) {
       try {
-        const token = ScannablePopToken.fromJson(popToken);
+        const token = ScannablePopToken.fromJson(JSON.parse(popToken));
         goBack(token.pop_token);
       } catch {
         toast.show(STRINGS.roll_call_invalid_token, {

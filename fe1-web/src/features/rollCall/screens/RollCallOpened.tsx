@@ -117,7 +117,7 @@ const RollCallOpened = () => {
 
   const addAttendeePopTokenAndShowToast = (popToken: string) => {
     try {
-      const token = ScannablePopToken.fromJson(popToken);
+      const token = ScannablePopToken.fromJson(JSON.parse(popToken));
       // only show a toast if an actual *new* token is added
       if (addAttendeePopToken(token.pop_token)) {
         toast.show(STRINGS.roll_call_scan_participant, {
