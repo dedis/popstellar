@@ -4,8 +4,11 @@ exports[`CollapsibleContainer container can be opened 1`] = `
 Array [
   <View
     accessible={true}
+    collapsable={false}
     focusable={true}
+    onBlur={[Function]}
     onClick={[Function]}
+    onFocus={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}
     onResponderRelease={[Function]}
@@ -32,7 +35,7 @@ Array [
           "paddingRight": 0,
         }
       }
-      testID="padView"
+      testID="RNE__LISTITEM__padView"
     >
       <View
         style={
@@ -48,6 +51,7 @@ Array [
         theme={
           Object {
             "colors": Object {
+              "background": "#ffffff",
               "black": "#242424",
               "disabled": "hsl(208, 8%, 90%)",
               "divider": "#bcbbc1",
@@ -99,15 +103,23 @@ Array [
               },
               "primary": "#2089dc",
               "searchBg": "#303337",
-              "secondary": "#ca71eb",
+              "secondary": "#03dac4",
               "success": "#52c41a",
               "warning": "#faad14",
               "white": "#ffffff",
+            },
+            "spacing": Object {
+              "lg": 12,
+              "md": 8,
+              "sm": 4,
+              "xl": 24,
+              "xs": 2,
             },
           }
         }
       >
         <Text
+          accessibilityRole="text"
           style={
             Object {
               "backgroundColor": "transparent",
@@ -141,6 +153,7 @@ Array [
             ],
           }
         }
+        testID="RNE__ListItem__Accordion__Icon"
       >
         <View
           style={
@@ -148,8 +161,20 @@ Array [
               "overflow": "hidden",
             }
           }
+          testID="RNE__ICON__CONTAINER"
         >
-          <View>
+          <View
+            accessibilityRole="button"
+            android_ripple={
+              Object {
+                "borderless": false,
+                "color": "rgba(0, 0, 0, 0.3)",
+                "radius": -5,
+              }
+            }
+            disabled={false}
+            testID="RNE__ICON__CONTAINER_ACTION"
+          >
             <View
               style={
                 Object {
@@ -158,6 +183,7 @@ Array [
                   "justifyContent": "center",
                 }
               }
+              testID="RNE__ICON"
             >
               <Text
                 allowFontScaling={false}
@@ -165,7 +191,7 @@ Array [
                 style={
                   Array [
                     Object {
-                      "color": undefined,
+                      "color": "#242424",
                       "fontSize": 24,
                     },
                     Object {
@@ -179,7 +205,7 @@ Array [
                     Object {},
                   ]
                 }
-                testID="iconIcon"
+                testID="RNE__ICON__Component"
               >
                 󰅀
               </Text>
@@ -193,10 +219,10 @@ Array [
     collapsable={false}
     style={
       Object {
-        "maxHeight": "0%",
         "opacity": 0,
       }
     }
+    testID="RNE__ListItem__Accordion__Children"
   >
     <Text>
       a first child
@@ -209,189 +235,207 @@ Array [
 `;
 
 exports[`CollapsibleContainer renders correctly when closed 1`] = `
-Array [
+<View
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onBlur={[Function]}
+  onClick={[Function]}
+  onFocus={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "backgroundColor": "rgb(242, 242, 242)",
+      "paddingLeft": 0,
+      "paddingRight": 0,
+    }
+  }
+>
   <View
-    accessible={true}
-    focusable={true}
-    onClick={[Function]}
-    onResponderGrant={[Function]}
-    onResponderMove={[Function]}
-    onResponderRelease={[Function]}
-    onResponderTerminate={[Function]}
-    onResponderTerminationRequest={[Function]}
-    onStartShouldSetResponder={[Function]}
     style={
       Object {
+        "alignItems": "center",
         "backgroundColor": "rgb(242, 242, 242)",
+        "borderColor": "#bcbbc1",
+        "flexDirection": "row",
+        "padding": 14,
         "paddingLeft": 0,
         "paddingRight": 0,
       }
     }
+    testID="RNE__LISTITEM__padView"
   >
     <View
       style={
+        Array [
+          Object {
+            "alignItems": "flex-start",
+            "flex": 1,
+            "justifyContent": "center",
+          },
+          undefined,
+        ]
+      }
+      theme={
         Object {
-          "alignItems": "center",
-          "backgroundColor": "rgb(242, 242, 242)",
-          "borderColor": "#bcbbc1",
-          "flexDirection": "row",
-          "padding": 14,
-          "paddingLeft": 0,
-          "paddingRight": 0,
+          "colors": Object {
+            "background": "#ffffff",
+            "black": "#242424",
+            "disabled": "hsl(208, 8%, 90%)",
+            "divider": "#bcbbc1",
+            "error": "#ff190c",
+            "grey0": "#393e42",
+            "grey1": "#43484d",
+            "grey2": "#5e6977",
+            "grey3": "#86939e",
+            "grey4": "#bdc6cf",
+            "grey5": "#e1e8ee",
+            "greyOutline": "#bbb",
+            "platform": Object {
+              "android": Object {
+                "error": "#f44336",
+                "grey": "rgba(0, 0, 0, 0.54)",
+                "primary": "#2196f3",
+                "searchBg": "#dcdce1",
+                "secondary": "#9C27B0",
+                "success": "#4caf50",
+                "warning": "#ffeb3b",
+              },
+              "default": Object {
+                "error": "#ff3b30",
+                "grey": "#7d7d7d",
+                "primary": "#007aff",
+                "searchBg": "#dcdce1",
+                "secondary": "#5856d6",
+                "success": "#4cd964",
+                "warning": "#ffcc00",
+              },
+              "ios": Object {
+                "error": "#ff3b30",
+                "grey": "#7d7d7d",
+                "primary": "#007aff",
+                "searchBg": "#dcdce1",
+                "secondary": "#5856d6",
+                "success": "#4cd964",
+                "warning": "#ffcc00",
+              },
+              "web": Object {
+                "error": "#ff190c",
+                "grey": "#393e42",
+                "primary": "#2089dc",
+                "searchBg": "#303337",
+                "secondary": "#ca71eb",
+                "success": "#52c41a",
+                "warning": "#faad14",
+              },
+            },
+            "primary": "#2089dc",
+            "searchBg": "#303337",
+            "secondary": "#03dac4",
+            "success": "#52c41a",
+            "warning": "#faad14",
+            "white": "#ffffff",
+          },
+          "spacing": Object {
+            "lg": 12,
+            "md": 8,
+            "sm": 4,
+            "xl": 24,
+            "xs": 2,
+          },
         }
       }
-      testID="padView"
+    >
+      <Text
+        accessibilityRole="text"
+        style={
+          Object {
+            "backgroundColor": "transparent",
+            "color": "#000",
+            "fontSize": 20,
+            "fontWeight": "bold",
+            "lineHeight": 26,
+            "textAlign": "left",
+          }
+        }
+        testID="listItemTitle"
+      >
+        A collapsible container
+      </Text>
+    </View>
+    <View
+      style={
+        Object {
+          "paddingLeft": 16,
+        }
+      }
+    />
+    <View
+      collapsable={false}
+      style={
+        Object {
+          "transform": Array [
+            Object {
+              "rotate": "0deg",
+            },
+          ],
+        }
+      }
+      testID="RNE__ListItem__Accordion__Icon"
     >
       <View
         style={
-          Array [
-            Object {
-              "alignItems": "flex-start",
-              "flex": 1,
-              "justifyContent": "center",
-            },
-            undefined,
-          ]
-        }
-        theme={
           Object {
-            "colors": Object {
-              "black": "#242424",
-              "disabled": "hsl(208, 8%, 90%)",
-              "divider": "#bcbbc1",
-              "error": "#ff190c",
-              "grey0": "#393e42",
-              "grey1": "#43484d",
-              "grey2": "#5e6977",
-              "grey3": "#86939e",
-              "grey4": "#bdc6cf",
-              "grey5": "#e1e8ee",
-              "greyOutline": "#bbb",
-              "platform": Object {
-                "android": Object {
-                  "error": "#f44336",
-                  "grey": "rgba(0, 0, 0, 0.54)",
-                  "primary": "#2196f3",
-                  "searchBg": "#dcdce1",
-                  "secondary": "#9C27B0",
-                  "success": "#4caf50",
-                  "warning": "#ffeb3b",
-                },
-                "default": Object {
-                  "error": "#ff3b30",
-                  "grey": "#7d7d7d",
-                  "primary": "#007aff",
-                  "searchBg": "#dcdce1",
-                  "secondary": "#5856d6",
-                  "success": "#4cd964",
-                  "warning": "#ffcc00",
-                },
-                "ios": Object {
-                  "error": "#ff3b30",
-                  "grey": "#7d7d7d",
-                  "primary": "#007aff",
-                  "searchBg": "#dcdce1",
-                  "secondary": "#5856d6",
-                  "success": "#4cd964",
-                  "warning": "#ffcc00",
-                },
-                "web": Object {
-                  "error": "#ff190c",
-                  "grey": "#393e42",
-                  "primary": "#2089dc",
-                  "searchBg": "#303337",
-                  "secondary": "#ca71eb",
-                  "success": "#52c41a",
-                  "warning": "#faad14",
-                },
-              },
-              "primary": "#2089dc",
-              "searchBg": "#303337",
-              "secondary": "#ca71eb",
-              "success": "#52c41a",
-              "warning": "#faad14",
-              "white": "#ffffff",
-            },
+            "overflow": "hidden",
           }
         }
-      >
-        <Text
-          style={
-            Object {
-              "backgroundColor": "transparent",
-              "color": "#000",
-              "fontSize": 20,
-              "fontWeight": "bold",
-              "lineHeight": 26,
-              "textAlign": "left",
-            }
-          }
-          testID="listItemTitle"
-        >
-          A collapsible container
-        </Text>
-      </View>
-      <View
-        style={
-          Object {
-            "paddingLeft": 16,
-          }
-        }
-      />
-      <View
-        collapsable={false}
-        style={
-          Object {
-            "transform": Array [
-              Object {
-                "rotate": "0deg",
-              },
-            ],
-          }
-        }
+        testID="RNE__ICON__CONTAINER"
       >
         <View
-          style={
+          accessibilityRole="button"
+          android_ripple={
             Object {
-              "overflow": "hidden",
+              "borderless": false,
+              "color": "rgba(0, 0, 0, 0.3)",
+              "radius": -5,
             }
           }
+          disabled={false}
+          testID="RNE__ICON__CONTAINER_ACTION"
         >
-          <View>
-            <View
-              style={
-                Object {
-                  "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "justifyContent": "center",
-                }
+          <View
+            style={
+              Object {
+                "alignItems": "center",
+                "backgroundColor": "transparent",
+                "justifyContent": "center",
               }
-            >
-              <Text />
-            </View>
+            }
+            testID="RNE__ICON"
+          >
+            <Text />
           </View>
         </View>
       </View>
     </View>
-  </View>,
-  <View
-    collapsable={false}
-    style={
-      Object {
-        "maxHeight": "0%",
-        "opacity": 0,
-      }
-    }
-  />,
-]
+  </View>
+</View>
 `;
 
 exports[`CollapsibleContainer renders correctly when opened 1`] = `
 Array [
   <View
     accessible={true}
+    collapsable={false}
     focusable={true}
+    onBlur={[Function]}
     onClick={[Function]}
+    onFocus={[Function]}
     onResponderGrant={[Function]}
     onResponderMove={[Function]}
     onResponderRelease={[Function]}
@@ -418,7 +462,7 @@ Array [
           "paddingRight": 0,
         }
       }
-      testID="padView"
+      testID="RNE__LISTITEM__padView"
     >
       <View
         style={
@@ -434,6 +478,7 @@ Array [
         theme={
           Object {
             "colors": Object {
+              "background": "#ffffff",
               "black": "#242424",
               "disabled": "hsl(208, 8%, 90%)",
               "divider": "#bcbbc1",
@@ -485,15 +530,23 @@ Array [
               },
               "primary": "#2089dc",
               "searchBg": "#303337",
-              "secondary": "#ca71eb",
+              "secondary": "#03dac4",
               "success": "#52c41a",
               "warning": "#faad14",
               "white": "#ffffff",
+            },
+            "spacing": Object {
+              "lg": 12,
+              "md": 8,
+              "sm": 4,
+              "xl": 24,
+              "xs": 2,
             },
           }
         }
       >
         <Text
+          accessibilityRole="text"
           style={
             Object {
               "backgroundColor": "transparent",
@@ -527,6 +580,7 @@ Array [
             ],
           }
         }
+        testID="RNE__ListItem__Accordion__Icon"
       >
         <View
           style={
@@ -534,8 +588,20 @@ Array [
               "overflow": "hidden",
             }
           }
+          testID="RNE__ICON__CONTAINER"
         >
-          <View>
+          <View
+            accessibilityRole="button"
+            android_ripple={
+              Object {
+                "borderless": false,
+                "color": "rgba(0, 0, 0, 0.3)",
+                "radius": -5,
+              }
+            }
+            disabled={false}
+            testID="RNE__ICON__CONTAINER_ACTION"
+          >
             <View
               style={
                 Object {
@@ -544,6 +610,7 @@ Array [
                   "justifyContent": "center",
                 }
               }
+              testID="RNE__ICON"
             >
               <Text
                 allowFontScaling={false}
@@ -551,7 +618,7 @@ Array [
                 style={
                   Array [
                     Object {
-                      "color": undefined,
+                      "color": "#242424",
                       "fontSize": 24,
                     },
                     Object {
@@ -565,7 +632,7 @@ Array [
                     Object {},
                   ]
                 }
-                testID="iconIcon"
+                testID="RNE__ICON__Component"
               >
                 󰅀
               </Text>
@@ -579,10 +646,10 @@ Array [
     collapsable={false}
     style={
       Object {
-        "maxHeight": "0%",
         "opacity": 0,
       }
     }
+    testID="RNE__ListItem__Accordion__Children"
   >
     <Text>
       a first child

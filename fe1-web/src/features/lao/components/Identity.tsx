@@ -1,6 +1,6 @@
+import { CheckBox } from '@rneui/themed';
 import React, { useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { CheckBox } from 'react-native-elements';
 
 import { Input, QRCode } from 'core/components';
 import { KeyPairStore } from 'core/keypair';

@@ -44,7 +44,10 @@ jest.mock('@react-navigation/core', () => {
   };
 });
 
-// Is mocked
+/* Disable ESLint on the following line as it otherwise complains
+ * that "useNavigation" cannot be called at the top level,
+ * ignoring the fact that useNavigation is mocked here...
+ */
 // eslint-disable-next-line react-hooks/rules-of-hooks
 const { navigate: mockNavigate, addListener } = useNavigation();
 

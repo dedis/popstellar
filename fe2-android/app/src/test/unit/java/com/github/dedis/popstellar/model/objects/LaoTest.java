@@ -297,12 +297,6 @@ public class LaoTest {
   }
 
   @Test
-  public void nullChirpUpdateThrowsException() {
-    MessageID messageID = new MessageID("FOO");
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.updateChirpList(messageID, null));
-  }
-
-  @Test
   public void nullTransactionObjectUpdateThrowsException() {
     assertThrows(IllegalArgumentException.class, () -> LAO_1.updateTransactionMaps(null));
   }
@@ -351,29 +345,5 @@ public class LaoTest {
     WitnessMessage witnessMessage = new WitnessMessage(messageID);
     LAO_1.updateWitnessMessage(messageID, witnessMessage);
     assertEquals(LAO_1.getWitnessMessages().get(messageID), witnessMessage);
-  }
-
-  @Test
-  public void getChirpsInOrderTest() {
-    MessageID id1 = new MessageID("foo");
-    Chirp chirp1 = new Chirp(id1);
-    chirp1.setTimestamp(1L);
-    chirp1.setText("text");
-    chirp1.setChannel(Channel.ROOT);
-    chirp1.setSender(ORGANIZER);
-    chirp1.setParentId(new MessageID("foobar"));
-    MessageID id2 = new MessageID("bar");
-    Chirp chirp2 = new Chirp(id2);
-    chirp2.setText("text");
-    chirp2.setChannel(Channel.ROOT);
-    chirp2.setSender(ORGANIZER);
-    chirp2.setParentId(new MessageID("foobar"));
-    chirp2.setTimestamp(2L);
-    LAO_1.updateChirpList(id1, chirp1);
-    LAO_1.updateChirpList(id2, chirp2);
-
-    List<Chirp> orderedList = LAO_1.getChirpsInOrder();
-    assertEquals(chirp2, orderedList.get(0));
-    assertEquals(chirp1, orderedList.get(1));
   }
 }

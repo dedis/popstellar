@@ -1,7 +1,7 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 
 import { PoPIcon } from 'core/components';
 import { Hash } from 'core/objects';

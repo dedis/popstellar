@@ -428,7 +428,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -444,6 +444,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -495,15 +496,23 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -537,6 +546,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -544,8 +554,20 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -554,6 +576,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text
                                           allowFontScaling={false}
@@ -561,7 +584,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                           style={
                                             Array [
                                               Object {
-                                                "color": undefined,
+                                                "color": "#242424",
                                                 "fontSize": 24,
                                               },
                                               Object {
@@ -575,7 +598,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                               Object {},
                                             ]
                                           }
-                                          testID="iconIcon"
+                                          testID="RNE__ICON__Component"
                                         >
                                           󰅀
                                         </Text>
@@ -589,10 +612,10 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 style={
@@ -619,7 +642,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -653,6 +676,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -704,15 +728,23 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -755,7 +787,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -789,6 +821,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -840,15 +873,23 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -1349,7 +1390,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -1365,6 +1406,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -1416,15 +1458,23 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -1458,6 +1508,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -1465,8 +1516,20 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -1475,6 +1538,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text
                                           allowFontScaling={false}
@@ -1482,7 +1546,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                           style={
                                             Array [
                                               Object {
-                                                "color": undefined,
+                                                "color": "#242424",
                                                 "fontSize": 24,
                                               },
                                               Object {
@@ -1496,7 +1560,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                               Object {},
                                             ]
                                           }
-                                          testID="iconIcon"
+                                          testID="RNE__ICON__Component"
                                         >
                                           󰅀
                                         </Text>
@@ -1510,10 +1574,10 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 style={
@@ -1540,7 +1604,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -1574,6 +1638,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -1625,15 +1690,23 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -1676,7 +1749,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -1710,6 +1783,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -1761,15 +1835,23 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -2215,7 +2297,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -2231,6 +2313,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -2282,15 +2365,23 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -2324,6 +2415,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -2331,8 +2423,20 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -2341,6 +2445,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text
                                           allowFontScaling={false}
@@ -2348,7 +2453,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                           style={
                                             Array [
                                               Object {
-                                                "color": undefined,
+                                                "color": "#242424",
                                                 "fontSize": 24,
                                               },
                                               Object {
@@ -2362,7 +2467,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                               Object {},
                                             ]
                                           }
-                                          testID="iconIcon"
+                                          testID="RNE__ICON__Component"
                                         >
                                           󰅀
                                         </Text>
@@ -2376,10 +2481,10 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 style={
@@ -2406,7 +2511,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -2440,6 +2545,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -2491,15 +2597,23 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -2542,7 +2656,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -2576,6 +2690,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -2627,15 +2742,23 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -3081,7 +3204,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -3097,6 +3220,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -3148,15 +3272,23 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -3190,6 +3322,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -3197,8 +3330,20 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -3207,6 +3352,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text
                                           allowFontScaling={false}
@@ -3214,7 +3360,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                           style={
                                             Array [
                                               Object {
-                                                "color": undefined,
+                                                "color": "#242424",
                                                 "fontSize": 24,
                                               },
                                               Object {
@@ -3228,7 +3374,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                               Object {},
                                             ]
                                           }
-                                          testID="iconIcon"
+                                          testID="RNE__ICON__Component"
                                         >
                                           󰅀
                                         </Text>
@@ -3242,10 +3388,10 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 style={
@@ -3272,7 +3418,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -3306,6 +3452,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -3357,15 +3504,23 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -3408,7 +3563,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -3442,6 +3597,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -3493,15 +3649,23 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -3964,7 +4128,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -3980,6 +4144,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -4031,15 +4196,23 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -4073,6 +4246,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -4080,8 +4254,20 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -4090,6 +4276,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text
                                           allowFontScaling={false}
@@ -4097,7 +4284,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                           style={
                                             Array [
                                               Object {
-                                                "color": undefined,
+                                                "color": "#242424",
                                                 "fontSize": 24,
                                               },
                                               Object {
@@ -4111,7 +4298,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                               Object {},
                                             ]
                                           }
-                                          testID="iconIcon"
+                                          testID="RNE__ICON__Component"
                                         >
                                           󰅀
                                         </Text>
@@ -4125,10 +4312,10 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 style={
@@ -4155,7 +4342,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -4189,6 +4376,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -4240,15 +4428,23 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -4291,7 +4487,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -4325,6 +4521,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -4376,15 +4573,23 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -4885,7 +5090,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -4901,6 +5106,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -4952,15 +5158,23 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -4994,6 +5208,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -5001,8 +5216,20 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -5011,6 +5238,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text />
                                       </View>
@@ -5023,10 +5251,10 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 style={
@@ -5053,7 +5281,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -5087,6 +5315,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -5138,15 +5367,23 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -5189,7 +5426,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -5223,6 +5460,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -5274,15 +5512,23 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -5724,7 +5970,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -5740,6 +5986,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -5791,15 +6038,23 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -5833,6 +6088,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -5840,8 +6096,20 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -5850,6 +6118,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text
                                           allowFontScaling={false}
@@ -5857,7 +6126,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                           style={
                                             Array [
                                               Object {
-                                                "color": undefined,
+                                                "color": "#242424",
                                                 "fontSize": 24,
                                               },
                                               Object {
@@ -5871,7 +6140,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                               Object {},
                                             ]
                                           }
-                                          testID="iconIcon"
+                                          testID="RNE__ICON__Component"
                                         >
                                           󰅀
                                         </Text>
@@ -5885,10 +6154,10 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 style={
@@ -5915,7 +6184,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -5949,6 +6218,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -6000,15 +6270,23 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -6051,7 +6329,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -6085,6 +6363,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -6136,15 +6415,23 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -6586,7 +6873,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                     "paddingRight": 0,
                                   }
                                 }
-                                testID="padView"
+                                testID="RNE__LISTITEM__padView"
                               >
                                 <View
                                   style={
@@ -6602,6 +6889,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                   theme={
                                     Object {
                                       "colors": Object {
+                                        "background": "#ffffff",
                                         "black": "#242424",
                                         "disabled": "hsl(208, 8%, 90%)",
                                         "divider": "#bcbbc1",
@@ -6653,15 +6941,23 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
+                                      },
+                                      "spacing": Object {
+                                        "lg": 12,
+                                        "md": 8,
+                                        "sm": 4,
+                                        "xl": 24,
+                                        "xs": 2,
                                       },
                                     }
                                   }
                                 >
                                   <Text
+                                    accessibilityRole="text"
                                     style={
                                       Object {
                                         "backgroundColor": "transparent",
@@ -6695,6 +6991,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                       ],
                                     }
                                   }
+                                  testID="RNE__ListItem__Accordion__Icon"
                                 >
                                   <View
                                     style={
@@ -6702,8 +6999,20 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -6712,6 +7021,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text
                                           allowFontScaling={false}
@@ -6719,7 +7029,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                           style={
                                             Array [
                                               Object {
-                                                "color": undefined,
+                                                "color": "#242424",
                                                 "fontSize": 24,
                                               },
                                               Object {
@@ -6733,7 +7043,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                               Object {},
                                             ]
                                           }
-                                          testID="iconIcon"
+                                          testID="RNE__ICON__Component"
                                         >
                                           󰅀
                                         </Text>
@@ -6747,10 +7057,10 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                               collapsable={false}
                               style={
                                 Object {
-                                  "maxHeight": "0%",
                                   "opacity": 0,
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Children"
                             >
                               <View
                                 style={
@@ -6777,7 +7087,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -6811,6 +7121,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -6862,15 +7173,23 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {
@@ -6913,7 +7232,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -6947,6 +7266,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -6998,15 +7318,23 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
                                         Object {

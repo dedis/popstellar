@@ -1,6 +1,6 @@
+import { ListItem } from '@rneui/themed';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import { Timestamp } from 'core/objects';

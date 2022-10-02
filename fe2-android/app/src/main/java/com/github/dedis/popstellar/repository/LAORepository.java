@@ -20,8 +20,8 @@ public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
 
-  private final HashMap<String, Lao> laoById = new HashMap<>();
-  private final HashMap<String, Subject<LaoView>> subjectById = new HashMap<>();
+  private final Map<String, Lao> laoById = new HashMap<>();
+  private final Map<String, Subject<LaoView>> subjectById = new HashMap<>();
   private final BehaviorSubject<List<String>> laosSubject = BehaviorSubject.create();
 
   // ============ Lao Unrelated data ===============
