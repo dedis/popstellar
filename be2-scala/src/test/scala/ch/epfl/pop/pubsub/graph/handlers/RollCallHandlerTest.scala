@@ -28,7 +28,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m @ (DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) | DbActor.ChannelMissing(_)) =>
+        case m @ (DbActor.WriteAndPropagate(_, _) | DbActor.ChannelExists(_) | DbActor.CreateChannel(_, _) | DbActor.ChannelMissing(_) | DbActor.WriteRollCallData(_, _) | DbActor.WriteLaoData(_, _, _)) =>
           system.log.info(s"Received - message $m")
           system.log.info("Responding with a Nack")
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
@@ -74,7 +74,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
-        case DbActor.WriteRollCallData(_, _) =>
+        case DbActor.WriteRollCallData(_, _) | DbActor.WriteLaoData(_, _, _) =>
           system.log.info(s"Received a message")
           system.log.info("Responding with a Ack")
           sender() ! DbActor.DbActorAck()
@@ -152,14 +152,6 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val rc = new RollCallHandler(mockedDB)
     val request = ReopenRollCallMessages.reopenRollCall
     rc.handleReopenRollCall(request) shouldBe an[Right[PipelineError, _]]
-    system.stop(mockedDB.actorRef)
-  }
-
-  test("CloseRollcall should succeed if the rollcall is already created") {
-    val mockedDB = mockDbRollCallAlreadyCreated
-    val rc = new RollCallHandler(mockedDB)
-    val request = CloseRollCallMessages.closeRollCall
-    rc.handleCloseRollCall(request) should matchPattern { case Left(_) => }
     system.stop(mockedDB.actorRef)
   }
 
