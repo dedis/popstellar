@@ -416,6 +416,84 @@ func TestVerify_ElectionEnd_not_open(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestVerifyRegisteredVotes_Badly_Sorted(t *testing.T) {
+	questions := map[string]*question{
+		"question1": {
+			validVotes: map[string]validVote{
+				"vote1.2": {
+					msgID: "aa",
+					ID:    "vote1.2",
+				},
+				"vote1.1": {
+					msgID: "bb",
+					ID:    "vote1.1",
+				},
+			},
+		},
+		"question2": {
+			validVotes: map[string]validVote{
+				"vote2.1": {
+					msgID: "bb",
+					ID:    "vote2.1",
+				},
+				"vote2.2": {
+					msgID: "aa",
+					ID:    "vote2.2",
+				},
+			},
+		},
+	}
+
+	// votes must be sorted by by vote id
+	expected := messagedata.Hash("vote1.1", "vote2.1", "vote2.2", "vote1.2")
+
+	end := messagedata.ElectionEnd{
+		RegisteredVotes: expected,
+	}
+
+	err := verifyRegisteredVotes(end, &questions)
+	require.Error(t, err)
+}
+
+func TestVerifyRegisteredVotes_OK(t *testing.T) {
+	questions := map[string]*question{
+		"question1": {
+			validVotes: map[string]validVote{
+				"vote1.2": {
+					msgID: "aa",
+					ID:    "vote1.2",
+				},
+				"vote1.1": {
+					msgID: "bb",
+					ID:    "vote1.1",
+				},
+			},
+		},
+		"question2": {
+			validVotes: map[string]validVote{
+				"vote2.1": {
+					msgID: "bb",
+					ID:    "vote2.1",
+				},
+				"vote2.2": {
+					msgID: "aa",
+					ID:    "vote2.2",
+				},
+			},
+		},
+	}
+
+	// votes must be sorted by by vote id
+	expected := messagedata.Hash("vote1.1", "vote1.2", "vote2.1", "vote2.2")
+
+	end := messagedata.ElectionEnd{
+		RegisteredVotes: expected,
+	}
+
+	err := verifyRegisteredVotes(end, &questions)
+	require.NoError(t, err)
+}
+
 func TestVerify_ElectionEnd_already_closed(t *testing.T) {
 	// create the terminated election channel
 	electChannel, _ := newFakeChannel(t, false)

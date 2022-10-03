@@ -8,7 +8,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/rs/zerolog/log"
 	"golang.org/x/xerrors"
 )
 
@@ -217,40 +216,37 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 	return nil
 }
 
-// verifyRegisteredVotes checks the registered votes of an election end message are valid.
+// verifyRegisteredVotes checks the registered votes of an election end message
+// are valid.
 func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	questions *map[string]*question) error {
 
-	// get hashed ID of valid votes sorted by msg ID
-	validVotes := make(map[string]string)
-	validVotesSorted := make([]string, 0)
-	msgIDs := make([]string, 0)
+	// get list of sorted vote ID
+	questionIDs := map[string]struct{}{} // a bag of question IDs
 
 	for _, question := range *questions {
-
 		question.validVotesMu.Lock()
+
 		for _, validVote := range question.validVotes {
-			// since we eliminated (in cast vote) the duplicate votes we are sure
-			// that the validVotes contain one vote for one question by every voter
-			validVotes[validVote.msgID] = validVote.ID
-			msgIDs = append(msgIDs, validVote.msgID)
+			// since we eliminated (in cast vote) the duplicate votes we are
+			// sure that the validVotes contain one vote for one question by
+			// every voter
+			questionIDs[validVote.ID] = struct{}{}
 		}
+
 		question.validVotesMu.Unlock()
-
-		for _, msgID := range msgIDs {
-			log.Info().Msgf("valid votes is %s for msg id %s", validVotes[msgID], msgID)
-		}
 	}
 
-	// sort message ids
-	sort.Strings(msgIDs)
-
-	for _, k := range msgIDs {
-		validVotesSorted = append(validVotesSorted, validVotes[k])
+	questionIDsList := make([]string, 0, len(questionIDs))
+	for questionID := range questionIDs {
+		questionIDsList = append(questionIDsList, questionID)
 	}
+
+	// sort question IDs
+	sort.Strings(questionIDsList)
 
 	// hash all valid vote ids
-	validVotesHash := messagedata.Hash(validVotesSorted...)
+	validVotesHash := messagedata.Hash(questionIDsList...)
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
