@@ -460,12 +460,12 @@ object DbActor {
   final case class ChannelExists(channel: Channel) extends Event
 
   /** Request to check if channel <channel> is missing in the db
-   *
-   * @param channel
-   *   targeted channel
-   * @note
-   *   db answers with a simple boolean
-   */
+    *
+    * @param channel
+    *   targeted channel
+    * @note
+    *   db answers with a simple boolean
+    */
   final case class ChannelMissing(channel: Channel) extends Event
 
   /** Request to append witness <signature> to a stored message with message_id <messageId>
