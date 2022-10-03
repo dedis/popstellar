@@ -110,7 +110,7 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 		return xerrors.Errorf(elecIDCompare, electionID, castVote.Election)
 	}
 
-	//verify if election is terminated
+	// verify if election is terminated
 	if c.terminated {
 		return xerrors.Errorf("cast vote created at is %d, but the election is terminated",
 			castVote.CreatedAt)
@@ -221,8 +221,8 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 	questions *map[string]*question) error {
 
-	// get list of sorted vote ID
-	questionIDs := map[string]struct{}{} // a bag of question IDs
+	// get list of sorted vote IDs
+	voteIDs := []string{}
 
 	for _, question := range *questions {
 		question.validVotesMu.Lock()
@@ -231,22 +231,17 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd,
 			// since we eliminated (in cast vote) the duplicate votes we are
 			// sure that the validVotes contain one vote for one question by
 			// every voter
-			questionIDs[validVote.ID] = struct{}{}
+			voteIDs = append(voteIDs, validVote.ID)
 		}
 
 		question.validVotesMu.Unlock()
 	}
 
-	questionIDsList := make([]string, 0, len(questionIDs))
-	for questionID := range questionIDs {
-		questionIDsList = append(questionIDsList, questionID)
-	}
-
 	// sort question IDs
-	sort.Strings(questionIDsList)
+	sort.Strings(voteIDs)
 
 	// hash all valid vote ids
-	validVotesHash := messagedata.Hash(questionIDsList...)
+	validVotesHash := messagedata.Hash(voteIDs...)
 
 	// compare registered votes with local saved votes
 	if electionEnd.RegisteredVotes != validVotesHash {
