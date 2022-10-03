@@ -35,7 +35,7 @@ object CloseRollCallMessages extends RollCallMessagesTrait {
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "close_roll_call_channel")
 
-  final val openRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("roll_call_close.json")()
+  final val closeRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("roll_call_close.json")()
 
   // TODO: Generate other Close RollCall messages
 }
@@ -46,7 +46,7 @@ object ReopenRollCallMessages extends RollCallMessagesTrait {
 
   override val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "reopen_roll_call_channel")
 
-  final val openRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("reopen_call_close.json")()
+  final val reopenRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("reopen_call_close.json")()
 
   // TODO: Generate other Close RollCall messages
 }
