@@ -96,6 +96,7 @@ Feature: This feature starts a server and stops it after every scenario.
           """
             function() {
               stopServer();
+              wait(2);
               deleteDB();
             }
           """
