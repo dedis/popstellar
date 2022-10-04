@@ -2,6 +2,12 @@ package be.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class Server implements Runnable {
@@ -32,9 +38,33 @@ public abstract class Server implements Runnable {
   }
 
   @Override
-  public void stop() {
-    process.children().forEach(ProcessHandle::destroyForcibly);
+  public void stop() throws RuntimeException {
+    process.descendants().forEach(ProcessHandle::destroy);
+    process.destroy();
+    List<CompletableFuture<?>> allProcesses = process.descendants().map(ProcessHandle::onExit).collect(Collectors.toList());
+    allProcesses.add(process.onExit());
+    CompletableFuture<Void> onExit = CompletableFuture.allOf(allProcesses.toArray(new CompletableFuture[]{}));
+
+    try {
+      // Wait for the process to exit
+      onExit.get(1, TimeUnit.SECONDS);
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException(e);
+    } catch (TimeoutException e) {
+      System.out.println("Could not stop");
+      forceStop(onExit);
+    }
+  }
+
+  private void forceStop(CompletableFuture<Void> onExit) {
+    // The process did not exit, trying the force
+    process.descendants().forEach(ProcessHandle::destroyForcibly);
     process.destroyForcibly();
+    try {
+      onExit.get(1, TimeUnit.SECONDS);
+    } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+      throw new RuntimeException("Could not exit the server correctly", ex);
+    }
   }
 
   @Override
@@ -66,16 +96,17 @@ public abstract class Server implements Runnable {
       System.out.println("Need a command to start the server");
       return false;
     }
+
+    System.out.printf("Executing %s in directory %s%n",
+      Stream.of(cmd).reduce((s, acc) -> s + " " + acc).get(), dir);
+
     try {
       ProcessBuilder serverProcess = build(cmd, dir, logPath);
       process = serverProcess.start();
       System.out.println("Process PID = " + process.pid());
       return true;
     } catch (IOException e) {
-      System.out.printf("Could not execute %s in directory %s%n",
-        Stream.of(cmd).reduce((s, acc) -> s + " " + acc),
-        dir);
-      System.out.println(e.getMessage());
+      e.printStackTrace();
       return false;
     }
   }
@@ -83,4 +114,8 @@ public abstract class Server implements Runnable {
    * Deletes database of the server
    */
   abstract void deleteDatabaseDir();
+
+  public static boolean isWindowsOS() {
+    return System.getProperty("os.name").toLowerCase().contains("windows");
+  }
 }
