@@ -91,7 +91,9 @@ export const WalletSingleHeaderRight = () => {
             <QRCode value={rollCallTokenPublicKey} visibility />
           </View>
 
-          <Text style={[Typography.small, styles.publicKey]}>{rollCallTokenPublicKey}</Text>
+          <Text style={[Typography.small, styles.publicKey]} selectable>
+            {rollCallTokenPublicKey}
+          </Text>
 
           <PoPTextButton onPress={() => Clipboard.setStringAsync(rollCallTokenPublicKey)}>
             {STRINGS.wallet_single_roll_call_copy_pop_token}
