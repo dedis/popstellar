@@ -18,6 +18,11 @@ import { persist, store } from 'core/redux';
 import { Color } from 'core/styles';
 import { configureFeatures } from 'features';
 
+import firefoxCameraPolyfill from './polyfill/firefox/expo-camera';
+
+// load polyfill when the app loads
+firefoxCameraPolyfill();
+
 const { messageRegistry, keyPairRegistry, navigationOpts, context } = configureFeatures();
 configureKeyPair();
 configureNetwork(messageRegistry, keyPairRegistry);
