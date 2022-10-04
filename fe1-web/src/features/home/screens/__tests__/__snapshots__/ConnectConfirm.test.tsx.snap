@@ -377,6 +377,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="Server URI"
+                                placeholderTextColor="#8E8E8E"
                                 style={
                                   Array [
                                     Object {
@@ -430,6 +431,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="LAO ID"
+                                placeholderTextColor="#8E8E8E"
                                 style={
                                   Array [
                                     Object {

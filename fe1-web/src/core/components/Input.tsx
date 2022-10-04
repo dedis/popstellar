@@ -46,6 +46,7 @@ const Input = (props: IPropTypes) => {
     <View style={styles.container}>
       <TextInput
         style={inputStyles}
+        placeholderTextColor={Color.inactive}
         editable={enabled || false}
         value={value}
         placeholder={placeholder || ''}

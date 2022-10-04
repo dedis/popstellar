@@ -369,6 +369,7 @@ exports[`CreateElection renders correctly 1`] = `
                               editable={true}
                               onChangeText={[Function]}
                               placeholder="Election Q1 2022"
+                              placeholderTextColor="#8E8E8E"
                               style={
                                 Array [
                                   Object {
@@ -489,6 +490,7 @@ exports[`CreateElection renders correctly 1`] = `
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="What is your favorite color?"
+                                placeholderTextColor="#8E8E8E"
                                 style={
                                   Array [
                                     Object {
@@ -554,6 +556,7 @@ exports[`CreateElection renders correctly 1`] = `
                                     editable={true}
                                     onChangeText={[Function]}
                                     placeholder="Blue"
+                                    placeholderTextColor="#8E8E8E"
                                     style={
                                       Array [
                                         Object {

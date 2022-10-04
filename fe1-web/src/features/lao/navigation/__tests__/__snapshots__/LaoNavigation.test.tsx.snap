@@ -519,6 +519,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                       <TextInput
                                         editable={false}
                                         placeholder="John Doe"
+                                        placeholderTextColor="#8E8E8E"
                                         style={
                                           Array [
                                             Object {
@@ -574,6 +575,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                       <TextInput
                                         editable={false}
                                         placeholder="LAO Organizer"
+                                        placeholderTextColor="#8E8E8E"
                                         style={
                                           Array [
                                             Object {
@@ -629,6 +631,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                       <TextInput
                                         editable={false}
                                         placeholder="DEDIS Lab"
+                                        placeholderTextColor="#8E8E8E"
                                         style={
                                           Array [
                                             Object {
@@ -684,6 +687,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                       <TextInput
                                         editable={false}
                                         placeholder="john.doe@epfl.ch"
+                                        placeholderTextColor="#8E8E8E"
                                         style={
                                           Array [
                                             Object {
@@ -739,6 +743,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                       <TextInput
                                         editable={false}
                                         placeholder="+41 12 345 67 89"
+                                        placeholderTextColor="#8E8E8E"
                                         style={
                                           Array [
                                             Object {
