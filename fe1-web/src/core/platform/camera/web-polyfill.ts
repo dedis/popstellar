@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 // https://developer.mozilla.org/en-US/docs/Web/API/PermissionStatus
 interface PermissionStatusCustom {
   name: string;
@@ -6,6 +8,10 @@ interface PermissionStatusCustom {
 }
 
 export default () => {
+  if (Platform.OS !== 'web' || typeof 'navigator' === undefined) {
+    return;
+  }
+
   // in general modifying the prototype is very bad practise but
   // unfortunately it is required in this case
   // see https://github.com/dedis/popstellar/issues/1258
