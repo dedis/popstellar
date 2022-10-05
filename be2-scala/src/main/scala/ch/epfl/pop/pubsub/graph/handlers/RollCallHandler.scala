@@ -4,7 +4,7 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall}
+import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -44,9 +44,10 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        _ <- checkParameters(rpcRequest, serverUnexpectedAnswer)
-        message: Message = rpcRequest.getParamsMessage.get
-        data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
+        (_, message, somedata) <- checkParameters[CreateRollCall](rpcRequest, serverUnexpectedAnswer)
+        data: CreateRollCall = somedata.get
+        //message: Message = rpcRequest.getParamsMessage.get
+        //data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
         // we are using the rollcall id instead of the message_id at rollcall creation
         rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         laoId: Hash = rpcRequest.extractLaoId
@@ -69,8 +70,8 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleOpenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        _ <- checkParameters(rpcRequest, serverUnexpectedAnswer) // if it fails, throw an error
-        message: Message = rpcRequest.getParamsMessage.get // this line is not executed if the first fails
+        (_, message, _) <- checkParameters[OpenRollCall](rpcRequest, serverUnexpectedAnswer) // if it fails, throw an error
+        //message: Message = rpcRequest.getParamsMessage.get // this line is not executed if the first fails
         channel: Channel = rpcRequest.getParamsChannel
         laoId: Hash = rpcRequest.extractLaoId
         // check if the roll call already exists to open it
@@ -90,8 +91,8 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   def handleReopenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask = for {
-      _ <- checkParameters(rpcRequest, serverUnexpectedAnswer)
-      message: Message = rpcRequest.getParamsMessage.get
+      (_, message, _) <- checkParameters[ReopenRollCall](rpcRequest, serverUnexpectedAnswer)
+      //message: Message = rpcRequest.getParamsMessage.get
       laoId: Hash = rpcRequest.extractLaoId
       _ <- dbAskWritePropagate(rpcRequest)
       _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
@@ -109,8 +110,8 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
       _ <- checkLaoChannel(rpcRequest, s"There is an issue with the data of the LAO")
       laoChannel: Option[Hash] = rpcRequest.getParamsChannel.decodeChannelLaoId
       _ <- dbAskWritePropagate(rpcRequest)
-      _ <- checkParameters(rpcRequest, s"Unable to handle lao message $rpcRequest. Not a Publish/Broadcast message")
-      message: Message = rpcRequest.getParamsMessage.get
+      (_, message, _) <- checkParameters[CloseRollCall](rpcRequest, serverUnexpectedAnswer)
+      //message: Message = rpcRequest.getParamsMessage.get
       _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
       _ <- dbActor ? DbActor.WriteRollCallData(laoChannel.get, message)
     } yield ()
