@@ -42,26 +42,28 @@ class NetworkManager {
     AppState.addEventListener('change', this.onAppStateChange.bind(this));
   }
 
-  private onNetworkChange(state: NetInfoState): void {
+  private onNetworkChange(state: NetInfoState): Promise<void> {
     const isOnline = state.isConnected || false;
     if (!this.isOnline && isOnline) {
       // if we were disconnected before and are now reconnected to the network
       // then try to reconnect all connections
-      this.reconnectIfNecessary();
+      return this.reconnectIfNecessary();
     }
 
     this.isOnline = isOnline;
+    return Promise.resolve();
   }
 
-  private onAppStateChange(status: AppStateStatus) {
+  private onAppStateChange(status: AppStateStatus): Promise<void> {
     const isFocused = status === 'active';
     if (!this.isFocused && isFocused) {
       // if we were backgrounded and become active again, the websocket
       // connections are very likely to be broken
-      this.reconnectIfNecessary();
+      return this.reconnectIfNecessary();
     }
 
     this.isFocused = isFocused;
+    return Promise.resolve();
   }
 
   public addReconnectionHandler(handler: ReconnectionHandler) {

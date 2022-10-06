@@ -22,6 +22,7 @@ const { getMockNetworkManager } = NetworkManagerMock;
 afterEach(() => {
   networkManager.disconnectFromAll();
   networkManager.removeAllReconnectionHandler();
+  networkManager.removeAllConnectionDeathHandlers();
 });
 
 describe('NetworkManager', () => {
@@ -158,7 +159,7 @@ describe('NetworkManager', () => {
     networkManager.addReconnectionHandler(handler);
     networkManager.addReconnectionHandler(handler2);
 
-    networkManager['reconnectIfNecessary']();
+    await networkManager['reconnectIfNecessary']();
 
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler2).toHaveBeenCalledTimes(1);
@@ -226,7 +227,7 @@ describe('NetworkManager', () => {
     networkManager.addReconnectionHandler(handler);
 
     // mock reconnection
-    networkManager['onNetworkChange']({ isConnected: true } as NetInfoState);
+    await networkManager['onNetworkChange']({ isConnected: true } as NetInfoState);
 
     // make sure the handler has been called
     expect(handler).toHaveBeenCalledTimes(1);
@@ -244,7 +245,7 @@ describe('NetworkManager', () => {
     networkManager.addReconnectionHandler(handler);
 
     // mock becoming active again
-    networkManager['onAppStateChange']('active');
+    await networkManager['onAppStateChange']('active');
 
     // make sure the handler has been called
     expect(handler).toHaveBeenCalledTimes(1);
