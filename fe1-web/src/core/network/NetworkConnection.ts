@@ -13,39 +13,92 @@ import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
 import { RpcOperationError } from './RpcOperationError';
 
-const WEBSOCKET_CONNECTION_MAX_ATTEMPTS = 3;
-const WEBSOCKET_CONNECTION_FAILURE_TIMEOUT = 1000;
+const WEBSOCKET_CONNECTION_MAX_ATTEMPTS = 5;
+const WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS = 500;
 
-const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
-const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
+const WEBSOCKET_READYSTATE_INTERVAL_MS = 250;
+const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 10;
 const WEBSOCKET_MESSAGE_TIMEOUT_MS = 10000; // 10 seconds max round-trip time
 
 const JSON_RPC_ID_WRAP_AROUND = 10000;
 
-interface PendingResponse {
-  promise: Promise<ExtendedJsonRpcResponse>;
+interface PendingRequest {
   resolvePromise: (value: ExtendedJsonRpcResponse) => void;
   rejectPromise: (error: RpcOperationError) => void;
   timeoutId: ReturnType<typeof setTimeout>;
 }
 
 export class NetworkConnection {
+  /**
+   * The associated websocket connection
+   */
   private ws: W3CWebSocket;
 
+  /**
+   * The next json rpc request id to be used
+   */
   private nextRpcId: number = 1;
 
-  private readonly payloadPending: Map<number, PendingResponse> = new Map();
+  /**
+   * A map from rpc id to pending requests
+   */
+  private readonly pendingRequests: Map<number, PendingRequest> = new Map();
 
+  /**
+   * The handler used for handling json rpc requests
+   */
   private onRpcHandler: JsonRpcHandler = defaultRpcHandler;
 
+  /**
+   * The address where to connect to
+   */
   public readonly address: string;
 
+  /**
+   * The number of failed connection attempts after the connection broke
+   * because of an error
+   */
   private failedConnectionAttempts: number = 0;
 
-  constructor(address: string, handler?: JsonRpcHandler) {
-    this.ws = this.establishConnection(address);
-    this.address = this.ws.url;
+  /**
+   * Function called when the first websocket connection is established
+   */
+  private onInitialOpenCallback?: () => void;
+
+  /**
+   * Function called when the connection closes for good
+   */
+  private onConnectionDeadCallback?: () => void;
+
+  /**
+   * Boolean indicating whether this connection is open or there is still hope
+   * in re-establishing a broken conneciton
+   */
+  private alive: boolean;
+
+  /**
+   * Boolean indicating whether we wanted to close it
+   */
+  private closeIntent: boolean;
+
+  /**
+   * SHOULD *NOT* BE CALLED DIRECTLY.
+   * USE NetworkConnection.create() instead
+   */
+  constructor(
+    address: string,
+    handler?: JsonRpcHandler,
+    onInitialOpenCallback?: () => void,
+    onConnectionDeadCallback?: () => void,
+  ) {
+    this.address = address;
     this.onRpcHandler = handler !== undefined ? handler : defaultRpcHandler;
+    this.onInitialOpenCallback = onInitialOpenCallback;
+    this.onConnectionDeadCallback = onConnectionDeadCallback;
+    this.alive = true;
+    this.closeIntent = false;
+
+    this.ws = this.establishConnection(address);
   }
 
   private establishConnection(address: string): W3CWebSocket {
@@ -59,25 +112,73 @@ export class NetworkConnection {
     return ws;
   }
 
+  /**
+   * Creates a new NetworkConnection instance
+   * @param address The address to connect to
+   * @param handler The json rpc message handler
+   * @param onConnectionDeadCallback A function called when the connection closes for good because of an error
+   * @returns A promise with the network connection if a connection can be established
+   */
+  static create(
+    address: string,
+    handler: JsonRpcHandler,
+    onConnectionDeadCallback: () => void,
+  ): Promise<NetworkConnection> {
+    return new Promise((resolve, reject) => {
+      setTimeout(
+        () => reject(new NetworkError(`Connecting to ${address} timed out.`)),
+        WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS,
+      );
+
+      const nc: NetworkConnection = new NetworkConnection(
+        address,
+        handler,
+        () => resolve(nc),
+        onConnectionDeadCallback,
+      );
+    });
+  }
+
+  /**
+   * Closes the websocket connection
+   */
   public disconnect(): void {
+    this.closeIntent = true;
     this.ws.close();
   }
 
+  /**
+   * If the websocket is in the closing state or has already been closed,
+   * this function tries to re-establish the connection
+   */
   public reconnectIfNecessary() {
     // 0 = CONNECTING, 1 = OPEN, 2 = CLOSING, 3 = CLOSED
     if (this.ws.readyState > 1) {
-      this.disconnect();
       this.ws = this.establishConnection(this.address);
     }
   }
 
+  /**
+   * Function called when the websocket connection opens / is established
+   */
   private onOpen(): void {
     console.info(`Initiating web socket : ${this.address}`);
 
     // reset failed connection attempts
     this.failedConnectionAttempts = 0;
+
+    // when the connection is established for the first time
+    // call onInitialOpenCallback exactly once
+    if (this.onInitialOpenCallback) {
+      this.onInitialOpenCallback();
+      this.onInitialOpenCallback = undefined;
+    }
   }
 
+  /**
+   * Function called when a message over the websocket connection is received
+   * @param message The websocket message
+   */
   private onMessage(message: IMessageEvent): void {
     console.debug(`Received a new message from '${this.address}' : `, message.data);
 
@@ -96,24 +197,46 @@ export class NetworkConnection {
     }
   }
 
+  /**
+   * Function called when the connection has been closed, either on purpose or because of an error
+   */
   private onClose(): void {
     console.info(`Closed websocket connection : ${this.address}`);
-  }
 
-  private onError(event: Error): void {
-    this.failedConnectionAttempts += 1;
+    // it was not our intention to close the connection. try to re-connect
+    if (!this.closeIntent) {
+      this.failedConnectionAttempts += 1;
+      console.error(`Trying to re-establish a connection at address : ${this.address}`);
 
-    console.error(`WebSocket error observed on '${this.address}' : `, event);
-    console.error(`Trying to establish a new connection at address : ${this.address}`);
+      // only retry a certain number of times and add a wait before retrying
+      if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
+        setTimeout(() => {
+          this.reconnectIfNecessary();
+        }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS);
 
-    // only retry a certain number of times and add a wait before retrying
-    if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
-      setTimeout(() => {
-        this.reconnectIfNecessary();
-      }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT);
+        // check if callback is set
+      } else if (this.onConnectionDeadCallback) {
+        // do not try to re-establish the connection, this connection seems
+        // to be broken for now and the near future
+        console.error(`Connection with ${this.address} broke for good`);
+        this.alive = false;
+        this.onConnectionDeadCallback();
+      }
     }
   }
 
+  /**
+   * Function called when the websocket connection fails because of an error
+   */
+  private onError(event: Error): void {
+    console.error(`WebSocket error observed on '${this.address}' : `, event);
+  }
+
+  /**
+   * Parses the incoming data
+   * @param data The data received over the websocket
+   * @returns A parsed json rpc response or request
+   */
   private static parseIncomingData(data: any): JsonRpcResponse | JsonRpcRequest {
     let errResp: any;
     let errReq: any;
@@ -136,6 +259,9 @@ export class NetworkConnection {
     );
   }
 
+  /**
+   * Forwards a received json rpc request to the rpc handler
+   */
   private processRequest(request: JsonRpcRequest): void {
     try {
       this.onRpcHandler(new ExtendedJsonRpcRequest({ receivedFrom: this.address }, request));
@@ -144,9 +270,13 @@ export class NetworkConnection {
     }
   }
 
+  /**
+   * Finds the pending request for a received response
+   * and resolve the respective promise
+   */
   private processResponse(parsedMessage: JsonRpcResponse): void {
     if (parsedMessage.id !== UNDEFINED_ID) {
-      const pendingResponse = this.payloadPending.get(parsedMessage.id);
+      const pendingResponse = this.pendingRequests.get(parsedMessage.id);
       if (pendingResponse === undefined) {
         throw new NetworkError(
           `Received a response whose id = ${parsedMessage.id}` +
@@ -156,7 +286,7 @@ export class NetworkConnection {
 
       // a response was received, clear the timeout and the pending query from the pending map
       clearTimeout(pendingResponse.timeoutId);
-      this.payloadPending.delete(parsedMessage.id);
+      this.pendingRequests.delete(parsedMessage.id);
 
       // use promise resolve/reject to communicate RPC outcome
       if (parsedMessage.error === undefined) {
@@ -175,28 +305,35 @@ export class NetworkConnection {
     }
   }
 
+  /**
+   * Updates the rpc handler for received json rpc requests
+   */
   public setRpcHandler(handler: JsonRpcHandler): void {
     this.onRpcHandler = handler;
   }
 
-  public sendPayload(payload: JsonRpcRequest): Promise<ExtendedJsonRpcResponse> {
+  /**
+   * Tries to send a payload and waits for its response
+   * @param payload The payload to send
+   * @returns A promise that resolves when the payload was sent sucessfully and a response was received
+   */
+  public async sendPayload(payload: JsonRpcRequest): Promise<ExtendedJsonRpcResponse> {
     // Check that the websocket connection is ready
-    if (!this.ws.readyState) {
-      return this.waitWebsocketReady().then(() => this.sendPayload(payload));
+    if (this.ws.readyState !== 1 /* CONNECTING | CLOSING | CLOSED */) {
+      await this.waitWebsocketReady();
+      return this.sendPayload(payload);
     }
 
     // websocket ready to be used, message can be sent
-    let query: JsonRpcRequest = payload;
-
     // Note: this only works because react/Js is single threaded
-    query = new JsonRpcRequest({
+    const query: JsonRpcRequest = new JsonRpcRequest({
       ...payload,
       id: this.getNextRpcID(),
     });
 
-    const promise = new Promise<ExtendedJsonRpcResponse>((resolve, reject) => {
+    return new Promise<ExtendedJsonRpcResponse>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
-        this.payloadPending.delete(query.id as number);
+        this.pendingRequests.delete(query.id as number);
         reject(
           new NetworkError(
             `Maximum waiting time of ${WEBSOCKET_MESSAGE_TIMEOUT_MS} [ms] reached, dropping query`,
@@ -204,25 +341,25 @@ export class NetworkConnection {
         );
       }, WEBSOCKET_MESSAGE_TIMEOUT_MS);
 
-      const pendingResponse: PendingResponse = {
-        promise: promise,
+      const pendingRequest: PendingRequest = {
         resolvePromise: resolve,
         rejectPromise: reject,
         timeoutId: timeoutId,
       };
 
-      this.payloadPending.set(
+      this.pendingRequests.set(
         query.id as number, // as this point, there will be a number as id
-        pendingResponse,
+        pendingRequest,
       );
 
       console.log(`Sending this message on '${this.address}' : `, query);
       this.ws.send(JSON.stringify(query));
     });
-
-    return promise;
   }
 
+  /**
+   * Generates consecutive json rpc ids
+   */
   private getNextRpcID(): number {
     /* This function should also make sure that IDs used by the connection peer are not reused.
      * In practice, not doing this check is okay as the server doesn't initiate RPCs
@@ -232,27 +369,46 @@ export class NetworkConnection {
     return rpcId;
   }
 
+  /**
+   * Allows to wait for the websocket readyState to switch to OPEN within a fixed amount of retries
+   * @returns The promise
+   */
   private waitWebsocketReady(): Promise<void> {
-    if (this.ws.readyState) {
+    if (this.ws.readyState === 1 /* OPEN */) {
       return Promise.resolve();
     }
+
+    // the connection broke before we could send our message
+    // and onError should be trying to restore it
+    // thus wait for a little bit and re-check from
+    // time to time
 
     let count = 0;
     return new Promise((resolve, reject) => {
       const id = setInterval(() => {
-        if (this.ws.readyState) {
+        if (this.ws.readyState === 1 /* OPEN */ && this.alive) {
           clearInterval(id);
           resolve();
-        } else if (count < WEBSOCKET_READYSTATE_MAX_ATTEMPTS) {
+        } else if (
+          this.ws.readyState !== 1 /* CONNECTING | CLOSING | CLOSED */ &&
+          count < WEBSOCKET_READYSTATE_MAX_ATTEMPTS &&
+          this.alive
+        ) {
           count += 1;
-        } else {
+        } else if (this.alive) {
           // abandon if we reached too many attempts
-          clearInterval(id);
           reject(
             new NetworkError(
-              `Maximum waiting time for websocket to be ready reached :
-            ${WEBSOCKET_READYSTATE_MAX_ATTEMPTS * WEBSOCKET_READYSTATE_INTERVAL_MS}
-            [ms] (_waitWebsocketReady)`,
+              `Maximum waiting time for websocket to be ready reached : ${
+                WEBSOCKET_READYSTATE_MAX_ATTEMPTS * WEBSOCKET_READYSTATE_INTERVAL_MS
+              } [ms] (waitWebsocketReady)`,
+            ),
+          );
+        } else {
+          // the connection broke for good
+          reject(
+            new NetworkConnection(
+              `Connection broke for good and cannot re-established in the near future`,
             ),
           );
         }

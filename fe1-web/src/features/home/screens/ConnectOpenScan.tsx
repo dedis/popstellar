@@ -70,7 +70,7 @@ const ConnectOpenScan = () => {
     });
   }, [navigation]);
 
-  const handleScan = (data: string | null) => {
+  const handleScan = async (data: string | null) => {
     if (!data) {
       return;
     }
@@ -101,7 +101,9 @@ const ConnectOpenScan = () => {
       );
 
       // connect to the lao
-      const connections = connectToLao.servers.map((server) => getNetworkManager().connect(server));
+      const connections = await Promise.all(
+        connectToLao.servers.map((server) => getNetworkManager().connect(server)),
+      );
       if (connections.length === 0) {
         return;
       }

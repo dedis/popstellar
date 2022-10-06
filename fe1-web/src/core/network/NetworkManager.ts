@@ -10,6 +10,7 @@ import { sendToAllServersStrategy } from './strategies/SendToAllServersStrategy'
 let NETWORK_MANAGER_INSTANCE: NetworkManager;
 
 type ReconnectionHandler = () => void;
+type ConnectionDeathHandler = (address: string) => void;
 
 class NetworkManager {
   private connections: NetworkConnection[];
@@ -23,6 +24,8 @@ class NetworkManager {
   private isFocused: boolean;
 
   private reconnectionHandlers: ReconnectionHandler[] = [];
+
+  private connectionDeathHandlers: ConnectionDeathHandler[] = [];
 
   public constructor(sendingStrategy: SendingStrategy) {
     this.connections = [];
@@ -73,6 +76,18 @@ class NetworkManager {
     this.reconnectionHandlers = [];
   }
 
+  public addConnectionDeathHandler(handler: ConnectionDeathHandler) {
+    this.connectionDeathHandlers.push(handler);
+  }
+
+  public removeConnectionDeathHandler(handler: ConnectionDeathHandler) {
+    this.connectionDeathHandlers = this.connectionDeathHandlers.filter((h) => h !== handler);
+  }
+
+  public removeAllConnectionDeathHandlers() {
+    this.connectionDeathHandlers = [];
+  }
+
   private reconnectIfNecessary() {
     // the sending strategy will fail if we have no connection
     if (this.connections.length > 0) {
@@ -90,11 +105,16 @@ class NetworkManager {
     return this.connections.find((nc: NetworkConnection) => nc.address === address);
   }
 
+  private onConnectionDead(address: string) {
+    this.disconnectFrom(address);
+    this.connectionDeathHandlers.forEach((handler) => handler(address));
+  }
+
   /** Connects to a server or returns an existing connection to the server
    * @param address the server's full address (URI)
    * @returns a new connection to the server, or an existing one if it's already established
    */
-  public connect(address: string): NetworkConnection {
+  public async connect(address: string): Promise<NetworkConnection> {
     if (!address) {
       throw new Error('No address provided in connect');
     }
@@ -107,7 +127,11 @@ class NetworkManager {
       return existingConnection;
     }
 
-    const connection: NetworkConnection = new NetworkConnection(href, this.rpcHandler);
+    const connection: NetworkConnection = await NetworkConnection.create(
+      href,
+      this.rpcHandler,
+      () => this.onConnectionDead(href),
+    );
     this.connections.push(connection);
     return connection;
   }

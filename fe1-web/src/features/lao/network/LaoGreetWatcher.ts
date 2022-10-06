@@ -22,7 +22,7 @@ import { GreetLao } from './messages/GreetLao';
  * @param greetLaoMsg The GreetLao data of the greeting message
  * @param publicKey The public key of the message's sender, i.e. the public key of the backend
  */
-export const storeBackendAndConnectToPeers = (
+export const storeBackendAndConnectToPeers = async (
   messageId: Hash,
   greetLaoMsg: GreetLao,
   publicKey: PublicKey,
@@ -48,16 +48,24 @@ export const storeBackendAndConnectToPeers = (
   // address, otherwise a client will connect to the same server twice (e.g. using its IP and then
   // then using the canonical domain address)
   const networkManager = getNetworkManager();
-  for (const peerAddress of greetLaoMsg.peers) {
-    networkManager.connect(peerAddress.address);
-  }
 
-  // mark the lao#greet message as handled
-  dispatch(
-    handleGreetLaoMessage({
-      messageId: messageId.valueOf(),
-    }),
-  );
+  try {
+    await Promise.all(
+      greetLaoMsg.peers.map((peerAddress) => networkManager.connect(peerAddress.address)),
+    );
+
+    // mark the lao#greet message as handled
+    dispatch(
+      handleGreetLaoMessage({
+        messageId: messageId.valueOf(),
+      }),
+    );
+  } catch {
+    // here we can actually ignore errors for now since
+    // this only applies to peers which are not implemented at the moment
+    // anyway. In the future we might need to show the user an indication
+    // of the fact that it was not possible to connect to (all) peers
+  }
 };
 
 /**
