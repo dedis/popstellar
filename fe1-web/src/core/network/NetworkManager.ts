@@ -105,7 +105,7 @@ class NetworkManager {
     return this.connections.find((nc: NetworkConnection) => nc.address === address);
   }
 
-  private onConnectionDead(address: string) {
+  private onConnectionDeath(address: string) {
     this.disconnectFrom(address);
     this.connectionDeathHandlers.forEach((handler) => handler(address));
   }
@@ -130,7 +130,7 @@ class NetworkManager {
     const connection: NetworkConnection = await NetworkConnection.create(
       href,
       this.rpcHandler,
-      () => this.onConnectionDead(href),
+      () => this.onConnectionDeath(href),
     );
     this.connections.push(connection);
     return connection;

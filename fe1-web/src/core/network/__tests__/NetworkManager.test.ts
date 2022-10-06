@@ -117,7 +117,7 @@ describe('NetworkManager', () => {
     expect(sendingStrategy).toHaveBeenCalledWith(mockJsonRpcPayload, [connection]);
   });
 
-  it('is possible to add a reconnection handlers', () => {
+  it('is possible to add a reconnection handler', () => {
     const handler = jest.fn();
     const handler2 = jest.fn();
 
@@ -137,7 +137,7 @@ describe('NetworkManager', () => {
     expect(networkManager['reconnectionHandlers']).toEqual([]);
   });
 
-  it('is possible to remove all reconnection handler', () => {
+  it('is possible to remove all reconnection handlers', () => {
     const handler = jest.fn();
     const handler2 = jest.fn();
 
@@ -162,6 +162,56 @@ describe('NetworkManager', () => {
 
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler2).toHaveBeenCalledTimes(1);
+  });
+
+  it('is possible to add a connection death handler', () => {
+    const handler = jest.fn();
+    const handler2 = jest.fn();
+
+    networkManager.addConnectionDeathHandler(handler);
+    expect(networkManager['connectionDeathHandlers']).toEqual([handler]);
+
+    networkManager.addConnectionDeathHandler(handler2);
+    expect(networkManager['connectionDeathHandlers']).toEqual([handler, handler2]);
+  });
+
+  it('is possible to remove a connection death handler', () => {
+    const handler = jest.fn();
+
+    networkManager.addConnectionDeathHandler(handler);
+    networkManager.removeConnectionDeathHandler(handler);
+
+    expect(networkManager['connectionDeathHandlers']).toEqual([]);
+  });
+
+  it('is possible to remove all connection death handlers', () => {
+    const handler = jest.fn();
+    const handler2 = jest.fn();
+
+    networkManager.addConnectionDeathHandler(handler);
+    networkManager.addConnectionDeathHandler(handler2);
+    networkManager.removeAllConnectionDeathHandlers();
+
+    expect(networkManager['connectionDeathHandlers']).toEqual([]);
+  });
+
+  it('correctly calls the connection death handlers', async () => {
+    // have to add some connection, otherwise no reconnection happens
+    await networkManager.connect(mockAddress);
+
+    const handler = jest.fn();
+    const handler2 = jest.fn();
+
+    networkManager.addConnectionDeathHandler(handler);
+    networkManager.addConnectionDeathHandler(handler2);
+
+    networkManager['onConnectionDeath'](mockAddress);
+
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenCalledWith(mockAddress);
+
+    expect(handler2).toHaveBeenCalledTimes(1);
+    expect(handler2).toHaveBeenCalledWith(mockAddress);
   });
 
   it('triggers reconnect() after being reconnected to the network', async () => {
