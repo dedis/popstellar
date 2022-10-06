@@ -18,6 +18,9 @@ export class w3cwebsocket {
 
   constructor(url: string) {
     this.url = url;
+
+    // mock connection establishment
+    setTimeout(this.mockOnOpen.bind(this), 100);
   }
 
   public mockOnOpen() {

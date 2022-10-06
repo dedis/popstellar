@@ -35,8 +35,8 @@ describe('NetworkManager', () => {
     expect(instance2).toBe(instance3);
   });
 
-  it('can connect to address', () => {
-    const connection = networkManager.connect(mockAddress);
+  it('can connect to address', async () => {
+    const connection = await networkManager.connect(mockAddress);
 
     // check whether the address of the connection has been set
     expect(connection.address).toEqual(mockAddress);
@@ -44,31 +44,31 @@ describe('NetworkManager', () => {
     expect(networkManager['connections']).toEqual([connection]);
   });
 
-  it('does not create two connections to the same address', () => {
-    const connection1 = networkManager.connect(mockAddress);
-    const connection2 = networkManager.connect(mockAddress);
+  it('does not create two connections to the same address', async () => {
+    const connection1 = await networkManager.connect(mockAddress);
+    const connection2 = await networkManager.connect(mockAddress);
 
     expect(connection1).toBe(connection2);
     expect(networkManager['connections']).toEqual([connection1]);
   });
 
-  it('can connect to multiple addresses', () => {
-    const connection1 = networkManager.connect(mockAddress);
-    const connection2 = networkManager.connect('wss://some-other-address.com:8000/');
+  it('can connect to multiple addresses', async () => {
+    const connection1 = await networkManager.connect(mockAddress);
+    const connection2 = await networkManager.connect('wss://some-other-address.com:8000/');
 
     // check whether the connections have been added
     expect(networkManager['connections']).toEqual([connection1, connection2]);
   });
 
-  it('can disconnect a given connection', () => {
-    const connection = networkManager.connect(mockAddress);
+  it('can disconnect a given connection', async () => {
+    const connection = await networkManager.connect(mockAddress);
     networkManager.disconnect(connection);
 
     expect(networkManager['connections']).toEqual([]);
   });
 
-  it('can disconnect from a given address', () => {
-    const connection = networkManager.connect(mockAddress);
+  it('can disconnect from a given address', async () => {
+    const connection = await networkManager.connect(mockAddress);
 
     expect(networkManager['connections']).toEqual([connection]);
 
@@ -77,10 +77,10 @@ describe('NetworkManager', () => {
     expect(networkManager['connections']).toEqual([]);
   });
 
-  it('can disconnect from all connections', () => {
-    const connection1 = networkManager.connect(mockAddress);
-    const connection2 = networkManager.connect('wss://some-other-address.com:8000/');
-    const connection3 = networkManager.connect('wss://another-address.com:8000/');
+  it('can disconnect from all connections', async () => {
+    const connection1 = await networkManager.connect(mockAddress);
+    const connection2 = await networkManager.connect('wss://some-other-address.com:8000/');
+    const connection3 = await networkManager.connect('wss://another-address.com:8000/');
 
     expect(networkManager['connections']).toEqual([connection1, connection2, connection3]);
 
@@ -89,10 +89,10 @@ describe('NetworkManager', () => {
     expect(networkManager['connections']).toEqual([]);
   });
 
-  it('sets the RPC handler correctly', () => {
-    const connection1 = networkManager.connect(mockAddress);
-    const connection2 = networkManager.connect('wss://some-other-address.com:8000/');
-    const connection3 = networkManager.connect('wss://another-address.com:8000/');
+  it('sets the RPC handler correctly', async () => {
+    const connection1 = await networkManager.connect(mockAddress);
+    const connection2 = await networkManager.connect('wss://some-other-address.com:8000/');
+    const connection3 = await networkManager.connect('wss://another-address.com:8000/');
 
     const rpcHandler = jest.fn();
 
@@ -107,11 +107,11 @@ describe('NetworkManager', () => {
     expect(connection3['onRpcHandler']).toBe(rpcHandler);
   });
 
-  it('can sends data using the sending strategy', () => {
+  it('can sends data using the sending strategy', async () => {
     const sendingStrategy = jest.fn();
     const mockNetworkManager: NetworkManagerType = getMockNetworkManager(sendingStrategy);
 
-    const connection = mockNetworkManager.connect(mockAddress);
+    const connection = await mockNetworkManager.connect(mockAddress);
     mockNetworkManager.sendPayload(mockJsonRpcPayload);
 
     expect(sendingStrategy).toHaveBeenCalledWith(mockJsonRpcPayload, [connection]);
@@ -148,9 +148,9 @@ describe('NetworkManager', () => {
     expect(networkManager['reconnectionHandlers']).toEqual([]);
   });
 
-  it('correctly calls the reconnection handlers', () => {
+  it('correctly calls the reconnection handlers', async () => {
     // have to add some connection, otherwise no reconnection happens
-    networkManager.connect(mockAddress);
+    await networkManager.connect(mockAddress);
 
     const handler = jest.fn();
     const handler2 = jest.fn();
@@ -164,9 +164,9 @@ describe('NetworkManager', () => {
     expect(handler2).toHaveBeenCalledTimes(1);
   });
 
-  it('triggers reconnect() after being reconnected to the network', () => {
+  it('triggers reconnect() after being reconnected to the network', async () => {
     // have to add some connection, otherwise no reconnection happens
-    networkManager.connect(mockAddress);
+    await networkManager.connect(mockAddress);
 
     // mock disconnection
     networkManager['onNetworkChange']({ isConnected: false } as NetInfoState);
@@ -182,9 +182,9 @@ describe('NetworkManager', () => {
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
-  it('triggers reconnect() after becoming active again', () => {
+  it('triggers reconnect() after becoming active again', async () => {
     // have to add some connection, otherwise no reconnection happens
-    networkManager.connect(mockAddress);
+    await networkManager.connect(mockAddress);
 
     // mock backgrounding
     networkManager['onAppStateChange']('background');

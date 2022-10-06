@@ -66,7 +66,7 @@ jest.mock('core/redux', () => {
 });
 
 describe('handleLaoGreet', () => {
-  it('should add the server and mark the greeting message as handled', () => {
+  it('should add the server and mark the greeting message as handled', async () => {
     const greetLaoMsg = new GreetLao({
       object: ObjectType.LAO,
       action: ActionType.GREET,
@@ -83,7 +83,7 @@ describe('handleLaoGreet', () => {
       t,
     );
 
-    storeBackendAndConnectToPeers(msg.message_id, greetLaoMsg, msg.sender);
+    await storeBackendAndConnectToPeers(msg.message_id, greetLaoMsg, msg.sender);
     expect(dispatch).toHaveBeenCalledTimes(2);
     // the key of the server should have been stored
     expect(dispatch).toHaveBeenCalledWith(
