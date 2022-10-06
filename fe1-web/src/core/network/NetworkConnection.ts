@@ -24,8 +24,9 @@ const JSON_RPC_ID_WRAP_AROUND = 10000;
 
 interface PendingRequest {
   resolvePromise: (value: ExtendedJsonRpcResponse) => void;
-  rejectPromise: (error: RpcOperationError) => void;
+  rejectPromise: (error: NetworkError) => void;
   timeoutId: ReturnType<typeof setTimeout>;
+  payload: JsonRpcRequest;
 }
 
 export class NetworkConnection {
@@ -151,11 +152,21 @@ export class NetworkConnection {
    * If the websocket is in the closing state or has already been closed,
    * this function tries to re-establish the connection
    */
-  public reconnectIfNecessary() {
+  public reconnectIfNecessary(): Promise<void> {
     // 0 = CONNECTING, 1 = OPEN, 2 = CLOSING, 3 = CLOSED
     if (this.ws.readyState > 1) {
-      this.ws = this.establishConnection(this.address);
+      return new Promise((resolve, reject) => {
+        setTimeout(
+          () => reject(new NetworkError(`Re-connecting to ${this.address} timed out.`)),
+          WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS,
+        );
+
+        this.onInitialOpenCallback = resolve;
+        this.ws = this.establishConnection(this.address);
+      });
     }
+
+    return Promise.resolve();
   }
 
   /**
@@ -172,6 +183,16 @@ export class NetworkConnection {
     if (this.onInitialOpenCallback) {
       this.onInitialOpenCallback();
       this.onInitialOpenCallback = undefined;
+    }
+
+    // if there are pending requests, re-send them
+    // this can happen after the connection was re-established
+    for (const entry of this.pendingRequests.entries()) {
+      const request: PendingRequest = entry[1];
+
+      // clear timeout, connection was just re-established
+      clearTimeout(request.timeoutId);
+      this.resendRequest(request);
     }
   }
 
@@ -345,6 +366,7 @@ export class NetworkConnection {
         resolvePromise: resolve,
         rejectPromise: reject,
         timeoutId: timeoutId,
+        payload: query,
       };
 
       this.pendingRequests.set(
@@ -355,6 +377,48 @@ export class NetworkConnection {
       console.log(`Sending this message on '${this.address}' : `, query);
       this.ws.send(JSON.stringify(query));
     });
+  }
+
+  /**
+   * Tries to re-send a pending request
+   * @param request The request to resend
+   */
+  public async resendRequest(request: PendingRequest): Promise<void> {
+    // Check that the websocket connection is ready
+    if (this.ws.readyState !== 1 /* CONNECTING | CLOSING | CLOSED */) {
+      await this.waitWebsocketReady();
+      this.resendRequest(request);
+
+      return;
+    }
+
+    const resolve = request.resolvePromise;
+    const reject = request.rejectPromise;
+
+    const timeoutId = setTimeout(() => {
+      this.pendingRequests.delete(request.payload.id as number);
+      reject(
+        new NetworkError(
+          `Maximum waiting time of ${WEBSOCKET_MESSAGE_TIMEOUT_MS} [ms] reached, dropping query`,
+        ),
+      );
+    }, WEBSOCKET_MESSAGE_TIMEOUT_MS);
+
+    const newPendingRequest: PendingRequest = {
+      resolvePromise: resolve,
+      rejectPromise: reject,
+      timeoutId: timeoutId,
+      payload: request.payload,
+    };
+
+    // override map entry
+    this.pendingRequests.set(
+      request.payload.id as number, // as this point, there will be a number as id
+      newPendingRequest,
+    );
+
+    console.log(`Re-sending this message on '${this.address}' : `, request.payload);
+    this.ws.send(JSON.stringify(request.payload));
   }
 
   /**

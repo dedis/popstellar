@@ -88,13 +88,13 @@ class NetworkManager {
     this.connectionDeathHandlers = [];
   }
 
-  private reconnectIfNecessary() {
+  private async reconnectIfNecessary() {
     // the sending strategy will fail if we have no connection
     if (this.connections.length > 0) {
       console.info('Reconnecting to all disconnected websockets..');
-      for (const connection of this.connections) {
-        connection.reconnectIfNecessary();
-      }
+      await Promise.all(this.connections.map((connection) => connection.reconnectIfNecessary()));
+      console.info('Done. Execute re-connection handlers..');
+
       for (const handler of this.reconnectionHandlers) {
         handler();
       }
