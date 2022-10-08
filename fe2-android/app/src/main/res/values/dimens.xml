@@ -18,6 +18,10 @@
   <dimen name="size_for_longer_text">10sp</dimen>
   <dimen name="rounded_edit_text">10dp</dimen>
 
+  <!--  Home -->
+  <dimen name="home_button_horizontal_margin">50dp</dimen>
+  <dimen name="home_button_vertical_margin">30dp</dimen>
+
   <!-- Camera preview -->
   <dimen name="camera_preview_margin">20dp</dimen>
   <dimen name="qr_rollcall_img">320dp</dimen>
@@ -40,6 +44,8 @@
   <!-- Button -->
   <dimen name="event_buttons_width">110dp</dimen>
   <dimen name="event_buttons_height">43dp</dimen>
+  <dimen name="standard_button_height">55dp</dimen>
+  <dimen name="standard_button_width">105dp</dimen>
   <dimen name="qr_icon_side">40dp</dimen>
 
   <!-- Event -->

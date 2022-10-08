@@ -28,6 +28,9 @@
     </string>
   <string name="attendee">Attendee</string>
   <string name="organizer">Organizer</string>
+  <string name="join">Join</string>
+  <string name="create">Create</string>
+  <string name="no_lao_text">OOPS, Looks like you don\'t have any Local Autonomous Organization (LAO) yet.\n Join or Create one with the buttons below</string>
 
   <!-- Connect -->
   <string name="allow_camera_text">Please allow the camera to be used by the app</string>

@@ -10,19 +10,14 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.repository.local.PersistentData;
-import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
-import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -33,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
-public class HomeActivity extends NavigationActivity<HomeTab> {
+public class HomeActivity extends AppCompatActivity {
 
   private final String TAG = HomeActivity.class.getSimpleName();
 
@@ -44,7 +39,7 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.home_activity);
 
-    navigationViewModel = viewModel = obtainViewModel(this);
+    viewModel = obtainViewModel(this);
 
     // Load all the json schemas in background when the app is started.
     AsyncTask.execute(
@@ -54,9 +49,8 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
           JsonUtils.loadSchema(JsonUtils.GENERAL_MESSAGE_SCHEMA);
         });
 
-    BottomNavigationView navbar = findViewById(R.id.home_nav_bar);
-    setupNavigationBar(navbar);
-    setupMenuAvailabilityListeners(navbar);
+    // At start of Activity we display home fragment
+    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
     restoreStoredState();
   }
@@ -125,84 +119,8 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
     }
   }
 
-  @Override
-  protected HomeTab findTabByMenu(int menuId) {
-    return HomeTab.findByMenu(menuId);
-  }
-
-  /**
-   * Open the fragment based on the given tab and the application state
-   *
-   * @param tab to open
-   * @return true if the tab was opened and the menu should be selected on the navigation bar
-   */
-  @Override
-  protected boolean openTab(HomeTab tab) {
-    switch (tab) {
-      case HOME:
-        openHomeTab();
-        return true;
-      case CONNECT:
-        return openConnectTab();
-      case LAUNCH:
-        return openLaunchTab();
-      case WALLET:
-        WalletFragment.openWallet(getSupportFragmentManager(), viewModel.isWalletSetUp());
-        return true;
-      case SOCIAL:
-        openSocialMediaTab();
-        return false;
-      default:
-        Log.w(TAG, "Unhandled tab type : " + tab);
-        return false;
-    }
-  }
-
-  @Override
-  protected HomeTab getDefaultTab() {
-    return HomeTab.HOME;
-  }
-
-  private void openHomeTab() {
-    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
-  }
-
-  private boolean openConnectTab() {
-    // Check if the wallet is setup
-    if (!viewModel.isWalletSetUp()) {
-      showWalletWarning();
-      return false;
-    }
-
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
-    return true;
-  }
-
-  private boolean openLaunchTab() {
-    // Check if the wallet is setup
-    if (!viewModel.isWalletSetUp()) {
-      showWalletWarning();
-      return false;
-    }
-
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_launch, LaunchFragment::newInstance);
-    return true;
-  }
-
   private void showWalletWarning() {
     Toast.makeText(this, R.string.uninitialized_wallet_exception, Toast.LENGTH_SHORT).show();
-  }
-
-  private void openSocialMediaTab() {
-    if (!Boolean.TRUE.equals(viewModel.isSocialMediaEnabled().getValue())) {
-      Toast.makeText(this, R.string.error_no_lao, Toast.LENGTH_SHORT).show();
-      return;
-    }
-
-    Log.d(HomeViewModel.TAG, "Opening social media activity");
-    startActivity(SocialMediaActivity.newIntent(this));
   }
 
   private void restoreStoredState() {
