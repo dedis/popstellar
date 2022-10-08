@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_launch"
     android:layout_width="match_parent"
@@ -12,61 +13,68 @@
       android:gravity="center_vertical"
       android:orientation="vertical">
 
-      <TextView
-        android:id="@+id/launch_title_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/explication_welcome_style"
-        android:text="@string/text_title_launch"
-        android:textStyle="bold" />
-
-      <TextView
-        android:id="@+id/launch_body_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/text_body_launch"
-        style="@style/explication_text_style"
-        android:textSize="@dimen/size_body"
-        android:textStyle="italic" />
-
-      <EditText
+      <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lao_name_entry"
+        app:endIconMode="clear_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:autofillHints=""
         android:hint="@string/text_entry_launch"
-        android:inputType="text" />
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <com.google.android.material.textfield.TextInputEditText
+          android:id="@+id/lao_name_entry_edit_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:inputType="text" />
+
+      </com.google.android.material.textfield.TextInputLayout>
+
+      <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/server_url_entry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/server_url"
+        android:layout_marginTop="@dimen/margin_text"
+        app:endIconMode="clear_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+          android:id="@+id/server_url_entry_edit_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content" />
+
+      </com.google.android.material.textfield.TextInputLayout>
 
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/margin_button"
         android:gravity="center_horizontal"
+        style="?android:attr/buttonBarStyle"
         android:orientation="horizontal">
 
         <Button
           android:id="@+id/button_cancel_launch"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+          android:layout_width="@dimen/standard_button_width"
+          android:layout_height="@dimen/standard_button_height"
           android:theme="@style/button_style"
           android:gravity="center"
           android:backgroundTint="@color/gray"
+          android:textColor="@color/white"
           android:text="@string/button_cancel"
-          style="@style/Theme.AppCompat" />
+          style="?android:attr/buttonBarButtonStyle" />
 
         <Button
           android:id="@+id/button_launch"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+          android:layout_width="@dimen/standard_button_width"
+          android:layout_height="@dimen/standard_button_height"
           android:layout_marginEnd="@dimen/margin_button"
-          android:layout_marginStart="@dimen/inter_buttons_margin"
+          android:layout_marginStart="@dimen/margin_button"
           android:gravity="center"
           android:theme="@style/button_style"
-          android:enabled="@{laoNameEntry.text.length() > 0}"
-          android:alpha="@{laoNameEntry.text.length() > 0 ? 1.0f : 0.3f}"
+          android:enabled="false"
+          android:textColor="@color/white"
           android:text="@string/text_button_launch"
-          style="@style/Theme.AppCompat" />
+          style="?android:attr/buttonBarButtonStyle" />
 
       </LinearLayout>
     </LinearLayout>

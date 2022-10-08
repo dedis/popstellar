@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.ui.home;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
 
@@ -41,8 +43,35 @@ public final class LaunchFragment extends Fragment {
 
     setupLaunchButton();
     setupCancelButton();
+    setupTextFieldWatcher();
 
     return binding.getRoot();
+  }
+
+  TextWatcher launchWatcher =
+      new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+          // Do nothing
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+          String laoName = binding.laoNameEntry.getEditText().getText().toString().trim();
+          String serverUrl = binding.serverUrlEntry.getEditText().getText().toString().trim();
+          boolean areFieldsFilled = !laoName.isEmpty() && serverUrl.isEmpty();
+          binding.buttonLaunch.setEnabled(areFieldsFilled);
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+          // Do nothing
+        }
+      };
+
+  private void setupTextFieldWatcher() {
+    binding.serverUrlEntry.getEditText().addTextChangedListener(launchWatcher);
+    binding.laoNameEntry.getEditText().addTextChangedListener(launchWatcher);
   }
 
   private void setupLaunchButton() {
@@ -51,7 +80,7 @@ public final class LaunchFragment extends Fragment {
           Context ctx = requireContext();
           viewModel.addDisposable(
               viewModel
-                  .launchLao(binding.laoNameEntry.getText().toString())
+                  .launchLao(binding.laoNameEntry.getEditText().getText().toString())
                   .subscribe(
                       laoId -> {
                         Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
@@ -64,8 +93,9 @@ public final class LaunchFragment extends Fragment {
   private void setupCancelButton() {
     binding.buttonCancelLaunch.setOnClickListener(
         v -> {
-          binding.laoNameEntry.getText().clear();
-          viewModel.setCurrentTab(HomeTab.HOME);
+          binding.laoNameEntry.getEditText().getText().clear();
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
         });
   }
 }
