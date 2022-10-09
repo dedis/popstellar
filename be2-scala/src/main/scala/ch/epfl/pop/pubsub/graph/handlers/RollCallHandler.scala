@@ -38,7 +38,6 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     */
   override final val dbActor: AskableActorRef = dbRef
 
-  private val unknownAnswer: String = "Database actor returned an unknown answer"
   private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
 
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
@@ -50,8 +49,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
         // we are using the rollcall id instead of the message_id at rollcall creation
         rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         laoId: Hash = rpcRequest.extractLaoId
-        // do not see how to NOT use the transformWith function except if create other function, i.e. the inverse of CHannelExists
-        _ <- dbActor ? DbActor.ChannelMissing(rollCallChannel)
+        _ <- dbActor ? DbActor.AssertChannelMissing(rollCallChannel)
         // we create a new channel to write uniquely the RollCall, this ensures then if the RollCall already exists or not
         // otherwise, we never write in this channel
         _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
@@ -69,12 +67,11 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleOpenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        _ <- checkParameters(rpcRequest, serverUnexpectedAnswer) // if it fails, throw an error
+        _ <- checkParameters(rpcRequest, serverUnexpectedAnswer)
         message: Message = rpcRequest.getParamsMessage.get // this line is not executed if the first fails
         channel: Channel = rpcRequest.getParamsChannel
         laoId: Hash = rpcRequest.extractLaoId
         // check if the roll call already exists to open it
-        // no need for the transform with, message of error thrown by the CHannelExists
         _ <- dbActor ? DbActor.ChannelExists(channel)
         _ <- dbAskWritePropagate(rpcRequest)
         // creates a RollCallData
