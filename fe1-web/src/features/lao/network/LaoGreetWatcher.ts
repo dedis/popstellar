@@ -65,6 +65,10 @@ export const storeBackendAndConnectToPeers = async (
     // this only applies to peers which are not implemented at the moment
     // anyway. In the future we might need to show the user an indication
     // of the fact that it was not possible to connect to (all) peers
+    console.warn(
+      `Tried connecting to peers ${greetLaoMsg.peers.join(', ')} but some connection failed.
+      This case is currently ignored and should be handled properly.`,
+    );
   }
 };
 
