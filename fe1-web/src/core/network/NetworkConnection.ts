@@ -224,26 +224,30 @@ export class NetworkConnection {
   private onClose(): void {
     console.info(`Closed websocket connection : ${this.address}`);
 
-    // it was not our intention to close the connection. try to re-connect
-    if (!this.closeIntent) {
-      this.failedConnectionAttempts += 1;
-      console.error(`Trying to re-establish a connection at address : ${this.address}`);
-
-      // only retry a certain number of times and add a wait before retrying
-      if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
-        setTimeout(() => {
-          this.reconnectIfNecessary();
-        }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS);
-
-        // check if callback is set
-      } else if (this.onConnectionDeadCallback) {
-        // do not try to re-establish the connection, this connection seems
-        // to be broken for now and the near future
-        console.error(`Connection with ${this.address} broke for good`);
-        this.alive = false;
-        this.onConnectionDeadCallback();
-      }
+    if (this.closeIntent) {
+      return;
     }
+    
+    // it was not our intention to close the connection. try to re-connect
+    this.failedConnectionAttempts += 1;
+    console.error(`Trying to re-establish a connection at address : ${this.address}`);
+
+    // only retry a certain number of times and add a wait before retrying
+    if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
+      setTimeout(() => {
+        this.reconnectIfNecessary();
+      }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS);
+      return;
+    }
+    
+    if (this.onConnectionDeadCallback) {
+      // do not try to re-establish the connection, this connection seems
+      // to be broken for now and the near future
+      console.error(`Connection with ${this.address} broke for good`);
+      this.alive = false;
+      this.onConnectionDeadCallback();
+    }
+    
   }
 
   /**
