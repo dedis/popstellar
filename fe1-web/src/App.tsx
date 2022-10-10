@@ -18,6 +18,11 @@ import { persist, store } from 'core/redux';
 import { Color } from 'core/styles';
 import { configureFeatures } from 'features';
 
+import cameraPolyfill from './core/platform/camera/web-polyfill';
+
+// load polyfill when the app loads
+cameraPolyfill();
+
 const { messageRegistry, keyPairRegistry, navigationOpts, context } = configureFeatures();
 configureKeyPair();
 configureNetwork(messageRegistry, keyPairRegistry);
