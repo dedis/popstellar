@@ -227,7 +227,7 @@ export class NetworkConnection {
     if (this.closeIntent) {
       return;
     }
-    
+
     // it was not our intention to close the connection. try to re-connect
     this.failedConnectionAttempts += 1;
     console.error(`Trying to re-establish a connection at address : ${this.address}`);
@@ -239,15 +239,15 @@ export class NetworkConnection {
       }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS);
       return;
     }
-    
+
+    console.error(`Connection with ${this.address} broke for good`);
+    this.alive = false;
+
     if (this.onConnectionDeadCallback) {
       // do not try to re-establish the connection, this connection seems
       // to be broken for now and the near future
-      console.error(`Connection with ${this.address} broke for good`);
-      this.alive = false;
       this.onConnectionDeadCallback();
     }
-    
   }
 
   /**
