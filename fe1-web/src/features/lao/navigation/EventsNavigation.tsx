@@ -2,8 +2,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
-import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
@@ -25,17 +25,7 @@ export default function EventsNavigation() {
   const CreateEventButton = LaoHooks.useCreateEventButtonComponent();
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerLeftContainerStyle: {
-          paddingLeft: Spacing.contentSpacing,
-        },
-        headerRightContainerStyle: {
-          paddingRight: Spacing.contentSpacing,
-        },
-        headerTitleStyle: Typography.topNavigationHeading,
-        headerTitleAlign: 'center',
-      }}>
+    <Stack.Navigator screenOptions={stackScreenOptionsWithHeader}>
       <Stack.Screen
         name={STRINGS.navigation_lao_events_home}
         component={EventsScreen}

@@ -6,9 +6,10 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { PoPIcon } from 'core/components';
 import { makeIcon } from 'core/components/PoPIcon';
 import { useActionSheet } from 'core/hooks/ActionSheet';
+import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
-import { Color, Icon, Spacing, Typography } from 'core/styles';
+import { Color, Icon } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { WalletHooks } from '../hooks';
@@ -57,17 +58,7 @@ export default function WalletNavigation() {
   const screens = WalletHooks.useWalletNavigationScreens();
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerLeftContainerStyle: {
-          paddingLeft: Spacing.contentSpacing,
-        },
-        headerRightContainerStyle: {
-          paddingRight: Spacing.contentSpacing,
-        },
-        headerTitleStyle: Typography.topNavigationHeading,
-        headerTitleAlign: 'center',
-      }}>
+    <Stack.Navigator screenOptions={stackScreenOptionsWithHeader}>
       <Stack.Screen
         name={STRINGS.navigation_wallet_home}
         component={WalletHome}

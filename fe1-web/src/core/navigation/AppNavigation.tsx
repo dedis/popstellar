@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import STRINGS from 'resources/strings';
 
+import { stackScreenOptionsWithoutHeader } from './ScreenOptions';
 import { AppParamList } from './typing/AppParamList';
 import { NavigationScreen } from './typing/Screen';
 
@@ -36,9 +37,7 @@ const AppNavigation = ({ screens }: IPropTypes) => {
     <SafeAreaView style={styles.view}>
       <Stack.Navigator
         initialRouteName={STRINGS.navigation_app_wallet_create_seed}
-        screenOptions={{
-          headerShown: false,
-        }}>
+        screenOptions={stackScreenOptionsWithoutHeader}>
         {entries}
       </Stack.Navigator>
     </SafeAreaView>

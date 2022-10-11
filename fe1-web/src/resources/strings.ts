@@ -35,10 +35,10 @@ namespace STRINGS {
   export const navigation_app_lao = 'AppLao';
   export const navigation_app_wallet_create_seed = 'Wallet Seed Creation';
   export const navigation_app_wallet_insert_seed = 'Wallet Recovery';
-  export const navigation_app_connect = 'Connect';
 
   /* --- HomeNavigation Strings --- */
   export const navigation_home_home = 'Home';
+  export const navigation_home_connect = 'Connect';
   export const navigation_home_mock_connect = 'MockConnect';
   export const navigation_home_wallet = 'Wallet';
 

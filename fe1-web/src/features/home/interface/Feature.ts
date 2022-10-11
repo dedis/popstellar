@@ -1,5 +1,5 @@
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
-import { NavigationTabScreen } from 'core/navigation/typing/Screen';
+import { NavigationScreen } from 'core/navigation/typing/Screen';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 
 export namespace HomeFeature {
@@ -31,7 +31,7 @@ export namespace HomeFeature {
     toState: () => LaoState;
   }
 
-  export interface HomeScreen extends NavigationTabScreen {
+  export interface HomeScreen extends NavigationScreen {
     id: keyof HomeParamList;
   }
 }
