@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -28,13 +28,6 @@ type MaterialIconNames = keyof typeof MaterialIcons['glyphMap'];
 type MaterialIcon = {
   iconName: MaterialIconNames;
   IconFamily: typeof MaterialIcons;
-};
-
-type MaterialCommunityIconNames = keyof typeof MaterialCommunityIcons['glyphMap'];
-
-type MaterialCommunityIcon = {
-  iconName: MaterialCommunityIconNames;
-  IconFamily: typeof MaterialCommunityIcons;
 };
 
 /**
@@ -139,10 +132,6 @@ const iconNameMap = {
     iconName: 'ios-scan',
     IconFamily: Ionicons,
   } as IonIcon,
-  scanQrCode: {
-    iconName: 'qrcode-scan',
-    IconFamily: MaterialCommunityIcons,
-  } as MaterialCommunityIcon,
   settings: {
     iconName: 'ios-cog',
     IconFamily: Ionicons,

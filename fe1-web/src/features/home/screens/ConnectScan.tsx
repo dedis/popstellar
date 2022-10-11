@@ -5,14 +5,14 @@ import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useDispatch } from 'react-redux';
 
-import { PoPIcon } from 'core/components';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
+import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel } from 'core/objects';
-import { Color, Spacing, Typography } from 'core/styles';
+import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -216,7 +216,7 @@ const ConnectScan = () => {
       <View style={styles.container}>
         <View />
         <View style={styles.qrCode}>
-          <PoPIcon name="scanQrCode" color={Color.contrast} size={300} />
+          <QrCodeScanOverlay width={300} height={300} />
         </View>
         <View style={styles.enterManually}>
           <View style={QrCodeScannerUIElementContainer}>
