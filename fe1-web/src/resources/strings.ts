@@ -120,10 +120,11 @@ namespace STRINGS {
     'The POPStellar application builds on top of so-called local autonomous organizations (LAOs). ' +
     'Known LAOs will be listed here after you connected to it once.';
   export const home_setup_description_2 =
-    'You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code a LAO organizer provides to you.';
+    'You can connect to a LAO by tapping "Join LAO" in the bottom toolbar and then scanning the qr code a LAO organizer provides to you.';
 
   export const home_create_lao = 'Create LAO';
   export const home_join_lao = 'Join LAO';
+  export const home_logout = 'Logout';
 
   /* --- Social Media Strings --- */
   export const button_publish = 'Publish';
@@ -370,7 +371,6 @@ namespace STRINGS {
 
   /* --- Wallet Home Screen Strings --- */
   export const wallet_home_roll_calls = 'Roll Calls';
-  export const wallet_home_logout = 'Logout';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
   export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
 

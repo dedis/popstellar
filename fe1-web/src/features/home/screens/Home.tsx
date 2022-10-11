@@ -3,10 +3,13 @@ import { StackScreenProps } from '@react-navigation/stack';
 import React, { FunctionComponent, useEffect } from 'react';
 import { Text } from 'react-native';
 
+import { PoPIcon } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
-import { Typography } from 'core/styles';
+import { Color, Icon, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
@@ -70,3 +73,31 @@ const Home: FunctionComponent<unknown> = () => {
 };
 
 export default Home;
+
+/**
+ * Component rendered in the top right of the navigation bar
+ * Shows three dots allowing the user to log out of the application
+ * and in the future possibly access app settings
+ */
+export const HomeHeaderRight = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
+  const showActionSheet = useActionSheet();
+  const forgetSeed = HomeHooks.useForgetSeed();
+
+  return (
+    <PoPTouchableOpacity
+      onPress={() =>
+        showActionSheet([
+          {
+            displayName: STRINGS.home_logout,
+            action: () => {
+              forgetSeed();
+              navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
+            },
+          },
+        ])
+      }>
+      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
+    </PoPTouchableOpacity>
+  );
+};

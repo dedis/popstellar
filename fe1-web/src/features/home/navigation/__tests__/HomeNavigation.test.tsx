@@ -17,14 +17,15 @@ const contextValue = {
     useLaoList: () => [],
     LaoList: () => null,
     homeNavigationScreens: [
-      { id: 'home' as HomeFeature.HomeScreen['id'], title: 'Home', order: 0, Component: Home },
-      { id: 'home2' as HomeFeature.HomeScreen['id'], order: -3, Component: Home },
+      { id: 'home' as HomeFeature.HomeScreen['id'], title: 'Home', Component: Home },
+      { id: 'home2' as HomeFeature.HomeScreen['id'], Component: Home },
     ],
     getLaoChannel: () => mockChannel,
     useCurrentLaoId: () => mockLaoIdHash,
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao: () => Promise.resolve(),
+    forgetSeed: () => {},
   } as HomeReactContext,
 };
 

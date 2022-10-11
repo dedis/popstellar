@@ -10,6 +10,7 @@ import STRINGS from 'resources/strings';
 import { HomeHooks } from '../hooks';
 import { HomeFeature } from '../interface';
 import { Home } from '../screens';
+import { HomeHeaderRight } from '../screens/Home';
 import ConnectNavigation from './ConnectNavigation';
 
 /**
@@ -31,6 +32,7 @@ const HomeNavigation = () => {
         Component: Home,
         tabBarIcon: makeIcon('list'),
         headerLeft: () => null,
+        headerRight: HomeHeaderRight,
       } as HomeFeature.HomeScreen,
       {
         id: STRINGS.navigation_home_connect,

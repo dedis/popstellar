@@ -76,4 +76,9 @@ export namespace HomeHooks {
    * Gets the function to resubscribe to a lao
    */
   export const useResubscribeToLao = () => useHomeContext().resubscribeToLao;
+
+  /**
+   * Gets the function to forget the current seed
+   */
+  export const useForgetSeed = () => useHomeContext().forgetSeed;
 }
