@@ -1,6 +1,6 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useMemo } from 'react';
 import { Text } from 'react-native';
 import { useDispatch } from 'react-redux';
 
@@ -44,28 +44,32 @@ const Home: FunctionComponent<unknown> = () => {
     });
   }, [navigation, laoId, disconnectFromLao]);
 
+  const toolbarItems = useMemo(
+    () => [
+      {
+        title: STRINGS.home_create_lao,
+        onPress: () =>
+          navigation.navigate(STRINGS.navigation_home_connect, {
+            screen: STRINGS.navigation_connect_launch,
+          }),
+      },
+      {
+        title: STRINGS.home_join_lao,
+        onPress: () =>
+          navigation.navigate(STRINGS.navigation_home_connect, {
+            screen: STRINGS.navigation_connect_scan,
+          }),
+      },
+    ],
+    [navigation],
+  );
+
   return laos && laos.length > 0 ? (
-    <ScreenWrapper
-      toolbarItems={[
-        {
-          title: STRINGS.home_create_lao,
-          onPress: () =>
-            navigation.navigate(STRINGS.navigation_home_connect, {
-              screen: STRINGS.navigation_connect_launch,
-            }),
-        },
-        {
-          title: STRINGS.home_join_lao,
-          onPress: () =>
-            navigation.navigate(STRINGS.navigation_home_connect, {
-              screen: STRINGS.navigation_connect_scan,
-            }),
-        },
-      ]}>
+    <ScreenWrapper toolbarItems={toolbarItems}>
       <LaoList />
     </ScreenWrapper>
   ) : (
-    <ScreenWrapper>
+    <ScreenWrapper toolbarItems={toolbarItems}>
       <Text style={Typography.heading}>{STRINGS.home_setup_heading}</Text>
       <Text style={Typography.paragraph}>{STRINGS.home_setup_description_1}</Text>
       <Text style={Typography.paragraph}>{STRINGS.home_setup_description_2}</Text>
