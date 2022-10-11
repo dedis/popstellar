@@ -36,6 +36,7 @@ const HomeNavigation = () => {
         id: STRINGS.navigation_home_connect,
         title: STRINGS.navigation_home_connect,
         Component: ConnectNavigation,
+        headerShown: false,
       },
       // sort screens by order before rendering them
     ];

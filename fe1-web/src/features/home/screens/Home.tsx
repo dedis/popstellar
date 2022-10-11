@@ -41,7 +41,23 @@ const Home: FunctionComponent<unknown> = () => {
   }, [navigation, laoId, disconnectFromLao]);
 
   return laos && laos.length > 0 ? (
-    <ScreenWrapper>
+    <ScreenWrapper
+      toolbarItems={[
+        {
+          title: STRINGS.home_create_lao,
+          onPress: () =>
+            navigation.navigate(STRINGS.navigation_home_connect, {
+              screen: STRINGS.navigation_connect_launch,
+            }),
+        },
+        {
+          title: STRINGS.home_join_lao,
+          onPress: () =>
+            navigation.navigate(STRINGS.navigation_home_connect, {
+              screen: STRINGS.navigation_connect_scan,
+            }),
+        },
+      ]}>
       <LaoList />
     </ScreenWrapper>
   ) : (

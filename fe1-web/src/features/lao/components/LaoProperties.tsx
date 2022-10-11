@@ -63,7 +63,15 @@ const LaoProperties = () => {
         <Text selectable>{lao.server_addresses.join(', ')}</Text>
       </Text>
 
-      <PoPTextButton onPress={() => navigation.navigate(STRINGS.navigation_home_connect)}>
+      <PoPTextButton
+        onPress={() =>
+          navigation.navigate(STRINGS.navigation_app_home, {
+            screen: STRINGS.navigation_home_connect,
+            params: {
+              screen: STRINGS.navigation_connect_scan,
+            },
+          })
+        }>
         {STRINGS.lao_properties_add_additional_connection}
       </PoPTextButton>
 

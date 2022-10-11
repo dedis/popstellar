@@ -22,15 +22,7 @@ const styles = StyleSheet.create({
  */
 const ScreenWrapper = ({ children, toolbarItems }: IPropTypes) => (
   <View style={styles.container}>
-    <ScrollView style={styles.view}>
-      {children}
-      {children}
-      {children}
-      {children}
-      {children}
-      {children}
-      {children}
-    </ScrollView>
+    <ScrollView style={styles.view}>{children}</ScrollView>
     {toolbarItems && <Toolbar items={toolbarItems} />}
   </View>
 );

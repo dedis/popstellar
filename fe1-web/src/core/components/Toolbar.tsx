@@ -4,8 +4,12 @@ import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { Color, Spacing, Typography } from 'core/styles';
 
+import PoPTouchableOpacity from './PoPTouchableOpacity';
+
 const styles = StyleSheet.create({
   toolbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     paddingHorizontal: Spacing.contentSpacing,
     backgroundColor: Color.contrast,
     paddingVertical: Spacing.x1,
@@ -23,9 +27,11 @@ const Toolbar = ({ items }: IPropTypes) => {
   return (
     <View style={styles.toolbar}>
       {items.map((item) => (
-        <View style={styles.toolbarItem} key={item.id || item.title}>
-          <Text style={Typography.base}>{item.title}</Text>
-        </View>
+        <PoPTouchableOpacity onPress={item.onPress} key={item.id || item.title}>
+          <View style={styles.toolbarItem}>
+            <Text style={[Typography.base, Typography.accent]}>{item.title}</Text>
+          </View>
+        </PoPTouchableOpacity>
       ))}
     </View>
   );
@@ -35,6 +41,7 @@ export const toolbarItemsPropType = PropTypes.arrayOf(
   PropTypes.shape({
     id: PropTypes.string,
     title: PropTypes.string.isRequired,
+    onPress: PropTypes.func.isRequired,
   }).isRequired,
 );
 

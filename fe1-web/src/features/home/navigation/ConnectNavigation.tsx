@@ -5,7 +5,7 @@ import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import STRINGS from 'resources/strings';
 
-import { ConnectConfirm, ConnectOpenScan, Launch } from '../screens';
+import { ConnectConfirm, ConnectScan, Launch } from '../screens';
 
 const Stack = createStackNavigator<ConnectParamList>();
 
@@ -14,8 +14,8 @@ export default function ConnectNavigation() {
     <Stack.Navigator screenOptions={stackScreenOptionsWithHeader}>
       <Stack.Screen
         name={STRINGS.navigation_connect_scan}
-        component={ConnectOpenScan}
-        options={{ headerShown: false }}
+        component={ConnectScan}
+        options={{ title: STRINGS.navigation_connect_scan_title }}
       />
       <Stack.Screen
         name={STRINGS.navigation_connect_confirm}

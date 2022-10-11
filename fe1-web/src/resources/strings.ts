@@ -39,11 +39,11 @@ namespace STRINGS {
   /* --- HomeNavigation Strings --- */
   export const navigation_home_home = 'Home';
   export const navigation_home_connect = 'Connect';
-  export const navigation_home_mock_connect = 'MockConnect';
   export const navigation_home_wallet = 'Wallet';
 
   /* --- ConnectionNavigation Strings --- */
   export const navigation_connect_scan = 'Scanning';
+  export const navigation_connect_scan_title = "Scan a LAO's QR code";
   export const navigation_connect_processing = 'Processing scanned QR code';
   export const navigation_connect_launch = 'Launch';
   export const navigation_connect_launch_title = 'Launch a new LAO';
@@ -121,6 +121,9 @@ namespace STRINGS {
     'Known LAOs will be listed here after you connected to it once.';
   export const home_setup_description_2 =
     'You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code a LAO organizer provides to you.';
+
+  export const home_create_lao = 'Create LAO';
+  export const home_join_lao = 'Join LAO';
 
   /* --- Social Media Strings --- */
   export const button_publish = 'Publish';
