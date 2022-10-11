@@ -326,61 +326,69 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        handlerTag={2}
-                        handlerType="NativeViewGestureHandler"
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 32,
-                                "fontWeight": "bold",
-                                "lineHeight": 41,
-                                "marginBottom": 16,
-                                "textAlign": "left",
-                              }
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={2}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            POPStellar 🤩
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "marginBottom": 16,
-                                "textAlign": "left",
+                          }
+                        >
+                          <View>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 32,
+                                  "fontWeight": "bold",
+                                  "lineHeight": 41,
+                                  "marginBottom": 16,
+                                  "textAlign": "left",
+                                }
                               }
-                            }
-                          >
-                            The POPStellar application builds on top of so-called local autonomous organizations (LAOs). Known LAOs will be listed here after you connected to it once.
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "marginBottom": 16,
-                                "textAlign": "left",
+                            >
+                              POPStellar 🤩
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "marginBottom": 16,
+                                  "textAlign": "left",
+                                }
                               }
-                            }
-                          >
-                            You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code a LAO organizer provides to you.
-                          </Text>
-                        </View>
-                      </RCTScrollView>
+                            >
+                              The POPStellar application builds on top of so-called local autonomous organizations (LAOs). Known LAOs will be listed here after you connected to it once.
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "marginBottom": 16,
+                                  "textAlign": "left",
+                                }
+                              }
+                            >
+                              You can connect to a LAO by tapping "Join LAO" in the bottom toolbar and then scanning the qr code a LAO organizer provides to you.
+                            </Text>
+                          </View>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -720,61 +728,69 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        handlerTag={4}
-                        handlerType="NativeViewGestureHandler"
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 32,
-                                "fontWeight": "bold",
-                                "lineHeight": 41,
-                                "marginBottom": 16,
-                                "textAlign": "left",
-                              }
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={4}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            POPStellar 🤩
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "marginBottom": 16,
-                                "textAlign": "left",
+                          }
+                        >
+                          <View>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 32,
+                                  "fontWeight": "bold",
+                                  "lineHeight": 41,
+                                  "marginBottom": 16,
+                                  "textAlign": "left",
+                                }
                               }
-                            }
-                          >
-                            The POPStellar application builds on top of so-called local autonomous organizations (LAOs). Known LAOs will be listed here after you connected to it once.
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "marginBottom": 16,
-                                "textAlign": "left",
+                            >
+                              POPStellar 🤩
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "marginBottom": 16,
+                                  "textAlign": "left",
+                                }
                               }
-                            }
-                          >
-                            You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code a LAO organizer provides to you.
-                          </Text>
-                        </View>
-                      </RCTScrollView>
+                            >
+                              The POPStellar application builds on top of so-called local autonomous organizations (LAOs). Known LAOs will be listed here after you connected to it once.
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "marginBottom": 16,
+                                  "textAlign": "left",
+                                }
+                              }
+                            >
+                              You can connect to a LAO by tapping "Join LAO" in the bottom toolbar and then scanning the qr code a LAO organizer provides to you.
+                            </Text>
+                          </View>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>

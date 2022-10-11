@@ -326,50 +326,27 @@ exports[`CreateRollCall renders correctly 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        handlerTag={2}
-                        handlerType="NativeViewGestureHandler"
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={2}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            Name
-                          </Text>
-                          <View
-                            style={
-                              Object {
-                                "flex": 1,
-                                "flexDirection": "row",
-                              }
-                            }
-                          >
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="Real Life Captcha"
-                              placeholderTextColor="#8E8E8E"
+                          }
+                        >
+                          <View>
+                            <Text
                               style={
                                 Array [
                                   Object {
@@ -380,51 +357,51 @@ exports[`CreateRollCall renders correctly 1`] = `
                                     "textAlign": "left",
                                   },
                                   Object {
-                                    "backgroundColor": "#fff",
-                                    "borderColor": "#fff",
-                                    "borderRadius": 8,
-                                    "borderWidth": 1,
-                                    "flex": 1,
-                                    "padding": 8,
-                                    "width": 50,
+                                    "fontWeight": "bold",
                                   },
                                 ]
                               }
-                              testID="roll_call_name_selector"
-                              value=""
-                            />
-                          </View>
-                          <Text
-                            style={
-                              Array [
+                            >
+                              Name
+                            </Text>
+                            <View
+                              style={
                                 Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            Location
-                          </Text>
-                          <View
-                            style={
-                              Object {
-                                "flex": 1,
-                                "flexDirection": "row",
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                }
                               }
-                            }
-                          >
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="BC410"
-                              placeholderTextColor="#8E8E8E"
+                            >
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="Real Life Captcha"
+                                placeholderTextColor="#8E8E8E"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "#fff",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                testID="roll_call_name_selector"
+                                value=""
+                              />
+                            </View>
+                            <Text
                               style={
                                 Array [
                                   Object {
@@ -435,51 +412,51 @@ exports[`CreateRollCall renders correctly 1`] = `
                                     "textAlign": "left",
                                   },
                                   Object {
-                                    "backgroundColor": "#fff",
-                                    "borderColor": "#fff",
-                                    "borderRadius": 8,
-                                    "borderWidth": 1,
-                                    "flex": 1,
-                                    "padding": 8,
-                                    "width": 50,
+                                    "fontWeight": "bold",
                                   },
                                 ]
                               }
-                              testID="roll_call_location_selector"
-                              value=""
-                            />
-                          </View>
-                          <Text
-                            style={
-                              Array [
+                            >
+                              Location
+                            </Text>
+                            <View
+                              style={
                                 Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            Description
-                          </Text>
-                          <View
-                            style={
-                              Object {
-                                "flex": 1,
-                                "flexDirection": "row",
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                }
                               }
-                            }
-                          >
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="Are you a robot?"
-                              placeholderTextColor="#8E8E8E"
+                            >
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="BC410"
+                                placeholderTextColor="#8E8E8E"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "#fff",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                testID="roll_call_location_selector"
+                                value=""
+                              />
+                            </View>
+                            <Text
                               style={
                                 Array [
                                   Object {
@@ -490,119 +467,150 @@ exports[`CreateRollCall renders correctly 1`] = `
                                     "textAlign": "left",
                                   },
                                   Object {
-                                    "backgroundColor": "#fff",
-                                    "borderColor": "#fff",
-                                    "borderRadius": 8,
-                                    "borderWidth": 1,
-                                    "flex": 1,
-                                    "padding": 8,
-                                    "width": 50,
+                                    "fontWeight": "bold",
                                   },
                                 ]
                               }
-                              value=""
-                            />
-                          </View>
-                          <View
-                            accessible={true}
-                            collapsable={false}
-                            focusable={true}
-                            onBlur={[Function]}
-                            onClick={[Function]}
-                            onFocus={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Object {
-                                "marginBottom": 16,
+                            >
+                              Description
+                            </Text>
+                            <View
+                              style={
+                                Object {
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                }
                               }
-                            }
-                            testID="roll_call_confirm_selector"
-                          >
-                            <RNGestureHandlerButton
+                            >
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="Are you a robot?"
+                                placeholderTextColor="#8E8E8E"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "#fff",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                value=""
+                              />
+                            </View>
+                            <View
+                              accessible={true}
                               collapsable={false}
-                              exclusive={true}
-                              handlerTag={3}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
+                              focusable={true}
+                              onBlur={[Function]}
+                              onClick={[Function]}
+                              onFocus={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
                                   "marginBottom": 16,
                                 }
                               }
-                              touchSoundDisabled={false}
+                              testID="roll_call_confirm_selector"
                             >
-                              <View
-                                accessible={true}
+                              <RNGestureHandlerButton
                                 collapsable={false}
+                                exclusive={true}
+                                handlerTag={3}
+                                handlerType="NativeViewGestureHandler"
+                                onGestureEvent={[Function]}
+                                onGestureHandlerEvent={[Function]}
+                                onGestureHandlerStateChange={[Function]}
+                                onHandlerStateChange={[Function]}
+                                rippleColor={0}
                                 style={
                                   Object {
-                                    "opacity": 1,
+                                    "marginBottom": 16,
                                   }
                                 }
+                                touchSoundDisabled={false}
                               >
                                 <View
+                                  accessible={true}
+                                  collapsable={false}
                                   style={
-                                    Array [
-                                      Object {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 16,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      },
-                                      Object {
-                                        "backgroundColor": "#8E8E8E",
-                                        "borderColor": "#8E8E8E",
-                                      },
-                                    ]
+                                    Object {
+                                      "opacity": 1,
+                                    }
                                   }
                                 >
-                                  <Text
+                                  <View
                                     style={
                                       Array [
                                         Object {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 16,
+                                          "borderWidth": 1,
+                                          "padding": 8,
                                         },
                                         Object {
-                                          "textAlign": "center",
-                                        },
-                                        Object {
-                                          "color": "#fff",
+                                          "backgroundColor": "#8E8E8E",
+                                          "borderColor": "#8E8E8E",
                                         },
                                       ]
                                     }
                                   >
-                                    Confirm
-                                  </Text>
+                                    <Text
+                                      style={
+                                        Array [
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "textAlign": "left",
+                                          },
+                                          Object {
+                                            "textAlign": "center",
+                                          },
+                                          Object {
+                                            "color": "#fff",
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      Confirm
+                                    </Text>
+                                  </View>
                                 </View>
-                              </View>
-                            </RNGestureHandlerButton>
+                              </RNGestureHandlerButton>
+                            </View>
+                            <Modal
+                              hardwareAccelerated={false}
+                              transparent={true}
+                              visible={false}
+                            />
+                            <Modal
+                              hardwareAccelerated={false}
+                              onRequestClose={[Function]}
+                              transparent={true}
+                              visible={false}
+                            />
                           </View>
-                          <Modal
-                            hardwareAccelerated={false}
-                            transparent={true}
-                            visible={false}
-                          />
-                          <Modal
-                            hardwareAccelerated={false}
-                            onRequestClose={[Function]}
-                            transparent={true}
-                            visible={false}
-                          />
-                        </View>
-                      </RCTScrollView>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>

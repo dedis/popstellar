@@ -393,385 +393,393 @@ exports[`LaoNavigation renders correctly 1`] = `
                                   }
                                 }
                               >
-                                <RCTScrollView
-                                  collapsable={false}
-                                  handlerTag={2}
-                                  handlerType="NativeViewGestureHandler"
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
+                                <View
                                   style={
                                     Object {
-                                      "padding": 16,
+                                      "flex": 1,
                                     }
                                   }
                                 >
-                                  <View>
-                                    <View
-                                      accessibilityRole="checkbox"
-                                      accessibilityState={
-                                        Object {
-                                          "checked": true,
-                                          "disabled": false,
-                                        }
+                                  <RCTScrollView
+                                    collapsable={false}
+                                    handlerTag={2}
+                                    handlerType="NativeViewGestureHandler"
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    style={
+                                      Object {
+                                        "padding": 16,
                                       }
-                                      accessible={true}
-                                      collapsable={false}
-                                      focusable={true}
-                                      onBlur={[Function]}
-                                      onClick={[Function]}
-                                      onFocus={[Function]}
-                                      onResponderGrant={[Function]}
-                                      onResponderMove={[Function]}
-                                      onResponderRelease={[Function]}
-                                      onResponderTerminate={[Function]}
-                                      onResponderTerminationRequest={[Function]}
-                                      onStartShouldSetResponder={[Function]}
-                                      style={
-                                        Object {
-                                          "backgroundColor": "transparent",
-                                          "borderColor": "#ffffff",
-                                          "borderWidth": 0,
-                                          "margin": 5,
-                                          "marginLeft": 0,
-                                          "marginRight": 0,
-                                          "padding": 8,
+                                    }
+                                  >
+                                    <View>
+                                      <View
+                                        accessibilityRole="checkbox"
+                                        accessibilityState={
+                                          Object {
+                                            "checked": true,
+                                            "disabled": false,
+                                          }
                                         }
-                                      }
-                                      testID="RNE__CheckBox__Wrapper"
-                                    >
+                                        accessible={true}
+                                        collapsable={false}
+                                        focusable={true}
+                                        onBlur={[Function]}
+                                        onClick={[Function]}
+                                        onFocus={[Function]}
+                                        onResponderGrant={[Function]}
+                                        onResponderMove={[Function]}
+                                        onResponderRelease={[Function]}
+                                        onResponderTerminate={[Function]}
+                                        onResponderTerminationRequest={[Function]}
+                                        onStartShouldSetResponder={[Function]}
+                                        style={
+                                          Object {
+                                            "backgroundColor": "transparent",
+                                            "borderColor": "#ffffff",
+                                            "borderWidth": 0,
+                                            "margin": 5,
+                                            "marginLeft": 0,
+                                            "marginRight": 0,
+                                            "padding": 8,
+                                          }
+                                        }
+                                        testID="RNE__CheckBox__Wrapper"
+                                      >
+                                        <View
+                                          style={
+                                            Object {
+                                              "alignItems": "center",
+                                              "flexDirection": "row",
+                                            }
+                                          }
+                                        >
+                                          <Text />
+                                          <Text
+                                            accessibilityRole="text"
+                                            style={
+                                              Object {
+                                                "color": "#43484d",
+                                                "fontWeight": "bold",
+                                                "marginLeft": 10,
+                                                "marginRight": 10,
+                                              }
+                                            }
+                                            testID="RNE__CheckBox__Title"
+                                          >
+                                            Anonymous
+                                          </Text>
+                                        </View>
+                                      </View>
+                                      <Text
+                                        style={
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "marginBottom": 16,
+                                            "textAlign": "left",
+                                          }
+                                        }
+                                      >
+                                        You can participate in organizations and meetings anonymously by leaving this box checked. If you wish to reveal your identity to other participants in the organization, you may un-check this box and enter the information you wish to reaveal below. You must enter identity information in order to play an Organizer or Witness role in an organization.
+                                      </Text>
+                                      <Text
+                                        style={
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "marginBottom": 16,
+                                            "textAlign": "left",
+                                          }
+                                        }
+                                      >
+                                        You can participate in organizations and meetings anonymously by leaving this box checked. If you wish to reveal your identity to other participants in the organization, you may un-check this box and enter the information you wish to reaveal below. You must enter identity information in order to play an Organizer or Witness role in an organization.
+                                      </Text>
+                                      <Text
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            Object {
+                                              "fontWeight": "bold",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        Name
+                                      </Text>
                                       <View
                                         style={
                                           Object {
-                                            "alignItems": "center",
+                                            "flex": 1,
                                             "flexDirection": "row",
                                           }
                                         }
                                       >
-                                        <Text />
-                                        <Text
-                                          accessibilityRole="text"
+                                        <TextInput
+                                          editable={false}
+                                          placeholder="John Doe"
+                                          placeholderTextColor="#8E8E8E"
                                           style={
-                                            Object {
-                                              "color": "#43484d",
-                                              "fontWeight": "bold",
-                                              "marginLeft": 10,
-                                              "marginRight": 10,
-                                            }
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderColor": "#fff",
+                                                "borderRadius": 8,
+                                                "borderWidth": 1,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                              Object {
+                                                "color": "gray",
+                                              },
+                                            ]
                                           }
-                                          testID="RNE__CheckBox__Title"
-                                        >
-                                          Anonymous
-                                        </Text>
+                                          value=""
+                                        />
+                                      </View>
+                                      <Text
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            Object {
+                                              "fontWeight": "bold",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        Title
+                                      </Text>
+                                      <View
+                                        style={
+                                          Object {
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
+                                        }
+                                      >
+                                        <TextInput
+                                          editable={false}
+                                          placeholder="LAO Organizer"
+                                          placeholderTextColor="#8E8E8E"
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderColor": "#fff",
+                                                "borderRadius": 8,
+                                                "borderWidth": 1,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                              Object {
+                                                "color": "gray",
+                                              },
+                                            ]
+                                          }
+                                          value=""
+                                        />
+                                      </View>
+                                      <Text
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            Object {
+                                              "fontWeight": "bold",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        Organization
+                                      </Text>
+                                      <View
+                                        style={
+                                          Object {
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
+                                        }
+                                      >
+                                        <TextInput
+                                          editable={false}
+                                          placeholder="DEDIS Lab"
+                                          placeholderTextColor="#8E8E8E"
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderColor": "#fff",
+                                                "borderRadius": 8,
+                                                "borderWidth": 1,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                              Object {
+                                                "color": "gray",
+                                              },
+                                            ]
+                                          }
+                                          value=""
+                                        />
+                                      </View>
+                                      <Text
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            Object {
+                                              "fontWeight": "bold",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        Email
+                                      </Text>
+                                      <View
+                                        style={
+                                          Object {
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
+                                        }
+                                      >
+                                        <TextInput
+                                          editable={false}
+                                          placeholder="john.doe@epfl.ch"
+                                          placeholderTextColor="#8E8E8E"
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderColor": "#fff",
+                                                "borderRadius": 8,
+                                                "borderWidth": 1,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                              Object {
+                                                "color": "gray",
+                                              },
+                                            ]
+                                          }
+                                          value=""
+                                        />
+                                      </View>
+                                      <Text
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            Object {
+                                              "fontWeight": "bold",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        Phone number
+                                      </Text>
+                                      <View
+                                        style={
+                                          Object {
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
+                                        }
+                                      >
+                                        <TextInput
+                                          editable={false}
+                                          placeholder="+41 12 345 67 89"
+                                          placeholderTextColor="#8E8E8E"
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderColor": "#fff",
+                                                "borderRadius": 8,
+                                                "borderWidth": 1,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                              Object {
+                                                "color": "gray",
+                                              },
+                                            ]
+                                          }
+                                          value=""
+                                        />
                                       </View>
                                     </View>
-                                    <Text
-                                      style={
-                                        Object {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "marginBottom": 16,
-                                          "textAlign": "left",
-                                        }
-                                      }
-                                    >
-                                      You can participate in organizations and meetings anonymously by leaving this box checked. If you wish to reveal your identity to other participants in the organization, you may un-check this box and enter the information you wish to reaveal below. You must enter identity information in order to play an Organizer or Witness role in an organization.
-                                    </Text>
-                                    <Text
-                                      style={
-                                        Object {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "marginBottom": 16,
-                                          "textAlign": "left",
-                                        }
-                                      }
-                                    >
-                                      You can participate in organizations and meetings anonymously by leaving this box checked. If you wish to reveal your identity to other participants in the organization, you may un-check this box and enter the information you wish to reaveal below. You must enter identity information in order to play an Organizer or Witness role in an organization.
-                                    </Text>
-                                    <Text
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "fontWeight": "bold",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Name
-                                    </Text>
-                                    <View
-                                      style={
-                                        Object {
-                                          "flex": 1,
-                                          "flexDirection": "row",
-                                        }
-                                      }
-                                    >
-                                      <TextInput
-                                        editable={false}
-                                        placeholder="John Doe"
-                                        placeholderTextColor="#8E8E8E"
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderColor": "#fff",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                            Object {
-                                              "color": "gray",
-                                            },
-                                          ]
-                                        }
-                                        value=""
-                                      />
-                                    </View>
-                                    <Text
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "fontWeight": "bold",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Title
-                                    </Text>
-                                    <View
-                                      style={
-                                        Object {
-                                          "flex": 1,
-                                          "flexDirection": "row",
-                                        }
-                                      }
-                                    >
-                                      <TextInput
-                                        editable={false}
-                                        placeholder="LAO Organizer"
-                                        placeholderTextColor="#8E8E8E"
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderColor": "#fff",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                            Object {
-                                              "color": "gray",
-                                            },
-                                          ]
-                                        }
-                                        value=""
-                                      />
-                                    </View>
-                                    <Text
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "fontWeight": "bold",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Organization
-                                    </Text>
-                                    <View
-                                      style={
-                                        Object {
-                                          "flex": 1,
-                                          "flexDirection": "row",
-                                        }
-                                      }
-                                    >
-                                      <TextInput
-                                        editable={false}
-                                        placeholder="DEDIS Lab"
-                                        placeholderTextColor="#8E8E8E"
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderColor": "#fff",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                            Object {
-                                              "color": "gray",
-                                            },
-                                          ]
-                                        }
-                                        value=""
-                                      />
-                                    </View>
-                                    <Text
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "fontWeight": "bold",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Email
-                                    </Text>
-                                    <View
-                                      style={
-                                        Object {
-                                          "flex": 1,
-                                          "flexDirection": "row",
-                                        }
-                                      }
-                                    >
-                                      <TextInput
-                                        editable={false}
-                                        placeholder="john.doe@epfl.ch"
-                                        placeholderTextColor="#8E8E8E"
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderColor": "#fff",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                            Object {
-                                              "color": "gray",
-                                            },
-                                          ]
-                                        }
-                                        value=""
-                                      />
-                                    </View>
-                                    <Text
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "fontWeight": "bold",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Phone number
-                                    </Text>
-                                    <View
-                                      style={
-                                        Object {
-                                          "flex": 1,
-                                          "flexDirection": "row",
-                                        }
-                                      }
-                                    >
-                                      <TextInput
-                                        editable={false}
-                                        placeholder="+41 12 345 67 89"
-                                        placeholderTextColor="#8E8E8E"
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderColor": "#fff",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                            Object {
-                                              "color": "gray",
-                                            },
-                                          ]
-                                        }
-                                        value=""
-                                      />
-                                    </View>
-                                  </View>
-                                </RCTScrollView>
+                                  </RCTScrollView>
+                                </View>
                               </View>
                               <View
                                 onLayout={[Function]}
@@ -795,8 +803,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     collapsable={false}
                                     style={
                                       Object {
-                                        "backgroundColor": "rgb(255, 255, 255)",
+                                        "backgroundColor": "#fff",
                                         "borderBottomColor": "rgb(216, 216, 216)",
+                                        "borderColor": "rgb(216, 216, 216)",
                                         "flex": 1,
                                         "shadowColor": "rgb(216, 216, 216)",
                                         "shadowOffset": Object {
