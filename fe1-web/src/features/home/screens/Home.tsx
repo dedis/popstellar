@@ -2,6 +2,7 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { FunctionComponent, useEffect } from 'react';
 import { Text } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
@@ -83,6 +84,7 @@ export const HomeHeaderRight = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const showActionSheet = useActionSheet();
   const forgetSeed = HomeHooks.useForgetSeed();
+  const dispatch = useDispatch();
 
   return (
     <PoPTouchableOpacity
@@ -92,6 +94,13 @@ export const HomeHeaderRight = () => {
             displayName: STRINGS.home_logout,
             action: () => {
               forgetSeed();
+              navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
+            },
+          },
+          {
+            displayName: STRINGS.home_logout_clear_data,
+            action: () => {
+              dispatch({ type: 'CLEAR_STORAGE', value: {} });
               navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
             },
           },

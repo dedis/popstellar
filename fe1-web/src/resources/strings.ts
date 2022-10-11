@@ -125,6 +125,7 @@ namespace STRINGS {
   export const home_create_lao = 'Create LAO';
   export const home_join_lao = 'Join LAO';
   export const home_logout = 'Logout';
+  export const home_logout_clear_data = 'Logout and clear data';
 
   /* --- Social Media Strings --- */
   export const button_publish = 'Publish';

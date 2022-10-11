@@ -70,8 +70,6 @@ const Launch = () => {
     }
   };
 
-  const onTestClearStorage = () => dispatch({ type: 'CLEAR_STORAGE', value: {} });
-
   return (
     <ScreenWrapper>
       <View style={containerStyles.flex}>
@@ -105,10 +103,6 @@ const Launch = () => {
 
           <PoPTextButton onPress={connectToTestLao}>
             [TEST] Connect to LocalMockServer.ts (use &apos;npm run startServer&apos;)
-          </PoPTextButton>
-
-          <PoPTextButton onPress={onTestClearStorage}>
-            [TEST] Clear (persistent) storage
           </PoPTextButton>
         </View>
       </View>
