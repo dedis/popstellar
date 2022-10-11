@@ -40,7 +40,6 @@ const HomeNavigation = () => {
         Component: ConnectNavigation,
         headerShown: false,
       },
-      // sort screens by order before rendering them
     ];
   }, [navigationScreens]);
 
@@ -59,7 +58,6 @@ const HomeNavigation = () => {
               headerTitle: headerTitle || title || id,
               headerLeft,
               headerRight,
-              // hide the item if tabBarIcon is set to null
               headerShown,
             }}
           />
