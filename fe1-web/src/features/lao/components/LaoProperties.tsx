@@ -44,7 +44,7 @@ const LaoProperties = () => {
       <Text style={Typography.paragraph}>
         <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_id}</Text>
         {'\n'}
-        <Text>{lao.id}</Text>
+        <Text selectable>{lao.id}</Text>
       </Text>
 
       <Text style={Typography.paragraph}>
@@ -60,7 +60,7 @@ const LaoProperties = () => {
           {STRINGS.lao_properties_current_connections}
         </Text>
         {'\n'}
-        <Text>{lao.server_addresses.join(', ')}</Text>
+        <Text selectable>{lao.server_addresses.join(', ')}</Text>
       </Text>
 
       <PoPTextButton onPress={() => navigation.navigate(STRINGS.navigation_app_connect)}>
