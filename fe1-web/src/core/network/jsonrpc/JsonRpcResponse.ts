@@ -12,6 +12,8 @@ interface ErrorObject {
 }
 
 export class JsonRpcResponse {
+  public readonly jsonrpc: string;
+
   public readonly result?: number | Message[];
 
   public readonly error?: ErrorObject;
@@ -42,6 +44,8 @@ export class JsonRpcResponse {
     } else {
       throw new ProtocolError("Unexpected json-rpc answer : both 'error' and 'result' are absent");
     }
+
+    this.jsonrpc = '2.0';
   }
 
   public static fromJson(jsonString: string): JsonRpcResponse {
