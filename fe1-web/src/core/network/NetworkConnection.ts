@@ -69,7 +69,7 @@ export class NetworkConnection {
   /**
    * Function called when the connection closes for good
    */
-  private onConnectionDeadCallback?: () => void;
+  private readonly onConnectionDeadCallback?: () => void;
 
   /**
    * Boolean indicating whether this connection is open or there is still hope
