@@ -12,7 +12,10 @@ import {
   disallowNewConnections as disallowNewC,
 } from 'websocket';
 
-export type MockWebsocket = w3cwebsocket & { mockReceive: (message: NetworkMessage) => void };
+export type MockWebsocket = w3cwebsocket & {
+  mockReceive: (message: NetworkMessage) => void;
+  mockConnectionClose: (wasClean: boolean, code?: number, reason?: string) => void;
+};
 
 export type NetworkMessage = string;
 export type NetworkMessageHandler = (ws: MockWebsocket, message: NetworkMessage) => void;

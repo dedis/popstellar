@@ -88,6 +88,14 @@ export class NetworkConnection {
   private closeIntent: boolean;
 
   /**
+   * Timeouts per instance. Only here so that
+   * the tests can go brrr
+   */
+  private readonly websocketConnectionTimeout: number;
+
+  private readonly websocketMessageTimeout: number;
+
+  /**
    * SHOULD *NOT* BE CALLED DIRECTLY.
    * USE NetworkConnection.create() instead
    */
@@ -97,6 +105,8 @@ export class NetworkConnection {
     onInitialOpenCallback?: () => void,
     onInitialOpenTimeout?: () => void,
     onConnectionDeathCallback?: () => void,
+    websocketConnectionTimeout = WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS,
+    websocketMessageTimeout = WEBSOCKET_MESSAGE_TIMEOUT_MS,
   ) {
     this.address = address;
     this.onRpcHandler = handler !== undefined ? handler : defaultRpcHandler;
@@ -104,6 +114,8 @@ export class NetworkConnection {
     this.onConnectionDeathCallback = onConnectionDeathCallback;
     this.alive = true;
     this.closeIntent = false;
+    this.websocketConnectionTimeout = websocketConnectionTimeout;
+    this.websocketMessageTimeout = websocketMessageTimeout;
 
     this.initalOpenTimeout = setTimeout(() => {
       // if the initial timeout expires, we deem this connection
@@ -115,7 +127,7 @@ export class NetworkConnection {
       if (onInitialOpenTimeout) {
         onInitialOpenTimeout();
       }
-    }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS);
+    }, this.websocketConnectionTimeout);
 
     this.ws = this.establishConnection(address);
   }
@@ -136,12 +148,16 @@ export class NetworkConnection {
    * @param address The address to connect to
    * @param handler The json rpc message handler
    * @param onConnectionDeathCallback A function called when the connection closes for good because of an error
+   * @param websocketConnectionTimeout The timeout for new websocket connections
+   * @param websocketMessageTimeout The timeout for individual messages
    * @returns A promise with the network connection if a connection can be established
    */
   static create(
     address: string,
     handler: JsonRpcHandler,
     onConnectionDeathCallback: () => void,
+    websocketConnectionTimeout?: number,
+    websocketMessageTimeout?: number,
   ): Promise<NetworkConnection> {
     return new Promise((resolve, reject) => {
       const nc: NetworkConnection = new NetworkConnection(
@@ -150,6 +166,8 @@ export class NetworkConnection {
         () => resolve(nc),
         () => reject(new NetworkError(`Connecting to ${address} timed out.`)),
         onConnectionDeathCallback,
+        websocketConnectionTimeout,
+        websocketMessageTimeout,
       );
     });
   }
@@ -172,7 +190,7 @@ export class NetworkConnection {
       return new Promise((resolve, reject) => {
         const connectionTimeout = setTimeout(
           () => reject(new NetworkError(`Re-connecting to ${this.address} timed out.`)),
-          WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS,
+          this.websocketConnectionTimeout,
         );
 
         this.onInitialOpenCallback = () => {
@@ -192,9 +210,9 @@ export class NetworkConnection {
   private onOpen(): void {
     // only execute function if the connection is still alive
     // (it could be that due to a timeout this connection is already deemed dead)
-    // if (!this.alive) {
-    //   return;
-    // }
+    if (!this.alive) {
+      return;
+    }
 
     console.info(`Initiating web socket : ${this.address}`);
     clearTimeout(this.initalOpenTimeout);
@@ -268,7 +286,7 @@ export class NetworkConnection {
     if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
       setTimeout(() => {
         this.reconnectIfNecessary();
-      }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT_MS);
+      }, this.websocketConnectionTimeout);
       return;
     }
 
@@ -399,10 +417,10 @@ export class NetworkConnection {
         this.pendingRequests.delete(query.id as number);
         reject(
           new NetworkError(
-            `Maximum waiting time of ${WEBSOCKET_MESSAGE_TIMEOUT_MS} [ms] reached, dropping query`,
+            `Maximum waiting time of ${this.websocketMessageTimeout} [ms] reached, dropping query`,
           ),
         );
-      }, WEBSOCKET_MESSAGE_TIMEOUT_MS);
+      }, this.websocketMessageTimeout);
 
       const pendingRequest: PendingRequest = {
         resolvePromise: resolve,
@@ -425,7 +443,7 @@ export class NetworkConnection {
    * Tries to re-send a pending request
    * @param request The request to resend
    */
-  public async resendRequest(request: PendingRequest): Promise<void> {
+  private async resendRequest(request: PendingRequest): Promise<void> {
     // Check that the websocket connection is ready
     if (this.ws.readyState !== 1 /* CONNECTING | CLOSING | CLOSED */) {
       await this.waitWebsocketReady();
@@ -441,10 +459,10 @@ export class NetworkConnection {
       this.pendingRequests.delete(request.payload.id as number);
       reject(
         new NetworkError(
-          `Maximum waiting time of ${WEBSOCKET_MESSAGE_TIMEOUT_MS} [ms] reached, dropping query`,
+          `Maximum waiting time of ${this.websocketMessageTimeout} [ms] reached, dropping query`,
         ),
       );
-    }, WEBSOCKET_MESSAGE_TIMEOUT_MS);
+    }, this.websocketMessageTimeout);
 
     const newPendingRequest: PendingRequest = {
       resolvePromise: resolve,
