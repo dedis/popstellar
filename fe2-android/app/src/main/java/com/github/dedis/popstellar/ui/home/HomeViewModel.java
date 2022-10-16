@@ -171,13 +171,13 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
   }
 
   /**
-   * launchLao is invoked when the user tries to create a new LAO. The method creates a `CreateLAO`
+   * createLao is invoked when the user tries to create a new LAO. The method creates a `CreateLAO`
    * message and publishes it to the root channel. It observers the response in the background and
    * switches to the home screen on success.
    *
    * @return a single containing the id of the launched lao if it was successful
    */
-  public Single<String> launchLao(String laoName) {
+  public Single<String> createLao(String laoName) {
     Log.d(TAG, "creating lao with name " + laoName);
     CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey());
     Lao lao = new Lao(createLao.getId());

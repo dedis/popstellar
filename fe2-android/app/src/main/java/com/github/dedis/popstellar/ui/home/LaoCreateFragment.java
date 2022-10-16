@@ -6,7 +6,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -92,7 +91,7 @@ public final class LaoCreateFragment extends Fragment {
           Context ctx = requireContext();
           viewModel.addDisposable(
               viewModel
-                  .launchLao(
+                  .createLao(
                       Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString())
                   .subscribe(
                       laoId -> {
