@@ -13,10 +13,13 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -26,8 +29,11 @@ public final class LaoCreateFragment extends Fragment {
 
   public static final String TAG = LaoCreateFragment.class.getSimpleName();
 
+  @Inject GlobalNetworkManager globalNetworkManager;
+
   private LaoCreateFragmentBinding binding;
   private HomeViewModel viewModel;
+  private String initialUrl;
 
   public static LaoCreateFragment newInstance() {
     return new LaoCreateFragment();
@@ -42,10 +48,10 @@ public final class LaoCreateFragment extends Fragment {
     binding = LaoCreateFragmentBinding.inflate(inflater, container, false);
     binding.setLifecycleOwner(getActivity());
     viewModel = HomeActivity.obtainViewModel(requireActivity());
+    initialUrl = globalNetworkManager.getCurrentUrl();
 
-    setupCreateButton();
     setupCancelButton();
-    setupTextFieldWatcher();
+    setupTextFields();
 
     return binding.getRoot();
   }
@@ -80,7 +86,8 @@ public final class LaoCreateFragment extends Fragment {
         }
       };
 
-  private void setupTextFieldWatcher() {
+  private void setupTextFields() {
+    binding.serverUrlEntryEditText.setText(initialUrl);
     binding.serverUrlEntryEditText.addTextChangedListener(launchWatcher);
     binding.laoNameEntryEditText.addTextChangedListener(launchWatcher);
   }
