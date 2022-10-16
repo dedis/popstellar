@@ -37,14 +37,14 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.home.LaunchPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
-public class LaunchFragmentTest {
+public class LaoCreateFragmentTest {
 
   private static final String LAO_NAME = "LAO";
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
@@ -98,8 +98,6 @@ public class LaunchFragmentTest {
 
   @Test
   public final void uiElementsAreDisplayed() {
-    bodyText().check(matches(isDisplayed()));
-    titleText().check(matches(isDisplayed()));
     laoNameEntry().check(matches(isDisplayed()));
     cancelButtonLaunch().check(matches(isDisplayed()));
     confirmButtonLaunch().check(matches(isDisplayed()));

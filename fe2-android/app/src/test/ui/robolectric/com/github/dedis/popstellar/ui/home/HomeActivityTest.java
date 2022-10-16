@@ -17,7 +17,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.home.LaunchPageObject.launchFragmentId;
+import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.launchFragmentId;
 import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.*;
 
 @HiltAndroidTest

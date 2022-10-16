@@ -52,7 +52,7 @@ public final class HomeFragment extends Fragment {
         v -> {
           Log.d(TAG, "Opening Create fragment");
           HomeActivity.setCurrentFragment(
-              getParentFragmentManager(), R.id.fragment_launch, LaunchFragment::newInstance);
+              getParentFragmentManager(), R.id.fragment_lao_create, LaoCreateFragment::newInstance);
         });
 
     binding.homeJoinButton.setOnClickListener(

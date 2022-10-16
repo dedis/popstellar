@@ -39,10 +39,9 @@
   <string name="stored_channels">stored channels</string>
 
   <!-- Launch -->
-  <string name="text_title_launch">To launch a new organization, please enter a name for the organization.</string>
-  <string name="text_body_launch">(You can change it later.)\n\n</string>
-  <string name="text_entry_launch">Organization name</string>
-  <string name="text_button_launch">Launch</string>
+  <string name="text_title_create">To create a new organization, please enter a name for the organization.</string>
+  <string name="text_body_create">(You can change it later.)\n\n</string>
+  <string name="text_entry_create">Organization name</string>
 
   <!--  Lao Detail-->
   <string name="add_election">New Election</string>
