@@ -160,7 +160,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     String firstLaoId = laoView.getId();
     try {
       PublicKey pk = wallet.generatePoPToken(firstLaoId, rollcall.getPersistentId()).getPublicKey();
-      return rollcall.getAttendees().contains(pk) || Boolean.TRUE.equals(isOrganizer().getValue());
+      return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
     } catch (KeyGenerationException | UninitializedWalletException e) {
       Log.e(TAG, "failed to retrieve public key from wallet", e);
       return false;
@@ -666,9 +666,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public void setCurrentElectionQuestionVotes(Integer votes, int position) {
-    if (votes == null
-        || position < 0
-        || position > Objects.requireNonNull(mCurrentElectionVotes.getValue()).size()) {
+    if (votes == null || position < 0 || position > mCurrentElectionVotes.getValue().size()) {
       throw new IllegalArgumentException();
     }
     if (mCurrentElectionVotes.getValue().size() <= position) {
@@ -855,9 +853,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
           getApplication().getApplicationContext(), TAG, e, R.string.qr_code_not_main_pk);
       return false;
     }
-
     PublicKey publicKey = pkData.getPublicKey();
-
     if (witnesses.contains(publicKey)) {
       Log.d(TAG, "Witness was already scanned");
       mScanWarningEvent.postValue(
