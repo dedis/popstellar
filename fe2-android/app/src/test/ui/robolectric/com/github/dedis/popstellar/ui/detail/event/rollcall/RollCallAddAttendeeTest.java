@@ -4,6 +4,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.UITestUtils.forceTypeText;
 import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.containerId;
 import static com.github.dedis.popstellar.testutils.pages.scanning.QrScanningPageObject.*;
@@ -149,27 +150,6 @@ public class RollCallAddAttendeeTest {
     // viewModel), the count was never updated to 0. Here we checked that after submission it is not
     // updated
     attendeeCount().check(matches(withText("")));
-  }
-
-  private ViewAction forceTypeText(String text) {
-    return new ViewAction() {
-      @Override
-      public String getDescription() {
-        return "force type text";
-      }
-
-      @Override
-      public Matcher<View> getConstraints() {
-        return allOf(isEnabled());
-      }
-
-      @Override
-      public void perform(UiController uiController, View view) {
-        EditText editText = (EditText) view;
-        editText.append(text);
-        uiController.loopMainThreadUntilIdle();
-      }
-    };
   }
 
   private void setupViewModel() {
