@@ -228,10 +228,6 @@ public final class QRCodeScanningFragment extends Fragment {
     closeRollCallAlert.show();
   }
 
-  private void setupSuccessPopup(String msg) {
-    Toast.makeText(requireContext(), R.string.add_witness_successful, Toast.LENGTH_SHORT).show();
-  }
-
   private void setupWarningPopup(String msg) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
     builder.setTitle("Warning");
@@ -280,7 +276,9 @@ public final class QRCodeScanningFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSuccessPopup(getString(R.string.add_witness_successful));
+                Toast.makeText(
+                        requireContext(), R.string.add_witness_successful, Toast.LENGTH_SHORT)
+                    .show();
               }
             });
   }
@@ -293,7 +291,9 @@ public final class QRCodeScanningFragment extends Fragment {
             stringEvent -> {
               String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSuccessPopup(event);
+                Toast.makeText(
+                        requireContext(), R.string.add_attendee_successful, Toast.LENGTH_SHORT)
+                    .show();
               }
             });
   }
