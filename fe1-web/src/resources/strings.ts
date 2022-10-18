@@ -122,8 +122,8 @@ namespace STRINGS {
   export const home_setup_description_2 =
     'You can connect to a LAO by tapping "Join LAO" in the bottom toolbar and then scanning the qr code a LAO organizer provides to you.';
 
-  export const home_create_lao = 'Create LAO';
-  export const home_join_lao = 'Join LAO';
+  export const home_create_lao = 'Create';
+  export const home_join_lao = 'Join';
   export const home_logout = 'Logout';
   export const home_logout_clear_data = 'Logout and clear data';
 

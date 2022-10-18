@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { PoPIcon } from 'core/components';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
@@ -44,7 +45,7 @@ const Home: FunctionComponent<unknown> = () => {
     });
   }, [navigation, laoId, disconnectFromLao]);
 
-  const toolbarItems = useMemo(
+  const toolbarItems = useMemo<ToolbarItem[]>(
     () => [
       {
         title: STRINGS.home_create_lao,
@@ -59,6 +60,7 @@ const Home: FunctionComponent<unknown> = () => {
           navigation.navigate(STRINGS.navigation_home_connect, {
             screen: STRINGS.navigation_connect_scan,
           }),
+        negative: true,
       },
     ],
     [navigation],

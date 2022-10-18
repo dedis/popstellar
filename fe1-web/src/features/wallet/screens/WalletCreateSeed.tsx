@@ -136,12 +136,15 @@ const WalletCreateSeed = () => {
               {STRINGS.wallet_welcome_text_wallet_explanation_6}
             </Text>
           </Text>
-          <PoPTextButton onPress={() => connectWithSeed()} negative testID="exploring_selector">
+          <PoPTextButton
+            onPress={() => connectWithSeed()}
+            negativeBorder
+            testID="exploring_selector">
             {STRINGS.wallet_welcome_start_exploring}
           </PoPTextButton>
           <PoPTextButton
             onPress={() => navigation.navigate(STRINGS.navigation_app_wallet_insert_seed)}
-            negative>
+            negativeBorder>
             {STRINGS.wallet_welcome_already_know_seed}
           </PoPTextButton>
         </View>

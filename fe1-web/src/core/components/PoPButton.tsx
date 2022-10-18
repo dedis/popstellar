@@ -20,30 +20,36 @@ const styles = StyleSheet.create({
     borderColor: Color.inactive,
     backgroundColor: Color.inactive,
   } as ViewStyle,
-  negative: {
+  outline: {
+    borderColor: Color.accent,
+    backgroundColor: Color.contrast,
+  } as ViewStyle,
+  negativeBorder: {
     borderColor: Color.contrast,
   } as ViewStyle,
-  disabledNegative: {
+  disabledNegativeBorder: {
     borderColor: Color.inactive,
     backgroundColor: Color.inactive,
   } as ViewStyle,
 });
 
 const PoPButton = (props: IPropTypes) => {
-  const { onPress, disabled, children, negative, testID } = props;
+  const { onPress, disabled, children, outline, negativeBorder, margin, testID } = props;
 
   const viewStyles = [styles.button];
-  if (negative && disabled) {
-    viewStyles.push(styles.disabledNegative);
-  } else if (negative) {
-    viewStyles.push(styles.negative);
+  if (negativeBorder && disabled) {
+    viewStyles.push(styles.disabledNegativeBorder);
+  } else if (negativeBorder) {
+    viewStyles.push(styles.negativeBorder);
   } else if (disabled) {
     viewStyles.push(styles.disabled);
+  } else if (outline) {
+    viewStyles.push(styles.outline);
   }
 
   return (
     <PoPTouchableOpacity
-      containerStyle={styles.container}
+      containerStyle={margin ? styles.container : []}
       onPress={disabled ? undefined : onPress}
       testID={testID || undefined}>
       <View style={viewStyles}>{children}</View>
@@ -54,7 +60,9 @@ const PoPButton = (props: IPropTypes) => {
 const propTypes = {
   onPress: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
-  negative: PropTypes.bool,
+  outline: PropTypes.bool,
+  negativeBorder: PropTypes.bool,
+  margin: PropTypes.bool,
   children: PropTypes.node,
   testID: PropTypes.string,
 };
@@ -62,7 +70,9 @@ PoPButton.propTypes = propTypes;
 
 PoPButton.defaultProps = {
   disabled: false,
-  negative: false,
+  outline: false,
+  negativeBorder: false,
+  margin: true,
   children: null,
   testID: undefined,
 };
