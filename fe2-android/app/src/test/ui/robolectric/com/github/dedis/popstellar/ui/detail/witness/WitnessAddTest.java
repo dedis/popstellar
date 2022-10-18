@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail.event.rollcall;
+package com.github.dedis.popstellar.ui.detail.witness;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -16,6 +16,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -27,8 +28,9 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 
-import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -43,7 +45,7 @@ import io.reactivex.subjects.BehaviorSubject;
 @LargeTest
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
-public class RollCallAddAttendeeTest {
+public class WitnessAddTest {
 
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
@@ -54,14 +56,14 @@ public class RollCallAddAttendeeTest {
       Base64DataUtils.generatePoPToken().getPublicKey().getEncoded();
   private static final String VALID_RC_MANUAL_INPUT = "{\"pop_token\": \"" + POP_TOKEN + "\"}";
   public static final String JSON_INVALID_INPUT = "{pop_token:" + POP_TOKEN;
-  public static final String VALID_WITNESS_MANUAL_INPUT =
-      "{\"main_public_key\": \"" + POP_TOKEN + "\"}";
   public static final String INVALID_KEY_FORMAT_INPUT = "{\"pop_token\": \"invalid_key\"}";
 
   private static final BehaviorSubject<LaoView> laoSubject =
       BehaviorSubject.createDefault(new LaoView(LAO));
 
   @BindValue @Mock LAORepository repository;
+  @BindValue @Mock
+    KeyManager keyManager;
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -75,9 +77,11 @@ public class RollCallAddAttendeeTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
+          when(repository.getLaoView(anyString())).thenReturn(new LaoView(LAO));
+          when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
         }
       };
 
@@ -100,38 +104,21 @@ public class RollCallAddAttendeeTest {
   }
 
   @Test
-  public void addingAttendeeManuallyUpdatesCount() {
-    setupViewModel();
-    manualAddEditText().perform(forceTypeText(VALID_RC_MANUAL_INPUT));
-    manualAddConfirm().perform(click());
-
-    // Since we haven't mocked for the viewModel to fetch the organizer token, adding an attendee
-    // should result in a total of one attendee
-    attendeeCount().check(matches(withText("1")));
-  }
-
-  @Test
   public void addingInvalidJsonFormatDoesNotAddAttendees() {
     setupViewModel();
     manualAddEditText().perform(forceTypeText(JSON_INVALID_INPUT));
     manualAddConfirm().perform(click());
 
-    // Since we opened the scanner directly (without going through the openRollCall of the
-    // viewModel), the count was never updated to 0. Here we checked that after submission it is not
-    // updated
-    attendeeCount().check(matches(withText("")));
+    UITestUtils.assertToastIsDisplayedWithText(R.string.qr_code_not_main_pk);
   }
 
   @Test
   public void addingValidNonRcFormatDoesNotAddAttendees() {
     setupViewModel();
-    manualAddEditText().perform(forceTypeText(VALID_WITNESS_MANUAL_INPUT));
+    manualAddEditText().perform(forceTypeText(VALID_RC_MANUAL_INPUT));
     manualAddConfirm().perform(click());
 
-    // Since we opened the scanner directly (without going through the openRollCall of the
-    // viewModel), the count was never updated to 0. Here we checked that after submission it is not
-    // updated
-    attendeeCount().check(matches(withText("")));
+    UITestUtils.assertToastIsDisplayedWithText(R.string.qr_code_not_main_pk);
   }
 
   @Test
@@ -140,10 +127,7 @@ public class RollCallAddAttendeeTest {
     manualAddEditText().perform(forceTypeText(INVALID_KEY_FORMAT_INPUT));
     manualAddConfirm().perform(click());
 
-    // Since we opened the scanner directly (without going through the openRollCall of the
-    // viewModel), the count was never updated to 0. Here we checked that after submission it is not
-    // updated
-    attendeeCount().check(matches(withText("")));
+    UITestUtils.assertToastIsDisplayedWithText(R.string.qr_code_not_main_pk);
   }
 
   private void setupViewModel() {
@@ -152,7 +136,7 @@ public class RollCallAddAttendeeTest {
         .onActivity(
             activity -> {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
-              laoDetailViewModel.setScanningAction(ScanningAction.ADD_ROLL_CALL_ATTENDEE);
+              laoDetailViewModel.setScanningAction(ScanningAction.ADD_WITNESS);
             });
     activityScenarioRule.getScenario().recreate();
   }

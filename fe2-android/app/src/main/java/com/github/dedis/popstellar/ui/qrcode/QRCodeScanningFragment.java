@@ -293,7 +293,7 @@ public final class QRCodeScanningFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSuccessPopup("A new witness was added to the the Lao");
+                setupSuccessPopup(getString(R.string.add_witness_successful));
               }
             });
   }

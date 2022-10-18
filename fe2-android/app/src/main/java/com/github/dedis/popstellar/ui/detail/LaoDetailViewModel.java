@@ -160,7 +160,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     String firstLaoId = laoView.getId();
     try {
       PublicKey pk = wallet.generatePoPToken(firstLaoId, rollcall.getPersistentId()).getPublicKey();
-      return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
+      return rollcall.getAttendees().contains(pk) || Boolean.TRUE.equals(isOrganizer().getValue());
     } catch (KeyGenerationException | UninitializedWalletException e) {
       Log.e(TAG, "failed to retrieve public key from wallet", e);
       return false;
@@ -666,7 +666,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public void setCurrentElectionQuestionVotes(Integer votes, int position) {
-    if (votes == null || position < 0 || position > mCurrentElectionVotes.getValue().size()) {
+    if (votes == null
+        || position < 0
+        || position > Objects.requireNonNull(mCurrentElectionVotes.getValue()).size()) {
       throw new IllegalArgumentException();
     }
     if (mCurrentElectionVotes.getValue().size() <= position) {
@@ -829,14 +831,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
           getApplication().getApplicationContext(), TAG, R.string.qr_code_not_pop_token);
       return false;
     }
-    PublicKey publicKey;
-    try {
-      publicKey = tokenData.getPopToken();
-    } catch (IllegalArgumentException e) {
-      Log.d(TAG, "invalid key format ", e);
-      mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
-      return false;
-    }
+    PublicKey publicKey = tokenData.getPopToken();
     if (attendees.contains(publicKey)) {
       Log.d(TAG, "Attendee was already scanned");
       mScanWarningEvent.postValue(
@@ -845,7 +840,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     }
 
     attendees.add(publicKey);
-    Log.d(TAG, "Attendee " + publicKey + " sucessfully added");
+    Log.d(TAG, "Attendee " + publicKey + " successfully added");
     mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
     mNbAttendees.postValue(attendees.size());
     return true;
@@ -857,17 +852,12 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       pkData = MainPublicKeyData.extractFrom(gson, data);
     } catch (Exception e) {
       ErrorUtils.logAndShow(
-          getApplication().getApplicationContext(), TAG, R.string.qr_code_not_main_pk);
+          getApplication().getApplicationContext(), TAG, e, R.string.qr_code_not_main_pk);
       return false;
     }
-    PublicKey publicKey;
-    try {
-      publicKey = pkData.getPublicKey();
-    } catch (IllegalArgumentException e) {
-      Log.d(TAG, "invalid key format ", e);
-      mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
-      return false;
-    }
+
+    PublicKey publicKey = pkData.getPublicKey();
+
     if (witnesses.contains(publicKey)) {
       Log.d(TAG, "Witness was already scanned");
       mScanWarningEvent.postValue(
