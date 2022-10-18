@@ -10,8 +10,8 @@ import { Lao, LaoState } from '../objects/Lao';
  * @param lao The lao to connect to
  * @returns The list of new network connections
  */
-export const connectToLao = (lao: Lao): NetworkConnection[] =>
-  lao.server_addresses.map((address) => getNetworkManager().connect(address));
+export const connectToLao = (lao: Lao): Promise<NetworkConnection[]> =>
+  Promise.all(lao.server_addresses.map((address) => getNetworkManager().connect(address)));
 
 /**
  * Resubscribes to a known lao

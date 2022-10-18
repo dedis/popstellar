@@ -48,7 +48,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
   const reconnectToLao = async () => {
     try {
       // connect to toe lao
-      const connections = connectToLao(lao);
+      const connections = await connectToLao(lao);
       // and subscribe to all previously subscribed to channels on the new connections
       await resubscribeToLao(lao, dispatch, connections);
 
