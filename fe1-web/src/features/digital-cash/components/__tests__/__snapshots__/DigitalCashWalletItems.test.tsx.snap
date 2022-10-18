@@ -345,8 +345,8 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                               "backgroundColor": "#fff",
                             },
                             Object {
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
+                              "borderTopLeftRadius": 8,
+                              "borderTopRightRadius": 8,
                             },
                           ]
                         }
@@ -357,8 +357,8 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                               "alignItems": "center",
                               "backgroundColor": "#fff",
                               "borderColor": "#bcbbc1",
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
+                              "borderTopLeftRadius": 8,
+                              "borderTopRightRadius": 8,
                               "flexDirection": "row",
                               "padding": 14,
                             }

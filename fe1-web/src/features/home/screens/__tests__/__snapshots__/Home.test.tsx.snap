@@ -391,6 +391,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                         <View
                           style={
                             Object {
+                              "alignItems": "center",
                               "backgroundColor": "#fff",
                               "borderColor": "rgb(216, 216, 216)",
                               "borderTopWidth": 1,
@@ -414,6 +415,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={Array []}
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
@@ -425,6 +427,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
+                              style={Array []}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -437,7 +440,21 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                                 }
                               >
                                 <View
-                                  style={Object {}}
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                      Object {
+                                        "backgroundColor": "#fff",
+                                        "borderColor": "#3742fa",
+                                      },
+                                    ]
+                                  }
                                 >
                                   <Text
                                     style={
@@ -449,12 +466,15 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                                           "textAlign": "left",
                                         },
                                         Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
                                           "color": "#3742fa",
                                         },
                                       ]
                                     }
                                   >
-                                    Create LAO
+                                    Create
                                   </Text>
                                 </View>
                               </View>
@@ -473,6 +493,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={Array []}
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
@@ -484,6 +505,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
+                              style={Array []}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -496,7 +518,17 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                                 }
                               >
                                 <View
-                                  style={Object {}}
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                    ]
+                                  }
                                 >
                                   <Text
                                     style={
@@ -508,12 +540,15 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                                           "textAlign": "left",
                                         },
                                         Object {
-                                          "color": "#3742fa",
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
                                         },
                                       ]
                                     }
                                   >
-                                    Join LAO
+                                    Join
                                   </Text>
                                 </View>
                               </View>
@@ -925,6 +960,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                         <View
                           style={
                             Object {
+                              "alignItems": "center",
                               "backgroundColor": "#fff",
                               "borderColor": "rgb(216, 216, 216)",
                               "borderTopWidth": 1,
@@ -948,6 +984,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={Array []}
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
@@ -959,6 +996,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
+                              style={Array []}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -971,7 +1009,21 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                                 }
                               >
                                 <View
-                                  style={Object {}}
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                      Object {
+                                        "backgroundColor": "#fff",
+                                        "borderColor": "#3742fa",
+                                      },
+                                    ]
+                                  }
                                 >
                                   <Text
                                     style={
@@ -983,12 +1035,15 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                                           "textAlign": "left",
                                         },
                                         Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
                                           "color": "#3742fa",
                                         },
                                       ]
                                     }
                                   >
-                                    Create LAO
+                                    Create
                                   </Text>
                                 </View>
                               </View>
@@ -1007,6 +1062,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
+                            style={Array []}
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
@@ -1018,6 +1074,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
+                              style={Array []}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -1030,7 +1087,17 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                                 }
                               >
                                 <View
-                                  style={Object {}}
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                    ]
+                                  }
                                 >
                                   <Text
                                     style={
@@ -1042,12 +1109,15 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                                           "textAlign": "left",
                                         },
                                         Object {
-                                          "color": "#3742fa",
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
                                         },
                                       ]
                                     }
                                   >
-                                    Join LAO
+                                    Join
                                   </Text>
                                 </View>
                               </View>

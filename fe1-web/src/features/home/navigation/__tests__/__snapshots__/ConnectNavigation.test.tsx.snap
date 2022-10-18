@@ -760,7 +760,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                         style={
                                                           Object {
                                                             "backgroundColor": "#fff",
-                                                            "borderRadius": 16,
+                                                            "borderRadius": 8,
                                                             "padding": 8,
                                                           }
                                                         }
@@ -836,7 +836,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                       Object {
                                                         "alignSelf": "flex-end",
                                                         "backgroundColor": "#fff",
-                                                        "borderRadius": 16,
+                                                        "borderRadius": 8,
                                                         "padding": 8,
                                                       }
                                                     }

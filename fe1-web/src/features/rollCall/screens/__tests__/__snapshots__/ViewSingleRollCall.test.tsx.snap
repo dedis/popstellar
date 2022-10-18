@@ -417,7 +417,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -631,8 +631,8 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -643,8 +643,8 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -777,8 +777,8 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -788,8 +788,8 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -1389,7 +1389,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -1603,8 +1603,8 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -1615,8 +1615,8 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -1749,8 +1749,8 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -1760,8 +1760,8 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -2306,7 +2306,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -2520,8 +2520,8 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -2532,8 +2532,8 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -2666,8 +2666,8 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -2677,8 +2677,8 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -3223,7 +3223,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -3437,8 +3437,8 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -3449,8 +3449,8 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -3583,8 +3583,8 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -3594,8 +3594,8 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -4157,7 +4157,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -4371,8 +4371,8 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -4383,8 +4383,8 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -4517,8 +4517,8 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -4528,8 +4528,8 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -5129,7 +5129,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -5320,8 +5320,8 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -5332,8 +5332,8 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -5466,8 +5466,8 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -5477,8 +5477,8 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -6019,7 +6019,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -6233,8 +6233,8 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -6245,8 +6245,8 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -6379,8 +6379,8 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -6390,8 +6390,8 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -6932,7 +6932,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -7146,8 +7146,8 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -7158,8 +7158,8 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -7292,8 +7292,8 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -7303,8 +7303,8 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,

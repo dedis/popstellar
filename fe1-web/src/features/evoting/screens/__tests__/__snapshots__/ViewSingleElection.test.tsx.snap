@@ -4587,7 +4587,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -4814,8 +4814,8 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -4826,8 +4826,8 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -4973,8 +4973,8 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -4984,8 +4984,8 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -5348,8 +5348,8 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -5360,8 +5360,8 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -5507,8 +5507,8 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -5518,8 +5518,8 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -6116,7 +6116,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -6350,8 +6350,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -6362,8 +6362,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -6490,8 +6490,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -6501,8 +6501,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -6853,8 +6853,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -6865,8 +6865,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -6993,8 +6993,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -7004,8 +7004,8 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -7870,7 +7870,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 Array [
                                   Object {
                                     "alignItems": "center",
-                                    "borderRadius": 16,
+                                    "borderRadius": 8,
                                     "flexDirection": "row",
                                     "marginBottom": 16,
                                     "padding": 16,
@@ -7992,7 +7992,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               style={
                                 Array [
                                   Object {
-                                    "borderRadius": 16,
+                                    "borderRadius": 8,
                                     "marginBottom": 16,
                                   },
                                   Object {
@@ -8223,8 +8223,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -8235,8 +8235,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -8431,8 +8431,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -8442,8 +8442,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -8855,8 +8855,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -8867,8 +8867,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -9063,8 +9063,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -9074,8 +9074,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -9318,7 +9318,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                         Object {
                                           "backgroundColor": "#3742fa",
                                           "borderColor": "#3742fa",
-                                          "borderRadius": 16,
+                                          "borderRadius": 8,
                                           "borderWidth": 1,
                                           "padding": 8,
                                         },
@@ -9744,7 +9744,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -9978,8 +9978,8 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -9990,8 +9990,8 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -10118,8 +10118,8 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -10129,8 +10129,8 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -10481,8 +10481,8 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -10493,8 +10493,8 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -10621,8 +10621,8 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -10632,8 +10632,8 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -11473,7 +11473,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -11700,8 +11700,8 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -11712,8 +11712,8 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -11859,8 +11859,8 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -11870,8 +11870,8 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -12234,8 +12234,8 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -12246,8 +12246,8 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -12393,8 +12393,8 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -12404,8 +12404,8 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -13002,7 +13002,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -13213,8 +13213,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -13225,8 +13225,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -13353,8 +13353,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -13364,8 +13364,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -13693,8 +13693,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -13705,8 +13705,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -13833,8 +13833,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -13844,8 +13844,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -14710,7 +14710,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 Array [
                                   Object {
                                     "alignItems": "center",
-                                    "borderRadius": 16,
+                                    "borderRadius": 8,
                                     "flexDirection": "row",
                                     "marginBottom": 16,
                                     "padding": 16,
@@ -14832,7 +14832,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               style={
                                 Array [
                                   Object {
-                                    "borderRadius": 16,
+                                    "borderRadius": 8,
                                     "marginBottom": 16,
                                   },
                                   Object {
@@ -15063,8 +15063,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -15075,8 +15075,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -15248,8 +15248,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -15259,8 +15259,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -15649,8 +15649,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -15661,8 +15661,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -15834,8 +15834,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -15845,8 +15845,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -16066,7 +16066,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                         Object {
                                           "backgroundColor": "#3742fa",
                                           "borderColor": "#3742fa",
-                                          "borderRadius": 16,
+                                          "borderRadius": 8,
                                           "borderWidth": 1,
                                           "padding": 8,
                                         },
@@ -16492,7 +16492,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -16726,8 +16726,8 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -16738,8 +16738,8 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -16866,8 +16866,8 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -16877,8 +16877,8 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -17229,8 +17229,8 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -17241,8 +17241,8 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -17369,8 +17369,8 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -17380,8 +17380,8 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
