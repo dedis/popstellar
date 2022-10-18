@@ -89,7 +89,6 @@ export default Home;
 export const HomeHeaderRight = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const showActionSheet = useActionSheet();
-  const forgetSeed = HomeHooks.useForgetSeed();
   const dispatch = useDispatch();
 
   return (
@@ -98,13 +97,6 @@ export const HomeHeaderRight = () => {
         showActionSheet([
           {
             displayName: STRINGS.home_logout,
-            action: () => {
-              forgetSeed();
-              navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
-            },
-          },
-          {
-            displayName: STRINGS.home_logout_clear_data,
             action: () => {
               dispatch({ type: 'CLEAR_STORAGE', value: {} });
               navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
