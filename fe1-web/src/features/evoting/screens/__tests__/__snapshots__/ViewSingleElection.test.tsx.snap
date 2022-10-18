@@ -8217,6 +8217,18 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 testID="RNE__ListItem__Accordion__Children"
                               >
                                 <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Array [
                                       Object {
@@ -8425,6 +8437,18 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                   </View>
                                 </View>
                                 <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Array [
                                       Object {
@@ -8849,6 +8873,18 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 testID="RNE__ListItem__Accordion__Children"
                               >
                                 <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Array [
                                       Object {
@@ -9057,6 +9093,18 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                   </View>
                                 </View>
                                 <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Array [
                                       Object {
@@ -15057,6 +15105,18 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 testID="RNE__ListItem__Accordion__Children"
                               >
                                 <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Array [
                                       Object {
@@ -15242,6 +15302,18 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                   </View>
                                 </View>
                                 <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Array [
                                       Object {
@@ -15643,6 +15715,18 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 testID="RNE__ListItem__Accordion__Children"
                               >
                                 <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Array [
                                       Object {
@@ -15828,6 +15912,18 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                   </View>
                                 </View>
                                 <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     Array [
                                       Object {
