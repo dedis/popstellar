@@ -35,6 +35,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.hamcrest.Matcher;
@@ -72,8 +73,6 @@ public class RollCallAddAttendeeTest {
       BehaviorSubject.createDefault(new LaoView(LAO));
 
   @BindValue @Mock LAORepository repository;
-  @BindValue @Mock GlobalNetworkManager networkManager;
-  @BindValue @Mock KeyManager keyManager;
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -122,34 +121,40 @@ public class RollCallAddAttendeeTest {
     attendeeCount().check(matches(withText("1")));
   }
 
+  @Test
   public void addingInvalidJsonFormatDoesNotAddAttendees() {
     setupViewModel();
     manualAddEditText().perform(forceTypeText(JSON_INVALID_INPUT));
     manualAddConfirm().perform(click());
 
-    // Since we haven't mocked for the viewModel to fetch the organizer token, adding an invalid
-    // attendee should result in a total of zero attendee
-    attendeeCount().check(matches(withText("0")));
+    // Since we opened the scanner directly (without going through the openRollCall of the
+    // viewModel), the count was never updated to 0. Here we checked that after submission it is not
+    // updated
+    attendeeCount().check(matches(withText("")));
   }
 
+  @Test
   public void addingValidNonRcFormatDoesNotAddAttendees() {
     setupViewModel();
     manualAddEditText().perform(forceTypeText(VALID_WITNESS_MANUAL_INPUT));
     manualAddConfirm().perform(click());
 
-    // Since we haven't mocked for the viewModel to fetch the organizer token, adding an invalid
-    // attendee should result in a total of zero attendee
-    attendeeCount().check(matches(withText("0")));
+    // Since we opened the scanner directly (without going through the openRollCall of the
+    // viewModel), the count was never updated to 0. Here we checked that after submission it is not
+    // updated
+    attendeeCount().check(matches(withText("")));
   }
 
+  @Test
   public void addingKeyFormatDoesNotAddAttendees() {
     setupViewModel();
     manualAddEditText().perform(forceTypeText(INVALID_KEY_FORMAT_INPUT));
     manualAddConfirm().perform(click());
 
-    // Since we haven't mocked for the viewModel to fetch the organizer token, adding an invalid
-    // attendee should result in a total of zero attendee
-    attendeeCount().check(matches(withText("0")));
+    // Since we opened the scanner directly (without going through the openRollCall of the
+    // viewModel), the count was never updated to 0. Here we checked that after submission it is not
+    // updated
+    attendeeCount().check(matches(withText("")));
   }
 
   private ViewAction forceTypeText(String text) {
