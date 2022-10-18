@@ -11,6 +11,7 @@ import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -33,8 +34,6 @@ const styles = StyleSheet.create({
   leftButtons: QrCodeScannerUIElementContainer,
   rightButtons: QrCodeScannerUIElementContainer,
 });
-
-const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_open_roll_call>,
@@ -117,9 +116,10 @@ const RollCallOpened = () => {
   );
 
   const addAttendeePopTokenAndShowToast = (popToken: string) => {
-    if (tokenMatcher.test(popToken)) {
+    try {
+      const token = ScannablePopToken.fromJson(JSON.parse(popToken));
       // only show a toast if an actual *new* token is added
-      if (addAttendeePopToken(popToken)) {
+      if (addAttendeePopToken(token.pop_token)) {
         toast.show(STRINGS.roll_call_scan_participant, {
           type: 'success',
           placement: 'top',
@@ -132,7 +132,7 @@ const RollCallOpened = () => {
           duration: FOUR_SECONDS,
         });
       }
-    } else {
+    } catch {
       toast.show(STRINGS.roll_call_invalid_token, {
         type: 'danger',
         placement: 'top',

@@ -7,6 +7,8 @@ import { KeyPairStore } from 'core/keypair';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
+import { ScannableIdentity } from '../objects/ScannableIdentity';
+
 /**
  * Manage the Identity screen. A user may decide to participate anonymously to a
  * LAO or share personal information
@@ -102,7 +104,12 @@ const Identity = () => {
           <Text style={[Typography.paragraph, Typography.important]}>
             {STRINGS.identity_qrcode_description}
           </Text>
-          <QRCode value={KeyPairStore.getPublicKey().toString()} visibility={!isAnonymous} />
+          <QRCode
+            value={ScannableIdentity.encodeIdentity({
+              main_public_key: KeyPairStore.getPublicKey().toString(),
+            })}
+            visibility={!isAnonymous}
+          />
         </>
       )}
     </>

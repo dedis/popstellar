@@ -546,13 +546,15 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	require.NoError(t, err)
 
 	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+	// should contain the creation message and the LAO greet
+	require.Len(t, catchupAnswer, 2)
 
 	greetMsg := catchupAnswer[1]
 
 	var laoGreet messagedata.LaoGreet
 
 	err = greetMsg.UnmarshalData(&laoGreet)
-	require.NoError(t, err)
+	require.NoError(t, err, laoGreet, catchupAnswer)
 
 	require.Equal(t, messagedata.LAOObject, laoGreet.Object)
 	require.Equal(t, messagedata.LAOActionGreet, laoGreet.Action)
