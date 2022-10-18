@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.*;
 import android.util.Log;
 import android.view.*;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -228,21 +229,7 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   private void setupSuccessPopup(String msg) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-    builder.setTitle("Success");
-    builder.setMessage(msg);
-    builder.setOnDismissListener(dialog -> startCamera());
-    AlertDialog alert = builder.create();
-    mPreview.stop();
-    alert.show();
-    new Handler(Looper.myLooper())
-        .postDelayed(
-            () -> {
-              if (alert.isShowing()) {
-                alert.dismiss();
-              }
-            },
-            2000);
+    Toast.makeText(requireContext(), R.string.add_witness_successful, Toast.LENGTH_SHORT).show();
   }
 
   private void setupWarningPopup(String msg) {

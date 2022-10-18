@@ -56,14 +56,15 @@ public class WitnessAddTest {
       Base64DataUtils.generatePoPToken().getPublicKey().getEncoded();
   private static final String VALID_RC_MANUAL_INPUT = "{\"pop_token\": \"" + POP_TOKEN + "\"}";
   public static final String JSON_INVALID_INPUT = "{pop_token:" + POP_TOKEN;
+  public static final String VALID_WITNESS_MANUAL_INPUT =
+      "{\"main_public_key\": \"" + POP_TOKEN + "\"}";
   public static final String INVALID_KEY_FORMAT_INPUT = "{\"pop_token\": \"invalid_key\"}";
 
   private static final BehaviorSubject<LaoView> laoSubject =
       BehaviorSubject.createDefault(new LaoView(LAO));
 
   @BindValue @Mock LAORepository repository;
-  @BindValue @Mock
-    KeyManager keyManager;
+  @BindValue @Mock KeyManager keyManager;
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -101,6 +102,15 @@ public class WitnessAddTest {
   @Test
   public void addButtonIsDisplayed() {
     manualAddConfirm().check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void addingValidManualEntry() {
+    setupViewModel();
+    manualAddEditText().perform(forceTypeText(VALID_WITNESS_MANUAL_INPUT));
+    manualAddConfirm().perform(click());
+
+    UITestUtils.assertToastIsDisplayedWithText(R.string.add_witness_successful);
   }
 
   @Test
