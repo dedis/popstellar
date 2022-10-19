@@ -46,7 +46,7 @@ const ConnectConfirm = () => {
 
   const onButtonConfirm = async () => {
     try {
-      const connection = getNetworkManager().connect(serverUrl);
+      const connection = await getNetworkManager().connect(serverUrl);
 
       const laoChannel = getLaoChannel(laoId);
       if (!laoChannel) {
@@ -67,7 +67,7 @@ const ConnectConfirm = () => {
         screen: STRINGS.navigation_lao_home,
       });
     } catch (err) {
-      console.error(`Failed to establish lao connection: ${err}`);
+      console.error(`Failed to establish lao connection`, err);
       toast.show(`Failed to establish lao connection: ${err}`, {
         type: 'danger',
         placement: 'top',

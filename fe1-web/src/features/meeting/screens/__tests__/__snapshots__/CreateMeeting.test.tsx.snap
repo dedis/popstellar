@@ -369,6 +369,7 @@ exports[`CreateMeeting renders correctly 1`] = `
                               editable={true}
                               onChangeText={[Function]}
                               placeholder="Global PoP Meeting"
+                              placeholderTextColor="#8E8E8E"
                               style={
                                 Array [
                                   Object {
@@ -422,6 +423,7 @@ exports[`CreateMeeting renders correctly 1`] = `
                               editable={true}
                               onChangeText={[Function]}
                               placeholder="BC410"
+                              placeholderTextColor="#8E8E8E"
                               style={
                                 Array [
                                   Object {

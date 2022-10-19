@@ -69,6 +69,7 @@ beforeAll(() => {
   // this cannot be initialized before as it requires the mock registries to be set up
   mockResponseMessage = Message.fromData(mockMessageData, mockKeyPair, mockChannel, []);
   mockResponse = {
+    jsonrpc: '2.0',
     id: 0,
     result: [mockResponseMessage],
   };

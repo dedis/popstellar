@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "resource:/protocol/qrcode/pop_token.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/qrcode/pop_token.json",
     "title": "QRCode data for pop tokens",
     "description": "Match a data contained in a qrcode encoding a pop token",
     "type": "object",

@@ -1,3 +1,4 @@
+import { createNavigationContainerRef } from '@react-navigation/core';
 import { createStackNavigator } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -8,6 +9,9 @@ import STRINGS from 'resources/strings';
 
 import { AppParamList } from './typing/AppParamList';
 import { NavigationScreen } from './typing/Screen';
+
+// allows react-navigation to be used outside of react components
+export const navigationRef = createNavigationContainerRef<AppParamList>();
 
 /**
  * Define the App stack navigation
