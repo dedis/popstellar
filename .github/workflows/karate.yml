@@ -1,7 +1,15 @@
+name: Integration Tests
+
 on:
   schedule:
     # Run the ci every day at 19:00
     - cron:  '00 19 * * *'
+    
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
     
 jobs:
   be2-scala:
@@ -37,6 +45,13 @@ jobs:
         with:
           name: HTML Report
           path: ./tests/karate/target/karate-reports
+                  
+      - name: Publish Cucumber Report
+        if: ${{ always() }} # execute even if previous steps failed
+        uses: actions/upload-artifact@v3
+        with:
+          name: HTML Report
+          path: ./tests/karate/target/cucumber-html-reports
           
       - name: Publish Server logs
         if: ${{ always() }} # execute even if previous steps failed
@@ -94,6 +109,13 @@ jobs:
         with:
           name: HTML Report
           path: ./tests/karate/target/karate-reports
+                  
+      - name: Publish Cucumber Report
+        if: ${{ always() }} # execute even if previous steps failed
+        uses: actions/upload-artifact@v3
+        with:
+          name: HTML Report
+          path: ./tests/karate/target/cucumber-html-reports
           
       - name: Publish Server logs
         if: ${{ always() }} # execute even if previous steps failed
