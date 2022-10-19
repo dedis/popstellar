@@ -1,4 +1,4 @@
-@env=android,web
+@ignore @report=false @env=android,web
 Feature: Simple Scenarios
 
   @name=basic_setup
