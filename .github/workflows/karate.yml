@@ -5,12 +5,6 @@ on:
     # Run the ci every day at 19:00
     - cron:  '00 19 * * *'
     
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-    
 jobs:
   be2-scala:
     name: Be2-Scala
