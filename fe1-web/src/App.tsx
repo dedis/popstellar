@@ -1,22 +1,27 @@
 import 'react-native-gesture-handler';
 
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { registerRootComponent } from 'expo';
 import React from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { ToastProvider } from 'react-native-toast-notifications';
+import Toast, { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 import { configureKeyPair } from 'core/keypair';
-import AppNavigation from 'core/navigation/AppNavigation';
+import AppNavigation, { navigationRef } from 'core/navigation/AppNavigation';
 import { configureNetwork } from 'core/network';
 import { persist, store } from 'core/redux';
 import { Color } from 'core/styles';
 import { configureFeatures } from 'features';
+
+import cameraPolyfill from './core/platform/camera/web-polyfill';
+
+// load polyfill when the app loads
+cameraPolyfill();
 
 const { messageRegistry, keyPairRegistry, navigationOpts, context } = configureFeatures();
 configureKeyPair();
@@ -34,8 +39,6 @@ persist.persist();
  * The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
  */
 function App() {
-  const navigationRef = useNavigationContainerRef();
-
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persist}>
@@ -52,6 +55,11 @@ function App() {
                   warningColor={Color.warning}
                   dangerColor={Color.error}>
                   <AppNavigation screens={navigationOpts.screens} />
+                  <Toast
+                    ref={(ref) => {
+                      globalThis.toast = ref;
+                    }}
+                  />
                 </ToastProvider>
               </SafeAreaProvider>
             </ActionSheetProvider>

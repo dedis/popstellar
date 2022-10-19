@@ -8,8 +8,8 @@ import { dispatch } from 'core/redux';
 import { Lao } from '../objects';
 import { setCurrentLao } from '../reducer';
 
-export const openLaoTestConnection = () => {
-  const nc = getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
+export const openLaoTestConnection = async () => {
+  const nc = await getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
   nc.setRpcHandler(() => {
     console.info('Using custom test rpc handler: does nothing');
   });

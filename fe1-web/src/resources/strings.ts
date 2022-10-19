@@ -44,6 +44,7 @@ namespace STRINGS {
 
   /* --- ConnectionNavigation Strings --- */
   export const navigation_connect_scan = 'Scanning';
+  export const navigation_connect_processing = 'Processing scanned QR code';
   export const navigation_connect_launch = 'Launch';
   export const navigation_connect_launch_title = 'Launch a new LAO';
   export const navigation_connect_confirm = 'Confirm';
@@ -109,6 +110,7 @@ namespace STRINGS {
   export const lao_properties_add_additional_connection = 'Add connection';
   export const lao_properties_disconnect = 'Disconnect';
   export const lao_no_current = 'You are currently not connected to any LAO';
+  export const lao_error_disconnect = 'The connection to the LAO broke unexpectedly';
 
   /* --- Home Strings --- */
 

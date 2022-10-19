@@ -1,3 +1,4 @@
+import { navigationRef } from 'core/navigation/AppNavigation';
 import {
   addOnChannelSubscriptionHandlers,
   addOnChannelUnsubscriptionHandlers,
@@ -5,6 +6,8 @@ import {
 } from 'core/network';
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 import { getStore } from 'core/redux';
+import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
 
 import { getLaoById } from '../functions/lao';
 import { resubscribeToLao } from '../functions/network';
@@ -62,5 +65,32 @@ export function configureNetwork(registry: MessageRegistry) {
     }
 
     await resubscribeToLao(lao, store.dispatch);
+  });
+  getNetworkManager().addConnectionDeathHandler((address) => {
+    const laoId = selectCurrentLaoId(getStore().getState());
+    const currentLao = getLaoById(laoId?.valueOf() || '');
+    if (!laoId || !currentLao) {
+      return;
+    }
+
+    if (currentLao.server_addresses.includes(address)) {
+      // a connection we have with this lao has been terminated
+      // -> navigate back to the home screen
+      if (navigationRef.isReady()) {
+        if (toast) {
+          toast.show(STRINGS.lao_error_disconnect, {
+            type: 'danger',
+            placement: 'top',
+            duration: FOUR_SECONDS,
+          });
+        }
+        navigationRef.navigate(STRINGS.navigation_app_home, {
+          screen: STRINGS.navigation_home_home,
+        });
+      }
+
+      // in the future this can be handled more gracefully if there are multiple concurrent connections
+      // with different servers
+    }
   });
 }

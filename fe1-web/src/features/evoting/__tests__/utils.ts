@@ -68,7 +68,7 @@ export const mockRegisteredVotes: RegisteredVote[] = [
     messageId: 'b',
     sender: 'sender 1',
     votes: [
-      { id: 'id1', question: 'q1', vote: 0 },
+      { id: 'id1', question: 'q1', vote: 1 },
       { id: 'id2', question: 'q2', vote: 0 },
     ],
   },
@@ -78,7 +78,17 @@ export const mockRegisteredVotes: RegisteredVote[] = [
     sender: 'sender 2',
     votes: [
       { id: 'id3', question: 'q3', vote: 0 },
-      { id: 'id4', question: 'q4', vote: 0 },
+      { id: 'id4', question: 'q4', vote: 1 },
+    ],
+  },
+  {
+    createdAt: 2,
+    messageId: '1a',
+    sender: 'sender 3',
+    votes: [
+      { id: 'id01', question: 'q01', vote: 1 },
+      { id: 'id00', question: 'q00', vote: 0 },
+      { id: 'id02', question: 'q02', vote: 1 },
     ],
   },
 ];
