@@ -96,6 +96,7 @@ jobs:
       
       - name: Build
         if: ${{ always() }} # execute even if previous steps failed
+        working-directory: ./be1-go
         run: |
           make build
         
