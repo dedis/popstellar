@@ -40,21 +40,21 @@ jobs:
         if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
-          name: HTML Report
+          name: Scala HTML Report
           path: ./tests/karate/target/karate-reports
                   
       - name: Publish Cucumber Report
         if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
-          name: Cucumber Report
+          name: Scala Cucumber Report
           path: ./tests/karate/target/cucumber-html-reports
           
       - name: Publish Server logs
         if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
-          name: Server Logs
+          name: Scala Server Logs
           path: ./tests/karate/scala.log
           
   be1-go:
@@ -98,19 +98,19 @@ jobs:
         if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
-          name: HTML Report
+          name: Go HTML Report
           path: ./tests/karate/target/karate-reports
                   
       - name: Publish Cucumber Report
         if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
-          name: Cucumber Report
+          name: Go Cucumber Report
           path: ./tests/karate/target/cucumber-html-reports
           
       - name: Publish Server logs
         if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
-          name: Server Logs
+          name: Go Server Logs
           path: ./tests/karate/go.log
