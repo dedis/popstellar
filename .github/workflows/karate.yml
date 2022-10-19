@@ -73,7 +73,6 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
       - uses: actions/cache@v2
-        working-directory: ./be1-go
         with:
           # In order:
           # * Module download cache
