@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
@@ -29,7 +28,11 @@ public class ScalaServer extends Server implements Configurable {
     String configPath = Paths.get("src", "main", "scala", "ch", "epfl", "pop", "config").toString();
     File targetJar = getTargetJar();
 
-    return new String[] { "java", "-Dscala.config=" + configPath, "-jar", targetJar.getCanonicalPath()};
+    return new String[] {
+      "java",
+      "-Dscala.config=" + configPath,
+      "-jar", targetJar.getCanonicalPath()
+    };
   }
 
   private File getTargetJar() throws IOException {

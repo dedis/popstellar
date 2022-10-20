@@ -17,9 +17,17 @@ public class GoServer extends Server implements Configurable {
   @Override
   public String[] getCmd() {
     if (isWindowsOS()) {
-      return new String[]{"cmd", "/c", "\"pop.exe organizer --pk J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM= serve\""};
+      return new String[]{
+        "cmd",
+        "/c",
+        "\"pop.exe organizer --pk J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM= serve\""
+      };
     } else {
-      return new String[]{"bash", "-c", "./pop organizer --pk J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM= serve"};
+      return new String[]{
+        "bash",
+        "-c",
+        "./pop organizer --pk J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM= serve"
+      };
     }
   }
 
