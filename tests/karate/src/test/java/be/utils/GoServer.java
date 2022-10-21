@@ -47,5 +47,4 @@ public class GoServer extends Server implements Configurable {
     System.out.println("No database to delete for GO backend");
 
   }
-
 }

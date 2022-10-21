@@ -28,22 +28,35 @@ public abstract class Server implements Runnable {
     ProcessBuilder processBuilder = new ProcessBuilder(cmd).directory(workingDirectory);
 
     if (logPath == null) {
-      processBuilder = processBuilder.inheritIO();
+      processBuilder.inheritIO();
     } else {
       File logFile = new File(logPath);
-      processBuilder = processBuilder.redirectOutput(logFile);
-      processBuilder = processBuilder.redirectError(logFile);
+      processBuilder
+        .redirectOutput(logFile)
+        .redirectError(logFile);
     }
     return processBuilder;
   }
 
   @Override
   public void stop() throws RuntimeException {
+    System.out.println("Stopping server...");
+    if (process == null) {
+      System.out.println("Server already stopped");
+      return;
+    }
+
     process.descendants().forEach(ProcessHandle::destroy);
     process.destroy();
-    List<CompletableFuture<?>> allProcesses = process.descendants().map(ProcessHandle::onExit).collect(Collectors.toList());
+    List<CompletableFuture<?>> allProcesses = process
+      .descendants()
+      .map(ProcessHandle::onExit)
+      .collect(Collectors.toList());
+
     allProcesses.add(process.onExit());
-    CompletableFuture<Void> onExit = CompletableFuture.allOf(allProcesses.toArray(new CompletableFuture[]{}));
+
+    CompletableFuture<Void> onExit = CompletableFuture
+      .allOf(allProcesses.toArray(new CompletableFuture[]{}));
 
     try {
       // Wait for the process to exit
@@ -51,9 +64,12 @@ public abstract class Server implements Runnable {
     } catch (InterruptedException | ExecutionException e) {
       throw new RuntimeException(e);
     } catch (TimeoutException e) {
-      System.out.println("Could not stop");
+      System.out.println("Could not stop, trying harder");
       forceStop(onExit);
     }
+
+    process = null;
+    System.out.println("Server stopped");
   }
 
   private void forceStop(CompletableFuture<Void> onExit) {

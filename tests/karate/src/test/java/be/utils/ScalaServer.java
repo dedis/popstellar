@@ -39,12 +39,22 @@ public class ScalaServer extends Server implements Configurable {
     File targetPath = new File(getDir(), "target");
     // Find the folder in target containing the built jar. It should resemble scala-x.xx
     File[] scalaFolder = targetPath.listFiles((dir, name) -> name.startsWith("scala-"));
-    if (scalaFolder == null || scalaFolder.length == 0) throw new FileNotFoundException("Could not find scala folder in the target folder. Did you assemble the server jar ?");
-    if (scalaFolder.length != 1) throw new IOException("There are multiple folder matching scala-xxx, please remove the old ones.");
+    if (scalaFolder == null || scalaFolder.length == 0) {
+      throw new FileNotFoundException("Could not find scala folder in the target folder. Did you assemble the server jar ?");
+    }
+
+    if (scalaFolder.length != 1) {
+      throw new IOException("There are multiple folder matching scala-xxx, please remove the old ones.");
+    }
 
     File[] jars = scalaFolder[0].listFiles((dir, name) -> name.startsWith("pop-assembly-"));
-    if (jars == null || jars.length == 0) throw new FileNotFoundException("Could not find jar file in the target folder. Did you assemble it ?");
-    if (jars.length != 1) throw new IOException("There are multiple jar file matching pop-assembly-**, please remove the old ones");
+    if (jars == null || jars.length == 0) {
+      throw new FileNotFoundException("Could not find jar file in the target folder. Did you assemble it ?");
+    }
+
+    if (jars.length != 1) {
+      throw new IOException("There are multiple jar file matching pop-assembly-**, please remove the old ones");
+    }
 
     return jars[0];
   }
@@ -69,6 +79,7 @@ public class ScalaServer extends Server implements Configurable {
           .forEach(ScalaServer::deleteHandled);
     } catch (IOException e) {
       System.err.println("Could not delete database located at " + path);
+      e.printStackTrace(System.err);
     }
 
     assertFalse(Files.exists(path));

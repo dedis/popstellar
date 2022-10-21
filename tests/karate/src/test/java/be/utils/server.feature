@@ -91,15 +91,12 @@ Feature: This feature starts a server and stops it after every scenario.
         """
     * def converter = call convertData
 
-        # Shutdown server automatically after the end of a scenario and  feature
-    * configure afterScenario =
+    # Shutdown server automatically after the end of a feature
+    * configure afterFeature =
           """
             function() {
               stopServer();
-              wait(2);
               deleteDB();
             }
           """
-    # Configure an after feature function
-    * configure afterFeature = karate.get('afterScenario')
 
