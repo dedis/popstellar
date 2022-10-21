@@ -47,6 +47,7 @@ public class ScalaServer extends Server implements Configurable {
       throw new IOException("There are multiple folder matching scala-xxx, please remove the old ones.");
     }
 
+    // Find the correct jar file in the folder
     File[] jars = scalaFolder[0].listFiles((dir, name) -> name.startsWith("pop-assembly-"));
     if (jars == null || jars.length == 0) {
       throw new FileNotFoundException("Could not find jar file in the target folder. Did you assemble it ?");
