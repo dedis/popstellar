@@ -41,7 +41,7 @@ public class BackEndTest {
    * <p>
    * <code>mvn test -DargLine=-Dkarate.env=env -Dtest=BackEndTest#fullTest</code>
    * <p>
-   * It will execute all frontend tests and generate a report
+   * It will execute all backend tests and generate a report
    */
   @Test
   void fullTest() {
