@@ -2,7 +2,7 @@
 Feature: This feature starts a server and stops it after every scenario.
 
   Background:
-    * def MAX_CONNECTION_ATTEMPTS = 5
+    * def MAX_CONNECTION_ATTEMPTS = 3
 
   Scenario: Start the server and configure Karate
         # Handler can be used to filter websocket messages
