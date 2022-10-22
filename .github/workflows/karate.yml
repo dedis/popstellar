@@ -2,8 +2,8 @@ name: Integration Tests
 
 on:
   schedule:
-    # Run the ci every day at 19:00
-    - cron:  '00 19 * * *'
+    # Run the ci every day at 4:00 am
+    - cron:  '00 04 * * *'
     
 jobs:
   be2-scala:
@@ -20,7 +20,7 @@ jobs:
       - name: Setup repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
+          fetch-depth: 0
 
       - name: Compile server
         working-directory: ./be2-scala
@@ -68,7 +68,7 @@ jobs:
       - name: Setup repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of Sonar analysis
+          fetch-depth: 0
 
       - uses: actions/cache@v3
         with:
