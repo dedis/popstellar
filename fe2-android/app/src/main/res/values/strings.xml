@@ -37,6 +37,7 @@
   <string name="allow_camera_button">Allow camera</string>
   <string name="connecting">Connecting to</string>
   <string name="stored_channels">stored channels</string>
+  <string name="creating_new_lao">Creating new LAO</string>
 
   <!-- Launch -->
   <string name="text_title_create">To create a new organization, please enter a name for the organization.</string>
@@ -194,6 +195,7 @@
   <string name="election_scheduled">Election scheduled to start at\n%s</string>
 
   <!-- Wallet -->
+  <string name="wallet_setup">Set up wallet</string>
   <string name="button_own_seed">I own a seed</string>
   <string name="button_new_wallet">New wallet</string>
   <string name="text_title_wallet">Welcome to your wallet !</string>
@@ -208,7 +210,7 @@
         If you are an organizer, you can look at the attendees\' public tokens of the roll calls you organize.</string>
   <string name="token_button">TOKEN</string>
   <string name="logout_button">LOGOUT</string>
-  <string name="logout_title">Log out</string>
+  <string name="logout_title">Wallet log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
   <string name="copied_to_clipboard">Copied to clipboard</string>
   <string name="copy_button_descriptor">Button to copy seed</string>
@@ -278,7 +280,7 @@
 
   <!--  Storage-->
   <string name="nothing_stored">no stored data found</string>
-  <string name="clear_text">clear</string>
+  <string name="clear_text">Clear all storage</string>
   <string name="storage_title">Storage</string>
   <string name="clear_confirmation_text">Are you sure you want to clear stored data ? This action is irreversible</string>
   <string name="clear_success">Clearing was successful</string>

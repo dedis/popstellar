@@ -11,10 +11,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletSeedFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
-import com.github.dedis.popstellar.ui.home.HomeViewModel;
+import com.github.dedis.popstellar.ui.home.*;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 
 import java.security.GeneralSecurityException;
@@ -102,8 +102,8 @@ public class SeedWalletFragment extends Fragment {
                 try {
                   mHomeViewModel.importSeed(
                       mWalletSeedFragBinding.seedWalletText.getText().toString());
-                  WalletFragment.openWallet(
-                      getParentFragmentManager(), mHomeViewModel.isWalletSetUp());
+                  HomeActivity.setCurrentFragment(
+                      getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
                 } catch (GeneralSecurityException | SeedValidationException e) {
                   Log.e(TAG, "Error importing key", e);
                   Toast.makeText(

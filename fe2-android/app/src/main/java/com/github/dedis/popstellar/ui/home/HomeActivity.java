@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.content.Context;
-import android.content.Intent;
+import android.app.*;
+import android.content.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,14 +12,17 @@ import android.widget.Toast;
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.repository.local.PersistentData;
-import com.github.dedis.popstellar.ui.settings.SettingsActivity;
+import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
@@ -33,6 +36,7 @@ public class HomeActivity extends AppCompatActivity {
   private final String TAG = HomeActivity.class.getSimpleName();
 
   private HomeViewModel viewModel;
+  private Menu menu;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -68,55 +72,72 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
-  /** Setup the listeners that changes the navigation bar menus */
-  private void setupMenuAvailabilityListeners(BottomNavigationView navbar) {
-    MenuItem connectItem = navbar.getMenu().getItem(HomeTab.CONNECT.ordinal());
-    MenuItem launchItem = navbar.getMenu().getItem(HomeTab.LAUNCH.ordinal());
-    MenuItem socialMediaItem = navbar.getMenu().getItem(HomeTab.SOCIAL.ordinal());
-
-    // Gray out the launch and connect buttons depending on the wallet state
+  private void menuTitleUpdater() {
     viewModel
         .getIsWalletSetUpEvent()
         .observe(
             this,
-            walletSetup -> {
-              // We set the button icon depending on the livedata value
-              boolean setup = Boolean.TRUE.equals(walletSetup);
-              connectItem.setIcon(
-                  setup ? R.drawable.ic_home_connect_enabled : R.drawable.ic_home_connect_disabled);
-              launchItem.setIcon(
-                  setup ? R.drawable.ic_home_launch_enabled : R.drawable.ic_home_launch_disabled);
-            });
-
-    // Gray out the social media button if no laos were created
-    viewModel
-        .isSocialMediaEnabled()
-        .observe(
-            this,
-            enabled ->
-                // We set the button icon depending on the livedata value
-                socialMediaItem.setIcon(
-                    Boolean.TRUE.equals(enabled)
-                        ? R.drawable.ic_common_social_media_enabled
-                        : R.drawable.ic_common_social_media_disabled));
+            isSetUp ->
+                menu.getItem(0)
+                    .setTitle(
+                        Boolean.TRUE.equals(isSetUp)
+                            ? R.string.logout_title
+                            : R.string.wallet_setup));
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.options_menu, menu);
+    this.menu = menu;
+    menuTitleUpdater();
     return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == R.id.settings) {
-      Intent intent = new Intent(this, SettingsActivity.class);
-      Log.d(HomeViewModel.TAG, "Trying to open settings");
-      startActivity(intent);
-      return true;
+    if (item.getItemId() == R.id.wallet_init_logout) {
+      handleWalletSettings();
+    } else if (item.getItemId() == R.id.clear_storage) {
+      handleClearing();
     } else {
       return super.onOptionsItemSelected(item);
     }
+    return true;
+  }
+
+  private void handleWalletSettings() {
+    if (viewModel.isWalletSetUp()) {
+      new MaterialAlertDialogBuilder(this)
+          .setTitle(R.string.logout_title)
+          .setMessage(R.string.logout_message)
+          .setPositiveButton(R.string.confirm, (dialog, which) -> viewModel.logoutWallet())
+          .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+          .show();
+    } else {
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::new);
+    }
+  }
+
+  private void handleClearing() {
+    new AlertDialog.Builder(this)
+        .setTitle(R.string.confirm_title)
+        .setMessage(R.string.clear_confirmation_text)
+        .setPositiveButton(
+            R.string.yes,
+            (dialogInterface, i) -> {
+              boolean success = ActivityUtils.clearStorage(this);
+              Toast.makeText(
+                      this,
+                      success ? R.string.clear_success : R.string.clear_failure,
+                      Toast.LENGTH_LONG)
+                  .show();
+
+              // Restart activity
+              recreate();
+            })
+        .setNegativeButton(R.string.no, null)
+        .show();
   }
 
   private void showWalletWarning() {
