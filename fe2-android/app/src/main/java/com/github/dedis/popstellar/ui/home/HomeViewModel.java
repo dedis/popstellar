@@ -23,7 +23,6 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
-import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -35,7 +34,6 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
-import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -57,7 +55,6 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
   /** Dependencies for this class */
   private final Gson gson;
 
-  private final KeyManager keyManager;
   private final Wallet wallet;
   private final GlobalNetworkManager networkManager;
   private final LAORepository laoRepository;
@@ -70,12 +67,10 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
       Gson gson,
       Wallet wallet,
       LAORepository laoRepository,
-      KeyManager keyManager,
       GlobalNetworkManager networkManager) {
     super(application);
 
     this.gson = gson;
-    this.keyManager = keyManager;
     this.wallet = wallet;
     this.networkManager = networkManager;
     this.laoRepository = laoRepository;
@@ -133,7 +128,7 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
     networkManager.connect(laoData.server);
     getApplication()
         .startActivity(
-            ConnectingActivity.newIntentForDetail(
+            ConnectingActivity.newIntentForJoiningDetail(
                 getApplication().getApplicationContext(), laoData.lao));
   }
 
@@ -174,20 +169,14 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
    * createLao is invoked when the user tries to create a new LAO. The method creates a `CreateLAO`
    * message and publishes it to the root channel. It observers the response in the background and
    * switches to the home screen on success.
-   *
-   * @return a single containing the id of the launched lao if it was successful
    */
-  public Single<String> createLao(String laoName) {
+  public void createLao(String laoName, String serverAddress) {
     Log.d(TAG, "creating lao with name " + laoName);
-    CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey());
-    Lao lao = new Lao(createLao.getId());
-
-    return networkManager
-        .getMessageSender()
-        .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
-        .doOnComplete(() -> Log.d(TAG, "got success result for create lao with id " + lao.getId()))
-        .andThen(networkManager.getMessageSender().subscribe(lao.getChannel()))
-        .toSingleDefault(lao.getId());
+    networkManager.connect(serverAddress);
+    getApplication()
+        .startActivity(
+            ConnectingActivity.newIntentForCreatingDetail(
+                getApplication().getApplicationContext(), laoName));
   }
 
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {

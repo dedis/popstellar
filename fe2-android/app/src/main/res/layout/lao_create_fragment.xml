@@ -64,11 +64,12 @@
           style="?android:attr/buttonBarButtonStyle" />
 
         <Button
-          android:id="@+id/button_launch"
+          android:id="@+id/button_create"
           android:layout_width="@dimen/standard_button_width"
           android:layout_height="@dimen/standard_button_height"
           android:layout_marginEnd="@dimen/margin_button"
           android:layout_marginStart="@dimen/margin_button"
+          android:alpha="0.4"
           android:gravity="center"
           android:theme="@style/button_style"
           android:enabled="false"

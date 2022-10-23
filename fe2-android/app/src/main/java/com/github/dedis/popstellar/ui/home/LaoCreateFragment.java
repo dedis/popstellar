@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.Objects;
@@ -52,6 +53,7 @@ public final class LaoCreateFragment extends Fragment {
 
     setupCancelButton();
     setupTextFields();
+    setupCreateButton();
 
     return binding.getRoot();
   }
@@ -76,8 +78,10 @@ public final class LaoCreateFragment extends Fragment {
                   .toString()
                   .trim();
 
-          boolean areFieldsFilled = !laoName.isEmpty() && serverUrl.isEmpty();
-          binding.buttonLaunch.setEnabled(areFieldsFilled);
+          boolean areFieldsFilled = !laoName.isEmpty() && !serverUrl.isEmpty();
+          binding.buttonCreate.setEnabled(areFieldsFilled);
+          binding.buttonCreate.setAlpha(
+              areFieldsFilled ? Constants.ENABLED_ALPHA : Constants.DISABLED_ALPHA);
         }
 
         @Override
@@ -93,20 +97,11 @@ public final class LaoCreateFragment extends Fragment {
   }
 
   private void setupCreateButton() {
-    binding.buttonLaunch.setOnClickListener(
-        v -> {
-          Context ctx = requireContext();
-          viewModel.addDisposable(
-              viewModel
-                  .createLao(
-                      Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString())
-                  .subscribe(
-                      laoId -> {
-                        Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
-                        startActivity(LaoDetailActivity.newIntentForLao(ctx, laoId));
-                      },
-                      error -> ErrorUtils.logAndShow(ctx, TAG, error, R.string.error_create_lao)));
-        });
+    binding.buttonCreate.setOnClickListener(
+        v ->
+            viewModel.createLao(
+                Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString(),
+                Objects.requireNonNull(binding.serverUrlEntryEditText.getText()).toString()));
   }
 
   private void setupCancelButton() {

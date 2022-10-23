@@ -34,6 +34,6 @@ public class LaoCreatePageObject {
   }
 
   public static ViewInteraction confirmButtonLaunch() {
-    return onView(withId(R.id.button_launch));
+    return onView(withId(R.id.button_create));
   }
 }
