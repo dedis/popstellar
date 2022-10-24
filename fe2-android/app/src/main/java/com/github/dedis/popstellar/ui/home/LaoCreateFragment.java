@@ -1,10 +1,8 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -14,9 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.Constants;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.Objects;
 

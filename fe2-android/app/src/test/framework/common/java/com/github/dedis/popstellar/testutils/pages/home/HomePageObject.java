@@ -26,10 +26,6 @@ public class HomePageObject {
     return onView(withId(R.id.fragment_container_home));
   }
 
-  public static ViewInteraction homeButton() {
-    return onView(withId(R.id.home_home_menu));
-  }
-
   public static ViewInteraction joinButton() {
     return onView(withId(R.id.home_join_button));
   }

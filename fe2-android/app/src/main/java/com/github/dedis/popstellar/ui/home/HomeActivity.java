@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +22,6 @@ import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.security.GeneralSecurityException;
@@ -44,6 +44,8 @@ public class HomeActivity extends AppCompatActivity {
     setContentView(R.layout.home_activity);
 
     viewModel = obtainViewModel(this);
+
+  //    Toolbar toolbar = findViewById(R.id.too);
 
     // Load all the json schemas in background when the app is started.
     AsyncTask.execute(
@@ -138,10 +140,6 @@ public class HomeActivity extends AppCompatActivity {
             })
         .setNegativeButton(R.string.no, null)
         .show();
-  }
-
-  private void showWalletWarning() {
-    Toast.makeText(this, R.string.uninitialized_wallet_exception, Toast.LENGTH_SHORT).show();
   }
 
   private void restoreStoredState() {

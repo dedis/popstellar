@@ -7,10 +7,6 @@
   <string name="add_caps">ADD</string>
 
   <!-- bottom nav -->
-  <string name="tab_home">Home</string>
-  <string name="tab_connect">Connect</string>
-  <string name="tab_launch">Launch</string>
-  <string name="tab_wallet">Wallet</string>
   <string name="tab_identity">Identity</string>
   <string name="tab_social_media">Social Media</string>
   <string name="tab_digital_cash">Digital Cash</string>

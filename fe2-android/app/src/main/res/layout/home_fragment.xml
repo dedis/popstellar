@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+  xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <data>
@@ -31,9 +32,11 @@
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       android:text="@string/join"
+      android:drawableLeft="@drawable/qr_code_button_icon"
       android:layout_marginBottom="@dimen/home_button_vertical_margin"
       android:layout_marginEnd="@dimen/home_button_horizontal_margin"
-      style="style/widget.MaterialComponents.Button.Icon" />
+      style="style/widget.MaterialComponents.Button.Icon"
+      tools:ignore="RtlHardcoded" />
 
     <Button
       android:id="@+id/home_create_button"

@@ -9,14 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -40,7 +38,7 @@ import io.reactivex.disposables.Disposable;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 @HiltViewModel
-public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCodeScanningViewModel {
+public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
 
