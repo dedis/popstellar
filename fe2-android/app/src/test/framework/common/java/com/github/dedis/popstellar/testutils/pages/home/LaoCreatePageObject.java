@@ -26,7 +26,11 @@ public class LaoCreatePageObject {
   }
 
   public static ViewInteraction laoNameEntry() {
-    return onView(withId(R.id.lao_name_entry));
+    return onView(withId(R.id.lao_name_entry_edit_text));
+  }
+
+  public static ViewInteraction serverNameEntry(){
+      return onView(withId(R.id.server_url_entry_edit_text));
   }
 
   public static ViewInteraction cancelButtonLaunch() {

@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ActivityScenario.ActivityAction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -44,45 +45,35 @@ public class HomeActivityTest {
 
   @Test
   public void createButtonBringsToCreateScreen() {
-    ActivityAction<HomeActivity> action =
-        activity -> {
-          HomeViewModel viewModel = HomeActivity.obtainViewModel(activity);
-          if (!viewModel.isWalletSetUp()) {
-            initializeWallet();
-          }
-          createButton().perform(click());
-          fragmentContainer().check(matches(withChild(withId(createFragmentId()))));
-        };
-    executeAction(action);
+    initializeWallet(activityScenarioRule);
+    createButton().perform(click());
+    fragmentContainer().check(matches(withChild(withId(createFragmentId()))));
   }
 
   @Test
-  public void logOutMenuTest(){
-      ActivityAction<HomeActivity> action =
-              activity -> {
-                  HomeViewModel viewModel = HomeActivity.obtainViewModel(activity);
-                  if (!viewModel.isWalletSetUp()) {
-                      initializeWallet();
-                  }
-                  openActionBarOverflowOrOptionsMenu(
-                          InstrumentationRegistry.getInstrumentation().getTargetContext());
-                  walletLogOutMenuItem().perform(click());
-                  assertThat(dialogPositiveButton(), allOf(withText("CONFIRM"), isDisplayed()));
-                  assertThat(dialogNegativeButton(), allOf(withText("CANCEL"), isDisplayed()));
-              };
-      executeAction(action);
-  }
-
-
-  public static void initializeWallet() {
+  public void logOutMenuTest() {
+    initializeWallet(activityScenarioRule);
     openActionBarOverflowOrOptionsMenu(
         InstrumentationRegistry.getInstrumentation().getTargetContext());
-    walletSetupMenuItem().perform(click());
-    confirmButton().perform(click());
-    dialogPositiveButton().performClick();
+    walletLogOutMenuItem().perform(click());
+    assertThat(dialogPositiveButton(), allOf(withText("CONFIRM"), isDisplayed()));
+    assertThat(dialogNegativeButton(), allOf(withText("CANCEL"), isDisplayed()));
   }
 
-  private void executeAction(ActivityAction<HomeActivity> action) {
-    activityScenarioRule.getScenario().onActivity(action);
+  public static void initializeWallet(
+      ActivityScenarioRule<HomeActivity> activityActivityScenarioRule) {
+    activityActivityScenarioRule
+        .getScenario()
+        .onActivity(
+            activity -> {
+              HomeViewModel viewModel = HomeActivity.obtainViewModel(activity);
+              if (!viewModel.isWalletSetUp()) {
+                openActionBarOverflowOrOptionsMenu(
+                    InstrumentationRegistry.getInstrumentation().getTargetContext());
+                walletSetupMenuItem().perform(click());
+                confirmButton().perform(click());
+                dialogPositiveButton().performClick();
+              }
+            });
   }
 }

@@ -47,6 +47,7 @@ import static org.mockito.Mockito.when;
 public class LaoCreateFragmentTest {
 
   private static final String LAO_NAME = "LAO";
+  private static final String SERVER_URL = "localhost";
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
   private static final PublicKey PK = KEY_PAIR.getPublicKey();
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
@@ -92,7 +93,7 @@ public class LaoCreateFragmentTest {
   @Before
   public void setup() {
     // Open the launch tab
-    HomeActivityTest.initializeWallet();
+    HomeActivityTest.initializeWallet(activityScenarioRule);
     createButton().perform(click());
   }
 
@@ -107,9 +108,11 @@ public class LaoCreateFragmentTest {
   public void confirmButtonGoesToLaoDetail() {
     Intents.init();
     laoNameEntry().perform(ViewActions.replaceText(LAO_NAME));
+    serverNameEntry().perform(ViewActions.replaceText(SERVER_URL));
+    confirmButtonLaunch().check(matches(isDisplayed()));
     confirmButtonLaunch().check(matches(isEnabled()));
     confirmButtonLaunch().perform(click());
-    intended(hasComponent(LaoDetailActivity.class.getName()));
+    intended(hasComponent(ConnectingActivity.class.getName()));
     Intents.release();
   }
 
