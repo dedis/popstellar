@@ -44,8 +44,6 @@ public class HomeActivity extends AppCompatActivity {
 
     viewModel = obtainViewModel(this);
 
-  //    Toolbar toolbar = findViewById(R.id.too);
-
     // Load all the json schemas in background when the app is started.
     AsyncTask.execute(
         () -> {
