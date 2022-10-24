@@ -38,18 +38,6 @@ public class HomePageObject {
     return onView(withId(R.id.home_create_button));
   }
 
-  public static ViewInteraction walletButton() {
-    return onView(withId(R.id.home_wallet_menu));
-  }
-
-  public static ViewInteraction socialMediaButton() {
-    return onView(withId(R.id.home_social_media_menu));
-  }
-
-  public static ViewInteraction navBar() {
-    return onView(withId(R.id.home_nav_bar));
-  }
-
   public static ViewInteraction walletSetupMenuItem(){
       return onView(withText(R.string.wallet_setup));
   }
