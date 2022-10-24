@@ -47,6 +47,7 @@ public class ConnectingFragmentTest {
               new BundleBuilder()
                   .putString(Constants.LAO_ID_EXTRA, LAO_ID)
                   .putString(Constants.ACTIVITY_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA)
+                  .putString(Constants.CONNECTION_PURPOSE_EXTRA, Constants.JOINING_EXTRA)
                   .build()));
 
   @Before
