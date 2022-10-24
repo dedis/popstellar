@@ -46,6 +46,7 @@
   <string name="present_header_title">Current</string>
   <string name="future_header_title">Upcoming</string>
   <string name="past_header_title">Previous</string>
+  <string name="qr_icon_title">Lao\'s QR code</string>
 
   <!-- Abstract Event-->
   <string name="open">Open</string>

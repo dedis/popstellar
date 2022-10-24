@@ -107,6 +107,7 @@ public class ConnectingActivity extends AppCompatActivity {
       // This is when we reconnect to laos, therefore returning home
       Log.d(TAG, "Opening Home activity");
       startActivity(HomeActivity.newIntent(this));
+      finish();
       return;
     }
     // We are either joining an LAO or creating a new one
@@ -148,17 +149,23 @@ public class ConnectingActivity extends AppCompatActivity {
                 () -> {
                   Log.d(TAG, "subscribing to LAO with id " + lao.getId());
                   startActivity(LaoDetailActivity.newIntentForLao(this, lao.getId()));
+                  finish();
                 },
                 error -> {
                   // In case of error, log it and go to home activity
                   ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_subscribe_lao);
                   startActivity(HomeActivity.newIntent(this));
+                  finish();
                 }));
   }
 
   private void setupCancelButton() {
     Button cancelButton = findViewById(R.id.button_cancel_connecting);
-    cancelButton.setOnClickListener(v -> startActivity(HomeActivity.newIntent(this)));
+    cancelButton.setOnClickListener(
+        v -> {
+          startActivity(HomeActivity.newIntent(this));
+          finish();
+        });
   }
 
   public static Intent newIntentForJoiningDetail(Context ctx, String laoId) {

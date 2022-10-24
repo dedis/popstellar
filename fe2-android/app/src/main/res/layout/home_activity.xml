@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:id="@+id/fragment_container_home"
+  android:id="@+id/fragment_container_home">
 
-  >
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
-
-  <com.google.android.material.appbar.AppBarLayout
+  <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-  <com.google.android.material.appbar.MaterialToolbar
-    android:id="@+id/topAppBar"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    app:title="@string/home_title"
-    app:menu="@menu/options_menu"
-    style="@style/Widget.MaterialComponents.Toolbar.Primary"
-    />
-  </com.google.android.material.appbar.AppBarLayout>
+    <com.google.android.material.appbar.AppBarLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+      <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:menu="@menu/options_menu"
+        app:title="@string/home_title" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+  </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

@@ -118,7 +118,6 @@ public class LaoDetailFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    setupQrCodeIconButton();
     setUpQrCloseButton();
     setupEventListAdapter();
     setupEventListUpdates();
@@ -141,11 +140,6 @@ public class LaoDetailFragment extends Fragment {
               Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
               mLaoDetailFragBinding.channelQrCode.setImageBitmap(myBitmap);
             });
-  }
-
-  private void setupQrCodeIconButton() {
-    ImageView propertiesButton = requireActivity().findViewById(R.id.qr_code_icon);
-    propertiesButton.setOnClickListener(clicked -> toggleProperties());
   }
 
   private void setUpQrCloseButton() {

@@ -9,10 +9,12 @@ import android.widget.Toast;
 
 import androidx.annotation.*;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.databinding.LaoDetailActivityBinding;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
@@ -37,15 +39,17 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private static final String TAG = LaoDetailActivity.class.getSimpleName();
 
   private LaoDetailViewModel viewModel;
+  private LaoDetailActivityBinding binding;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.lao_detail_activity);
+    binding = LaoDetailActivityBinding.inflate(getLayoutInflater());
+    setContentView(binding.getRoot());
     navigationViewModel = viewModel = obtainViewModel(this);
 
     setupNavigationBar(findViewById(R.id.lao_detail_nav_bar));
-    setupBackButton();
+    handleTopAppBar();
 
     viewModel.subscribeToLao(
         (String) Objects.requireNonNull(getIntent().getExtras()).get(Constants.LAO_ID_EXTRA));
@@ -70,33 +74,26 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     }
   }
 
-  @Override
-  public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
-    if (menuItem.getItemId() == android.R.id.home) {
-      Fragment fragment =
-          getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao_detail);
-      if (fragment instanceof LaoDetailFragment) {
-        startActivity(HomeActivity.newIntent(this));
-      } else {
-        if (viewModel.getCurrentTab().getValue() == LaoTab.EVENTS){
-            // On reselection the navigation is supposed to do nothing to prevent loops, so we
-            // manually change the fragment
-            openEventsTab();
-        } else {
-          viewModel.setCurrentTab(LaoTab.EVENTS);
-        }
-      }
-      return true;
-    }
-    return super.onOptionsItemSelected(menuItem);
-  }
-
-  private void setupBackButton() {
-    ActionBar actionBar = getSupportActionBar();
-    if (actionBar != null) {
-      actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow);
-      actionBar.setDisplayHomeAsUpEnabled(true);
-    }
+  private void handleTopAppBar() {
+    viewModel
+        .getCurrentLao()
+        .observe(this, laoView -> binding.laoTopAppBar.setTitle(laoView.getName()));
+    binding.laoTopAppBar.setNavigationOnClickListener(
+        v -> {
+          Fragment fragment =
+              getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao_detail);
+          if (fragment instanceof LaoDetailFragment) {
+            startActivity(HomeActivity.newIntent(this));
+          } else {
+            if (viewModel.getCurrentTab().getValue() == LaoTab.EVENTS) {
+              // On reselection the navigation is supposed to do nothing to prevent loops, so we
+              // manually change the fragment
+              openEventsTab();
+            } else {
+              viewModel.setCurrentTab(LaoTab.EVENTS);
+            }
+          }
+        });
   }
 
   @Override
