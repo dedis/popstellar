@@ -5,8 +5,7 @@ import android.content.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.*;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -18,10 +17,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.databinding.HomeActivityBinding;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.security.GeneralSecurityException;
@@ -36,16 +37,17 @@ public class HomeActivity extends AppCompatActivity {
   private final String TAG = HomeActivity.class.getSimpleName();
 
   private HomeViewModel viewModel;
+  private HomeActivityBinding binding;
   private Menu menu;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.home_activity);
+    binding = HomeActivityBinding.inflate(getLayoutInflater());
+    setContentView(binding.getRoot());
 
     viewModel = obtainViewModel(this);
-
-  //    Toolbar toolbar = findViewById(R.id.too);
+    handleTopAppBar();
 
     // Load all the json schemas in background when the app is started.
     AsyncTask.execute(
@@ -61,6 +63,34 @@ public class HomeActivity extends AppCompatActivity {
     restoreStoredState();
   }
 
+  private void handleTopAppBar() {
+    // Set menu items behaviour
+    binding.topAppBar.setOnMenuItemClickListener(
+        item -> {
+          if (item.getItemId() == R.id.wallet_init_logout) {
+            handleWalletSettings();
+          } else if (item.getItemId() == R.id.clear_storage) {
+            handleClearing();
+          }
+          return true;
+        });
+
+    // Listen to wallet status to adapt the menu item title
+    viewModel
+        .getIsWalletSetUpEvent()
+        .observe(
+            this,
+            isSetUp ->
+                binding
+                    .topAppBar
+                    .getMenu()
+                    .getItem(0)
+                    .setTitle(
+                        Boolean.TRUE.equals(isSetUp)
+                            ? R.string.logout_title
+                            : R.string.wallet_setup));
+  }
+
   @Override
   public void onStop() {
     super.onStop();
@@ -74,38 +104,25 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
-  private void menuTitleUpdater() {
-    viewModel
-        .getIsWalletSetUpEvent()
-        .observe(
-            this,
-            isSetUp ->
-                menu.getItem(0)
-                    .setTitle(
-                        Boolean.TRUE.equals(isSetUp)
-                            ? R.string.logout_title
-                            : R.string.wallet_setup));
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.options_menu, menu);
-    this.menu = menu;
-    menuTitleUpdater();
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == R.id.wallet_init_logout) {
-      handleWalletSettings();
-    } else if (item.getItemId() == R.id.clear_storage) {
-      handleClearing();
-    } else {
-      return super.onOptionsItemSelected(item);
-    }
-    return true;
-  }
+  //  @Override
+  //  public boolean onCreateOptionsMenu(Menu menu) {
+  //    getMenuInflater().inflate(R.menu.options_menu, menu);
+  //    this.menu = menu;
+  //    menuTitleUpdater();
+  //    return true;
+  //  }
+  //
+  //  @Override
+  //  public boolean onOptionsItemSelected(MenuItem item) {
+  //    if (item.getItemId() == R.id.wallet_init_logout) {
+  //      handleWalletSettings();
+  //    } else if (item.getItemId() == R.id.clear_storage) {
+  //      handleClearing();
+  //    } else {
+  //      return super.onOptionsItemSelected(item);
+  //    }
+  //    return true;
+  //  }
 
   private void handleWalletSettings() {
     if (viewModel.isWalletSetUp()) {

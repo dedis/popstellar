@@ -1,7 +1,7 @@
 <resources>
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+  <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
     <item name="materialButtonStyle">@style/Widget.App.Button</item>
     <!-- Customize your theme here. -->
     <item name="colorPrimary">@color/colorPrimary</item>
