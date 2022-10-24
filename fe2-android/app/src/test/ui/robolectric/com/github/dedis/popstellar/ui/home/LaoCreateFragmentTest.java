@@ -93,7 +93,7 @@ public class LaoCreateFragmentTest {
   public void setup() {
     // Open the launch tab
     HomeActivityTest.initializeWallet();
-    launchButton().perform(click());
+    createButton().perform(click());
   }
 
   @Test

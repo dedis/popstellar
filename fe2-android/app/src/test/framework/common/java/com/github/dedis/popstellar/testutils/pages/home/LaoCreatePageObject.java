@@ -21,7 +21,7 @@ public class LaoCreatePageObject {
   }
 
   @IdRes
-  public static int launchFragmentId() {
+  public static int createFragmentId() {
     return R.id.fragment_lao_create;
   }
 
