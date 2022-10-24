@@ -4,7 +4,13 @@ on:
   schedule:
     # Run the ci on the latest commit of master every day at 4:00 am
     - cron:  '00 04 * * *'
-    
+  
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      
 jobs:
   be2-scala:
     name: Be2-Scala
@@ -54,6 +60,41 @@ jobs:
         with:
           name: Scala Server Logs
           path: ./tests/karate/scala.log
+          
+      # The next actions are pushing the new report to the defined branch
+      - name: Checkout report branch
+        if: ${{ always() }} # execute even if previous steps failed
+        uses: actions/checkout@v3
+        with:
+          ref: report-karate-be2-scala
+          path: report-repo
+      
+      - name: Update report
+        if: ${{ always() }} # execute even if previous steps failed
+        run: |
+          rm -r report-repo/*
+          cp -r ./tests/karate/target/cucumber-html-reports/* ./report-repo
+          
+      - name: Get current date
+        if: ${{ always() }} # execute even if previous steps failed
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        
+      - name: Commit files
+        if: ${{ always() }} # execute even if previous steps failed
+        working-directory: report-repo
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Report from ${{ steps.date.outputs.date }}" -a
+          
+      - name: Push changes
+        if: ${{ always() }} # execute even if previous steps failed
+        uses: ad-m/github-push-action@0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: report-karate-be2-scala
+          directory: report-repo
           
   be1-go:
     name: Be1-Go
