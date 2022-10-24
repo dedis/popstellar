@@ -27,7 +27,7 @@ import static com.github.dedis.popstellar.testutils.pages.home.ConnectingPageObj
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
-public class ConnectingFragmentTest {
+public class ConnectingActivityTest {
   private static final String LAO_NAME = "Lao Name";
   private static final PublicKey PK = Base64DataUtils.generatePublicKey();
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
