@@ -14,18 +14,11 @@
   <string name="witnessing">Witnessing</string>
 
   <!-- Home -->
-  <string name="home_title">My LAOs</string>
-  <string name="text_title_welcome">Welcome to Personhood.Online!</string>
-  <string name="text_body_welcome">
-    \n\n To connect to a local organization (LAO), please tap Connect below.
-    \n\n To launch a new LAO as an organizer, please tap Launch tab below.
-    \n\n Please initialize your wallet to access the functionalities of the app.
-    To do so, please tap Wallet tab below.
-    </string>
   <string name="attendee">Attendee</string>
   <string name="organizer">Organizer</string>
   <string name="join">Join</string>
   <string name="create">Create</string>
+  <string name="server_url">Server URL</string>
   <string name="no_lao_text">OOPS, Looks like you don\'t have any Local Autonomous Organization (LAO) yet.\n Join or Create one with the buttons below</string>
 
   <!-- Connect -->
@@ -36,8 +29,6 @@
   <string name="creating_new_lao">Creating new LAO</string>
 
   <!-- Launch -->
-  <string name="text_title_create">To create a new organization, please enter a name for the organization.</string>
-  <string name="text_body_create">(You can change it later.)\n\n</string>
   <string name="text_entry_create">Organization name</string>
 
   <!--  Lao Detail-->
@@ -253,12 +244,6 @@
   <string name="sign_message">SIGN MESSAGE</string>
   <string name="message_signed">MESSAGE SIGNED</string>
 
-  <!-- Settings -->
-  <string name="settings">Settings</string>
-  <string name="server_url">Server URL</string>
-  <string name="text_hint_server_url">Enter the server URL</string>
-  <string name="apply_button">APPLY</string>
-
   <!-- Social Media -->
   <string name="home">HOME</string>
   <string name="search">SEARCH</string>
@@ -277,7 +262,6 @@
   <!--  Storage-->
   <string name="nothing_stored">no stored data found</string>
   <string name="clear_text">Clear all storage</string>
-  <string name="storage_title">Storage</string>
   <string name="clear_confirmation_text">Are you sure you want to clear stored data ? This action is irreversible</string>
   <string name="clear_success">Clearing was successful</string>
   <string name="clear_failure">Clearing was unsuccessful</string>
@@ -314,7 +298,6 @@
   <string name="error_sign_message">Could not send message signature\n%1$s</string>
   <string name="error_update_lao">Could not update the LAO\n%1$s</string>
   <string name="error_subscribe_lao">Could not subscribe to the LAO channel\n%1$s</string>
-  <string name="error_create_lao">Could not create the LAO\n%1$s</string>
   <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
   <string name="error_open_election">Could not open the election\n%1$s</string>
   <string name="error_post_transaction">Could not post a transaction\n%1$s</string>

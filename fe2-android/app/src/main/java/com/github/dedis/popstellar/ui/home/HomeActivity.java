@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
