@@ -18,10 +18,12 @@ import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.createFragmentId;
 import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.*;
+import static org.hamcrest.Matchers.allOf;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -53,6 +55,24 @@ public class HomeActivityTest {
         };
     executeAction(action);
   }
+
+  @Test
+  public void logOutMenuTest(){
+      ActivityAction<HomeActivity> action =
+              activity -> {
+                  HomeViewModel viewModel = HomeActivity.obtainViewModel(activity);
+                  if (!viewModel.isWalletSetUp()) {
+                      initializeWallet();
+                  }
+                  openActionBarOverflowOrOptionsMenu(
+                          InstrumentationRegistry.getInstrumentation().getTargetContext());
+                  walletLogOutMenuItem().perform(click());
+                  assertThat(dialogPositiveButton(), allOf(withText("CONFIRM"), isDisplayed()));
+                  assertThat(dialogNegativeButton(), allOf(withText("CANCEL"), isDisplayed()));
+              };
+      executeAction(action);
+  }
+
 
   public static void initializeWallet() {
     openActionBarOverflowOrOptionsMenu(

@@ -9,6 +9,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.view.View;
+
 /**
  * Page object of {@link com.github.dedis.popstellar.ui.home.HomeActivity}
  *
@@ -50,6 +52,10 @@ public class HomePageObject {
 
   public static ViewInteraction walletSetupMenuItem(){
       return onView(withText(R.string.wallet_setup));
+  }
+
+  public static ViewInteraction walletLogOutMenuItem(){
+      return onView(withText(R.string.logout_title));
   }
 
   @IdRes
