@@ -73,7 +73,7 @@ jobs:
         if: ${{ always() }} # execute even if previous steps failed
         run: |
           rm -r report-repo/*
-          cp -r ./tests/karate/target/cucumber-html-reports/* ./report-repo
+          cp -a ./tests/karate/target/cucumber-html-reports/. ./report-repo/
           
       - name: Get current date
         if: ${{ always() }} # execute even if previous steps failed
