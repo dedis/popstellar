@@ -4,6 +4,12 @@ on:
   schedule:
     # Run the ci on the latest commit of master every day at 4:00 am
     - cron:  '00 04 * * *'
+
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
       
 jobs:
   be2-scala:
@@ -31,25 +37,24 @@ jobs:
         run: sbt assembly
         
       - name: Run Karate tests
+        id: tests
+        continue-on-error: true
         working-directory: ./tests/karate
         run: mvn test -DargLine=-Dkarate.env=scala -Dtest=BackEndTest#fullTest
         
       - name: Publish HTML Report
-        if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
           name: Scala HTML Report
           path: ./tests/karate/target/karate-reports
                   
       - name: Publish Cucumber Report
-        if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
           name: Scala Cucumber Report
           path: ./tests/karate/target/cucumber-html-reports
           
       - name: Publish Server logs
-        if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
           name: Scala Server Logs
@@ -57,25 +62,17 @@ jobs:
           
       # The next actions are pushing the new report to the defined branch
       - name: Checkout report branch
-        if: ${{ always() }} # execute even if previous steps failed
         uses: actions/checkout@v3
         with:
           ref: report-karate-be2-scala
           path: report-repo
       
       - name: Update report
-        if: ${{ always() }} # execute even if previous steps failed
         run: |
           rm -rf report-repo/*
           cp -a ./tests/karate/target/cucumber-html-reports/. ./report-repo/
-          
-      - name: Get current date
-        if: ${{ always() }} # execute even if previous steps failed
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
         
       - name: Commit files
-        if: ${{ always() }} # execute even if previous steps failed
         working-directory: ./report-repo
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -84,12 +81,16 @@ jobs:
           git commit -m "Report from ${{ steps.date.outputs.date }}"
           
       - name: Push changes
-        if: ${{ always() }} # execute even if previous steps failed
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: report-karate-be2-scala
           directory: report-repo
+          
+      - name: Fail job if the test were not successful
+        # Catchup of tests failure such that the job fo fail
+        if: steps.tests.outcome == 'failure'
+        run: exit 1
           
   be1-go:
     name: Be1-Go
