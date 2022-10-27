@@ -1,13 +1,11 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
-import { selectIsLaoOrganizer } from '../reducer';
 import EventsScreen, {
   EventsScreenHeader,
   EventsScreenHeaderLeft,
@@ -25,8 +23,6 @@ const Stack = createStackNavigator<LaoEventsParamList>();
 
 export default function EventsNavigation() {
   const screens = LaoHooks.useEventsNavigationScreens();
-  const isOrganizer = useSelector(selectIsLaoOrganizer);
-  const CreateEventButton = LaoHooks.useCreateEventButtonComponent();
 
   return (
     <Stack.Navigator
@@ -39,7 +35,7 @@ export default function EventsNavigation() {
           title: STRINGS.navigation_lao_events_home_title,
           headerTitle: EventsScreenHeader,
           headerLeft: EventsScreenHeaderLeft,
-          headerRight: isOrganizer ? CreateEventButton : undefined,
+          headerRight: EventsScreenHeaderRight,
         }}
       />
       {screens.map(

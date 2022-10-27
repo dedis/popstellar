@@ -3,6 +3,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { useSelector } from 'react-redux';
 
 import { PoPIcon, QRCode } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
@@ -16,6 +17,7 @@ import STRINGS from 'resources/strings';
 
 import { LaoProperties } from '../components';
 import { LaoHooks } from '../hooks';
+import { selectIsLaoOrganizer } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
@@ -52,6 +54,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  button: {
+    marginLeft: Spacing.x1,
+  },
 });
 
 /**
@@ -86,7 +91,6 @@ export const EventsScreenHeader = () => {
         />
         <ScrollView style={ModalStyles.modalContainer}>
           <ModalHeader onClose={() => setModalVisible(!modalVisible)}>{lao.name}</ModalHeader>
-          <LaoProperties />
         </ScrollView>
       </Modal>
     </>
@@ -126,13 +130,22 @@ export const EventsScreenHeaderRight = () => {
 
   const lao = LaoHooks.useCurrentLao();
   const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
+  const isOrganizer = useSelector(selectIsLaoOrganizer);
+  const CreateEventButton = LaoHooks.useCreateEventButtonComponent();
 
   return (
     <>
       <View style={styles.buttons}>
-        <PoPTouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
+        <PoPTouchableOpacity
+          onPress={() => setModalVisible(!modalVisible)}
+          containerStyle={styles.button}>
           <PoPIcon name="qrCode" color={Color.inactive} size={Icon.size} />
         </PoPTouchableOpacity>
+        {isOrganizer && (
+          <View style={styles.button}>
+            <CreateEventButton />
+          </View>
+        )}
 
         <Modal
           transparent
@@ -148,9 +161,12 @@ export const EventsScreenHeaderRight = () => {
           />
           <ScrollView style={ModalStyles.modalContainer}>
             <ModalHeader onClose={() => setModalVisible(!modalVisible)}>
-              {STRINGS.lao_qr_code_title}
+              {STRINGS.lao_properties_modal_heading}
             </ModalHeader>
 
+            <LaoProperties />
+
+            <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_qr_code_title}</Text>
             <View>
               <QRCode
                 value={encodeLaoConnection(lao.server_addresses, lao.id.toString())}

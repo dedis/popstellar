@@ -103,6 +103,7 @@ namespace STRINGS {
   export const social_media_navigation_tab_attendee_list = 'List of attendees';
 
   /* --- Lao Strings --- */
+  export const lao_properties_modal_heading = 'Lao Properties';
   export const lao_qr_code_title = 'Connection QR Code';
   export const lao_properties_id = 'Identifier';
   export const lao_properties_your_role = 'Your role';
