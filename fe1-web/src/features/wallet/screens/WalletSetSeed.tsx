@@ -65,12 +65,12 @@ const WalletSetSeed = () => {
             onChangeText={(input: string) => setSeed(input)}
             negative
           />
-          <PoPTextButton onPress={() => initWallet()} negativeBorder>
+          <PoPTextButton onPress={() => initWallet()} negative>
             {STRINGS.wallet_restore_using_known_seed}
           </PoPTextButton>
           <PoPTextButton
             onPress={() => navigation.navigate(STRINGS.navigation_app_wallet_create_seed)}
-            negativeBorder>
+            negative>
             {STRINGS.wallet_previous_seed_not_known}
           </PoPTextButton>
         </View>

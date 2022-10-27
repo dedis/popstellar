@@ -28,11 +28,15 @@ const Toolbar = ({ items }: IPropTypes) => {
     <View style={styles.toolbar}>
       {items.map((item) =>
         item.negative ? (
-          <PoPTextButton onPress={item.onPress} key={item.id || item.title} margin={false}>
+          <PoPTextButton onPress={item.onPress} key={item.id || item.title} toolbar>
             {item.title}
           </PoPTextButton>
         ) : (
-          <PoPTextButton onPress={item.onPress} key={item.id || item.title} margin={false} outline>
+          <PoPTextButton
+            onPress={item.onPress}
+            key={item.id || item.title}
+            buttonStyle="secondary"
+            toolbar>
             {item.title}
           </PoPTextButton>
         ),
