@@ -108,7 +108,7 @@ export const LaoHomeScreenHeaderLeft = () => {
             screen: STRINGS.navigation_home_home,
           });
         }}>
-        <PoPIcon name="close" color={Color.inactive} size={Icon.size} />
+        <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
       </PoPTouchableOpacity>
     </>
   );

@@ -56,7 +56,7 @@ const HomeNavigation = () => {
             options={{
               title: title || id,
               headerTitle: headerTitle || title || id,
-              headerLeft,
+              headerLeft: headerLeft || stackScreenOptionsWithHeader.headerLeft,
               headerRight,
               headerShown,
             }}

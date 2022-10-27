@@ -75,7 +75,7 @@ const LaoNavigation: React.FC<unknown> = () => {
               options={{
                 title: title || id,
                 headerTitle: headerTitle || title || id,
-                headerLeft,
+                headerLeft: headerLeft || tabNavigationOptions.headerLeft,
                 headerRight,
                 tabBarIcon: tabBarIcon || undefined,
                 // hide the item if tabBarIcon is set to null
