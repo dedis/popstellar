@@ -454,6 +454,7 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                               "padding": 8,
                                             },
                                             Object {
+                                              "backgroundColor": "#fff",
                                               "borderColor": "#fff",
                                             },
                                           ]
@@ -539,6 +540,7 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                                               "padding": 8,
                                             },
                                             Object {
+                                              "backgroundColor": "#fff",
                                               "borderColor": "#fff",
                                             },
                                           ]

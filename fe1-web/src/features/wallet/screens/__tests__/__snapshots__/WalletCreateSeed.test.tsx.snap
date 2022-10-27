@@ -620,7 +620,11 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                               "padding": 8,
                                             },
                                             Object {
+                                              "backgroundColor": "#fff",
                                               "borderColor": "#fff",
+                                            },
+                                            Object {
+                                              "backgroundColor": "transparent",
                                             },
                                           ]
                                         }
@@ -636,6 +640,9 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                               },
                                               Object {
                                                 "textAlign": "center",
+                                              },
+                                              Object {
+                                                "color": "#fff",
                                               },
                                               Object {
                                                 "color": "#fff",
@@ -705,7 +712,11 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                               "padding": 8,
                                             },
                                             Object {
+                                              "backgroundColor": "#fff",
                                               "borderColor": "#fff",
+                                            },
+                                            Object {
+                                              "backgroundColor": "transparent",
                                             },
                                           ]
                                         }
@@ -721,6 +732,9 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                               },
                                               Object {
                                                 "textAlign": "center",
+                                              },
+                                              Object {
+                                                "color": "#fff",
                                               },
                                               Object {
                                                 "color": "#fff",
