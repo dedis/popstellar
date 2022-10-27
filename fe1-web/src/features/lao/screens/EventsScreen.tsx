@@ -52,9 +52,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  notificationButton: {
-    marginLeft: Spacing.x1,
-  },
 });
 
 /**
@@ -125,8 +122,6 @@ export const EventsScreenHeaderLeft = () => {
  * and a bell icon for accessing the notifications menu
  */
 export const EventsScreenHeaderRight = () => {
-  const navigation = useNavigation<NavigationProps['navigation']>();
-
   const [modalVisible, setModalVisible] = useState(false);
 
   const lao = LaoHooks.useCurrentLao();
@@ -137,18 +132,6 @@ export const EventsScreenHeaderRight = () => {
       <View style={styles.buttons}>
         <PoPTouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
           <PoPIcon name="qrCode" color={Color.inactive} size={Icon.size} />
-        </PoPTouchableOpacity>
-        <PoPTouchableOpacity
-          containerStyle={styles.notificationButton}
-          onPress={() =>
-            navigation.push(STRINGS.navigation_app_lao, {
-              screen: STRINGS.navigation_lao_notifications,
-              params: {
-                screen: STRINGS.navigation_notification_notifications,
-              },
-            })
-          }>
-          <PoPIcon name="notification" color={Color.inactive} size={Icon.size} />
         </PoPTouchableOpacity>
 
         <Modal
