@@ -1,7 +1,7 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
