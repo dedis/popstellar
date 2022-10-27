@@ -1,13 +1,7 @@
-import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { PoPTextButton } from 'core/components';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { getNetworkManager } from 'core/network';
 import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -26,15 +20,8 @@ const getUserRole = (isOrganizer: boolean, isWitness: boolean): string => {
   return STRINGS.user_role_attendee;
 };
 
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_home>,
-  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
->;
-
 const LaoProperties = () => {
   const lao = LaoHooks.useCurrentLao();
-
-  const navigation = useNavigation<NavigationProps['navigation']>();
 
   const isOrganizer = useSelector(selectIsLaoOrganizer);
   const isWitness = useSelector(selectIsLaoWitness);
@@ -62,29 +49,6 @@ const LaoProperties = () => {
         {'\n'}
         <Text selectable>{lao.server_addresses.join(', ')}</Text>
       </Text>
-
-      <PoPTextButton
-        onPress={() =>
-          navigation.navigate(STRINGS.navigation_app_home, {
-            screen: STRINGS.navigation_home_connect,
-            params: {
-              screen: STRINGS.navigation_connect_scan,
-            },
-          })
-        }>
-        {STRINGS.lao_properties_add_additional_connection}
-      </PoPTextButton>
-
-      <PoPTextButton
-        onPress={() => {
-          getNetworkManager().disconnectFromAll();
-
-          navigation.navigate(STRINGS.navigation_app_home, {
-            screen: STRINGS.navigation_home_home,
-          });
-        }}>
-        {STRINGS.lao_properties_disconnect}
-      </PoPTextButton>
     </View>
   );
 };

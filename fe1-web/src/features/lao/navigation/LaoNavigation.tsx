@@ -10,11 +10,6 @@ import STRINGS from 'resources/strings';
 import NoCurrentLaoErrorBoundary from '../errors/NoCurrentLaoErrorBoundary';
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
-import LaoHomeScreen, {
-  LaoHomeScreenHeader,
-  LaoHomeScreenHeaderLeft,
-  LaoHomeScreenHeaderRight,
-} from '../screens/LaoHomeScreen';
 import EventsNavigation from './EventsNavigation';
 
 const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
@@ -31,16 +26,6 @@ const LaoNavigation: React.FC<unknown> = () => {
     return [
       ...passedScreens,
       {
-        id: STRINGS.navigation_lao_home,
-        title: STRINGS.navigation_lao_lao_title,
-        headerTitle: LaoHomeScreenHeader,
-        Component: LaoHomeScreen,
-        headerRight: LaoHomeScreenHeaderRight,
-        headerLeft: LaoHomeScreenHeaderLeft,
-        tabBarIcon: makeIcon('home'),
-        order: -9999999,
-      } as LaoFeature.LaoScreen,
-      {
         id: STRINGS.navigation_lao_events,
         tabBarIcon: makeIcon('event'),
         Component: EventsNavigation,
@@ -54,7 +39,7 @@ const LaoNavigation: React.FC<unknown> = () => {
   return (
     <NoCurrentLaoErrorBoundary>
       <OrganizationTopTabNavigator.Navigator
-        initialRouteName={STRINGS.navigation_lao_home}
+        initialRouteName={STRINGS.navigation_lao_events}
         screenOptions={tabNavigationOptions}>
         {screens.map(
           ({

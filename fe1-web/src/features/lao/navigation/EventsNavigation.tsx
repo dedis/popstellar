@@ -8,7 +8,11 @@ import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { selectIsLaoOrganizer } from '../reducer';
-import { EventsScreen } from '../screens';
+import EventsScreen, {
+  EventsScreenHeader,
+  EventsScreenHeaderLeft,
+  EventsScreenHeaderRight,
+} from '../screens/EventsScreen';
 
 /**
  * Define the Organizer stack navigation
@@ -25,14 +29,16 @@ export default function EventsNavigation() {
   const CreateEventButton = LaoHooks.useCreateEventButtonComponent();
 
   return (
-    <Stack.Navigator screenOptions={stackScreenOptionsWithHeader}>
+    <Stack.Navigator
+      initialRouteName={STRINGS.navigation_lao_events_home}
+      screenOptions={stackScreenOptionsWithHeader}>
       <Stack.Screen
         name={STRINGS.navigation_lao_events_home}
         component={EventsScreen}
         options={{
           title: STRINGS.navigation_lao_events_home_title,
-          /* do not show the back button */
-          headerLeft: () => null,
+          headerTitle: EventsScreenHeader,
+          headerLeft: EventsScreenHeaderLeft,
           headerRight: isOrganizer ? CreateEventButton : undefined,
         }}
       />
