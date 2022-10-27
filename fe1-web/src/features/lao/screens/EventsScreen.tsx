@@ -41,14 +41,6 @@ const EventsScreen = () => {
 export default EventsScreen;
 
 const styles = StyleSheet.create({
-  header: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  } as ViewStyle,
-  infoIcon: {
-    marginLeft: Spacing.x025,
-  },
   buttons: {
     flex: 1,
     flexDirection: 'row',
@@ -66,35 +58,7 @@ const styles = StyleSheet.create({
  */
 export const EventsScreenHeader = () => {
   const lao = LaoHooks.useCurrentLao();
-  const [modalVisible, setModalVisible] = useState(false);
-
-  return (
-    <>
-      <PoPTouchableOpacity onPress={() => setModalVisible(!modalVisible)} style={styles.header}>
-        <Text style={Typography.topNavigationHeading}>{lao.name}</Text>
-        <View style={styles.infoIcon}>
-          <PoPIcon name="info" color={Color.primary} size={Icon.size} />
-        </View>
-      </PoPTouchableOpacity>
-
-      <Modal
-        transparent
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}>
-        <TouchableWithoutFeedback
-          containerStyle={ModalStyles.modalBackground}
-          onPress={() => {
-            setModalVisible(!modalVisible);
-          }}
-        />
-        <ScrollView style={ModalStyles.modalContainer}>
-          <ModalHeader onClose={() => setModalVisible(!modalVisible)}>{lao.name}</ModalHeader>
-        </ScrollView>
-      </Modal>
-    </>
-  );
+  return <Text style={Typography.topNavigationHeading}>{lao.name}</Text>;
 };
 
 /**
