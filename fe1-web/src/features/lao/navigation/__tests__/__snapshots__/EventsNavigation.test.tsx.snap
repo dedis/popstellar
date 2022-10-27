@@ -449,7 +449,49 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                           "paddingLeft": 16,
                                         }
                                       }
-                                    />
+                                    >
+                                      <View
+                                        accessible={true}
+                                        collapsable={false}
+                                        focusable={true}
+                                        onBlur={[Function]}
+                                        onClick={[Function]}
+                                        onFocus={[Function]}
+                                        onResponderGrant={[Function]}
+                                        onResponderMove={[Function]}
+                                        onResponderRelease={[Function]}
+                                        onResponderTerminate={[Function]}
+                                        onResponderTerminationRequest={[Function]}
+                                        onStartShouldSetResponder={[Function]}
+                                      >
+                                        <RNGestureHandlerButton
+                                          collapsable={false}
+                                          exclusive={true}
+                                          handlerTag={2}
+                                          handlerType="NativeViewGestureHandler"
+                                          onGestureEvent={[Function]}
+                                          onGestureHandlerEvent={[Function]}
+                                          onGestureHandlerStateChange={[Function]}
+                                          onHandlerStateChange={[Function]}
+                                          rippleColor={0}
+                                          touchSoundDisabled={false}
+                                        >
+                                          <View
+                                            accessible={true}
+                                            collapsable={false}
+                                            style={
+                                              Object {
+                                                "opacity": 1,
+                                              }
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"ios-arrow-back","size":25,"color":"#8E8E8E"}
+                                            </View>
+                                          </View>
+                                        </RNGestureHandlerButton>
+                                      </View>
+                                    </View>
                                     <View
                                       collapsable={false}
                                       pointerEvents="box-none"
@@ -457,17 +499,12 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                         Object {
                                           "justifyContent": "center",
                                           "marginHorizontal": 16,
-                                          "maxWidth": 718,
+                                          "maxWidth": 590,
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <Text
-                                        accessibilityRole="header"
-                                        aria-level="1"
-                                        collapsable={false}
-                                        numberOfLines={1}
-                                        onLayout={[Function]}
                                         style={
                                           Object {
                                             "color": "#000",
@@ -478,7 +515,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                           }
                                         }
                                       >
-                                        Events
+                                        MyLao
                                       </Text>
                                     </View>
                                     <View
@@ -495,7 +532,82 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                           "paddingRight": 16,
                                         }
                                       }
-                                    />
+                                    >
+                                      <View
+                                        style={
+                                          Object {
+                                            "alignItems": "center",
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
+                                        }
+                                      >
+                                        <View
+                                          accessible={true}
+                                          collapsable={false}
+                                          focusable={true}
+                                          onBlur={[Function]}
+                                          onClick={[Function]}
+                                          onFocus={[Function]}
+                                          onResponderGrant={[Function]}
+                                          onResponderMove={[Function]}
+                                          onResponderRelease={[Function]}
+                                          onResponderTerminate={[Function]}
+                                          onResponderTerminationRequest={[Function]}
+                                          onStartShouldSetResponder={[Function]}
+                                          style={
+                                            Object {
+                                              "marginLeft": 16,
+                                            }
+                                          }
+                                        >
+                                          <RNGestureHandlerButton
+                                            collapsable={false}
+                                            exclusive={true}
+                                            handlerTag={3}
+                                            handlerType="NativeViewGestureHandler"
+                                            onGestureEvent={[Function]}
+                                            onGestureHandlerEvent={[Function]}
+                                            onGestureHandlerStateChange={[Function]}
+                                            onHandlerStateChange={[Function]}
+                                            rippleColor={0}
+                                            style={
+                                              Object {
+                                                "marginLeft": 16,
+                                              }
+                                            }
+                                            touchSoundDisabled={false}
+                                          >
+                                            <View
+                                              accessible={true}
+                                              collapsable={false}
+                                              style={
+                                                Object {
+                                                  "opacity": 1,
+                                                }
+                                              }
+                                            >
+                                              <View>
+                                                {"name":"ios-qr-code","size":25,"color":"#8E8E8E"}
+                                              </View>
+                                            </View>
+                                          </RNGestureHandlerButton>
+                                        </View>
+                                        <View
+                                          style={
+                                            Object {
+                                              "marginLeft": 16,
+                                            }
+                                          }
+                                        />
+                                        <Modal
+                                          hardwareAccelerated={false}
+                                          onRequestClose={[Function]}
+                                          transparent={true}
+                                          visible={false}
+                                        />
+                                      </View>
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -605,7 +717,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                     <View
                                       collapsable={false}
                                       forwardedRef={[Function]}
-                                      handlerTag={2}
+                                      handlerTag={4}
                                       handlerType="PanGestureHandler"
                                       needsOffscreenAlphaCompositing={false}
                                       onGestureHandlerEvent={[Function]}
@@ -666,7 +778,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                             >
                                               <RCTScrollView
                                                 collapsable={false}
-                                                handlerTag={3}
+                                                handlerTag={5}
                                                 handlerType="NativeViewGestureHandler"
                                                 onGestureHandlerEvent={[Function]}
                                                 onGestureHandlerStateChange={[Function]}
