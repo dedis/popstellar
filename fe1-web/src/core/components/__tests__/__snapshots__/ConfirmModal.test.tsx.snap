@@ -58,13 +58,15 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
           Object {
             "alignItems": "center",
             "flexDirection": "row",
-            "justifyContent": "center",
+            "justifyContent": "space-between",
             "marginBottom": 16,
             "width": "100%",
           }
         }
       >
+        <View />
         <Text
+          numberOfLines={1}
           style={
             Object {
               "color": "#000",
@@ -90,12 +92,6 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
-          style={
-            Object {
-              "position": "absolute",
-              "right": 0,
-            }
-          }
           testID="modal-header-close"
         >
           <RNGestureHandlerButton
@@ -108,12 +104,6 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "position": "absolute",
-                "right": 0,
-              }
-            }
             touchSoundDisabled={false}
           >
             <View
@@ -125,19 +115,9 @@ exports[`ConfirmModal disappears correctly after dismissing 1`] = `
                 }
               }
             >
-              <Text
-                style={
-                  Object {
-                    "color": "#3742fa",
-                    "fontSize": 20,
-                    "fontWeight": "500",
-                    "lineHeight": 26,
-                    "textAlign": "left",
-                  }
-                }
-              >
-                Done
-              </Text>
+              <View>
+                {"name":"ios-close","size":25,"color":"#000"}
+              </View>
             </View>
           </RNGestureHandlerButton>
         </View>
@@ -301,13 +281,15 @@ exports[`ConfirmModal renders correctly 1`] = `
           Object {
             "alignItems": "center",
             "flexDirection": "row",
-            "justifyContent": "center",
+            "justifyContent": "space-between",
             "marginBottom": 16,
             "width": "100%",
           }
         }
       >
+        <View />
         <Text
+          numberOfLines={1}
           style={
             Object {
               "color": "#000",
@@ -333,12 +315,6 @@ exports[`ConfirmModal renders correctly 1`] = `
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
-          style={
-            Object {
-              "position": "absolute",
-              "right": 0,
-            }
-          }
           testID="modal-header-close"
         >
           <RNGestureHandlerButton
@@ -351,12 +327,6 @@ exports[`ConfirmModal renders correctly 1`] = `
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "position": "absolute",
-                "right": 0,
-              }
-            }
             touchSoundDisabled={false}
           >
             <View
@@ -368,19 +338,9 @@ exports[`ConfirmModal renders correctly 1`] = `
                 }
               }
             >
-              <Text
-                style={
-                  Object {
-                    "color": "#3742fa",
-                    "fontSize": 20,
-                    "fontWeight": "500",
-                    "lineHeight": 26,
-                    "textAlign": "left",
-                  }
-                }
-              >
-                Done
-              </Text>
+              <View>
+                {"name":"ios-close","size":25,"color":"#000"}
+              </View>
             </View>
           </RNGestureHandlerButton>
         </View>
@@ -544,13 +504,15 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
           Object {
             "alignItems": "center",
             "flexDirection": "row",
-            "justifyContent": "center",
+            "justifyContent": "space-between",
             "marginBottom": 16,
             "width": "100%",
           }
         }
       >
+        <View />
         <Text
+          numberOfLines={1}
           style={
             Object {
               "color": "#000",
@@ -576,12 +538,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
-          style={
-            Object {
-              "position": "absolute",
-              "right": 0,
-            }
-          }
           testID="modal-header-close"
         >
           <RNGestureHandlerButton
@@ -594,12 +550,6 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "position": "absolute",
-                "right": 0,
-              }
-            }
             touchSoundDisabled={false}
           >
             <View
@@ -611,19 +561,9 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
                 }
               }
             >
-              <Text
-                style={
-                  Object {
-                    "color": "#3742fa",
-                    "fontSize": 20,
-                    "fontWeight": "500",
-                    "lineHeight": 26,
-                    "textAlign": "left",
-                  }
-                }
-              >
-                Done
-              </Text>
+              <View>
+                {"name":"ios-close","size":25,"color":"#000"}
+              </View>
             </View>
           </RNGestureHandlerButton>
         </View>
