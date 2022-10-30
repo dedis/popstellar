@@ -51,7 +51,11 @@ export const ViewSingleRollCallScreenHeader = () => {
   const route = useRoute<NavigationProps['route']>();
   const { rollCallName } = route.params;
 
-  return <Text style={Typography.topNavigationHeading}>{rollCallName}</Text>;
+  return (
+    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
+      {rollCallName}
+    </Text>
+  );
 };
 
 /**

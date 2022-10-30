@@ -61,7 +61,11 @@ const styles = StyleSheet.create({
  */
 export const EventsScreenHeader = () => {
   const lao = LaoHooks.useCurrentLao();
-  return <Text style={Typography.topNavigationHeading}>{lao.name}</Text>;
+  return (
+    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
+      {lao.name}
+    </Text>
+  );
 };
 
 /**
@@ -101,46 +105,44 @@ export const EventsScreenHeaderRight = () => {
   const CreateEventButton = LaoHooks.useCreateEventButtonComponent();
 
   return (
-    <>
-      <View style={styles.buttons}>
-        <PoPTouchableOpacity
-          onPress={() => setModalVisible(!modalVisible)}
-          containerStyle={styles.button}>
-          <PoPIcon name="qrCode" color={Color.inactive} size={Icon.size} />
-        </PoPTouchableOpacity>
-        {isOrganizer && (
-          <View style={styles.button}>
-            <CreateEventButton />
-          </View>
-        )}
+    <View style={styles.buttons}>
+      <PoPTouchableOpacity
+        onPress={() => setModalVisible(!modalVisible)}
+        containerStyle={styles.button}>
+        <PoPIcon name="qrCode" color={Color.inactive} size={Icon.size} />
+      </PoPTouchableOpacity>
+      {isOrganizer && (
+        <View style={styles.button}>
+          <CreateEventButton />
+        </View>
+      )}
 
-        <Modal
-          transparent
-          visible={modalVisible}
-          onRequestClose={() => {
+      <Modal
+        transparent
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <TouchableWithoutFeedback
+          containerStyle={ModalStyles.modalBackground}
+          onPress={() => {
             setModalVisible(!modalVisible);
-          }}>
-          <TouchableWithoutFeedback
-            containerStyle={ModalStyles.modalBackground}
-            onPress={() => {
-              setModalVisible(!modalVisible);
-            }}
-          />
-          <ScrollView style={ModalStyles.modalContainer}>
-            <ModalHeader onClose={() => setModalVisible(!modalVisible)}>
-              {STRINGS.lao_properties_modal_heading}
-            </ModalHeader>
-            <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_qr_code_title}</Text>
-            <View style={styles.qrcodeContainer}>
-              <QRCode
-                value={encodeLaoConnection(lao.server_addresses, lao.id.toString())}
-                visibility
-              />
-            </View>
-            <LaoProperties />
-          </ScrollView>
-        </Modal>
-      </View>
-    </>
+          }}
+        />
+        <ScrollView style={ModalStyles.modalContainer}>
+          <ModalHeader onClose={() => setModalVisible(!modalVisible)}>
+            {STRINGS.lao_properties_modal_heading}
+          </ModalHeader>
+          <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_qr_code_title}</Text>
+          <View style={styles.qrcodeContainer}>
+            <QRCode
+              value={encodeLaoConnection(lao.server_addresses, lao.id.toString())}
+              visibility
+            />
+          </View>
+          <LaoProperties />
+        </ScrollView>
+      </Modal>
+    </View>
   );
 };

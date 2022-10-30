@@ -13,10 +13,15 @@ export const stackScreenOptionsWithoutHeader: StackNavigationOptions = {
 
 export const stackScreenOptionsWithHeader: StackNavigationOptions = {
   headerLeftContainerStyle: {
+    flexBasis: 'auto',
     paddingLeft: Spacing.contentSpacing,
   },
   headerRightContainerStyle: {
+    flexBasis: 'auto',
     paddingRight: Spacing.contentSpacing,
+  },
+  headerTitleContainerStyle: {
+    flexShrink: 1,
   },
   headerTitleStyle: Typography.topNavigationHeading,
   headerTitleAlign: 'center',
@@ -33,10 +38,15 @@ export const tabNavigationOptions: BottomTabNavigationOptions = {
   tabBarActiveTintColor: Color.accent,
   tabBarInactiveTintColor: Color.inactive,
   headerLeftContainerStyle: {
+    flexBasis: 'auto',
     paddingLeft: Spacing.contentSpacing,
   },
   headerRightContainerStyle: {
+    flexBasis: 'auto',
     paddingRight: Spacing.contentSpacing,
+  },
+  headerTitleContainerStyle: {
+    flexShrink: 1,
   },
   headerTitleStyle: Typography.topNavigationHeading,
   headerTitleAlign: 'center',
