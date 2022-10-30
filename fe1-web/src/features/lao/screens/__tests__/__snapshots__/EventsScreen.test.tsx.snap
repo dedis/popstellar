@@ -688,6 +688,7 @@ exports[`EventsScreenHeader renders correctly 1`] = `
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",

@@ -508,7 +508,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 style={
                                                   Object {
                                                     "alignItems": "flex-start",
-                                                    "flexBasis": 0,
+                                                    "flexBasis": "auto",
                                                     "flexGrow": 1,
                                                     "justifyContent": "center",
                                                     "marginStart": 0,
@@ -564,6 +564,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 pointerEvents="box-none"
                                                 style={
                                                   Object {
+                                                    "flexShrink": 1,
                                                     "justifyContent": "center",
                                                     "marginHorizontal": 16,
                                                     "maxWidth": 590,
@@ -572,6 +573,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 }
                                               >
                                                 <Text
+                                                  numberOfLines={1}
                                                   style={
                                                     Object {
                                                       "color": "#000",
@@ -591,7 +593,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 style={
                                                   Object {
                                                     "alignItems": "flex-end",
-                                                    "flexBasis": 0,
+                                                    "flexBasis": "auto",
                                                     "flexGrow": 1,
                                                     "justifyContent": "center",
                                                     "marginEnd": 0,

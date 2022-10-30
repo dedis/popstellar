@@ -327,6 +327,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ele
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -679,6 +680,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers not
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -1031,6 +1033,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -1383,6 +1386,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ope
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -1735,6 +1739,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers ter
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -2087,6 +2092,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly non organizers und
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -2439,6 +2445,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers electio
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -2791,6 +2798,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers not sta
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -3143,6 +3151,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers open se
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -3495,6 +3504,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers opened 
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -3847,6 +3857,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers termina
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
@@ -4199,6 +4210,7 @@ exports[`ViewSinglRollCallScreenRightHeader renders correctly organizers undefin
                       }
                     >
                       <Text
+                        numberOfLines={1}
                         style={
                           Object {
                             "color": "#000",
