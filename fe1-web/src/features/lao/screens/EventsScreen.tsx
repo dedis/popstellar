@@ -49,6 +49,9 @@ const styles = StyleSheet.create({
   button: {
     marginLeft: Spacing.x1,
   },
+  qrcodeContainer: {
+    marginVertical: Spacing.x05,
+  },
 });
 
 /**
@@ -127,16 +130,14 @@ export const EventsScreenHeaderRight = () => {
             <ModalHeader onClose={() => setModalVisible(!modalVisible)}>
               {STRINGS.lao_properties_modal_heading}
             </ModalHeader>
-
-            <LaoProperties />
-
             <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_qr_code_title}</Text>
-            <View>
+            <View style={styles.qrcodeContainer}>
               <QRCode
                 value={encodeLaoConnection(lao.server_addresses, lao.id.toString())}
                 visibility
               />
             </View>
+            <LaoProperties />
           </ScrollView>
         </Modal>
       </View>
