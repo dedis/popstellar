@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.ui.wallet;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
@@ -15,9 +17,11 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletSeedFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.*;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 
 import java.security.GeneralSecurityException;
+import java.util.Objects;
 import java.util.StringJoiner;
 
 import javax.inject.Inject;
@@ -29,8 +33,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class SeedWalletFragment extends Fragment {
 
   public static final String TAG = SeedWalletFragment.class.getSimpleName();
-  private WalletSeedFragmentBinding mWalletSeedFragBinding;
-  private HomeViewModel mHomeViewModel;
+  private WalletSeedFragmentBinding binding;
+  private HomeViewModel viewModel;
   @Inject Wallet wallet;
 
   public static SeedWalletFragment newInstance() {
@@ -45,19 +49,18 @@ public class SeedWalletFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mWalletSeedFragBinding = WalletSeedFragmentBinding.inflate(inflater, container, false);
+    binding = WalletSeedFragmentBinding.inflate(inflater, container, false);
 
     FragmentActivity activity = getActivity();
     if (activity instanceof HomeActivity) {
-      mHomeViewModel = HomeActivity.obtainViewModel(activity);
+      viewModel = HomeActivity.obtainViewModel(activity);
     } else {
       throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
     }
 
-    mWalletSeedFragBinding.setViewModel(mHomeViewModel);
-    mWalletSeedFragBinding.setLifecycleOwner(activity);
+    binding.setLifecycleOwner(activity);
 
-    return mWalletSeedFragBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
@@ -65,6 +68,7 @@ public class SeedWalletFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     setupDisplaySeed();
     setupConfirmSeedButton();
+    setupImportPart();
   }
 
   private void setupDisplaySeed() {
@@ -75,21 +79,21 @@ public class SeedWalletFragment extends Fragment {
       exportSeed = wallet.exportSeed();
     } catch (Exception e) {
       Toast.makeText(requireContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
-      Log.d(TAG, "Error while importing key", e);
+      Log.d(TAG, "Error while generating new seed", e);
     }
     if (exportSeed != null && exportSeed.length > 0) {
       StringJoiner joiner = new StringJoiner(" ");
       for (String i : exportSeed) {
         joiner.add(i);
       }
-      mWalletSeedFragBinding.seedWalletText.setText(joiner.toString());
+      binding.seedWalletText.setText(joiner.toString());
     } else {
       Toast.makeText(requireContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
     }
   }
 
   private void setupConfirmSeedButton() {
-    mWalletSeedFragBinding.buttonConfirmSeed.setOnClickListener(
+    binding.buttonConfirmSeed.setOnClickListener(
         v -> {
           if (seedAlert != null && seedAlert.isShowing()) {
             seedAlert.dismiss();
@@ -100,8 +104,7 @@ public class SeedWalletFragment extends Fragment {
               "Yes",
               (dialog, which) -> {
                 try {
-                  mHomeViewModel.importSeed(
-                      mWalletSeedFragBinding.seedWalletText.getText().toString());
+                  viewModel.importSeed(binding.seedWalletText.getText().toString());
                   HomeActivity.setCurrentFragment(
                       getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
                 } catch (GeneralSecurityException | SeedValidationException e) {
@@ -116,6 +119,42 @@ public class SeedWalletFragment extends Fragment {
           builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
           seedAlert = builder.create();
           seedAlert.show();
+        });
+  }
+
+  private void setupImportPart() {
+    TextWatcher importSeedWatcher =
+        new TextWatcher() {
+          @Override
+          public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            // Do nothing
+          }
+
+          @Override
+          public void onTextChanged(CharSequence s, int start, int before, int count) {
+            binding.importSeedButton.setEnabled(!s.toString().isEmpty());
+          }
+
+          @Override
+          public void afterTextChanged(Editable s) {
+            // Do nothing
+          }
+        };
+
+    binding.importSeedEntryEditText.addTextChangedListener(importSeedWatcher);
+
+    binding.importSeedButton.setOnClickListener(
+        v -> {
+          try {
+            viewModel.importSeed(
+                Objects.requireNonNull(binding.importSeedEntryEditText.getText()).toString());
+          } catch (GeneralSecurityException | SeedValidationException e) {
+            ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.seed_validation_exception);
+            return;
+          }
+          Toast.makeText(requireContext(), R.string.seed_import_success, Toast.LENGTH_SHORT).show();
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(), R.id.fragment_home, HomeFragment::new);
         });
   }
 }

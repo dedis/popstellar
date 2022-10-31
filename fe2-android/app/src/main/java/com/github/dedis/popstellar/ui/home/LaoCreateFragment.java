@@ -76,8 +76,6 @@ public final class LaoCreateFragment extends Fragment {
 
           boolean areFieldsFilled = !laoName.isEmpty() && !serverUrl.isEmpty();
           binding.buttonCreate.setEnabled(areFieldsFilled);
-          binding.buttonCreate.setAlpha(
-              areFieldsFilled ? Constants.ENABLED_ALPHA : Constants.DISABLED_ALPHA);
         }
 
         @Override

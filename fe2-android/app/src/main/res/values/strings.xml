@@ -189,7 +189,9 @@
   <string name="text_help_wallet">\n\nYou may import your seed if you own one or create a new wallet.</string>
   <string name="text_help_new_wallet">\n\nATTENTION: if you create a new wallet remember to write down
         the given seed and store it in a secure place, this is the only backup to your PoP tokens.</string>
-  <string name="text_seed_wallet">This is the only backup for your PoP tokens - store it securely</string>
+  <string name="wallet_init_message">Hello there ! We\'ve noticed your wallet is not set up. To use the app, it must be</string>
+  <string name="text_seed_wallet">This is the only backup for your PoP tokens - store it securely \n Warning ! If you don\'t, your key will be lost forever</string>
+  <string name="wallet_seed_title">Mnemonic wallet seed:</string>
   <string name="confirm_button">Confirm</string>
   <string name="content_title">Tokens</string>
   <string name="wallet_empty">Your wallet is empty</string>
@@ -199,8 +201,12 @@
   <string name="logout_button">LOGOUT</string>
   <string name="logout_title">Wallet log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
-  <string name="copied_to_clipboard">Copied to clipboard</string>
   <string name="copy_button_descriptor">Button to copy seed</string>
+  <string name="ok">OK</string>
+  <string name="import_seed">Import</string>
+  <string name="stored_seed">Stored seed</string>
+  <string name="initialize">Initialize</string>
+  <string name="seed_import_success">Seed successfully imported !</string>
 
   <!-- Digital Cash -->
   <string name="digital_cash_send">SEND</string>

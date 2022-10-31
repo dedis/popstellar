@@ -55,7 +55,16 @@ public class HomeActivity extends AppCompatActivity {
     // At start of Activity we display home fragment
     setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
-    restoreStoredState();
+    // restoreStoredState();
+    Log.d(TAG, "wallet is " + viewModel.isWalletSetUp());
+    if (!viewModel.isWalletSetUp()) {
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
+      new MaterialAlertDialogBuilder(this)
+          .setMessage(R.string.wallet_init_message)
+          .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+          .show();
+    }
   }
 
   @Override
@@ -109,7 +118,15 @@ public class HomeActivity extends AppCompatActivity {
       new MaterialAlertDialogBuilder(this)
           .setTitle(R.string.logout_title)
           .setMessage(R.string.logout_message)
-          .setPositiveButton(R.string.confirm, (dialog, which) -> viewModel.logoutWallet())
+          .setPositiveButton(
+              R.string.confirm,
+              (dialog, which) -> {
+                viewModel.logoutWallet();
+                setCurrentFragment(
+                    getSupportFragmentManager(),
+                    R.id.fragment_seed_wallet,
+                    SeedWalletFragment::new);
+              })
           .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
           .show();
     } else {
@@ -133,7 +150,9 @@ public class HomeActivity extends AppCompatActivity {
                   .show();
 
               // Restart activity
-              recreate();
+              Intent intent = HomeActivity.newIntent(this);
+              startActivity(intent);
+              finish();
             })
         .setNegativeButton(R.string.no, null)
         .show();
