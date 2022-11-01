@@ -1,13 +1,11 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo } from 'react';
-import { Text } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import ElectionNotStarted, {
@@ -60,29 +58,6 @@ const ViewSingleElection = () => {
 export default ViewSingleElection;
 
 /**
- * Component rendered in the top middle of the navgiation bar when looking
- * at a single election. Makes sure it shows the name of the election and
- * not just some static string.
- */
-export const ViewSingleElectionScreenHeader = () => {
-  const route = useRoute<NavigationProps['route']>();
-  const { eventId: electionId } = route.params;
-
-  const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
-  const election = useSelector(selectElection);
-
-  if (!election) {
-    throw new Error(`Could not find a roll call with id ${electionId}`);
-  }
-
-  return (
-    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
-      {election.name}
-    </Text>
-  );
-};
-
-/**
  * Component rendered in the top right of the navigation bar when looking at a
  * single election. Allows the user to perform certaina actions such as opening
  * or closing an election.
@@ -114,6 +89,6 @@ export const ViewSingleElectionScreenRightHeader = () => {
 export const ViewSingleElectionScreen: EvotingFeature.LaoEventScreen = {
   id: STRINGS.navigation_lao_events_view_single_election,
   Component: ViewSingleElection,
-  headerTitle: ViewSingleElectionScreenHeader,
+  headerTitle: STRINGS.election_event_name,
   headerRight: ViewSingleElectionScreenRightHeader,
 };

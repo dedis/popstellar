@@ -15,6 +15,11 @@ import ElectionQuestions from './ElectionQuestions';
 const ElectionTerminated = ({ election }: IPropTypes) => {
   return (
     <ScreenWrapper>
+      <Text style={Typography.paragraph}>
+        <Text style={[Typography.base, Typography.important]}>{election.name}</Text>
+        {'\n'}
+      </Text>
+
       <Text style={Typography.base}>{STRINGS.election_terminated_description}</Text>
 
       <ElectionQuestions election={election} />

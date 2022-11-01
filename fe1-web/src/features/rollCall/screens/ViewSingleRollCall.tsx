@@ -1,24 +1,24 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { ListItem } from '@rneui/themed';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Text, View } from 'react-native';
+import React, { useMemo } from 'react';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { PoPIcon, QRCode } from 'core/components';
+import { PoPIcon } from 'core/components';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
-import ScreenWrapper from 'core/components/ScreenWrapper';
 import { ActionSheetOption, useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { PublicKey } from 'core/objects';
-import { Color, Icon, List, Typography } from 'core/styles';
+import { Color, Icon } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import RollCallClosed from '../components/RollCallClosed';
+import RollCallCreated from '../components/RollCallCreated';
+import RollCallOpen from '../components/RollCallOpen';
 import { RollCallHooks } from '../hooks';
 import { RollCallFeature } from '../interface';
 import { requestCloseRollCall, requestOpenRollCall, requestReopenRollCall } from '../network';
@@ -47,189 +47,27 @@ const ViewSingleRollCall = () => {
     throw new Error(`Could not find a roll call with id ${rollCallId}`);
   }
 
-  const navigation = useNavigation<NavigationProps['navigation']>();
-
-  const laoId = RollCallHooks.useAssertCurrentLaoId();
-  const generateToken = RollCallHooks.useGenerateToken();
-  const hasSeed = RollCallHooks.useHasSeed();
-
-  if (!laoId) {
-    throw new Error('no LAO is currently active');
+  switch (rollCall.status) {
+    case RollCallStatus.CREATED:
+      return <RollCallCreated rollCall={rollCall} />;
+    case RollCallStatus.REOPENED:
+    case RollCallStatus.OPENED:
+      return (
+        <RollCallOpen
+          rollCall={rollCall}
+          isOrganizer={isOrganizer}
+          scannedPopTokens={attendeePopTokens}
+        />
+      );
+    case RollCallStatus.CLOSED:
+      return <RollCallClosed rollCall={rollCall} />;
+    default:
+      console.warn('Roll Call Status was undefined in EventRollCall');
+      return null;
   }
-  const [popToken, setPopToken] = useState('');
-  const [hasWalletBeenInitialized, setHasWalletBeenInitialized] = useState(hasSeed());
-
-  // re-check if wallet has been initialized after focus events
-  useEffect(() => {
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return navigation.addListener('focus', () => {
-      setHasWalletBeenInitialized(hasSeed());
-    });
-  }, [navigation, hasSeed]);
-
-  useEffect(() => {
-    if (!hasWalletBeenInitialized || !laoId || !rollCall?.id) {
-      return;
-    }
-
-    // Here we get the pop-token to display in the QR code
-    generateToken(laoId, rollCall.id)
-      .then((token) => setPopToken(token.publicKey.valueOf()))
-      .catch((err) => console.error(`Could not generate token: ${err}`));
-  }, [hasWalletBeenInitialized, generateToken, laoId, rollCall]);
-
-  if (!rollCall) {
-    console.debug('Error in Roll Call display: Roll Call doesnt exist in store');
-    return null;
-  }
-
-  const getRollCallDisplay = (status: RollCallStatus) => {
-    switch (status) {
-      case RollCallStatus.CREATED:
-        return (
-          <>
-            <Text style={Typography.paragraph}>
-              <Text style={[Typography.base, Typography.important]}>
-                {STRINGS.general_starting_at}
-              </Text>
-              {'\n'}
-              <Text>
-                {rollCall.proposedStart.toDate().toLocaleDateString()}{' '}
-                {rollCall.proposedStart.toDate().toLocaleTimeString()}
-              </Text>
-            </Text>
-
-            <Text style={Typography.paragraph}>
-              <Text style={[Typography.base, Typography.important]}>
-                {STRINGS.general_ending_at}
-              </Text>
-              {'\n'}
-              <Text>
-                {rollCall.proposedEnd.toDate().toLocaleDateString()}{' '}
-                {rollCall.proposedEnd.toDate().toLocaleTimeString()}
-              </Text>
-            </Text>
-          </>
-        );
-      case RollCallStatus.REOPENED:
-      case RollCallStatus.OPENED:
-        if (isOrganizer) {
-          if (!attendeePopTokens) {
-            return <Text style={Typography.paragraph}>{STRINGS.roll_call_open_organizer}</Text>;
-          }
-
-          return null;
-        }
-
-        return (
-          <>
-            <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
-            <QRCode visibility value={popToken} />
-          </>
-        );
-
-      case RollCallStatus.CLOSED:
-        return (
-          <>
-            <Text style={Typography.paragraph}>
-              <Text style={[Typography.base, Typography.important]}>
-                {STRINGS.general_ended_at}
-              </Text>
-              {'\n'}
-              <Text>
-                {rollCall.closedAt?.toDate().toLocaleDateString()}{' '}
-                {rollCall.closedAt?.toDate().toLocaleTimeString()}
-              </Text>
-            </Text>
-          </>
-        );
-      default:
-        console.warn('Roll Call Status was undefined in EventRollCall');
-        return null;
-    }
-  };
-
-  const popTokens = rollCall.attendees || attendeePopTokens;
-
-  return (
-    <ScreenWrapper>
-      {rollCall.description && (
-        <Text style={Typography.paragraph}>
-          <Text style={[Typography.base, Typography.important]}>
-            {STRINGS.roll_call_description}
-          </Text>
-          {'\n'}
-          <Text>{rollCall.description}</Text>
-        </Text>
-      )}
-
-      <Text style={Typography.paragraph}>
-        <Text style={[Typography.base, Typography.important]}>{STRINGS.roll_call_location}</Text>
-        {'\n'}
-        <Text>{rollCall.location}</Text>
-      </Text>
-
-      {getRollCallDisplay(rollCall.status)}
-
-      {popTokens && (
-        <View style={List.container}>
-          <ListItem.Accordion
-            containerStyle={List.accordionItem}
-            content={
-              <ListItem.Content>
-                <ListItem.Title style={[Typography.base, Typography.important]}>
-                  Attendees
-                </ListItem.Title>
-              </ListItem.Content>
-            }
-            isExpanded>
-            {popTokens.map((token, idx) => {
-              const listStyle = List.getListItemStyles(idx === 0, idx === popTokens.length - 1);
-
-              return (
-                <ListItem key={token.valueOf()} containerStyle={listStyle} style={listStyle}>
-                  <View style={List.icon}>
-                    <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
-                  </View>
-                  <ListItem.Content>
-                    <ListItem.Title style={Typography.base} numberOfLines={1} selectable>
-                      {token.valueOf()}
-                    </ListItem.Title>
-                  </ListItem.Content>
-                </ListItem>
-              );
-            })}
-          </ListItem.Accordion>
-        </View>
-      )}
-    </ScreenWrapper>
-  );
 };
 
 export default ViewSingleRollCall;
-
-/**
- * Component rendered in the top middle of the navgiation bar when looking
- * at a single roll call. Makes sure it shows the name of the roll call and
- * not just some static string.
- */
-export const ViewSingleRollCallScreenHeader = () => {
-  const route = useRoute<NavigationProps['route']>();
-  const { eventId: rollCallId } = route.params;
-
-  const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
-  const rollCall = useSelector(selectRollCall);
-
-  if (!rollCall) {
-    throw new Error(`Could not find a roll call with id ${rollCallId}`);
-  }
-
-  return (
-    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
-      {rollCall.name}
-    </Text>
-  );
-};
 
 /**
  * Component rendered in the top right of the navigation bar when looking at a roll call.
@@ -288,25 +126,6 @@ export const ViewSinglRollCallScreenRightHeader = () => {
     }
   };
 
-  const onScanAttendees = () => {
-    // Once the roll call is opened the first time, idAlias is defined
-    if (rollCall.idAlias) {
-      navigation.navigate(STRINGS.navigation_app_lao, {
-        screen: STRINGS.navigation_lao_events,
-        params: {
-          screen: STRINGS.navigation_lao_events_open_roll_call,
-          params: {
-            rollCallId: rollCall.id.toString(),
-            initialAttendeePopTokens: attendeePopTokens || [],
-          },
-        },
-      });
-    } else {
-      makeToastErr(STRINGS.roll_call_location_error_scanning_no_alias);
-      console.debug(STRINGS.roll_call_location_error_scanning_no_alias);
-    }
-  };
-
   const onCloseRollCall = async () => {
     // get the public key as strings from the existing rollcall
     const previousAttendees = (rollCall.attendees || []).map((key) => key.valueOf());
@@ -345,10 +164,6 @@ export const ViewSinglRollCallScreenRightHeader = () => {
       case RollCallStatus.REOPENED:
         return [
           {
-            displayName: STRINGS.roll_call_scan_attendees,
-            action: onScanAttendees,
-          },
-          {
             displayName: STRINGS.roll_call_close,
             action: onCloseRollCall,
           },
@@ -378,6 +193,6 @@ export const ViewSinglRollCallScreenRightHeader = () => {
 export const ViewSingleRollCallScreen: RollCallFeature.LaoEventScreen = {
   id: STRINGS.navigation_lao_events_view_single_roll_call,
   Component: ViewSingleRollCall,
-  headerTitle: ViewSingleRollCallScreenHeader,
+  headerTitle: STRINGS.roll_call_event_name,
   headerRight: ViewSinglRollCallScreenRightHeader,
 };

@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import { PoPIcon } from 'core/components';
+import DateRange from 'core/components/DateRange';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
@@ -22,21 +23,13 @@ const ElectionNotStarted = ({ election }: IPropTypes) => {
   return (
     <ScreenWrapper>
       <Text style={Typography.paragraph}>
-        <Text style={[Typography.base, Typography.important]}>{STRINGS.general_starting_at}</Text>
+        <Text style={[Typography.base, Typography.important]}>{election.name}</Text>
         {'\n'}
-        <Text>
-          {election.start.toDate().toLocaleDateString()}{' '}
-          {election.start.toDate().toLocaleTimeString()}
+        <Text style={Typography.paragraph}>
+          <DateRange start={election.start.toDate()} end={election.end.toDate()} />
         </Text>
       </Text>
 
-      <Text style={Typography.paragraph}>
-        <Text style={[Typography.base, Typography.important]}>{STRINGS.general_ending_at}</Text>
-        {'\n'}
-        <Text>
-          {election.end.toDate().toLocaleDateString()} {election.end.toDate().toLocaleTimeString()}
-        </Text>
-      </Text>
       <ElectionQuestions election={election} />
     </ScreenWrapper>
   );

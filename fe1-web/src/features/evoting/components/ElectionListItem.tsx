@@ -28,7 +28,7 @@ const Subtitle = ({ election }: { election: Election }) => {
   if (election.electionStatus === ElectionStatus.OPENED) {
     return (
       <ListItem.Subtitle style={Typography.small}>
-        {STRINGS.general_ongoing}, {STRINGS.general_ending_at}{' '}
+        {STRINGS.general_ongoing}, {STRINGS.general_ending}{' '}
         <ReactTimeago date={election.end.valueOf() * 1000} />
       </ListItem.Subtitle>
     );

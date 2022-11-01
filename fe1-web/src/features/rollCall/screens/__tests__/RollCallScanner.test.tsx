@@ -24,7 +24,7 @@ import { addRollCall, rollCallReducer } from 'features/rollCall/reducer';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
 
 import { requestCloseRollCall as mockRequestCloseRollCall } from '../../network/RollCallMessageApi';
-import RollCallOpened from '../RollCallOpened';
+import RollCallOpened from '../RollCallScanner';
 
 const mockPublicKey2 = new PublicKey('mockPublicKey2_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=');
 const mockPublicKey3 = new PublicKey('mockPublicKey3_fFcHDaVHcCcY8IBfHE7auXJ7h4ms=');
