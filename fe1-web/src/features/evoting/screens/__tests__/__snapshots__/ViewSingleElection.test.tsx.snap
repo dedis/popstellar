@@ -4586,15 +4586,32 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                               style={
                                 Object {
                                   "color": "#000",
-                                  "fontSize": 32,
-                                  "fontWeight": "bold",
-                                  "lineHeight": 41,
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
                                   "marginBottom": 16,
                                   "textAlign": "left",
                                 }
                               }
                             >
-                              Election Results
+                              <Text
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "fontWeight": "bold",
+                                    },
+                                  ]
+                                }
+                              >
+                                An election
+                              </Text>
+                              
+
                             </Text>
                             <View
                               style={
@@ -4848,20 +4865,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -5005,20 +5008,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -5382,20 +5371,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -5539,20 +5514,6 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -6061,69 +6022,41 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                   ]
                                 }
                               >
-                                Supposed to start
+                                An election
                               </Text>
                               
 
-                              <Text>
-                                2022-05-28
-                                 
-                                00:00:00
-                              </Text>
-                            </Text>
-                            <Text
-                              style={
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                }
-                              }
-                            >
                               <Text
                                 style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "fontWeight": "bold",
-                                    },
-                                  ]
-                                }
-                              >
-                                Supposed to end
-                              </Text>
-                              
-
-                              <Text>
-                                2022-05-28
-                                 
-                                00:00:00
-                              </Text>
-                            </Text>
-                            <Text
-                              style={
-                                Array [
                                   Object {
                                     "color": "#000",
                                     "fontSize": 20,
                                     "lineHeight": 26,
                                     "marginBottom": 16,
                                     "textAlign": "left",
-                                  },
-                                  Object {
-                                    "fontWeight": "bold",
-                                  },
-                                ]
-                              }
-                            >
-                              Questions
+                                  }
+                                }
+                              >
+                                <Text>
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                   -
+                                  
+
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                </Text>
+                              </Text>
                             </Text>
                             <View
                               style={
@@ -6384,20 +6317,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -6522,20 +6441,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -6887,20 +6792,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -7025,20 +6916,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -7877,72 +7754,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                           }
                         >
                           <View>
-                            <View
-                              style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "borderRadius": 8,
-                                    "flexDirection": "row",
-                                    "marginBottom": 16,
-                                    "padding": 16,
-                                  },
-                                  Object {
-                                    "backgroundColor": "#ffa502",
-                                  },
-                                ]
-                              }
-                            >
-                              <View>
-                                {"name":"ios-warning","size":50,"color":"#fff"}
-                              </View>
-                              <View
-                                style={
-                                  Object {
-                                    "flex": 1,
-                                    "marginLeft": 16,
-                                  }
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "fontWeight": "bold",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Warning
-                                </Text>
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  This is an open ballot election, your cast votes will be visible to all members of the LAO.
-                                </Text>
-                              </View>
-                            </View>
                             <Text
                               style={
                                 Object {
@@ -7969,11 +7780,13 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                   ]
                                 }
                               >
-                                Supposed to end
+                                An election
                               </Text>
                               
 
                               <Text>
+                                Ending
+                                 
                                 <time
                                   dateTime="2021-01-01T23:00:00.000Z"
                                   title="2021-01-01 23:00"
@@ -7981,24 +7794,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                   4 months ago
                                 </time>
                               </Text>
-                            </Text>
-                            <Text
-                              style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "fontWeight": "bold",
-                                  },
-                                ]
-                              }
-                            >
-                              Questions
                             </Text>
                             <View
                               style={
@@ -8256,78 +8051,70 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                     testID="RNE__LISTITEM__padView"
                                   >
                                     <View
-                                      style={
+                                      accessibilityRole="checkbox"
+                                      accessibilityState={
                                         Object {
-                                          "marginRight": 16,
+                                          "checked": false,
+                                          "disabled": false,
                                         }
                                       }
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      size={25}
+                                      style={
+                                        Object {
+                                          "backgroundColor": "#ffffff",
+                                          "borderColor": "#ffffff",
+                                          "margin": 0,
+                                          "marginLeft": 0,
+                                          "marginRight": 0,
+                                          "padding": 0,
+                                        }
+                                      }
+                                      testID="questions_0_ballots_option_0_checkbox"
                                     >
                                       <View
-                                        accessibilityRole="checkbox"
-                                        accessibilityState={
-                                          Object {
-                                            "checked": false,
-                                            "disabled": false,
-                                          }
-                                        }
-                                        accessible={true}
-                                        collapsable={false}
-                                        focusable={true}
-                                        onBlur={[Function]}
-                                        onClick={[Function]}
-                                        onFocus={[Function]}
-                                        onResponderGrant={[Function]}
-                                        onResponderMove={[Function]}
-                                        onResponderRelease={[Function]}
-                                        onResponderTerminate={[Function]}
-                                        onResponderTerminationRequest={[Function]}
-                                        onStartShouldSetResponder={[Function]}
-                                        size={25}
                                         style={
                                           Object {
-                                            "backgroundColor": "#ffffff",
-                                            "borderColor": "#ffffff",
-                                            "margin": 0,
-                                            "marginLeft": 0,
-                                            "marginRight": 0,
-                                            "padding": 0,
+                                            "alignItems": "center",
+                                            "flexDirection": "row",
                                           }
                                         }
-                                        testID="questions_0_ballots_option_0_checkbox"
                                       >
-                                        <View
+                                        <Text
+                                          allowFontScaling={false}
+                                          selectable={false}
                                           style={
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                            }
+                                            Array [
+                                              Object {
+                                                "color": "#bfbfbf",
+                                                "fontSize": 25,
+                                              },
+                                              Object {
+                                                "minWidth": 25,
+                                              },
+                                              Object {
+                                                "fontFamily": "FontAwesome",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
                                           }
+                                          testID="RNE__Checkbox__Icon"
                                         >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              Array [
-                                                Object {
-                                                  "color": "#bfbfbf",
-                                                  "fontSize": 25,
-                                                },
-                                                Object {
-                                                  "minWidth": 25,
-                                                },
-                                                Object {
-                                                  "fontFamily": "FontAwesome",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                Object {},
-                                              ]
-                                            }
-                                            testID="RNE__Checkbox__Icon"
-                                          >
-                                            
-                                          </Text>
-                                        </View>
+                                          
+                                        </Text>
                                       </View>
                                     </View>
                                     <View
@@ -8464,78 +8251,70 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                     testID="RNE__LISTITEM__padView"
                                   >
                                     <View
-                                      style={
+                                      accessibilityRole="checkbox"
+                                      accessibilityState={
                                         Object {
-                                          "marginRight": 16,
+                                          "checked": false,
+                                          "disabled": false,
                                         }
                                       }
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      size={25}
+                                      style={
+                                        Object {
+                                          "backgroundColor": "#ffffff",
+                                          "borderColor": "#ffffff",
+                                          "margin": 0,
+                                          "marginLeft": 0,
+                                          "marginRight": 0,
+                                          "padding": 0,
+                                        }
+                                      }
+                                      testID="questions_0_ballots_option_1_checkbox"
                                     >
                                       <View
-                                        accessibilityRole="checkbox"
-                                        accessibilityState={
-                                          Object {
-                                            "checked": false,
-                                            "disabled": false,
-                                          }
-                                        }
-                                        accessible={true}
-                                        collapsable={false}
-                                        focusable={true}
-                                        onBlur={[Function]}
-                                        onClick={[Function]}
-                                        onFocus={[Function]}
-                                        onResponderGrant={[Function]}
-                                        onResponderMove={[Function]}
-                                        onResponderRelease={[Function]}
-                                        onResponderTerminate={[Function]}
-                                        onResponderTerminationRequest={[Function]}
-                                        onStartShouldSetResponder={[Function]}
-                                        size={25}
                                         style={
                                           Object {
-                                            "backgroundColor": "#ffffff",
-                                            "borderColor": "#ffffff",
-                                            "margin": 0,
-                                            "marginLeft": 0,
-                                            "marginRight": 0,
-                                            "padding": 0,
+                                            "alignItems": "center",
+                                            "flexDirection": "row",
                                           }
                                         }
-                                        testID="questions_0_ballots_option_1_checkbox"
                                       >
-                                        <View
+                                        <Text
+                                          allowFontScaling={false}
+                                          selectable={false}
                                           style={
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                            }
+                                            Array [
+                                              Object {
+                                                "color": "#bfbfbf",
+                                                "fontSize": 25,
+                                              },
+                                              Object {
+                                                "minWidth": 25,
+                                              },
+                                              Object {
+                                                "fontFamily": "FontAwesome",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
                                           }
+                                          testID="RNE__Checkbox__Icon"
                                         >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              Array [
-                                                Object {
-                                                  "color": "#bfbfbf",
-                                                  "fontSize": 25,
-                                                },
-                                                Object {
-                                                  "minWidth": 25,
-                                                },
-                                                Object {
-                                                  "fontFamily": "FontAwesome",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                Object {},
-                                              ]
-                                            }
-                                            testID="RNE__Checkbox__Icon"
-                                          >
-                                            
-                                          </Text>
-                                        </View>
+                                          
+                                        </Text>
                                       </View>
                                     </View>
                                     <View
@@ -8888,78 +8667,70 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                     testID="RNE__LISTITEM__padView"
                                   >
                                     <View
-                                      style={
+                                      accessibilityRole="checkbox"
+                                      accessibilityState={
                                         Object {
-                                          "marginRight": 16,
+                                          "checked": false,
+                                          "disabled": false,
                                         }
                                       }
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      size={25}
+                                      style={
+                                        Object {
+                                          "backgroundColor": "#ffffff",
+                                          "borderColor": "#ffffff",
+                                          "margin": 0,
+                                          "marginLeft": 0,
+                                          "marginRight": 0,
+                                          "padding": 0,
+                                        }
+                                      }
+                                      testID="questions_1_ballots_option_0_checkbox"
                                     >
                                       <View
-                                        accessibilityRole="checkbox"
-                                        accessibilityState={
-                                          Object {
-                                            "checked": false,
-                                            "disabled": false,
-                                          }
-                                        }
-                                        accessible={true}
-                                        collapsable={false}
-                                        focusable={true}
-                                        onBlur={[Function]}
-                                        onClick={[Function]}
-                                        onFocus={[Function]}
-                                        onResponderGrant={[Function]}
-                                        onResponderMove={[Function]}
-                                        onResponderRelease={[Function]}
-                                        onResponderTerminate={[Function]}
-                                        onResponderTerminationRequest={[Function]}
-                                        onStartShouldSetResponder={[Function]}
-                                        size={25}
                                         style={
                                           Object {
-                                            "backgroundColor": "#ffffff",
-                                            "borderColor": "#ffffff",
-                                            "margin": 0,
-                                            "marginLeft": 0,
-                                            "marginRight": 0,
-                                            "padding": 0,
+                                            "alignItems": "center",
+                                            "flexDirection": "row",
                                           }
                                         }
-                                        testID="questions_1_ballots_option_0_checkbox"
                                       >
-                                        <View
+                                        <Text
+                                          allowFontScaling={false}
+                                          selectable={false}
                                           style={
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                            }
+                                            Array [
+                                              Object {
+                                                "color": "#bfbfbf",
+                                                "fontSize": 25,
+                                              },
+                                              Object {
+                                                "minWidth": 25,
+                                              },
+                                              Object {
+                                                "fontFamily": "FontAwesome",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
                                           }
+                                          testID="RNE__Checkbox__Icon"
                                         >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              Array [
-                                                Object {
-                                                  "color": "#bfbfbf",
-                                                  "fontSize": 25,
-                                                },
-                                                Object {
-                                                  "minWidth": 25,
-                                                },
-                                                Object {
-                                                  "fontFamily": "FontAwesome",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                Object {},
-                                              ]
-                                            }
-                                            testID="RNE__Checkbox__Icon"
-                                          >
-                                            
-                                          </Text>
-                                        </View>
+                                          
+                                        </Text>
                                       </View>
                                     </View>
                                     <View
@@ -9096,78 +8867,70 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                     testID="RNE__LISTITEM__padView"
                                   >
                                     <View
-                                      style={
+                                      accessibilityRole="checkbox"
+                                      accessibilityState={
                                         Object {
-                                          "marginRight": 16,
+                                          "checked": false,
+                                          "disabled": false,
                                         }
                                       }
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      size={25}
+                                      style={
+                                        Object {
+                                          "backgroundColor": "#ffffff",
+                                          "borderColor": "#ffffff",
+                                          "margin": 0,
+                                          "marginLeft": 0,
+                                          "marginRight": 0,
+                                          "padding": 0,
+                                        }
+                                      }
+                                      testID="questions_1_ballots_option_1_checkbox"
                                     >
                                       <View
-                                        accessibilityRole="checkbox"
-                                        accessibilityState={
-                                          Object {
-                                            "checked": false,
-                                            "disabled": false,
-                                          }
-                                        }
-                                        accessible={true}
-                                        collapsable={false}
-                                        focusable={true}
-                                        onBlur={[Function]}
-                                        onClick={[Function]}
-                                        onFocus={[Function]}
-                                        onResponderGrant={[Function]}
-                                        onResponderMove={[Function]}
-                                        onResponderRelease={[Function]}
-                                        onResponderTerminate={[Function]}
-                                        onResponderTerminationRequest={[Function]}
-                                        onStartShouldSetResponder={[Function]}
-                                        size={25}
                                         style={
                                           Object {
-                                            "backgroundColor": "#ffffff",
-                                            "borderColor": "#ffffff",
-                                            "margin": 0,
-                                            "marginLeft": 0,
-                                            "marginRight": 0,
-                                            "padding": 0,
+                                            "alignItems": "center",
+                                            "flexDirection": "row",
                                           }
                                         }
-                                        testID="questions_1_ballots_option_1_checkbox"
                                       >
-                                        <View
+                                        <Text
+                                          allowFontScaling={false}
+                                          selectable={false}
                                           style={
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                            }
+                                            Array [
+                                              Object {
+                                                "color": "#bfbfbf",
+                                                "fontSize": 25,
+                                              },
+                                              Object {
+                                                "minWidth": 25,
+                                              },
+                                              Object {
+                                                "fontFamily": "FontAwesome",
+                                                "fontStyle": "normal",
+                                                "fontWeight": "normal",
+                                              },
+                                              Object {},
+                                            ]
                                           }
+                                          testID="RNE__Checkbox__Icon"
                                         >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              Array [
-                                                Object {
-                                                  "color": "#bfbfbf",
-                                                  "fontSize": 25,
-                                                },
-                                                Object {
-                                                  "minWidth": 25,
-                                                },
-                                                Object {
-                                                  "fontFamily": "FontAwesome",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                Object {},
-                                              ]
-                                            }
-                                            testID="RNE__Checkbox__Icon"
-                                          >
-                                            
-                                          </Text>
-                                        </View>
+                                          
+                                        </Text>
                                       </View>
                                     </View>
                                     <View
@@ -9276,6 +9039,72 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                     </View>
                                   </View>
                                 </View>
+                              </View>
+                            </View>
+                            <View
+                              style={
+                                Array [
+                                  Object {
+                                    "alignItems": "center",
+                                    "borderRadius": 8,
+                                    "flexDirection": "row",
+                                    "marginBottom": 16,
+                                    "padding": 16,
+                                  },
+                                  Object {
+                                    "backgroundColor": "#ffa502",
+                                  },
+                                ]
+                              }
+                            >
+                              <View>
+                                {"name":"ios-warning","size":50,"color":"#fff"}
+                              </View>
+                              <View
+                                style={
+                                  Object {
+                                    "flex": 1,
+                                    "marginLeft": 16,
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "fontWeight": "bold",
+                                      },
+                                      Object {
+                                        "color": "#fff",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  Notice
+                                </Text>
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "color": "#fff",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  This is an open ballot election, your cast votes will be visible to all members of the LAO.
+                                </Text>
                               </View>
                             </View>
                             <View
@@ -9729,29 +9558,42 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
+                                  "marginBottom": 16,
+                                  "textAlign": "left",
+                                }
+                              }
+                            >
+                              <Text
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "fontWeight": "bold",
+                                    },
+                                  ]
+                                }
+                              >
+                                An election
+                              </Text>
+                              
+
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
                                   "textAlign": "left",
                                 }
                               }
                             >
                               The election was terminated and the votes are being tallied... Waiting for the result
-                            </Text>
-                            <Text
-                              style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "fontWeight": "bold",
-                                  },
-                                ]
-                              }
-                            >
-                              Questions
                             </Text>
                             <View
                               style={
@@ -10012,20 +9854,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -10150,20 +9978,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -10515,20 +10329,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -10653,20 +10453,6 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -11472,15 +11258,32 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                               style={
                                 Object {
                                   "color": "#000",
-                                  "fontSize": 32,
-                                  "fontWeight": "bold",
-                                  "lineHeight": 41,
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
                                   "marginBottom": 16,
                                   "textAlign": "left",
                                 }
                               }
                             >
-                              Election Results
+                              <Text
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "fontWeight": "bold",
+                                    },
+                                  ]
+                                }
+                              >
+                                An election
+                              </Text>
+                              
+
                             </Text>
                             <View
                               style={
@@ -11734,20 +11537,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -11891,20 +11680,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -12268,20 +12043,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -12425,20 +12186,6 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -12947,69 +12694,41 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                   ]
                                 }
                               >
-                                Supposed to start
+                                An election
                               </Text>
                               
 
-                              <Text>
-                                2022-05-28
-                                 
-                                00:00:00
-                              </Text>
-                            </Text>
-                            <Text
-                              style={
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                }
-                              }
-                            >
                               <Text
                                 style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "fontWeight": "bold",
-                                    },
-                                  ]
-                                }
-                              >
-                                Supposed to end
-                              </Text>
-                              
-
-                              <Text>
-                                2022-05-28
-                                 
-                                00:00:00
-                              </Text>
-                            </Text>
-                            <Text
-                              style={
-                                Array [
                                   Object {
                                     "color": "#000",
                                     "fontSize": 20,
                                     "lineHeight": 26,
                                     "marginBottom": 16,
                                     "textAlign": "left",
-                                  },
-                                  Object {
-                                    "fontWeight": "bold",
-                                  },
-                                ]
-                              }
-                            >
-                              Questions
+                                  }
+                                }
+                              >
+                                <Text>
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                   -
+                                  
+
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                </Text>
+                              </Text>
                             </Text>
                             <View
                               style={
@@ -13247,20 +12966,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -13385,20 +13090,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -13727,20 +13418,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -13865,20 +13542,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -14717,72 +14380,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                           }
                         >
                           <View>
-                            <View
-                              style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "borderRadius": 8,
-                                    "flexDirection": "row",
-                                    "marginBottom": 16,
-                                    "padding": 16,
-                                  },
-                                  Object {
-                                    "backgroundColor": "#ffa502",
-                                  },
-                                ]
-                              }
-                            >
-                              <View>
-                                {"name":"ios-warning","size":50,"color":"#fff"}
-                              </View>
-                              <View
-                                style={
-                                  Object {
-                                    "flex": 1,
-                                    "marginLeft": 16,
-                                  }
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "fontWeight": "bold",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Warning
-                                </Text>
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  This is an open ballot election, your cast votes will be visible to all members of the LAO.
-                                </Text>
-                              </View>
-                            </View>
                             <Text
                               style={
                                 Object {
@@ -14809,11 +14406,13 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                   ]
                                 }
                               >
-                                Supposed to end
+                                An election
                               </Text>
                               
 
                               <Text>
+                                Ending
+                                 
                                 <time
                                   dateTime="2021-01-01T23:00:00.000Z"
                                   title="2021-01-01 23:00"
@@ -14821,24 +14420,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                   4 months ago
                                 </time>
                               </Text>
-                            </Text>
-                            <Text
-                              style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "fontWeight": "bold",
-                                  },
-                                ]
-                              }
-                            >
-                              Questions
                             </Text>
                             <View
                               style={
@@ -15096,55 +14677,47 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                     testID="RNE__LISTITEM__padView"
                                   >
                                     <View
-                                      style={
+                                      accessibilityRole="checkbox"
+                                      accessibilityState={
                                         Object {
-                                          "marginRight": 16,
+                                          "checked": false,
+                                          "disabled": false,
                                         }
                                       }
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      size={25}
+                                      style={
+                                        Object {
+                                          "backgroundColor": "#ffffff",
+                                          "borderColor": "#ffffff",
+                                          "margin": 0,
+                                          "marginLeft": 0,
+                                          "marginRight": 0,
+                                          "padding": 0,
+                                        }
+                                      }
+                                      testID="questions_0_ballots_option_0_checkbox"
                                     >
                                       <View
-                                        accessibilityRole="checkbox"
-                                        accessibilityState={
-                                          Object {
-                                            "checked": false,
-                                            "disabled": false,
-                                          }
-                                        }
-                                        accessible={true}
-                                        collapsable={false}
-                                        focusable={true}
-                                        onBlur={[Function]}
-                                        onClick={[Function]}
-                                        onFocus={[Function]}
-                                        onResponderGrant={[Function]}
-                                        onResponderMove={[Function]}
-                                        onResponderRelease={[Function]}
-                                        onResponderTerminate={[Function]}
-                                        onResponderTerminationRequest={[Function]}
-                                        onStartShouldSetResponder={[Function]}
-                                        size={25}
                                         style={
                                           Object {
-                                            "backgroundColor": "#ffffff",
-                                            "borderColor": "#ffffff",
-                                            "margin": 0,
-                                            "marginLeft": 0,
-                                            "marginRight": 0,
-                                            "padding": 0,
+                                            "alignItems": "center",
+                                            "flexDirection": "row",
                                           }
                                         }
-                                        testID="questions_0_ballots_option_0_checkbox"
                                       >
-                                        <View
-                                          style={
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                            }
-                                          }
-                                        >
-                                          <Text />
-                                        </View>
+                                        <Text />
                                       </View>
                                     </View>
                                     <View
@@ -15281,55 +14854,47 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                     testID="RNE__LISTITEM__padView"
                                   >
                                     <View
-                                      style={
+                                      accessibilityRole="checkbox"
+                                      accessibilityState={
                                         Object {
-                                          "marginRight": 16,
+                                          "checked": false,
+                                          "disabled": false,
                                         }
                                       }
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      size={25}
+                                      style={
+                                        Object {
+                                          "backgroundColor": "#ffffff",
+                                          "borderColor": "#ffffff",
+                                          "margin": 0,
+                                          "marginLeft": 0,
+                                          "marginRight": 0,
+                                          "padding": 0,
+                                        }
+                                      }
+                                      testID="questions_0_ballots_option_1_checkbox"
                                     >
                                       <View
-                                        accessibilityRole="checkbox"
-                                        accessibilityState={
-                                          Object {
-                                            "checked": false,
-                                            "disabled": false,
-                                          }
-                                        }
-                                        accessible={true}
-                                        collapsable={false}
-                                        focusable={true}
-                                        onBlur={[Function]}
-                                        onClick={[Function]}
-                                        onFocus={[Function]}
-                                        onResponderGrant={[Function]}
-                                        onResponderMove={[Function]}
-                                        onResponderRelease={[Function]}
-                                        onResponderTerminate={[Function]}
-                                        onResponderTerminationRequest={[Function]}
-                                        onStartShouldSetResponder={[Function]}
-                                        size={25}
                                         style={
                                           Object {
-                                            "backgroundColor": "#ffffff",
-                                            "borderColor": "#ffffff",
-                                            "margin": 0,
-                                            "marginLeft": 0,
-                                            "marginRight": 0,
-                                            "padding": 0,
+                                            "alignItems": "center",
+                                            "flexDirection": "row",
                                           }
                                         }
-                                        testID="questions_0_ballots_option_1_checkbox"
                                       >
-                                        <View
-                                          style={
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                            }
-                                          }
-                                        >
-                                          <Text />
-                                        </View>
+                                        <Text />
                                       </View>
                                     </View>
                                     <View
@@ -15682,55 +15247,47 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                     testID="RNE__LISTITEM__padView"
                                   >
                                     <View
-                                      style={
+                                      accessibilityRole="checkbox"
+                                      accessibilityState={
                                         Object {
-                                          "marginRight": 16,
+                                          "checked": false,
+                                          "disabled": false,
                                         }
                                       }
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      size={25}
+                                      style={
+                                        Object {
+                                          "backgroundColor": "#ffffff",
+                                          "borderColor": "#ffffff",
+                                          "margin": 0,
+                                          "marginLeft": 0,
+                                          "marginRight": 0,
+                                          "padding": 0,
+                                        }
+                                      }
+                                      testID="questions_1_ballots_option_0_checkbox"
                                     >
                                       <View
-                                        accessibilityRole="checkbox"
-                                        accessibilityState={
-                                          Object {
-                                            "checked": false,
-                                            "disabled": false,
-                                          }
-                                        }
-                                        accessible={true}
-                                        collapsable={false}
-                                        focusable={true}
-                                        onBlur={[Function]}
-                                        onClick={[Function]}
-                                        onFocus={[Function]}
-                                        onResponderGrant={[Function]}
-                                        onResponderMove={[Function]}
-                                        onResponderRelease={[Function]}
-                                        onResponderTerminate={[Function]}
-                                        onResponderTerminationRequest={[Function]}
-                                        onStartShouldSetResponder={[Function]}
-                                        size={25}
                                         style={
                                           Object {
-                                            "backgroundColor": "#ffffff",
-                                            "borderColor": "#ffffff",
-                                            "margin": 0,
-                                            "marginLeft": 0,
-                                            "marginRight": 0,
-                                            "padding": 0,
+                                            "alignItems": "center",
+                                            "flexDirection": "row",
                                           }
                                         }
-                                        testID="questions_1_ballots_option_0_checkbox"
                                       >
-                                        <View
-                                          style={
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                            }
-                                          }
-                                        >
-                                          <Text />
-                                        </View>
+                                        <Text />
                                       </View>
                                     </View>
                                     <View
@@ -15867,55 +15424,47 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                     testID="RNE__LISTITEM__padView"
                                   >
                                     <View
-                                      style={
+                                      accessibilityRole="checkbox"
+                                      accessibilityState={
                                         Object {
-                                          "marginRight": 16,
+                                          "checked": false,
+                                          "disabled": false,
                                         }
                                       }
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      size={25}
+                                      style={
+                                        Object {
+                                          "backgroundColor": "#ffffff",
+                                          "borderColor": "#ffffff",
+                                          "margin": 0,
+                                          "marginLeft": 0,
+                                          "marginRight": 0,
+                                          "padding": 0,
+                                        }
+                                      }
+                                      testID="questions_1_ballots_option_1_checkbox"
                                     >
                                       <View
-                                        accessibilityRole="checkbox"
-                                        accessibilityState={
-                                          Object {
-                                            "checked": false,
-                                            "disabled": false,
-                                          }
-                                        }
-                                        accessible={true}
-                                        collapsable={false}
-                                        focusable={true}
-                                        onBlur={[Function]}
-                                        onClick={[Function]}
-                                        onFocus={[Function]}
-                                        onResponderGrant={[Function]}
-                                        onResponderMove={[Function]}
-                                        onResponderRelease={[Function]}
-                                        onResponderTerminate={[Function]}
-                                        onResponderTerminationRequest={[Function]}
-                                        onStartShouldSetResponder={[Function]}
-                                        size={25}
                                         style={
                                           Object {
-                                            "backgroundColor": "#ffffff",
-                                            "borderColor": "#ffffff",
-                                            "margin": 0,
-                                            "marginLeft": 0,
-                                            "marginRight": 0,
-                                            "padding": 0,
+                                            "alignItems": "center",
+                                            "flexDirection": "row",
                                           }
                                         }
-                                        testID="questions_1_ballots_option_1_checkbox"
                                       >
-                                        <View
-                                          style={
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                            }
-                                          }
-                                        >
-                                          <Text />
-                                        </View>
+                                        <Text />
                                       </View>
                                     </View>
                                     <View
@@ -16024,6 +15573,72 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                     </View>
                                   </View>
                                 </View>
+                              </View>
+                            </View>
+                            <View
+                              style={
+                                Array [
+                                  Object {
+                                    "alignItems": "center",
+                                    "borderRadius": 8,
+                                    "flexDirection": "row",
+                                    "marginBottom": 16,
+                                    "padding": 16,
+                                  },
+                                  Object {
+                                    "backgroundColor": "#ffa502",
+                                  },
+                                ]
+                              }
+                            >
+                              <View>
+                                {"name":"ios-warning","size":50,"color":"#fff"}
+                              </View>
+                              <View
+                                style={
+                                  Object {
+                                    "flex": 1,
+                                    "marginLeft": 16,
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "fontWeight": "bold",
+                                      },
+                                      Object {
+                                        "color": "#fff",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  Notice
+                                </Text>
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "color": "#fff",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  This is an open ballot election, your cast votes will be visible to all members of the LAO.
+                                </Text>
                               </View>
                             </View>
                             <View
@@ -16477,29 +16092,42 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
+                                  "marginBottom": 16,
+                                  "textAlign": "left",
+                                }
+                              }
+                            >
+                              <Text
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "fontWeight": "bold",
+                                    },
+                                  ]
+                                }
+                              >
+                                An election
+                              </Text>
+                              
+
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
                                   "textAlign": "left",
                                 }
                               }
                             >
                               The election was terminated and the votes are being tallied... Waiting for the result
-                            </Text>
-                            <Text
-                              style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "fontWeight": "bold",
-                                  },
-                                ]
-                              }
-                            >
-                              Questions
                             </Text>
                             <View
                               style={
@@ -16760,20 +16388,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -16898,20 +16512,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [
@@ -17263,20 +16863,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                   >
                                     <View
                                       style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
                                         Array [
                                           Object {
                                             "alignItems": "flex-start",
@@ -17401,20 +16987,6 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                     }
                                     testID="RNE__LISTITEM__padView"
                                   >
-                                    <View
-                                      style={
-                                        Object {
-                                          "marginRight": 16,
-                                        }
-                                      }
-                                    />
-                                    <View
-                                      style={
-                                        Object {
-                                          "paddingLeft": 16,
-                                        }
-                                      }
-                                    />
                                     <View
                                       style={
                                         Array [

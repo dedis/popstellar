@@ -904,7 +904,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   }
                                   testID="listItemTitle"
                                 >
-                                  Supposed to start
+                                  Starting
                                    
                                   <time
                                     dateTime="2021-05-07T03:20:00.000Z"
@@ -2112,7 +2112,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   }
                                   testID="listItemTitle"
                                 >
-                                  Supposed to start
+                                  Starting
                                    
                                   <time
                                     dateTime="2021-05-07T03:20:00.000Z"
