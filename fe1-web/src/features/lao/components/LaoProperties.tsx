@@ -1,8 +1,9 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { Typography } from 'core/styles';
+import { QRCode } from 'core/components';
+import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
@@ -20,18 +21,32 @@ const getUserRole = (isOrganizer: boolean, isWitness: boolean): string => {
   return STRINGS.user_role_attendee;
 };
 
+const styles = StyleSheet.create({
+  qrcodeContainer: {
+    marginVertical: Spacing.x05,
+  },
+});
+
 const LaoProperties = () => {
   const lao = LaoHooks.useCurrentLao();
+  const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
 
   const isOrganizer = useSelector(selectIsLaoOrganizer);
   const isWitness = useSelector(selectIsLaoWitness);
 
   return (
     <View>
+      <View style={styles.qrcodeContainer}>
+        <QRCode
+          value={encodeLaoConnection(lao.server_addresses, lao.id.toString())}
+          overlayText={STRINGS.lao_qr_code_overlay}
+        />
+      </View>
+
       <Text style={Typography.paragraph}>
-        <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_id}</Text>
+        <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_name}</Text>
         {'\n'}
-        <Text selectable>{lao.id}</Text>
+        <Text selectable>{lao.name}</Text>
       </Text>
 
       <Text style={Typography.paragraph}>
@@ -48,6 +63,12 @@ const LaoProperties = () => {
         </Text>
         {'\n'}
         <Text selectable>{lao.server_addresses.join(', ')}</Text>
+      </Text>
+
+      <Text style={Typography.paragraph}>
+        <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_id}</Text>
+        {'\n'}
+        <Text selectable>{lao.id}</Text>
       </Text>
     </View>
   );

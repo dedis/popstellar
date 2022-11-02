@@ -327,6 +327,123 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                       }
                     >
                       <View>
+                        <View
+                          style={
+                            Object {
+                              "marginVertical": 8,
+                            }
+                          }
+                        >
+                          <qrcode
+                            overlayText="Scan to
+Connect"
+                            value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                          />
+                        </View>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Name
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          >
+                            MyLao
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Your role
+                          </Text>
+                          
+
+                          <Text>
+                            Attendee
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            You are currently connected to
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          />
+                        </Text>
                         <Text
                           style={
                             Object {
@@ -405,74 +522,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                             E
                             =
                           </Text>
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            Your role
-                          </Text>
-                          
-
-                          <Text>
-                            Attendee
-                          </Text>
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            You are currently connected to
-                          </Text>
-                          
-
-                          <Text
-                            selectable={true}
-                          />
                         </Text>
                       </View>
                     </View>
@@ -815,6 +864,123 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                       }
                     >
                       <View>
+                        <View
+                          style={
+                            Object {
+                              "marginVertical": 8,
+                            }
+                          }
+                        >
+                          <qrcode
+                            overlayText="Scan to
+Connect"
+                            value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                          />
+                        </View>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Name
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          >
+                            MyLao
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Your role
+                          </Text>
+                          
+
+                          <Text>
+                            Organizer
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            You are currently connected to
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          />
+                        </Text>
                         <Text
                           style={
                             Object {
@@ -893,74 +1059,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                             E
                             =
                           </Text>
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            Your role
-                          </Text>
-                          
-
-                          <Text>
-                            Organizer
-                          </Text>
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            You are currently connected to
-                          </Text>
-                          
-
-                          <Text
-                            selectable={true}
-                          />
                         </Text>
                       </View>
                     </View>
@@ -1303,6 +1401,123 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                       }
                     >
                       <View>
+                        <View
+                          style={
+                            Object {
+                              "marginVertical": 8,
+                            }
+                          }
+                        >
+                          <qrcode
+                            overlayText="Scan to
+Connect"
+                            value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                          />
+                        </View>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Name
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          >
+                            MyLao
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Your role
+                          </Text>
+                          
+
+                          <Text>
+                            Witness
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            You are currently connected to
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          />
+                        </Text>
                         <Text
                           style={
                             Object {
@@ -1381,74 +1596,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                             E
                             =
                           </Text>
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            Your role
-                          </Text>
-                          
-
-                          <Text>
-                            Witness
-                          </Text>
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            You are currently connected to
-                          </Text>
-                          
-
-                          <Text
-                            selectable={true}
-                          />
                         </Text>
                       </View>
                     </View>
