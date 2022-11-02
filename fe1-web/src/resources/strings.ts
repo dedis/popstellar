@@ -9,7 +9,8 @@ namespace STRINGS {
   export const general_yes = 'Yes';
   export const general_no = 'No';
   export const general_add = 'Add';
-  export const general_starting_at = 'Starting';
+  export const general_starting = 'Starting';
+  export const general_starting_now = 'Starting anytime now';
   export const general_ending = 'Ending';
   export const general_ended = 'Ended';
   export const general_notice = 'Notice';

@@ -18,7 +18,7 @@ const getSubtitle = (meeting: Meeting): string => {
   const location = meeting.location ? `, ${meeting.location}` : '';
 
   if (meeting.start.after(now)) {
-    return `${STRINGS.general_starting_at} ${meeting.start
+    return `${STRINGS.general_starting} ${meeting.start
       .toDate()
       .toLocaleDateString()} ${meeting.start.toDate().toLocaleTimeString()}${
       meeting.location ? `, ${meeting.location}` : ''

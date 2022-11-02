@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
 import { PoPIcon } from 'core/components';
+import { Timestamp } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -15,10 +16,18 @@ import { makeRollCallSelector } from '../reducer';
 
 const Subtitle = ({ rollCall }: { rollCall: RollCall }) => {
   if (rollCall.status === RollCallStatus.CREATED) {
+    if (Timestamp.EpochNow().before(rollCall.start)) {
+      return (
+        <>
+          {STRINGS.general_starting} <ReactTimeago live date={rollCall.start.toDate()} />,{' '}
+          {rollCall.location}
+        </>
+      );
+    }
+
     return (
       <>
-        {STRINGS.general_starting_at} <ReactTimeago date={rollCall.end.toDate()} />,{' '}
-        {rollCall.location}
+        {STRINGS.general_starting_now}, {rollCall.location}
       </>
     );
   }
@@ -31,9 +40,13 @@ const Subtitle = ({ rollCall }: { rollCall: RollCall }) => {
     );
   }
 
+  if (!rollCall.end) {
+    throw new Error('rollCall.end should always be defined for closed roll calls');
+  }
+
   return (
     <>
-      {STRINGS.general_closed} <ReactTimeago date={rollCall.end.toDate()} />
+      {STRINGS.general_closed} <ReactTimeago live date={rollCall.end.toDate()} />
     </>
   );
 };

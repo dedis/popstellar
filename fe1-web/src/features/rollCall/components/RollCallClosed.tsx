@@ -12,6 +12,10 @@ import { RollCall } from '../objects';
 import AttendeeList from './AttendeeList';
 
 const RollCallClosed = ({ rollCall }: IPropTypes) => {
+  if (!rollCall.end) {
+    throw new Error('rollCall.end should always be defined for closed roll calls');
+  }
+
   return (
     <ScreenWrapper>
       <Text style={Typography.paragraph}>
@@ -21,7 +25,7 @@ const RollCallClosed = ({ rollCall }: IPropTypes) => {
       </Text>
 
       <Text style={Typography.paragraph}>
-        {STRINGS.general_ended} <ReactTimeago date={rollCall.end.toDate()} />
+        {STRINGS.general_ended} <ReactTimeago live date={rollCall.end.toDate()} />
       </Text>
 
       {rollCall.description && (

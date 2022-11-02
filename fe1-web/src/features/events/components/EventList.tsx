@@ -37,7 +37,7 @@ const EventList = () => {
   const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
   const events = useSelector(eventListSelector);
 
-  const [{ pastEvents, currentEvents }, setEvents] = useState<{
+  const [{ pastEvents, currentEvents, upcomingEvents }, setEvents] = useState<{
     pastEvents: EventState[];
     currentEvents: EventState[];
     upcomingEvents: EventState[];
@@ -58,71 +58,79 @@ const EventList = () => {
 
   return (
     <View>
-      <ListItem
-        containerStyle={List.getListItemStyles(true, true)}
-        style={List.getListItemStyles(true, true)}
-        bottomDivider
-        onPress={() =>
-          navigation.push(STRINGS.navigation_app_lao, {
-            screen: STRINGS.navigation_lao_events,
-            params: {
-              screen: STRINGS.navigation_lao_events_upcoming,
-            },
-          })
-        }>
-        <ListItem.Content>
-          <ListItem.Title style={Typography.base}>{STRINGS.events_upcoming_events}</ListItem.Title>
-        </ListItem.Content>
-        <ListItem.Chevron />
-      </ListItem>
+      {upcomingEvents.length > 0 && (
+        <ListItem
+          containerStyle={List.getListItemStyles(true, true)}
+          style={List.getListItemStyles(true, true)}
+          bottomDivider
+          onPress={() =>
+            navigation.push(STRINGS.navigation_app_lao, {
+              screen: STRINGS.navigation_lao_events,
+              params: {
+                screen: STRINGS.navigation_lao_events_upcoming,
+              },
+            })
+          }>
+          <ListItem.Content>
+            <ListItem.Title style={Typography.base}>
+              {STRINGS.events_upcoming_events}
+            </ListItem.Title>
+          </ListItem.Content>
+          <ListItem.Chevron />
+        </ListItem>
+      )}
 
       <View style={List.container}>
-        <ListItem.Accordion
-          containerStyle={List.accordionItem}
-          style={List.accordionItem}
-          content={
-            <ListItem.Content>
-              <ListItem.Title style={[Typography.base, Typography.important]}>
-                {STRINGS.events_list_current}
-              </ListItem.Title>
-            </ListItem.Content>
-          }
-          isExpanded={showCurrent}
-          onPress={() => setShowCurrent(!showCurrent)}>
-          {currentEvents.map((event, idx) => (
-            <EventListItem
-              key={event.id}
-              eventId={event.id}
-              eventType={event.eventType}
-              isFirstItem={idx === 0}
-              isLastItem={idx === currentEvents.length - 1}
-              testID={`current_event_selector_${idx}`}
-            />
-          ))}
-        </ListItem.Accordion>
-        <ListItem.Accordion
-          containerStyle={List.accordionItem}
-          style={List.accordionItem}
-          content={
-            <ListItem.Content>
-              <ListItem.Title style={[Typography.base, Typography.important]}>
-                {STRINGS.events_list_past}
-              </ListItem.Title>
-            </ListItem.Content>
-          }
-          isExpanded={showPast}
-          onPress={() => setShowPast(!showPast)}>
-          {pastEvents.map((event, idx) => (
-            <EventListItem
-              key={event.id}
-              eventId={event.id}
-              eventType={event.eventType}
-              isFirstItem={idx === 0}
-              isLastItem={idx === pastEvents.length - 1}
-              testID={`previous_event_selector_${idx}`}
-            />
-          ))}
-        </ListItem.Accordion>
+        {currentEvents.length > 0 && (
+          <ListItem.Accordion
+            containerStyle={List.accordionItem}
+            style={List.accordionItem}
+            content={
+              <ListItem.Content>
+                <ListItem.Title style={[Typography.base, Typography.important]}>
+                  {STRINGS.events_list_current}
+                </ListItem.Title>
+              </ListItem.Content>
+            }
+            isExpanded={showCurrent}
+            onPress={() => setShowCurrent(!showCurrent)}>
+            {currentEvents.map((event, idx) => (
+              <EventListItem
+                key={event.id}
+                eventId={event.id}
+                eventType={event.eventType}
+                isFirstItem={idx === 0}
+                isLastItem={idx === currentEvents.length - 1}
+                testID={`current_event_selector_${idx}`}
+              />
+            ))}
+          </ListItem.Accordion>
+        )}
+        {pastEvents.length > 0 && (
+          <ListItem.Accordion
+            containerStyle={List.accordionItem}
+            style={List.accordionItem}
+            content={
+              <ListItem.Content>
+                <ListItem.Title style={[Typography.base, Typography.important]}>
+                  {STRINGS.events_list_past}
+                </ListItem.Title>
+              </ListItem.Content>
+            }
+            isExpanded={showPast}
+            onPress={() => setShowPast(!showPast)}>
+            {pastEvents.map((event, idx) => (
+              <EventListItem
+                key={event.id}
+                eventId={event.id}
+                eventType={event.eventType}
+                isFirstItem={idx === 0}
+                isLastItem={idx === pastEvents.length - 1}
+                testID={`previous_event_selector_${idx}`}
+              />
+            ))}
+          </ListItem.Accordion>
+        )}
       </View>
     </View>
   );

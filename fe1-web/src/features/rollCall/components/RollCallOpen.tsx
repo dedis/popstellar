@@ -89,7 +89,7 @@ const RollCallOpen = ({ rollCall, isOrganizer, scannedPopTokens }: IPropTypes) =
       </Text>
 
       <Text style={Typography.paragraph}>
-        {STRINGS.general_ending} <ReactTimeago date={rollCall.proposedEnd.toDate()} />
+        {STRINGS.general_ending} <ReactTimeago live date={rollCall.proposedEnd.toDate()} />
       </Text>
 
       {rollCall.description && (

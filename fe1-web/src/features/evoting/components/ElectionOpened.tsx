@@ -84,7 +84,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
         <Text style={[Typography.base, Typography.important]}>{election.name}</Text>
         {'\n'}
         <Text>
-          {STRINGS.general_ending} <ReactTimeago date={election.end.toDate()} />
+          {STRINGS.general_ending} <ReactTimeago live date={election.end.toDate()} />
         </Text>
       </Text>
 

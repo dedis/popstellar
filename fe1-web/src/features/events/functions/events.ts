@@ -34,13 +34,20 @@ export const categorizeEventsByTime = (time: Timestamp, events: EventState[]) =>
 
     // current events are the ones that already started or will start within
     // the next {CURRENT_EVENTS_THRESHOLD_MINUTES} minutes
-    if (e.start <= t + CURRENT_EVENTS_THRESHOLD_MINUTES * 60 * 1000) {
+    if (e.start <= t + CURRENT_EVENTS_THRESHOLD_MINUTES * 60) {
       currentEvents.push(e);
       return;
     }
 
     upcomingEvents.push(e);
   });
+
+  // current and past events from newest to oldest
+  pastEvents.sort((a, b) => b.start - a.start);
+  currentEvents.sort((a, b) => b.start - a.start);
+
+  // upcoming events from oldest i.e. closest in the future to newest / furthest
+  upcomingEvents.sort((a, b) => b.start - a.start);
 
   return { pastEvents, currentEvents, upcomingEvents };
 };

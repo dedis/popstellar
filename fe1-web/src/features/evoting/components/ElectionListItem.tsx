@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
 import { PoPIcon } from 'core/components';
+import { Timestamp } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -18,10 +19,20 @@ import { makeElectionSelector } from '../reducer';
  */
 const Subtitle = ({ election }: { election: Election }) => {
   if (election.electionStatus === ElectionStatus.NOT_STARTED) {
+    if (Timestamp.EpochNow().before(election.start)) {
+      return (
+        <ListItem.Subtitle style={Typography.small}>
+          {STRINGS.general_starting} <ReactTimeago live date={election.start.toDate()} />
+        </ListItem.Subtitle>
+      );
+    }
+
     return (
-      <ListItem.Subtitle style={Typography.small}>
-        {STRINGS.general_starting_at} <ReactTimeago date={election.start.valueOf() * 1000} />
-      </ListItem.Subtitle>
+      <>
+        <ListItem.Subtitle style={Typography.small}>
+          {STRINGS.general_starting_now}
+        </ListItem.Subtitle>
+      </>
     );
   }
 
@@ -29,7 +40,7 @@ const Subtitle = ({ election }: { election: Election }) => {
     return (
       <ListItem.Subtitle style={Typography.small}>
         {STRINGS.general_ongoing}, {STRINGS.general_ending}{' '}
-        <ReactTimeago date={election.end.valueOf() * 1000} />
+        <ReactTimeago live date={election.end.valueOf() * 1000} />
       </ListItem.Subtitle>
     );
   }
