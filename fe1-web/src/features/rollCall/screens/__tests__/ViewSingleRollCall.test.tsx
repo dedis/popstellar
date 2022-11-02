@@ -31,6 +31,7 @@ const createStateWithStatus: any = (mockStatus: RollCallStatus) => {
     id: ID.valueOf(),
     eventType: RollCall.EVENT_TYPE,
     start: TIMESTAMP_START.valueOf(),
+    closedAt: TIMESTAMP_END.valueOf(),
     name: NAME,
     location: LOCATION,
     creation: TIMESTAMP_START.valueOf(),
@@ -64,7 +65,7 @@ mockStore.dispatch(
     eventType: RollCall.EVENT_TYPE,
     id: mockRollCallState.id,
     start: mockRollCall.start.valueOf(),
-    end: mockRollCall.end.valueOf(),
+    end: mockRollCall.end?.valueOf(),
   }),
 );
 mockStore.dispatch(addRollCall(mockRollCallState));

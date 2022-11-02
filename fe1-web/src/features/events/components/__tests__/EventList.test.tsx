@@ -105,7 +105,7 @@ mockStore.dispatch(
     eventType: RollCall.EVENT_TYPE,
     id: mockRollCall.id.valueOf(),
     start: mockRollCall.start.valueOf(),
-    end: mockRollCall.end.valueOf(),
+    end: mockRollCall.end?.valueOf(),
   }),
 );
 mockStore.dispatch(addRollCall(mockRollCall.toState()));
