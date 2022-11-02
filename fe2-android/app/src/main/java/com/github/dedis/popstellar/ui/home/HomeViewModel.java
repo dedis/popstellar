@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -26,6 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -138,6 +140,13 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
     if (!isWalletSetUp()) {
       Log.d(TAG, "Restoring wallet");
+      String[] seed = data.getWalletSeed();
+      Log.d(TAG, "seed is " + Arrays.toString(seed));
+      if (seed.length == 0) {
+        ErrorUtils.logAndShow(
+            getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
+        return;
+      }
       String appended = String.join(" ", data.getWalletSeed());
       try {
         importSeed(appended);

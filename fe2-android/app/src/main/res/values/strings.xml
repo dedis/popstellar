@@ -204,9 +204,10 @@
   <string name="copy_button_descriptor">Button to copy seed</string>
   <string name="ok">OK</string>
   <string name="import_seed">Import</string>
-  <string name="stored_seed">Stored seed</string>
+  <string name="stored_seed">Stored seed…</string>
   <string name="initialize">Initialize</string>
   <string name="seed_import_success">Seed successfully imported !</string>
+  <string name="no_seed_storage_found">No wallet storage was found</string>
 
   <!-- Digital Cash -->
   <string name="digital_cash_send">SEND</string>

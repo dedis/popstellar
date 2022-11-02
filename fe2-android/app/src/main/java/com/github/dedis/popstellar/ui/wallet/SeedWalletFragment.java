@@ -50,7 +50,6 @@ public class SeedWalletFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     binding = WalletSeedFragmentBinding.inflate(inflater, container, false);
-
     FragmentActivity activity = getActivity();
     if (activity instanceof HomeActivity) {
       viewModel = HomeActivity.obtainViewModel(activity);
@@ -66,30 +65,9 @@ public class SeedWalletFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    setupDisplaySeed();
+    binding.seedWalletText.setText(wallet.newSeed());
     setupConfirmSeedButton();
     setupImportPart();
-  }
-
-  private void setupDisplaySeed() {
-    String[] exportSeed = new String[0];
-    String err = "Error import key, try again";
-    try {
-      wallet.newSeed();
-      exportSeed = wallet.exportSeed();
-    } catch (Exception e) {
-      Toast.makeText(requireContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
-      Log.d(TAG, "Error while generating new seed", e);
-    }
-    if (exportSeed != null && exportSeed.length > 0) {
-      StringJoiner joiner = new StringJoiner(" ");
-      for (String i : exportSeed) {
-        joiner.add(i);
-      }
-      binding.seedWalletText.setText(joiner.toString());
-    } else {
-      Toast.makeText(requireContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
-    }
   }
 
   private void setupConfirmSeedButton() {

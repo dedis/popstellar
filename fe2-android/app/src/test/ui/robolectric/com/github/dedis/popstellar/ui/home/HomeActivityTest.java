@@ -19,8 +19,7 @@ import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
-import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
+import static com.github.dedis.popstellar.testutils.UITestUtils.*;
 import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.createFragmentId;
 import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.*;
@@ -68,9 +67,7 @@ public class HomeActivityTest {
             activity -> {
               HomeViewModel viewModel = HomeActivity.obtainViewModel(activity);
               if (!viewModel.isWalletSetUp()) {
-                openActionBarOverflowOrOptionsMenu(
-                    InstrumentationRegistry.getInstrumentation().getTargetContext());
-                walletSetupMenuItem().perform(click());
+                  dialogNeutralButton().performClick();
                 confirmButton().perform(click());
                 dialogPositiveButton().performClick();
               }

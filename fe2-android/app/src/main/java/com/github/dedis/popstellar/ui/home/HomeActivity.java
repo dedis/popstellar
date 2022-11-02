@@ -55,8 +55,8 @@ public class HomeActivity extends AppCompatActivity {
     // At start of Activity we display home fragment
     setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
-    // restoreStoredState();
-    Log.d(TAG, "wallet is " + viewModel.isWalletSetUp());
+    restoreStoredState();
+
     if (!viewModel.isWalletSetUp()) {
       setCurrentFragment(
           getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
@@ -111,6 +111,15 @@ public class HomeActivity extends AppCompatActivity {
       return super.onOptionsItemSelected(item);
     }
     return true;
+  }
+
+  @Override
+  public void onBackPressed() {
+    Fragment fragment =
+        getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
+    if (!(fragment instanceof SeedWalletFragment)) {
+      setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new);
+    }
   }
 
   private void handleWalletSettings() {
