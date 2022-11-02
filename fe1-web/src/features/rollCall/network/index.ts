@@ -34,7 +34,7 @@ export const configureNetwork = (configuration: RollCallConfiguration) => {
         eventType: RollCall.EVENT_TYPE,
         id: rollCallState.id,
         start: rollCall.start.valueOf(),
-        end: rollCall.end.valueOf(),
+        end: rollCall.end?.valueOf(),
       }),
     );
   };
@@ -48,7 +48,7 @@ export const configureNetwork = (configuration: RollCallConfiguration) => {
         eventType: RollCall.EVENT_TYPE,
         id: rollCallState.id,
         start: rollCall.start.valueOf(),
-        end: rollCall.end.valueOf(),
+        end: rollCall.end?.valueOf(),
       }),
     );
   };

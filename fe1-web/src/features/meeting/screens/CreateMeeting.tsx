@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
 });
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_meeting>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_create_meeting>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -160,6 +160,6 @@ const CreateMeeting = () => {
 export default CreateMeeting;
 
 export const CreateMeetingScreen: MeetingFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_create_meeting,
+  id: STRINGS.events_create_meeting,
   Component: CreateMeeting,
 };

@@ -19,7 +19,7 @@ import { ElectionStatus } from '../objects';
 import { makeElectionSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_view_single_election>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_view_single_election>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -87,7 +87,7 @@ export const ViewSingleElectionScreenRightHeader = () => {
 };
 
 export const ViewSingleElectionScreen: EvotingFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_view_single_election,
+  id: STRINGS.events_view_single_election,
   Component: ViewSingleElection,
   headerTitle: STRINGS.election_event_name,
   headerRight: ViewSingleElectionScreenRightHeader,

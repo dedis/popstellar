@@ -21,7 +21,7 @@ import { RollCall } from '../objects';
 import AttendeeList from './AttendeeList';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_view_single_roll_call>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_view_single_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -44,7 +44,7 @@ const RollCallOpen = ({ rollCall, isOrganizer, scannedPopTokens }: IPropTypes) =
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_events,
         params: {
-          screen: STRINGS.navigation_lao_events_open_roll_call,
+          screen: STRINGS.events_open_roll_call,
           params: {
             rollCallId: rollCall.id.toString(),
             initialAttendeePopTokens: (scannedPopTokens || []).map((e) => e.valueOf()),

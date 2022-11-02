@@ -77,8 +77,8 @@ export const RollCallEventType: RollCallInterface['eventTypes'][0] = {
   eventType: RollCall.EVENT_TYPE,
   eventName: STRINGS.roll_call_event_name,
   navigationNames: {
-    createEvent: STRINGS.navigation_lao_events_create_roll_call,
-    screenSingle: STRINGS.navigation_lao_events_view_single_roll_call,
+    createEvent: STRINGS.events_create_roll_call,
+    screenSingle: STRINGS.events_view_single_roll_call,
   },
   ListItemComponent: RollCallListItem as FunctionComponent<{
     eventId: string;

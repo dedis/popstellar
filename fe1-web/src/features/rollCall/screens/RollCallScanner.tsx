@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_open_roll_call>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_open_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -164,7 +164,7 @@ const RollCallOpened = () => {
               <PoPTouchableOpacity
                 testID="roll_call_open_stop_scanning"
                 onPress={() =>
-                  navigation.navigate(STRINGS.navigation_lao_events_view_single_roll_call, {
+                  navigation.navigate(STRINGS.events_view_single_roll_call, {
                     eventId: rollCallId,
                     /* this screen is only reachable for organizers */
                     isOrganizer: true,
@@ -204,7 +204,7 @@ const RollCallOpened = () => {
 export default RollCallOpened;
 
 export const RollCallOpenedScreen: RollCallFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_open_roll_call,
+  id: STRINGS.events_open_roll_call,
   Component: RollCallOpened,
   headerShown: false,
 };

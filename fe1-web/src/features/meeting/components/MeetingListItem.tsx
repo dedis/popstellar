@@ -71,8 +71,8 @@ export const MeetingEventType: MeetingInterface['eventTypes'][0] = {
   eventType: Meeting.EVENT_TYPE,
   eventName: STRINGS.meeting_event_name,
   navigationNames: {
-    createEvent: STRINGS.navigation_lao_events_create_meeting,
-    screenSingle: STRINGS.navigation_lao_events_view_single_meeting,
+    createEvent: STRINGS.events_create_meeting,
+    screenSingle: STRINGS.events_view_single_meeting,
   },
   ListItemComponent: MeetingListItem as React.FunctionComponent<{
     eventId: string;

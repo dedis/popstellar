@@ -80,8 +80,8 @@ export const ElectionEventType: EvotingInterface['eventTypes'][0] = {
   eventType: Election.EVENT_TYPE,
   eventName: STRINGS.election_event_name,
   navigationNames: {
-    createEvent: STRINGS.navigation_lao_events_create_election,
-    screenSingle: STRINGS.navigation_lao_events_view_single_election,
+    createEvent: STRINGS.events_create_election,
+    screenSingle: STRINGS.events_view_single_election,
   },
   ListItemComponent: ElectionListItem as FunctionComponent<{
     eventId: string;
