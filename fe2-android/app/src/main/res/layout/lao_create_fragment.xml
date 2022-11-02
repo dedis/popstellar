@@ -59,8 +59,7 @@
           android:gravity="center"
           android:backgroundTint="@color/gray"
           android:textColor="@color/white"
-          android:text="@string/button_cancel"
-          style="?android:attr/buttonBarButtonStyle" />
+          android:text="@string/button_cancel" />
 
         <Button
           android:id="@+id/button_create"
