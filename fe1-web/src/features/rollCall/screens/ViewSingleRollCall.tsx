@@ -124,7 +124,7 @@ const ViewSingleRollCall = () => {
         return (
           <>
             <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
-            <QRCode visibility value={popToken} />
+            <QRCode value={popToken} />
           </>
         );
 

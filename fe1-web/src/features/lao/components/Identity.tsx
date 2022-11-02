@@ -102,7 +102,7 @@ const Identity = () => {
           <Text style={[Typography.paragraph, Typography.important]}>
             {STRINGS.identity_qrcode_description}
           </Text>
-          <QRCode value={KeyPairStore.getPublicKey().toString()} visibility={!isAnonymous} />
+          <QRCode value={KeyPairStore.getPublicKey().toString()} visible={!isAnonymous} />
         </>
       )}
     </>
