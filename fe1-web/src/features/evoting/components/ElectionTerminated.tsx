@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Text } from 'react-native';
 
-import DateRange from 'core/components/DateRange';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { Election } from '../objects';
+import ElectionHeader from './ElectionHeader';
 import ElectionQuestions from './ElectionQuestions';
 
 /**
@@ -16,13 +16,7 @@ import ElectionQuestions from './ElectionQuestions';
 const ElectionTerminated = ({ election }: IPropTypes) => {
   return (
     <ScreenWrapper>
-      <Text style={Typography.paragraph}>
-        <Text style={[Typography.base, Typography.important]}>{election.name}</Text>
-        {'\n'}
-        <Text style={Typography.paragraph}>
-          <DateRange start={election.start.toDate()} end={election.end.toDate()} />
-        </Text>
-      </Text>
+      <ElectionHeader election={election} />
 
       <Text style={Typography.base}>{STRINGS.election_terminated_description}</Text>
 

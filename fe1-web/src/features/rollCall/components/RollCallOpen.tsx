@@ -11,7 +11,7 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { PublicKey } from 'core/objects';
+import { PublicKey, Timestamp } from 'core/objects';
 import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -88,9 +88,13 @@ const RollCallOpen = ({ rollCall, isOrganizer, scannedPopTokens }: IPropTypes) =
         <Text>{rollCall.location}</Text>
       </Text>
 
-      <Text style={Typography.paragraph}>
-        {STRINGS.general_ending} <ReactTimeago date={rollCall.proposedEnd.toDate()} />
-      </Text>
+      {Timestamp.EpochNow().before(rollCall.proposedEnd) ? (
+        <Text style={Typography.paragraph}>
+          {STRINGS.general_ending} <ReactTimeago date={rollCall.proposedEnd.toDate()} />
+        </Text>
+      ) : (
+        <Text style={Typography.paragraph}>{STRINGS.general_ending_now}</Text>
+      )}
 
       {rollCall.description && (
         <CollapsibleContainer title={STRINGS.roll_call_description} isInitiallyOpen={false}>

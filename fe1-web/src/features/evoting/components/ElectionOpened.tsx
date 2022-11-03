@@ -10,6 +10,7 @@ import { PoPIcon, PoPTextButton } from 'core/components';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { useActionSheet } from 'core/hooks/ActionSheet';
+import { Timestamp } from 'core/objects';
 import { Color, Icon, List, Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -83,9 +84,13 @@ const ElectionOpened = ({ election }: IPropTypes) => {
       <Text style={Typography.paragraph}>
         <Text style={[Typography.base, Typography.important]}>{election.name}</Text>
         {'\n'}
-        <Text>
-          {STRINGS.general_ending} <ReactTimeago date={election.end.toDate()} />
-        </Text>
+        {Timestamp.EpochNow().before(election.end) ? (
+          <Text>
+            {STRINGS.general_ending} <ReactTimeago date={election.end.toDate()} />
+          </Text>
+        ) : (
+          <Text>{STRINGS.general_ending_now}</Text>
+        )}
       </Text>
 
       <View style={[List.container, styles.questionList]}>
