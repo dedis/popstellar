@@ -33,10 +33,10 @@
         android:layout_width="@dimen/channel_qr_code_size"
         android:layout_height="@dimen/channel_qr_code_size"
         android:contentDescription="@string/qr_code_image_description"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"/>
 
       <ImageView
         android:id="@+id/qr_icon_close"
@@ -62,8 +62,10 @@
         <TextView
           android:id="@+id/lao_detail_title"
           style="@style/title_style"
+          android:maxWidth="@dimen/title_max_width"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:singleLine="false"
           android:text="@{view_model.getCurrentLaoName}"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"

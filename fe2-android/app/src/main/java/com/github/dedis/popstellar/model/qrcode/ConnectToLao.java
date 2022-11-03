@@ -1,9 +1,11 @@
 package com.github.dedis.popstellar.model.qrcode;
 
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.google.gson.Gson;
 
 /** Represent the data held in a QRCode used to connect to an LAO */
+@Immutable
 public class ConnectToLao {
 
   public final String server;

@@ -48,6 +48,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/scan_description" />
 
+      <LinearLayout
+        android:id="@+id/camera_permission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@id/qr_camera_preview"
+        app:layout_constraintEnd_toEndOf="@+id/qr_camera_preview"
+        app:layout_constraintStart_toStartOf="@+id/qr_camera_preview"
+        app:layout_constraintTop_toTopOf="@id/qr_camera_preview">
+
+        <Button
+          android:id="@+id/allow_camera_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@color/colorPrimaryDark"
+          android:text="@string/allow_camera_button"
+          android:textColor="@android:color/white"
+          android:textSize="@dimen/size_section_title" />
+
+        <TextView
+          style="@style/explication_text_style"
+          android:textColor="@color/white"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text"
+          android:text="@string/allow_camera_text" />
+
+      </LinearLayout>
+
       <EditText
         android:id="@+id/manual_add_edit_text"
         android:layout_width="wrap_content"

@@ -1,5 +1,6 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import * as Clipboard from 'expo-clipboard';
 import React, { useState } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
@@ -9,7 +10,7 @@ import ModalHeader from 'core/components/ModalHeader';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
-import { getNavigator } from 'core/platform/Navigator';
+import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -88,12 +89,17 @@ export const WalletSingleHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={rollCallTokenPublicKey} visibility />
+            <QRCode
+              value={ScannablePopToken.encodePopToken({ pop_token: rollCallTokenPublicKey })}
+              visibility
+            />
           </View>
 
-          <Text style={[Typography.small, styles.publicKey]}>{rollCallTokenPublicKey}</Text>
+          <Text style={[Typography.small, styles.publicKey]} selectable>
+            {rollCallTokenPublicKey}
+          </Text>
 
-          <PoPTextButton onPress={() => getNavigator().clipboard.writeText(rollCallTokenPublicKey)}>
+          <PoPTextButton onPress={() => Clipboard.setStringAsync(rollCallTokenPublicKey)}>
             {STRINGS.wallet_single_roll_call_copy_pop_token}
           </PoPTextButton>
         </ScrollView>

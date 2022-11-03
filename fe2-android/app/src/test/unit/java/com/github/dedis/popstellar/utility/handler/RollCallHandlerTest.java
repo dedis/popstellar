@@ -39,7 +39,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RollCallHandlerTest {
@@ -68,7 +67,7 @@ public class RollCallHandlerTest {
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
     lenient().when(keyManager.getValidPoPToken(any(), any())).thenReturn(POP_TOKEN);
 
-    when(messageSender.subscribe(any())).then(args -> Completable.complete());
+    lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepo = new LAORepository();
     DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);

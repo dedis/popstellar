@@ -1,7 +1,7 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useDispatch } from 'react-redux';
 
@@ -11,7 +11,8 @@ import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { Color, Icon, Spacing } from 'core/styles';
+import { Channel } from 'core/objects';
+import { Color, Icon, Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -52,6 +53,8 @@ const ConnectOpenScan = () => {
 
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const isProcessingScan = useRef(false);
 
   // re-enable scanner on focus events
   useEffect(() => {
@@ -70,17 +73,21 @@ const ConnectOpenScan = () => {
     });
   }, [navigation]);
 
-  const handleScan = (data: string | null) => {
-    if (!data) {
-      return;
-    }
-
-    console.log('read', data);
+  /**
+   * Checks if the passed connection data is valid
+   * @param data A stringified ConnectToLao object
+   */
+  const validateConnectionData = (
+    data: string,
+  ): { connectToLao: ConnectToLao; laoChannel: Channel } | false => {
+    const obj = JSON.parse(data);
 
     try {
-      const obj = JSON.parse(data);
-
       const connectToLao = ConnectToLao.fromJson(obj);
+
+      if (connectToLao.servers.length === 0) {
+        throw new Error('The scanned QR code did not contain any server address');
+      }
 
       // if we are already connected to a LAO, then only allow new connections
       // to servers for the same LAO id
@@ -93,22 +100,12 @@ const ConnectOpenScan = () => {
             duration: FOUR_SECONDS,
           },
         );
-        return;
-      }
 
-      setShowScanner(false);
-
-      console.info(
-        `Trying to connect to lao with id '${connectToLao.lao}' on '${connectToLao.servers}'.`,
-      );
-
-      // connect to the lao
-      const connections = connectToLao.servers.map((server) => getNetworkManager().connect(server));
-      if (connections.length === 0) {
-        return;
+        return false;
       }
 
       const laoChannel = getLaoChannel(connectToLao.lao);
+
       if (!laoChannel) {
         // invalid lao id
         toast.show(STRINGS.connect_scanning_fail, {
@@ -116,27 +113,88 @@ const ConnectOpenScan = () => {
           placement: 'top',
           duration: FOUR_SECONDS,
         });
-        return;
+
+        return false;
       }
 
-      const lao = getLaoById(connectToLao.lao);
+      return { connectToLao, laoChannel };
+    } catch (e) {
+      console.error(e);
 
-      let promise: Promise<void>;
+      toast.show(`The scanned QR code is invalid`, {
+        type: 'warning',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      });
 
-      if (lao) {
-        // subscribe to all previously subscribed to channels on the new connectionss
-        promise = resubscribeToLao(lao, dispatch, connections);
-      } else {
-        // subscribe to the lao channel on the new connections
-        promise = subscribeToChannel(connectToLao.lao, dispatch, laoChannel, connections);
-      }
+      return false;
+    }
+  };
 
-      promise.then(() => {
-        navigation.navigate(STRINGS.navigation_app_lao, {
-          screen: STRINGS.navigation_lao_home,
-        });
+  const connectToLaoAndSubscribe = async (connectToLao: ConnectToLao, laoChannel: Channel) => {
+    // connect to the lao
+    const connections = await Promise.all(
+      connectToLao.servers.map((server) => getNetworkManager().connect(server)),
+    );
+    if (connections.length !== connectToLao.servers.length) {
+      throw new Error(
+        `networkManager.connect() should either return a connection or throw an error.
+        ${connectToLao.servers.length} addresses were passed and ${connections.length} were received`,
+      );
+    }
+
+    const lao = getLaoById(connectToLao.lao);
+
+    if (lao) {
+      // subscribe to all previously subscribed to channels on the new connectionss
+      return resubscribeToLao(lao, dispatch, connections);
+    }
+
+    // subscribe to the lao channel on the new connections
+    return subscribeToChannel(connectToLao.lao, dispatch, laoChannel, connections);
+  };
+
+  const handleScan = async (data: string | null) => {
+    if (!data || isProcessingScan.current) {
+      return;
+    }
+
+    const validatedConnectionData = validateConnectionData(data);
+    if (!validatedConnectionData) {
+      return;
+    }
+
+    const { connectToLao, laoChannel } = validatedConnectionData;
+
+    try {
+      // prevent the function from being executed twice
+      // it is okay to only call this here (after the above checks) since
+      // javascript is single threaded and will not stop executing this function
+      // in the middle
+      isProcessingScan.current = true;
+      // update (and possibly disable) the UI while the scanned data is being processed
+      setIsConnecting(true);
+
+      console.info(
+        `Trying to connect to lao with id '${connectToLao.lao}' on '${connectToLao.servers}'.`,
+      );
+
+      await connectToLaoAndSubscribe(connectToLao, laoChannel);
+
+      isProcessingScan.current = false;
+      setIsConnecting(false);
+
+      navigation.navigate(STRINGS.navigation_app_lao, {
+        screen: STRINGS.navigation_lao_home,
       });
     } catch (error) {
+      // close already established connections
+      getNetworkManager().disconnectFromAll();
+
+      // allow scanning of new codes
+      isProcessingScan.current = false;
+      setIsConnecting(false);
+
       toast.show(STRINGS.connect_scanning_fail, {
         type: 'danger',
         placement: 'top',
@@ -144,6 +202,14 @@ const ConnectOpenScan = () => {
       });
     }
   };
+
+  if (isConnecting) {
+    return (
+      <QrCodeScanner showCamera={showScanner} handleScan={handleScan}>
+        <Text style={Typography.base}>{STRINGS.navigation_connect_processing}</Text>
+      </QrCodeScanner>
+    );
+  }
 
   return (
     <QrCodeScanner showCamera={showScanner} handleScan={handleScan}>

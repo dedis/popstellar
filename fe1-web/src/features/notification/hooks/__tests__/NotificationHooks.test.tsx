@@ -28,7 +28,7 @@ const mockStore = configureStore({ reducer: combineReducers(notificationReducer)
 
 const wrapper =
   (store: Store) =>
-  ({ children }: { children: React.ReactChildren }) =>
+  ({ children }: { children: React.ReactNode }) =>
     (
       <Provider store={store}>
         <FeatureContext.Provider value={contextValue}>{children}</FeatureContext.Provider>

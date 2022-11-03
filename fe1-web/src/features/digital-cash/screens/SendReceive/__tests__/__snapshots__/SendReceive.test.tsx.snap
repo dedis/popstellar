@@ -411,6 +411,7 @@ exports[`SendReceive renders correctly 1`] = `
                                   editable={true}
                                   onChangeText={[Function]}
                                   placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                  placeholderTextColor="#8E8E8E"
                                   style={
                                     Array [
                                       Object {
@@ -538,6 +539,7 @@ exports[`SendReceive renders correctly 1`] = `
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="42"
+                                placeholderTextColor="#8E8E8E"
                                 style={
                                   Array [
                                     Object {
@@ -1074,6 +1076,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                   editable={true}
                                   onChangeText={[Function]}
                                   placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                  placeholderTextColor="#8E8E8E"
                                   style={
                                     Array [
                                       Object {
@@ -1201,6 +1204,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                 editable={true}
                                 onChangeText={[Function]}
                                 placeholder="42"
+                                placeholderTextColor="#8E8E8E"
                                 style={
                                   Array [
                                     Object {
