@@ -5,7 +5,7 @@ import { Modal, StyleSheet, Text, View } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
-import { PoPIcon, QRCode } from 'core/components';
+import { PoPIcon } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -48,9 +48,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginLeft: Spacing.x1,
-  },
-  qrcodeContainer: {
-    marginVertical: Spacing.x05,
   },
 });
 
@@ -99,8 +96,6 @@ export const EventsScreenHeaderLeft = () => {
 export const EventsScreenHeaderRight = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const lao = LaoHooks.useCurrentLao();
-  const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
   const isOrganizer = useSelector(selectIsLaoOrganizer);
   const CreateEventButton = LaoHooks.useCreateEventButtonComponent();
 
@@ -133,13 +128,6 @@ export const EventsScreenHeaderRight = () => {
           <ModalHeader onClose={() => setModalVisible(!modalVisible)}>
             {STRINGS.lao_properties_modal_heading}
           </ModalHeader>
-          <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_qr_code_title}</Text>
-          <View style={styles.qrcodeContainer}>
-            <QRCode
-              value={encodeLaoConnection(lao.server_addresses, lao.id.toString())}
-              visibility
-            />
-          </View>
           <LaoProperties />
         </ScrollView>
       </Modal>

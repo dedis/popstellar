@@ -376,6 +376,37 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                               </Text>
                               
 
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                <Text>
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                   -
+                                  
+
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                </Text>
+                              </Text>
                             </Text>
                             <View
                               style={
@@ -5346,6 +5377,37 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                               </Text>
                               
 
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                <Text>
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                   -
+                                  
+
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                </Text>
+                              </Text>
                             </Text>
                             <Text
                               style={
@@ -7048,6 +7110,37 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                               </Text>
                               
 
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                <Text>
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                   -
+                                  
+
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                </Text>
+                              </Text>
                             </Text>
                             <View
                               style={
@@ -11880,6 +11973,37 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                               </Text>
                               
 
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                <Text>
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                   -
+                                  
+
+                                  <Text>
+                                    2022-05-28
+                                  </Text>
+                                   
+                                  <Text>
+                                    00:00:00
+                                  </Text>
+                                </Text>
+                              </Text>
                             </Text>
                             <Text
                               style={

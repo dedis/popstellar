@@ -92,7 +92,7 @@ export const WalletSingleHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={rollCallTokenPublicKey} visibility />
+            <QRCode value={rollCallTokenPublicKey} />
           </View>
 
           <Text style={[Typography.small, styles.publicKey]} selectable>

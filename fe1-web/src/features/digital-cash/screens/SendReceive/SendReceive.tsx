@@ -284,7 +284,7 @@ export const SendReceiveHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={publicKey} visibility />
+            <QRCode value={publicKey} />
           </View>
 
           <Text style={[Typography.small, styles.publicKey]} selectable>
