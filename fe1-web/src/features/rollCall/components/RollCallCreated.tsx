@@ -20,7 +20,7 @@ const RollCallCreated = ({ rollCall }: IPropTypes) => {
       </Text>
 
       <Text style={Typography.paragraph}>
-        <DateRange start={rollCall.proposedStart.toDate()} end={rollCall.proposedStart.toDate()} />
+        <DateRange start={rollCall.proposedStart.toDate()} end={rollCall.proposedEnd.toDate()} />
       </Text>
 
       {rollCall.description && (
