@@ -1315,10 +1315,19 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                                 <Text>
                                   2022-05-28
                                 </Text>
+                                 
+                                <Text>
+                                  00:00:00
+                                </Text>
+                                 -
                                 
 
                                 <Text>
-                                  00:00:00 - 00:00:00
+                                  2022-05-28
+                                </Text>
+                                 
+                                <Text>
+                                  00:00:00
                                 </Text>
                               </Text>
                             </Text>
@@ -3939,10 +3948,19 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                                 <Text>
                                   2022-05-28
                                 </Text>
+                                 
+                                <Text>
+                                  00:00:00
+                                </Text>
+                                 -
                                 
 
                                 <Text>
-                                  00:00:00 - 00:00:00
+                                  2022-05-28
+                                </Text>
+                                 
+                                <Text>
+                                  00:00:00
                                 </Text>
                               </Text>
                             </Text>
