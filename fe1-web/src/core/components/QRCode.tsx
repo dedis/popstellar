@@ -3,29 +3,35 @@ import React from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import QRCodeDisplay from 'react-qr-code';
 
-import { Border, Color, Spacing, Typography } from 'core/styles';
+import { Color, Typography } from 'core/styles';
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
     flexDirection: 'row',
     justifyContent: 'center',
   } as ViewStyle,
+  innerContainer: {
+    position: 'relative',
+  },
   overlay: {
+    /*
+      we are only allowed to cover < 30% (lets say 25% to be safe) for
+      error correction level H (https://www.qrcode.com/en/about/error_correction.html)
+      assuming the qr code is a square, this means we can cover a width of 50%
+      and a height of 50%. centering this gives us 25% margin on every side
+    */
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    top: '25%',
+    left: '25%',
+    right: '25%',
+    bottom: '25%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  overlayTextContainer: {
     backgroundColor: Color.accent,
-    borderRadius: Border.radius,
-    padding: Spacing.x05,
-  } as ViewStyle,
+    overflow: 'hidden',
+    borderRadius: 1000,
+  },
 });
 
 const qrCodeStyles = { height: 'auto', maxWidth: '300px', width: '100%' };
@@ -44,18 +50,18 @@ const QRCode = ({ value, visible, overlayText }: IPropTypes) => {
 
   return (
     <View style={styles.container}>
-      <QRCodeDisplay
-        value={value || ''}
-        size={256}
-        style={qrCodeStyles}
-        level={errorCorrectionLevel}
-        {...{
-          /* The typescript prop type for QRCodeDisplay is wrong */
-          viewBox: '0 0 256 256',
-        }}
-      />
-      <View style={styles.overlay}>
-        <View style={styles.overlayTextContainer}>
+      <View style={styles.innerContainer}>
+        <QRCodeDisplay
+          value={value || ''}
+          size={256}
+          style={qrCodeStyles}
+          level={errorCorrectionLevel}
+          {...{
+            /* The typescript prop type for QRCodeDisplay is wrong */
+            viewBox: '0 0 256 256',
+          }}
+        />
+        <View style={styles.overlay}>
           <Text style={[Typography.base, Typography.centered, Typography.negative]}>
             {overlayText}
           </Text>
