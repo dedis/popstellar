@@ -61,11 +61,13 @@ const QRCode = ({ value, visible, overlayText }: IPropTypes) => {
             viewBox: '0 0 256 256',
           }}
         />
-        <View style={styles.overlay}>
-          <Text style={[Typography.base, Typography.centered, Typography.negative]}>
-            {overlayText}
-          </Text>
-        </View>
+        {overlayText && (
+          <View style={styles.overlay}>
+            <Text style={[Typography.base, Typography.centered, Typography.negative]}>
+              {overlayText}
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
