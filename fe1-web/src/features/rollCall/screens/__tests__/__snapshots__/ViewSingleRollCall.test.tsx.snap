@@ -391,14 +391,25 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                 }
                               }
                             >
-                              Ended
-                               
-                              <time
-                                dateTime="2021-05-07T03:20:00.000Z"
-                                title="2021-05-07 03:20"
-                              >
-                                1 day from now
-                              </time>
+                              <Text>
+                                <Text>
+                                  2022-05-28
+                                </Text>
+                                 
+                                <Text>
+                                  00:00:00
+                                </Text>
+                                 -
+                                
+
+                                <Text>
+                                  2022-05-28
+                                </Text>
+                                 
+                                <Text>
+                                  00:00:00
+                                </Text>
+                              </Text>
                             </Text>
                             <View
                               style={
@@ -3024,14 +3035,25 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                 }
                               }
                             >
-                              Ended
-                               
-                              <time
-                                dateTime="2021-05-07T03:20:00.000Z"
-                                title="2021-05-07 03:20"
-                              >
-                                1 day from now
-                              </time>
+                              <Text>
+                                <Text>
+                                  2022-05-28
+                                </Text>
+                                 
+                                <Text>
+                                  00:00:00
+                                </Text>
+                                 -
+                                
+
+                                <Text>
+                                  2022-05-28
+                                </Text>
+                                 
+                                <Text>
+                                  00:00:00
+                                </Text>
+                              </Text>
                             </Text>
                             <View
                               style={
