@@ -53,6 +53,7 @@ const Home: FunctionComponent<unknown> = () => {
           navigation.navigate(STRINGS.navigation_home_connect, {
             screen: STRINGS.navigation_connect_launch,
           }),
+        buttonStyle: 'secondary',
       },
       {
         title: STRINGS.home_join_lao,
@@ -60,7 +61,6 @@ const Home: FunctionComponent<unknown> = () => {
           navigation.navigate(STRINGS.navigation_home_connect, {
             screen: STRINGS.navigation_connect_scan,
           }),
-        negative: true,
       },
     ],
     [navigation],
