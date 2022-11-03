@@ -26,21 +26,15 @@ const styles = StyleSheet.create({
 const Toolbar = ({ items }: IPropTypes) => {
   return (
     <View style={styles.toolbar}>
-      {items.map((item) =>
-        item.negative ? (
-          <PoPTextButton onPress={item.onPress} key={item.id || item.title} toolbar>
-            {item.title}
-          </PoPTextButton>
-        ) : (
-          <PoPTextButton
-            onPress={item.onPress}
-            key={item.id || item.title}
-            buttonStyle="secondary"
-            toolbar>
-            {item.title}
-          </PoPTextButton>
-        ),
-      )}
+      {items.map((item) => (
+        <PoPTextButton
+          onPress={item.onPress}
+          key={item.id || item.title}
+          buttonStyle={item.buttonStyle}
+          toolbar>
+          {item.title}
+        </PoPTextButton>
+      ))}
     </View>
   );
 };
@@ -50,7 +44,7 @@ export const toolbarItemsPropType = PropTypes.arrayOf(
     id: PropTypes.string,
     title: PropTypes.string.isRequired,
     onPress: PropTypes.func.isRequired,
-    negative: PropTypes.bool,
+    buttonStyle: PropTypes.oneOf<'primary' | 'secondary'>(['primary', 'secondary']),
   }).isRequired,
 );
 

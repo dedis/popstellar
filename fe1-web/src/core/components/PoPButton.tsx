@@ -6,6 +6,10 @@ import { Border, Color, Spacing } from '../styles';
 import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 const styles = StyleSheet.create({
+  toolbar: {
+    // make toolbar buttons uniform in size
+    width: 100,
+  } as ViewStyle,
   containerMargin: {
     marginBottom: Spacing.x1,
   } as ViewStyle,
@@ -49,7 +53,7 @@ const PoPButton = (props: IPropTypes) => {
 
   return (
     <PoPTouchableOpacity
-      containerStyle={toolbar ? undefined : styles.containerMargin}
+      containerStyle={toolbar ? styles.toolbar : styles.containerMargin}
       onPress={disabled ? undefined : onPress}
       testID={testID || undefined}>
       <View style={viewStyles}>{children}</View>
