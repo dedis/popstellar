@@ -44,7 +44,7 @@ const EventList = () => {
   }>(() => categorizeEventsByTime(Timestamp.EpochNow(), events));
 
   const [showCurrent, setShowCurrent] = useState(true);
-  const [showPast, setShowPast] = useState(false);
+  const [showPast, setShowPast] = useState(currentEvents.length === 0);
 
   useEffect(() => {
     const interval = setInterval(

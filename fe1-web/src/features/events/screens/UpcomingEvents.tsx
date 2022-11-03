@@ -1,6 +1,5 @@
-import { ListItem } from '@rneui/themed';
 import React, { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -34,34 +33,20 @@ const UpcomingEvents = () => {
     return () => clearInterval(interval);
   }, [events]);
 
-  const [showUpcoming, setShowUpcoming] = useState(true);
-
   return (
     <ScreenWrapper>
+      <Text style={[Typography.base, Typography.important]}>{STRINGS.events_list_upcoming}</Text>
       <View style={List.container}>
-        <ListItem.Accordion
-          containerStyle={List.accordionItem}
-          style={List.accordionItem}
-          content={
-            <ListItem.Content>
-              <ListItem.Title style={[Typography.base, Typography.important]}>
-                {STRINGS.events_list_upcoming}
-              </ListItem.Title>
-            </ListItem.Content>
-          }
-          isExpanded={showUpcoming}
-          onPress={() => setShowUpcoming(!showUpcoming)}>
-          {upcomingEvents.map((event, idx) => (
-            <EventListItem
-              key={event.id}
-              eventId={event.id}
-              eventType={event.eventType}
-              isFirstItem={idx === 0}
-              isLastItem={idx === upcomingEvents.length - 1}
-              testID={`upcoming_event_selector_${idx}`}
-            />
-          ))}
-        </ListItem.Accordion>
+        {upcomingEvents.map((event, idx) => (
+          <EventListItem
+            key={event.id}
+            eventId={event.id}
+            eventType={event.eventType}
+            isFirstItem={idx === 0}
+            isLastItem={idx === upcomingEvents.length - 1}
+            testID={`upcoming_event_selector_${idx}`}
+          />
+        ))}
       </View>
     </ScreenWrapper>
   );
