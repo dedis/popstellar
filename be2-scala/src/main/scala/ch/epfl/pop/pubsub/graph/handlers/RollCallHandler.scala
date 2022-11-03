@@ -44,7 +44,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        (_, message, somedata) <- checkParameters[CreateRollCall](rpcRequest, serverUnexpectedAnswer)
+        (_, message, somedata) <- extractParameters[CreateRollCall](rpcRequest, serverUnexpectedAnswer)
         data: CreateRollCall = somedata.get
         //message: Message = rpcRequest.getParamsMessage.get
         //data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
@@ -70,7 +70,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleOpenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        (_, message, _) <- checkParameters[OpenRollCall](rpcRequest, serverUnexpectedAnswer) // if it fails, throw an error
+        (_, message, _) <- extractParameters[OpenRollCall](rpcRequest, serverUnexpectedAnswer) // if it fails, throw an error
         //message: Message = rpcRequest.getParamsMessage.get // this line is not executed if the first fails
         channel: Channel = rpcRequest.getParamsChannel
         laoId: Hash = rpcRequest.extractLaoId
@@ -91,7 +91,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   def handleReopenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask = for {
-      (_, message, _) <- checkParameters[ReopenRollCall](rpcRequest, serverUnexpectedAnswer)
+      (_, message, _) <- extractParameters[ReopenRollCall](rpcRequest, serverUnexpectedAnswer)
       //message: Message = rpcRequest.getParamsMessage.get
       laoId: Hash = rpcRequest.extractLaoId
       _ <- dbAskWritePropagate(rpcRequest)
@@ -107,10 +107,10 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   def handleCloseRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val combined = for {
-      _ <- checkLaoChannel(rpcRequest, s"There is an issue with the data of the LAO")
+      _ <- extractLaoChannel(rpcRequest, s"There is an issue with the data of the LAO")
       laoChannel: Option[Hash] = rpcRequest.getParamsChannel.decodeChannelLaoId
       _ <- dbAskWritePropagate(rpcRequest)
-      (_, message, _) <- checkParameters[CloseRollCall](rpcRequest, serverUnexpectedAnswer)
+      (_, message, _) <- extractParameters[CloseRollCall](rpcRequest, serverUnexpectedAnswer)
       //message: Message = rpcRequest.getParamsMessage.get
       _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
       _ <- dbActor ? DbActor.WriteRollCallData(laoChannel.get, message)

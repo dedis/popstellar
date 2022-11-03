@@ -20,7 +20,7 @@ trait MessageHandler extends AskPatternConstants {
     */
   def dbActor: AskableActorRef = DbActor.getInstance
 
-  def checkParameters[T](rpcRequest: JsonRpcRequest, errorMsg: String): Future[(GraphMessage, Message, Option[T])] = {
+  def extractParameters[T](rpcRequest: JsonRpcRequest, errorMsg: String): Future[(GraphMessage, Message, Option[T])] = {
     rpcRequest.getParamsMessage match {
       case Some(_) => 
         val message: Message = rpcRequest.getParamsMessage.get
@@ -30,7 +30,7 @@ trait MessageHandler extends AskPatternConstants {
     }
   }
 
-  def checkLaoChannel(rpcRequest: JsonRpcRequest, errorMsg: String): Future[GraphMessage] = {
+  def extractLaoChannel(rpcRequest: JsonRpcRequest, errorMsg: String): Future[GraphMessage] = {
     rpcRequest.getParamsChannel.decodeChannelLaoId match {
       case Some(_) => Future(Left(rpcRequest))
       case _       => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)))
