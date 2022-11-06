@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import androidx.test.core.app.ActivityScenario;
-import androidx.test.core.app.ActivityScenario.ActivityAction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -22,7 +20,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.UITestUtils.*;
 import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.createFragmentId;
-import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.confirmButton;
+import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.walletId;
 import static org.hamcrest.Matchers.allOf;
 
 @HiltAndroidTest
@@ -57,6 +56,18 @@ public class HomeActivityTest {
     walletLogOutMenuItem().perform(click());
     assertThat(dialogPositiveButton(), allOf(withText("CONFIRM"), isDisplayed()));
     assertThat(dialogNegativeButton(), allOf(withText("CANCEL"), isDisplayed()));
+    dialogPositiveButton().performClick();
+    fragmentContainer().check(matches(withChild(withId(walletId()))));
+  }
+
+  @Test
+  public void clearDataTest() {
+    initializeWallet(activityScenarioRule);
+    openActionBarOverflowOrOptionsMenu(
+        InstrumentationRegistry.getInstrumentation().getTargetContext());
+    clearDataMenuItem().perform(click());
+    assertThat(dialogPositiveButton(), allOf(withText("YES"), isDisplayed()));
+    assertThat(dialogNegativeButton(), allOf(withText("NO"), isDisplayed()));
   }
 
   public static void initializeWallet(
@@ -67,7 +78,7 @@ public class HomeActivityTest {
             activity -> {
               HomeViewModel viewModel = HomeActivity.obtainViewModel(activity);
               if (!viewModel.isWalletSetUp()) {
-                  dialogNeutralButton().performClick();
+                dialogNeutralButton().performClick();
                 confirmButton().perform(click());
                 dialogPositiveButton().performClick();
               }
