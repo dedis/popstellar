@@ -1,15 +1,21 @@
 package com.github.dedis.popstellar.ui.home;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import android.app.Application;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.*;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -19,23 +25,23 @@ import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
-import java.security.GeneralSecurityException;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.inject.Inject;
 
 @HiltViewModel
 public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
@@ -138,6 +144,13 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
     if (!isWalletSetUp()) {
       Log.d(TAG, "Restoring wallet");
+      String[] seed = data.getWalletSeed();
+      Log.d(TAG, "seed is " + Arrays.toString(seed));
+      if (seed.length == 0) {
+        ErrorUtils.logAndShow(
+            getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
+        return;
+      }
       String appended = String.join(" ", data.getWalletSeed());
       try {
         importSeed(appended);
@@ -182,7 +195,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     setIsWalletSetUp(true);
   }
 
-  public void newSeed() throws GeneralSecurityException {
+  public void newSeed() {
     wallet.newSeed();
   }
 

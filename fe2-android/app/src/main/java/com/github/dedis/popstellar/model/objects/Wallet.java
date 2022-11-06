@@ -113,7 +113,7 @@ public class Wallet {
   }
 
   /**
-   * Method that allow import mnemonic seed.
+   * Method that allow initialize wallet with mnemonic seed.
    *
    * @param words a String.
    */
@@ -143,20 +143,20 @@ public class Wallet {
 
   /** Logout the wallet by replacing the seed by a random one */
   public void logout() {
+    Log.d(TAG, "Logged out of wallet");
     encryptedSeed = null;
+    encryptedMnemonic = null;
   }
 
-  /** Initialized the wallet with a new random seed */
-  public void newSeed() throws GeneralSecurityException {
+  /** Generates mnemonic seed but does not store it*/
+  public String newSeed() {
 
     StringBuilder sb = new StringBuilder();
     byte[] entropy = new byte[Words.TWELVE.byteLength()];
     new SecureRandom().nextBytes(entropy);
     new MnemonicGenerator(English.INSTANCE).createMnemonic(entropy, sb::append);
 
-    String mnemonicWords = sb.toString();
-    storeEncrypted(mnemonicWords);
-    Log.d(TAG, "Mnemonic words and seed were successfully generated");
+    return sb.toString();
   }
 
   private void storeEncrypted(String mnemonicWords) throws GeneralSecurityException {

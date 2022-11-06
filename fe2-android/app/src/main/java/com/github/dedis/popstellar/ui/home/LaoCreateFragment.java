@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.utility.Constants;
 
 import java.util.Objects;
 
@@ -76,8 +75,6 @@ public final class LaoCreateFragment extends Fragment {
 
           boolean areFieldsFilled = !laoName.isEmpty() && !serverUrl.isEmpty();
           binding.buttonCreate.setEnabled(areFieldsFilled);
-          binding.buttonCreate.setAlpha(
-              areFieldsFilled ? Constants.ENABLED_ALPHA : Constants.DISABLED_ALPHA);
         }
 
         @Override

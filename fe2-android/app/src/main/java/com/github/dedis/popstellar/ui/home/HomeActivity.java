@@ -61,6 +61,15 @@ public class HomeActivity extends AppCompatActivity {
     setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
 
     restoreStoredState();
+
+    if (!viewModel.isWalletSetUp()) {
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
+      new MaterialAlertDialogBuilder(this)
+          .setMessage(R.string.wallet_init_message)
+          .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+          .show();
+    }
   }
 
   private void handleTopAppBar() {
@@ -124,12 +133,29 @@ public class HomeActivity extends AppCompatActivity {
   //    return true;
   //  }
 
+  @Override
+  public void onBackPressed() {
+    Fragment fragment =
+        getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
+    if (!(fragment instanceof SeedWalletFragment)) {
+      setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new);
+    }
+  }
+
   private void handleWalletSettings() {
     if (viewModel.isWalletSetUp()) {
       new MaterialAlertDialogBuilder(this)
           .setTitle(R.string.logout_title)
           .setMessage(R.string.logout_message)
-          .setPositiveButton(R.string.confirm, (dialog, which) -> viewModel.logoutWallet())
+          .setPositiveButton(
+              R.string.confirm,
+              (dialog, which) -> {
+                viewModel.logoutWallet();
+                setCurrentFragment(
+                    getSupportFragmentManager(),
+                    R.id.fragment_seed_wallet,
+                    SeedWalletFragment::new);
+              })
           .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
           .show();
     } else {
@@ -153,7 +179,9 @@ public class HomeActivity extends AppCompatActivity {
                   .show();
 
               // Restart activity
-              recreate();
+              Intent intent = HomeActivity.newIntent(this);
+              startActivity(intent);
+              finish();
             })
         .setNegativeButton(R.string.no, null)
         .show();
