@@ -7,9 +7,9 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActor
 import spray.json._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 
@@ -37,49 +37,56 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
   private def generateSocialChannel(lao_id: Hash): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + lao_id + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
 
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    writeAndPropagate(rpcMessage) match {
-      case Left(_) =>
+    val ask =
+      for {
+        _ <- dbAskWritePropagate(rpcMessage)
+        _ <- checkLaoChannel(rpcMessage, "Server failed to extract LAO id for the broadcast")
+        _ <- checkParameters(rpcMessage, "Server failed to extract chirp id for the broadcast")
+      } yield ()
+
+    Await.ready(ask, duration).value match {
+      case Some(Success(_)) =>
         val channelChirp: Channel = rpcMessage.getParamsChannel
-        channelChirp.decodeChannelLaoId match {
-          case Some(lao_id) =>
-            val broadcastChannel: Channel = generateSocialChannel(lao_id)
-            rpcMessage.getParamsMessage match {
-              case Some(params) =>
-                // we can't get the message_id as a Base64Data, it is a Hash
-                val chirp_id: Hash = params.message_id
-                val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
-                val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, timestamp)
-                val broadcastData: Base64Data = Base64Data.encode(notifyAddChirp.toJson.toString)
-                Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastData, broadcastChannel), duration)
-              case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract chirp id for the broadcast", rpcMessage.id))
-            }
-          case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))
-        }
-      case error @ Right(_) => error
-      case _                => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
+        val lao_id: Hash = channelChirp.decodeChannelLaoId.get
+        val broadcastChannel: Channel = generateSocialChannel(lao_id)
+
+        val params: Message = rpcMessage.getParamsMessage.get
+        val chirp_id: Hash = params.message_id
+        val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
+        val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, timestamp)
+        val broadcastData: Base64Data = Base64Data.encode(notifyAddChirp.toJson.toString)
+
+        Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastData, broadcastChannel), duration)
+
+      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleAddChirp failed : ${ex.message}", rpcMessage.getId))
+      case _                                       => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.getId))
     }
   }
 
   def handleDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    writeAndPropagate(rpcMessage) match {
-      case Left(_) =>
+    val ask =
+      for {
+        _ <- dbAskWritePropagate(rpcMessage)
+        _ <- checkLaoChannel(rpcMessage, "Server failed to extract LAO id for the broadcast")
+        _ <- checkParameters(rpcMessage, "Server failed to extract chirp id for the broadcast")
+      } yield ()
+
+    Await.ready(ask, duration).value match {
+      case Some(Success(_)) =>
         val channelChirp: Channel = rpcMessage.getParamsChannel
-        channelChirp.decodeChannelLaoId match {
-          case Some(lao_id) =>
-            val broadcastChannel: Channel = generateSocialChannel(lao_id)
-            rpcMessage.getParamsMessage match {
-              case Some(params) =>
-                val chirp_id: Hash = params.message_id
-                val timestamp: Timestamp = params.decodedData.get.asInstanceOf[DeleteChirp].timestamp
-                val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, timestamp)
-                val broadcastData: Base64Data = Base64Data.encode(notifyDeleteChirp.toJson.toString)
-                Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastData, broadcastChannel), duration)
-              case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract chirp id for the broadcast", rpcMessage.id))
-            }
-          case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))
-        }
-      case error @ Right(_) => error
-      case _                => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
+        val lao_id: Hash = channelChirp.decodeChannelLaoId.get
+        val broadcastChannel: Channel = generateSocialChannel(lao_id)
+
+        val params: Message = rpcMessage.getParamsMessage.get
+        val chirp_id: Hash = params.message_id
+        val timestamp: Timestamp = params.decodedData.get.asInstanceOf[DeleteChirp].timestamp
+        val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, timestamp)
+        val broadcastData: Base64Data = Base64Data.encode(notifyDeleteChirp.toJson.toString)
+
+        Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastData, broadcastChannel), duration)
+
+      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleDeleteChirp failed : ${ex.message}", rpcMessage.getId))
+      case _                                       => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.getId))
     }
   }
 

@@ -34,6 +34,8 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
           system.log.info("Responding with a Nack")
 
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
+        case x =>
+          system.log.info(s"Received - error $x")
       }
     })
     system.actorOf(dbActorMock, "MockedDB-NACK")
