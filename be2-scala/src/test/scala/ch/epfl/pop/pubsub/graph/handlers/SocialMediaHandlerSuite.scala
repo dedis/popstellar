@@ -29,7 +29,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActor.WriteAndPropagate =>
+        case m @ DbActor.WriteAndPropagate(_, _) =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Nack")
 
