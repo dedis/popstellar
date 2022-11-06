@@ -7,6 +7,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActor
 import spray.json._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -42,9 +43,9 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        _ <- dbAskWritePropagate(rpcMessage)
         _ <- checkLaoChannel(rpcMessage, "Server failed to extract LAO id for the broadcast")
         _ <- checkParameters(rpcMessage, "Server failed to extract chirp id for the broadcast")
+        _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, rpcMessage.getParamsMessage.get)
       } yield ()
 
     Await.ready(ask, duration).value match {
@@ -69,9 +70,9 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        _ <- dbAskWritePropagate(rpcMessage)
         _ <- checkLaoChannel(rpcMessage, "Server failed to extract LAO id for the broadcast")
         _ <- checkParameters(rpcMessage, "Server failed to extract chirp id for the broadcast")
+        _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, rpcMessage.getParamsMessage.get)
       } yield ()
 
     Await.ready(ask, duration).value match {
@@ -103,11 +104,12 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
   }
 
   def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
-    writeAndPropagate(rpcMessage)
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
   }
 
   def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
-    writeAndPropagate(rpcMessage)
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
   }
-
 }
