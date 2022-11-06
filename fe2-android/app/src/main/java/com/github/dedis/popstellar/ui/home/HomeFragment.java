@@ -24,6 +24,7 @@ public final class HomeFragment extends Fragment {
   private HomeFragmentBinding binding;
   private HomeViewModel viewModel;
   private LAOListAdapter laoListAdapter;
+  private HomeActivity activity;
 
   public static HomeFragment newInstance() {
     return new HomeFragment();
@@ -37,6 +38,7 @@ public final class HomeFragment extends Fragment {
 
     binding = HomeFragmentBinding.inflate(inflater, container, false);
     binding.setLifecycleOwner(getActivity());
+    activity = (HomeActivity) getActivity();
     viewModel = HomeActivity.obtainViewModel(requireActivity());
     binding.setViewmodel(viewModel);
 
@@ -51,15 +53,21 @@ public final class HomeFragment extends Fragment {
     binding.homeCreateButton.setOnClickListener(
         v -> {
           Log.d(TAG, "Opening Create fragment");
-          HomeActivity.setCurrentFragment(
-              getParentFragmentManager(), R.id.fragment_lao_create, LaoCreateFragment::newInstance);
+          activity.setCurrentFragment(
+              getParentFragmentManager(),
+              R.id.fragment_lao_create,
+              LaoCreateFragment::newInstance,
+              R.string.lao_create_title);
         });
 
     binding.homeJoinButton.setOnClickListener(
         v -> {
           Log.d(TAG, "Opening join fragment");
-          HomeActivity.setCurrentFragment(
-              getParentFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
+          activity.setCurrentFragment(
+              getParentFragmentManager(),
+              R.id.fragment_qrcode,
+              QRCodeScanningFragment::new,
+              R.string.join_lao_title);
         });
   }
 

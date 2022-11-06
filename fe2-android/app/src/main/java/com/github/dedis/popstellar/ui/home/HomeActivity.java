@@ -10,6 +10,7 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
 import androidx.fragment.app.Fragment;
@@ -58,13 +59,20 @@ public class HomeActivity extends AppCompatActivity {
         });
 
     // At start of Activity we display home fragment
-    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+    setCurrentFragment(
+        getSupportFragmentManager(),
+        R.id.fragment_home,
+        HomeFragment::newInstance,
+        R.string.home_title);
 
     restoreStoredState();
 
     if (!viewModel.isWalletSetUp()) {
       setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
+          getSupportFragmentManager(),
+          R.id.fragment_seed_wallet,
+          SeedWalletFragment::newInstance,
+          R.string.wallet_setup);
       new MaterialAlertDialogBuilder(this)
           .setMessage(R.string.wallet_init_message)
           .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
@@ -135,10 +143,10 @@ public class HomeActivity extends AppCompatActivity {
 
   @Override
   public void onBackPressed() {
-    Fragment fragment =
-        getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
+    Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
     if (!(fragment instanceof SeedWalletFragment)) {
-      setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new);
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new, R.string.home_title);
     }
   }
 
@@ -154,13 +162,17 @@ public class HomeActivity extends AppCompatActivity {
                 setCurrentFragment(
                     getSupportFragmentManager(),
                     R.id.fragment_seed_wallet,
-                    SeedWalletFragment::new);
+                    SeedWalletFragment::new,
+                    R.string.wallet_setup);
               })
           .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
           .show();
     } else {
       setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::new);
+          getSupportFragmentManager(),
+          R.id.fragment_seed_wallet,
+          SeedWalletFragment::new,
+          R.string.wallet_setup);
     }
   }
 
@@ -208,9 +220,13 @@ public class HomeActivity extends AppCompatActivity {
    * @param id of the fragment
    * @param fragmentSupplier provides the fragment if it is missing
    */
-  public static void setCurrentFragment(
-      FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
+  public void setCurrentFragment(
+      FragmentManager manager,
+      @IdRes int id,
+      Supplier<Fragment> fragmentSupplier,
+      @StringRes int barTitleId) {
     ActivityUtils.setFragmentInContainer(
         manager, R.id.fragment_container_home, id, fragmentSupplier);
+    binding.topAppBar.setTitle(barTitleId);
   }
 }

@@ -34,6 +34,8 @@ public class SeedWalletFragment extends Fragment {
   public static final String TAG = SeedWalletFragment.class.getSimpleName();
   private WalletSeedFragmentBinding binding;
   private HomeViewModel viewModel;
+  private HomeActivity activity;
+
   @Inject Wallet wallet;
 
   public static SeedWalletFragment newInstance() {
@@ -48,16 +50,11 @@ public class SeedWalletFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+
     binding = WalletSeedFragmentBinding.inflate(inflater, container, false);
-    FragmentActivity activity = getActivity();
-    if (activity instanceof HomeActivity) {
-      viewModel = HomeActivity.obtainViewModel(activity);
-    } else {
-      throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
-    }
-
+    activity = (HomeActivity) getActivity();
+    viewModel = HomeActivity.obtainViewModel(activity);
     binding.setLifecycleOwner(activity);
-
     return binding.getRoot();
   }
 
@@ -82,8 +79,11 @@ public class SeedWalletFragment extends Fragment {
               (dialog, which) -> {
                 try {
                   viewModel.importSeed(binding.seedWalletText.getText().toString());
-                  HomeActivity.setCurrentFragment(
-                      getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+                  activity.setCurrentFragment(
+                      getParentFragmentManager(),
+                      R.id.fragment_home,
+                      HomeFragment::newInstance,
+                      R.string.home_title);
                 } catch (GeneralSecurityException | SeedValidationException e) {
                   Log.e(TAG, "Error importing key", e);
                   Toast.makeText(
@@ -130,8 +130,11 @@ public class SeedWalletFragment extends Fragment {
             return;
           }
           Toast.makeText(requireContext(), R.string.seed_import_success, Toast.LENGTH_SHORT).show();
-          HomeActivity.setCurrentFragment(
-              getParentFragmentManager(), R.id.fragment_home, HomeFragment::new);
+          activity.setCurrentFragment(
+              getParentFragmentManager(),
+              R.id.fragment_home,
+              HomeFragment::new,
+              R.string.home_title);
         });
   }
 }
