@@ -16,6 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 object WitnessHandler {
   final lazy val handlerInstance = new WitnessHandler(DbActor.getInstance)
+
   def handleWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleWitnessMessage(rpcMessage)
 }
 
