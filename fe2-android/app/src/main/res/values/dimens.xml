@@ -113,7 +113,6 @@
   <dimen name="bottom_navigation_view_height">56dp</dimen>
   <dimen name="card_view_elevation">1dp</dimen>
   <dimen name="lone_bottom_button_top_margin">30dp</dimen>
-  <integer name="min_number_lines_seed_text">2</integer>
 
   <!--  Witnessing dimensions -->
   <dimen name="tab_layout_top_margin">20dp</dimen>

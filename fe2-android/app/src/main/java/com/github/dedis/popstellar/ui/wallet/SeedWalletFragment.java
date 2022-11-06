@@ -22,7 +22,6 @@ import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 
 import java.security.GeneralSecurityException;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import javax.inject.Inject;
 
