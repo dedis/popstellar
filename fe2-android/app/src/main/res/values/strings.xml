@@ -6,6 +6,11 @@
   <string name="no">No</string>
   <string name="add_caps">ADD</string>
 
+  <!--  Roles -->
+  <string name="organizer">Organizer</string>
+  <string name="attendee">Attendee</string>
+  <string name="witness">Witness</string>
+
   <!-- bottom nav -->
   <string name="tab_identity">Identity</string>
   <string name="tab_social_media">Social Media</string>
@@ -15,8 +20,6 @@
 
   <!-- Home -->
   <string name="home_title">My LAOs</string>
-  <string name="attendee">Attendee</string>
-  <string name="organizer">Organizer</string>
   <string name="join">Join</string>
   <string name="create">Create</string>
   <string name="server_url">Server URL</string>
@@ -41,6 +44,10 @@
   <string name="future_header_title">Upcoming</string>
   <string name="past_header_title">Previous</string>
   <string name="qr_icon_title">Lao\'s QR code</string>
+  <string name="lao_properties_title">Lao Properties</string>
+  <string name="lao_properties_server_title">Connected to server</string>
+  <string name="lao_properties_identifier_title">Identifier</string>
+  <string name="role">Role</string>
 
   <!-- Abstract Event-->
   <string name="open">Open</string>

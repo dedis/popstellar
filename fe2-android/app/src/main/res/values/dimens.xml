@@ -40,7 +40,7 @@
   <dimen name="camera_close_button_end_margin">8dp</dimen>
 
   <!-- QR code -->
-  <dimen name="channel_qr_code_size">250dp</dimen>
+  <dimen name="channel_qr_code_size">200dp</dimen>
   <dimen name="pk_qr_code_size">400dp</dimen>
 
   <!-- Button -->
@@ -49,6 +49,10 @@
   <dimen name="standard_button_height">55dp</dimen>
   <dimen name="standard_button_width">105dp</dimen>
   <dimen name="qr_icon_side">40dp</dimen>
+
+  <!--  Lao Detail -->
+  <dimen name="properties_section_margin">16dp</dimen>
+  <dimen name="properties_title_margin">8dp</dimen>
 
   <!-- Event -->
   <dimen name="election_setup_margin_text">16dp</dimen>
@@ -122,7 +126,7 @@
   <dimen name="add_button_margin_end">8dp</dimen>
   <dimen name="qr_icon_start_margin">30dp</dimen>
   <dimen name="qr_close_icon_side">30dp</dimen>
-  <dimen name="qr_layout_margin">40dp</dimen>
+  <dimen name="qr_layout_margin">20dp</dimen>
   <dimen name="qr_layout_elevation">8dp</dimen>
   <dimen name="title_max_width">250dp</dimen>
 
@@ -163,7 +167,7 @@
   <dimen name="provenance_title_top_margin">12dp</dimen>
   <dimen name="transaction_title_top_margin">10dp</dimen>
 
-<!--  CardView dimensions -->
+  <!--  CardView dimensions -->
   <dimen name="padding_standard">8dp</dimen>
   <dimen name="corner_radius_standard">12dp</dimen>
   <dimen name="stroke_width">1dp</dimen>

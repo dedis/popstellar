@@ -1,10 +1,8 @@
 package com.github.dedis.popstellar.ui.detail;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,15 +16,12 @@ import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.*;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
-
-import net.glxn.qrgen.android.QRCode;
 
 import java.util.ArrayList;
 
@@ -118,7 +113,6 @@ public class LaoDetailFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    setUpQrCloseButton();
     setupEventListAdapter();
     setupEventListUpdates();
 
@@ -130,21 +124,6 @@ public class LaoDetailFragment extends Fragment {
               Log.d(TAG, "Got a list update for LAO events");
               mEventListViewEventAdapter.replaceList(events);
             });
-
-    mLaoDetailViewModel
-        .getCurrentLao()
-        .observe(
-            requireActivity(),
-            lao -> {
-              ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), lao.getId());
-              Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
-              mLaoDetailFragBinding.channelQrCode.setImageBitmap(myBitmap);
-            });
-  }
-
-  private void setUpQrCloseButton() {
-    ImageView closeButton = requireActivity().findViewById(R.id.qr_icon_close);
-    closeButton.setOnClickListener(view -> toggleProperties());
   }
 
   private void setupEventListAdapter() {
@@ -175,18 +154,5 @@ public class LaoDetailFragment extends Fragment {
               }
               mEventListViewEventAdapter.replaceList(events);
             });
-  }
-
-  private void toggleProperties() {
-    ConstraintLayout laoDetailQrLayout = mLaoDetailFragBinding.laoDetailQrLayout;
-    if (Boolean.FALSE.equals(mLaoDetailViewModel.getShowProperties().getValue())) {
-      LaoDetailAnimation.fadeIn(laoDetailQrLayout, 0.0f, 1.0f, 500);
-      laoDetailQrLayout.setVisibility(View.VISIBLE);
-      mLaoDetailViewModel.setShowProperties(true);
-    } else {
-      LaoDetailAnimation.fadeOut(laoDetailQrLayout, 1.0f, 0.0f, 500);
-      laoDetailQrLayout.setVisibility(View.GONE);
-      mLaoDetailViewModel.setShowProperties(false);
-    }
   }
 }

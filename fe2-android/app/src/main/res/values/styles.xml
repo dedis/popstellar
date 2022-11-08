@@ -46,6 +46,23 @@
     <item name="android:gravity">center</item>
   </style>
 
+  <style name="properties_section_title">
+    <item name="android:textSize">@dimen/size_section_title</item>
+    <item name="android:layout_marginTop">@dimen/properties_section_margin</item>
+    <item name="android:layout_marginHorizontal">22dp</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textColor">@color/black</item>
+    <item name="android:gravity">center</item>
+  </style>
+
+  <style name="properties_section_text">
+    <item name="android:textSize">@dimen/size_section_title</item>
+    <item name="android:layout_marginTop">@dimen/properties_title_margin</item>
+    <item name="android:layout_marginHorizontal">22dp</item>
+    <item name="android:textColor">@color/black</item>
+    <item name="android:gravity">center</item>
+  </style>
+
   <style name="style_border">
     <item name="android:textSize">@dimen/size_title</item>
     <item name="android:layout_margin">@dimen/margin_text</item>

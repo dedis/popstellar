@@ -2,12 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <androidx.coordinatorlayout.widget.CoordinatorLayout
+  <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <androidx.constraintlayout.widget.ConstraintLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
       android:id="@+id/lao_detail_app_bar_layout"
@@ -21,26 +18,152 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:menu="@menu/lao_detail_tool_menu"
-        app:navigationIcon="@drawable/ic_back_arrow"/>
+        app:navigationIcon="@drawable/ic_back_arrow" />
     </com.google.android.material.appbar.AppBarLayout>
 
-      <FrameLayout
-        android:id="@+id/fragment_container_lao_detail"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/lao_detail_nav_bar"
-        app:layout_constraintTop_toBottomOf="@+id/lao_detail_app_bar_layout" />
+    <FrameLayout
+      android:id="@+id/fragment_container_lao_detail"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toTopOf="@+id/lao_detail_nav_bar"
+      app:layout_constraintTop_toBottomOf="@+id/lao_detail_app_bar_layout" />
 
-      <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/lao_detail_nav_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
-        app:labelVisibilityMode="labeled"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/lao_detail_menu" />
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+      android:id="@+id/lao_detail_nav_bar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="?android:attr/windowBackground"
+      app:labelVisibilityMode="labeled"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:menu="@menu/lao_detail_menu" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-  </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <com.google.android.material.card.MaterialCardView
+      android:id="@+id/lao_detail_qr_layout"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_margin="@dimen/qr_layout_margin"
+      android:elevation="16dp"
+      android:visibility="gone"
+      app:cardCornerRadius="@dimen/corner_radius_standard"
+      app:layout_constraintBottom_toTopOf="@id/lao_detail_nav_bar"
+      app:layout_constraintTop_toBottomOf="@+id/lao_detail_app_bar_layout">
+
+      <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbarFadeDuration="0">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+          <TextView
+            android:id="@+id/properties_title"
+            style="@style/title_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lao_properties_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+          <ImageView
+            android:id="@+id/qr_icon_close"
+            android:layout_width="@dimen/qr_close_icon_side"
+            android:layout_height="@dimen/qr_close_icon_side"
+            android:layout_margin="@dimen/size_small"
+            android:contentDescription="@string/close_qr_description"
+            android:src="@drawable/ic_cancel_cross"
+            app:layout_constraintBottom_toBottomOf="@+id/properties_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/properties_title"
+            app:layout_constraintTop_toTopOf="@+id/properties_title" />
+
+          <ImageView
+            android:id="@+id/channel_qr_code"
+            android:layout_width="@dimen/channel_qr_code_size"
+            android:layout_height="@dimen/channel_qr_code_size"
+            android:contentDescription="@string/qr_code_image_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/properties_title" />
+
+          <TextView
+            android:id="@+id/lao_properties_name_title"
+            style="@style/properties_section_title"
+            android:layout_marginTop="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/identity_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/channel_qr_code" />
+
+          <TextView
+            android:id="@+id/lao_properties_name_text"
+            style="@style/properties_section_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_name_title" />
+
+          <TextView
+            android:id="@+id/lao_properties_role_title"
+            style="@style/properties_section_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/role"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_name_text" />
+
+          <TextView
+            android:id="@+id/lao_properties_role_text"
+            style="@style/properties_section_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_role_title" />
+
+          <TextView
+            android:id="@+id/lao_properties_server_title"
+            style="@style/properties_section_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lao_properties_server_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_role_text" />
+
+          <TextView
+            android:id="@+id/lao_properties_server_text"
+            style="@style/properties_section_text"
+            android:layout_width="match_parent"
+            android:gravity="start"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_server_title" />
+
+          <TextView
+            android:id="@+id/lao_properties_identifier_title"
+            style="@style/properties_section_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lao_properties_identifier_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_server_text" />
+
+          <TextView
+            android:id="@+id/lao_properties_identifier_text"
+            style="@style/properties_section_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lao_properties_identifier_title" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+      </ScrollView>
+    </com.google.android.material.card.MaterialCardView>
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

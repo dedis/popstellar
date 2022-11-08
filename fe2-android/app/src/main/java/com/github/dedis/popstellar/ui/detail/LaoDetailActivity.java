@@ -2,20 +2,22 @@ package com.github.dedis.popstellar.ui.detail;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.*;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailActivityBinding;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
@@ -26,10 +28,15 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.google.gson.Gson;
+
+import net.glxn.qrgen.android.QRCode;
 
 import java.security.GeneralSecurityException;
 import java.util.Objects;
 import java.util.function.Supplier;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -41,6 +48,9 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private LaoDetailViewModel viewModel;
   private LaoDetailActivityBinding binding;
 
+  @Inject Gson gson;
+  @Inject GlobalNetworkManager networkManager;
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -49,7 +59,8 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     navigationViewModel = viewModel = obtainViewModel(this);
 
     setupNavigationBar(findViewById(R.id.lao_detail_nav_bar));
-    handleTopAppBar();
+    setupTopAppBar();
+    setupProperties();
 
     viewModel.subscribeToLao(
         (String) Objects.requireNonNull(getIntent().getExtras()).get(Constants.LAO_ID_EXTRA));
@@ -74,7 +85,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     }
   }
 
-  private void handleTopAppBar() {
+  private void setupTopAppBar() {
     viewModel
         .getCurrentLao()
         .observe(this, laoView -> binding.laoTopAppBar.setTitle(laoView.getName()));
@@ -94,6 +105,57 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
             }
           }
         });
+    binding.laoTopAppBar.setOnMenuItemClickListener(
+        item -> {
+          if (item.getItemId() == R.id.lao_toolbar_qr_code) {
+            binding.laoDetailQrLayout.setVisibility(View.VISIBLE);
+            binding.laoDetailQrLayout.setAlpha(Constants.ENABLED_ALPHA);
+            binding.fragmentContainerLaoDetail.setAlpha(Constants.DISABLED_ALPHA);
+            binding.fragmentContainerLaoDetail.setEnabled(false);
+            return true;
+          }
+          return false;
+        });
+  }
+
+  private void setupProperties() {
+    binding.laoPropertiesIdentifierText.setText(viewModel.getPublicKey().getEncoded());
+    binding.laoPropertiesServerText.setText(networkManager.getCurrentUrl());
+
+    viewModel
+        .getCurrentLao()
+        .observe(
+            this,
+            laoView -> {
+              // Set the QR code
+              ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), laoView.getId());
+              Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
+              binding.channelQrCode.setImageBitmap(myBitmap);
+
+              binding.laoPropertiesNameText.setText(laoView.getName());
+              binding.laoPropertiesRoleText.setText(getRole(laoView));
+            });
+
+    binding.qrIconClose.setOnClickListener(
+        v -> {
+          LaoDetailAnimation.fadeOut(binding.laoDetailQrLayout, 1.0f, 0.0f, 500);
+          binding.fragmentContainerLaoDetail.setAlpha(Constants.ENABLED_ALPHA);
+          binding.fragmentContainerLaoDetail.setEnabled(true);
+        });
+  }
+
+  @StringRes
+  private int getRole(LaoView laoView) {
+    if (Boolean.TRUE.equals(viewModel.isOrganizer().getValue())) {
+      return R.string.organizer;
+    } else {
+      try {
+        boolean isWitness = Boolean.TRUE.equals(viewModel.isWitness().getValue());
+        return isWitness ? R.string.witness : R.string.attendee;
+      } catch (UnknownLaoException e) {
+        return 0;
+      }
+    }
   }
 
   @Override
