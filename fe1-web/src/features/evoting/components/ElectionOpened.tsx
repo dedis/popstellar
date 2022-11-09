@@ -106,7 +106,10 @@ const ElectionOpened = ({ election }: IPropTypes) => {
               </ListItem.Content>
             }
             onPress={() =>
-              setIsQuestionOpen({ ...isQuestionOpen, [question.id]: !isQuestionOpen[question.id] })
+              setIsQuestionOpen({
+                ...isQuestionOpen,
+                [question.id]: !isQuestionOpen[question.id],
+              })
             }
             isExpanded={!!isQuestionOpen[question.id]}>
             {question.ballot_options.map((ballotOption, ballotOptionIndex) => {
@@ -119,8 +122,19 @@ const ElectionOpened = ({ election }: IPropTypes) => {
                 listStyle.push(List.hiddenItem);
               }
 
+              const onPress = () => {
+                setSelectedBallots({
+                  ...selectedBallots,
+                  [questionIndex]: ballotOptionIndex,
+                });
+              };
+
               return (
-                <ListItem key={ballotOption} containerStyle={listStyle} style={listStyle}>
+                <ListItem
+                  key={ballotOption}
+                  containerStyle={listStyle}
+                  style={listStyle}
+                  onPress={onPress}>
                   <ListItem.CheckBox
                     testID={`questions_${questionIndex}_ballots_option_${ballotOptionIndex}_checkbox`}
                     size={Icon.size}
@@ -193,7 +207,12 @@ export const ElectionOpenedRightHeader = (props: RightHeaderIPropTypes) => {
     <PoPTouchableOpacity
       testID="election_opened_option_selector"
       onPress={() =>
-        showActionSheet([{ displayName: STRINGS.election_end, action: onTerminateElection }])
+        showActionSheet([
+          {
+            displayName: STRINGS.election_end,
+            action: onTerminateElection,
+          },
+        ])
       }>
       <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
     </PoPTouchableOpacity>

@@ -25,6 +25,7 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -41,10 +42,8 @@ public final class QRCodeScanningFragment extends Fragment {
   public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
   private static final int HANDLE_GMS = 9001;
 
-  @Inject
-  BarcodeDetector barcodeDetector;
-  @Inject
-  CameraProvider cameraProvider;
+  @Inject BarcodeDetector barcodeDetector;
+  @Inject CameraProvider cameraProvider;
 
   private CameraSource camera;
 
@@ -85,21 +84,21 @@ public final class QRCodeScanningFragment extends Fragment {
     } else {
       throw new IllegalArgumentException("cannot obtain view model");
     }
+    binding.setScanningAction(viewModel.getScanningAction());
+    binding.manualAddConfirm.setOnClickListener(
+        view -> {
+          String data = binding.manualAddEditText.getText().toString();
+          boolean success = viewModel.addManually(data);
+          if (success) {
+            binding.manualAddEditText.getText().clear();
+          }
+        });
 
     if (viewModel.getScanningAction() == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      binding.setScanningAction(ScanningAction.ADD_ROLL_CALL_ATTENDEE);
       binding.addAttendeeTotalText.setVisibility(View.VISIBLE);
       binding.addAttendeeNumberText.setVisibility(View.VISIBLE);
       binding.addAttendeeConfirm.setVisibility(View.VISIBLE);
 
-      binding.manualAddConfirm.setOnClickListener(
-          view -> {
-            String data = binding.manualAddEditText.getText().toString();
-            boolean success = viewModel.addManually(data);
-            if (success) {
-              binding.manualAddEditText.getText().clear();
-            }
-          });
       // Subscribe to " Nb of attendees"  event
       observeNbAttendeesEvent();
 
@@ -108,17 +107,11 @@ public final class QRCodeScanningFragment extends Fragment {
 
       // set up the listener for the button that closes the roll call
       setupCloseRollCallButton();
-    } else if (viewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
-      binding.setScanningAction(ScanningAction.ADD_WITNESS);
+    }
+
+    if (viewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
       // Subscribe to " Witness scan confirm " event
       observeWitnessScanConfirmEvent();
-    } else if (viewModel.getScanningAction() == ScanningAction.ADD_LAO_PARTICIPANT) {
-      binding.manualAddConfirm.setOnClickListener(
-          view -> {
-            String data = binding.manualAddEditText.getText().toString();
-            viewModel.addManually(data);
-          });
-      binding.setScanningAction(ScanningAction.ADD_LAO_PARTICIPANT);
     }
 
     mPreview = binding.qrCameraPreview;
@@ -126,8 +119,7 @@ public final class QRCodeScanningFragment extends Fragment {
     binding.setLifecycleOwner(activity);
     // TODO: consider removing coupling with QRFocusingProcessor
     barcodeDetector.setProcessor(
-        new QRFocusingProcessor(
-            barcodeDetector, BarcodeTracker.getInstance(viewModel)));
+        new QRFocusingProcessor(barcodeDetector, BarcodeTracker.getInstance(viewModel)));
     setupAllowCameraButton();
     return binding.getRoot();
   }
@@ -140,11 +132,12 @@ public final class QRCodeScanningFragment extends Fragment {
 
   private void setupAllowCameraButton() {
     // Create request permission launcher which will ask for permission
-    ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
-        new ActivityResultContracts.RequestPermission(),
-        requireActivity().getActivityResultRegistry(),
-        isGranted -> applyPermissionToView() // This is the callback of the permission granter
-    );
+    ActivityResultLauncher<String> requestPermissionLauncher =
+        registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            requireActivity().getActivityResultRegistry(),
+            isGranted -> applyPermissionToView() // This is the callback of the permission granter
+            );
 
     // The button launch the build launcher when is it clicked
     binding.allowCameraButton.setOnClickListener(
@@ -185,8 +178,9 @@ public final class QRCodeScanningFragment extends Fragment {
     // check that the device has play services available.
     int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(requireContext());
     if (code != ConnectionResult.SUCCESS) {
-      GoogleApiAvailability.getInstance()
-          .getErrorDialog(requireActivity(), code, HANDLE_GMS)
+      Objects.requireNonNull(
+              GoogleApiAvailability.getInstance()
+                  .getErrorDialog(requireActivity(), code, HANDLE_GMS))
           .show();
     }
     if (camera != null) {

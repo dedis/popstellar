@@ -332,8 +332,13 @@ and look at existing components.
 The root navigation in the application is handled in `core/navigation`.
 All other navigation is setup as part of the `features`.
 
-It should be noted that as of February 2022, the navigation in the application suffers from a few bad implementation choices.
-It would warrant being significantly cleaned.
+In order to get proper typing on the navigation, the whole layout stack, including the screens of the different features, is defined in `core/navigation/typing` even though this contradicts the general design with the separation into the different features. The reason for this is technical:
+
+Assume a feature `X` provides a screen `SX`. If some other feature `Y` wants to tell the navigator to navigate to `SX`, we have to decide whether we want to statically check the navigation calls. Assuming we do want these checks, the whole navigation stack needs to be defined statically in typescript. We can use imports as long as they are not between features (see the related Section below) but not function calls such as `configure()` that return the API of a feature: Typescript types are a construct that does not have a representation in javascript at runtime. Hence we cannot use dependency injection to inject typing information into features, this has to be fixed statically. Hence the use of a global definition of the navigation stack.
+
+Currently there is an app navigator that differentiates between three general application states: 1) Setup, 2) Not connected to a LAO and 3) Connected to a LAO. In each case a different screen is shown that possibly uses a subnavigator, i.e. in case 2) a stack navigator allowing the user to create LAOs or join existing ones or in case 3) a bottom tab navigation bar to navigate between the different LAO screens.
+
+Inside the LAO subnavigator, each tab contains another stack-based subnavigator that allows navigation between events or different wallet items.
 
 For more information on managing the navigation in the user interface,
 please make sure you have a solid understanding of [React Navigation](https://reactnavigation.org/).
