@@ -449,7 +449,15 @@ exports[`HomeNavigation renders correctly 1`] = `
                                           "paddingLeft": 16,
                                         }
                                       }
-                                    />
+                                    >
+                                      <View
+                                        style={
+                                          Object {
+                                            "width": 25,
+                                          }
+                                        }
+                                      />
+                                    </View>
                                     <View
                                       collapsable={false}
                                       pointerEvents="box-none"
@@ -458,7 +466,7 @@ exports[`HomeNavigation renders correctly 1`] = `
                                           "flexShrink": 1,
                                           "justifyContent": "center",
                                           "marginHorizontal": 16,
-                                          "maxWidth": 718,
+                                          "maxWidth": 590,
                                           "opacity": 1,
                                         }
                                       }
@@ -801,7 +809,6 @@ exports[`HomeNavigation renders correctly 1`] = `
                                                     onGestureHandlerStateChange={[Function]}
                                                     onHandlerStateChange={[Function]}
                                                     rippleColor={0}
-                                                    style={Object {}}
                                                     touchSoundDisabled={false}
                                                   >
                                                     <View
@@ -881,7 +888,6 @@ exports[`HomeNavigation renders correctly 1`] = `
                                                     onGestureHandlerStateChange={[Function]}
                                                     onHandlerStateChange={[Function]}
                                                     rippleColor={0}
-                                                    style={Object {}}
                                                     touchSoundDisabled={false}
                                                   >
                                                     <View

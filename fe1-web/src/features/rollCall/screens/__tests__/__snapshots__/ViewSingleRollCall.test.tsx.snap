@@ -3656,7 +3656,6 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -4172,7 +4171,6 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -4878,7 +4876,6 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -4958,7 +4955,6 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -5687,7 +5683,6 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -5767,7 +5762,6 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View

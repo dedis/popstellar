@@ -4999,7 +4999,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -9604,7 +9603,6 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -11733,7 +11731,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -11814,7 +11811,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
