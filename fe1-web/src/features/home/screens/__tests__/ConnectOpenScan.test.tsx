@@ -24,7 +24,7 @@ import { getLaoChannel, resubscribeToLao } from 'features/lao/functions';
 import { LaoHooks } from 'features/lao/hooks';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
-import ConnectOpenScan from '../ConnectOpenScan';
+import ConnectScan from '../ConnectScan';
 
 jest.mock('expo-camera');
 jest.mock('websocket');
@@ -82,6 +82,7 @@ const contextValue = {
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao,
+    forgetSeed: () => {},
   } as HomeReactContext,
 };
 
@@ -93,7 +94,7 @@ describe('ConnectOpenScan', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={ConnectOpenScan} />
+          <MockNavigator component={ConnectScan} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();
@@ -104,7 +105,7 @@ describe('ConnectOpenScan', () => {
     render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={ConnectOpenScan} />
+          <MockNavigator component={ConnectScan} />
         </FeatureContext.Provider>
       </Provider>,
     );

@@ -1,4 +1,3 @@
-import { HomeParamList } from 'core/navigation/typing/HomeParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { NavigationScreen, NavigationTabScreen } from 'core/navigation/typing/Screen';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
@@ -37,10 +36,6 @@ export namespace WalletFeature {
 
   export interface LaoScreen extends NavigationTabScreen {
     id: keyof LaoParamList;
-  }
-
-  export interface HomeScreen extends NavigationTabScreen {
-    id: keyof HomeParamList;
   }
 
   export interface WalletScreen extends NavigationScreen {

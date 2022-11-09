@@ -26,6 +26,7 @@ const contextValueEmpyList = {
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao: () => Promise.resolve(),
+    forgetSeed: () => {},
   } as HomeReactContext,
 };
 
@@ -43,6 +44,7 @@ const contextValue = {
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao: () => Promise.resolve(),
+    forgetSeed: () => {},
   } as HomeReactContext,
 };
 

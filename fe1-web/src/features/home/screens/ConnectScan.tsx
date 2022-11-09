@@ -5,42 +5,42 @@ import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useDispatch } from 'react-redux';
 
-import { PoPIcon } from 'core/components';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
+import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel } from 'core/objects';
-import { Color, Icon, Spacing, Typography } from 'core/styles';
+import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
 import { ConnectToLao } from '../objects';
 
-const styles = StyleSheet.create({
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  } as ViewStyle,
-  leftButtons: QrCodeScannerUIElementContainer,
-  rightButtons: QrCodeScannerUIElementContainer,
-  buttonMargin: {
-    marginBottom: Spacing.x05,
-  } as ViewStyle,
-});
-
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<ConnectParamList, typeof STRINGS.navigation_connect_scan>,
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_home>
 >;
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: Spacing.contentSpacing,
+  } as ViewStyle,
+  qrCode: {
+    opacity: 0.5,
+  } as ViewStyle,
+  enterManually: {} as ViewStyle,
+});
+
 /**
  * Starts a QR code scan
  */
-const ConnectOpenScan = () => {
+const ConnectScan = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const dispatch = useDispatch();
 
@@ -213,25 +213,16 @@ const ConnectOpenScan = () => {
 
   return (
     <QrCodeScanner showCamera={showScanner} handleScan={handleScan}>
-      <View style={styles.buttonContainer}>
-        <View>
-          <View style={styles.leftButtons}>
-            <PoPTouchableOpacity onPress={() => navigation.goBack()}>
-              <PoPIcon name="close" color={Color.accent} size={Icon.size} />
-            </PoPTouchableOpacity>
-          </View>
+      <View style={styles.container}>
+        <View />
+        <View style={styles.qrCode}>
+          <QrCodeScanOverlay width={300} height={300} />
         </View>
-        <View>
-          <View style={styles.rightButtons}>
+        <View style={styles.enterManually}>
+          <View style={QrCodeScannerUIElementContainer}>
             <PoPTouchableOpacity
-              style={styles.buttonMargin}
-              onPress={() => navigation.navigate(STRINGS.navigation_connect_launch)}
-              testID="launch_selector">
-              <PoPIcon name="create" color={Color.accent} size={Icon.size} />
-            </PoPTouchableOpacity>
-            <PoPTouchableOpacity
-              onPress={() => navigation.navigate(STRINGS.navigation_connect_confirm)}>
-              <PoPIcon name="code" color={Color.accent} size={Icon.size} />
+              onPress={() => navigation.push(STRINGS.navigation_connect_confirm)}>
+              <Text style={[Typography.base, Typography.accent]}>Enter Manually</Text>
             </PoPTouchableOpacity>
           </View>
         </View>
@@ -240,4 +231,4 @@ const ConnectOpenScan = () => {
   );
 };
 
-export default ConnectOpenScan;
+export default ConnectScan;

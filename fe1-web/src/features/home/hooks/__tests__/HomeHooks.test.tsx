@@ -20,12 +20,12 @@ const connectToTestLao = jest.fn();
 const LaoList = jest.fn();
 const hasSeed = jest.fn();
 const resubscribeToLao = jest.fn();
+const forgetSeed = jest.fn();
 const homeNavigationScreens: HomeFeature.HomeScreen[] = [
   {
     Component: LaoList,
     id: 'x' as HomeFeature.HomeScreen['id'],
     title: 'X',
-    order: 2,
   },
 ];
 
@@ -43,6 +43,7 @@ const contextValue = {
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao,
+    forgetSeed,
   } as HomeReactContext,
 };
 
@@ -117,6 +118,13 @@ describe('Home hooks', () => {
     it('should return the function for resubscribing to a lao', () => {
       const { result } = renderHook(() => HomeHooks.useResubscribeToLao(), { wrapper });
       expect(result.current).toEqual(resubscribeToLao);
+    });
+  });
+
+  describe('useForgetSeed', () => {
+    it('should return the function for forgetting the current seed', () => {
+      const { result } = renderHook(() => HomeHooks.useForgetSeed(), { wrapper });
+      expect(result.current).toEqual(forgetSeed);
     });
   });
 });

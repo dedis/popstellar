@@ -3,8 +3,8 @@ import React, { useMemo } from 'react';
 
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
+import { tabNavigationOptions } from 'core/navigation/ScreenOptions';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import NoCurrentLaoErrorBoundary from '../errors/NoCurrentLaoErrorBoundary';
@@ -55,18 +55,7 @@ const LaoNavigation: React.FC<unknown> = () => {
     <NoCurrentLaoErrorBoundary>
       <OrganizationTopTabNavigator.Navigator
         initialRouteName={STRINGS.navigation_lao_home}
-        screenOptions={{
-          tabBarActiveTintColor: Color.accent,
-          tabBarInactiveTintColor: Color.inactive,
-          headerLeftContainerStyle: {
-            paddingLeft: Spacing.contentSpacing,
-          },
-          headerRightContainerStyle: {
-            paddingRight: Spacing.contentSpacing,
-          },
-          headerTitleStyle: Typography.topNavigationHeading,
-          headerTitleAlign: 'center',
-        }}>
+        screenOptions={tabNavigationOptions}>
         {screens.map(
           ({
             id,

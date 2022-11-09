@@ -51,6 +51,11 @@ export interface HomeCompositionConfiguration {
     connections?: NetworkConnection[],
   ) => Promise<void>;
 
+  /**
+   * A function to forget the current seed
+   */
+  forgetSeed: () => void;
+
   /* action creators */
   /**
    * A function for adding a lao server address
@@ -105,6 +110,8 @@ export type HomeReactContext = Pick<
   | 'useCurrentLaoId'
   | 'useDisconnectFromLao'
   | 'getLaoById'
+  /* wallet */
+  | 'forgetSeed'
 >;
 
 /**

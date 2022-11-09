@@ -35,15 +35,15 @@ namespace STRINGS {
   export const navigation_app_lao = 'AppLao';
   export const navigation_app_wallet_create_seed = 'Wallet Seed Creation';
   export const navigation_app_wallet_insert_seed = 'Wallet Recovery';
-  export const navigation_app_connect = 'Connect';
 
   /* --- HomeNavigation Strings --- */
   export const navigation_home_home = 'Home';
-  export const navigation_home_mock_connect = 'MockConnect';
+  export const navigation_home_connect = 'Connect';
   export const navigation_home_wallet = 'Wallet';
 
   /* --- ConnectionNavigation Strings --- */
   export const navigation_connect_scan = 'Scanning';
+  export const navigation_connect_scan_title = "Scan a LAO's QR code";
   export const navigation_connect_processing = 'Processing scanned QR code';
   export const navigation_connect_launch = 'Launch';
   export const navigation_connect_launch_title = 'Launch a new LAO';
@@ -120,7 +120,12 @@ namespace STRINGS {
     'The POPStellar application builds on top of so-called local autonomous organizations (LAOs). ' +
     'Known LAOs will be listed here after you connected to it once.';
   export const home_setup_description_2 =
-    'You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code a LAO organizer provides to you.';
+    'You can connect to a LAO by tapping "Join LAO" in the bottom toolbar and then scanning the qr code a LAO organizer provides to you.';
+
+  export const home_create_lao = 'Create LAO';
+  export const home_join_lao = 'Join LAO';
+  export const home_logout = 'Logout';
+  export const home_logout_clear_data = 'Logout and clear data';
 
   /* --- Social Media Strings --- */
   export const button_publish = 'Publish';
@@ -367,7 +372,6 @@ namespace STRINGS {
 
   /* --- Wallet Home Screen Strings --- */
   export const wallet_home_roll_calls = 'Roll Calls';
-  export const wallet_home_logout = 'Logout';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
   export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
 
