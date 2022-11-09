@@ -12,6 +12,7 @@ import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { PublicKey, Timestamp } from 'core/objects';
+import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -109,7 +110,7 @@ const RollCallOpen = ({ rollCall, isOrganizer, scannedPopTokens }: IPropTypes) =
       {!isOrganizer && (
         <>
           <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
-          <QRCode value={popToken} />
+          <QRCode value={ScannablePopToken.encodePopToken({ pop_token: popToken })} />
         </>
       )}
 
