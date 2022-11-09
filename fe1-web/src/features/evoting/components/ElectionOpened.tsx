@@ -1,17 +1,15 @@
 import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
-import { PoPIcon, PoPTextButton } from 'core/components';
-import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { useActionSheet } from 'core/hooks/ActionSheet';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { Timestamp } from 'core/objects';
-import { Color, Icon, List, Spacing, Typography } from 'core/styles';
+import { Icon, List, Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -29,7 +27,7 @@ const styles = StyleSheet.create({
 /**
  * Screen component for opened elections
  */
-const ElectionOpened = ({ election }: IPropTypes) => {
+const ElectionOpened = ({ election, isOrganizer }: IPropTypes) => {
   const toast = useToast();
 
   const [selectedBallots, setSelectedBallots] = useState<SelectedBallots>({});
@@ -51,7 +49,21 @@ const ElectionOpened = ({ election }: IPropTypes) => {
 
   const canCastVote = !!(election.version !== ElectionVersion.SECRET_BALLOT || electionKey);
 
-  const onCastVote = () => {
+  const onTerminateElection = useCallback(() => {
+    console.log('Terminating Election');
+    terminateElection(election)
+      .then(() => console.log('Election Terminated'))
+      .catch((err) => {
+        console.error('Could not terminate election, error:', err);
+        toast.show(`Could not terminate election, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      });
+  }, [toast, election]);
+
+  const onCastVote = useCallback(() => {
     console.log('Casting Vote');
     castVote(election, electionKey || undefined, selectedBallots)
       .then(() => {
@@ -69,7 +81,33 @@ const ElectionOpened = ({ election }: IPropTypes) => {
           duration: FOUR_SECONDS,
         });
       });
-  };
+  }, [toast, election, electionKey, selectedBallots]);
+
+  const toolbarItems: ToolbarItem[] = useMemo(() => {
+    if (!isOrganizer) {
+      return [
+        {
+          id: 'election_vote_selector',
+          title: STRINGS.cast_vote,
+          onPress: onCastVote,
+        },
+      ] as ToolbarItem[];
+    }
+
+    return [
+      {
+        id: 'election_opened_option_selector',
+        title: STRINGS.election_end,
+        onPress: onTerminateElection,
+        buttonStyle: 'secondary',
+      },
+      {
+        id: 'election_vote_selector',
+        title: STRINGS.cast_vote,
+        onPress: onCastVote,
+      },
+    ] as ToolbarItem[];
+  }, [isOrganizer, onTerminateElection, onCastVote]);
 
   if (!canCastVote) {
     return (
@@ -80,7 +118,7 @@ const ElectionOpened = ({ election }: IPropTypes) => {
   }
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper toolbarItems={toolbarItems}>
       <Text style={Typography.paragraph}>
         <Text style={[Typography.base, Typography.important]}>{election.name}</Text>
         {'\n'}
@@ -92,6 +130,8 @@ const ElectionOpened = ({ election }: IPropTypes) => {
           <Text>{STRINGS.general_ending_now}</Text>
         )}
       </Text>
+
+      <ElectionVersionNotice election={election} />
 
       <View style={[List.container, styles.questionList]}>
         {election.questions.map((question, questionIndex) => (
@@ -155,79 +195,16 @@ const ElectionOpened = ({ election }: IPropTypes) => {
           </ListItem.Accordion>
         ))}
       </View>
-
-      <ElectionVersionNotice election={election} />
-
-      <PoPTextButton testID="election_vote_selector" onPress={onCastVote}>
-        {STRINGS.cast_vote}
-      </PoPTextButton>
     </ScreenWrapper>
   );
 };
 
 const propTypes = {
   election: PropTypes.instanceOf(Election).isRequired,
+  isOrganizer: PropTypes.bool.isRequired,
 };
 ElectionOpened.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default ElectionOpened;
-
-/**
- * Component that is rendered in the top right of the navigation bar for opened elections.
- * Allows for example to show icons that then trigger different actions
- */
-export const ElectionOpenedRightHeader = (props: RightHeaderIPropTypes) => {
-  const { election, isOrganizer } = props;
-
-  const showActionSheet = useActionSheet();
-  const toast = useToast();
-
-  const onTerminateElection = () => {
-    console.log('Terminating Election');
-    terminateElection(election)
-      .then(() => console.log('Election Terminated'))
-      .catch((err) => {
-        console.error('Could not terminate election, error:', err);
-        toast.show(`Could not terminate election, error: ${err}`, {
-          type: 'danger',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
-      });
-  };
-
-  // don't show a button for non-organizers
-  if (!isOrganizer) {
-    return null;
-  }
-
-  return (
-    <PoPTouchableOpacity
-      testID="election_opened_option_selector"
-      onPress={() =>
-        showActionSheet([
-          {
-            displayName: STRINGS.election_end,
-            action: onTerminateElection,
-          },
-        ])
-      }>
-      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
-    </PoPTouchableOpacity>
-  );
-};
-
-const rightHeaderPropTypes = {
-  election: PropTypes.instanceOf(Election).isRequired,
-  isOrganizer: PropTypes.bool,
-};
-
-type RightHeaderIPropTypes = PropTypes.InferProps<typeof rightHeaderPropTypes>;
-
-ElectionOpenedRightHeader.propTypes = rightHeaderPropTypes;
-
-ElectionOpenedRightHeader.defaultProps = {
-  isOrganizer: false,
-};

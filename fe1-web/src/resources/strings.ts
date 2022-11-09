@@ -229,7 +229,7 @@ namespace STRINGS {
 
   export const election_open = 'Open Election';
   export const election_add_question = 'Add Question';
-  export const election_end = 'End Election and Tally Votes';
+  export const election_end = 'Tally Votes';
   export const election_questions = 'Questions';
   export const election_results = 'Election Results';
 
