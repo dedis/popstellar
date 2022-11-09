@@ -26,7 +26,7 @@ jest.mock('core/platform/crypto/browser');
 
 const mockRCName = 'myRollCall';
 const mockRCLocation = 'location';
-const mockRCTimestampStart = new Timestamp(1620255600);
+const mockRCTimestampStart = new Timestamp(1620355600);
 const mockRCTimestampEnd = new Timestamp(1620357600);
 const mockRCAttendees = ['attendee1', 'attendee2'];
 
