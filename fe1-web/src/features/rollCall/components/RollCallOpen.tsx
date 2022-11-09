@@ -6,18 +6,21 @@ import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import ReactTimeago from 'react-timeago';
 
-import { CollapsibleContainer, QRCode } from 'core/components';
+import { CollapsibleContainer, PoPIcon, QRCode } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { PublicKey, Timestamp } from 'core/objects';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
-import { Typography } from 'core/styles';
+import { Color, Icon, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import { RollCallHooks } from '../hooks';
+import { requestCloseRollCall } from '../network';
 import { RollCall } from '../objects';
 import AttendeeList from './AttendeeList';
 
@@ -144,3 +147,73 @@ RollCallOpen.defaultProps = {
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default RollCallOpen;
+
+export const RollCallOpenRightHeader = ({
+  rollCall,
+  laoId,
+  isOrganizer,
+  attendeePopTokens,
+}: RightHeaderIPropTypes) => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
+  const showActionSheet = useActionSheet();
+  const toast = useToast();
+
+  // don't show a button for non-organizers
+  if (!isOrganizer) {
+    return null;
+  }
+
+  const onCloseRollCall = async () => {
+    // get the public key as strings from the existing rollcall
+    const previousAttendees = (rollCall.attendees || []).map((key) => key.valueOf());
+    // add the create a set of all attendees (takes care of deduplication)
+    const allAttendees = new Set([...previousAttendees, ...(attendeePopTokens || [])]);
+    // create PublicKey instances from the set of strings
+    const attendeesList = [...allAttendees].map((key: string) => new PublicKey(key));
+
+    if (!rollCall.idAlias) {
+      throw new Error('Trying to close a roll call that has no idAlias defined');
+    }
+
+    try {
+      await requestCloseRollCall(laoId, rollCall.idAlias, attendeesList);
+      navigation.navigate(STRINGS.navigation_lao_events_home);
+    } catch (err) {
+      console.log(err);
+      toast.show(STRINGS.roll_call_location_error_close_roll_call, {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      });
+    }
+  };
+
+  return (
+    <PoPTouchableOpacity
+      onPress={() =>
+        showActionSheet([
+          {
+            displayName: STRINGS.roll_call_close,
+            action: onCloseRollCall,
+          },
+        ])
+      }
+      testID="roll_call_options">
+      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
+    </PoPTouchableOpacity>
+  );
+};
+
+const rightHeaderPropTypes = {
+  rollCall: PropTypes.instanceOf(RollCall).isRequired,
+  laoId: PropTypes.instanceOf(Hash).isRequired,
+  isOrganizer: PropTypes.bool.isRequired,
+  attendeePopTokens: PropTypes.arrayOf(PropTypes.string.isRequired),
+};
+RollCallOpenRightHeader.propTypes = rightHeaderPropTypes;
+
+RollCallOpenRightHeader.defaultProps = {
+  attendeePopTokens: [],
+};
+
+type RightHeaderIPropTypes = PropTypes.InferProps<typeof rightHeaderPropTypes>;
