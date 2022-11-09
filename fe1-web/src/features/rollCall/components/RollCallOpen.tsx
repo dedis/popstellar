@@ -48,7 +48,7 @@ const RollCallOpen = ({ rollCall, isOrganizer, scannedPopTokens }: IPropTypes) =
           screen: STRINGS.navigation_lao_events_open_roll_call,
           params: {
             rollCallId: rollCall.id.toString(),
-            initialAttendeePopTokens: (scannedPopTokens || []).map((e) => e.valueOf()),
+            attendeePopTokens: (scannedPopTokens || []).map((e) => e.valueOf()),
           },
         },
       });

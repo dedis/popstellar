@@ -20,7 +20,7 @@ export type LaoEventsParamList = {
   [STRINGS.navigation_lao_events_view_single_roll_call]: ViewSingleParams;
   [STRINGS.navigation_lao_events_open_roll_call]: {
     rollCallId: string;
-    initialAttendeePopTokens: string[];
+    attendeePopTokens: string[];
   };
 
   [STRINGS.navigation_lao_events_create_election]: undefined;

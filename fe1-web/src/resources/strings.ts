@@ -14,6 +14,7 @@ namespace STRINGS {
   export const general_ending_now = 'Ending anytime now';
   export const general_ended = 'Ended';
   export const general_notice = 'Notice';
+  export const general_enter_manually = 'Enter Manually';
 
   export const general_closed = 'Closed';
   export const general_ongoing = 'Ongoing';
@@ -78,6 +79,7 @@ namespace STRINGS {
   export const navigation_lao_events_create_election = 'Create Election';
   export const navigation_lao_events_view_single_election = 'Single Election';
   export const navigation_lao_events_open_roll_call = 'Open Roll-Call';
+  export const navigation_lao_events_open_roll_call_title = 'Scan PoP Tokens';
 
   /* --- Wallet Navigation Strings --- */
   export const navigation_wallet_home = 'Wallet Home';
