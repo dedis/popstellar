@@ -415,11 +415,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={
-                              Object {
-                                "width": 100,
-                              }
-                            }
+                            style={Object {}}
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
@@ -431,11 +427,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={
-                                Object {
-                                  "width": 100,
-                                }
-                              }
+                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -503,11 +495,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={
-                              Object {
-                                "width": 100,
-                              }
-                            }
+                            style={Object {}}
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
@@ -519,11 +507,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={
-                                Object {
-                                  "width": 100,
-                                }
-                              }
+                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -1002,11 +986,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={
-                              Object {
-                                "width": 100,
-                              }
-                            }
+                            style={Object {}}
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
@@ -1018,11 +998,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={
-                                Object {
-                                  "width": 100,
-                                }
-                              }
+                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View
@@ -1090,11 +1066,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                             onResponderTerminate={[Function]}
                             onResponderTerminationRequest={[Function]}
                             onStartShouldSetResponder={[Function]}
-                            style={
-                              Object {
-                                "width": 100,
-                              }
-                            }
+                            style={Object {}}
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
@@ -1106,11 +1078,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                               onGestureHandlerStateChange={[Function]}
                               onHandlerStateChange={[Function]}
                               rippleColor={0}
-                              style={
-                                Object {
-                                  "width": 100,
-                                }
-                              }
+                              style={Object {}}
                               touchSoundDisabled={false}
                             >
                               <View

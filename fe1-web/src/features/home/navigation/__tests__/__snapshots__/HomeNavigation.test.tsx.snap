@@ -789,11 +789,7 @@ exports[`HomeNavigation renders correctly 1`] = `
                                                   onResponderTerminate={[Function]}
                                                   onResponderTerminationRequest={[Function]}
                                                   onStartShouldSetResponder={[Function]}
-                                                  style={
-                                                    Object {
-                                                      "width": 100,
-                                                    }
-                                                  }
+                                                  style={Object {}}
                                                 >
                                                   <RNGestureHandlerButton
                                                     collapsable={false}
@@ -805,11 +801,7 @@ exports[`HomeNavigation renders correctly 1`] = `
                                                     onGestureHandlerStateChange={[Function]}
                                                     onHandlerStateChange={[Function]}
                                                     rippleColor={0}
-                                                    style={
-                                                      Object {
-                                                        "width": 100,
-                                                      }
-                                                    }
+                                                    style={Object {}}
                                                     touchSoundDisabled={false}
                                                   >
                                                     <View
@@ -877,11 +869,7 @@ exports[`HomeNavigation renders correctly 1`] = `
                                                   onResponderTerminate={[Function]}
                                                   onResponderTerminationRequest={[Function]}
                                                   onStartShouldSetResponder={[Function]}
-                                                  style={
-                                                    Object {
-                                                      "width": 100,
-                                                    }
-                                                  }
+                                                  style={Object {}}
                                                 >
                                                   <RNGestureHandlerButton
                                                     collapsable={false}
@@ -893,11 +881,7 @@ exports[`HomeNavigation renders correctly 1`] = `
                                                     onGestureHandlerStateChange={[Function]}
                                                     onHandlerStateChange={[Function]}
                                                     rippleColor={0}
-                                                    style={
-                                                      Object {
-                                                        "width": 100,
-                                                      }
-                                                    }
+                                                    style={Object {}}
                                                     touchSoundDisabled={false}
                                                   >
                                                     <View

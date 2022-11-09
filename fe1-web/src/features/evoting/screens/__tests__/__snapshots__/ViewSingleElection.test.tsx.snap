@@ -276,7 +276,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={20}
+                handlerTag={22}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -335,7 +335,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={21}
+                          handlerTag={23}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -1721,7 +1721,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={13}
+                handlerTag={15}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1780,7 +1780,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={14}
+                          handlerTag={16}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -2814,6 +2814,20 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                             </View>
                           </View>
                         </RCTScrollView>
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "backgroundColor": "#fff",
+                              "borderColor": "rgb(216, 216, 216)",
+                              "borderTopWidth": 1,
+                              "flexDirection": "row",
+                              "justifyContent": "space-around",
+                              "paddingHorizontal": 16,
+                              "paddingVertical": 16,
+                            }
+                          }
+                        />
                       </View>
                     </View>
                   </View>
@@ -3104,7 +3118,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={23}
+                handlerTag={25}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -3163,7 +3177,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={24}
+                          handlerTag={26}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -3479,7 +3493,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={15}
+                handlerTag={17}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -3538,7 +3552,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={16}
+                          handlerTag={18}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -3583,6 +3597,72 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 Ending anytime now
                               </Text>
                             </Text>
+                            <View
+                              style={
+                                Array [
+                                  Object {
+                                    "alignItems": "center",
+                                    "borderRadius": 8,
+                                    "flexDirection": "row",
+                                    "marginBottom": 16,
+                                    "padding": 16,
+                                  },
+                                  Object {
+                                    "backgroundColor": "#ffa502",
+                                  },
+                                ]
+                              }
+                            >
+                              <View>
+                                {"name":"ios-warning","size":50,"color":"#fff"}
+                              </View>
+                              <View
+                                style={
+                                  Object {
+                                    "flex": 1,
+                                    "marginLeft": 16,
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "fontWeight": "bold",
+                                      },
+                                      Object {
+                                        "color": "#fff",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  Notice
+                                </Text>
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "color": "#fff",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  This is an open ballot election, your cast votes will be visible to all members of the LAO.
+                                </Text>
+                              </View>
+                            </View>
                             <View
                               style={
                                 Array [
@@ -4877,157 +4957,98 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 </View>
                               </View>
                             </View>
-                            <View
-                              style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "borderRadius": 8,
-                                    "flexDirection": "row",
-                                    "marginBottom": 16,
-                                    "padding": 16,
-                                  },
-                                  Object {
-                                    "backgroundColor": "#ffa502",
-                                  },
-                                ]
-                              }
-                            >
-                              <View>
-                                {"name":"ios-warning","size":50,"color":"#fff"}
-                              </View>
-                              <View
-                                style={
-                                  Object {
-                                    "flex": 1,
-                                    "marginLeft": 16,
-                                  }
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "fontWeight": "bold",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Notice
-                                </Text>
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  This is an open ballot election, your cast votes will be visible to all members of the LAO.
-                                </Text>
-                              </View>
-                            </View>
-                            <View
-                              accessible={true}
+                          </View>
+                        </RCTScrollView>
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "backgroundColor": "#fff",
+                              "borderColor": "rgb(216, 216, 216)",
+                              "borderTopWidth": 1,
+                              "flexDirection": "row",
+                              "justifyContent": "space-around",
+                              "paddingHorizontal": 16,
+                              "paddingVertical": 16,
+                            }
+                          }
+                        >
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={Object {}}
+                            testID="election_vote_selector"
+                          >
+                            <RNGestureHandlerButton
                               collapsable={false}
-                              focusable={true}
-                              onBlur={[Function]}
-                              onClick={[Function]}
-                              onFocus={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
-                              style={
-                                Object {
-                                  "marginBottom": 16,
-                                }
-                              }
-                              testID="election_vote_selector"
+                              exclusive={true}
+                              handlerTag={19}
+                              handlerType="NativeViewGestureHandler"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              style={Object {}}
+                              touchSoundDisabled={false}
                             >
-                              <RNGestureHandlerButton
+                              <View
+                                accessible={true}
                                 collapsable={false}
-                                exclusive={true}
-                                handlerTag={17}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
                                 style={
                                   Object {
-                                    "marginBottom": 16,
+                                    "opacity": 1,
                                   }
                                 }
-                                touchSoundDisabled={false}
                               >
                                 <View
-                                  accessible={true}
-                                  collapsable={false}
                                   style={
-                                    Object {
-                                      "opacity": 1,
-                                    }
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
+                                  <Text
                                     style={
                                       Array [
                                         Object {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
                                         },
                                       ]
                                     }
                                   >
-                                    <Text
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "textAlign": "center",
-                                          },
-                                          Object {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Cast Vote
-                                    </Text>
-                                  </View>
+                                    Cast Vote
+                                  </Text>
                                 </View>
-                              </RNGestureHandlerButton>
-                            </View>
+                              </View>
+                            </RNGestureHandlerButton>
                           </View>
-                        </RCTScrollView>
+                        </View>
                       </View>
                     </View>
                   </View>
@@ -5318,7 +5339,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={18}
+                handlerTag={20}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -5377,7 +5398,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={19}
+                          handlerTag={21}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -6713,7 +6734,7 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={22}
+                handlerTag={24}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -7051,7 +7072,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={8}
+                handlerTag={10}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -7110,7 +7131,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={9}
+                          handlerTag={11}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -9543,6 +9564,96 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                             </View>
                           </View>
                         </RCTScrollView>
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "backgroundColor": "#fff",
+                              "borderColor": "rgb(216, 216, 216)",
+                              "borderTopWidth": 1,
+                              "flexDirection": "row",
+                              "justifyContent": "space-around",
+                              "paddingHorizontal": 16,
+                              "paddingVertical": 16,
+                            }
+                          }
+                        >
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={Object {}}
+                            testID="election_option_selector"
+                          >
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              exclusive={true}
+                              handlerTag={3}
+                              handlerType="NativeViewGestureHandler"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              style={Object {}}
+                              touchSoundDisabled={false}
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                style={
+                                  Object {
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <View
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Open Election
+                                  </Text>
+                                </View>
+                              </View>
+                            </RNGestureHandlerButton>
+                          </View>
+                        </View>
                       </View>
                     </View>
                   </View>
@@ -9833,7 +9944,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={11}
+                handlerTag={13}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -9892,7 +10003,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={12}
+                          handlerTag={14}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -10208,7 +10319,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={3}
+                handlerTag={4}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -10267,7 +10378,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={4}
+                          handlerTag={5}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -10312,6 +10423,72 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 Ending anytime now
                               </Text>
                             </Text>
+                            <View
+                              style={
+                                Array [
+                                  Object {
+                                    "alignItems": "center",
+                                    "borderRadius": 8,
+                                    "flexDirection": "row",
+                                    "marginBottom": 16,
+                                    "padding": 16,
+                                  },
+                                  Object {
+                                    "backgroundColor": "#ffa502",
+                                  },
+                                ]
+                              }
+                            >
+                              <View>
+                                {"name":"ios-warning","size":50,"color":"#fff"}
+                              </View>
+                              <View
+                                style={
+                                  Object {
+                                    "flex": 1,
+                                    "marginLeft": 16,
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "fontWeight": "bold",
+                                      },
+                                      Object {
+                                        "color": "#fff",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  Notice
+                                </Text>
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "color": "#fff",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  This is an open ballot election, your cast votes will be visible to all members of the LAO.
+                                </Text>
+                              </View>
+                            </View>
                             <View
                               style={
                                 Array [
@@ -11514,157 +11691,179 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 </View>
                               </View>
                             </View>
-                            <View
-                              style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "borderRadius": 8,
-                                    "flexDirection": "row",
-                                    "marginBottom": 16,
-                                    "padding": 16,
-                                  },
-                                  Object {
-                                    "backgroundColor": "#ffa502",
-                                  },
-                                ]
-                              }
-                            >
-                              <View>
-                                {"name":"ios-warning","size":50,"color":"#fff"}
-                              </View>
-                              <View
-                                style={
-                                  Object {
-                                    "flex": 1,
-                                    "marginLeft": 16,
-                                  }
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "fontWeight": "bold",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Notice
-                                </Text>
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  This is an open ballot election, your cast votes will be visible to all members of the LAO.
-                                </Text>
-                              </View>
-                            </View>
-                            <View
-                              accessible={true}
+                          </View>
+                        </RCTScrollView>
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "backgroundColor": "#fff",
+                              "borderColor": "rgb(216, 216, 216)",
+                              "borderTopWidth": 1,
+                              "flexDirection": "row",
+                              "justifyContent": "space-around",
+                              "paddingHorizontal": 16,
+                              "paddingVertical": 16,
+                            }
+                          }
+                        >
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={Object {}}
+                            testID="election_opened_option_selector"
+                          >
+                            <RNGestureHandlerButton
                               collapsable={false}
-                              focusable={true}
-                              onBlur={[Function]}
-                              onClick={[Function]}
-                              onFocus={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
-                              style={
-                                Object {
-                                  "marginBottom": 16,
-                                }
-                              }
-                              testID="election_vote_selector"
+                              exclusive={true}
+                              handlerTag={6}
+                              handlerType="NativeViewGestureHandler"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              style={Object {}}
+                              touchSoundDisabled={false}
                             >
-                              <RNGestureHandlerButton
+                              <View
+                                accessible={true}
                                 collapsable={false}
-                                exclusive={true}
-                                handlerTag={5}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
                                 style={
                                   Object {
-                                    "marginBottom": 16,
+                                    "opacity": 1,
                                   }
                                 }
-                                touchSoundDisabled={false}
                               >
                                 <View
-                                  accessible={true}
-                                  collapsable={false}
                                   style={
-                                    Object {
-                                      "opacity": 1,
-                                    }
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                      Object {
+                                        "backgroundColor": "transparent",
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
+                                  <Text
                                     style={
                                       Array [
                                         Object {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                        Object {
+                                          "color": "#3742fa",
                                         },
                                       ]
                                     }
                                   >
-                                    <Text
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "textAlign": "center",
-                                          },
-                                          Object {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Cast Vote
-                                    </Text>
-                                  </View>
+                                    Tally Votes
+                                  </Text>
                                 </View>
-                              </RNGestureHandlerButton>
-                            </View>
+                              </View>
+                            </RNGestureHandlerButton>
                           </View>
-                        </RCTScrollView>
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={Object {}}
+                            testID="election_vote_selector"
+                          >
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              exclusive={true}
+                              handlerTag={7}
+                              handlerType="NativeViewGestureHandler"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              style={Object {}}
+                              touchSoundDisabled={false}
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                style={
+                                  Object {
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <View
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Cast Vote
+                                  </Text>
+                                </View>
+                              </View>
+                            </RNGestureHandlerButton>
+                          </View>
+                        </View>
                       </View>
                     </View>
                   </View>
@@ -11955,7 +12154,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={6}
+                handlerTag={8}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -12014,7 +12213,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={7}
+                          handlerTag={9}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -13350,7 +13549,7 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={10}
+                handlerTag={12}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}

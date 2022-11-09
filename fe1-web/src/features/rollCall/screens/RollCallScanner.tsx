@@ -167,7 +167,9 @@ const RollCallOpened = () => {
           </View>
           <View style={styles.enterManually}>
             <View style={QrCodeScannerUIElementContainer}>
-              <PoPTouchableOpacity onPress={() => setInputModalIsVisible(true)}>
+              <PoPTouchableOpacity
+                testID="roll_call_open_add_manually"
+                onPress={() => setInputModalIsVisible(true)}>
                 <Text style={[Typography.base, Typography.accent]}>
                   {STRINGS.general_enter_manually}
                 </Text>
@@ -196,13 +198,14 @@ export default RollCallOpened;
  * Custom back arrow that navigates back to the single roll call view
  * and brings along the scanned pop tokens as a parameter
  */
-const RollCallOpenedHeaderLeft = () => {
+export const RollCallOpenedHeaderLeft = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
   const { rollCallId, attendeePopTokens } = route.params;
 
   return (
     <PoPTouchableOpacity
+      testID="roll_call_open_stop_scanning"
       onPress={() =>
         navigation.navigate(STRINGS.navigation_lao_events_view_single_roll_call, {
           eventId: rollCallId,

@@ -510,93 +510,6 @@ exports[`CreateRollCall renders correctly 1`] = `
                                 value=""
                               />
                             </View>
-                            <View
-                              accessible={true}
-                              collapsable={false}
-                              focusable={true}
-                              onBlur={[Function]}
-                              onClick={[Function]}
-                              onFocus={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
-                              style={
-                                Object {
-                                  "marginBottom": 16,
-                                }
-                              }
-                              testID="roll_call_confirm_selector"
-                            >
-                              <RNGestureHandlerButton
-                                collapsable={false}
-                                exclusive={true}
-                                handlerTag={3}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
-                                style={
-                                  Object {
-                                    "marginBottom": 16,
-                                  }
-                                }
-                                touchSoundDisabled={false}
-                              >
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  style={
-                                    Object {
-                                      "opacity": 1,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    style={
-                                      Array [
-                                        Object {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
-                                        },
-                                        Object {
-                                          "backgroundColor": "#8E8E8E",
-                                          "borderColor": "#8E8E8E",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "textAlign": "center",
-                                          },
-                                          Object {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Confirm
-                                    </Text>
-                                  </View>
-                                </View>
-                              </RNGestureHandlerButton>
-                            </View>
                             <Modal
                               hardwareAccelerated={false}
                               transparent={true}
@@ -610,6 +523,100 @@ exports[`CreateRollCall renders correctly 1`] = `
                             />
                           </View>
                         </RCTScrollView>
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "backgroundColor": "#fff",
+                              "borderColor": "rgb(216, 216, 216)",
+                              "borderTopWidth": 1,
+                              "flexDirection": "row",
+                              "justifyContent": "space-around",
+                              "paddingHorizontal": 16,
+                              "paddingVertical": 16,
+                            }
+                          }
+                        >
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={Object {}}
+                            testID="roll_call_confirm_selector"
+                          >
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              exclusive={true}
+                              handlerTag={3}
+                              handlerType="NativeViewGestureHandler"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              style={Object {}}
+                              touchSoundDisabled={false}
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                style={
+                                  Object {
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <View
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                      Object {
+                                        "backgroundColor": "#8E8E8E",
+                                        "borderColor": "#8E8E8E",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Confirm
+                                  </Text>
+                                </View>
+                              </View>
+                            </RNGestureHandlerButton>
+                          </View>
+                        </View>
                       </View>
                     </View>
                   </View>

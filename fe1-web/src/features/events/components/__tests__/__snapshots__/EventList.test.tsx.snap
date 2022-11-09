@@ -907,10 +907,10 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   Starting
                                    
                                   <time
-                                    dateTime="2021-05-07T03:20:00.000Z"
-                                    title="2021-05-07 03:20"
+                                    dateTime="2021-05-05T23:00:00.000Z"
+                                    title="2021-05-05 23:00"
                                   >
-                                    1 day from now
+                                    0 seconds from now
                                   </time>
                                   ,
                                    
@@ -2115,10 +2115,10 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   Starting
                                    
                                   <time
-                                    dateTime="2021-05-07T03:20:00.000Z"
-                                    title="2021-05-07 03:20"
+                                    dateTime="2021-05-05T23:00:00.000Z"
+                                    title="2021-05-05 23:00"
                                   >
-                                    1 day from now
+                                    0 seconds from now
                                   </time>
                                   ,
                                    
