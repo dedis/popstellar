@@ -374,7 +374,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                               >
                                 Location
                               </Text>
-
+                              
 
                               <Text>
                                 location
@@ -408,10 +408,10 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                               >
                                 Ended at
                               </Text>
-
+                              
 
                               <Text>
-
+                                 
                               </Text>
                             </Text>
                             <View
@@ -1308,7 +1308,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                               >
                                 Location
                               </Text>
-
+                              
 
                               <Text>
                                 location
@@ -1342,11 +1342,11 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                               >
                                 Supposed to start
                               </Text>
-
+                              
 
                               <Text>
                                 2022-05-28
-
+                                 
                                 00:00:00
                               </Text>
                             </Text>
@@ -1378,11 +1378,11 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                               >
                                 Supposed to end
                               </Text>
-
+                              
 
                               <Text>
                                 2022-05-28
-
+                                 
                                 00:00:00
                               </Text>
                             </Text>
@@ -2280,7 +2280,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                               >
                                 Location
                               </Text>
-
+                              
 
                               <Text>
                                 location
@@ -3196,7 +3196,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                               >
                                 Location
                               </Text>
-
+                              
 
                               <Text>
                                 location
@@ -4112,7 +4112,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                               >
                                 Location
                               </Text>
-
+                              
 
                               <Text>
                                 location
@@ -4146,10 +4146,10 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                               >
                                 Ended at
                               </Text>
-
+                              
 
                               <Text>
-
+                                 
                               </Text>
                             </Text>
                             <View
@@ -5046,7 +5046,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                               >
                                 Location
                               </Text>
-
+                              
 
                               <Text>
                                 location
@@ -5080,11 +5080,11 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                               >
                                 Supposed to start
                               </Text>
-
+                              
 
                               <Text>
                                 2022-05-28
-
+                                 
                                 00:00:00
                               </Text>
                             </Text>
@@ -5116,11 +5116,11 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                               >
                                 Supposed to end
                               </Text>
-
+                              
 
                               <Text>
                                 2022-05-28
-
+                                 
                                 00:00:00
                               </Text>
                             </Text>
@@ -5995,7 +5995,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                               >
                                 Location
                               </Text>
-
+                              
 
                               <Text>
                                 location
@@ -6908,7 +6908,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                               >
                                 Location
                               </Text>
-
+                              
 
                               <Text>
                                 location
