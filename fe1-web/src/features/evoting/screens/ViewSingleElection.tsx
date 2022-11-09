@@ -75,7 +75,11 @@ export const ViewSingleElectionScreenHeader = () => {
     throw new Error(`Could not find a roll call with id ${electionId}`);
   }
 
-  return <Text style={Typography.topNavigationHeading}>{election.name}</Text>;
+  return (
+    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
+      {election.name}
+    </Text>
+  );
 };
 
 /**

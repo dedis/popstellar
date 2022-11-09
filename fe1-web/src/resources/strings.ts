@@ -9,7 +9,6 @@ namespace STRINGS {
   export const general_yes = 'Yes';
   export const general_no = 'No';
   export const general_add = 'Add';
-  export const general_done = 'Done';
   export const general_starting_at = 'Supposed to start';
   export const general_ending_at = 'Supposed to end';
   export const general_ended_at = 'Ended at';
@@ -103,12 +102,12 @@ namespace STRINGS {
   export const social_media_navigation_tab_attendee_list = 'List of attendees';
 
   /* --- Lao Strings --- */
-  export const lao_qr_code_title = 'Connection QR Code';
+  export const lao_properties_modal_heading = 'Lao Properties';
+  export const lao_qr_code_overlay = 'Scan to\nConnect';
+  export const lao_properties_name = 'Name';
   export const lao_properties_id = 'Identifier';
   export const lao_properties_your_role = 'Your role';
   export const lao_properties_current_connections = 'You are currently connected to';
-  export const lao_properties_add_additional_connection = 'Add connection';
-  export const lao_properties_disconnect = 'Disconnect';
   export const lao_no_current = 'You are currently not connected to any LAO';
   export const lao_error_disconnect = 'The connection to the LAO broke unexpectedly';
 

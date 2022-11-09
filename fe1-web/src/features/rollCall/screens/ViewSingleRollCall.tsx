@@ -124,7 +124,7 @@ const ViewSingleRollCall = () => {
         return (
           <>
             <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
-            <QRCode visibility value={popToken} />
+            <QRCode value={popToken} />
           </>
         );
 
@@ -224,7 +224,11 @@ export const ViewSingleRollCallScreenHeader = () => {
     throw new Error(`Could not find a roll call with id ${rollCallId}`);
   }
 
-  return <Text style={Typography.topNavigationHeading}>{rollCall.name}</Text>;
+  return (
+    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
+      {rollCall.name}
+    </Text>
+  );
 };
 
 /**

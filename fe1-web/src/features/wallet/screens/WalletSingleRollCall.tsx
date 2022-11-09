@@ -51,7 +51,11 @@ export const ViewSingleRollCallScreenHeader = () => {
   const route = useRoute<NavigationProps['route']>();
   const { rollCallName } = route.params;
 
-  return <Text style={Typography.topNavigationHeading}>{rollCallName}</Text>;
+  return (
+    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
+      {rollCallName}
+    </Text>
+  );
 };
 
 /**
@@ -88,7 +92,7 @@ export const WalletSingleHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={rollCallTokenPublicKey} visibility />
+            <QRCode value={rollCallTokenPublicKey} />
           </View>
 
           <Text style={[Typography.small, styles.publicKey]} selectable>

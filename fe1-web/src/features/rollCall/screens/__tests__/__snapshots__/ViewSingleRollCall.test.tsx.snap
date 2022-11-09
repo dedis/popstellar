@@ -2301,7 +2301,6 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                             </Text>
                             <qrcode
                               value=""
-                              visibility={true}
                             />
                             <View
                               style={
@@ -3218,7 +3217,6 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                             </Text>
                             <qrcode
                               value=""
-                              visibility={true}
                             />
                             <View
                               style={
