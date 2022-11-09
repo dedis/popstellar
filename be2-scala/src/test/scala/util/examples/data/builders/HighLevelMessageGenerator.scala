@@ -122,6 +122,11 @@ object HighLevelMessageGenerator {
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
           JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
+        case (ObjectType.ROLL_CALL, ActionType.REOPEN) =>
+          messageData = OpenRollCall.buildFromJson(payload)
+          params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+
         case (ObjectType.ROLL_CALL, ActionType.CLOSE) =>
           messageData = CloseRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)

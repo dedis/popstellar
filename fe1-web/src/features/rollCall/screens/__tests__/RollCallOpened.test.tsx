@@ -12,6 +12,7 @@ import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { PublicKey } from 'core/objects';
+import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 import {
@@ -127,8 +128,8 @@ describe('RollCallOpened', () => {
 
     await waitFor(async () => {
       // scan valid pop tokens
-      fakeQrReaderScan(mockPublicKey2.valueOf());
-      fakeQrReaderScan(mockPublicKey3.valueOf());
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
       // scan invalid pop tokens
       fakeQrReaderScan('123');
       fakeQrReaderScan('456');
@@ -202,8 +203,8 @@ describe('RollCallOpened', () => {
     const button = renderRollCallOpened().getByTestId('roll_call_open_stop_scanning');
 
     await waitFor(() => {
-      fakeQrReaderScan(mockPublicKey2.valueOf());
-      fakeQrReaderScan(mockPublicKey3.valueOf());
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
       expect(mockGenerateToken).toHaveBeenCalled();
     });
     fireEvent.press(button);

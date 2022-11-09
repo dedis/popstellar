@@ -1,21 +1,25 @@
 package com.github.dedis.popstellar.testutils;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.view.*;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 
 import org.hamcrest.*;
 import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.ShadowToast;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
@@ -106,6 +110,34 @@ public class UITestUtils {
         return parent instanceof ViewGroup
             && parentMatcher.matches(parent)
             && view.equals(((ViewGroup) parent).getChildAt(position));
+      }
+    };
+  }
+
+  /**
+   * Is used to type text in EditTexts programmatically. roboelectric sometimes des not write all
+   * characters like ":"
+   *
+   * @param text to type
+   * @return A ViewAction to be performed
+   */
+  public static ViewAction forceTypeText(String text) {
+    return new ViewAction() {
+      @Override
+      public String getDescription() {
+        return "force type text";
+      }
+
+      @Override
+      public Matcher<View> getConstraints() {
+        return allOf(isEnabled());
+      }
+
+      @Override
+      public void perform(UiController uiController, View view) {
+        EditText editText = (EditText) view;
+        editText.append(text);
+        uiController.loopMainThreadUntilIdle();
       }
     };
   }

@@ -2,6 +2,8 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import jsonRPC from 'protocol/jsonRPC.json';
 import connectToLaoSchema from 'protocol/qrcode/connect_to_lao.json';
+import mainPublicKeySchema from 'protocol/qrcode/main_public_key.json';
+import popTokenSchema from 'protocol/qrcode/pop_token.json';
 
 import answerSchema from 'core/network/validation/schemas/answerSchemas';
 import dataSchema from 'core/network/validation/schemas/dataSchemas';
@@ -15,6 +17,8 @@ addFormats(ajv);
 ajv.addSchema([
   jsonRPC,
   connectToLaoSchema,
+  mainPublicKeySchema,
+  popTokenSchema,
   ...answerSchema,
   ...dataSchema,
   ...messageSchema,
@@ -107,4 +111,10 @@ export function validateDataObject(
 
 export function validateConnectToLao(obj: any): ValidationResult {
   return validate(`${schemaPrefix}/qrcode/connect_to_lao.json`, obj);
+}
+export function validateScannableMainPublicKey(obj: any): ValidationResult {
+  return validate(`${schemaPrefix}/qrcode/main_public_key.json`, obj);
+}
+export function validateScannablePopToken(obj: any): ValidationResult {
+  return validate(`${schemaPrefix}/qrcode/pop_token.json`, obj);
 }
