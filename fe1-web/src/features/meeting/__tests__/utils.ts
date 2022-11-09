@@ -4,7 +4,7 @@ import { Timestamp } from 'core/objects';
 import { CreateMeeting } from '../network/messages';
 import { Meeting, MeetingState } from '../objects';
 
-const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
+const TIMESTAMP = new Timestamp(1610000000); // 7th of january 2021
 
 const mockMeetingName = 'a meeting';
 const mockMeetingLocation = 'on earth';
