@@ -1,20 +1,13 @@
 import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 
-import { PoPIcon, PoPTextButton } from 'core/components';
+import { PoPIcon } from 'core/components';
 import { PublicKey } from 'core/objects';
-import { Color, Icon, List, Spacing, Typography } from 'core/styles';
-import STRINGS from 'resources/strings';
+import { Color, Icon, List, Typography } from 'core/styles';
 
-const styles = StyleSheet.create({
-  attendeeAddButtonContainer: {
-    marginTop: Spacing.x1,
-  } as ViewStyle,
-});
-
-const AttendeeList = ({ popTokens, isOrganizer, onAddAttendee }: IPropTypes) => {
+const AttendeeList = ({ popTokens }: IPropTypes) => {
   return (
     <View style={List.container}>
       <ListItem.Accordion
@@ -44,11 +37,6 @@ const AttendeeList = ({ popTokens, isOrganizer, onAddAttendee }: IPropTypes) => 
           );
         })}
       </ListItem.Accordion>
-      {isOrganizer && onAddAttendee && (
-        <View style={styles.attendeeAddButtonContainer}>
-          <PoPTextButton onPress={onAddAttendee}>{STRINGS.roll_call_scan_attendees}</PoPTextButton>
-        </View>
-      )}
     </View>
   );
 };
@@ -58,15 +46,8 @@ const propTypes = {
     PropTypes.arrayOf(PropTypes.instanceOf(PublicKey).isRequired).isRequired,
     PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   ]).isRequired,
-  isOrganizer: PropTypes.bool,
-  onAddAttendee: PropTypes.func,
 };
 AttendeeList.propTypes = propTypes;
-
-AttendeeList.defaultProps = {
-  isOrganizer: false,
-  onAddAttendee: undefined,
-};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

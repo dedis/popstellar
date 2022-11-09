@@ -45,6 +45,7 @@ export const toolbarItemsPropType = PropTypes.arrayOf(
     title: PropTypes.string.isRequired,
     onPress: PropTypes.func.isRequired,
     buttonStyle: PropTypes.oneOf<'primary' | 'secondary'>(['primary', 'secondary']),
+    width: PropTypes.number,
   }).isRequired,
 );
 

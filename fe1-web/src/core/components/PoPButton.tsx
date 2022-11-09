@@ -8,7 +8,7 @@ import PoPTouchableOpacity from './PoPTouchableOpacity';
 const styles = StyleSheet.create({
   toolbar: {
     // make toolbar buttons uniform in size
-    width: 100,
+    // width: 100,
   } as ViewStyle,
   containerMargin: {
     marginBottom: Spacing.x1,

@@ -8,9 +8,9 @@ import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import STRINGS from 'resources/strings';
 
-import RollCallClosed, { RollCallClosedRightHeader } from '../components/RollCallClosed';
-import RollCallCreated, { RollCallCreatedRightHeader } from '../components/RollCallCreated';
-import RollCallOpen, { RollCallOpenRightHeader } from '../components/RollCallOpen';
+import RollCallClosed from '../components/RollCallClosed';
+import RollCallCreated from '../components/RollCallCreated';
+import RollCallOpen from '../components/RollCallOpen';
 import { RollCallHooks } from '../hooks';
 import { RollCallFeature } from '../interface';
 import { RollCallStatus } from '../objects';
@@ -38,20 +38,23 @@ const ViewSingleRollCall = () => {
     throw new Error(`Could not find a roll call with id ${rollCallId}`);
   }
 
+  const laoId = RollCallHooks.useAssertCurrentLaoId();
+
   switch (rollCall.status) {
     case RollCallStatus.CREATED:
-      return <RollCallCreated rollCall={rollCall} />;
+      return <RollCallCreated rollCall={rollCall} laoId={laoId} isOrganizer={isOrganizer} />;
     case RollCallStatus.REOPENED:
     case RollCallStatus.OPENED:
       return (
         <RollCallOpen
           rollCall={rollCall}
+          laoId={laoId}
           isOrganizer={isOrganizer}
           scannedPopTokens={attendeePopTokens}
         />
       );
     case RollCallStatus.CLOSED:
-      return <RollCallClosed rollCall={rollCall} />;
+      return <RollCallClosed rollCall={rollCall} laoId={laoId} isOrganizer={isOrganizer} />;
     default:
       console.warn('Roll Call Status was undefined in EventRollCall');
       return null;
@@ -60,50 +63,8 @@ const ViewSingleRollCall = () => {
 
 export default ViewSingleRollCall;
 
-/**
- * Component rendered in the top right of the navigation bar when looking at a roll call.
- * Allows the user to trigger different actions by pressing on the options button.
- */
-export const ViewSinglRollCallScreenRightHeader = () => {
-  const route = useRoute<NavigationProps['route']>();
-  const { eventId: rollCallId, isOrganizer, attendeePopTokens } = route.params;
-
-  const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
-  const rollCall = useSelector(selectRollCall);
-  if (!rollCall) {
-    throw new Error(`Could not find a roll call with id ${rollCallId}`);
-  }
-
-  const laoId = RollCallHooks.useAssertCurrentLaoId();
-
-  switch (rollCall.status) {
-    case RollCallStatus.CREATED:
-      return (
-        <RollCallCreatedRightHeader rollCall={rollCall} laoId={laoId} isOrganizer={isOrganizer} />
-      );
-    case RollCallStatus.REOPENED:
-    case RollCallStatus.OPENED:
-      return (
-        <RollCallOpenRightHeader
-          rollCall={rollCall}
-          laoId={laoId}
-          isOrganizer={isOrganizer}
-          attendeePopTokens={attendeePopTokens}
-        />
-      );
-    case RollCallStatus.CLOSED:
-      return (
-        <RollCallClosedRightHeader rollCall={rollCall} laoId={laoId} isOrganizer={isOrganizer} />
-      );
-    default:
-      console.warn('Roll Call Status was undefined in EventRollCall');
-      return null;
-  }
-};
-
 export const ViewSingleRollCallScreen: RollCallFeature.LaoEventScreen = {
   id: STRINGS.navigation_lao_events_view_single_roll_call,
   Component: ViewSingleRollCall,
   headerTitle: STRINGS.roll_call_event_name,
-  headerRight: ViewSinglRollCallScreenRightHeader,
 };
