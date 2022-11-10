@@ -81,8 +81,6 @@ namespace STRINGS {
   export const navigation_lao_events_view_single_roll_call = 'Single Roll-Call';
   export const navigation_lao_events_create_election = 'Create Election';
   export const navigation_lao_events_view_single_election = 'Single Election';
-  export const navigation_lao_events_open_roll_call = 'Open Roll-Call';
-  export const navigation_lao_events_open_roll_call_title = 'Scan PoP Tokens';
 
   /* --- Wallet Navigation Strings --- */
   export const navigation_wallet_home = 'Wallet Home';
@@ -337,6 +335,7 @@ namespace STRINGS {
   export const events_create_election = 'Create Election';
   export const events_view_single_election = 'Single Election';
   export const events_open_roll_call = 'Open Roll-Call';
+  export const events_open_roll_call_title = 'Scan PoP Tokens';
 
   /* --- Notification screen Strings --- */
   export const notification_unread_notifications = 'Notifications';
