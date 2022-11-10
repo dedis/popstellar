@@ -1,12 +1,9 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useToast } from 'react-native-toast-notifications';
 
-import { PoPIcon } from 'core/components';
-import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { useActionSheet } from 'core/hooks/ActionSheet';
-import { Color, Icon } from 'core/styles';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -18,35 +15,10 @@ import ElectionQuestions from './ElectionQuestions';
 /**
  * Screen component for not started elections
  */
-const ElectionNotStarted = ({ election }: IPropTypes) => {
-  return (
-    <ScreenWrapper>
-      <ElectionHeader election={election} />
-      <ElectionQuestions election={election} />
-    </ScreenWrapper>
-  );
-};
-
-const propTypes = {
-  election: PropTypes.instanceOf(Election).isRequired,
-};
-ElectionNotStarted.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
-
-export default ElectionNotStarted;
-
-/**
- * Component that is rendered in the top right of the navigation bar for not started elections.
- * Allows for example to show icons that then trigger different actions
- */
-export const ElectionNotStartedRightHeader = (props: RightHeaderIPropTypes) => {
-  const { election, isOrganizer } = props;
-
-  const showActionSheet = useActionSheet();
+const ElectionNotStarted = ({ election, isOrganizer }: IPropTypes) => {
   const toast = useToast();
 
-  const onOpenElection = () => {
+  const onOpenElection = useCallback(() => {
     console.log('Opening Election');
     openElection(election)
       .then(() => console.log('Election Opened'))
@@ -58,33 +30,32 @@ export const ElectionNotStartedRightHeader = (props: RightHeaderIPropTypes) => {
           duration: FOUR_SECONDS,
         });
       });
-  };
+  }, [toast, election]);
 
-  // don't show a button for non-organizers
-  if (!isOrganizer) {
-    return null;
-  }
+  const toolbarItems: ToolbarItem[] = useMemo(() => {
+    if (!isOrganizer) {
+      return [];
+    }
+
+    return [
+      { id: 'election_option_selector', title: STRINGS.election_open, onPress: onOpenElection },
+    ] as ToolbarItem[];
+  }, [isOrganizer, onOpenElection]);
 
   return (
-    <PoPTouchableOpacity
-      testID="election_option_selector"
-      onPress={() =>
-        showActionSheet([{ displayName: STRINGS.election_open, action: onOpenElection }])
-      }>
-      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
-    </PoPTouchableOpacity>
+    <ScreenWrapper toolbarItems={toolbarItems}>
+      <ElectionHeader election={election} />
+      <ElectionQuestions election={election} />
+    </ScreenWrapper>
   );
 };
 
-const rightHeaderPropTypes = {
+const propTypes = {
   election: PropTypes.instanceOf(Election).isRequired,
-  isOrganizer: PropTypes.bool,
+  isOrganizer: PropTypes.bool.isRequired,
 };
+ElectionNotStarted.propTypes = propTypes;
 
-type RightHeaderIPropTypes = PropTypes.InferProps<typeof rightHeaderPropTypes>;
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
-ElectionNotStartedRightHeader.propTypes = rightHeaderPropTypes;
-
-ElectionNotStartedRightHeader.defaultProps = {
-  isOrganizer: false,
-};
+export default ElectionNotStarted;

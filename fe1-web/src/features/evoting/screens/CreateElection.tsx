@@ -16,6 +16,7 @@ import {
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
@@ -183,8 +184,24 @@ const CreateElection = () => {
     );
   };
 
+  const toolbarItems: ToolbarItem[] = [
+    {
+      id: 'election_confirm_selector',
+      title: STRINGS.general_button_confirm,
+      disabled: !buttonsVisibility,
+      onPress: () =>
+        onConfirmEventCreation(
+          startTime,
+          endTime,
+          onCreateElection,
+          setModalStartIsVisible,
+          setModalEndIsVisible,
+        ),
+    },
+  ];
+
   return (
-    <ScreenWrapper>
+    <ScreenWrapper toolbarItems={toolbarItems}>
       <Text style={[Typography.paragraph, Typography.important]}>
         {STRINGS.election_create_name}
       </Text>
@@ -265,21 +282,6 @@ const CreateElection = () => {
 
       <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
         {STRINGS.election_create_add_question}
-      </PoPTextButton>
-
-      <PoPTextButton
-        onPress={() =>
-          onConfirmEventCreation(
-            startTime,
-            endTime,
-            onCreateElection,
-            setModalStartIsVisible,
-            setModalEndIsVisible,
-          )
-        }
-        testID="election_confirm_selector"
-        disabled={!buttonsVisibility}>
-        {STRINGS.general_button_confirm}
       </PoPTextButton>
 
       <DismissModal

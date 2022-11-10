@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useMemo } from 'react';
 
+import { makeNavigationPadding } from 'core/components/NavigationPadding';
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
@@ -31,7 +32,7 @@ const HomeNavigation = () => {
         title: STRINGS.home_navigation_title,
         Component: Home,
         tabBarIcon: makeIcon('list'),
-        headerLeft: () => null,
+        headerLeft: makeNavigationPadding(1),
         headerRight: HomeHeaderRight,
       } as HomeFeature.HomeScreen,
       {
@@ -57,7 +58,7 @@ const HomeNavigation = () => {
               title: title || id,
               headerTitle: headerTitle || title || id,
               headerLeft: headerLeft || stackScreenOptionsWithHeader.headerLeft,
-              headerRight,
+              headerRight: headerRight || stackScreenOptionsWithHeader.headerRight,
               headerShown,
             }}
           />

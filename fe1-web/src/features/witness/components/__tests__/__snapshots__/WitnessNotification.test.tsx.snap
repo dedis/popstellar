@@ -35,11 +35,6 @@ exports[`WitnessNotification renders correctly 1`] = `
       onGestureHandlerStateChange={[Function]}
       onHandlerStateChange={[Function]}
       rippleColor={0}
-      style={
-        Object {
-          "marginBottom": 16,
-        }
-      }
       touchSoundDisabled={false}
     >
       <View
@@ -117,11 +112,6 @@ exports[`WitnessNotification renders correctly 1`] = `
       onGestureHandlerStateChange={[Function]}
       onHandlerStateChange={[Function]}
       rippleColor={0}
-      style={
-        Object {
-          "marginBottom": 16,
-        }
-      }
       touchSoundDisabled={false}
     >
       <View

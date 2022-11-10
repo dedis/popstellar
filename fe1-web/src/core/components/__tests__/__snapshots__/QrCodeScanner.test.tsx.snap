@@ -213,10 +213,17 @@ exports[`QrCodeScanner renders correctly when not showing camera with children 1
 `;
 
 exports[`QrCodeScanner renders correctly when permissions are denied 1`] = `
-Array [
+<View
+  style={
+    Object {
+      "flex": 1,
+      "overflow": "hidden",
+    }
+  }
+>
   <Text>
     Permissions for camera denied
-  </Text>,
+  </Text>
   <View
     style={
       Object {
@@ -224,15 +231,22 @@ Array [
         "flex": 1,
       }
     }
-  />,
-]
+  />
+</View>
 `;
 
 exports[`QrCodeScanner renders correctly when requesting for permissions 1`] = `
-Array [
+<View
+  style={
+    Object {
+      "flex": 1,
+      "overflow": "hidden",
+    }
+  }
+>
   <Text>
     Requesting camera permissions
-  </Text>,
+  </Text>
   <View
     style={
       Object {
@@ -240,8 +254,8 @@ Array [
         "flex": 1,
       }
     }
-  />,
-]
+  />
+</View>
 `;
 
 exports[`QrCodeScanner renders correctly when showing camera 1`] = `

@@ -15,6 +15,7 @@ namespace STRINGS {
   export const general_ending_now = 'Ending anytime now';
   export const general_ended = 'Ended';
   export const general_notice = 'Notice';
+  export const general_enter_manually = 'Enter Manually';
 
   export const general_closed = 'Closed';
   export const general_ongoing = 'Ongoing';
@@ -73,6 +74,15 @@ namespace STRINGS {
 
   export const navigation_lao_events_upcoming = 'Upcoming Events';
   export const navigation_lao_events_upcoming_title = 'Upcoming Events';
+  export const navigation_lao_events_create_event = 'Create Event';
+  export const navigation_lao_events_create_meeting = 'Create Meeting';
+  export const navigation_lao_events_view_single_meeting = 'Single Meeting';
+  export const navigation_lao_events_create_roll_call = 'Create Roll-Call';
+  export const navigation_lao_events_view_single_roll_call = 'Single Roll-Call';
+  export const navigation_lao_events_create_election = 'Create Election';
+  export const navigation_lao_events_view_single_election = 'Single Election';
+  export const navigation_lao_events_open_roll_call = 'Open Roll-Call';
+  export const navigation_lao_events_open_roll_call_title = 'Scan PoP Tokens';
 
   /* --- Wallet Navigation Strings --- */
   export const navigation_wallet_home = 'Wallet Home';
@@ -222,7 +232,7 @@ namespace STRINGS {
 
   export const election_open = 'Open Election';
   export const election_add_question = 'Add Question';
-  export const election_end = 'End Election and Tally Votes';
+  export const election_end = 'Tally Votes';
   export const election_questions = 'Questions';
   export const election_results = 'Election Results';
 

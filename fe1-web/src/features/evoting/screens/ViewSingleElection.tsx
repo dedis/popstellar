@@ -8,10 +8,8 @@ import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import STRINGS from 'resources/strings';
 
-import ElectionNotStarted, {
-  ElectionNotStartedRightHeader,
-} from '../components/ElectionNotStarted';
-import ElectionOpened, { ElectionOpenedRightHeader } from '../components/ElectionOpened';
+import ElectionNotStarted from '../components/ElectionNotStarted';
+import ElectionOpened from '../components/ElectionOpened';
 import ElectionResult from '../components/ElectionResult';
 import ElectionTerminated from '../components/ElectionTerminated';
 import { EvotingFeature } from '../interface';
@@ -31,7 +29,7 @@ type NavigationProps = CompositeScreenProps<
  */
 const ViewSingleElection = () => {
   const route = useRoute<NavigationProps['route']>();
-  const { eventId: electionId } = route.params;
+  const { eventId: electionId, isOrganizer } = route.params;
 
   const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
   const election = useSelector(selectElection);
@@ -42,9 +40,9 @@ const ViewSingleElection = () => {
 
   switch (election.electionStatus) {
     case ElectionStatus.NOT_STARTED:
-      return <ElectionNotStarted election={election} />;
+      return <ElectionNotStarted election={election} isOrganizer={isOrganizer} />;
     case ElectionStatus.OPENED:
-      return <ElectionOpened election={election} />;
+      return <ElectionOpened election={election} isOrganizer={isOrganizer} />;
     case ElectionStatus.TERMINATED:
       return <ElectionTerminated election={election} />;
     case ElectionStatus.RESULT:
@@ -57,38 +55,8 @@ const ViewSingleElection = () => {
 
 export default ViewSingleElection;
 
-/**
- * Component rendered in the top right of the navigation bar when looking at a
- * single election. Allows the user to perform certaina actions such as opening
- * or closing an election.
- */
-export const ViewSingleElectionScreenRightHeader = () => {
-  const route = useRoute<NavigationProps['route']>();
-  const { eventId: electionId, isOrganizer } = route.params;
-
-  const selectionElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
-  const election = useSelector(selectionElection);
-  if (!election) {
-    throw new Error(`Could not find an election with id ${electionId}`);
-  }
-
-  switch (election.electionStatus) {
-    case ElectionStatus.NOT_STARTED:
-      return <ElectionNotStartedRightHeader election={election} isOrganizer={isOrganizer} />;
-    case ElectionStatus.OPENED:
-      return <ElectionOpenedRightHeader election={election} isOrganizer={isOrganizer} />;
-    case ElectionStatus.TERMINATED:
-      return null;
-    case ElectionStatus.RESULT:
-      return null;
-    default:
-      throw new Error(`Unkown election status '${election.electionStatus}'`);
-  }
-};
-
 export const ViewSingleElectionScreen: EvotingFeature.LaoEventScreen = {
   id: STRINGS.events_view_single_election,
   Component: ViewSingleElection,
   headerTitle: STRINGS.election_event_name,
-  headerRight: ViewSingleElectionScreenRightHeader,
 };
