@@ -38,6 +38,7 @@ export function configureFeatures() {
     /* lao: hooks */
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     /* EVENTS FEATURE */
     /* events: action creators */
     addEvent: eventConfiguration.actionCreators.addEvent,

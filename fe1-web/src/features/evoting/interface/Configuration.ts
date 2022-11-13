@@ -42,6 +42,12 @@ export interface EvotingConfiguration {
   useAssertCurrentLaoId: () => Hash;
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
+
+  /**
    * Given a lao id, this function returns the public key of the backend
    * @param laoId The id of the lao
    * @returns The public key of the lao organizer's backend or undefined if none is known
@@ -90,6 +96,7 @@ export type EvotingReactContext = Pick<
   /* lao */
   | 'useCurrentLao'
   | 'useAssertCurrentLaoId'
+  | 'useConnectedToLao'
   | 'useLaoOrganizerBackendPublicKey'
   /* events */
   | 'getEventById'
