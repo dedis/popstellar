@@ -16,6 +16,7 @@ namespace STRINGS {
   export const general_ended = 'Ended';
   export const general_notice = 'Notice';
   export const general_enter_manually = 'Enter Manually';
+  export const general_offline = 'Offline';
 
   export const general_closed = 'Closed';
   export const general_ongoing = 'Ongoing';
