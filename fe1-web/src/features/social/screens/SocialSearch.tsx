@@ -11,7 +11,6 @@ import STRINGS from 'resources/strings';
 import { UserListItem } from '../components';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
-import { SocialFeature } from '../interface';
 
 /**
  * Component that will be used to allow users to search for other users or topics.
@@ -74,8 +73,3 @@ const SocialSearch = () => {
 };
 
 export default SocialSearch;
-
-export const SocialSearchScreen: SocialFeature.SocialScreen = {
-  id: STRINGS.social_media_navigation_tab_search,
-  Component: SocialSearch,
-};

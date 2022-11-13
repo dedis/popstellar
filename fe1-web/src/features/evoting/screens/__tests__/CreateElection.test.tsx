@@ -18,6 +18,7 @@ const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
     getCurrentLao: () => mockLao,
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     useCurrentLao: () => mockLao,
     useCurrentLaoId: () => mockLaoIdHash,
     addEvent: () => mockReduxAction,

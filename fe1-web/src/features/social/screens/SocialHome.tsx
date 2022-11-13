@@ -11,7 +11,6 @@ import STRINGS from 'resources/strings';
 import { ChirpCard, TextInputChirp } from '../components';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
-import { SocialFeature } from '../interface';
 import { requestAddChirp } from '../network/SocialMessageApi';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsList } from '../reducer';
@@ -95,8 +94,3 @@ const SocialHome = () => {
 };
 
 export default SocialHome;
-
-export const SocialHomeScreen: SocialFeature.SocialScreen = {
-  id: STRINGS.social_media_navigation_tab_home,
-  Component: SocialHome,
-};

@@ -1,34 +1,29 @@
-import { SOCIAL_FEATURE_IDENTIFIER, SocialConfiguration } from './interface';
-import * as navigation from './navigation';
+import { SOCIAL_FEATURE_IDENTIFIER, SocialConfiguration, SocialInterface } from './interface';
+import { SocialMediaScreen } from './navigation/SocialMediaNavigation';
 import { configureNetwork } from './network';
 import { socialReducer } from './reducer';
-import {
-  SocialFollowsScreen,
-  SocialHomeScreen,
-  SocialProfileScreen,
-  SocialSearchScreen,
-  SocialUserProfileScreen,
-} from './screens';
 
 /**
  * Configures the social media feature
  *
  * @param configuration - The configuration object for the social media feature
  */
-export function configure(configuration: SocialConfiguration) {
+export function configure(configuration: SocialConfiguration): SocialInterface {
   const {
     useCurrentLao,
     getCurrentLao,
     useCurrentLaoId,
     getCurrentLaoId,
+    useConnectedToLao,
     useRollCallById,
     useRollCallAttendeesById,
     generateToken,
   } = configuration;
+
   configureNetwork(configuration);
+
   return {
     identifier: SOCIAL_FEATURE_IDENTIFIER,
-    navigation,
     reducers: {
       ...socialReducer,
     },
@@ -38,13 +33,13 @@ export function configure(configuration: SocialConfiguration) {
       getCurrentLao,
       useCurrentLaoId,
       getCurrentLaoId,
+      useConnectedToLao,
       /* roll call */
       useRollCallById,
       useRollCallAttendeesById,
       /* wallet */
       generateToken,
     },
-    socialScreens: [SocialHomeScreen, SocialSearchScreen, SocialFollowsScreen, SocialProfileScreen],
-    socialSearchScreens: [SocialSearchScreen, SocialUserProfileScreen],
+    laoScreens: [SocialMediaScreen],
   };
 }

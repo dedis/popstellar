@@ -1,8 +1,6 @@
-import { makeIcon } from 'core/components/PoPIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
-import STRINGS from 'resources/strings';
 
 import * as digitalCash from './digital-cash';
 import * as events from './events';
@@ -109,6 +107,7 @@ export function configureFeatures() {
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useRollCallById: rollCallConfiguration.hooks.useRollCallById,
     useRollCallAttendeesById: rollCallConfiguration.hooks.useRollCallAttendeesById,
     generateToken: walletConfiguration.functions.generateToken,
@@ -170,13 +169,7 @@ export function configureFeatures() {
     encodeLaoConnectionForQRCode: homeComposition.functions.encodeLaoConnectionForQRCode,
     /* navigation */
     laoNavigationScreens: [
-      {
-        id: STRINGS.navigation_social_media,
-        Component: socialConfiguration.navigation.SocialMediaNavigation,
-        headerShown: false,
-        tabBarIcon: makeIcon('socialMedia'),
-        order: 10000,
-      },
+      ...socialConfiguration.laoScreens,
       ...notificationConfiguration.laoScreens,
       ...walletComposition.laoScreens,
     ],
