@@ -54,6 +54,7 @@ export function configureFeatures() {
     getEventById: eventConfiguration.functions.getEventById,
     getLaoById: laoConfiguration.functions.getLaoById,
     useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
   });
 
   const rollCallConfiguration = rollCall.configure({

@@ -28,6 +28,12 @@ export interface MeetingConfiguration {
    */
   useAssertCurrentLaoId: () => Hash;
 
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
+
   /* Event related functions */
 
   /**
@@ -59,7 +65,10 @@ export interface MeetingConfiguration {
 /**
  * The type of the context that is provided to react meeting components
  */
-export type MeetingReactContext = Pick<MeetingConfiguration, 'useAssertCurrentLaoId'>;
+export type MeetingReactContext = Pick<
+  MeetingConfiguration,
+  'useAssertCurrentLaoId' | 'useConnectedToLao'
+>;
 
 /**
  * The interface the meeting feature exposes
