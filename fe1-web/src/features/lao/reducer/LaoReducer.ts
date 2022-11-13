@@ -91,7 +91,7 @@ const laosSlice = createSlice({
       if (state.currentId === undefined) {
         const { lao } = action.payload;
         state.currentId = lao.id;
-        state.connected = action.payload.connected || true;
+        state.connected = action.payload.connected !== false;
       }
     },
 
@@ -316,7 +316,7 @@ export const selectCurrentLaoId = createSelector(
  * returns the connected state value (true or false). Otherwise
  * it returns undefined (i.e. if there is no current lao)
  */
-export const selectIsConnected = createSelector(
+export const selectConnectedToLao = createSelector(
   // First input: current LAO id
   (state: any) => getLaosState(state).currentId,
   // First input: connected boolean

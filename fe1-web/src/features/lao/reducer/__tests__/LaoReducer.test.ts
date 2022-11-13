@@ -39,7 +39,7 @@ import {
   addLaoServerAddress,
   addSubscribedChannel,
   removeSubscribedChannel,
-  selectIsConnected,
+  selectConnectedToLao,
 } from '../LaoReducer';
 
 let emptyState: any;
@@ -181,6 +181,13 @@ describe('LaoReducer', () => {
 
   it('should connect to lao', () => {
     expect(laoReduce(emptyState, setCurrentLao({ lao: mockLaoState }))).toEqual(connectedState1);
+  });
+
+  it('should allow entering offline mode', () => {
+    expect(laoReduce(emptyState, setCurrentLao({ lao: mockLaoState, connected: false }))).toEqual({
+      ...connectedState1,
+      connected: false,
+    });
   });
 
   it('should disconnect from lao', () => {
@@ -334,7 +341,7 @@ describe('Lao selector', () => {
   describe('selectIsConnected', () => {
     it('returns true if currently connected to a lao', () => {
       expect(
-        selectIsConnected({
+        selectConnectedToLao({
           [LAO_REDUCER_PATH]: {
             byId: {
               [mockLaoId]: mockLao.toState(),
@@ -349,7 +356,7 @@ describe('Lao selector', () => {
 
     it('returns false if there is a current lao but no connection was established (offline mode)', () => {
       expect(
-        selectIsConnected({
+        selectConnectedToLao({
           [LAO_REDUCER_PATH]: {
             byId: {
               [mockLaoId]: mockLao.toState(),
@@ -364,7 +371,7 @@ describe('Lao selector', () => {
 
     it('returns undefined if there is no current lao', () => {
       expect(
-        selectIsConnected({
+        selectConnectedToLao({
           [LAO_REDUCER_PATH]: {
             byId: {},
             allIds: [],

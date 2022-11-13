@@ -77,6 +77,33 @@ describe('LaoHooks', () => {
     });
   });
 
+  describe('useConnectedToLao', () => {
+    it('returns true if currently connected to a lao', () => {
+      const { result } = renderHook(() => LaoHooks.useConnectedToLao(), {
+        wrapper: wrapper(mockStore),
+      });
+      expect(result.current).toBeTrue();
+    });
+
+    it('returns false if in offline mode (there is a current lao but no connection to it)', () => {
+      // setup mock store
+      const offlineMockStore = configureStore({ reducer: combineReducers(laoReducer) });
+      offlineMockStore.dispatch(setCurrentLao({ lao: mockLao.toState(), connected: false }));
+
+      const { result } = renderHook(() => LaoHooks.useConnectedToLao(), {
+        wrapper: wrapper(offlineMockStore),
+      });
+      expect(result.current).toBeFalse();
+    });
+
+    it('returns undefined if there is no current lao', () => {
+      const { result } = renderHook(() => LaoHooks.useConnectedToLao(), {
+        wrapper: wrapper(emptyMockStore),
+      });
+      expect(result.current).toBeUndefined();
+    });
+  });
+
   describe('useEncodeLaoConnectionForQRCode', () => {
     it('should return the function for encoding a connection', () => {
       const { result } = renderHook(() => LaoHooks.useEncodeLaoConnectionForQRCode(), {
