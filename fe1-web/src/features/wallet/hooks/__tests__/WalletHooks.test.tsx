@@ -35,6 +35,7 @@ const walletNavigationScreens: WalletFeature.WalletScreen[] = [];
 const contextValue = {
   [WALLET_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => false,
     getEventById,
     useRollCallsByLaoId,
     getLaoOrganizer,
@@ -73,6 +74,13 @@ describe('WalletHooks', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => WalletHooks.useCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
+    });
+  });
+
+  describe('useConnectedToLao', () => {
+    it('should return whether currently connected to a lao', () => {
+      const { result } = renderHook(() => WalletHooks.useConnectedToLao(), { wrapper });
+      expect(result.current).toBeFalse();
     });
   });
 

@@ -25,6 +25,12 @@ export namespace WalletHooks {
   export const useCurrentLaoId = () => useWalletContext().useCurrentLaoId();
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  export const useConnectedToLao = () => useWalletContext().useConnectedToLao();
+
+  /**
    * Gets all lao ids
    */
   export const useLaoIds = () => useWalletContext().useLaoIds();

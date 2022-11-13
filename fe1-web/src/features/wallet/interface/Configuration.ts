@@ -56,6 +56,12 @@ export interface WalletCompositionConfiguration {
   useCurrentLaoId: () => Hash | undefined;
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
+
+  /**
    * Returns the list of all known lao ids.
    */
   useLaoIds: () => Hash[];
@@ -106,6 +112,7 @@ export type WalletReactContext = Pick<
   | 'walletNavigationScreens'
   /* lao */
   | 'useCurrentLaoId'
+  | 'useConnectedToLao'
   | 'useLaoIds'
   | 'useNamesByLaoId'
   /* events */

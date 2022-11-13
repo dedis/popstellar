@@ -77,6 +77,7 @@ export function configureFeatures() {
     messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useLaoIds: laoConfiguration.hooks.useLaoIds,
     useNamesByLaoId: laoConfiguration.hooks.useNamesByLaoId,
     getEventById: eventConfiguration.functions.getEventById,
