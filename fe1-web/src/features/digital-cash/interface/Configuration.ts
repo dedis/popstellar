@@ -38,6 +38,12 @@ export interface DigitalCashCompositionConfiguration {
   useCurrentLaoId: () => Hash | undefined;
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
+
+  /**
    * Gets whether the current user is organizer of the given lao
    * To use only in a React component
    */
@@ -95,6 +101,7 @@ export type DigitalCashReactContext = Pick<
   /* lao */
   | 'useCurrentLaoId'
   | 'useIsLaoOrganizer'
+  | 'useConnectedToLao'
 
   /* roll call */
   | 'useRollCallById'

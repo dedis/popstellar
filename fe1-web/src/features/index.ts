@@ -93,6 +93,7 @@ export function configureFeatures() {
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
     getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,
     useRollCallById: rollCallConfiguration.hooks.useRollCallById,
