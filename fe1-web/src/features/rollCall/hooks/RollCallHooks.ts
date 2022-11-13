@@ -29,6 +29,12 @@ export namespace RollCallHooks {
    */
   export const useAssertCurrentLaoId = () => useRollCallContext().useAssertCurrentLaoId();
 
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  export const useConnectedToLao = () => useRollCallContext().useConnectedToLao();
+
   export const useRollCallById = (rollCallId: Hash | string | undefined) => {
     const rollCallSelector = useMemo(
       () => makeRollCallSelector(rollCallId?.valueOf()),

@@ -66,6 +66,7 @@ export function configureFeatures() {
     getLaoById: laoConfiguration.functions.getLaoById,
     setLaoLastRollCall: laoConfiguration.actionCreators.setLaoLastRollCall,
     useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     generateToken: walletConfiguration.functions.generateToken,
     hasSeed: walletConfiguration.functions.hasSeed,
   });

@@ -31,6 +31,12 @@ export interface RollCallConfiguration {
   useAssertCurrentLaoId: () => Hash;
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
+
+  /**
    * An action cretor that sets the last roll call for a given lao
    */
   setLaoLastRollCall: (
@@ -95,7 +101,11 @@ export interface RollCallConfiguration {
  */
 export type RollCallReactContext = Pick<
   RollCallConfiguration,
-  'useAssertCurrentLaoId' | 'makeEventByTypeSelector' | 'generateToken' | 'hasSeed'
+  | 'useAssertCurrentLaoId'
+  | 'useConnectedToLao'
+  | 'makeEventByTypeSelector'
+  | 'generateToken'
+  | 'hasSeed'
 >;
 
 /**
