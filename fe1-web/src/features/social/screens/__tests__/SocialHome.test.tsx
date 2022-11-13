@@ -48,7 +48,7 @@ const mockStore = configureStore({
     ...SocialReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLaoState));
+mockStore.dispatch(setCurrentLao({ lao: mockLaoState }));
 
 describe('SocialHome', () => {
   it('renders correctly', () => {

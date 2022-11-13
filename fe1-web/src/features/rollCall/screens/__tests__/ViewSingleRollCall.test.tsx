@@ -57,7 +57,7 @@ const mockStore = configureStore({
     ...walletReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 const mockRollCallState = mockRollCallCreated.toState();
 
 mockStore.dispatch(

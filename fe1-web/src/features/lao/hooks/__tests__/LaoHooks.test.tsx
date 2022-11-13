@@ -37,7 +37,7 @@ const mockStore = configureStore({
     ...keyPairReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 
 // setup mock store
 const emptyMockStore = configureStore({ reducer: combineReducers(laoReducer) });

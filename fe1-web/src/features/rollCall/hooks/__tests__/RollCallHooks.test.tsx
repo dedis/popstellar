@@ -71,7 +71,7 @@ const mockStore = configureStore({
     ...rollCallReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 mockStore.dispatch(
   addEvent(mockLaoId, {
     eventType: RollCall.EVENT_TYPE,

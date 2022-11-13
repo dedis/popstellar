@@ -77,7 +77,7 @@ const mockStore = configureStore({
     ...walletReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 mockStore.dispatch(addRollCall(mockRollCall.toState()));
 
 const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
