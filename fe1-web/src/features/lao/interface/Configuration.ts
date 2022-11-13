@@ -121,6 +121,12 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     useAssertCurrentLaoId: () => Hash;
 
     /**
+     * Returns true if currently connected to a lao, false if in offline mode
+     * and undefined if there is no current lao
+     */
+    useConnectedToLao: () => boolean | undefined;
+
+    /**
      * Returns the public key of the organizer's backend for a given lao id
      * @param laoId The lao id for which the key should be retrieved
      * @returns The public key or undefined if there is none
