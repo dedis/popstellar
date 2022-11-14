@@ -20,20 +20,20 @@ export namespace WalletHooks {
   export const useWalletItemGenerators = () => useWalletContext().walletItemGenerators;
 
   /**
-   * Gets the current lao id
+   * Gets the current lao id, throws error if there is none
    */
-  export const useCurrentLaoId = () => useWalletContext().useCurrentLaoId();
+  export const useAssertCurrentLaoId = () => useWalletContext().useAssertCurrentLaoId();
+
+  /**
+   * Gets the current lao, throws error if there is none
+   */
+  export const useCurrentLao = () => useWalletContext().useCurrentLao();
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode
    * and undefined if there is no current lao
    */
   export const useConnectedToLao = () => useWalletContext().useConnectedToLao();
-
-  /**
-   * Gets all lao ids
-   */
-  export const useLaoIds = () => useWalletContext().useLaoIds();
 
   /**
    * Gets a map from rollCall ids to rollCall instances for a given lao id
@@ -46,11 +46,6 @@ export namespace WalletHooks {
    */
   export const useRollCallTokensByLaoId = (laoId: string) =>
     useWalletContext().useRollCallTokensByLaoId(laoId);
-
-  /**
-   * Gets a map from laoIds to names
-   */
-  export const useNamesByLaoId = () => useWalletContext().useNamesByLaoId();
 
   /**
    * Gets the list of wallet navigation screens

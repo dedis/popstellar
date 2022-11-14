@@ -38,10 +38,9 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
     context: {
       useRollCallTokensByLaoId: configuration.useRollCallTokensByLaoId,
       useRollCallsByLaoId: configuration.useRollCallsByLaoId,
-      useCurrentLaoId: configuration.useCurrentLaoId,
+      useAssertCurrentLaoId: configuration.useAssertCurrentLaoId,
+      useCurrentLao: configuration.useCurrentLao,
       useConnectedToLao: configuration.useConnectedToLao,
-      useLaoIds: configuration.useLaoIds,
-      useNamesByLaoId: configuration.useNamesByLaoId,
       walletItemGenerators: configuration.walletItemGenerators,
       walletNavigationScreens: configuration.walletNavigationScreens,
     },

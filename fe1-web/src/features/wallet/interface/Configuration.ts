@@ -50,21 +50,22 @@ export interface WalletCompositionConfiguration {
   getCurrentLao: () => WalletFeature.Lao;
 
   /**
-   * Returns the currently active lao id. Should be used inside react components
-   * @returns The current lao id
+   * Returns the currently active lao id, throws error if there is none.
+   * Should be used inside react components
    */
-  useCurrentLaoId: () => Hash | undefined;
+  useAssertCurrentLaoId: () => Hash | undefined;
+
+  /**
+   * Returns the currently active lao, throws error if there is none.
+   * Should be used inside react components
+   */
+  useCurrentLao: () => WalletFeature.Lao;
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode
    * and undefined if there is no current lao
    */
   useConnectedToLao: () => boolean | undefined;
-
-  /**
-   * Returns the list of all known lao ids.
-   */
-  useLaoIds: () => Hash[];
 
   /* Event related functions */
 
@@ -87,7 +88,6 @@ export interface WalletCompositionConfiguration {
   /**
    * Returns a map from laoIds to names
    */
-  useNamesByLaoId: () => { [laoId: string]: string };
 
   getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
 
@@ -111,10 +111,9 @@ export type WalletReactContext = Pick<
   | 'walletItemGenerators'
   | 'walletNavigationScreens'
   /* lao */
-  | 'useCurrentLaoId'
+  | 'useAssertCurrentLaoId'
+  | 'useCurrentLao'
   | 'useConnectedToLao'
-  | 'useLaoIds'
-  | 'useNamesByLaoId'
   /* events */
   | 'useRollCallsByLaoId'
   | 'useRollCallTokensByLaoId'
