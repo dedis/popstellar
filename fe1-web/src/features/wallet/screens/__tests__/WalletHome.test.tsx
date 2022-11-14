@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockKeyPair, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
+import { mockKeyPair, mockLao, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EventTags, Hash, PopToken, RollCallToken, Timestamp } from 'core/objects';
 import { getEventById } from 'features/events/functions';
@@ -68,7 +68,8 @@ const mockRollCallToken: RollCallToken = {
 
 const contextValue = (rollCallTokens: RollCallToken[]) => ({
   [WALLET_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLao: () => mockLao,
     useConnectedToLao: () => true,
     getEventById,
     useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,

@@ -72,7 +72,8 @@ const getContextValue = (isOrganizer: boolean) => ({
     makeEventByTypeSelector,
   } as RollCallReactContext,
   [WALLET_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLao: () => mockLao,
     useConnectedToLao: () => true,
     useRollCallsByLaoId: () => ({}),
     useLaoIds: () => [mockLaoIdHash],

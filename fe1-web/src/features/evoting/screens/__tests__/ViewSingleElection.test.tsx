@@ -7,6 +7,7 @@ import { combineReducers } from 'redux';
 import MockNavigator from '__tests__/components/MockNavigator';
 import {
   messageRegistryInstance,
+  mockKeyPair,
   mockLao,
   mockLaoId,
   mockLaoIdHash,
@@ -21,7 +22,7 @@ import {
   mockElectionTerminated,
   openedSecretBallotElection,
 } from 'features/evoting/__tests__/utils';
-import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
+import { EvotingReactContext, EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
 import { Election, ElectionStatus } from 'features/evoting/objects';
 import {
   addElection,
@@ -57,13 +58,15 @@ mockStore.dispatch(addElection(mockElectionNotStarted.toState()));
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
+    useLaoOrganizerBackendPublicKey: () => mockKeyPair.publicKey,
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
     getEventById: () => undefined,
     messageRegistry: messageRegistryInstance,
     onConfirmEventCreation: () => undefined,
-  },
+  } as EvotingReactContext,
 };
 
 describe('ViewSingleElection', () => {

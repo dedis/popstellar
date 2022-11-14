@@ -7,7 +7,7 @@ import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
 
-import { SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
+import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
 import {
   requestAddReaction as mockRequestAddReaction,
   requestDeleteChirp as mockRequestDeleteChirp,
@@ -62,12 +62,13 @@ const contextValue = {
   [SOCIAL_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
     getCurrentLao: () => mockLao,
+    useConnectedToLao: () => true,
     useCurrentLaoId: () => mockLaoIdHash,
     getCurrentLaoId: () => mockLaoIdHash,
     useRollCallById: () => undefined,
     useRollCallAttendeesById: () => [],
-    generateToken: () => mockPopToken,
-  },
+    generateToken: () => Promise.resolve(mockPopToken),
+  } as SocialReactContext,
 };
 
 // FIXME: useSelector mock doesn't seem to work correctly
