@@ -1,18 +1,11 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 import android.app.Application;
-import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
+import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Wallet;
@@ -24,7 +17,6 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
@@ -32,16 +24,16 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
-import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 @HiltViewModel
 public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
@@ -176,27 +168,9 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
         networkManager, wallet, getApplication().getApplicationContext());
   }
 
-  /**
-   * createLao is invoked when the user tries to create a new LAO. The method creates a `CreateLAO`
-   * message and publishes it to the root channel. It observers the response in the background and
-   * switches to the home screen on success.
-   */
-  public void createLao(String laoName, String serverAddress) {
-    Log.d(TAG, "creating lao with name " + laoName);
-    networkManager.connect(serverAddress);
-    getApplication()
-        .startActivity(
-            ConnectingActivity.newIntentForCreatingDetail(
-                getApplication().getApplicationContext(), laoName));
-  }
-
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {
     wallet.importSeed(seed);
     setIsWalletSetUp(true);
-  }
-
-  public void newSeed() {
-    wallet.newSeed();
   }
 
   public LiveData<List<String>> getLaoIdList() {
@@ -205,10 +179,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
   public LaoView getLaoView(String laoId) throws UnknownLaoException {
     return laoRepository.getLaoView(laoId);
-  }
-
-  public LiveData<Boolean> isSocialMediaEnabled() {
-    return isSocialMediaEnabled;
   }
 
   public LiveData<Boolean> getIsWalletSetUpEvent() {
@@ -228,13 +198,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   public void logoutWallet() {
     wallet.logout();
     setIsWalletSetUp(false);
-  }
-
-  public void openConnecting(String laoId) {
-    Intent intent = new Intent(getApplication().getApplicationContext(), ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-    getApplication().startActivity(intent);
   }
 
   /**
