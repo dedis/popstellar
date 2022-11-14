@@ -23,9 +23,9 @@ export namespace DigitalCashHooks {
   };
 
   /**
-   * Gets the current lao id
+   * Gets the current lao id, throws an error if there is none
    */
-  export const useCurrentLaoId = () => useDigitalCashContext().useCurrentLaoId();
+  export const useAssertCurrentLaoId = () => useDigitalCashContext().useAssertCurrentLaoId();
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode
@@ -36,19 +36,19 @@ export namespace DigitalCashHooks {
   /**
    * Gets whether the current user is organizer of the given lao
    */
-  export const useIsLaoOrganizer = (laoId: string) =>
+  export const useIsLaoOrganizer = (laoId: Hash | string) =>
     useDigitalCashContext().useIsLaoOrganizer(laoId);
 
   /**
    * Gets the roll call tokens for a given lao id
    */
-  export const useRollCallTokensByLaoId = (laoId: string) =>
+  export const useRollCallTokensByLaoId = (laoId: Hash | string) =>
     useDigitalCashContext().useRollCallTokensByLaoId(laoId);
 
   /**
    * Gets the roll call token for a given lao id and a given roll call id
    */
-  export const useRollCallTokenByRollCallId = (laoId: string, rollCallId: string) =>
+  export const useRollCallTokenByRollCallId = (laoId: Hash | string, rollCallId: string) =>
     useDigitalCashContext().useRollCallTokenByRollCallId(laoId, rollCallId);
 
   /**
@@ -60,7 +60,7 @@ export namespace DigitalCashHooks {
   /**
    * Gets all roll calls for a given lao id
    */
-  export const useRollCallsByLaoId = (laoId: string) =>
+  export const useRollCallsByLaoId = (laoId: Hash | string) =>
     useDigitalCashContext().useRollCallsByLaoId(laoId);
 
   /**

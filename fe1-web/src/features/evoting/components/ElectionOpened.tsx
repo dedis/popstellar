@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
 /**
  * Screen component for opened elections
  */
-const ElectionOpened = ({ election, isOrganizer }: IPropTypes) => {
+const ElectionOpened = ({ election, isConnected, isOrganizer }: IPropTypes) => {
   const toast = useToast();
 
   const [selectedBallots, setSelectedBallots] = useState<SelectedBallots>({});
@@ -100,14 +100,16 @@ const ElectionOpened = ({ election, isOrganizer }: IPropTypes) => {
         title: STRINGS.election_end,
         onPress: onTerminateElection,
         buttonStyle: 'secondary',
+        disabled: isConnected !== true,
       },
       {
         id: 'election_vote_selector',
         title: STRINGS.cast_vote,
         onPress: onCastVote,
+        disabled: isConnected !== true,
       },
     ] as ToolbarItem[];
-  }, [isOrganizer, onTerminateElection, onCastVote]);
+  }, [isConnected, isOrganizer, onTerminateElection, onCastVote]);
 
   if (!canCastVote) {
     return (
@@ -201,9 +203,14 @@ const ElectionOpened = ({ election, isOrganizer }: IPropTypes) => {
 
 const propTypes = {
   election: PropTypes.instanceOf(Election).isRequired,
+  isConnected: PropTypes.bool,
   isOrganizer: PropTypes.bool.isRequired,
 };
 ElectionOpened.propTypes = propTypes;
+
+ElectionOpened.defaultProps = {
+  isConnected: undefined,
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

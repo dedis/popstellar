@@ -13,7 +13,7 @@ import { RollCall } from '../objects';
 import AttendeeList from './AttendeeList';
 import RollCallHeader from './RollCallHeader';
 
-const RollCallClosed = ({ rollCall, laoId, isOrganizer }: IPropTypes) => {
+const RollCallClosed = ({ rollCall, laoId, isConnected, isOrganizer }: IPropTypes) => {
   const toast = useToast();
 
   const makeToastErr = useCallback(
@@ -45,8 +45,14 @@ const RollCallClosed = ({ rollCall, laoId, isOrganizer }: IPropTypes) => {
       return [];
     }
 
-    return [{ title: STRINGS.roll_call_reopen, onPress: onReopenRollCall } as ToolbarItem];
-  }, [isOrganizer, onReopenRollCall]);
+    return [
+      {
+        title: STRINGS.roll_call_reopen,
+        onPress: onReopenRollCall,
+        disabled: isConnected !== true,
+      } as ToolbarItem,
+    ];
+  }, [isConnected, isOrganizer, onReopenRollCall]);
 
   return (
     <ScreenWrapper toolbarItems={toolbarItems}>
@@ -59,9 +65,14 @@ const RollCallClosed = ({ rollCall, laoId, isOrganizer }: IPropTypes) => {
 const propTypes = {
   rollCall: PropTypes.instanceOf(RollCall).isRequired,
   laoId: PropTypes.instanceOf(Hash).isRequired,
+  isConnected: PropTypes.bool,
   isOrganizer: PropTypes.bool.isRequired,
 };
 RollCallClosed.propTypes = propTypes;
+
+RollCallClosed.defaultProps = {
+  isConnected: undefined,
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

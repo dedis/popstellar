@@ -78,7 +78,7 @@ export interface RollCallConfiguration {
    * @returns A selector for a map from laoIds to a map of eventIds to events
    */
   makeEventByTypeSelector: (
-    laoId: string,
+    laoId: Hash | string,
     eventType: string,
   ) => (state: unknown) => Record<string, RollCallFeature.EventState>;
 
@@ -122,12 +122,15 @@ export interface RollCallInterface extends FeatureInterface {
 
   hooks: {
     useRollCallById: (rollCallId: Hash | string | undefined) => RollCall | undefined;
-    useRollCallsByLaoId: (laoId: string) => {
+    useRollCallsByLaoId: (laoId: Hash | string) => {
       [rollCallId: string]: RollCall;
     };
 
-    useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
-    useRollCallTokenByRollCallId: (laoId: string, rollCallId: string) => RollCallToken | undefined;
+    useRollCallTokensByLaoId: (laoId: Hash | string) => RollCallToken[];
+    useRollCallTokenByRollCallId: (
+      laoId: Hash | string,
+      rollCallId: string,
+    ) => RollCallToken | undefined;
 
     useRollCallAttendeesById: (rollCallId: Hash | string | undefined) => PublicKey[];
   };

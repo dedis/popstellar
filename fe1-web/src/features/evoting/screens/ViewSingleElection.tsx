@@ -12,6 +12,7 @@ import ElectionNotStarted from '../components/ElectionNotStarted';
 import ElectionOpened from '../components/ElectionOpened';
 import ElectionResult from '../components/ElectionResult';
 import ElectionTerminated from '../components/ElectionTerminated';
+import { EvotingHooks } from '../hooks';
 import { EvotingFeature } from '../interface';
 import { ElectionStatus } from '../objects';
 import { makeElectionSelector } from '../reducer';
@@ -33,6 +34,7 @@ const ViewSingleElection = () => {
 
   const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
   const election = useSelector(selectElection);
+  const isConnected = EvotingHooks.useConnectedToLao();
 
   if (!election) {
     throw new Error(`Could not find an election with id ${electionId}`);
@@ -40,9 +42,17 @@ const ViewSingleElection = () => {
 
   switch (election.electionStatus) {
     case ElectionStatus.NOT_STARTED:
-      return <ElectionNotStarted election={election} isOrganizer={isOrganizer} />;
+      return (
+        <ElectionNotStarted
+          election={election}
+          isConnected={isConnected}
+          isOrganizer={isOrganizer}
+        />
+      );
     case ElectionStatus.OPENED:
-      return <ElectionOpened election={election} isOrganizer={isOrganizer} />;
+      return (
+        <ElectionOpened election={election} isConnected={isConnected} isOrganizer={isOrganizer} />
+      );
     case ElectionStatus.TERMINATED:
       return <ElectionTerminated election={election} />;
     case ElectionStatus.RESULT:

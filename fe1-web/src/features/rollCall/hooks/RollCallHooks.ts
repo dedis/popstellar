@@ -66,7 +66,7 @@ export namespace RollCallHooks {
   export const useHasSeed = () => useRollCallContext().hasSeed;
 
   export const useRollCallsByLaoId = (
-    laoId: string,
+    laoId: Hash | string,
   ): {
     [rollCallId: string]: RollCall;
   } => {
@@ -93,7 +93,7 @@ export namespace RollCallHooks {
     return useSelector(rollCallByIdSelector);
   };
 
-  export const useRollCallTokensByLaoId = (laoId: string): RollCallToken[] => {
+  export const useRollCallTokensByLaoId = (laoId: Hash | string): RollCallToken[] => {
     const rollCalls = useRollCallsByLaoId(laoId);
     const generate = useRollCallContext().generateToken;
 
@@ -103,7 +103,7 @@ export namespace RollCallHooks {
       // allows the promise to be cancelled in cases of re-rendering the component
       let wasCanceled = false;
 
-      const laoIdHash = new Hash(laoId);
+      const laoIdHash = new Hash(laoId.valueOf());
       const tokens = Object.values(rollCalls).map((rc) =>
         generate(laoIdHash, rc.id).then((popToken) => {
           // If the token participated in the roll call, create a RollCallToken object
@@ -134,7 +134,7 @@ export namespace RollCallHooks {
   };
 
   export const useRollCallTokenByRollCallId = (
-    laoId: string,
+    laoId: Hash | string,
     rollCallId: string,
   ): RollCallToken | undefined => {
     const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
@@ -151,13 +151,15 @@ export namespace RollCallHooks {
         return undefined;
       }
 
-      generate(new Hash(laoId), rollCall.id)
+      const laoIdHash = new Hash(laoId.valueOf());
+
+      generate(laoIdHash, rollCall.id)
         .then(
           (popToken): RollCallToken => ({
             rollCallId: rollCall.id,
             rollCallName: rollCall.name,
             token: popToken,
-            laoId: new Hash(laoId),
+            laoId: laoIdHash,
           }),
         )
         .then((newRollCallToken) => {

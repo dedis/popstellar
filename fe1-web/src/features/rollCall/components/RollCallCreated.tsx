@@ -12,7 +12,7 @@ import { requestOpenRollCall } from '../network';
 import { RollCall } from '../objects';
 import RollCallHeader from './RollCallHeader';
 
-const RollCallCreated = ({ rollCall, laoId, isOrganizer }: IPropTypes) => {
+const RollCallCreated = ({ rollCall, laoId, isConnected, isOrganizer }: IPropTypes) => {
   const toast = useToast();
 
   const onOpenRollCall = useCallback(() => {
@@ -31,8 +31,14 @@ const RollCallCreated = ({ rollCall, laoId, isOrganizer }: IPropTypes) => {
       return [];
     }
 
-    return [{ title: STRINGS.roll_call_open, onPress: onOpenRollCall } as ToolbarItem];
-  }, [isOrganizer, onOpenRollCall]);
+    return [
+      {
+        title: STRINGS.roll_call_open,
+        onPress: onOpenRollCall,
+        disabled: isConnected !== true,
+      } as ToolbarItem,
+    ];
+  }, [isConnected, isOrganizer, onOpenRollCall]);
 
   return (
     <ScreenWrapper toolbarItems={toolbarItems}>
@@ -44,9 +50,14 @@ const RollCallCreated = ({ rollCall, laoId, isOrganizer }: IPropTypes) => {
 const propTypes = {
   rollCall: PropTypes.instanceOf(RollCall).isRequired,
   laoId: PropTypes.instanceOf(Hash).isRequired,
+  isConnected: PropTypes.bool,
   isOrganizer: PropTypes.bool.isRequired,
 };
 RollCallCreated.propTypes = propTypes;
+
+RollCallCreated.defaultProps = {
+  isConnected: undefined,
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

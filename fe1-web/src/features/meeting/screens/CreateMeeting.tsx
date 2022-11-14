@@ -40,6 +40,7 @@ const CreateMeeting = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const laoId = MeetingHooks.useAssertCurrentLaoId();
+  const isConnected = MeetingHooks.useConnectedToLao();
 
   const [meetingName, setMeetingName] = useState('');
   const [startTime, setStartTime] = useState(Timestamp.EpochNow());
@@ -49,7 +50,7 @@ const CreateMeeting = () => {
 
   const [location, setLocation] = useState('');
 
-  const confirmButtonVisibility: boolean = meetingName !== '';
+  const confirmButtonEnabled: boolean = isConnected === true && meetingName !== '';
 
   const createMeeting = () => {
     requestCreateMeeting(laoId, meetingName, startTime, location, endTime)
@@ -97,7 +98,7 @@ const CreateMeeting = () => {
   const toolbarItems: ToolbarItem[] = [
     {
       title: STRINGS.meeting_create_meeting,
-      disabled: !confirmButtonVisibility,
+      disabled: !confirmButtonEnabled,
       onPress: () =>
         onConfirmEventCreation(
           startTime,

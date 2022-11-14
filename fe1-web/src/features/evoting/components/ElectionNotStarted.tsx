@@ -15,7 +15,7 @@ import ElectionQuestions from './ElectionQuestions';
 /**
  * Screen component for not started elections
  */
-const ElectionNotStarted = ({ election, isOrganizer }: IPropTypes) => {
+const ElectionNotStarted = ({ election, isConnected, isOrganizer }: IPropTypes) => {
   const toast = useToast();
 
   const onOpenElection = useCallback(() => {
@@ -38,9 +38,14 @@ const ElectionNotStarted = ({ election, isOrganizer }: IPropTypes) => {
     }
 
     return [
-      { id: 'election_option_selector', title: STRINGS.election_open, onPress: onOpenElection },
+      {
+        id: 'election_option_selector',
+        title: STRINGS.election_open,
+        onPress: onOpenElection,
+        disabled: isConnected !== true,
+      },
     ] as ToolbarItem[];
-  }, [isOrganizer, onOpenElection]);
+  }, [isConnected, isOrganizer, onOpenElection]);
 
   return (
     <ScreenWrapper toolbarItems={toolbarItems}>
@@ -52,9 +57,14 @@ const ElectionNotStarted = ({ election, isOrganizer }: IPropTypes) => {
 
 const propTypes = {
   election: PropTypes.instanceOf(Election).isRequired,
+  isConnected: PropTypes.bool,
   isOrganizer: PropTypes.bool.isRequired,
 };
 ElectionNotStarted.propTypes = propTypes;
+
+ElectionNotStarted.defaultProps = {
+  isConnected: undefined,
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

@@ -39,22 +39,38 @@ const ViewSingleRollCall = () => {
   }
 
   const laoId = RollCallHooks.useAssertCurrentLaoId();
+  const isConnected = RollCallHooks.useConnectedToLao();
 
   switch (rollCall.status) {
     case RollCallStatus.CREATED:
-      return <RollCallCreated rollCall={rollCall} laoId={laoId} isOrganizer={isOrganizer} />;
+      return (
+        <RollCallCreated
+          rollCall={rollCall}
+          laoId={laoId}
+          isConnected={isConnected}
+          isOrganizer={isOrganizer}
+        />
+      );
     case RollCallStatus.REOPENED:
     case RollCallStatus.OPENED:
       return (
         <RollCallOpen
           rollCall={rollCall}
           laoId={laoId}
+          isConnected={isConnected}
           isOrganizer={isOrganizer}
           scannedPopTokens={attendeePopTokens}
         />
       );
     case RollCallStatus.CLOSED:
-      return <RollCallClosed rollCall={rollCall} laoId={laoId} isOrganizer={isOrganizer} />;
+      return (
+        <RollCallClosed
+          rollCall={rollCall}
+          laoId={laoId}
+          isConnected={isConnected}
+          isOrganizer={isOrganizer}
+        />
+      );
     default:
       console.warn('Roll Call Status was undefined in EventRollCall');
       return null;

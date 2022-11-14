@@ -31,7 +31,13 @@ type NavigationProps = CompositeScreenProps<
   >
 >;
 
-const RollCallOpen = ({ rollCall, laoId, isOrganizer, scannedPopTokens }: IPropTypes) => {
+const RollCallOpen = ({
+  rollCall,
+  laoId,
+  isConnected,
+  isOrganizer,
+  scannedPopTokens,
+}: IPropTypes) => {
   const generateToken = RollCallHooks.useGenerateToken();
   const hasSeed = RollCallHooks.useHasSeed();
   const toast = useToast();
@@ -94,10 +100,19 @@ const RollCallOpen = ({ rollCall, laoId, isOrganizer, scannedPopTokens }: IPropT
     }
 
     return [
-      { title: STRINGS.roll_call_close, onPress: onCloseRollCall, buttonStyle: 'secondary' },
-      { title: STRINGS.roll_call_scan_attendees, onPress: onAddAttendees },
+      {
+        title: STRINGS.roll_call_close,
+        onPress: onCloseRollCall,
+        buttonStyle: 'secondary',
+        disabled: isConnected !== true,
+      },
+      {
+        title: STRINGS.roll_call_scan_attendees,
+        onPress: onAddAttendees,
+        disabled: isConnected !== true,
+      },
     ] as ToolbarItem[];
-  }, [isOrganizer, onCloseRollCall, onAddAttendees]);
+  }, [isConnected, isOrganizer, onCloseRollCall, onAddAttendees]);
 
   // re-check if wallet has been initialized after focus events
   useEffect(() => {
@@ -161,11 +176,13 @@ const propTypes = {
   laoId: PropTypes.instanceOf(Hash).isRequired,
   // pop tokens scanned by the organizer
   scannedPopTokens: PropTypes.arrayOf(PropTypes.string.isRequired),
+  isConnected: PropTypes.bool,
   isOrganizer: PropTypes.bool,
 };
 RollCallOpen.propTypes = propTypes;
 
 RollCallOpen.defaultProps = {
+  isConnected: undefined,
   isOrganizer: false,
   scannedPopTokens: [],
 };

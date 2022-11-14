@@ -92,7 +92,7 @@ export function configureFeatures() {
     keyPairRegistry: keyPairRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
     getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,

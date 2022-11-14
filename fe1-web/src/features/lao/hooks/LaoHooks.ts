@@ -76,8 +76,11 @@ export namespace LaoHooks {
    * Indicates whether we are an organizer of the the given lao
    * If no laoId is passed, it is checked for the current lao
    */
-  export const useIsLaoOrganizer = (laoId?: string): boolean => {
-    const isLaoOrganizerSelector = useMemo(() => makeIsLaoOrganizerSelector(laoId), [laoId]);
+  export const useIsLaoOrganizer = (laoId?: Hash | string): boolean => {
+    const isLaoOrganizerSelector = useMemo(
+      () => makeIsLaoOrganizerSelector(laoId?.valueOf()),
+      [laoId],
+    );
 
     return useSelector(isLaoOrganizerSelector);
   };

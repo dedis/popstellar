@@ -124,6 +124,7 @@ const CreateElection = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const currentLao = EvotingHooks.useCurrentLao();
+  const isConnected = EvotingHooks.useConnectedToLao();
 
   // form data for the new election
   const [startTime, setStartTime] = useState<Timestamp>(Timestamp.EpochNow());
@@ -140,7 +141,8 @@ const CreateElection = () => {
   const [modalStartIsVisible, setModalStartIsVisible] = useState<boolean>(false);
 
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
-  const buttonsVisibility: boolean = electionName !== '' && !questions.some(isQuestionInvalid);
+  const confirmButtonEnabled: boolean =
+    isConnected === true && electionName !== '' && !questions.some(isQuestionInvalid);
 
   const onCreateElection = () => {
     createElection(currentLao.id, version, electionName, questions, startTime, endTime)
@@ -188,7 +190,7 @@ const CreateElection = () => {
     {
       id: 'election_confirm_selector',
       title: STRINGS.general_button_confirm,
-      disabled: !buttonsVisibility,
+      disabled: !confirmButtonEnabled,
       onPress: () =>
         onConfirmEventCreation(
           startTime,
