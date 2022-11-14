@@ -88,6 +88,8 @@ const ChirpCard = (props: IPropTypes) => {
   const { chirp, currentUserPublicKey } = props;
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
+  const isConnected = SocialHooks.useConnectedToLao();
+
   if (laoId === undefined) {
     throw new Error('Impossible to render chirp, current lao id is undefined');
   }
@@ -103,6 +105,10 @@ const ChirpCard = (props: IPropTypes) => {
   const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false);
 
   const addReaction = (reaction_codepoint: string) => {
+    if (!isConnected) {
+      return;
+    }
+
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
       toast.show(`Could not add reaction, error: ${err}`, {
         type: 'danger',
@@ -116,6 +122,10 @@ const ChirpCard = (props: IPropTypes) => {
   const isSender = currentUserPublicKey.valueOf() === chirp.sender.valueOf();
 
   const deleteChirp = () => {
+    if (!isConnected) {
+      return;
+    }
+
     requestDeleteChirp(currentUserPublicKey, chirp.id, laoId).catch((err) => {
       toast.show(`Could not remove chirp, error: ${err}`, {
         type: 'danger',
