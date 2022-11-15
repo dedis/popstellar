@@ -5,6 +5,7 @@ import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils/TestUtils'
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
+import { SocialMediaContext } from 'features/social/context';
 import STRINGS from 'resources/strings';
 
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
@@ -71,12 +72,17 @@ const contextValue = {
   } as SocialReactContext,
 };
 
+const senderContext = { currentUserPublicKey: sender };
+const nonSenderContext = { currentUserPublicKey: new PublicKey('IAmNotTheSender') };
+
 // FIXME: useSelector mock doesn't seem to work correctly
 describe('ChirpCard', () => {
-  const renderChirp = (c: Chirp, publicKey: PublicKey) => {
+  const renderChirp = (c: Chirp, isSender: boolean) => {
     return render(
       <FeatureContext.Provider value={contextValue}>
-        <ChirpCard chirp={c} currentUserPublicKey={publicKey} />
+        <SocialMediaContext.Provider value={isSender ? senderContext : nonSenderContext}>
+          <ChirpCard chirp={c} />
+        </SocialMediaContext.Provider>
       </FeatureContext.Provider>,
     );
   };
@@ -86,55 +92,55 @@ describe('ChirpCard', () => {
     getMockLao.mockImplementation(() => mockLao);
 
     it('renders correctly for sender', () => {
-      const obj = renderChirp(chirp, sender);
+      const obj = renderChirp(chirp, true);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('renders correctly for non-sender', () => {
-      const obj = renderChirp(chirp, new PublicKey('IAmNotTheSender'));
+      const obj = renderChirp(chirp, false);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('calls delete correctly', () => {
-      const { getByLabelText, getByText } = renderChirp(chirp, sender);
-      fireEvent.press(getByLabelText('deleteChirpButton'));
+      const { getByTestId, getByText } = renderChirp(chirp, true);
+      fireEvent.press(getByTestId(`delete_chirp_${chirp.id}`));
       fireEvent.press(getByText(STRINGS.general_yes));
       expect(mockRequestDeleteChirp).toHaveBeenCalledTimes(1);
     });
 
     it('render correct for a deleted chirp', () => {
-      const obj = renderChirp(deletedChirp, sender);
+      const obj = renderChirp(deletedChirp, true);
       expect(obj.toJSON()).toMatchSnapshot();
     });
   });
 
   describe('for reaction', () => {
     it('renders correctly with reaction', () => {
-      const obj = renderChirp(chirp, sender);
+      const obj = renderChirp(chirp, true);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('renders correctly without reaction', () => {
-      const obj = renderChirp(chirp1, sender);
+      const obj = renderChirp(chirp1, true);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('adds thumbs up correctly', () => {
-      const { getByTestId } = renderChirp(chirp, sender);
+      const { getByTestId } = renderChirp(chirp, true);
       const thumbsUpButton = getByTestId('thumbs-up');
       fireEvent.press(thumbsUpButton);
       expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID, mockLaoIdHash);
     });
 
     it('adds thumbs down correctly', () => {
-      const { getByTestId } = renderChirp(chirp, sender);
+      const { getByTestId } = renderChirp(chirp, true);
       const thumbsDownButton = getByTestId('thumbs-down');
       fireEvent.press(thumbsDownButton);
       expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoIdHash);
     });
 
     it('adds heart correctly', () => {
-      const { getByTestId } = renderChirp(chirp, sender);
+      const { getByTestId } = renderChirp(chirp, true);
       const heartButton = getByTestId('heart');
       fireEvent.press(heartButton);
       expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID, mockLaoIdHash);

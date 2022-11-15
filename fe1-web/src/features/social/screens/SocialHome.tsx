@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 });
 
 const SocialHome = () => {
-  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
+  const { currentUserPublicKey } = useContext(SocialMediaContext);
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
@@ -45,8 +45,16 @@ const SocialHome = () => {
     throw new Error('Impossible to render Social Home, current lao id is undefined');
   }
 
+  // The publish button is disabled in offline mode and when the user public key is not defined
+  const publishDisabled = !isConnected || !currentUserPublicKey;
+
   const publishChirp = () => {
-    requestAddChirp(currentUserPopTokenPublicKey, inputChirp, laoId)
+    // button is disabled if publicKey is not set
+    if (!currentUserPublicKey) {
+      return;
+    }
+
+    requestAddChirp(currentUserPublicKey, inputChirp, laoId)
       .then(() => {
         setInputChirp('');
       })
@@ -64,11 +72,8 @@ const SocialHome = () => {
   const chirpList = useSelector(chirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPopTokenPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} />
   );
-
-  // The publish button is disabled in offline mode and when the user public key is not defined
-  const publishDisabled = !isConnected || !currentUserPopTokenPublicKey;
 
   return (
     <ScreenWrapper>
@@ -83,7 +88,7 @@ const SocialHome = () => {
             onChangeText={setInputChirp}
             onPress={publishChirp}
             disabled={publishDisabled}
-            currentUserPublicKey={currentUserPopTokenPublicKey}
+            currentUserPublicKey={currentUserPublicKey}
           />
           <FlatList
             data={chirpList}

@@ -47,7 +47,7 @@ const iconSelector =
  * This class manages the social media navigation and creates the corresponding navigation bar.
  */
 const SocialMediaNavigation = () => {
-  const [currentUserPopTokenPublicKey, setCurrentUserPopTokenPublicKey] = useState(
+  const [currentUserPublicKey, setCurrentUserPublicKey] = useState(
     undefined as unknown as PublicKey,
   );
 
@@ -65,7 +65,7 @@ const SocialMediaNavigation = () => {
     .generateToken(lao.id, rollCallId)
     .then((token) => {
       if (rollCall?.containsToken(token)) {
-        setCurrentUserPopTokenPublicKey(token.publicKey);
+        setCurrentUserPublicKey(token.publicKey);
       }
     })
     // If an error happens when generating the token, it should not affect the Social Media
@@ -78,9 +78,9 @@ const SocialMediaNavigation = () => {
   // it will be a different object (try ({a: 1} == {a: 1})) and trigger a re-render
   const contextValue = useMemo(
     () => ({
-      currentUserPopTokenPublicKey,
+      currentUserPublicKey,
     }),
-    [currentUserPopTokenPublicKey],
+    [currentUserPublicKey],
   );
 
   return (
