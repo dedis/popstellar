@@ -1,5 +1,5 @@
 # popstellar: fe1-web
-Proof-of-personhood, Spring 2021: Web-based front-end
+Proof-of-personhood, web-based front-end
 
 ## Running the project
 Open the terminal in the `fe1-web`folder and enter the following commands
