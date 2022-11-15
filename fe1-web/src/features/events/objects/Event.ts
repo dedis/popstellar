@@ -1,12 +1,15 @@
+import PropTypes from 'prop-types';
 /**
  * Interface to represent an event within a LAO.
  */
 
-// Serializable Event (using primitive types)
-export interface EventState {
-  eventType: string;
-  id: string;
+export const eventStatePropType = PropTypes.shape({
+  eventType: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
 
-  start: number;
-  end?: number;
-}
+  start: PropTypes.number.isRequired,
+  end: PropTypes.number,
+}).isRequired;
+
+// Serializable Event (using primitive types)
+export type EventState = PropTypes.InferType<typeof eventStatePropType>;

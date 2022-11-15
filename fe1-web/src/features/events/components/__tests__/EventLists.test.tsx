@@ -34,7 +34,7 @@ import { WALLET_FEATURE_IDENTIFIER, WalletReactContext } from 'features/wallet/i
 import { generateToken } from 'features/wallet/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
 
-import EventList from '../EventList';
+import EventLists from '../EventLists';
 
 const mockStore = configureStore({
   reducer: combineReducers({
@@ -110,12 +110,12 @@ mockStore.dispatch(
 );
 mockStore.dispatch(addRollCall(mockRollCall.toState()));
 
-describe('EventList', () => {
+describe('EventLists', () => {
   it('renders correctly for attendees', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={getContextValue(false)}>
-          <MockNavigator component={EventList} />
+          <MockNavigator component={EventLists} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();
@@ -126,7 +126,7 @@ describe('EventList', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={getContextValue(true)}>
-          <MockNavigator component={EventList} />
+          <MockNavigator component={EventLists} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();
