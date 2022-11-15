@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EventList renders correctly for attendees 1`] = `
+exports[`EventLists renders correctly for attendees 1`] = `
 <View
   style={
     Object {
@@ -745,7 +745,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   },
                                 ]
                               }
-                              testID="previous_event_selector_0"
+                              testID="current_event_selector_0"
                             >
                               <View
                                 style={
@@ -945,7 +945,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   },
                                 ]
                               }
-                              testID="previous_event_selector_1"
+                              testID="current_event_selector_1"
                             >
                               <View
                                 style={
@@ -1137,7 +1137,7 @@ exports[`EventList renders correctly for attendees 1`] = `
 </View>
 `;
 
-exports[`EventList renders correctly for organizers 1`] = `
+exports[`EventLists renders correctly for organizers 1`] = `
 <View
   style={
     Object {
@@ -1928,7 +1928,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   },
                                 ]
                               }
-                              testID="previous_event_selector_0"
+                              testID="current_event_selector_0"
                             >
                               <View
                                 style={
@@ -2151,7 +2151,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   },
                                 ]
                               }
-                              testID="previous_event_selector_1"
+                              testID="current_event_selector_1"
                             >
                               <View
                                 style={
