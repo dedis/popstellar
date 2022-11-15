@@ -1,29 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { TextStyle } from 'react-native';
 
 import { ExtendType } from 'core/types';
 
-import { Color, Icon, Typography } from '../styles';
+import { Color, Icon } from '../styles';
 import PoPButton from './PoPButton';
 import PoPIcon, { PopIconName } from './PoPIcon';
 
 const PoPIconButton = (props: IPropTypes) => {
   const { onPress, buttonStyle, disabled, negative, toolbar, testID, name } = props;
-
-  const textStyles: TextStyle[] = [Typography.base, Typography.centered, Typography.negative];
-
-  if (buttonStyle === 'secondary') {
-    // in case of an outlined button, the text color
-    // should be the same as the border's
-    if (disabled) {
-      textStyles.push(Typography.inactive);
-    } else if (negative) {
-      textStyles.push(Typography.negative);
-    } else {
-      textStyles.push(Typography.accent);
-    }
-  }
 
   return (
     <PoPButton
