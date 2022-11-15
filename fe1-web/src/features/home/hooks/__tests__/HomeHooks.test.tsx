@@ -120,11 +120,4 @@ describe('Home hooks', () => {
       expect(result.current).toEqual(resubscribeToLao);
     });
   });
-
-  describe('useForgetSeed', () => {
-    it('should return the function for forgetting the current seed', () => {
-      const { result } = renderHook(() => HomeHooks.useForgetSeed(), { wrapper });
-      expect(result.current).toEqual(forgetSeed);
-    });
-  });
 });

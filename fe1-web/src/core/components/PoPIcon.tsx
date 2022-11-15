@@ -44,6 +44,10 @@ type MaterialIcon = {
  * used and what name should be passed to it.
  */
 const iconNameMap = {
+  arrowBack: {
+    iconName: 'ios-arrow-back',
+    IconFamily: Ionicons,
+  } as IonIcon,
   addPerson: {
     iconName: 'ios-person-add',
     IconFamily: Ionicons,

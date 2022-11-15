@@ -11,7 +11,7 @@ import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LAO_FEATURE_IDENTIFIER, LaoReactContext } from 'features/lao/interface';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
-import LaoHomeScreen, { LaoHomeScreenHeader, LaoHomeScreenHeaderRight } from '../LaoHomeScreen';
+import IdentityScreen from '../IdentityScreen';
 
 jest.mock('react-qr-code', () => {
   const MockQrCode = (props: any) => `[QrCode ${JSON.stringify(props)}]`;
@@ -40,33 +40,7 @@ describe('LaoHomeScreen', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={LaoHomeScreen} />
-        </FeatureContext.Provider>
-      </Provider>,
-    ).toJSON();
-    expect(component).toMatchSnapshot();
-  });
-});
-
-describe('LaoHomeScreenHeader', () => {
-  it('renders correctly', () => {
-    const component = render(
-      <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={LaoHomeScreenHeader} />
-        </FeatureContext.Provider>
-      </Provider>,
-    ).toJSON();
-    expect(component).toMatchSnapshot();
-  });
-});
-
-describe('LaoHomeScreenHeaderRight', () => {
-  it('renders correctly', () => {
-    const component = render(
-      <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={LaoHomeScreenHeaderRight} />
+          <MockNavigator component={IdentityScreen} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

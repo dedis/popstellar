@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
+import { makeIcon } from 'core/components/PoPIcon';
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { NotificationParamList } from 'core/navigation/typing/NotificationParamList';
 import STRINGS from 'resources/strings';
@@ -22,6 +23,7 @@ const NotificationNavigation = () => {
         options={{
           title: STRINGS.navigation_notification_notifications_title,
           headerRight: NotificationScreenRightHeader,
+          headerLeft: () => null,
         }}
       />
       <NotificationStackNavigator.Screen
@@ -38,6 +40,6 @@ export const NotificationNavigationScreen: NotificationFeature.LaoScreen = {
   id: STRINGS.navigation_lao_notifications,
   Component: NotificationNavigation,
   headerShown: false,
-  tabBarIcon: null,
-  order: 0,
+  tabBarIcon: makeIcon('notification'),
+  order: 999999999,
 };

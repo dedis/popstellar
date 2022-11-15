@@ -53,7 +53,8 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       await resubscribeToLao(lao, dispatch, connections);
 
       navigation.navigate(STRINGS.navigation_app_lao, {
-        screen: STRINGS.navigation_lao_home,
+        screen: STRINGS.navigation_lao_events,
+        params: { screen: STRINGS.navigation_lao_events_home },
       });
     } catch (err) {
       console.error(`Failed to establish lao connection: ${err}`);

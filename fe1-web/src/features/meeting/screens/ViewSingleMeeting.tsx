@@ -61,7 +61,11 @@ export const ViewSingleMeetingScreenHeader = () => {
     throw new Error(`Could not find a meeting with id ${meetingId}`);
   }
 
-  return <Text style={Typography.topNavigationHeading}>{meeting.name}</Text>;
+  return (
+    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
+      {meeting.name}
+    </Text>
+  );
 };
 
 export const ViewSingleMeetingScreen: MeetingFeature.LaoEventScreen = {

@@ -285,7 +285,7 @@ export const SendReceiveHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={ScannablePopToken.encodePopToken({ pop_token: popToken })} visibility />
+            <QRCode value={ScannablePopToken.encodePopToken({ pop_token: popToken })} />
           </View>
 
           <Text style={[Typography.small, styles.publicKey]} selectable>

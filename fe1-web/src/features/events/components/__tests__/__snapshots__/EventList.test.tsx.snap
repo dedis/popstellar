@@ -329,7 +329,7 @@ exports[`EventList renders correctly for attendees 1`] = `
                       <View
                         style={
                           Object {
-                            "borderRadius": 16,
+                            "borderRadius": 8,
                             "marginBottom": 16,
                           }
                         }
@@ -757,12 +757,12 @@ exports[`EventList renders correctly for attendees 1`] = `
                                   "backgroundColor": "#fff",
                                 },
                                 Object {
-                                  "borderTopLeftRadius": 16,
-                                  "borderTopRightRadius": 16,
+                                  "borderTopLeftRadius": 8,
+                                  "borderTopRightRadius": 8,
                                 },
                                 Object {
-                                  "borderBottomLeftRadius": 16,
-                                  "borderBottomRightRadius": 16,
+                                  "borderBottomLeftRadius": 8,
+                                  "borderBottomRightRadius": 8,
                                 },
                               ]
                             }
@@ -773,12 +773,12 @@ exports[`EventList renders correctly for attendees 1`] = `
                                 Object {
                                   "alignItems": "center",
                                   "backgroundColor": "#fff",
-                                  "borderBottomLeftRadius": 16,
-                                  "borderBottomRightRadius": 16,
+                                  "borderBottomLeftRadius": 8,
+                                  "borderBottomRightRadius": 8,
                                   "borderBottomWidth": 0.5,
                                   "borderColor": "#bcbbc1",
-                                  "borderTopLeftRadius": 16,
-                                  "borderTopRightRadius": 16,
+                                  "borderTopLeftRadius": 8,
+                                  "borderTopRightRadius": 8,
                                   "flexDirection": "row",
                                   "padding": 14,
                                 }
@@ -1491,7 +1491,7 @@ exports[`EventList renders correctly for organizers 1`] = `
                       <View
                         style={
                           Object {
-                            "borderRadius": 16,
+                            "borderRadius": 8,
                             "marginBottom": 16,
                           }
                         }
@@ -1965,12 +1965,12 @@ exports[`EventList renders correctly for organizers 1`] = `
                                   "backgroundColor": "#fff",
                                 },
                                 Object {
-                                  "borderTopLeftRadius": 16,
-                                  "borderTopRightRadius": 16,
+                                  "borderTopLeftRadius": 8,
+                                  "borderTopRightRadius": 8,
                                 },
                                 Object {
-                                  "borderBottomLeftRadius": 16,
-                                  "borderBottomRightRadius": 16,
+                                  "borderBottomLeftRadius": 8,
+                                  "borderBottomRightRadius": 8,
                                 },
                               ]
                             }
@@ -1981,12 +1981,12 @@ exports[`EventList renders correctly for organizers 1`] = `
                                 Object {
                                   "alignItems": "center",
                                   "backgroundColor": "#fff",
-                                  "borderBottomLeftRadius": 16,
-                                  "borderBottomRightRadius": 16,
+                                  "borderBottomLeftRadius": 8,
+                                  "borderBottomRightRadius": 8,
                                   "borderBottomWidth": 0.5,
                                   "borderColor": "#bcbbc1",
-                                  "borderTopLeftRadius": 16,
-                                  "borderTopRightRadius": 16,
+                                  "borderTopLeftRadius": 8,
+                                  "borderTopRightRadius": 8,
                                   "flexDirection": "row",
                                   "padding": 14,
                                 }

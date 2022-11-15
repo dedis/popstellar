@@ -349,7 +349,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -595,8 +595,8 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -606,8 +606,8 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,
@@ -1155,7 +1155,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -1366,8 +1366,8 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -1377,8 +1377,8 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
                                         "flexDirection": "row",
                                         "padding": 14,

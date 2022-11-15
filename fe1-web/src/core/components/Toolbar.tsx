@@ -1,22 +1,22 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
-import { Color, Spacing, Typography } from 'core/styles';
+import { Color, Spacing } from 'core/styles';
 
-import PoPTouchableOpacity from './PoPTouchableOpacity';
+import PoPTextButton from './PoPTextButton';
 
 const styles = StyleSheet.create({
   toolbar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
     paddingHorizontal: Spacing.contentSpacing,
     backgroundColor: Color.contrast,
     paddingVertical: Spacing.x1,
     borderColor: Color.separator,
     borderTopWidth: 1,
   } as ViewStyle,
-  toolbarItem: {} as ViewStyle,
 });
 
 /**
@@ -27,11 +27,13 @@ const Toolbar = ({ items }: IPropTypes) => {
   return (
     <View style={styles.toolbar}>
       {items.map((item) => (
-        <PoPTouchableOpacity onPress={item.onPress} key={item.id || item.title}>
-          <View style={styles.toolbarItem}>
-            <Text style={[Typography.base, Typography.accent]}>{item.title}</Text>
-          </View>
-        </PoPTouchableOpacity>
+        <PoPTextButton
+          onPress={item.onPress}
+          key={item.id || item.title}
+          buttonStyle={item.buttonStyle}
+          toolbar>
+          {item.title}
+        </PoPTextButton>
       ))}
     </View>
   );
@@ -42,6 +44,7 @@ export const toolbarItemsPropType = PropTypes.arrayOf(
     id: PropTypes.string,
     title: PropTypes.string.isRequired,
     onPress: PropTypes.func.isRequired,
+    buttonStyle: PropTypes.oneOf<'primary' | 'secondary'>(['primary', 'secondary']),
   }).isRequired,
 );
 
@@ -52,5 +55,7 @@ const propTypes = {
 Toolbar.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+
+export type ToolbarItem = IPropTypes['items']['0'];
 
 export default Toolbar;

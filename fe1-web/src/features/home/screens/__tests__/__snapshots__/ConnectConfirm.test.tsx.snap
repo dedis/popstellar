@@ -514,7 +514,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                           Object {
                                             "backgroundColor": "#3742fa",
                                             "borderColor": "#3742fa",
-                                            "borderRadius": 16,
+                                            "borderRadius": 8,
                                             "borderWidth": 1,
                                             "padding": 8,
                                           },

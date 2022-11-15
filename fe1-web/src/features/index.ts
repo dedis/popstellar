@@ -136,7 +136,6 @@ export function configureFeatures() {
     getLaoChannel: laoConfiguration.functions.getLaoChannel,
     getLaoById: laoConfiguration.functions.getLaoById,
     resubscribeToLao: laoConfiguration.functions.resubscribeToLao,
-    forgetSeed: walletConfiguration.functions.forgetSeed,
     /* action creators */
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
     /* hooks */

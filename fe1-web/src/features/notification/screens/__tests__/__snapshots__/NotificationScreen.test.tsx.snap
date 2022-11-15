@@ -349,7 +349,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                             <View
                               style={
                                 Object {
-                                  "borderRadius": 16,
+                                  "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
                               }
@@ -565,12 +565,12 @@ exports[`NotificationScreen renders correctly 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -580,11 +580,11 @@ exports[`NotificationScreen renders correctly 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
@@ -939,12 +939,12 @@ exports[`NotificationScreen renders correctly 1`] = `
                                         "backgroundColor": "#fff",
                                       },
                                       Object {
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                       },
                                       Object {
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                       },
                                     ]
                                   }
@@ -954,11 +954,11 @@ exports[`NotificationScreen renders correctly 1`] = `
                                       Object {
                                         "alignItems": "center",
                                         "backgroundColor": "#fff",
-                                        "borderBottomLeftRadius": 16,
-                                        "borderBottomRightRadius": 16,
+                                        "borderBottomLeftRadius": 8,
+                                        "borderBottomRightRadius": 8,
                                         "borderColor": "#bcbbc1",
-                                        "borderTopLeftRadius": 16,
-                                        "borderTopRightRadius": 16,
+                                        "borderTopLeftRadius": 8,
+                                        "borderTopRightRadius": 8,
                                         "flexDirection": "row",
                                         "padding": 14,
                                       }
