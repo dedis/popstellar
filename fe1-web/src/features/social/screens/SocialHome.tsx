@@ -82,7 +82,7 @@ const SocialHome = () => {
             value={inputChirp}
             onChangeText={setInputChirp}
             onPress={publishChirp}
-            publishIsDisabledCond={publishDisabled}
+            disabled={publishDisabled}
             currentUserPublicKey={currentUserPopTokenPublicKey}
           />
           <FlatList
