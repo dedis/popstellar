@@ -1,7 +1,7 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { FunctionComponent, useMemo } from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 

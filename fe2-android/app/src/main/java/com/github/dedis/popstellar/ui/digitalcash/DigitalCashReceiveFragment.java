@@ -13,19 +13,28 @@ import com.github.dedis.popstellar.databinding.DigitalCashReceiveFragmentBinding
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
 
 import java.util.Objects;
+import dagger.hilt.android.AndroidEntryPoint;
+
+import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiveFragment#newInstance}
  * factory method to create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class DigitalCashReceiveFragment extends Fragment {
   public static final String TAG = DigitalCashReceiveFragment.class.getSimpleName();
+
+  @Inject Gson gson;
+
   private DigitalCashReceiveFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
 
@@ -58,8 +67,8 @@ public class DigitalCashReceiveFragment extends Fragment {
     try {
       LaoView laoView = mViewModel.getCurrentLaoValue();
       PoPToken token = mViewModel.getKeyManager().getValidPoPToken(laoView);
-
-      Bitmap myBitmap = QRCode.from(token.getPublicKey().getEncoded()).bitmap();
+      PopTokenData tokenData = new PopTokenData(token.getPublicKey());
+      Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
       mBinding.digitalCashReceiveQr.setImageBitmap(myBitmap);
 
       if (laoView.getTransactionByUser().containsKey(token.getPublicKey())) {

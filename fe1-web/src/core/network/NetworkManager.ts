@@ -10,6 +10,7 @@ import { sendToAllServersStrategy } from './strategies/SendToAllServersStrategy'
 let NETWORK_MANAGER_INSTANCE: NetworkManager;
 
 type ReconnectionHandler = () => void;
+type ConnectionDeathHandler = (address: string) => void;
 
 class NetworkManager {
   private connections: NetworkConnection[];
@@ -23,6 +24,8 @@ class NetworkManager {
   private isFocused: boolean;
 
   private reconnectionHandlers: ReconnectionHandler[] = [];
+
+  private connectionDeathHandlers: ConnectionDeathHandler[] = [];
 
   public constructor(sendingStrategy: SendingStrategy) {
     this.connections = [];
@@ -39,26 +42,28 @@ class NetworkManager {
     AppState.addEventListener('change', this.onAppStateChange.bind(this));
   }
 
-  private onNetworkChange(state: NetInfoState): void {
+  private onNetworkChange(state: NetInfoState): Promise<void> {
     const isOnline = state.isConnected || false;
     if (!this.isOnline && isOnline) {
       // if we were disconnected before and are now reconnected to the network
       // then try to reconnect all connections
-      this.reconnectIfNecessary();
+      return this.reconnectIfNecessary();
     }
 
     this.isOnline = isOnline;
+    return Promise.resolve();
   }
 
-  private onAppStateChange(status: AppStateStatus) {
+  private onAppStateChange(status: AppStateStatus): Promise<void> {
     const isFocused = status === 'active';
     if (!this.isFocused && isFocused) {
       // if we were backgrounded and become active again, the websocket
       // connections are very likely to be broken
-      this.reconnectIfNecessary();
+      return this.reconnectIfNecessary();
     }
 
     this.isFocused = isFocused;
+    return Promise.resolve();
   }
 
   public addReconnectionHandler(handler: ReconnectionHandler) {
@@ -73,13 +78,25 @@ class NetworkManager {
     this.reconnectionHandlers = [];
   }
 
-  private reconnectIfNecessary() {
+  public addConnectionDeathHandler(handler: ConnectionDeathHandler) {
+    this.connectionDeathHandlers.push(handler);
+  }
+
+  public removeConnectionDeathHandler(handler: ConnectionDeathHandler) {
+    this.connectionDeathHandlers = this.connectionDeathHandlers.filter((h) => h !== handler);
+  }
+
+  public removeAllConnectionDeathHandlers() {
+    this.connectionDeathHandlers = [];
+  }
+
+  private async reconnectIfNecessary() {
     // the sending strategy will fail if we have no connection
     if (this.connections.length > 0) {
       console.info('Reconnecting to all disconnected websockets..');
-      for (const connection of this.connections) {
-        connection.reconnectIfNecessary();
-      }
+      await Promise.all(this.connections.map((connection) => connection.reconnectIfNecessary()));
+      console.info('Done. Execute re-connection handlers..');
+
       for (const handler of this.reconnectionHandlers) {
         handler();
       }
@@ -90,11 +107,16 @@ class NetworkManager {
     return this.connections.find((nc: NetworkConnection) => nc.address === address);
   }
 
+  private onConnectionDeath(address: string) {
+    this.disconnectFrom(address);
+    this.connectionDeathHandlers.forEach((handler) => handler(address));
+  }
+
   /** Connects to a server or returns an existing connection to the server
    * @param address the server's full address (URI)
    * @returns a new connection to the server, or an existing one if it's already established
    */
-  public connect(address: string): NetworkConnection {
+  public async connect(address: string): Promise<NetworkConnection> {
     if (!address) {
       throw new Error('No address provided in connect');
     }
@@ -107,7 +129,11 @@ class NetworkManager {
       return existingConnection;
     }
 
-    const connection: NetworkConnection = new NetworkConnection(href, this.rpcHandler);
+    const connection: NetworkConnection = await NetworkConnection.create(
+      href,
+      this.rpcHandler,
+      () => this.onConnectionDeath(href),
+    );
     this.connections.push(connection);
     return connection;
   }

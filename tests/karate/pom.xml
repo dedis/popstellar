@@ -22,9 +22,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>net.masterthought</groupId>
+      <artifactId>cucumber-reporting</artifactId>
+      <version>5.3.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.crypto.tink</groupId>
       <artifactId>tink-gcpkms</artifactId>
-      <version>1.5.0</version>
+      <version>1.7.0</version>
     </dependency>
   </dependencies>
 

@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,13 +10,15 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
-import androidx.fragment.app.*;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
+import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
-import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
@@ -26,6 +26,7 @@ import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -56,6 +57,21 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
     BottomNavigationView navbar = findViewById(R.id.home_nav_bar);
     setupNavigationBar(navbar);
     setupMenuAvailabilityListeners(navbar);
+
+    restoreStoredState();
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+
+    try {
+      viewModel.savePersistentData();
+    } catch (GeneralSecurityException e) {
+      // We do not display the security error to the user
+      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
+    }
   }
 
   /** Setup the listeners that changes the navigation bar menus */
@@ -158,16 +174,8 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
       return false;
     }
 
-    // Check for the permission, if it is not granted, ask for it
-    if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-      setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
-    } else {
-      setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_camera_perm,
-          () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
-    }
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
     return true;
   }
 
@@ -195,6 +203,11 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
 
     Log.d(HomeViewModel.TAG, "Opening social media activity");
     startActivity(SocialMediaActivity.newIntent(this));
+  }
+
+  private void restoreStoredState() {
+    PersistentData data = ActivityUtils.loadPersistentData(this);
+    viewModel.restoreConnections(data);
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {

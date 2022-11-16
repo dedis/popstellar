@@ -50,7 +50,7 @@ const contextValue = {
 const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
 mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
-const wrapper = ({ children }: { children: React.ReactChildren }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) => (
   <Provider store={mockStore}>
     <FeatureContext.Provider value={contextValue}>{children}</FeatureContext.Provider>
   </Provider>

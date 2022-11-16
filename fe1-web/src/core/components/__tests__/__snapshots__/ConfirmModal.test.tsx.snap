@@ -653,6 +653,7 @@ exports[`ConfirmModal renders correctly with text input 1`] = `
           editable={true}
           onChangeText={[Function]}
           placeholder=""
+          placeholderTextColor="#8E8E8E"
           style={
             Array [
               Object {

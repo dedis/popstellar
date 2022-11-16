@@ -62,11 +62,6 @@ public class LaoDetailActivityPageObject {
   }
 
   @IdRes
-  public static int cameraPermissionId() {
-    return R.id.fragment_camera_perm;
-  }
-
-  @IdRes
   public static int qrCodeFragmentId() {
     return R.id.fragment_qrcode;
   }

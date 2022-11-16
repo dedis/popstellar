@@ -44,4 +44,17 @@ public interface Copyable<T> {
     return source.entrySet().stream()
         .collect(Collectors.toMap(Map.Entry::getKey, entry -> new ArrayList<>(entry.getValue())));
   }
+
+  /**
+   * Create a copy of a map containing sets
+   *
+   * @param source map
+   * @param <E> type of key
+   * @param <T> type of value inside the set (assumed to be immutable)
+   * @return the copy
+   */
+  static <E, T> Map<E, Set<T>> copyMapOfSet(Map<E, Set<T>> source) {
+    return source.entrySet().stream()
+        .collect(Collectors.toMap(Map.Entry::getKey, entry -> new HashSet<>(entry.getValue())));
+  }
 }

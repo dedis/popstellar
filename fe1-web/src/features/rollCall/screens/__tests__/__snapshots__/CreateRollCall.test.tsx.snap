@@ -369,6 +369,7 @@ exports[`CreateRollCall renders correctly 1`] = `
                               editable={true}
                               onChangeText={[Function]}
                               placeholder="Real Life Captcha"
+                              placeholderTextColor="#8E8E8E"
                               style={
                                 Array [
                                   Object {
@@ -423,6 +424,7 @@ exports[`CreateRollCall renders correctly 1`] = `
                               editable={true}
                               onChangeText={[Function]}
                               placeholder="BC410"
+                              placeholderTextColor="#8E8E8E"
                               style={
                                 Array [
                                   Object {
@@ -477,6 +479,7 @@ exports[`CreateRollCall renders correctly 1`] = `
                               editable={true}
                               onChangeText={[Function]}
                               placeholder="Are you a robot?"
+                              placeholderTextColor="#8E8E8E"
                               style={
                                 Array [
                                   Object {
