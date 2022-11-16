@@ -3599,22 +3599,18 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             </Text>
                             <View
                               style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "borderRadius": 8,
-                                    "flexDirection": "row",
-                                    "marginBottom": 16,
-                                    "padding": 16,
-                                  },
-                                  Object {
-                                    "backgroundColor": "#ffa502",
-                                  },
-                                ]
+                                Object {
+                                  "alignItems": "center",
+                                  "backgroundColor": "#3498db",
+                                  "borderRadius": 8,
+                                  "flexDirection": "row",
+                                  "marginBottom": 16,
+                                  "padding": 16,
+                                }
                               }
                             >
                               <View>
-                                {"name":"ios-warning","size":50,"color":"#fff"}
+                                {"name":"ios-information-circle-outline","size":50,"color":"#fff"}
                               </View>
                               <View
                                 style={
@@ -10423,22 +10419,18 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             </Text>
                             <View
                               style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "borderRadius": 8,
-                                    "flexDirection": "row",
-                                    "marginBottom": 16,
-                                    "padding": 16,
-                                  },
-                                  Object {
-                                    "backgroundColor": "#ffa502",
-                                  },
-                                ]
+                                Object {
+                                  "alignItems": "center",
+                                  "backgroundColor": "#3498db",
+                                  "borderRadius": 8,
+                                  "flexDirection": "row",
+                                  "marginBottom": 16,
+                                  "padding": 16,
+                                }
                               }
                             >
                               <View>
-                                {"name":"ios-warning","size":50,"color":"#fff"}
+                                {"name":"ios-information-circle-outline","size":50,"color":"#fff"}
                               </View>
                               <View
                                 style={
@@ -11779,7 +11771,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       ]
                                     }
                                   >
-                                    Tally Votes
+                                    End Election
                                   </Text>
                                 </View>
                               </View>

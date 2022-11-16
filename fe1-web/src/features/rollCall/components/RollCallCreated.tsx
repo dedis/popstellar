@@ -17,12 +17,12 @@ const RollCallCreated = ({ rollCall, laoId, isOrganizer }: IPropTypes) => {
 
   const onOpenRollCall = useCallback(() => {
     requestOpenRollCall(laoId, rollCall.id).catch((e) => {
-      toast.show(STRINGS.roll_call_location_error_open_roll_call, {
+      toast.show(STRINGS.roll_call_error_open_roll_call, {
         type: 'danger',
         placement: 'bottom',
         duration: FOUR_SECONDS,
       });
-      console.debug(STRINGS.roll_call_location_error_open_roll_call, e);
+      console.debug(STRINGS.roll_call_error_open_roll_call, e);
     });
   }, [toast, rollCall.id, laoId]);
 

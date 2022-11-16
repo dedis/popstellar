@@ -91,7 +91,7 @@ export const EventsScreenHeaderLeft = () => {
         }}>
         <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
       </PoPTouchableOpacity>
-      <NavigationPadding n={1} onlyPadding={false} />
+      <NavigationPadding paddingAmount={1} nextToIcon={false} />
     </View>
   );
 };

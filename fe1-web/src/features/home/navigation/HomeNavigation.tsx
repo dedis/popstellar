@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useMemo } from 'react';
 
-import { makeNavigationPadding } from 'core/components/NavigationPadding';
+import NavigationPadding from 'core/components/NavigationPadding';
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
@@ -13,6 +13,23 @@ import { HomeFeature } from '../interface';
 import { Home } from '../screens';
 import { HomeHeaderRight } from '../screens/Home';
 import ConnectNavigation from './ConnectNavigation';
+
+const homeScreens: HomeFeature.HomeScreen[] = [
+  {
+    id: STRINGS.navigation_home_home,
+    title: STRINGS.home_navigation_title,
+    Component: Home,
+    tabBarIcon: makeIcon('list'),
+    headerLeft: () => <NavigationPadding paddingAmount={1} />,
+    headerRight: HomeHeaderRight,
+  } as HomeFeature.HomeScreen,
+  {
+    id: STRINGS.navigation_home_connect,
+    title: STRINGS.navigation_home_connect,
+    Component: ConnectNavigation,
+    headerShown: false,
+  },
+];
 
 /**
  * The main tab navigation component. It creates a tab navigator between the Home, Connect, Launch
@@ -27,20 +44,7 @@ const HomeNavigation = () => {
     return [
       ...navigationScreens,
       // add home screen to the navigation
-      {
-        id: STRINGS.navigation_home_home,
-        title: STRINGS.home_navigation_title,
-        Component: Home,
-        tabBarIcon: makeIcon('list'),
-        headerLeft: makeNavigationPadding(1),
-        headerRight: HomeHeaderRight,
-      } as HomeFeature.HomeScreen,
-      {
-        id: STRINGS.navigation_home_connect,
-        title: STRINGS.navigation_home_connect,
-        Component: ConnectNavigation,
-        headerShown: false,
-      },
+      ...homeScreens,
     ];
   }, [navigationScreens]);
 

@@ -230,7 +230,7 @@ namespace STRINGS {
 
   export const election_open = 'Open Election';
   export const election_add_question = 'Add Question';
-  export const election_end = 'Tally Votes';
+  export const election_end = 'End Election';
   export const election_questions = 'Questions';
   export const election_results = 'Election Results';
 
@@ -263,15 +263,16 @@ namespace STRINGS {
   export const roll_call_open_attendee =
     'The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.';
 
-  export const roll_call_location_error_open_roll_call = 'Unable to send roll call open request';
-  export const roll_call_location_error_scanning_no_alias =
+  export const roll_call_error_open_roll_call = 'Unable to send roll call open request';
+  export const roll_call_error_scanning_no_alias =
     'Unable to scan attendees, the event does not have an idAlias';
-  export const roll_call_location_error_reopen_roll_call =
-    'Unable to send Roll call re-open request';
-  export const roll_call_location_error_reopen_roll_call_no_alias =
+  export const roll_call_error_reopen_roll_call = 'Unable to send Roll call re-open request';
+  export const roll_call_error_reopen_roll_call_no_alias =
     'Unable to send roll call re-open request, the event does not have an idAlias';
 
-  export const roll_call_location_error_close_roll_call = 'Could not close roll call';
+  export const roll_call_error_close_roll_call_no_alias =
+    'Could not close roll call, the event does not have an idAlias';
+  export const roll_call_error_close_roll_call = 'Could not close roll call';
 
   /* --- Roll-call creation Strings --- */
 

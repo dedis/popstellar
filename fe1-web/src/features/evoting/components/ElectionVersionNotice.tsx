@@ -9,23 +9,18 @@ import STRINGS from 'resources/strings';
 import { Election, ElectionVersion } from '../objects';
 
 const styles = StyleSheet.create({
-  warning: {
+  info: {
     padding: Spacing.x1,
     marginBottom: Spacing.x1,
     borderRadius: Border.radius,
 
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: Color.info,
   } as ViewStyle,
-  warningText: {
+  infoText: {
     flex: 1,
     marginLeft: Spacing.x1,
-  } as ViewStyle,
-  openBallot: {
-    backgroundColor: Color.warning,
-  } as ViewStyle,
-  secretBallot: {
-    backgroundColor: Color.success,
   } as ViewStyle,
 });
 
@@ -33,9 +28,9 @@ const ElectionVersionNotice = ({ election }: IPropTypes) => {
   switch (election.version) {
     case ElectionVersion.OPEN_BALLOT:
       return (
-        <View style={[styles.warning, styles.openBallot]}>
-          <PoPIcon name="warning" color={Color.contrast} size={Icon.largeSize} />
-          <View style={styles.warningText}>
+        <View style={styles.info}>
+          <PoPIcon name="info" color={Color.contrast} size={Icon.largeSize} />
+          <View style={styles.infoText}>
             <Text style={[Typography.base, Typography.important, Typography.negative]}>
               {STRINGS.general_notice}
             </Text>
@@ -47,9 +42,9 @@ const ElectionVersionNotice = ({ election }: IPropTypes) => {
       );
     case ElectionVersion.SECRET_BALLOT:
       return (
-        <View style={[styles.warning, styles.secretBallot]}>
+        <View style={styles.info}>
           <PoPIcon name="info" color={Color.contrast} size={Icon.largeSize} />
-          <View style={styles.warningText}>
+          <View style={styles.infoText}>
             <Text style={[Typography.base, Typography.important, Typography.negative]}>
               {STRINGS.general_notice}
             </Text>

@@ -20,7 +20,7 @@ const BackButton = ({ padding }: IPropTypes) => {
       <PoPTouchableOpacity onPress={navigation.goBack}>
         <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
       </PoPTouchableOpacity>
-      <NavigationPadding n={padding || 0} />
+      <NavigationPadding paddingAmount={padding || 0} />
     </>
   );
 };
@@ -38,8 +38,3 @@ BackButton.defaultProps = {
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default BackButton;
-
-/**
- * Returns a back button with the padding parameter set accordingly
- */
-export const makeBackButton = (padding: number) => () => <BackButton padding={padding} />;
