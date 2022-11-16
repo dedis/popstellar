@@ -10,6 +10,7 @@ export const contrast = '#fff';
 
 export const success = '#2ed573';
 export const warning = '#ffa502';
+export const info = '#3498db';
 export const error = '#e74c3c';
 
 export const inactive = '#8E8E8E';

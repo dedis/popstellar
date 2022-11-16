@@ -104,7 +104,7 @@ const RollCallOpened = () => {
   const addAttendeePopToken = useCallback(
     (popToken: string) => {
       // if the token is already part of attendeePopTokens, do not trigger a state update
-      // and return false indicating the pop token as not added since it's a duplicate
+      // and return false indicating the pop token was not added since it's a duplicate
       if (attendeePopTokens.includes(popToken)) {
         return false;
       }
