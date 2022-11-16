@@ -37,16 +37,17 @@ import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.home.LaunchPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
-public class LaunchFragmentTest {
+public class LaoCreateFragmentTest {
 
   private static final String LAO_NAME = "LAO";
+  private static final String SERVER_URL = "localhost";
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
   private static final PublicKey PK = KEY_PAIR.getPublicKey();
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
@@ -92,14 +93,12 @@ public class LaunchFragmentTest {
   @Before
   public void setup() {
     // Open the launch tab
-    HomeActivityTest.initializeWallet();
-    launchButton().perform(click());
+    HomeActivityTest.initializeWallet(activityScenarioRule);
+    createButton().perform(click());
   }
 
   @Test
   public final void uiElementsAreDisplayed() {
-    bodyText().check(matches(isDisplayed()));
-    titleText().check(matches(isDisplayed()));
     laoNameEntry().check(matches(isDisplayed()));
     cancelButtonLaunch().check(matches(isDisplayed()));
     confirmButtonLaunch().check(matches(isDisplayed()));
@@ -109,9 +108,11 @@ public class LaunchFragmentTest {
   public void confirmButtonGoesToLaoDetail() {
     Intents.init();
     laoNameEntry().perform(ViewActions.replaceText(LAO_NAME));
+    serverNameEntry().perform(ViewActions.replaceText(SERVER_URL));
+    confirmButtonLaunch().check(matches(isDisplayed()));
     confirmButtonLaunch().check(matches(isEnabled()));
     confirmButtonLaunch().perform(click());
-    intended(hasComponent(LaoDetailActivity.class.getName()));
+    intended(hasComponent(ConnectingActivity.class.getName()));
     Intents.release();
   }
 

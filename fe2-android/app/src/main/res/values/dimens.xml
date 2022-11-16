@@ -7,6 +7,7 @@
   <!-- Text -->
   <dimen name="margin_text">28dp</dimen>
   <dimen name="margin_text_small">16dp</dimen>
+  <dimen name="margin_text_horizontal">8dp</dimen>
   <dimen name="margin_top">5dp</dimen>
   <dimen name="size_title">28sp</dimen>
   <dimen name="size_section_title">22sp</dimen>
@@ -17,6 +18,11 @@
   <dimen name="tab_lao_detail">13sp</dimen>
   <dimen name="size_for_longer_text">10sp</dimen>
   <dimen name="rounded_edit_text">10dp</dimen>
+  <dimen name="margin_top_title">50dp</dimen>
+
+  <!--  Home -->
+  <dimen name="home_button_horizontal_margin">50dp</dimen>
+  <dimen name="home_button_vertical_margin">30dp</dimen>
 
   <!-- Camera preview -->
   <dimen name="camera_preview_margin">20dp</dimen>
@@ -40,6 +46,8 @@
   <!-- Button -->
   <dimen name="event_buttons_width">110dp</dimen>
   <dimen name="event_buttons_height">43dp</dimen>
+  <dimen name="standard_button_height">55dp</dimen>
+  <dimen name="standard_button_width">105dp</dimen>
   <dimen name="qr_icon_side">40dp</dimen>
 
   <!-- Event -->
@@ -105,7 +113,6 @@
   <dimen name="bottom_navigation_view_height">56dp</dimen>
   <dimen name="card_view_elevation">1dp</dimen>
   <dimen name="lone_bottom_button_top_margin">30dp</dimen>
-  <integer name="min_number_lines_seed_text">3</integer>
 
   <!--  Witnessing dimensions -->
   <dimen name="tab_layout_top_margin">20dp</dimen>
@@ -118,9 +125,6 @@
   <dimen name="qr_layout_margin">40dp</dimen>
   <dimen name="qr_layout_elevation">8dp</dimen>
   <dimen name="title_max_width">250dp</dimen>
-
-  <!-- Lao list dimensions -->
-  <dimen name="rv_margin_top">20dp</dimen>
 
   <!--  Container dimensions -->
   <dimen name="container_margin">8dp</dimen>
@@ -159,6 +163,8 @@
   <dimen name="provenance_title_top_margin">12dp</dimen>
   <dimen name="transaction_title_top_margin">10dp</dimen>
 
-  <!--  Settings -->
-  <dimen name="settings_margin_in_between_sections">28dp</dimen>
+<!--  CardView dimensions -->
+  <dimen name="padding_standard">8dp</dimen>
+  <dimen name="corner_radius_standard">12dp</dimen>
+  <dimen name="stroke_width">1dp</dimen>
 </resources>

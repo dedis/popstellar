@@ -35,7 +35,7 @@ public class WalletTest {
     String Roll_Call_ID = "1234123412341234";
 
     Wallet hdw1 = new Wallet(TestKeysetModule.provideWalletKeysetManager());
-    hdw1.newSeed();
+    hdw1.importSeed(hdw1.newSeed());
     String seed = String.join(" ", hdw1.exportSeed());
     PoPToken res1 = hdw1.generatePoPToken(Lao_ID, Roll_Call_ID);
 

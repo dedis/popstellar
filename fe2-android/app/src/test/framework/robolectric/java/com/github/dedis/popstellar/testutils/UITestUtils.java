@@ -76,6 +76,17 @@ public class UITestUtils {
     return getAlertDialogButton(DialogInterface.BUTTON_NEGATIVE);
   }
 
+    /**
+     * Retrieve the neutral button of the latest dialog
+     *
+     * <p>For example : The OK button
+     *
+     * @return the button
+     */
+  public static Button dialogNeutralButton(){
+      return getAlertDialogButton(DialogInterface.BUTTON_NEUTRAL);
+  }
+
   /**
    * Retrieve a specific button from the latest Alert Dialog
    *
