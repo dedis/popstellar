@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 });
 
 const SocialHome = () => {
-  const { currentUserPublicKey } = useContext(SocialMediaContext);
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
@@ -46,15 +46,15 @@ const SocialHome = () => {
   }
 
   // The publish button is disabled in offline mode and when the user public key is not defined
-  const publishDisabled = !isConnected || !currentUserPublicKey;
+  const publishDisabled = !isConnected || !currentUserPopTokenPublicKey;
 
   const publishChirp = () => {
     // button is disabled if publicKey is not set
-    if (!currentUserPublicKey) {
+    if (!currentUserPopTokenPublicKey) {
       return;
     }
 
-    requestAddChirp(currentUserPublicKey, inputChirp, laoId)
+    requestAddChirp(currentUserPopTokenPublicKey, inputChirp, laoId)
       .then(() => {
         setInputChirp('');
       })
@@ -88,7 +88,7 @@ const SocialHome = () => {
             onChangeText={setInputChirp}
             onPress={publishChirp}
             disabled={publishDisabled}
-            currentUserPublicKey={currentUserPublicKey}
+            currentUserPublicKey={currentUserPopTokenPublicKey}
           />
           <FlatList
             data={chirpList}

@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 });
 
 const SocialSearch = () => {
-  const { currentUserPublicKey } = useContext(SocialMediaContext);
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
   const currentLao = SocialHooks.useCurrentLao();
 
   if (!currentLao) {
@@ -48,7 +48,7 @@ const SocialSearch = () => {
 
   const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
     // Not show our own profile
-    if (currentUserPublicKey && item.valueOf() === currentUserPublicKey.valueOf()) {
+    if (currentUserPopTokenPublicKey && item.valueOf() === currentUserPopTokenPublicKey.valueOf()) {
       return null;
     }
     return <UserListItem laoId={currentLao.id} publicKey={item} />;

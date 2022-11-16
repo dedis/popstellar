@@ -89,7 +89,7 @@ const ChirpCard = ({ chirp }: IPropTypes) => {
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
   const isConnected = SocialHooks.useConnectedToLao();
-  const { currentUserPublicKey } = useContext(SocialMediaContext);
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
 
   if (laoId === undefined) {
     throw new Error('Impossible to render chirp, current lao id is undefined');
@@ -104,7 +104,7 @@ const ChirpCard = ({ chirp }: IPropTypes) => {
 
   const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false);
 
-  const addReactionDisabled = !isConnected || !currentUserPublicKey;
+  const addReactionDisabled = !isConnected || !currentUserPopTokenPublicKey;
 
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
@@ -118,16 +118,17 @@ const ChirpCard = ({ chirp }: IPropTypes) => {
 
   // TODO: delete a chirp posted with a PoP token from a previous roll call.
   const isSender =
-    currentUserPublicKey && currentUserPublicKey.valueOf() === chirp.sender.valueOf();
+    currentUserPopTokenPublicKey &&
+    currentUserPopTokenPublicKey.valueOf() === chirp.sender.valueOf();
 
-  const deleteDisabled = !isConnected || !currentUserPublicKey;
+  const deleteDisabled = !isConnected || !currentUserPopTokenPublicKey;
 
   const deleteChirp = () => {
-    if (!currentUserPublicKey) {
+    if (!currentUserPopTokenPublicKey) {
       return;
     }
 
-    requestDeleteChirp(currentUserPublicKey, chirp.id, laoId).catch((err) => {
+    requestDeleteChirp(currentUserPopTokenPublicKey, chirp.id, laoId).catch((err) => {
       toast.show(`Could not remove chirp, error: ${err}`, {
         type: 'danger',
         placement: 'top',

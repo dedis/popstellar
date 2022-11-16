@@ -72,8 +72,8 @@ const contextValue = {
   } as SocialReactContext,
 };
 
-const senderContext = { currentUserPublicKey: sender };
-const nonSenderContext = { currentUserPublicKey: new PublicKey('IAmNotTheSender') };
+const senderContext = { currentUserPopTokenPublicKey: sender };
+const nonSenderContext = { currentUserPopTokenPublicKey: new PublicKey('IAmNotTheSender') };
 
 // FIXME: useSelector mock doesn't seem to work correctly
 describe('ChirpCard', () => {
