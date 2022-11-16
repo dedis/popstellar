@@ -42,25 +42,26 @@ const RollCallOpen = ({ rollCall, laoId, isOrganizer, scannedPopTokens }: IPropT
 
   const onAddAttendees = useCallback(() => {
     // Once the roll call is opened the first time, idAlias is defined
-    if (rollCall.idAlias) {
-      navigation.navigate(STRINGS.navigation_app_lao, {
-        screen: STRINGS.navigation_lao_events,
-        params: {
-          screen: STRINGS.navigation_lao_events_open_roll_call,
-          params: {
-            rollCallId: rollCall.id.toString(),
-            attendeePopTokens: (scannedPopTokens || []).map((e) => e.valueOf()),
-          },
-        },
-      });
-    } else {
+    if (!rollCall.idAlias) {
       toast.show(STRINGS.roll_call_error_scanning_no_alias, {
         type: 'danger',
         placement: 'bottom',
         duration: FOUR_SECONDS,
       });
-      console.debug(STRINGS.roll_call_error_scanning_no_alias);
+      console.warn(STRINGS.roll_call_error_scanning_no_alias);
+      return;
     }
+
+    navigation.navigate(STRINGS.navigation_app_lao, {
+      screen: STRINGS.navigation_lao_events,
+      params: {
+        screen: STRINGS.navigation_lao_events_open_roll_call,
+        params: {
+          rollCallId: rollCall.id.toString(),
+          attendeePopTokens: (scannedPopTokens || []).map((e) => e.valueOf()),
+        },
+      },
+    });
   }, [toast, navigation, rollCall, scannedPopTokens]);
 
   const onCloseRollCall = useCallback(async () => {
@@ -107,10 +108,12 @@ const RollCallOpen = ({ rollCall, laoId, isOrganizer, scannedPopTokens }: IPropT
 
   // re-check if wallet has been initialized after focus events
   useEffect(() => {
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener('focus', () => {
       setHasWalletBeenInitialized(hasSeed());
     });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
   }, [navigation, hasSeed]);
 
   useEffect(() => {
