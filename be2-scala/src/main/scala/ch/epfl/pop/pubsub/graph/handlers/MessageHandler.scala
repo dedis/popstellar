@@ -22,18 +22,18 @@ trait MessageHandler extends AskPatternConstants {
 
   def extractParameters[T](rpcRequest: JsonRpcRequest, errorMsg: String): Future[(GraphMessage, Message, Option[T])] = {
     rpcRequest.getParamsMessage match {
-      case Some(_) => 
+      case Some(_) =>
         val message: Message = rpcRequest.getParamsMessage.get
         val data: T = message.decodedData.get.asInstanceOf[T]
         Future((Left(rpcRequest), message, Some(data)))
-      case _       => Future((Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), null, None))
+      case _ => Future((Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), null, None))
     }
   }
 
   def extractLaoChannel(rpcRequest: JsonRpcRequest, errorMsg: String): Future[(GraphMessage, Option[Hash])] = {
     rpcRequest.getParamsChannel.decodeChannelLaoId match {
-      case optId@Some(_) => Future((Left(rpcRequest), optId))
-      case _       => Future((Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), None))
+      case optId @ Some(_) => Future((Left(rpcRequest), optId))
+      case _ => Future((Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), None))
     }
   }
 
@@ -54,7 +54,7 @@ trait MessageHandler extends AskPatternConstants {
     val askWrite = dbActor ? DbActor.Write(rpcRequest.getParamsChannel, m)
     askWrite.transformWith {
       case Success(_) => Future(Left(rpcRequest))
-      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
+      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
     }
   }
 
@@ -75,7 +75,7 @@ trait MessageHandler extends AskPatternConstants {
     val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcRequest.getParamsChannel, m)
     askWritePropagate.transformWith {
       case Success(_) => Future(Left(rpcRequest))
-      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
+      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
     }
   }
 
@@ -109,7 +109,7 @@ trait MessageHandler extends AskPatternConstants {
 
     combined.transformWith {
       case Success(_) => Future(Left(rpcMessage))
-      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbBroadcast failed : could not read and broadcast message $m", rpcMessage.id)))
+      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbBroadcast failed : could not read and broadcast message $m", rpcMessage.id)))
     }
   }
 }
