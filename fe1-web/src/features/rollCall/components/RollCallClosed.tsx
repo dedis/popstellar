@@ -29,15 +29,16 @@ const RollCallClosed = ({ rollCall, laoId, isOrganizer }: IPropTypes) => {
 
   const onReopenRollCall = useCallback(() => {
     // Once the roll call is opened the first time, idAlias is defined
-    if (rollCall.idAlias) {
-      requestReopenRollCall(laoId, rollCall.idAlias).catch((e) => {
-        makeToastErr(STRINGS.roll_call_location_error_reopen_roll_call);
-        console.debug(STRINGS.roll_call_location_error_reopen_roll_call, e);
-      });
-    } else {
-      makeToastErr(STRINGS.roll_call_location_error_reopen_roll_call_no_alias);
-      console.debug(STRINGS.roll_call_location_error_reopen_roll_call_no_alias);
+    if (!rollCall.idAlias) {
+      makeToastErr(STRINGS.roll_call_error_reopen_roll_call_no_alias);
+      console.warn(STRINGS.roll_call_error_reopen_roll_call_no_alias);
+      return;
     }
+
+    requestReopenRollCall(laoId, rollCall.idAlias).catch((e) => {
+      makeToastErr(STRINGS.roll_call_error_reopen_roll_call);
+      console.debug(STRINGS.roll_call_error_reopen_roll_call, e);
+    });
   }, [makeToastErr, rollCall, laoId]);
 
   const toolbarItems: ToolbarItem[] = useMemo(() => {

@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import RollCallClosed from '../components/RollCallClosed';
@@ -29,16 +30,24 @@ type NavigationProps = CompositeScreenProps<
  */
 const ViewSingleRollCall = () => {
   const route = useRoute<NavigationProps['route']>();
-  const { eventId: rollCallId, isOrganizer, attendeePopTokens } = route.params;
+  const {
+    eventId: rollCallId,
+    isOrganizer,
+    attendeePopTokens: attendeePopTokensStrings,
+  } = route.params;
 
   const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
+  const laoId = RollCallHooks.useAssertCurrentLaoId();
   const rollCall = useSelector(selectRollCall);
+
+  const attendeePopTokens = useMemo(
+    () => attendeePopTokensStrings?.map((k) => new PublicKey(k)),
+    [attendeePopTokensStrings],
+  );
 
   if (!rollCall) {
     throw new Error(`Could not find a roll call with id ${rollCallId}`);
   }
-
-  const laoId = RollCallHooks.useAssertCurrentLaoId();
 
   switch (rollCall.status) {
     case RollCallStatus.CREATED:
@@ -56,7 +65,7 @@ const ViewSingleRollCall = () => {
     case RollCallStatus.CLOSED:
       return <RollCallClosed rollCall={rollCall} laoId={laoId} isOrganizer={isOrganizer} />;
     default:
-      console.warn('Roll Call Status was undefined in EventRollCall');
+      console.warn(`Unkown roll call status '${rollCall.status}' in ViewSingleRollCall`);
       return null;
   }
 };

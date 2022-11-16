@@ -54,25 +54,31 @@ const RollCallOpen = ({ rollCall, laoId, isOrganizer, scannedPopTokens }: IPropT
         },
       });
     } else {
-      toast.show(STRINGS.roll_call_location_error_scanning_no_alias, {
+      toast.show(STRINGS.roll_call_error_scanning_no_alias, {
         type: 'danger',
         placement: 'bottom',
         duration: FOUR_SECONDS,
       });
-      console.debug(STRINGS.roll_call_location_error_scanning_no_alias);
+      console.debug(STRINGS.roll_call_error_scanning_no_alias);
     }
   }, [toast, navigation, rollCall, scannedPopTokens]);
 
   const onCloseRollCall = useCallback(async () => {
     // get the public key as strings from the existing rollcall
-    const previousAttendees = (rollCall.attendees || []).map((key) => key.valueOf());
+    const previousAttendees = rollCall.attendees || [];
     // add the create a set of all attendees (takes care of deduplication)
     const allAttendees = new Set([...previousAttendees, ...(scannedPopTokens || [])]);
-    // create PublicKey instances from the set of strings
-    const attendeesList = [...allAttendees].map((key: string) => new PublicKey(key));
+    // convert it back to a list
+    const attendeesList = [...allAttendees];
 
     if (!rollCall.idAlias) {
-      throw new Error('Trying to close a roll call that has no idAlias defined');
+      toast.show(STRINGS.roll_call_error_close_roll_call_no_alias, {
+        type: 'danger',
+        placement: 'bottom',
+        duration: FOUR_SECONDS,
+      });
+      console.warn(STRINGS.roll_call_error_close_roll_call_no_alias);
+      return;
     }
 
     try {
@@ -80,7 +86,7 @@ const RollCallOpen = ({ rollCall, laoId, isOrganizer, scannedPopTokens }: IPropT
       navigation.navigate(STRINGS.navigation_lao_events_home);
     } catch (err) {
       console.log(err);
-      toast.show(STRINGS.roll_call_location_error_close_roll_call, {
+      toast.show(STRINGS.roll_call_error_close_roll_call, {
         type: 'danger',
         placement: 'top',
         duration: FOUR_SECONDS,
@@ -160,7 +166,7 @@ const propTypes = {
   rollCall: PropTypes.instanceOf(RollCall).isRequired,
   laoId: PropTypes.instanceOf(Hash).isRequired,
   // pop tokens scanned by the organizer
-  scannedPopTokens: PropTypes.arrayOf(PropTypes.string.isRequired),
+  scannedPopTokens: PropTypes.arrayOf(PropTypes.instanceOf(PublicKey).isRequired),
   isOrganizer: PropTypes.bool,
 };
 RollCallOpen.propTypes = propTypes;

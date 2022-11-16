@@ -42,10 +42,7 @@ const AttendeeList = ({ popTokens }: IPropTypes) => {
 };
 
 const propTypes = {
-  popTokens: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.instanceOf(PublicKey).isRequired).isRequired,
-    PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-  ]).isRequired,
+  popTokens: PropTypes.arrayOf(PropTypes.instanceOf(PublicKey).isRequired).isRequired,
 };
 AttendeeList.propTypes = propTypes;
 
