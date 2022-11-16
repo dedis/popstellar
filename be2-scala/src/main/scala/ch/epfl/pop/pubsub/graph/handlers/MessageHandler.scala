@@ -30,10 +30,10 @@ trait MessageHandler extends AskPatternConstants {
     }
   }
 
-  def extractLaoChannel(rpcRequest: JsonRpcRequest, errorMsg: String): Future[GraphMessage] = {
+  def extractLaoChannel(rpcRequest: JsonRpcRequest, errorMsg: String): Future[(GraphMessage, Option[Hash])] = {
     rpcRequest.getParamsChannel.decodeChannelLaoId match {
-      case Some(_) => Future(Left(rpcRequest))
-      case _       => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)))
+      case optId@Some(_) => Future((Left(rpcRequest), optId))
+      case _       => Future((Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), None))
     }
   }
 

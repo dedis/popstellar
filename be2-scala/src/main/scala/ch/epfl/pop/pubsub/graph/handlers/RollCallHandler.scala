@@ -107,8 +107,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   def handleCloseRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val combined = for {
-      _ <- extractLaoChannel(rpcRequest, s"There is an issue with the data of the LAO")
-      laoChannel: Option[Hash] = rpcRequest.getParamsChannel.decodeChannelLaoId
+      (_, laoChannel) <- extractLaoChannel(rpcRequest, s"There is an issue with the data of the LAO")
       _ <- dbAskWritePropagate(rpcRequest)
       (_, message, _) <- extractParameters[CloseRollCall](rpcRequest, serverUnexpectedAnswer)
       //message: Message = rpcRequest.getParamsMessage.get
