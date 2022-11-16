@@ -93,9 +93,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbWithNack
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-
     rc.handleCreateRollCall(request) shouldBe an[Right[PipelineError, _]]
-
     system.stop(mockedDB.actorRef)
   }
 
