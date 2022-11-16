@@ -102,10 +102,12 @@ const RollCallOpen = ({ rollCall, laoId, isOrganizer, scannedPopTokens }: IPropT
 
   // re-check if wallet has been initialized after focus events
   useEffect(() => {
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return navigation.addListener('focus', () => {
+   let unsubscribe = navigation.addListener('focus', () => {
       setHasWalletBeenInitialized(hasSeed());
     });
+    
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
   }, [navigation, hasSeed]);
 
   useEffect(() => {
