@@ -7,9 +7,7 @@ import { Icon } from 'core/styles';
 /**
  * Returns an empty react component that takes
  * the same amount of horizontal space as n icons would
- * Hence it allows proper centering of navigation titles
- * @param n The number of units of padding that should be added
- * @returns The component that can be used for padding
+ * This way it allows proper centering of navigation titles
  */
 const NavigationPadding = ({ paddingAmount, nextToIcon }: IPropTypes) => {
   // default is a padding of 1
