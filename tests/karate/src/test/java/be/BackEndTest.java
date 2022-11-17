@@ -1,4 +1,4 @@
-package fe;
+package be;
 
 import com.intuit.karate.Results;
 import com.intuit.karate.Runner;
@@ -8,40 +8,40 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FrontEndTest {
+public class BackEndTest {
 
   /**
-   * This test will execute all front-end tests with the web front-end
+   * This test will execute all back-end tests with the Go back-end
    * It will not generate a clean report, but it can be used in development
    *
    * @return the Karate builder
    */
   @Karate.Test
-  Karate testWeb() {
+  Karate testGo() {
     return Karate.run()
       .relativeTo(getClass())
-      .karateEnv("web");
+      .karateEnv("go");
   }
 
   /**
-   * This test will execute all front-end tests with android front-end
+   * This test will execute all back-end tests with the Scala back-end
    * It will not generate a clean report, but it can be used in development
    *
    * @return the Karate builder
    */
   @Karate.Test
-  Karate testAndroid() {
+  Karate testScala() {
     return Karate.run()
       .relativeTo(getClass())
-      .karateEnv("android");
+      .karateEnv("scala");
   }
 
   /**
    * This is the main front-end test, it is made to be executed from the command line :
    * <p>
-   * <code>mvn test -DargLine=-Dkarate.env=env -Dtest=FrontEndTest#fullTest</code>
+   * <code>mvn test -DargLine=-Dkarate.env=env -Dtest=BackEndTest#fullTest</code>
    * <p>
-   * It will execute all frontend tests and generate a report
+   * It will execute all backend tests and generate a report
    */
   @Test
   void fullTest() {
@@ -55,3 +55,5 @@ public class FrontEndTest {
     assertEquals(0, results.getFailCount(), results.getErrorMessages());
   }
 }
+
+
