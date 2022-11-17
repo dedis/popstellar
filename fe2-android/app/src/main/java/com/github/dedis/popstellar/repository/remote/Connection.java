@@ -44,17 +44,19 @@ public class Connection {
   }
 
   private void logEvent(WebSocket.Event event, String url) {
+    String baseMsg = "Connection to " + url;
+
     if (event instanceof OnConnectionOpened) {
-      Log.d(TAG, "Connection to " + url + " opened");
+      Log.d(TAG, baseMsg + " opened");
     } else if (event instanceof OnConnectionClosed) {
       ShutdownReason reason = ((OnConnectionClosed) event).getShutdownReason();
-      Log.d(TAG, "Connection to " + url + " closed: " + reason);
+      Log.d(TAG, baseMsg + " closed: " + reason);
     } else if (event instanceof OnConnectionFailed) {
       Throwable error = ((OnConnectionFailed) event).getThrowable();
-      Log.d(TAG, "Connection to " + url + " failed", error);
+      Log.d(TAG, baseMsg + " failed", error);
     } else if (event instanceof OnConnectionClosing) {
       ShutdownReason reason = ((OnConnectionClosing) event).getShutdownReason();
-      Log.d(TAG, "Connection to " + url + " is closing: " + reason);
+      Log.d(TAG, baseMsg + " is closing: " + reason);
     }
   }
 
