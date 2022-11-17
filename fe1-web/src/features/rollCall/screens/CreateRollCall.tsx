@@ -5,9 +5,10 @@ import React, { useState } from 'react';
 import { Platform, Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { ConfirmModal, DatePicker, DismissModal, Input, PoPTextButton } from 'core/components';
+import { ConfirmModal, DatePicker, DismissModal, Input } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
@@ -111,8 +112,24 @@ const CreateRollCall = () => {
       });
   };
 
+  const toolbarItems: ToolbarItem[] = [
+    {
+      id: 'roll_call_confirm_selector',
+      title: STRINGS.general_button_confirm,
+      disabled: !buttonsVisibility,
+      onPress: () =>
+        onConfirmEventCreation(
+          proposedStartTime,
+          proposedEndTime,
+          createRollCall,
+          setModalStartIsVisible,
+          setModalEndIsVisible,
+        ),
+    },
+  ];
+
   return (
-    <ScreenWrapper>
+    <ScreenWrapper toolbarItems={toolbarItems}>
       <Text style={[Typography.paragraph, Typography.important]}>
         {STRINGS.roll_call_create_name}
       </Text>
@@ -142,21 +159,6 @@ const CreateRollCall = () => {
 
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
-
-      <PoPTextButton
-        onPress={() =>
-          onConfirmEventCreation(
-            proposedStartTime,
-            proposedEndTime,
-            createRollCall,
-            setModalStartIsVisible,
-            setModalEndIsVisible,
-          )
-        }
-        disabled={!buttonsVisibility}
-        testID="roll_call_confirm_selector">
-        {STRINGS.general_button_confirm}
-      </PoPTextButton>
 
       <DismissModal
         visibility={modalEndIsVisible}

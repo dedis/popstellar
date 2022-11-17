@@ -29,7 +29,7 @@ const getSubtitle = (meeting: Meeting): string => {
     return `${STRINGS.general_ongoing}${location}`;
   }
 
-  return `${STRINGS.general_ended_at} ${meeting.end.toDate().toLocaleDateString()} ${meeting.end
+  return `${STRINGS.general_ended} ${meeting.end.toDate().toLocaleDateString()} ${meeting.end
     .toDate()
     .toLocaleTimeString()}${location}`;
 };

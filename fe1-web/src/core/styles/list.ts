@@ -57,7 +57,3 @@ export const container: ViewStyle = {
 export const icon: ViewStyle = {
   marginRight: x1,
 };
-
-export const iconPlaceholder: ViewStyle = {
-  ...icon,
-};

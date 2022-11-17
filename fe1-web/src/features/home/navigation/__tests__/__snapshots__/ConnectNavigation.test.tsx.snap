@@ -491,6 +491,13 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                           </View>
                                         </RNGestureHandlerButton>
                                       </View>
+                                      <View
+                                        style={
+                                          Object {
+                                            "width": 25,
+                                          }
+                                        }
+                                      />
                                     </View>
                                     <View
                                       collapsable={false}
@@ -538,7 +545,15 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                           "paddingRight": 16,
                                         }
                                       }
-                                    />
+                                    >
+                                      <View
+                                        style={
+                                          Object {
+                                            "width": 41,
+                                          }
+                                        }
+                                      />
+                                    </View>
                                   </View>
                                 </View>
                               </View>

@@ -17,7 +17,7 @@ const Subtitle = ({ rollCall }: { rollCall: RollCall }) => {
   if (rollCall.status === RollCallStatus.CREATED) {
     return (
       <>
-        {STRINGS.general_starting_at} <ReactTimeago date={rollCall.end.toDate()} />,{' '}
+        {STRINGS.general_starting_at} <ReactTimeago date={rollCall.start.toDate()} />,{' '}
         {rollCall.location}
       </>
     );

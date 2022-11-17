@@ -5,7 +5,7 @@ import { Hash, Timestamp } from 'core/objects';
 import { Meeting } from '../Meeting';
 
 const ID = new Hash('meetingId');
-const TIMESTAMP = new Timestamp(1620255600);
+const TIMESTAMP = new Timestamp(1620355600);
 const NAME = 'myMeeting';
 const LOCATION = 'location';
 

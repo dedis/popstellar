@@ -30,7 +30,7 @@ import {
   updateElection,
 } from 'features/evoting/reducer';
 
-import ViewSingleElection, { ViewSingleElectionScreenHeader } from '../ViewSingleElection';
+import ViewSingleElection from '../ViewSingleElection';
 
 const undefinedElection = Election.fromState({
   ...mockElectionNotStarted.toState(),
@@ -75,50 +75,6 @@ describe('ViewSingleElection', () => {
         <FeatureContext.Provider value={contextValue}>
           <MockNavigator
             component={ViewSingleElection}
-            params={{
-              eventId: election.id.valueOf(),
-              isOrganizer,
-            }}
-          />
-        </FeatureContext.Provider>
-      </Provider>,
-    );
-
-    expect(obj.toJSON()).toMatchSnapshot();
-  };
-
-  describe('renders correctly', () => {
-    describe('organizers', () => {
-      it('not started election', testRender(mockElectionNotStarted, true));
-      it('opened election', testRender(mockElectionOpened, true));
-      it('terminated election', testRender(mockElectionTerminated, true));
-      it('election with results', testRender(mockElectionResults, true));
-      it('undefined election status', testRender(undefinedElection, true));
-
-      it('open secret ballot election', testRender(openedSecretBallotElection, true));
-    });
-
-    describe('non organizers', () => {
-      it('not started election', testRender(mockElectionNotStarted, false));
-      it('opened election', testRender(mockElectionOpened, false));
-      it('terminated election', testRender(mockElectionTerminated, false));
-      it('election with results', testRender(mockElectionResults, false));
-      it('undefined election status', testRender(undefinedElection, false));
-
-      it('open secret ballot election', testRender(openedSecretBallotElection, false));
-    });
-  });
-});
-
-describe('ViewSinglRollCallScreenRightHeader', () => {
-  const testRender = (election: Election, isOrganizer: boolean) => () => {
-    mockStore.dispatch(updateElection(election.toState()));
-
-    const obj = render(
-      <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <MockNavigator
-            component={ViewSingleElectionScreenHeader}
             params={{
               eventId: election.id.valueOf(),
               isOrganizer,
