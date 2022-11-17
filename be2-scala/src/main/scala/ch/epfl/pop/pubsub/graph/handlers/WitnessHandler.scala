@@ -29,10 +29,9 @@ class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
     val combined =
       for {
-        _ <- checkParameters(rpcMessage, s"Unable to handle witness message $rpcMessage. Not an AddWitnessSignature message")
-        decodedData: WitnessMessage = rpcMessage.getDecodedData.get.asInstanceOf[WitnessMessage]
-        messageId: Hash = decodedData.message_id
-        signature: Signature = decodedData.signature
+        (_, _, decodedData) <- extractParameters[WitnessMessage](rpcMessage, s"Unable to handle witness message $rpcMessage. Not an AddWitnessSignature message")
+        messageId: Hash = decodedData.get.message_id
+        signature: Signature = decodedData.get.signature
         channel: Channel = rpcMessage.getParamsChannel
         // add new witness signature to existing ones
         DbActorAddWitnessSignatureAck(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
