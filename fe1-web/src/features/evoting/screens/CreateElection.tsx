@@ -37,7 +37,7 @@ const DEFAULT_ELECTION_DURATION = 3600;
 const VOTING_METHOD = STRINGS.election_method_Plurality;
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_election>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_create_election>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -305,6 +305,6 @@ const CreateElection = () => {
 export default CreateElection;
 
 export const CreateElectionScreen: EvotingFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_create_election,
+  id: STRINGS.events_create_election,
   Component: CreateElection,
 };

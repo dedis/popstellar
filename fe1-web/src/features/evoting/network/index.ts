@@ -3,7 +3,7 @@ import { Hash } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
-import { Election } from '../objects';
+import { Election, ElectionStatus } from '../objects';
 import { addElection, getElectionById, updateElection } from '../reducer';
 import {
   handleCastVoteMessage,
@@ -34,8 +34,12 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
       configuration.addEvent(laoId, {
         eventType: Election.EVENT_TYPE,
         id: electionState.id,
-        start: electionState.start,
-        end: electionState.end,
+        start: election.start.valueOf(),
+        end:
+          election.electionStatus === ElectionStatus.RESULT ||
+          election.electionStatus === ElectionStatus.TERMINATED
+            ? election.end.valueOf()
+            : undefined,
       }),
     );
   };
@@ -48,8 +52,12 @@ export const configureNetwork = (configuration: EvotingConfiguration) => {
       configuration.updateEvent({
         eventType: Election.EVENT_TYPE,
         id: electionState.id,
-        start: electionState.start,
-        end: electionState.end,
+        start: election.start.valueOf(),
+        end:
+          election.electionStatus === ElectionStatus.RESULT ||
+          election.electionStatus === ElectionStatus.TERMINATED
+            ? election.end.valueOf()
+            : undefined,
       }),
     );
   };

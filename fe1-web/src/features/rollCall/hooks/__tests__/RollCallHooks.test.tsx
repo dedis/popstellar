@@ -77,7 +77,7 @@ mockStore.dispatch(
     eventType: RollCall.EVENT_TYPE,
     id: mockRollCallState.id.valueOf(),
     start: mockRollCall.start.valueOf(),
-    end: mockRollCall.end.valueOf(),
+    end: mockRollCall.end?.valueOf(),
   }),
 );
 mockStore.dispatch(addRollCall(mockRollCallState));
@@ -87,7 +87,7 @@ mockStore.dispatch(
     eventType: RollCall.EVENT_TYPE,
     id: mockRollCall3.id.valueOf(),
     start: mockRollCall3.start.valueOf(),
-    end: mockRollCall3.end.valueOf(),
+    end: mockRollCall3.end?.valueOf(),
   }),
 );
 mockStore.dispatch(addRollCall(mockRollCall3.toState()));

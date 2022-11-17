@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
 });
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_open_roll_call>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_open_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -221,8 +221,8 @@ export const RollCallOpenedHeaderLeft = () => {
 };
 
 export const RollCallOpenedScreen: RollCallFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_open_roll_call,
-  title: STRINGS.navigation_lao_events_open_roll_call_title,
+  id: STRINGS.events_open_roll_call,
+  title: STRINGS.events_open_roll_call_title,
   Component: RollCallOpened,
   headerLeft: RollCallOpenedHeaderLeft,
 };

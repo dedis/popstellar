@@ -25,7 +25,7 @@ import { requestCreateRollCall } from '../network';
 const DEFAULT_ROLL_CALL_DURATION = 3600;
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_roll_call>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_create_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -181,6 +181,6 @@ const CreateRollCall = () => {
 export default CreateRollCall;
 
 export const CreateRollCallScreen: RollCallFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_create_roll_call,
+  id: STRINGS.events_create_roll_call,
   Component: CreateRollCall,
 };

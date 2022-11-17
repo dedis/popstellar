@@ -124,7 +124,7 @@ const ElectionOpened = ({ election, isOrganizer }: IPropTypes) => {
         {'\n'}
         {Timestamp.EpochNow().before(election.end) ? (
           <Text>
-            {STRINGS.general_ending} <ReactTimeago date={election.end.toDate()} />
+            {STRINGS.general_ending} <ReactTimeago live date={election.end.toDate()} />
           </Text>
         ) : (
           <Text>{STRINGS.general_ending_now}</Text>

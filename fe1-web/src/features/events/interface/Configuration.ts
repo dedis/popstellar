@@ -7,6 +7,7 @@ import STRINGS from 'resources/strings';
 
 import { EventState } from '../objects';
 import { EVENT_REDUCER_PATH, EventReducerState } from '../reducer';
+import { EventFeature } from './Feature';
 
 export const EVENT_FEATURE_IDENTIFIER = 'event';
 
@@ -50,6 +51,8 @@ export interface EventInterface extends FeatureInterface {
     EventList: React.ComponentType<unknown>;
     CreateEventButton: React.VFC<unknown>;
   };
+
+  laoEventScreens: EventFeature.LaoEventScreen[];
 
   actionCreators: {
     /**
@@ -97,14 +100,14 @@ interface EventType {
   eventName: string;
   navigationNames: {
     createEvent:
-      | typeof STRINGS.navigation_lao_events_create_meeting
-      | typeof STRINGS.navigation_lao_events_create_roll_call
-      | typeof STRINGS.navigation_lao_events_create_election;
+      | typeof STRINGS.events_create_meeting
+      | typeof STRINGS.events_create_roll_call
+      | typeof STRINGS.events_create_election;
 
     screenSingle:
-      | typeof STRINGS.navigation_lao_events_view_single_meeting
-      | typeof STRINGS.navigation_lao_events_view_single_roll_call
-      | typeof STRINGS.navigation_lao_events_view_single_election;
+      | typeof STRINGS.events_view_single_meeting
+      | typeof STRINGS.events_view_single_roll_call
+      | typeof STRINGS.events_view_single_election;
   };
   ListItemComponent: React.ComponentType<{
     eventId: string;

@@ -17,7 +17,7 @@ import { MeetingFeature } from '../interface';
 import { makeMeetingSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_view_single_meeting>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_view_single_meeting>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -61,7 +61,7 @@ const ViewSingleMeeting = () => {
 export default ViewSingleMeeting;
 
 export const ViewSingleMeetingScreen: MeetingFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_view_single_meeting,
+  id: STRINGS.events_view_single_meeting,
   Component: ViewSingleMeeting,
   headerTitle: STRINGS.meeting_event_name,
 };

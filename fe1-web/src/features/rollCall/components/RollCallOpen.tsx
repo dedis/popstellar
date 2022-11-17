@@ -24,7 +24,7 @@ import { RollCall } from '../objects';
 import AttendeeList from './AttendeeList';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_view_single_roll_call>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_view_single_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -55,7 +55,7 @@ const RollCallOpen = ({ rollCall, laoId, isOrganizer, scannedPopTokens }: IPropT
     navigation.navigate(STRINGS.navigation_app_lao, {
       screen: STRINGS.navigation_lao_events,
       params: {
-        screen: STRINGS.navigation_lao_events_open_roll_call,
+        screen: STRINGS.events_open_roll_call,
         params: {
           rollCallId: rollCall.id.toString(),
           attendeePopTokens: (scannedPopTokens || []).map((e) => e.valueOf()),
@@ -137,7 +137,7 @@ const RollCallOpen = ({ rollCall, laoId, isOrganizer, scannedPopTokens }: IPropT
 
       {Timestamp.EpochNow().before(rollCall.proposedEnd) ? (
         <Text style={Typography.paragraph}>
-          {STRINGS.general_ending} <ReactTimeago date={rollCall.proposedEnd.toDate()} />
+          {STRINGS.general_ending} <ReactTimeago live date={rollCall.proposedEnd.toDate()} />
         </Text>
       ) : (
         <Text style={Typography.paragraph}>{STRINGS.general_ending_now}</Text>

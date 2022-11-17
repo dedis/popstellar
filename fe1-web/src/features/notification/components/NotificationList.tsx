@@ -62,7 +62,7 @@ const NotificationList = ({ title, notifications }: IPropTypes) => {
             <ListItem.Content>
               <ListItem.Title style={Typography.base}>{notification.title}</ListItem.Title>
               <ListItem.Subtitle style={Typography.small}>
-                <ReactTimeago date={notification.timestamp * 1000} />
+                <ReactTimeago live date={notification.timestamp * 1000} />
               </ListItem.Subtitle>
             </ListItem.Content>
           </ListItem>

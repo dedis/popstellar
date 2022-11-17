@@ -18,7 +18,7 @@ import { RollCallStatus } from '../objects';
 import { makeRollCallSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_view_single_roll_call>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_view_single_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -73,7 +73,7 @@ const ViewSingleRollCall = () => {
 export default ViewSingleRollCall;
 
 export const ViewSingleRollCallScreen: RollCallFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_view_single_roll_call,
+  id: STRINGS.events_view_single_roll_call,
   Component: ViewSingleRollCall,
   headerTitle: STRINGS.roll_call_event_name,
 };
