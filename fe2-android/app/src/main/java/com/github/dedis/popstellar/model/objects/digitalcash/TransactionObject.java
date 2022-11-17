@@ -163,13 +163,13 @@ public class TransactionObject {
   /**
    * Total MiniLao per public key of a List of Transaction
    *
-   * @param transaction List<TransactionObject>
+   * @param transactions List<TransactionObject>
    * @param receiver Public Key
    * @return long amount per user
    */
   public static long getMiniLaoPerReceiverSetTransaction(
-      List<TransactionObject> transaction, PublicKey receiver) {
-    return transaction.stream().mapToLong(obj -> obj.getMiniLaoPerReceiver(receiver)).sum();
+      Set<TransactionObject> transactions, PublicKey receiver) {
+    return transactions.stream().mapToLong(obj -> obj.getMiniLaoPerReceiver(receiver)).sum();
   }
 
   /**
@@ -221,11 +221,11 @@ public class TransactionObject {
    * Class which return the last roll call open
    *
    * @return Rollcall the roll call with the last ending tim e
+   * @param transactions the set of transactions
    */
-  public static TransactionObject lastLockedTransactionObject(
-      List<TransactionObject> listTransaction) {
+  public static TransactionObject lastLockedTransactionObject(Set<TransactionObject> transactions) {
     Optional<TransactionObject> transactionObject =
-        listTransaction.stream().max(Comparator.comparing(TransactionObject::getLockTime));
+        transactions.stream().max(Comparator.comparing(TransactionObject::getLockTime));
     if (!transactionObject.isPresent()) {
       throw new IllegalStateException();
     }
@@ -245,6 +245,23 @@ public class TransactionObject {
 
   public String getTransactionId() {
     return transactionId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    TransactionObject that = (TransactionObject) o;
+    return transactionId.equals(that.transactionId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(transactionId);
   }
 
   @NonNull

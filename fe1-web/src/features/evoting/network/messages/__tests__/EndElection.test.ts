@@ -159,7 +159,7 @@ describe('EndElection', () => {
     it('returns the correct result', () => {
       const fn = () => EndElection.computeRegisteredVotesHash(mockElectionOpened);
       expect(fn).not.toThrow();
-      expect(fn().valueOf()).toEqual('eYH10agf4Jvfs-rihA-9pG1j0lFPHnYeI9e9Vx-GQ6Q=');
+      expect(fn().valueOf()).toEqual('mXvyOv7DcO_0Cl49W1EmUNs09HgGNASRCVGsZpEGsWA=');
     });
 
     it('does not mutate the election', () => {

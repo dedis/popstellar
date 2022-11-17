@@ -1,20 +1,32 @@
-import { render } from '@testing-library/react-native';
-import React from 'react';
+import { useNavigation } from '@react-navigation/core';
+import { configureStore } from '@reduxjs/toolkit';
+import { act, render, waitFor } from '@testing-library/react-native';
 // @ts-ignore
+import { fireScan as fakeQrReaderScan } from 'expo-camera';
+import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
+import {
+  mockAddress,
+  mockChannel,
+  mockLao,
+  mockLaoId,
+  mockLaoIdHash,
+  mockReduxAction,
+} from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
+import { subscribeToChannel } from 'core/network';
 import { HOME_FEATURE_IDENTIFIER, HomeReactContext } from 'features/home/interface';
-import { resubscribeToLao } from 'features/lao/functions';
+import { ConnectToLao } from 'features/home/objects';
+import { getLaoChannel, resubscribeToLao } from 'features/lao/functions';
 import { LaoHooks } from 'features/lao/hooks';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
-import ConnectOpenScan from '../ConnectOpenScan';
+import ConnectScan from '../ConnectScan';
 
-jest.mock('react-qr-reader');
+jest.mock('expo-camera');
 jest.mock('websocket');
 
 jest.mock('@react-navigation/core', () => {
@@ -32,17 +44,18 @@ jest.mock('@react-navigation/core', () => {
   };
 });
 
-// Is mocked
+/* Disable ESLint on the following line as it otherwise complains
+ * that "useNavigation" cannot be called at the top level,
+ * ignoring the fact that useNavigation is mocked here...
+ */
 // eslint-disable-next-line react-hooks/rules-of-hooks
-// const { navigate: mockNavigate, addListener } = useNavigation();
+const { navigate: mockNavigate, addListener } = useNavigation();
 
-/*
 const didFocus = () =>
   // call focus event listener
   (addListener as jest.Mock).mock.calls
     .filter(([eventName]) => eventName === 'focus')
     .forEach((args) => args[1]());
-*/
 
 const mockConnection = 0;
 
@@ -69,42 +82,43 @@ const contextValue = {
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao,
+    forgetSeed: () => {},
   } as HomeReactContext,
 };
 
-const mockStore = createStore(combineReducers(laoReducer));
+const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
 mockStore.dispatch(setCurrentLao(mockLao.toState()));
 
-// TODO: Fix react-qr-reader for commented tests to work
 describe('ConnectOpenScan', () => {
   it('renders correctly', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={ConnectOpenScan} />
+          <MockNavigator component={ConnectScan} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();
     expect(component).toMatchSnapshot();
   });
 
-  /*
   it('can connect to a lao', async () => {
     render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={ConnectOpenScan} />
+          <MockNavigator component={ConnectScan} />
         </FeatureContext.Provider>
       </Provider>,
     );
 
     act(didFocus);
 
-    fakeQrReaderScan(
-      new ConnectToLao({
-        lao: mockLaoId,
-        servers: [mockAddress],
-      }).toJson(),
+    act(() =>
+      fakeQrReaderScan(
+        new ConnectToLao({
+          lao: mockLaoId,
+          servers: [mockAddress],
+        }).toJson(),
+      ),
     );
 
     await waitFor(() => {
@@ -118,5 +132,4 @@ describe('ConnectOpenScan', () => {
       expect(mockNavigate).toHaveBeenCalledTimes(1);
     });
   });
-  */
 });

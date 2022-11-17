@@ -10,22 +10,31 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashReceiveFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
 
 import java.util.Objects;
+import dagger.hilt.android.AndroidEntryPoint;
+
+import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiveFragment#newInstance}
  * factory method to create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class DigitalCashReceiveFragment extends Fragment {
   public static final String TAG = DigitalCashReceiveFragment.class.getSimpleName();
+
+  @Inject Gson gson;
+
   private DigitalCashReceiveFragmentBinding mBinding;
   private DigitalCashViewModel mViewModel;
 
@@ -56,16 +65,16 @@ public class DigitalCashReceiveFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     try {
-      Lao lao = mViewModel.getCurrentLaoValue();
-      PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
-
-      Bitmap myBitmap = QRCode.from(token.getPublicKey().getEncoded()).bitmap();
+      LaoView laoView = mViewModel.getCurrentLaoValue();
+      PoPToken token = mViewModel.getKeyManager().getValidPoPToken(laoView);
+      PopTokenData tokenData = new PopTokenData(token.getPublicKey());
+      Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
       mBinding.digitalCashReceiveQr.setImageBitmap(myBitmap);
 
-      if (lao.getTransactionByUser().containsKey(token.getPublicKey())) {
+      if (laoView.getTransactionByUser().containsKey(token.getPublicKey())) {
         TransactionObject transaction =
             TransactionObject.lastLockedTransactionObject(
-                Objects.requireNonNull(lao.getTransactionByUser().get(token.getPublicKey())));
+                Objects.requireNonNull(laoView.getTransactionByUser().get(token.getPublicKey())));
         String sender = transaction.getSendersTransaction().get(0).getEncoded();
 
         mBinding.digitalCashReceiveAddress.setText(String.format("Received from : %n %s", sender));

@@ -31,7 +31,6 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
   return {
     identifier: WALLET_FEATURE_IDENTIFIER,
     appScreens: [WalletCreateSeedScreen, WalletSetSeedScreen],
-    homeScreens: [WalletNavigationScreen],
     laoScreens: [WalletNavigationScreen],
     reducers: {
       ...walletReducer,

@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.app.*;
+import android.content.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,38 +10,39 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
-import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
-import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
-import com.github.dedis.popstellar.ui.settings.SettingsActivity;
-import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.WalletFragment;
+import com.github.dedis.popstellar.repository.local.PersistentData;
+import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
-public class HomeActivity extends NavigationActivity<HomeTab> {
+public class HomeActivity extends AppCompatActivity {
 
   private final String TAG = HomeActivity.class.getSimpleName();
 
   private HomeViewModel viewModel;
+  private Menu menu;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.home_activity);
 
-    navigationViewModel = viewModel = obtainViewModel(this);
+    viewModel = obtainViewModel(this);
 
     // Load all the json schemas in background when the app is started.
     AsyncTask.execute(
@@ -53,157 +52,124 @@ public class HomeActivity extends NavigationActivity<HomeTab> {
           JsonUtils.loadSchema(JsonUtils.GENERAL_MESSAGE_SCHEMA);
         });
 
-    BottomNavigationView navbar = findViewById(R.id.home_nav_bar);
-    setupNavigationBar(navbar);
-    setupMenuAvailabilityListeners(navbar);
+    // At start of Activity we display home fragment
+    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+
+    restoreStoredState();
+
+    if (!viewModel.isWalletSetUp()) {
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
+      new MaterialAlertDialogBuilder(this)
+          .setMessage(R.string.wallet_init_message)
+          .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+          .show();
+    }
   }
 
-  /** Setup the listeners that changes the navigation bar menus */
-  private void setupMenuAvailabilityListeners(BottomNavigationView navbar) {
-    MenuItem connectItem = navbar.getMenu().getItem(HomeTab.CONNECT.ordinal());
-    MenuItem launchItem = navbar.getMenu().getItem(HomeTab.LAUNCH.ordinal());
-    MenuItem socialMediaItem = navbar.getMenu().getItem(HomeTab.SOCIAL.ordinal());
+  @Override
+  public void onStop() {
+    super.onStop();
 
-    // Gray out the launch and connect buttons depending on the wallet state
+    try {
+      viewModel.savePersistentData();
+    } catch (GeneralSecurityException e) {
+      // We do not display the security error to the user
+      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
+    }
+  }
+
+  private void menuTitleUpdater() {
     viewModel
         .getIsWalletSetUpEvent()
         .observe(
             this,
-            walletSetup -> {
-              // We set the button icon depending on the livedata value
-              boolean setup = Boolean.TRUE.equals(walletSetup);
-              connectItem.setIcon(
-                  setup ? R.drawable.ic_home_connect_enabled : R.drawable.ic_home_connect_disabled);
-              launchItem.setIcon(
-                  setup ? R.drawable.ic_home_launch_enabled : R.drawable.ic_home_launch_disabled);
-            });
-
-    // Gray out the social media button if no laos were created
-    viewModel
-        .isSocialMediaEnabled()
-        .observe(
-            this,
-            enabled ->
-                // We set the button icon depending on the livedata value
-                socialMediaItem.setIcon(
-                    Boolean.TRUE.equals(enabled)
-                        ? R.drawable.ic_common_social_media_enabled
-                        : R.drawable.ic_common_social_media_disabled));
+            isSetUp ->
+                menu.getItem(0)
+                    .setTitle(
+                        Boolean.TRUE.equals(isSetUp)
+                            ? R.string.logout_title
+                            : R.string.wallet_setup));
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.options_menu, menu);
+    this.menu = menu;
+    menuTitleUpdater();
     return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == R.id.settings) {
-      Intent intent = new Intent(this, SettingsActivity.class);
-      Log.d(HomeViewModel.TAG, "Trying to open settings");
-      startActivity(intent);
-      return true;
+    if (item.getItemId() == R.id.wallet_init_logout) {
+      handleWalletSettings();
+    } else if (item.getItemId() == R.id.clear_storage) {
+      handleClearing();
     } else {
       return super.onOptionsItemSelected(item);
     }
+    return true;
   }
 
   @Override
-  protected HomeTab findTabByMenu(int menuId) {
-    return HomeTab.findByMenu(menuId);
-  }
-
-  /**
-   * Open the fragment based on the given tab and the application state
-   *
-   * @param tab to open
-   * @return true if the tab was opened and the menu should be selected on the navigation bar
-   */
-  @Override
-  protected boolean openTab(HomeTab tab) {
-    switch (tab) {
-      case HOME:
-        openHomeTab();
-        return true;
-      case CONNECT:
-        return openConnectTab();
-      case LAUNCH:
-        return openLaunchTab();
-      case WALLET:
-        WalletFragment.openWallet(getSupportFragmentManager(), viewModel.isWalletSetUp());
-        return true;
-      case SOCIAL:
-        openSocialMediaTab();
-        return false;
-      default:
-        Log.w(TAG, "Unhandled tab type : " + tab);
-        return false;
+  public void onBackPressed() {
+    Fragment fragment =
+        getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
+    if (!(fragment instanceof SeedWalletFragment)) {
+      setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new);
     }
   }
 
-  @Override
-  protected HomeTab getDefaultTab() {
-    return HomeTab.HOME;
-  }
-
-  private void openHomeTab() {
-    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
-  }
-
-  private boolean openConnectTab() {
-    // Check if the wallet is setup
-    if (!viewModel.isWalletSetUp()) {
-      showWalletWarning();
-      return false;
-    }
-
-    // Check for the permission, if it is not granted, ask for it
-    if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-      requestCameraPermission();
+  private void handleWalletSettings() {
+    if (viewModel.isWalletSetUp()) {
+      new MaterialAlertDialogBuilder(this)
+          .setTitle(R.string.logout_title)
+          .setMessage(R.string.logout_message)
+          .setPositiveButton(
+              R.string.confirm,
+              (dialog, which) -> {
+                viewModel.logoutWallet();
+                setCurrentFragment(
+                    getSupportFragmentManager(),
+                    R.id.fragment_seed_wallet,
+                    SeedWalletFragment::new);
+              })
+          .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+          .show();
     } else {
       setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
+          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::new);
     }
-    return true;
   }
 
-  private void requestCameraPermission() {
-    // Setup result listener to open the connect tab once the permission is granted
-    getSupportFragmentManager()
-        .setFragmentResultListener(
-            CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> openConnectTab());
+  private void handleClearing() {
+    new AlertDialog.Builder(this)
+        .setTitle(R.string.confirm_title)
+        .setMessage(R.string.clear_confirmation_text)
+        .setPositiveButton(
+            R.string.yes,
+            (dialogInterface, i) -> {
+              boolean success = ActivityUtils.clearStorage(this);
+              Toast.makeText(
+                      this,
+                      success ? R.string.clear_success : R.string.clear_failure,
+                      Toast.LENGTH_LONG)
+                  .show();
 
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_camera_perm,
-        () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
+              // Restart activity
+              Intent intent = HomeActivity.newIntent(this);
+              startActivity(intent);
+              finish();
+            })
+        .setNegativeButton(R.string.no, null)
+        .show();
   }
 
-  private boolean openLaunchTab() {
-    // Check if the wallet is setup
-    if (!viewModel.isWalletSetUp()) {
-      showWalletWarning();
-      return false;
-    }
-
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_launch, LaunchFragment::newInstance);
-    return true;
-  }
-
-  private void showWalletWarning() {
-    Toast.makeText(this, R.string.uninitialized_wallet_exception, Toast.LENGTH_SHORT).show();
-  }
-
-  private void openSocialMediaTab() {
-    if (!Boolean.TRUE.equals(viewModel.isSocialMediaEnabled().getValue())) {
-      Toast.makeText(this, R.string.error_no_lao, Toast.LENGTH_SHORT).show();
-      return;
-    }
-
-    Log.d(HomeViewModel.TAG, "Opening social media activity");
-    startActivity(SocialMediaActivity.newIntent(this));
+  private void restoreStoredState() {
+    PersistentData data = ActivityUtils.loadPersistentData(this);
+    viewModel.restoreConnections(data);
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {

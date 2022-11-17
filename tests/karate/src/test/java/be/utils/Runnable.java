@@ -1,5 +1,7 @@
 package be.utils;
 
+import java.io.IOException;
+
 public interface Runnable {
 
   /**
@@ -7,7 +9,7 @@ public interface Runnable {
    *
    * @return true if the server has started correctly, false otherwise
    */
-  boolean start();
+  boolean start() throws IOException;
 
   /**
    * Force server to stop by killing the process and its children if any.

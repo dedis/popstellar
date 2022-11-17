@@ -328,8 +328,11 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                     >
                       <View
                         accessible={true}
+                        collapsable={false}
                         focusable={true}
+                        onBlur={[Function]}
                         onClick={[Function]}
+                        onFocus={[Function]}
                         onResponderGrant={[Function]}
                         onResponderMove={[Function]}
                         onResponderRelease={[Function]}
@@ -342,8 +345,8 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                               "backgroundColor": "#fff",
                             },
                             Object {
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
+                              "borderTopLeftRadius": 8,
+                              "borderTopRightRadius": 8,
                             },
                           ]
                         }
@@ -354,13 +357,13 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                               "alignItems": "center",
                               "backgroundColor": "#fff",
                               "borderColor": "#bcbbc1",
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
+                              "borderTopLeftRadius": 8,
+                              "borderTopRightRadius": 8,
                               "flexDirection": "row",
                               "padding": 14,
                             }
                           }
-                          testID="padView"
+                          testID="RNE__LISTITEM__padView"
                         >
                           <View
                             style={
@@ -394,6 +397,7 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                             theme={
                               Object {
                                 "colors": Object {
+                                  "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
                                   "divider": "#bcbbc1",
@@ -445,15 +449,23 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#ca71eb",
+                                  "secondary": "#03dac4",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
+                                },
+                                "spacing": Object {
+                                  "lg": 12,
+                                  "md": 8,
+                                  "sm": 4,
+                                  "xl": 24,
+                                  "xs": 2,
                                 },
                               }
                             }
                           >
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -468,6 +480,7 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                               Digital Cash Account
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -497,8 +510,20 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                                 "overflow": "hidden",
                               }
                             }
+                            testID="RNE__ICON__CONTAINER"
                           >
-                            <View>
+                            <View
+                              accessibilityRole="button"
+                              android_ripple={
+                                Object {
+                                  "borderless": false,
+                                  "color": "rgba(0, 0, 0, 0.3)",
+                                  "radius": -5,
+                                }
+                              }
+                              disabled={false}
+                              testID="RNE__ICON__CONTAINER_ACTION"
+                            >
                               <View
                                 style={
                                   Object {
@@ -507,6 +532,7 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                                     "justifyContent": "center",
                                   }
                                 }
+                                testID="RNE__ICON"
                               >
                                 <Text />
                               </View>

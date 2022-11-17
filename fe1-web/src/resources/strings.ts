@@ -9,13 +9,17 @@ namespace STRINGS {
   export const general_yes = 'Yes';
   export const general_no = 'No';
   export const general_add = 'Add';
-  export const general_done = 'Done';
   export const general_starting_at = 'Supposed to start';
   export const general_ending_at = 'Supposed to end';
   export const general_ended_at = 'Ended at';
 
   export const general_closed = 'Closed';
   export const general_ongoing = 'Ongoing';
+
+  /* --- QR code scanner strings --- */
+  export const camera_unavailable = 'Camera unavailable';
+  export const requesting_camera_permissions = 'Requesting camera permissions';
+  export const camera_permissions_denied = 'Permissions for camera denied';
 
   /* --- User Roles --- */
   export const user_role = 'Role';
@@ -30,15 +34,16 @@ namespace STRINGS {
   export const navigation_app_lao = 'AppLao';
   export const navigation_app_wallet_create_seed = 'Wallet Seed Creation';
   export const navigation_app_wallet_insert_seed = 'Wallet Recovery';
-  export const navigation_app_connect = 'Connect';
 
   /* --- HomeNavigation Strings --- */
   export const navigation_home_home = 'Home';
-  export const navigation_home_mock_connect = 'MockConnect';
+  export const navigation_home_connect = 'Connect';
   export const navigation_home_wallet = 'Wallet';
 
   /* --- ConnectionNavigation Strings --- */
   export const navigation_connect_scan = 'Scanning';
+  export const navigation_connect_scan_title = "Scan a LAO's QR code";
+  export const navigation_connect_processing = 'Processing scanned QR code';
   export const navigation_connect_launch = 'Launch';
   export const navigation_connect_launch_title = 'Launch a new LAO';
   export const navigation_connect_confirm = 'Confirm';
@@ -97,13 +102,14 @@ namespace STRINGS {
   export const social_media_navigation_tab_attendee_list = 'List of attendees';
 
   /* --- Lao Strings --- */
-  export const lao_qr_code_title = 'Connection QR Code';
+  export const lao_properties_modal_heading = 'Lao Properties';
+  export const lao_qr_code_overlay = 'Scan to\nConnect';
+  export const lao_properties_name = 'Name';
   export const lao_properties_id = 'Identifier';
   export const lao_properties_your_role = 'Your role';
   export const lao_properties_current_connections = 'You are currently connected to';
-  export const lao_properties_add_additional_connection = 'Add connection';
-  export const lao_properties_disconnect = 'Disconnect';
   export const lao_no_current = 'You are currently not connected to any LAO';
+  export const lao_error_disconnect = 'The connection to the LAO broke unexpectedly';
 
   /* --- Home Strings --- */
 
@@ -113,7 +119,11 @@ namespace STRINGS {
     'The POPStellar application builds on top of so-called local autonomous organizations (LAOs). ' +
     'Known LAOs will be listed here after you connected to it once.';
   export const home_setup_description_2 =
-    'You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code a LAO organizer provides to you.';
+    'You can connect to a LAO by tapping "Join LAO" in the bottom toolbar and then scanning the qr code a LAO organizer provides to you.';
+
+  export const home_create_lao = 'Create';
+  export const home_join_lao = 'Join';
+  export const home_logout = 'Logout';
 
   /* --- Social Media Strings --- */
   export const button_publish = 'Publish';
@@ -360,7 +370,6 @@ namespace STRINGS {
 
   /* --- Wallet Home Screen Strings --- */
   export const wallet_home_roll_calls = 'Roll Calls';
-  export const wallet_home_logout = 'Logout';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
   export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
 

@@ -354,6 +354,195 @@ exports[`ConnectNavigation renders correctly 1`] = `
                               ]
                             }
                           >
+                            <View
+                              collapsable={false}
+                              pointerEvents="box-none"
+                              style={
+                                Object {
+                                  "zIndex": 1,
+                                }
+                              }
+                            >
+                              <View
+                                accessibilityElementsHidden={false}
+                                importantForAccessibility="auto"
+                                onLayout={[Function]}
+                                pointerEvents="box-none"
+                                style={null}
+                              >
+                                <View
+                                  collapsable={false}
+                                  pointerEvents="box-none"
+                                  style={
+                                    Object {
+                                      "bottom": 0,
+                                      "left": 0,
+                                      "opacity": 1,
+                                      "position": "absolute",
+                                      "right": 0,
+                                      "top": 0,
+                                      "zIndex": 0,
+                                    }
+                                  }
+                                >
+                                  <View
+                                    collapsable={false}
+                                    style={
+                                      Object {
+                                        "backgroundColor": "#fff",
+                                        "borderBottomColor": "rgb(216, 216, 216)",
+                                        "borderColor": "rgb(216, 216, 216)",
+                                        "flex": 1,
+                                        "shadowColor": "rgb(216, 216, 216)",
+                                        "shadowOffset": Object {
+                                          "height": 0.5,
+                                          "width": 0,
+                                        },
+                                        "shadowOpacity": 0.85,
+                                        "shadowRadius": 0,
+                                      }
+                                    }
+                                  />
+                                </View>
+                                <View
+                                  collapsable={false}
+                                  pointerEvents="box-none"
+                                  style={
+                                    Object {
+                                      "height": 44,
+                                      "maxHeight": undefined,
+                                      "minHeight": undefined,
+                                      "opacity": undefined,
+                                      "transform": undefined,
+                                    }
+                                  }
+                                >
+                                  <View
+                                    pointerEvents="none"
+                                    style={
+                                      Object {
+                                        "height": 0,
+                                      }
+                                    }
+                                  />
+                                  <View
+                                    pointerEvents="box-none"
+                                    style={
+                                      Object {
+                                        "alignItems": "stretch",
+                                        "flex": 1,
+                                        "flexDirection": "row",
+                                      }
+                                    }
+                                  >
+                                    <View
+                                      collapsable={false}
+                                      pointerEvents="box-none"
+                                      style={
+                                        Object {
+                                          "alignItems": "flex-start",
+                                          "flexBasis": "auto",
+                                          "flexGrow": 1,
+                                          "justifyContent": "center",
+                                          "marginStart": 0,
+                                          "opacity": 1,
+                                          "paddingLeft": 16,
+                                        }
+                                      }
+                                    >
+                                      <View
+                                        accessible={true}
+                                        collapsable={false}
+                                        focusable={true}
+                                        onBlur={[Function]}
+                                        onClick={[Function]}
+                                        onFocus={[Function]}
+                                        onResponderGrant={[Function]}
+                                        onResponderMove={[Function]}
+                                        onResponderRelease={[Function]}
+                                        onResponderTerminate={[Function]}
+                                        onResponderTerminationRequest={[Function]}
+                                        onStartShouldSetResponder={[Function]}
+                                      >
+                                        <RNGestureHandlerButton
+                                          collapsable={false}
+                                          exclusive={true}
+                                          handlerTag={2}
+                                          handlerType="NativeViewGestureHandler"
+                                          onGestureEvent={[Function]}
+                                          onGestureHandlerEvent={[Function]}
+                                          onGestureHandlerStateChange={[Function]}
+                                          onHandlerStateChange={[Function]}
+                                          rippleColor={0}
+                                          touchSoundDisabled={false}
+                                        >
+                                          <View
+                                            accessible={true}
+                                            collapsable={false}
+                                            style={
+                                              Object {
+                                                "opacity": 1,
+                                              }
+                                            }
+                                          >
+                                            <View>
+                                              {"name":"ios-arrow-back","size":25,"color":"#8E8E8E"}
+                                            </View>
+                                          </View>
+                                        </RNGestureHandlerButton>
+                                      </View>
+                                    </View>
+                                    <View
+                                      collapsable={false}
+                                      pointerEvents="box-none"
+                                      style={
+                                        Object {
+                                          "flexShrink": 1,
+                                          "justifyContent": "center",
+                                          "marginHorizontal": 16,
+                                          "maxWidth": 590,
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <Text
+                                        accessibilityRole="header"
+                                        aria-level="1"
+                                        collapsable={false}
+                                        numberOfLines={1}
+                                        onLayout={[Function]}
+                                        style={
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "fontWeight": "500",
+                                            "lineHeight": 26,
+                                            "textAlign": "left",
+                                          }
+                                        }
+                                      >
+                                        Scan a LAO's QR code
+                                      </Text>
+                                    </View>
+                                    <View
+                                      collapsable={false}
+                                      pointerEvents="box-none"
+                                      style={
+                                        Object {
+                                          "alignItems": "flex-end",
+                                          "flexBasis": "auto",
+                                          "flexGrow": 1,
+                                          "justifyContent": "center",
+                                          "marginEnd": 0,
+                                          "opacity": 1,
+                                          "paddingRight": 16,
+                                        }
+                                      }
+                                    />
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
                             <RNSScreenContainer
                               onLayout={[Function]}
                               style={
@@ -453,14 +642,13 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                     style={
                                       Object {
                                         "flex": 1,
-                                        "marginTop": 0,
                                       }
                                     }
                                   >
                                     <View
                                       collapsable={false}
                                       forwardedRef={[Function]}
-                                      handlerTag={2}
+                                      handlerTag={3}
                                       handlerType="PanGestureHandler"
                                       needsOffscreenAlphaCompositing={false}
                                       onGestureHandlerEvent={[Function]}
@@ -490,7 +678,9 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                               Object {
                                                 "backgroundColor": "rgb(242, 242, 242)",
                                               },
-                                              undefined,
+                                              Object {
+                                                "flex": 1,
+                                              },
                                             ],
                                           ]
                                         }
@@ -530,9 +720,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                   }
                                                 }
                                               >
-                                                <Text>
-                                                  No QR reader
-                                                </Text>
+                                                <View />
                                               </View>
                                               <View
                                                 style={
@@ -554,71 +742,68 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                   <View
                                                     style={
                                                       Object {
+                                                        "alignItems": "center",
                                                         "flex": 1,
-                                                        "flexDirection": "row",
                                                         "justifyContent": "space-between",
+                                                        "marginVertical": 16,
                                                       }
                                                     }
                                                   >
-                                                    <View>
-                                                      <View
-                                                        style={
-                                                          Object {
-                                                            "backgroundColor": "#fff",
-                                                            "borderRadius": 16,
-                                                            "padding": 8,
-                                                          }
+                                                    <View />
+                                                    <View
+                                                      style={
+                                                        Object {
+                                                          "opacity": 0.5,
                                                         }
+                                                      }
+                                                    >
+                                                      <RNSVGSvgView
+                                                        align="xMidYMid"
+                                                        bbHeight={300}
+                                                        bbWidth={300}
+                                                        focusable={false}
+                                                        height={300}
+                                                        meetOrSlice={0}
+                                                        minX={0}
+                                                        minY={0}
+                                                        style={
+                                                          Array [
+                                                            Object {
+                                                              "backgroundColor": "transparent",
+                                                              "borderWidth": 0,
+                                                            },
+                                                            Object {
+                                                              "flex": 0,
+                                                              "height": 300,
+                                                              "width": 300,
+                                                            },
+                                                          ]
+                                                        }
+                                                        vbHeight={494}
+                                                        vbWidth={494}
+                                                        width={300}
                                                       >
-                                                        <View
-                                                          accessible={true}
-                                                          collapsable={false}
-                                                          focusable={true}
-                                                          onBlur={[Function]}
-                                                          onClick={[Function]}
-                                                          onFocus={[Function]}
-                                                          onResponderGrant={[Function]}
-                                                          onResponderMove={[Function]}
-                                                          onResponderRelease={[Function]}
-                                                          onResponderTerminate={[Function]}
-                                                          onResponderTerminationRequest={[Function]}
-                                                          onStartShouldSetResponder={[Function]}
-                                                        >
-                                                          <RNGestureHandlerButton
-                                                            collapsable={false}
-                                                            exclusive={true}
-                                                            handlerTag={3}
-                                                            handlerType="NativeViewGestureHandler"
-                                                            onGestureEvent={[Function]}
-                                                            onGestureHandlerEvent={[Function]}
-                                                            onGestureHandlerStateChange={[Function]}
-                                                            onHandlerStateChange={[Function]}
-                                                            rippleColor={0}
-                                                            touchSoundDisabled={false}
-                                                          >
-                                                            <View
-                                                              accessible={true}
-                                                              collapsable={false}
-                                                              style={
-                                                                Object {
-                                                                  "opacity": 1,
-                                                                }
-                                                              }
-                                                            >
-                                                              <View>
-                                                                {"name":"ios-close","size":25,"color":"#3742fa"}
-                                                              </View>
-                                                            </View>
-                                                          </RNGestureHandlerButton>
-                                                        </View>
-                                                      </View>
+                                                        <RNSVGGroup>
+                                                          <RNSVGPath
+                                                            d="M392.4 101.2h-22.398v22.398H392.4V101.2Zm44.801-44.801h-112v112h112v-112Zm-22.398 89.602h-67.199V78.802h67.199v67.199Zm-313.6-22.398h22.398v-22.398h-22.398v22.398ZM56.402 168.4h112v-112h-112v112Zm22.402-89.598h67.199v67.199H78.804V78.802Zm313.6 291.2h-22.398V392.4h22.398v-22.398Zm44.801-44.801h-112v112h112v-112Zm-22.398 89.602h-67.199v-67.199h67.199v67.199Zm-156.8-291.2h22.398v-22.398h22.398V78.807h-22.398V56.409h-67.199v22.398h44.801v22.398h-22.398v44.801h22.398v-22.403Zm-22.398 22.398h-22.398v22.398h22.398v-22.398Zm-44.801-22.398v22.398h22.398v-22.398h-22.398Zm0-22.402h22.398V78.803h-22.398v22.398Zm-44.801 112h-22.398v22.398h22.398v-22.398Zm89.602-22.398v22.398h67.199v-22.398H280.41v-44.801h-22.398v44.801h-22.403Zm-22.402-22.402h-22.398v44.801h22.398v-44.801Zm-44.801 22.402h-22.398v22.398h22.398v-22.398Zm-89.598 0v22.398h44.801v-22.398H78.808Zm112 44.801v-22.398H168.41v22.398h22.398Zm-44.801 22.398h22.398v-22.398h-22.398v22.398Zm-89.602-22.398h22.398v-22.398H56.405v22.398Zm0 22.398V280.4h22.398v-22.398H56.405ZM78.807 280.4v22.398h22.398V280.4H78.807Zm-22.402 44.801v44.801h22.398v-22.398h22.398v-22.398l-44.796-.005Zm44.801 44.801h44.801v-22.398h-44.801v22.398Zm246.4-112v-22.398h-22.398v22.398h22.398Zm-156.8 112h-22.398V392.4h22.398v-22.398ZM168.404 392.4h-112v44.801h22.398v-22.398H101.2v22.398h22.398v-22.398h22.398v22.398h67.199v-22.398h-44.801l.01-22.403Zm89.602 44.801v-22.398h-22.398v22.398h22.398Zm22.398 0h22.398v-22.398h-22.398v22.398Zm0-156.8h44.801v-22.398h-22.398v-22.398h-22.398v22.398h-22.398v67.199h44.801v-22.398h-22.398l-.01-22.403Zm-67.199 134.4h22.398v-22.398h-22.398v22.398Zm-44.801-89.602h-22.398v22.398h44.801v-44.801h-22.398l-.005 22.403ZM146.006 258h-22.398v-22.398H101.21v44.801h22.398v22.398H101.21v22.398h44.801L146.006 258Zm89.602 112v22.398h22.398V370h22.398v22.398h22.398v-44.801h-67.199v-44.801h-22.398v67.199l22.403.005Zm-67.203-89.602h22.398v22.398h22.398v-22.398h22.398V258H168.4l.005 22.398Zm44.801-44.797h22.398v-22.398h-22.398v22.398Zm22.402 0v22.398h22.398v-22.398h-22.398Zm89.598 0v-22.398h-22.398v22.398h22.398Zm22.402-44.801H325.21v22.398h22.398V190.8Zm22.398 0v44.801h22.398V190.8h-22.398Zm0 89.598v22.398h22.398v-22.398h22.398V258H437.2v-44.801h-22.398v22.398h-22.398v22.398h-44.801v22.398l22.403.005ZM325.205 302.8h22.398v-22.398h-22.398V302.8ZM414.807.4v22.398h56v56h22.398V.4h-78.398Zm-392 22.402h56V.404H.409v78.398h22.398v-56Zm0 392H.409V493.2h78.398v-22.398h-56v-56Zm448 56h-56V493.2h78.398v-78.398h-22.398v56Zm-33.602-168v-22.398h-22.398v22.398h22.398Z"
+                                                            fill={4294967295}
+                                                            propList={
+                                                              Array [
+                                                                "fill",
+                                                              ]
+                                                            }
+                                                          />
+                                                        </RNSVGGroup>
+                                                      </RNSVGSvgView>
                                                     </View>
-                                                    <View>
+                                                    <View
+                                                      style={Object {}}
+                                                    >
                                                       <View
                                                         style={
                                                           Object {
                                                             "backgroundColor": "#fff",
-                                                            "borderRadius": 16,
+                                                            "borderRadius": 8,
                                                             "padding": 8,
                                                           }
                                                         }
@@ -636,7 +821,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                           onResponderTerminate={[Function]}
                                                           onResponderTerminationRequest={[Function]}
                                                           onStartShouldSetResponder={[Function]}
-                                                          testID="launch_selector"
                                                         >
                                                           <RNGestureHandlerButton
                                                             collapsable={false}
@@ -655,59 +839,93 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                                               collapsable={false}
                                                               style={
                                                                 Object {
-                                                                  "marginBottom": 8,
                                                                   "opacity": 1,
                                                                 }
                                                               }
                                                             >
-                                                              <View>
-                                                                {"name":"ios-create","size":25,"color":"#3742fa"}
-                                                              </View>
-                                                            </View>
-                                                          </RNGestureHandlerButton>
-                                                        </View>
-                                                        <View
-                                                          accessible={true}
-                                                          collapsable={false}
-                                                          focusable={true}
-                                                          onBlur={[Function]}
-                                                          onClick={[Function]}
-                                                          onFocus={[Function]}
-                                                          onResponderGrant={[Function]}
-                                                          onResponderMove={[Function]}
-                                                          onResponderRelease={[Function]}
-                                                          onResponderTerminate={[Function]}
-                                                          onResponderTerminationRequest={[Function]}
-                                                          onStartShouldSetResponder={[Function]}
-                                                        >
-                                                          <RNGestureHandlerButton
-                                                            collapsable={false}
-                                                            exclusive={true}
-                                                            handlerTag={5}
-                                                            handlerType="NativeViewGestureHandler"
-                                                            onGestureEvent={[Function]}
-                                                            onGestureHandlerEvent={[Function]}
-                                                            onGestureHandlerStateChange={[Function]}
-                                                            onHandlerStateChange={[Function]}
-                                                            rippleColor={0}
-                                                            touchSoundDisabled={false}
-                                                          >
-                                                            <View
-                                                              accessible={true}
-                                                              collapsable={false}
-                                                              style={
-                                                                Object {
-                                                                  "opacity": 1,
+                                                              <Text
+                                                                style={
+                                                                  Array [
+                                                                    Object {
+                                                                      "color": "#000",
+                                                                      "fontSize": 20,
+                                                                      "lineHeight": 26,
+                                                                      "textAlign": "left",
+                                                                    },
+                                                                    Object {
+                                                                      "color": "#3742fa",
+                                                                    },
+                                                                  ]
                                                                 }
-                                                              }
-                                                            >
-                                                              <View>
-                                                                {"name":"ios-code","size":25,"color":"#3742fa"}
-                                                              </View>
+                                                              >
+                                                                Enter Manually
+                                                              </Text>
                                                             </View>
                                                           </RNGestureHandlerButton>
                                                         </View>
                                                       </View>
+                                                    </View>
+                                                  </View>
+                                                </View>
+                                                <View
+                                                  style={
+                                                    Object {
+                                                      "flexDirection": "column",
+                                                    }
+                                                  }
+                                                >
+                                                  <View
+                                                    style={
+                                                      Object {
+                                                        "alignSelf": "flex-end",
+                                                        "backgroundColor": "#fff",
+                                                        "borderRadius": 8,
+                                                        "padding": 8,
+                                                      }
+                                                    }
+                                                  >
+                                                    <View
+                                                      accessible={true}
+                                                      collapsable={false}
+                                                      focusable={true}
+                                                      onBlur={[Function]}
+                                                      onClick={[Function]}
+                                                      onFocus={[Function]}
+                                                      onResponderGrant={[Function]}
+                                                      onResponderMove={[Function]}
+                                                      onResponderRelease={[Function]}
+                                                      onResponderTerminate={[Function]}
+                                                      onResponderTerminationRequest={[Function]}
+                                                      onStartShouldSetResponder={[Function]}
+                                                    >
+                                                      <RNGestureHandlerButton
+                                                        collapsable={false}
+                                                        exclusive={true}
+                                                        handlerTag={5}
+                                                        handlerType="NativeViewGestureHandler"
+                                                        onGestureEvent={[Function]}
+                                                        onGestureHandlerEvent={[Function]}
+                                                        onGestureHandlerStateChange={[Function]}
+                                                        onHandlerStateChange={[Function]}
+                                                        rippleColor={0}
+                                                        touchSoundDisabled={false}
+                                                      >
+                                                        <View
+                                                          accessible={true}
+                                                          collapsable={false}
+                                                          style={
+                                                            Object {
+                                                              "alignSelf": "flex-end",
+                                                              "marginLeft": "auto",
+                                                              "opacity": 1,
+                                                            }
+                                                          }
+                                                        >
+                                                          <View>
+                                                            {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+                                                          </View>
+                                                        </View>
+                                                      </RNGestureHandlerButton>
                                                     </View>
                                                   </View>
                                                 </View>
@@ -721,20 +939,6 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                 </View>
                               </RNSScreen>
                             </RNSScreenContainer>
-                            <View
-                              collapsable={false}
-                              pointerEvents="box-none"
-                              style={
-                                Object {
-                                  "height": 44,
-                                  "left": 0,
-                                  "position": "absolute",
-                                  "right": 0,
-                                  "top": 0,
-                                  "zIndex": 1,
-                                }
-                              }
-                            />
                           </View>
                         </View>
                       </View>

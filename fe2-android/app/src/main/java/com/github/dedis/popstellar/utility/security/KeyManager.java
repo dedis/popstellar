@@ -4,9 +4,11 @@ import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.security.privatekey.ProtectedPrivateKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.*;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
@@ -15,7 +17,8 @@ import com.google.gson.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -75,35 +78,29 @@ public class KeyManager {
   /**
    * Generate the PoP Token for the given Lao - RollCall pair
    *
-   * @param lao to generate the PoP Token from
+   * @param laoView to generate the PoP Token from
    * @param rollCall to generate the PoP Token from
    * @return the generated PoP Token
    * @throws KeyGenerationException if an error occurs during key generation
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    */
-  public PoPToken getPoPToken(Lao lao, RollCall rollCall) throws KeyException {
-    return wallet.generatePoPToken(lao.getId(), rollCall.getPersistentId());
+  public PoPToken getPoPToken(LaoView laoView, RollCall rollCall) throws KeyException {
+    return wallet.generatePoPToken(laoView.getId(), rollCall.getPersistentId());
   }
 
   /**
    * Try to retrieve the user's PoPToken for the given Lao.
    *
-   * @param lao we want to retrieve the PoP Token from
+   * @param laoView of the lao we want to retrieve the PoP Token from
    * @return the PoP Token if it was retrieved
    * @throws KeyGenerationException if an error occurs during key generation
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    * @throws InvalidPoPTokenException if the token is not a valid attendee
    * @throws NoRollCallException if the LAO has no RollCall
    */
-  public PoPToken getValidPoPToken(Lao lao) throws KeyException {
-    // Find the latest closed RollCall and use the wallet to retrieve the key
-    RollCall rollCall =
-        lao.getRollCalls().values().stream()
-            .filter(RollCall::isClosed)
-            .max(Comparator.comparing(RollCall::getEnd))
-            .orElseThrow(() -> new NoRollCallException(lao));
-
-    return getValidPoPToken(lao.getId(), rollCall);
+  public PoPToken getValidPoPToken(LaoView laoView) throws KeyException {
+    // Use the wallet to retrieve the key from the latest closed roll call
+    return getValidPoPToken(laoView.getId(), laoView.getMostRecentRollCall());
   }
 
   /**

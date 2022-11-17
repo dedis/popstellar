@@ -1,7 +1,8 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import { mockLao, mockLaoIdHash, mockLaoState, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
@@ -41,7 +42,12 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-const mockStore = createStore(combineReducers({ ...laoReducer, ...SocialReducer }));
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...laoReducer,
+    ...SocialReducer,
+  }),
+});
 mockStore.dispatch(setCurrentLao(mockLaoState));
 
 describe('SocialHome', () => {

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.github.dedis.popstellar">
+
+  <application
+    android:allowBackup="true"
+    android:fullBackupContent="@xml/backup_rules"
+    android:usesCleartextTraffic="false"
+    android:icon="@mipmap/ic_launcher">
+    <activity
+      android:name="com.github.dedis.popstellar.testutils.fragment.EmptyHiltActivity"
+      android:exported="true"
+      android:multiprocess="true"
+      android:taskAffinity="">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+      </intent-filter>
+    </activity>
+  </application>
+
+</manifest>

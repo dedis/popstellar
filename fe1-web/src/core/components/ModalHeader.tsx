@@ -2,25 +2,21 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
-import { ModalStyles, Spacing, Typography } from 'core/styles';
-import STRINGS from 'resources/strings';
+import { Color, Icon, ModalStyles, Spacing } from 'core/styles';
 
+import PoPIcon from './PoPIcon';
 import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     width: '100%',
     marginBottom: Spacing.x1,
   } as ViewStyle,
   title: {
     ...ModalStyles.modalTitle,
-  } as TextStyle,
-  done: {
-    position: 'absolute',
-    right: 0,
   } as TextStyle,
 });
 
@@ -29,12 +25,12 @@ const ModalHeader = (props: IPropTypes) => {
 
   return (
     <View style={styles.header}>
-      <Text style={styles.title}>{title}</Text>
-      <PoPTouchableOpacity
-        containerStyle={styles.done}
-        onPress={onClose}
-        testID="modal-header-close">
-        <Text style={Typography.pressable}>{STRINGS.general_done}</Text>
+      <View />
+      <Text style={styles.title} numberOfLines={1}>
+        {title}
+      </Text>
+      <PoPTouchableOpacity onPress={onClose} testID="modal-header-close">
+        <PoPIcon name="close" color={Color.primary} size={Icon.size} />
       </PoPTouchableOpacity>
     </View>
   );

@@ -1,9 +1,9 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import ReactTimeago from 'react-timeago';
 
 import { NotificationParamList } from 'core/navigation/typing/NotificationParamList';

@@ -1,6 +1,6 @@
+import { ListItem } from '@rneui/themed';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { List, Typography } from 'core/styles';
@@ -61,10 +61,8 @@ const WalletHome = () => {
                   [laoId]: !isLaoExpanded[laoId],
                 })
               }>
-              {walletItemGenerators.map((Generator, idx) => (
-                // FIXME: Do not use index in key
-                // eslint-disable-next-line react/no-array-index-key
-                <Generator.ListItems key={idx.toString()} laoId={laoIdHash} />
+              {walletItemGenerators.map((Generator) => (
+                <Generator.ListItems key={Generator.order.toString()} laoId={laoIdHash} />
               ))}
             </ListItem.Accordion>
           );

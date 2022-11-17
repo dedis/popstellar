@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.objects.event;
 
-import androidx.lifecycle.MutableLiveData;
-
 /** Class modeling an Event */
 public abstract class Event implements Comparable<Event> {
 
@@ -15,7 +13,7 @@ public abstract class Event implements Comparable<Event> {
 
   public abstract long getEndTimestamp();
 
-  public abstract MutableLiveData<EventState> getState();
+  public abstract EventState getState();
 
   public long getEndTimestampInMillis() {
     return getEndTimestamp() * 1000;

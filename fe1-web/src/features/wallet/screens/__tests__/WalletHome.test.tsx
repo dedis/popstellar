@@ -1,20 +1,21 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockKeyPair, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { EventTags, Hash, Timestamp, RollCallToken, PopToken } from 'core/objects';
+import { EventTags, Hash, PopToken, RollCallToken, Timestamp } from 'core/objects';
 import { getEventById } from 'features/events/functions';
 import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
 import { RollCallHooks } from 'features/rollCall/hooks';
-import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
+import { ROLLCALL_FEATURE_IDENTIFIER, RollCallReactContext } from 'features/rollCall/interface';
 import { RollCall, RollCallStatus } from 'features/rollCall/objects';
 import { addRollCall, rollCallReducer } from 'features/rollCall/reducer';
 import { hasSeed } from 'features/wallet/functions';
-import { WalletReactContext, WALLET_FEATURE_IDENTIFIER } from 'features/wallet/interface';
+import { WALLET_FEATURE_IDENTIFIER, WalletReactContext } from 'features/wallet/interface';
 import { walletReducer } from 'features/wallet/reducer';
 
 import { generateToken } from '../../objects';
@@ -90,9 +91,13 @@ beforeEach(() => {
 
 describe('Wallet home', () => {
   it('renders correctly with an empty wallet', () => {
-    const mockStore = createStore(
-      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
-    );
+    const mockStore = configureStore({
+      reducer: combineReducers({
+        ...walletReducer,
+        ...rollCallReducer,
+        ...eventReducer,
+      }),
+    });
 
     const component = render(
       <Provider store={mockStore}>
@@ -105,9 +110,13 @@ describe('Wallet home', () => {
   });
 
   it('renders correctly with a non empty wallet', () => {
-    const mockStore = createStore(
-      combineReducers({ ...walletReducer, ...rollCallReducer, ...eventReducer }),
-    );
+    const mockStore = configureStore({
+      reducer: combineReducers({
+        ...walletReducer,
+        ...rollCallReducer,
+        ...eventReducer,
+      }),
+    });
 
     // make the selector return data
     mockStore.dispatch(

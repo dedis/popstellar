@@ -16,7 +16,8 @@
     android:networkSecurityConfig="@xml/network_security_config"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
-    android:theme="@style/AppTheme">
+    android:theme="@style/AppTheme"
+    android:usesCleartextTraffic="false">
     <activity android:name=".ui.home.ConnectingActivity" />
     <activity
       android:name=".ui.home.HomeActivity"
@@ -30,8 +31,7 @@
     <activity
       android:name=".ui.detail.LaoDetailActivity"
       android:windowSoftInputMode="adjustPan" />
-    <activity android:name=".ui.settings.SettingsActivity" />
-    <activity android:name=".ui.socialmedia.SocialMediaActivity" />
+      <activity android:name=".ui.socialmedia.SocialMediaActivity" />
     <activity android:name=".ui.digitalcash.DigitalCashActivity" />
 
     <uses-library

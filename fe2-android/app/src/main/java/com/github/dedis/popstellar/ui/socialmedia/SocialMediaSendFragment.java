@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaSendFragmentBinding;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -18,10 +20,11 @@ import dagger.hilt.android.AndroidEntryPoint;
 /** Fragment where we can write and send a chirp */
 @AndroidEntryPoint
 public class SocialMediaSendFragment extends Fragment {
-  private SocialMediaSendFragmentBinding mSocialMediaSendFragBinding;
-  private SocialMediaViewModel mSocialMediaViewModel;
 
   public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
+
+  private SocialMediaSendFragmentBinding mSocialMediaSendFragBinding;
+  private SocialMediaViewModel mSocialMediaViewModel;
 
   public static SocialMediaSendFragment newInstance() {
     return new SocialMediaSendFragment();
@@ -59,13 +62,31 @@ public class SocialMediaSendFragment extends Fragment {
     // Trying to send a chirp when no LAO has been chosen in the application will not send it, it
     // will
     // make a toast appear and it will log the error
-    if (mSocialMediaViewModel.getLaoId().getValue() == null) {
-      ErrorUtils.logAndShow(getContext(), TAG, R.string.error_no_lao);
+    if (mSocialMediaViewModel.getLaoId() == null) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
     } else {
-      mSocialMediaViewModel.sendChirp(
-          mSocialMediaSendFragBinding.entryBoxChirp.getText().toString(),
-          null,
-          Instant.now().getEpochSecond());
+      mSocialMediaViewModel.addDisposable(
+          mSocialMediaViewModel
+              .sendChirp(
+                  mSocialMediaSendFragBinding.entryBoxChirp.getText().toString(),
+                  null,
+                  Instant.now().getEpochSecond())
+              .subscribe(
+                  msg ->
+                      SocialMediaActivity.setCurrentFragment(
+                          getParentFragmentManager(),
+                          R.id.fragment_social_media_home,
+                          SocialMediaHomeFragment::newInstance),
+                  error -> {
+                    if (error instanceof KeyException
+                        || error instanceof GeneralSecurityException) {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                    } else {
+                      ErrorUtils.logAndShow(
+                          requireContext(), TAG, error, R.string.error_sending_chirp);
+                    }
+                  }));
       mSocialMediaViewModel.setCurrentTab(SocialMediaTab.HOME);
     }
   }

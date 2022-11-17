@@ -1,6 +1,6 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { ListItem } from 'react-native-elements';
 
 import { List, Typography } from '../styles';
 

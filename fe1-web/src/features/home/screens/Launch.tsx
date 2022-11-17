@@ -45,28 +45,31 @@ const Launch = () => {
   const connectToTestLao = HomeHooks.useConnectToTestLao();
   const requestCreateLao = HomeHooks.useRequestCreateLao();
 
-  const onButtonLaunchPress = (laoName: string) => {
+  const onButtonLaunchPress = async (laoName: string) => {
     if (!laoName) {
       return;
     }
 
-    getNetworkManager().connect(inputAddress);
+    try {
+      // establish connection
+      await getNetworkManager().connect(inputAddress);
 
-    requestCreateLao(laoName)
-      .then((channel: Channel) => {
-        const laoId = getLaoIdFromChannel(channel);
+      // create lao
+      const channel: Channel = await requestCreateLao(laoName);
+      const laoId = getLaoIdFromChannel(channel);
 
-        subscribeToChannel(laoId, dispatch, channel).then(() => {
-          // navigate to the newly created LAO
-          navigation.navigate(STRINGS.navigation_app_lao, {
-            screen: STRINGS.navigation_lao_home,
-          });
-        });
-      })
-      .catch((reason) => console.debug(`Failed to establish lao connection: ${reason}`));
+      // subscribe to the just created lao channel
+      await subscribeToChannel(laoId, dispatch, channel);
+
+      // navigate to the newly created LAO
+      navigation.navigate(STRINGS.navigation_app_lao, {
+        screen: STRINGS.navigation_lao_events,
+        params: { screen: STRINGS.navigation_lao_events_home },
+      });
+    } catch (e) {
+      console.error(`Failed to establish lao connection`, e);
+    }
   };
-
-  const onTestClearStorage = () => dispatch({ type: 'CLEAR_STORAGE', value: {} });
 
   return (
     <ScreenWrapper>
@@ -101,10 +104,6 @@ const Launch = () => {
 
           <PoPTextButton onPress={connectToTestLao}>
             [TEST] Connect to LocalMockServer.ts (use &apos;npm run startServer&apos;)
-          </PoPTextButton>
-
-          <PoPTextButton onPress={onTestClearStorage}>
-            [TEST] Clear (persistent) storage
           </PoPTextButton>
         </View>
       </View>

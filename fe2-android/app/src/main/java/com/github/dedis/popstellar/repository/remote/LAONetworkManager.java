@@ -10,18 +10,17 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.Observable;
 import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.PublishSubject;
@@ -32,7 +31,6 @@ public class LAONetworkManager implements MessageSender {
 
   private static final String TAG = LAONetworkManager.class.getSimpleName();
 
-  private final LAORepository repository;
   private final MessageHandler messageHandler;
   private final Connection connection;
   public final AtomicInteger requestCounter = new AtomicInteger();
@@ -41,20 +39,21 @@ public class LAONetworkManager implements MessageSender {
 
   // A subject that represents unprocessed messages
   private final Subject<GenericMessage> unprocessed = PublishSubject.create();
-  private final List<Channel> subscribedChannels = new LinkedList<>();
+  private final Set<Channel> subscribedChannels;
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   public LAONetworkManager(
-      LAORepository repository,
       MessageHandler messageHandler,
       Connection connection,
       Gson gson,
-      SchedulerProvider schedulerProvider) {
-    this.repository = repository;
+      SchedulerProvider schedulerProvider,
+      Set<Channel> subscribedChannels) {
+
     this.messageHandler = messageHandler;
     this.connection = connection;
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;
+    this.subscribedChannels = new HashSet<>(subscribedChannels);
 
     // Start the incoming message processing
     processIncomingMessages();
@@ -111,9 +110,10 @@ public class LAONetworkManager implements MessageSender {
     return request(catchup)
         .map(ResultMessages.class::cast)
         .map(ResultMessages::getMessages)
-        .doOnSuccess(messages -> Log.d(TAG, "Catchup on " + channel + " retrieved : " + messages))
-        .doOnSuccess(messages -> handleMessages(messages, channel))
         .doOnError(error -> Log.d(TAG, "Error in catchup :" + error))
+        .doOnSuccess(
+            msgs -> Log.d(TAG, "Received catchup response on " + channel + ", retrieved : " + msgs))
+        .doOnSuccess(messages -> handleMessages(messages, channel))
         .ignoreElement();
   }
 
@@ -126,7 +126,9 @@ public class LAONetworkManager implements MessageSender {
   public Completable publish(Channel channel, MessageGeneral msg) {
     Log.d(TAG, "sending a publish " + msg.getData().getClass() + " to the channel " + channel);
     Publish publish = new Publish(channel, requestCounter.incrementAndGet(), msg);
-    return request(publish).ignoreElement();
+    return request(publish)
+        .ignoreElement()
+        .doOnComplete(() -> Log.d(TAG, "Successfully published " + msg));
   }
 
   @Override
@@ -135,12 +137,18 @@ public class LAONetworkManager implements MessageSender {
     Subscribe subscribe = new Subscribe(channel, requestCounter.incrementAndGet());
     return request(subscribe)
         // This is used when reconnecting after a lost connection
-        .doOnSuccess(answer -> subscribedChannels.add(channel))
-        .doOnError(error -> Log.d(TAG, "error in subscribe : " + error))
+        .doOnSuccess(
+            answer -> {
+              Log.d(TAG, "Adding " + channel + " to subscriptions");
+              subscribedChannels.add(channel);
+            })
+        .doOnError(error -> Log.d(TAG, "error in subscribe : ", error))
         // Catchup already sent messages after the subscription to the channel is complete
         // This allows for the completion of the returned completable only when both subscribe
         // and catchup are completed
-        .flatMapCompletable(answer -> catchup(channel));
+        .flatMapCompletable(answer -> catchup(channel))
+        .doOnComplete(
+            () -> Log.d(TAG, "Successfully subscribed and catchup to channel " + channel));
   }
 
   @Override
@@ -149,8 +157,12 @@ public class LAONetworkManager implements MessageSender {
     Unsubscribe unsubscribe = new Unsubscribe(channel, requestCounter.incrementAndGet());
     return request(unsubscribe)
         // This is used when reconnecting after a lost connection
-        .doOnSuccess(answer -> subscribedChannels.remove(channel))
-        .doOnError(error -> Log.d(TAG, "error unsubscribing : " + error))
+        .doOnSuccess(
+            answer -> {
+              Log.d(TAG, "Removing " + channel + " from subscriptions");
+              subscribedChannels.remove(channel);
+            })
+        .doOnError(error -> Log.d(TAG, "error unsubscribing : ", error))
         .ignoreElement();
   }
 
@@ -159,26 +171,26 @@ public class LAONetworkManager implements MessageSender {
     return connection.observeConnectionEvents();
   }
 
+  @Override
+  public Set<Channel> getSubscriptions() {
+    return new HashSet<>(subscribedChannels);
+  }
+
   private void handleBroadcast(Broadcast broadcast) {
     Log.d(TAG, "handling broadcast msg : " + broadcast);
     try {
-      messageHandler.handleMessage(
-          repository, this, broadcast.getChannel(), broadcast.getMessage());
-    } catch (DataHandlingException e) {
+      messageHandler.handleMessage(this, broadcast.getChannel(), broadcast.getMessage());
+    } catch (DataHandlingException | UnknownLaoException e) {
       Log.e(TAG, "Error while handling received message", e);
       unprocessed.onNext(broadcast);
-    } catch (UnknownLaoException e) {
-      Log.e(TAG, "Error while handling received message", e);
     }
   }
 
   private void handleMessages(List<MessageGeneral> messages, Channel channel) {
     for (MessageGeneral msg : messages) {
       try {
-        messageHandler.handleMessage(repository, this, channel, msg);
-      } catch (DataHandlingException e) {
-        Log.e(TAG, "Error while handling received catchup message", e);
-      } catch (UnknownLaoException e) {
+        messageHandler.handleMessage(this, channel, msg);
+      } catch (DataHandlingException | UnknownLaoException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
       }
     }

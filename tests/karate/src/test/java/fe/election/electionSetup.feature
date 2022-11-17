@@ -1,3 +1,4 @@
+@env=android,web
 Feature:
 
   Scenario: Creating an election sends the correct message to the backend

@@ -10,8 +10,9 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.List;
 
@@ -21,17 +22,19 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
 
   private final Activity activity;
 
-  private List<Lao> laos;
+  private List<String> laoIdList;
   private final boolean openLaoDetail;
 
-  public LAOListAdapter(List<Lao> laos, Activity activity, boolean openLaoDetail) {
+  private final HomeViewModel homeViewModel;
+
+  public LAOListAdapter(HomeViewModel homeViewModel, Activity activity, boolean openLaoDetail) {
     this.activity = activity;
     this.openLaoDetail = openLaoDetail;
-    setList(laos);
+    this.homeViewModel = homeViewModel;
   }
 
-  public void setList(List<Lao> laos) {
-    this.laos = laos;
+  public void setList(List<String> laoIdList) {
+    this.laoIdList = laoIdList;
     notifyDataSetChanged();
   }
 
@@ -46,12 +49,11 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
   @Override
   public void onBindViewHolder(@NonNull LAOListItemViewHolder holder, int position) {
 
-    final Lao lao = laos.get(position);
+    final String laoId = laoIdList.get(position);
 
     CardView cardView = holder.cardView;
     cardView.setOnClickListener(
         v -> {
-          String laoId = lao.getId();
           if (openLaoDetail) {
             Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
             activity.startActivity(LaoDetailActivity.newIntentForLao(activity, laoId));
@@ -62,7 +64,13 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
         });
 
     TextView laoTitle = holder.laoTitle;
-    laoTitle.setText(lao.getName());
+
+    try {
+      LaoView laoView = homeViewModel.getLaoView(laoId);
+      laoTitle.setText(laoView.getName());
+    } catch (UnknownLaoException e) {
+      throw new IllegalStateException("Lao with id " + laoId + " is supposed to be present");
+    }
   }
 
   @Override
@@ -72,7 +80,7 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
 
   @Override
   public int getItemCount() {
-    return laos != null ? laos.size() : 0;
+    return laoIdList != null ? laoIdList.size() : 0;
   }
 
   static class LAOListItemViewHolder extends RecyclerView.ViewHolder {

@@ -329,15 +329,18 @@ exports[`TransactionHistory renders correctly 1`] = `
                       <View
                         style={
                           Object {
-                            "borderRadius": 16,
+                            "borderRadius": 8,
                             "marginBottom": 16,
                           }
                         }
                       >
                         <View
                           accessible={true}
+                          collapsable={false}
                           focusable={true}
+                          onBlur={[Function]}
                           onClick={[Function]}
+                          onFocus={[Function]}
                           onResponderGrant={[Function]}
                           onResponderMove={[Function]}
                           onResponderRelease={[Function]}
@@ -364,7 +367,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                 "paddingRight": 0,
                               }
                             }
-                            testID="padView"
+                            testID="RNE__LISTITEM__padView"
                           >
                             <View
                               style={
@@ -380,6 +383,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                               theme={
                                 Object {
                                   "colors": Object {
+                                    "background": "#ffffff",
                                     "black": "#242424",
                                     "disabled": "hsl(208, 8%, 90%)",
                                     "divider": "#bcbbc1",
@@ -431,15 +435,23 @@ exports[`TransactionHistory renders correctly 1`] = `
                                     },
                                     "primary": "#2089dc",
                                     "searchBg": "#303337",
-                                    "secondary": "#ca71eb",
+                                    "secondary": "#03dac4",
                                     "success": "#52c41a",
                                     "warning": "#faad14",
                                     "white": "#ffffff",
+                                  },
+                                  "spacing": Object {
+                                    "lg": 12,
+                                    "md": 8,
+                                    "sm": 4,
+                                    "xl": 24,
+                                    "xs": 2,
                                   },
                                 }
                               }
                             >
                               <Text
+                                accessibilityRole="text"
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
@@ -473,6 +485,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                   ],
                                 }
                               }
+                              testID="RNE__ListItem__Accordion__Icon"
                             >
                               <View
                                 style={
@@ -480,8 +493,20 @@ exports[`TransactionHistory renders correctly 1`] = `
                                     "overflow": "hidden",
                                   }
                                 }
+                                testID="RNE__ICON__CONTAINER"
                               >
-                                <View>
+                                <View
+                                  accessibilityRole="button"
+                                  android_ripple={
+                                    Object {
+                                      "borderless": false,
+                                      "color": "rgba(0, 0, 0, 0.3)",
+                                      "radius": -5,
+                                    }
+                                  }
+                                  disabled={false}
+                                  testID="RNE__ICON__CONTAINER_ACTION"
+                                >
                                   <View
                                     style={
                                       Object {
@@ -490,416 +515,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                         "justifyContent": "center",
                                       }
                                     }
-                                  >
-                                    <Text />
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                        </View>
-                        <View
-                          collapsable={false}
-                          style={
-                            Object {
-                              "maxHeight": "0%",
-                              "opacity": 0,
-                            }
-                          }
-                        >
-                          <View
-                            accessible={true}
-                            focusable={true}
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Array [
-                                Object {
-                                  "backgroundColor": "#fff",
-                                },
-                                Object {
-                                  "borderTopLeftRadius": 16,
-                                  "borderTopRightRadius": 16,
-                                },
-                              ]
-                            }
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignItems": "center",
-                                  "backgroundColor": "#fff",
-                                  "borderBottomWidth": 0.5,
-                                  "borderColor": "#bcbbc1",
-                                  "borderTopLeftRadius": 16,
-                                  "borderTopRightRadius": 16,
-                                  "flexDirection": "row",
-                                  "padding": 14,
-                                }
-                              }
-                              testID="padView"
-                            >
-                              <View
-                                style={
-                                  Array [
-                                    Object {
-                                      "alignItems": "flex-start",
-                                      "flex": 1,
-                                      "justifyContent": "center",
-                                    },
-                                    undefined,
-                                  ]
-                                }
-                                theme={
-                                  Object {
-                                    "colors": Object {
-                                      "black": "#242424",
-                                      "disabled": "hsl(208, 8%, 90%)",
-                                      "divider": "#bcbbc1",
-                                      "error": "#ff190c",
-                                      "grey0": "#393e42",
-                                      "grey1": "#43484d",
-                                      "grey2": "#5e6977",
-                                      "grey3": "#86939e",
-                                      "grey4": "#bdc6cf",
-                                      "grey5": "#e1e8ee",
-                                      "greyOutline": "#bbb",
-                                      "platform": Object {
-                                        "android": Object {
-                                          "error": "#f44336",
-                                          "grey": "rgba(0, 0, 0, 0.54)",
-                                          "primary": "#2196f3",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#9C27B0",
-                                          "success": "#4caf50",
-                                          "warning": "#ffeb3b",
-                                        },
-                                        "default": Object {
-                                          "error": "#ff3b30",
-                                          "grey": "#7d7d7d",
-                                          "primary": "#007aff",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#5856d6",
-                                          "success": "#4cd964",
-                                          "warning": "#ffcc00",
-                                        },
-                                        "ios": Object {
-                                          "error": "#ff3b30",
-                                          "grey": "#7d7d7d",
-                                          "primary": "#007aff",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#5856d6",
-                                          "success": "#4cd964",
-                                          "warning": "#ffcc00",
-                                        },
-                                        "web": Object {
-                                          "error": "#ff190c",
-                                          "grey": "#393e42",
-                                          "primary": "#2089dc",
-                                          "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
-                                          "success": "#52c41a",
-                                          "warning": "#faad14",
-                                        },
-                                      },
-                                      "primary": "#2089dc",
-                                      "searchBg": "#303337",
-                                      "secondary": "#ca71eb",
-                                      "success": "#52c41a",
-                                      "warning": "#faad14",
-                                      "white": "#ffffff",
-                                    },
-                                  }
-                                }
-                              >
-                                <Text
-                                  numberOfLines={1}
-                                  style={
-                                    Object {
-                                      "backgroundColor": "transparent",
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "textAlign": "left",
-                                    }
-                                  }
-                                  testID="listItemTitle"
-                                >
-                                  Sl_DPZl-qlXhjkudiZoSG9VscKU_cxm6AwBZzBEMK4M=
-                                </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "backgroundColor": "transparent",
-                                      "color": "#242424",
-                                      "fontSize": 16,
-                                      "lineHeight": 20,
-                                    }
-                                  }
-                                  testID="listItemTitle"
-                                >
-                                  Inputs
-                                  : 
-                                  1
-                                  ,
-                                   
-                                  Ouputs
-                                  :
-                                   
-                                  1
-                                </Text>
-                              </View>
-                              <View
-                                style={
-                                  Object {
-                                    "paddingLeft": 16,
-                                  }
-                                }
-                              />
-                              <Text
-                                style={
-                                  Object {
-                                    "backgroundColor": "transparent",
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "textAlign": "left",
-                                  }
-                                }
-                                testID="listItemTitle"
-                              >
-                                $
-                                100
-                              </Text>
-                              <View
-                                style={
-                                  Object {
-                                    "paddingLeft": 16,
-                                  }
-                                }
-                              />
-                              <View
-                                style={
-                                  Object {
-                                    "alignSelf": "center",
-                                    "overflow": "hidden",
-                                  }
-                                }
-                              >
-                                <View>
-                                  <View
-                                    style={
-                                      Object {
-                                        "alignItems": "center",
-                                        "backgroundColor": "transparent",
-                                        "justifyContent": "center",
-                                      }
-                                    }
-                                  >
-                                    <Text />
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                          </View>
-                          <View
-                            accessible={true}
-                            focusable={true}
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Array [
-                                Object {
-                                  "backgroundColor": "#fff",
-                                },
-                                Object {
-                                  "borderBottomLeftRadius": 16,
-                                  "borderBottomRightRadius": 16,
-                                },
-                              ]
-                            }
-                          >
-                            <View
-                              style={
-                                Object {
-                                  "alignItems": "center",
-                                  "backgroundColor": "#fff",
-                                  "borderBottomLeftRadius": 16,
-                                  "borderBottomRightRadius": 16,
-                                  "borderBottomWidth": 0.5,
-                                  "borderColor": "#bcbbc1",
-                                  "flexDirection": "row",
-                                  "padding": 14,
-                                }
-                              }
-                              testID="padView"
-                            >
-                              <View
-                                style={
-                                  Array [
-                                    Object {
-                                      "alignItems": "flex-start",
-                                      "flex": 1,
-                                      "justifyContent": "center",
-                                    },
-                                    undefined,
-                                  ]
-                                }
-                                theme={
-                                  Object {
-                                    "colors": Object {
-                                      "black": "#242424",
-                                      "disabled": "hsl(208, 8%, 90%)",
-                                      "divider": "#bcbbc1",
-                                      "error": "#ff190c",
-                                      "grey0": "#393e42",
-                                      "grey1": "#43484d",
-                                      "grey2": "#5e6977",
-                                      "grey3": "#86939e",
-                                      "grey4": "#bdc6cf",
-                                      "grey5": "#e1e8ee",
-                                      "greyOutline": "#bbb",
-                                      "platform": Object {
-                                        "android": Object {
-                                          "error": "#f44336",
-                                          "grey": "rgba(0, 0, 0, 0.54)",
-                                          "primary": "#2196f3",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#9C27B0",
-                                          "success": "#4caf50",
-                                          "warning": "#ffeb3b",
-                                        },
-                                        "default": Object {
-                                          "error": "#ff3b30",
-                                          "grey": "#7d7d7d",
-                                          "primary": "#007aff",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#5856d6",
-                                          "success": "#4cd964",
-                                          "warning": "#ffcc00",
-                                        },
-                                        "ios": Object {
-                                          "error": "#ff3b30",
-                                          "grey": "#7d7d7d",
-                                          "primary": "#007aff",
-                                          "searchBg": "#dcdce1",
-                                          "secondary": "#5856d6",
-                                          "success": "#4cd964",
-                                          "warning": "#ffcc00",
-                                        },
-                                        "web": Object {
-                                          "error": "#ff190c",
-                                          "grey": "#393e42",
-                                          "primary": "#2089dc",
-                                          "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
-                                          "success": "#52c41a",
-                                          "warning": "#faad14",
-                                        },
-                                      },
-                                      "primary": "#2089dc",
-                                      "searchBg": "#303337",
-                                      "secondary": "#ca71eb",
-                                      "success": "#52c41a",
-                                      "warning": "#faad14",
-                                      "white": "#ffffff",
-                                    },
-                                  }
-                                }
-                              >
-                                <Text
-                                  numberOfLines={1}
-                                  style={
-                                    Object {
-                                      "backgroundColor": "transparent",
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "textAlign": "left",
-                                    }
-                                  }
-                                  testID="listItemTitle"
-                                >
-                                  ZmVFcfCTuGi5YYpGTB_xzeYC6SfP_ernBOsakP-iq64=
-                                </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "backgroundColor": "transparent",
-                                      "color": "#242424",
-                                      "fontSize": 16,
-                                      "lineHeight": 20,
-                                    }
-                                  }
-                                  testID="listItemTitle"
-                                >
-                                  Inputs
-                                  : 
-                                  1
-                                  ,
-                                   
-                                  Ouputs
-                                  :
-                                   
-                                  1
-                                </Text>
-                              </View>
-                              <View
-                                style={
-                                  Object {
-                                    "paddingLeft": 16,
-                                  }
-                                }
-                              />
-                              <Text
-                                style={
-                                  Object {
-                                    "backgroundColor": "transparent",
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "textAlign": "left",
-                                  }
-                                }
-                                testID="listItemTitle"
-                              >
-                                $
-                                100
-                              </Text>
-                              <View
-                                style={
-                                  Object {
-                                    "paddingLeft": 16,
-                                  }
-                                }
-                              />
-                              <View
-                                style={
-                                  Object {
-                                    "alignSelf": "center",
-                                    "overflow": "hidden",
-                                  }
-                                }
-                              >
-                                <View>
-                                  <View
-                                    style={
-                                      Object {
-                                        "alignItems": "center",
-                                        "backgroundColor": "transparent",
-                                        "justifyContent": "center",
-                                      }
-                                    }
+                                    testID="RNE__ICON"
                                   >
                                     <Text />
                                   </View>

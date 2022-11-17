@@ -1,9 +1,9 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
@@ -15,6 +15,7 @@ import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { PublicKey } from 'core/objects';
+import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, List, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -124,7 +125,7 @@ const ViewSingleRollCall = () => {
         return (
           <>
             <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
-            <QRCode visibility value={popToken} />
+            <QRCode value={ScannablePopToken.encodePopToken({ pop_token: popToken })} />
           </>
         );
 
@@ -192,7 +193,7 @@ const ViewSingleRollCall = () => {
                     <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
                   </View>
                   <ListItem.Content>
-                    <ListItem.Title style={Typography.base} numberOfLines={1}>
+                    <ListItem.Title style={Typography.base} numberOfLines={1} selectable>
                       {token.valueOf()}
                     </ListItem.Title>
                   </ListItem.Content>
@@ -224,7 +225,11 @@ export const ViewSingleRollCallScreenHeader = () => {
     throw new Error(`Could not find a roll call with id ${rollCallId}`);
   }
 
-  return <Text style={Typography.topNavigationHeading}>{rollCall.name}</Text>;
+  return (
+    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
+      {rollCall.name}
+    </Text>
+  );
 };
 
 /**

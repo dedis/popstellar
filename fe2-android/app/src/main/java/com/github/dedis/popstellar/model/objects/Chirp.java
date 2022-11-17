@@ -6,32 +6,57 @@ import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
+import java.util.Objects;
+
 /** Class modeling a Chirp */
 public class Chirp implements Copyable<Chirp> {
 
   private static final int MAX_CHIRP_CHARS = 300;
 
-  private MessageID id;
-  private Channel channel;
+  private final MessageID id;
+  private final PublicKey sender;
+  private final String text;
+  private final long timestamp;
+  private final boolean isDeleted;
+  private final MessageID parentId;
 
-  private PublicKey sender;
-  private String text;
-  private long timestamp;
-  private boolean isDeleted;
-  private MessageID parentId;
-
-  public Chirp(MessageID id) {
-    if (id == null) {
-      throw new IllegalArgumentException("The id is null");
-    } else if (id.getEncoded().isEmpty()) {
+  public Chirp(
+      @NonNull MessageID id,
+      @NonNull PublicKey sender,
+      @NonNull String text,
+      long timestamp,
+      @NonNull MessageID parentId) {
+    if (id.getEncoded().isEmpty()) {
       throw new IllegalArgumentException("The id of the Chirp is empty");
     }
+
+    if (timestamp < 0) {
+      throw new IllegalArgumentException("The timestamp of the Chirp is negative");
+    }
+
+    if (text.length() > MAX_CHIRP_CHARS) {
+      throw new IllegalArgumentException("the text exceed the maximum numbers of characters");
+    }
+
     this.id = id;
+    this.sender = sender;
+    this.text = text;
+    this.timestamp = timestamp;
+    this.parentId = parentId;
+    this.isDeleted = false;
+  }
+
+  public Chirp(Chirp chirp, boolean deleted) {
+    this.id = chirp.id;
+    this.sender = chirp.sender;
+    this.text = "";
+    this.timestamp = chirp.timestamp;
+    this.parentId = chirp.parentId;
+    this.isDeleted = deleted;
   }
 
   public Chirp(Chirp chirp) {
     this.id = chirp.id;
-    this.channel = chirp.channel;
     this.sender = chirp.sender;
     this.text = chirp.text;
     this.timestamp = chirp.timestamp;
@@ -43,64 +68,24 @@ public class Chirp implements Copyable<Chirp> {
     return id;
   }
 
-  public void setId(MessageID id) {
-    if (id == null) {
-      throw new IllegalArgumentException("The id is null");
-    } else if (id.getEncoded().isEmpty()) {
-      throw new IllegalArgumentException("The id of the Chirp is empty");
-    }
-    this.id = id;
-  }
-
-  public Channel getChannel() {
-    return channel;
-  }
-
-  public void setChannel(@NonNull Channel channel) {
-    this.channel = channel;
-  }
-
   public PublicKey getSender() {
     return sender;
-  }
-
-  public void setSender(PublicKey sender) {
-    this.sender = sender;
   }
 
   public String getText() {
     return text;
   }
 
-  public void setText(String text) {
-    if (text.length() > MAX_CHIRP_CHARS) {
-      throw new IllegalArgumentException("the text exceed the maximum numbers of characters");
-    }
-    this.text = text;
-  }
-
   public long getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(long timestamp) {
-    this.timestamp = timestamp;
-  }
-
-  public boolean getIsDeleted() {
+  public boolean isDeleted() {
     return isDeleted;
-  }
-
-  public void setIsDeleted(boolean isDeleted) {
-    this.isDeleted = isDeleted;
   }
 
   public MessageID getParentId() {
     return parentId;
-  }
-
-  public void setParentId(MessageID parentId) {
-    this.parentId = parentId;
   }
 
   @Override
@@ -108,11 +93,36 @@ public class Chirp implements Copyable<Chirp> {
     return new Chirp(this);
   }
 
+  /**
+   * @return a new deleted chirp
+   */
+  public Chirp deleted() {
+    return new Chirp(this, true);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Chirp chirp = (Chirp) o;
+    return timestamp == chirp.timestamp
+        && isDeleted == chirp.isDeleted
+        && Objects.equals(id, chirp.id)
+        && Objects.equals(sender, chirp.sender)
+        && Objects.equals(text, chirp.text)
+        && Objects.equals(parentId, chirp.parentId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, sender, text, timestamp, isDeleted, parentId);
+  }
+
   @NonNull
   @Override
   public String toString() {
     return String.format(
-        "Chirp{id='%s', channel='%s', sender='%s', text='%s', timestamp='%s', isDeleted='%s', parentId='%s'",
-        id.getEncoded(), channel, sender, text, timestamp, isDeleted, parentId.getEncoded());
+        "Chirp{id='%s', sender='%s', text='%s', timestamp='%s', isDeleted='%s', parentId='%s'",
+        id.getEncoded(), sender, text, timestamp, isDeleted, parentId.getEncoded());
   }
 }

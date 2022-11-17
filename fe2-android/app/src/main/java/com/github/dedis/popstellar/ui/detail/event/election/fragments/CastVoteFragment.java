@@ -3,28 +3,31 @@ package com.github.dedis.popstellar.ui.detail.event.election.fragments;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.CastVoteFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.CastVoteViewPagerAdapter;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
+
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link CastVoteFragment#newInstance} factory method
@@ -63,7 +66,24 @@ public class CastVoteFragment extends Fragment {
                   mLaoDetailViewModel.getCurrentElection().getId());
           electionVotes.add(electionVote);
         }
-        mLaoDetailViewModel.sendVote(electionVotes, getParentFragmentManager());
+
+        mLaoDetailViewModel.addDisposable(
+            mLaoDetailViewModel
+                .sendVote(electionVotes)
+                .subscribe(
+                    () -> {
+                      setCurrentFragment(
+                          getParentFragmentManager(),
+                          R.id.fragment_lao_detail,
+                          LaoDetailFragment::newInstance);
+                      // Toast ? + send back to election screen or details screen ?
+                      Toast.makeText(
+                              requireContext(), "vote successfully sent !", Toast.LENGTH_LONG)
+                          .show();
+                    },
+                    error ->
+                        ErrorUtils.logAndShow(
+                            requireContext(), TAG, error, R.string.error_send_vote)));
       };
 
   public CastVoteFragment() {
@@ -89,10 +109,12 @@ public class CastVoteFragment extends Fragment {
     // setUp the cast Vote button
     voteButton = mCastVoteFragBinding.castVoteButton;
 
-    // Getting lao
-    Lao lao = mLaoDetailViewModel.getCurrentLao().getValue();
-    if (lao == null) {
-      Log.e(TAG, "The current LAO of the LaoDetailViewModel is null");
+    // Getting laoView
+    LaoView laoView;
+    try {
+      laoView = mLaoDetailViewModel.getLaoView();
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return null;
     }
 
@@ -104,7 +126,7 @@ public class CastVoteFragment extends Fragment {
     }
 
     // Setting the Lao Name
-    laoNameView.setText(lao.getName());
+    laoNameView.setText(laoView.getName());
 
     // Setting election name
     electionNameView.setText(election.getName());

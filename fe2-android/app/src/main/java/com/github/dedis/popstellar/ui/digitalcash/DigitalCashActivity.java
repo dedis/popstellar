@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
+import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -41,12 +43,24 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
     loadIntentData();
   }
 
+  @Override
+  public void onStop() {
+    super.onStop();
+
+    try {
+      viewModel.savePersistentData();
+    } catch (GeneralSecurityException e) {
+      // We do not display the security error to the user
+      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
+    }
+  }
+
   public void loadIntentData() {
     if (getIntent().getExtras() != null) {
       String id = getIntent().getExtras().getString(Constants.LAO_ID_EXTRA, "");
       viewModel.subscribeToLao(id);
       viewModel.setLaoId(id);
-      viewModel.setLaoName(getIntent().getExtras().getString(Constants.LAO_NAME, ""));
       viewModel.setRollCallId(getIntent().getExtras().getString(Constants.ROLL_CALL_ID, ""));
     }
   }
@@ -160,10 +174,9 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
     return true;
   }
 
-  public static Intent newIntent(Context ctx, String laoId, String laoName) {
+  public static Intent newIntent(Context ctx, String laoId) {
     Intent intent = new Intent(ctx, DigitalCashActivity.class);
     intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.putExtra(Constants.LAO_NAME, laoName);
     return intent;
   }
 

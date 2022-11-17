@@ -1,4 +1,5 @@
-import { combineReducers, createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 
 import {
   configureTestFeatures,
@@ -27,7 +28,7 @@ const t = new Timestamp(1600000000);
 // setup the test features to enable ExtendedMessage.fromData
 configureTestFeatures();
 
-const mockStore = createStore(combineReducers(messageReducer));
+const mockStore = configureStore({ reducer: combineReducers(messageReducer) });
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -50,7 +51,12 @@ describe('makeWitnessStoreWatcher', () => {
 
     const msg = ExtendedMessage.fromMessage(
       ExtendedMessage.fromData(
-        { object: ObjectType.CHIRP, action: ActionType.ADD, text: 'hi', timestamp: t } as AddChirp,
+        {
+          object: ObjectType.CHIRP,
+          action: ActionType.ADD,
+          text: 'hi',
+          timestamp: t,
+        } as AddChirp,
         mockKeyPair,
         mockChannel,
       ),
@@ -73,7 +79,12 @@ describe('makeWitnessStoreWatcher', () => {
 
     const msg = ExtendedMessage.fromMessage(
       ExtendedMessage.fromData(
-        { object: ObjectType.CHIRP, action: ActionType.ADD, text: 'hi', timestamp: t } as AddChirp,
+        {
+          object: ObjectType.CHIRP,
+          action: ActionType.ADD,
+          text: 'hi',
+          timestamp: t,
+        } as AddChirp,
         mockKeyPair,
         mockChannel,
       ),

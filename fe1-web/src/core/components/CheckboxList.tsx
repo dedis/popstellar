@@ -1,7 +1,7 @@
+import { CheckBox } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { CheckBox } from 'react-native-elements';
 
 import { Typography, ViewStyles } from '../styles';
 

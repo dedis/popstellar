@@ -1,0 +1,461 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QrCodeScanner renders correctly when not showing camera 1`] = `
+<View
+  style={
+    Object {
+      "flex": 1,
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "zIndex": 0,
+      }
+    }
+  />
+  <View
+    style={
+      Object {
+        "flex": 1,
+        "flexDirection": "column",
+        "margin": 16,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "bottom": 0,
+          "flex": 1,
+        }
+      }
+    />
+    <View
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
+    >
+      <View
+        style={
+          Object {
+            "alignSelf": "flex-end",
+            "backgroundColor": "#fff",
+            "borderRadius": 8,
+            "padding": 8,
+          }
+        }
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+        >
+          <RNGestureHandlerButton
+            collapsable={false}
+            exclusive={true}
+            handlerTag={2}
+            handlerType="NativeViewGestureHandler"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            touchSoundDisabled={false}
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              style={
+                Object {
+                  "alignSelf": "flex-end",
+                  "marginLeft": "auto",
+                  "opacity": 1,
+                }
+              }
+            >
+              <View>
+                {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+              </View>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`QrCodeScanner renders correctly when not showing camera with children 1`] = `
+<View
+  style={
+    Object {
+      "flex": 1,
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "zIndex": 0,
+      }
+    }
+  />
+  <View
+    style={
+      Object {
+        "flex": 1,
+        "flexDirection": "column",
+        "margin": 16,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "bottom": 0,
+          "flex": 1,
+        }
+      }
+    >
+      <Text>
+        Text
+      </Text>
+    </View>
+    <View
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
+    >
+      <View
+        style={
+          Object {
+            "alignSelf": "flex-end",
+            "backgroundColor": "#fff",
+            "borderRadius": 8,
+            "padding": 8,
+          }
+        }
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+        >
+          <RNGestureHandlerButton
+            collapsable={false}
+            exclusive={true}
+            handlerTag={4}
+            handlerType="NativeViewGestureHandler"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            touchSoundDisabled={false}
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              style={
+                Object {
+                  "alignSelf": "flex-end",
+                  "marginLeft": "auto",
+                  "opacity": 1,
+                }
+              }
+            >
+              <View>
+                {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+              </View>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`QrCodeScanner renders correctly when permissions are denied 1`] = `
+Array [
+  <Text>
+    Permissions for camera denied
+  </Text>,
+  <View
+    style={
+      Object {
+        "bottom": 0,
+        "flex": 1,
+      }
+    }
+  />,
+]
+`;
+
+exports[`QrCodeScanner renders correctly when requesting for permissions 1`] = `
+Array [
+  <Text>
+    Requesting camera permissions
+  </Text>,
+  <View
+    style={
+      Object {
+        "bottom": 0,
+        "flex": 1,
+      }
+    }
+  />,
+]
+`;
+
+exports[`QrCodeScanner renders correctly when showing camera 1`] = `
+<View
+  style={
+    Object {
+      "flex": 1,
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "zIndex": 0,
+      }
+    }
+  >
+    <View />
+  </View>
+  <View
+    style={
+      Object {
+        "flex": 1,
+        "flexDirection": "column",
+        "margin": 16,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "bottom": 0,
+          "flex": 1,
+        }
+      }
+    />
+    <View
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
+    >
+      <View
+        style={
+          Object {
+            "alignSelf": "flex-end",
+            "backgroundColor": "#fff",
+            "borderRadius": 8,
+            "padding": 8,
+          }
+        }
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+        >
+          <RNGestureHandlerButton
+            collapsable={false}
+            exclusive={true}
+            handlerTag={1}
+            handlerType="NativeViewGestureHandler"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            touchSoundDisabled={false}
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              style={
+                Object {
+                  "alignSelf": "flex-end",
+                  "marginLeft": "auto",
+                  "opacity": 1,
+                }
+              }
+            >
+              <View>
+                {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+              </View>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`QrCodeScanner renders correctly when showing camera with children 1`] = `
+<View
+  style={
+    Object {
+      "flex": 1,
+      "overflow": "hidden",
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "zIndex": 0,
+      }
+    }
+  >
+    <View />
+  </View>
+  <View
+    style={
+      Object {
+        "flex": 1,
+        "flexDirection": "column",
+        "margin": 16,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "bottom": 0,
+          "flex": 1,
+        }
+      }
+    >
+      <Text>
+        Text
+      </Text>
+    </View>
+    <View
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
+    >
+      <View
+        style={
+          Object {
+            "alignSelf": "flex-end",
+            "backgroundColor": "#fff",
+            "borderRadius": 8,
+            "padding": 8,
+          }
+        }
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+        >
+          <RNGestureHandlerButton
+            collapsable={false}
+            exclusive={true}
+            handlerTag={3}
+            handlerType="NativeViewGestureHandler"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            touchSoundDisabled={false}
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              style={
+                Object {
+                  "alignSelf": "flex-end",
+                  "marginLeft": "auto",
+                  "opacity": 1,
+                }
+              }
+            >
+              <View>
+                {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+              </View>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
+`;
