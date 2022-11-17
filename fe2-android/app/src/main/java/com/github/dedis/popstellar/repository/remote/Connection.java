@@ -54,7 +54,7 @@ public class Connection {
       Log.d(TAG, "Connection to " + url + " failed", error);
     } else if (event instanceof OnConnectionClosing) {
       ShutdownReason reason = ((OnConnectionClosing) event).getShutdownReason();
-      Log.d(TAG, "Connection to " + url + " closing: " + reason);
+      Log.d(TAG, "Connection to " + url + " is closing: " + reason);
     }
   }
 

@@ -21,6 +21,7 @@ public class ConnectionTest {
     LAOService service = mock(LAOService.class);
     BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
     when(service.observeMessage()).thenReturn(messages);
+    when(service.observeWebsocket()).thenReturn(BehaviorSubject.create());
 
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
@@ -39,6 +40,7 @@ public class ConnectionTest {
     LAOService service = mock(LAOService.class);
     BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
     when(service.observeMessage()).thenReturn(messages);
+    when(service.observeWebsocket()).thenReturn(BehaviorSubject.create());
 
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
@@ -55,6 +57,7 @@ public class ConnectionTest {
     LAOService service = mock(LAOService.class);
     BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
     when(service.observeMessage()).thenReturn(messages);
+    when(service.observeWebsocket()).thenReturn(BehaviorSubject.create());
 
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
@@ -72,6 +75,7 @@ public class ConnectionTest {
     LAOService service = mock(LAOService.class);
     BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
     when(service.observeMessage()).thenReturn(messages);
+    when(service.observeWebsocket()).thenReturn(BehaviorSubject.create());
 
     BehaviorSubject<Lifecycle.State> manualState =
         BehaviorSubject.createDefault(Lifecycle.State.Started.INSTANCE);
