@@ -32,6 +32,7 @@ public class ConnectionTest {
 
     verify(service).sendMessage(msg);
     verify(service).observeMessage();
+    verify(service, atLeastOnce()).observeWebsocket();
     verifyNoMoreInteractions(service);
   }
 
@@ -49,6 +50,7 @@ public class ConnectionTest {
     connection.observeMessage();
 
     verify(service).observeMessage();
+    verify(service, atLeastOnce()).observeWebsocket();
     verifyNoMoreInteractions(service);
   }
 
@@ -67,6 +69,7 @@ public class ConnectionTest {
 
     verify(service).observeWebsocket();
     verify(service).observeMessage();
+    verify(service, atLeastOnce()).observeWebsocket();
     verifyNoMoreInteractions(service);
   }
 
@@ -87,6 +90,7 @@ public class ConnectionTest {
         new Lifecycle.State.Stopped.WithReason(ShutdownReason.GRACEFUL), manualState.getValue());
 
     verify(service).observeMessage();
+    verify(service, atLeastOnce()).observeWebsocket();
     verifyNoMoreInteractions(service);
   }
 }
