@@ -24,7 +24,7 @@ public class ConnectionTest {
 
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
-    Connection connection = new Connection(service, manualState);
+    Connection connection = new Connection("url", service, manualState);
     Message msg = new Subscribe(Channel.ROOT, 12);
 
     connection.sendMessage(msg);
@@ -42,7 +42,7 @@ public class ConnectionTest {
 
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
-    Connection connection = new Connection(service, manualState);
+    Connection connection = new Connection("url", service, manualState);
 
     connection.observeMessage();
 
@@ -58,7 +58,7 @@ public class ConnectionTest {
 
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
-    Connection connection = new Connection(service, manualState);
+    Connection connection = new Connection("url", service, manualState);
 
     connection.observeConnectionEvents();
 
@@ -76,7 +76,7 @@ public class ConnectionTest {
     BehaviorSubject<Lifecycle.State> manualState =
         BehaviorSubject.createDefault(Lifecycle.State.Started.INSTANCE);
 
-    Connection connection = new Connection(service, manualState);
+    Connection connection = new Connection("url", service, manualState);
     connection.close();
 
     assertEquals(
