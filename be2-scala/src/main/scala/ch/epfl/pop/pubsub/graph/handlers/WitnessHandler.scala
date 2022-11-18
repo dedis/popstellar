@@ -37,7 +37,6 @@ class WitnessHandler(dbRef: => AskableActorRef) extends MessageHandler {
         DbActorAddWitnessSignatureAck(witnessMessage) <- dbActor ? DbActor.AddWitnessSignature(channel, messageId, signature)
         // overwrites the message containing now the witness signature in the db
         _ <- dbActor ? DbActor.WriteAndPropagate(channel, witnessMessage)
-
       } yield ()
 
     Await.ready(combined, duration).value.get match {
