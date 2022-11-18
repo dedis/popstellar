@@ -43,12 +43,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        (_, message, somedata) <- extractParameters[CreateRollCall](rpcRequest, serverUnexpectedAnswer)
-        data: CreateRollCall = somedata.get
-        // message: Message = rpcRequest.getParamsMessage.get
-        // data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
+        (_, message, data) <- extractParameters[CreateRollCall](rpcRequest, serverUnexpectedAnswer)
         // we are using the rollcall id instead of the message_id at rollcall creation
-        rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
+        rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.get.id}")
         laoId: Hash = rpcRequest.extractLaoId
         _ <- dbActor ? DbActor.AssertChannelMissing(rollCallChannel)
         // we create a new channel to write uniquely the RollCall, this ensures then if the RollCall already exists or not
@@ -69,7 +66,6 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val ask =
       for {
         (_, message, _) <- extractParameters[OpenRollCall](rpcRequest, serverUnexpectedAnswer) // if it fails, throw an error
-        // message: Message = rpcRequest.getParamsMessage.get // this line is not executed if the first fails
         channel: Channel = rpcRequest.getParamsChannel
         laoId: Hash = rpcRequest.extractLaoId
         // check if the roll call already exists to open it
@@ -89,7 +85,6 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleReopenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask = for {
       (_, message, _) <- extractParameters[ReopenRollCall](rpcRequest, serverUnexpectedAnswer)
-      // message: Message = rpcRequest.getParamsMessage.get
       laoId: Hash = rpcRequest.extractLaoId
       _ <- dbAskWritePropagate(rpcRequest)
       _ <- dbActor ? DbActor.WriteRollCallData(laoId, message)
@@ -107,7 +102,6 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
       (_, laoChannel) <- extractLaoChannel(rpcRequest, s"There is an issue with the data of the LAO")
       _ <- dbAskWritePropagate(rpcRequest)
       (_, message, _) <- extractParameters[CloseRollCall](rpcRequest, serverUnexpectedAnswer)
-      // message: Message = rpcRequest.getParamsMessage.get
       _ <- dbActor ? DbActor.WriteLaoData(rpcRequest.getParamsChannel, message, None)
       _ <- dbActor ? DbActor.WriteRollCallData(laoChannel.get, message)
     } yield ()

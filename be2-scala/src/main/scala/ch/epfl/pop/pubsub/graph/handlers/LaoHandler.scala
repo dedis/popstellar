@@ -20,11 +20,8 @@ case object LaoHandler extends MessageHandler {
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        _ <- checkParameters(rpcMessage, s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message")
-        params: Option[Message] = rpcMessage.getParamsMessage
-        message: Message = rpcMessage.getParamsMessage.get
-        data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
-
+        (_, message, somedata) <- extractParameters[CreateLao](rpcMessage, s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message")
+        data: CreateLao = somedata.get
         // we are using the lao id instead of the message_id at lao creation
         laoChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         coinChannel: Channel = Channel(s"$laoChannel${Channel.COIN_CHANNEL_PREFIX}")
@@ -48,7 +45,7 @@ case object LaoHandler extends MessageHandler {
         // write lao data
         _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message, address)
         // after creating the lao, we need to send a lao#greet message to the frontend
-        greet: GreetLao = GreetLao(data.id, params.get.sender, address.get, List.empty)
+        greet: GreetLao = GreetLao(data.id, message.sender, address.get, List.empty)
         broadcastGreet: Base64Data = Base64Data.encode(GreetLaoFormat.write(greet).toString())
         _ <- dbBroadcast(rpcMessage, laoChannel, broadcastGreet, laoChannel)
       } yield ()
