@@ -43,12 +43,9 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
-        (_, message, somedata) <- extractParameters[CreateRollCall](rpcRequest, serverUnexpectedAnswer)
-        data: CreateRollCall = somedata.get
-        // message: Message = rpcRequest.getParamsMessage.get
-        // data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
+        (_, message, data) <- extractParameters[CreateRollCall](rpcRequest, serverUnexpectedAnswer)
         // we are using the rollcall id instead of the message_id at rollcall creation
-        rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
+        rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.get.id}")
         laoId: Hash = rpcRequest.extractLaoId
         _ <- dbActor ? DbActor.AssertChannelMissing(rollCallChannel)
         // we create a new channel to write uniquely the RollCall, this ensures then if the RollCall already exists or not
