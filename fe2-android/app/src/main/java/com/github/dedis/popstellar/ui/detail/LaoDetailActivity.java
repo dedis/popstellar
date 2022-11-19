@@ -86,9 +86,8 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   }
 
   private void setupTopAppBar() {
-    viewModel
-        .getCurrentLao()
-        .observe(this, laoView -> binding.laoTopAppBar.setTitle(laoView.getName()));
+    viewModel.getPageTitle().observe(this, title -> binding.laoTopAppBar.setTitle(title));
+
     binding.laoTopAppBar.setNavigationOnClickListener(
         v -> {
           Fragment fragment =
@@ -195,6 +194,11 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private void openEventsTab() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
+    try {
+      viewModel.setPageTitle(viewModel.getLaoView().getName());
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(this, TAG, new UnknownError(), R.string.unknown_lao_exception);
+    }
   }
 
   private void openIdentityTab() {
@@ -202,11 +206,13 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
         getSupportFragmentManager(),
         R.id.fragment_identity,
         () -> IdentityFragment.newInstance(viewModel.getPublicKey()));
+    viewModel.setPageTitle(getString(R.string.tab_identity));
   }
 
   private void openWitnessTab() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_witnessing, WitnessingFragment::newInstance);
+    viewModel.setPageTitle(getString(R.string.witnessing));
   }
 
   private void openDigitalCashTab() {
@@ -225,6 +231,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private void setupLaoWalletFragment() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
+    viewModel.setPageTitle(getString(R.string.wallet_title));
   }
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {

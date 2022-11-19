@@ -38,8 +38,8 @@ public class LaoDetailFragment extends Fragment {
   @Inject Gson gson;
   @Inject GlobalNetworkManager networkManager;
 
-  private LaoDetailFragmentBinding mLaoDetailFragBinding;
-  private LaoDetailViewModel mLaoDetailViewModel;
+  private LaoDetailFragmentBinding binding;
+  private LaoDetailViewModel viewModel;
   private EventListAdapter mEventListViewEventAdapter;
   private boolean isRotated = false;
 
@@ -53,39 +53,39 @@ public class LaoDetailFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mLaoDetailFragBinding = LaoDetailFragmentBinding.inflate(inflater, container, false);
+    binding = LaoDetailFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    mLaoDetailFragBinding.setViewModel(mLaoDetailViewModel);
-    mLaoDetailFragBinding.setLifecycleOwner(requireActivity());
+    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    binding.setViewModel(viewModel);
+    binding.setLifecycleOwner(requireActivity());
 
-    FloatingActionButton addButton = mLaoDetailFragBinding.addEvent;
+    FloatingActionButton addButton = binding.addEvent;
     addButton.setOnClickListener(fabListener);
 
-    mLaoDetailFragBinding.addElection.setOnClickListener(openCreateEvent(EventType.ELECTION));
-    mLaoDetailFragBinding.addElectionText.setOnClickListener(openCreateEvent(EventType.ELECTION));
-    mLaoDetailFragBinding.addRollCall.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
-    mLaoDetailFragBinding.addRollCallText.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
+    binding.addElection.setOnClickListener(openCreateEvent(EventType.ELECTION));
+    binding.addElectionText.setOnClickListener(openCreateEvent(EventType.ELECTION));
+    binding.addRollCall.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
+    binding.addRollCallText.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
 
-    return mLaoDetailFragBinding.getRoot();
+    return binding.getRoot();
   }
 
   View.OnClickListener fabListener =
       view -> {
-        ConstraintLayout laoContainer = mLaoDetailFragBinding.laoContainer;
+        ConstraintLayout laoContainer = binding.laoContainer;
         isRotated = LaoDetailAnimation.rotateFab(view, !isRotated);
         if (isRotated) {
-          LaoDetailAnimation.showIn(mLaoDetailFragBinding.addRollCall);
-          LaoDetailAnimation.showIn(mLaoDetailFragBinding.addElection);
-          LaoDetailAnimation.showIn(mLaoDetailFragBinding.addElectionText);
-          LaoDetailAnimation.showIn(mLaoDetailFragBinding.addRollCallText);
+          LaoDetailAnimation.showIn(binding.addRollCall);
+          LaoDetailAnimation.showIn(binding.addElection);
+          LaoDetailAnimation.showIn(binding.addElectionText);
+          LaoDetailAnimation.showIn(binding.addRollCallText);
           LaoDetailAnimation.fadeOut(laoContainer, 1.0f, 0.2f, 300);
           laoContainer.setEnabled(false);
         } else {
-          LaoDetailAnimation.showOut(mLaoDetailFragBinding.addRollCall);
-          LaoDetailAnimation.showOut(mLaoDetailFragBinding.addElection);
-          LaoDetailAnimation.showOut(mLaoDetailFragBinding.addElectionText);
-          LaoDetailAnimation.showOut(mLaoDetailFragBinding.addRollCallText);
+          LaoDetailAnimation.showOut(binding.addRollCall);
+          LaoDetailAnimation.showOut(binding.addElection);
+          LaoDetailAnimation.showOut(binding.addElectionText);
+          LaoDetailAnimation.showOut(binding.addRollCallText);
           LaoDetailAnimation.fadeIn(laoContainer, 0.2f, 1.0f, 300);
           laoContainer.setEnabled(true);
         }
@@ -94,17 +94,21 @@ public class LaoDetailFragment extends Fragment {
   private View.OnClickListener openCreateEvent(EventType type) {
     switch (type) {
       case ROLL_CALL:
-        return v ->
-            LaoDetailActivity.setCurrentFragment(
-                getParentFragmentManager(),
-                R.id.fragment_create_roll_call_event,
-                RollCallCreationFragment::newInstance);
+        return v -> {
+          LaoDetailActivity.setCurrentFragment(
+              getParentFragmentManager(),
+              R.id.fragment_create_roll_call_event,
+              RollCallCreationFragment::newInstance);
+          viewModel.setPageTitle(getString(R.string.roll_call_title));
+        };
       case ELECTION:
-        return v ->
-            LaoDetailActivity.setCurrentFragment(
-                getParentFragmentManager(),
-                R.id.fragment_setup_election_event,
-                ElectionSetupFragment::newInstance);
+        return v -> {
+          LaoDetailActivity.setCurrentFragment(
+              getParentFragmentManager(),
+              R.id.fragment_setup_election_event,
+              ElectionSetupFragment::newInstance);
+          viewModel.setPageTitle(getString(R.string.election_setup_title));
+        };
       default:
         return v -> Log.d(TAG, "unknown event type: " + type);
     }
@@ -116,7 +120,7 @@ public class LaoDetailFragment extends Fragment {
     setupEventListAdapter();
     setupEventListUpdates();
 
-    mLaoDetailViewModel
+    viewModel
         .getLaoEvents()
         .observe(
             requireActivity(),
@@ -127,10 +131,10 @@ public class LaoDetailFragment extends Fragment {
   }
 
   private void setupEventListAdapter() {
-    RecyclerView eventList = mLaoDetailFragBinding.eventList;
+    RecyclerView eventList = binding.eventList;
 
     mEventListViewEventAdapter =
-        new EventListAdapter(new ArrayList<>(), mLaoDetailViewModel, requireActivity());
+        new EventListAdapter(new ArrayList<>(), viewModel, requireActivity());
     Log.d(TAG, "created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
@@ -141,7 +145,7 @@ public class LaoDetailFragment extends Fragment {
   }
 
   private void setupEventListUpdates() {
-    mLaoDetailViewModel
+    viewModel
         .getLaoEvents()
         .observe(
             requireActivity(),

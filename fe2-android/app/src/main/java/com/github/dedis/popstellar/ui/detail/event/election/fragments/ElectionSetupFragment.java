@@ -38,7 +38,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   private EditText electionNameText;
   private Button submitButton;
   private ElectionSetupViewPagerAdapter viewPagerAdapter;
-  private LaoDetailViewModel mLaoDetailViewModel;
+  private LaoDetailViewModel viewModel;
 
   // For election version choice
   private ElectionVersion electionVersion;
@@ -76,7 +76,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           // On each change of election level information, we check that at least one question is
           // complete to know if submit is allowed
           submitButton.setEnabled(
-              isElectionLevelInputValid() && viewPagerAdapter.isAnInputValid().getValue());
+              isElectionLevelInputValid()
+                  && Boolean.TRUE.equals(viewPagerAdapter.isAnInputValid().getValue()));
         }
       };
 
@@ -94,7 +95,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     ElectionSetupFragmentBinding binding =
         ElectionSetupFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     // Set the view for the date and time
     setDateAndTimeView(binding.getRoot());
@@ -108,12 +109,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     // Add text watchers on the fields that need to be filled
     electionNameText.addTextChangedListener(submitTextWatcher);
 
-    // Set the text widget in layout to current LAO name
-    TextView laoNameTextView = binding.electionSetupLaoName;
-    laoNameTextView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
-
     // Set viewPager adapter
-    viewPagerAdapter = new ElectionSetupViewPagerAdapter(mLaoDetailViewModel);
+    viewPagerAdapter = new ElectionSetupViewPagerAdapter(viewModel);
 
     // Set ViewPager
     ViewPager2 viewPager2 = binding.electionSetupViewPager2;
@@ -244,8 +241,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   questionsFiltered,
                   ballotsOptionsFiltered));
 
-          mLaoDetailViewModel.addDisposable(
-              mLaoDetailViewModel
+          viewModel.addDisposable(
+              viewModel
                   .createNewElection(
                       electionVersion,
                       electionName,
@@ -257,11 +254,13 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                       ballotsOptionsFiltered,
                       questionsFiltered)
                   .subscribe(
-                      () ->
-                          setCurrentFragment(
-                              getParentFragmentManager(),
-                              R.id.fragment_lao_detail,
-                              LaoDetailFragment::newInstance),
+                      () -> {
+                        setCurrentFragment(
+                            getParentFragmentManager(),
+                            R.id.fragment_lao_detail,
+                            LaoDetailFragment::newInstance);
+                        viewModel.setPageTitle(viewModel.getLaoView().getName());
+                      },
                       error ->
                           ErrorUtils.logAndShow(
                               requireContext(), TAG, error, R.string.error_create_election)));

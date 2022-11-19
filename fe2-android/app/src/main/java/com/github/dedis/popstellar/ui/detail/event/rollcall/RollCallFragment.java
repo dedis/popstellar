@@ -84,11 +84,13 @@ public class RollCallFragment extends Fragment {
                   viewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
-                          () ->
-                              setCurrentFragment(
-                                  getParentFragmentManager(),
-                                  R.id.add_attendee_layout,
-                                  QRCodeScanningFragment::new),
+                          () -> {
+                            setCurrentFragment(
+                                getParentFragmentManager(),
+                                R.id.add_attendee_layout,
+                                QRCodeScanningFragment::new);
+                            viewModel.setPageTitle(getString(R.string.add_attendee_title));
+                          },
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_open_rollcall)));
@@ -99,11 +101,13 @@ public class RollCallFragment extends Fragment {
                   viewModel
                       .closeRollCall()
                       .subscribe(
-                          () ->
-                              setCurrentFragment(
-                                  getParentFragmentManager(),
-                                  R.id.fragment_lao_detail,
-                                  LaoDetailFragment::newInstance),
+                          () -> {
+                            setCurrentFragment(
+                                getParentFragmentManager(),
+                                R.id.fragment_lao_detail,
+                                LaoDetailFragment::newInstance);
+                            viewModel.setPageTitle(viewModel.getLaoView().getName());
+                          },
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_close_rollcall)));
@@ -114,9 +118,11 @@ public class RollCallFragment extends Fragment {
         });
 
     binding.rollCallScanningButton.setOnClickListener(
-        b ->
-            setCurrentFragment(
-                getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new));
+        b -> {
+          setCurrentFragment(
+              getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new);
+          viewModel.setPageTitle(getString(R.string.add_attendee_title));
+        });
 
     viewModel
         .getLaoEvents()

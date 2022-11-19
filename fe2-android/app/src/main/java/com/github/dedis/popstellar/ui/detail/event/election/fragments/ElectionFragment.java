@@ -30,7 +30,7 @@ public class ElectionFragment extends Fragment {
 
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
-  private LaoDetailViewModel laoDetailViewModel;
+  private LaoDetailViewModel viewModel;
   private Election election;
   private View view;
 
@@ -65,11 +65,11 @@ public class ElectionFragment extends Fragment {
     managementButton = view.findViewById(R.id.election_management_button);
     actionButton = view.findViewById(R.id.election_action_button);
 
-    laoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     managementVisibilityMap = buildManagementVisibilityMap();
 
     if (election == null) {
-      election = laoDetailViewModel.getCurrentElection();
+      election = viewModel.getCurrentElection();
     }
 
     setupElectionContent();
@@ -87,8 +87,8 @@ public class ElectionFragment extends Fragment {
                   .setPositiveButton(
                       R.string.yes,
                       (dialogInterface, i) ->
-                          laoDetailViewModel.addDisposable(
-                              laoDetailViewModel
+                          viewModel.addDisposable(
+                              viewModel
                                   .openElection(election)
                                   .subscribe(
                                       () -> {},
@@ -108,8 +108,8 @@ public class ElectionFragment extends Fragment {
                   .setPositiveButton(
                       R.string.yes,
                       (dialogInterface, i) ->
-                          laoDetailViewModel.addDisposable(
-                              laoDetailViewModel
+                          viewModel.addDisposable(
+                              viewModel
                                   .endElection(election)
                                   .subscribe(
                                       () -> {},
@@ -138,19 +138,21 @@ public class ElectionFragment extends Fragment {
                   getParentFragmentManager(),
                   R.id.fragment_cast_vote,
                   CastVoteFragment::newInstance);
+              viewModel.setPageTitle(getString(R.string.vote));
               break;
             case RESULTS_READY:
               LaoDetailActivity.setCurrentFragment(
                   getParentFragmentManager(),
                   R.id.fragment_election_result,
                   ElectionResultFragment::newInstance);
+              viewModel.setPageTitle(getString(R.string.election_result_title));
               break;
             default:
               throw new IllegalStateException(
                   "User should not be able to use the action button in this state :" + state);
           }
         });
-    laoDetailViewModel
+    viewModel
         .getCurrentLao()
         .observe(
             getViewLifecycleOwner(),
@@ -170,7 +172,7 @@ public class ElectionFragment extends Fragment {
       // before going ahead.
       return;
     }
-    election = laoDetailViewModel.getCurrentElection();
+    election = viewModel.getCurrentElection();
     if (election == null) {
       return;
     }
@@ -314,7 +316,7 @@ public class ElectionFragment extends Fragment {
   private EnumMap<EventState, Integer> buildManagementVisibilityMap() {
     // Only the organizer may start or end an election
     int organizerVisibility =
-        Boolean.TRUE.equals(laoDetailViewModel.isOrganizer().getValue()) ? View.VISIBLE : View.GONE;
+        Boolean.TRUE.equals(viewModel.isOrganizer().getValue()) ? View.VISIBLE : View.GONE;
 
     EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
     map.put(EventState.CREATED, organizerVisibility);

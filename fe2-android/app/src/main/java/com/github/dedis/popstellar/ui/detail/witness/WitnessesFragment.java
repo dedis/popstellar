@@ -60,5 +60,6 @@ public class WitnessesFragment extends Fragment {
 
     viewModel.setScanningAction(ScanningAction.ADD_WITNESS);
     setCurrentFragment(manager, R.id.add_witness_button, QRCodeScanningFragment::new);
+    viewModel.setPageTitle(getString(R.string.add_witness_description));
   }
 }
