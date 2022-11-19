@@ -33,7 +33,7 @@ public class Connection {
             .doOnNext(msg -> Log.d(TAG, "Received a new message from remote: " + msg))
             .subscribe(messagesSubject::onNext, messagesSubject::onError));
 
-    // Add logs on connection stated
+    // Add logs on connection state events
     disposables.add(
         this.laoService
             .observeWebsocket()
@@ -73,8 +73,10 @@ public class Connection {
   }
 
   public void close() {
-    disposables.dispose();
+    // Dispose of any held resources and mark the message subject as complete (aka will not be used
+    // again)
     messagesSubject.onComplete();
+    disposables.dispose();
     manualState.onNext(new Lifecycle.State.Stopped.WithReason(ShutdownReason.GRACEFUL));
   }
 }
