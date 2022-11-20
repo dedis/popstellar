@@ -88,6 +88,20 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private void setupTopAppBar() {
     viewModel.getPageTitle().observe(this, title -> binding.laoTopAppBar.setTitle(title));
 
+    // We subscribe to lao updates to display name iff the event list is displayed
+    // This is far from elegant but I don't see a better way
+    viewModel
+        .getCurrentLao()
+        .observe(
+            this,
+            laoView -> {
+              Fragment fragment =
+                  getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao_detail);
+              if (fragment instanceof LaoDetailFragment) {
+                viewModel.setPageTitle(laoView.getName());
+              }
+            });
+
     binding.laoTopAppBar.setNavigationOnClickListener(
         v -> {
           Fragment fragment =
@@ -197,7 +211,8 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     try {
       viewModel.setPageTitle(viewModel.getLaoView().getName());
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(this, TAG, new UnknownError(), R.string.unknown_lao_exception);
+      // We don't inform the user because it will happen on every activity start
+      Log.d(TAG, "Lao name could not be retrieved");
     }
   }
 
