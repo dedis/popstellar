@@ -146,7 +146,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
               binding.channelQrCode.setImageBitmap(myBitmap);
 
               binding.laoPropertiesNameText.setText(laoView.getName());
-              binding.laoPropertiesRoleText.setText(getRole(laoView));
+              binding.laoPropertiesRoleText.setText(getRole());
             });
 
     binding.qrIconClose.setOnClickListener(
@@ -158,7 +158,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   }
 
   @StringRes
-  private int getRole(LaoView laoView) {
+  private int getRole() {
     if (Boolean.TRUE.equals(viewModel.isOrganizer().getValue())) {
       return R.string.organizer;
     } else {

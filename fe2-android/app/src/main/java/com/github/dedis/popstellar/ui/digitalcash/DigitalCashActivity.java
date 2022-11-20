@@ -161,7 +161,7 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
   }
 
   private void setupTopAppBar() {
-    viewModel.getPageTitle().observe(this, title -> binding.digitalCashAppBar.setTitle(title));
+    viewModel.getPageTitle().observe(this, binding.digitalCashAppBar::setTitle);
 
     binding.digitalCashAppBar.setNavigationOnClickListener(
         v -> {
