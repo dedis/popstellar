@@ -1,18 +1,12 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 import android.app.Application;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
+import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Wallet;
@@ -32,16 +26,18 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
-import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 @HiltViewModel
 public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
@@ -54,7 +50,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
 
   private final LiveData<List<String>> laoIdList;
-  private final LiveData<Boolean> isSocialMediaEnabled;
+  private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
   /** Dependencies for this class */
   private final Gson gson;
@@ -82,9 +78,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     laoIdList =
         LiveDataReactiveStreams.fromPublisher(
             laoRepository.getAllLaoIds().toFlowable(BackpressureStrategy.BUFFER));
-
-    isSocialMediaEnabled =
-        Transformations.map(laoIdList, laoSet -> laoSet != null && !laoSet.isEmpty());
   }
 
   @Override
@@ -195,10 +188,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     setIsWalletSetUp(true);
   }
 
-  public void newSeed() {
-    wallet.newSeed();
-  }
-
   public LiveData<List<String>> getLaoIdList() {
     return laoIdList;
   }
@@ -207,16 +196,20 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     return laoRepository.getLaoView(laoId);
   }
 
-  public LiveData<Boolean> isSocialMediaEnabled() {
-    return isSocialMediaEnabled;
-  }
-
   public LiveData<Boolean> getIsWalletSetUpEvent() {
     return isWalletSetup;
   }
 
   public void setIsWalletSetUp(boolean isSetUp) {
     this.isWalletSetup.setValue(isSetUp);
+  }
+
+  public LiveData<Integer> getPageTitle() {
+    return mPageTitle;
+  }
+
+  public void setPageTitle(int titleId) {
+    mPageTitle.postValue(titleId);
   }
 
   public boolean isWalletSetUp() {

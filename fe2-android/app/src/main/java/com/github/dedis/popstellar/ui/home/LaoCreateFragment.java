@@ -30,7 +30,6 @@ public final class LaoCreateFragment extends Fragment {
   private LaoCreateFragmentBinding binding;
   private HomeViewModel viewModel;
   private String initialUrl;
-  private HomeActivity activity;
 
   public static LaoCreateFragment newInstance() {
     return new LaoCreateFragment();
@@ -44,7 +43,6 @@ public final class LaoCreateFragment extends Fragment {
 
     binding = LaoCreateFragmentBinding.inflate(inflater, container, false);
     binding.setLifecycleOwner(getActivity());
-    activity = (HomeActivity) getActivity();
     viewModel = HomeActivity.obtainViewModel(requireActivity());
     initialUrl = globalNetworkManager.getCurrentUrl();
 
@@ -103,11 +101,9 @@ public final class LaoCreateFragment extends Fragment {
     binding.buttonCancelLaunch.setOnClickListener(
         v -> {
           Objects.requireNonNull(binding.laoNameEntryEditText.getText()).clear();
-          activity.setCurrentFragment(
-              getParentFragmentManager(),
-              R.id.fragment_home,
-              HomeFragment::newInstance,
-              R.string.home_title);
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+          viewModel.setPageTitle(R.string.home_title);
         });
   }
 }

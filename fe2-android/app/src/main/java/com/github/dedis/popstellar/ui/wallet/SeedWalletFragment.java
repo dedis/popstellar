@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletSeedFragmentBinding;
@@ -34,7 +33,6 @@ public class SeedWalletFragment extends Fragment {
   public static final String TAG = SeedWalletFragment.class.getSimpleName();
   private WalletSeedFragmentBinding binding;
   private HomeViewModel viewModel;
-  private HomeActivity activity;
 
   @Inject Wallet wallet;
 
@@ -52,7 +50,7 @@ public class SeedWalletFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
 
     binding = WalletSeedFragmentBinding.inflate(inflater, container, false);
-    activity = (HomeActivity) getActivity();
+    HomeActivity activity = (HomeActivity) getActivity();
     viewModel = HomeActivity.obtainViewModel(activity);
     binding.setLifecycleOwner(activity);
     return binding.getRoot();
@@ -79,11 +77,10 @@ public class SeedWalletFragment extends Fragment {
               (dialog, which) -> {
                 try {
                   viewModel.importSeed(binding.seedWalletText.getText().toString());
-                  activity.setCurrentFragment(
-                      getParentFragmentManager(),
-                      R.id.fragment_home,
-                      HomeFragment::newInstance,
-                      R.string.home_title);
+                  HomeActivity.setCurrentFragment(
+                      getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+                  viewModel.setPageTitle(R.string.home_title);
+
                 } catch (GeneralSecurityException | SeedValidationException e) {
                   Log.e(TAG, "Error importing key", e);
                   Toast.makeText(
@@ -130,11 +127,9 @@ public class SeedWalletFragment extends Fragment {
             return;
           }
           Toast.makeText(requireContext(), R.string.seed_import_success, Toast.LENGTH_SHORT).show();
-          activity.setCurrentFragment(
-              getParentFragmentManager(),
-              R.id.fragment_home,
-              HomeFragment::new,
-              R.string.home_title);
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(), R.id.fragment_home, HomeFragment::new);
+          viewModel.setPageTitle(R.string.home_title);
         });
   }
 }

@@ -1,20 +1,17 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.app.*;
-import android.content.*;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*;
+import android.view.Menu;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
@@ -23,7 +20,6 @@ import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.security.GeneralSecurityException;
@@ -59,20 +55,16 @@ public class HomeActivity extends AppCompatActivity {
         });
 
     // At start of Activity we display home fragment
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_home,
-        HomeFragment::newInstance,
-        R.string.home_title);
+    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+    viewModel.setPageTitle(R.string.home_title);
 
     restoreStoredState();
 
     if (!viewModel.isWalletSetUp()) {
       setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_seed_wallet,
-          SeedWalletFragment::newInstance,
-          R.string.wallet_setup);
+          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
+      viewModel.setPageTitle(R.string.wallet_setup);
+
       new MaterialAlertDialogBuilder(this)
           .setMessage(R.string.wallet_init_message)
           .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
@@ -81,6 +73,8 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void handleTopAppBar() {
+    viewModel.getPageTitle().observe(this, id -> binding.topAppBar.setTitle(id));
+
     // Set menu items behaviour
     binding.topAppBar.setOnMenuItemClickListener(
         item -> {
@@ -121,32 +115,12 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
-  //  @Override
-  //  public boolean onCreateOptionsMenu(Menu menu) {
-  //    getMenuInflater().inflate(R.menu.options_menu, menu);
-  //    this.menu = menu;
-  //    menuTitleUpdater();
-  //    return true;
-  //  }
-  //
-  //  @Override
-  //  public boolean onOptionsItemSelected(MenuItem item) {
-  //    if (item.getItemId() == R.id.wallet_init_logout) {
-  //      handleWalletSettings();
-  //    } else if (item.getItemId() == R.id.clear_storage) {
-  //      handleClearing();
-  //    } else {
-  //      return super.onOptionsItemSelected(item);
-  //    }
-  //    return true;
-  //  }
-
   @Override
   public void onBackPressed() {
     Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
     if (!(fragment instanceof SeedWalletFragment)) {
-      setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new, R.string.home_title);
+      setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new);
+      viewModel.setPageTitle(R.string.home_title);
     }
   }
 
@@ -162,17 +136,15 @@ public class HomeActivity extends AppCompatActivity {
                 setCurrentFragment(
                     getSupportFragmentManager(),
                     R.id.fragment_seed_wallet,
-                    SeedWalletFragment::new,
-                    R.string.wallet_setup);
+                    SeedWalletFragment::new);
+                viewModel.setPageTitle(R.string.wallet_setup);
               })
           .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
           .show();
     } else {
       setCurrentFragment(
-          getSupportFragmentManager(),
-          R.id.fragment_seed_wallet,
-          SeedWalletFragment::new,
-          R.string.wallet_setup);
+          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::new);
+      viewModel.setPageTitle(R.string.wallet_setup);
     }
   }
 
@@ -220,13 +192,9 @@ public class HomeActivity extends AppCompatActivity {
    * @param id of the fragment
    * @param fragmentSupplier provides the fragment if it is missing
    */
-  public void setCurrentFragment(
-      FragmentManager manager,
-      @IdRes int id,
-      Supplier<Fragment> fragmentSupplier,
-      @StringRes int barTitleId) {
+  public static void setCurrentFragment(
+      FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
     ActivityUtils.setFragmentInContainer(
         manager, R.id.fragment_container_home, id, fragmentSupplier);
-    binding.topAppBar.setTitle(barTitleId);
   }
 }
