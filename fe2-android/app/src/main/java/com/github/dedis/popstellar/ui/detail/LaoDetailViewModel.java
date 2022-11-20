@@ -585,7 +585,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public void setPageTitle(String title) {
-    mPageTitle.setValue(title);
+    mPageTitle.postValue(title);
   }
 
   public LiveData<Boolean> isOrganizer() {

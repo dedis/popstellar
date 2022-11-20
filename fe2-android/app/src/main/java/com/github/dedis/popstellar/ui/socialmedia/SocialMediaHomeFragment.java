@@ -19,7 +19,7 @@ public class SocialMediaHomeFragment extends Fragment {
   public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
 
   private SocialMediaHomeFragmentBinding mSocialMediaHomeFragBinding;
-  private SocialMediaViewModel mSocialMediaViewModel;
+  private SocialMediaViewModel viewModel;
 
   public static SocialMediaHomeFragment newInstance() {
     return new SocialMediaHomeFragment();
@@ -34,9 +34,9 @@ public class SocialMediaHomeFragment extends Fragment {
     mSocialMediaHomeFragBinding =
         SocialMediaHomeFragmentBinding.inflate(inflater, container, false);
 
-    mSocialMediaViewModel = SocialMediaActivity.obtainViewModel(requireActivity());
+    viewModel = SocialMediaActivity.obtainViewModel(requireActivity());
 
-    mSocialMediaHomeFragBinding.setViewModel(mSocialMediaViewModel);
+    mSocialMediaHomeFragBinding.setViewModel(viewModel);
     mSocialMediaHomeFragBinding.setLifecycleOwner(getViewLifecycleOwner());
 
     return mSocialMediaHomeFragBinding.getRoot();
@@ -52,17 +52,18 @@ public class SocialMediaHomeFragment extends Fragment {
 
   private void setupSendButton() {
     mSocialMediaHomeFragBinding.socialMediaSendFragmentButton.setOnClickListener(
-        v ->
-            SocialMediaActivity.setCurrentFragment(
-                getParentFragmentManager(),
-                R.id.fragment_social_media_send,
-                SocialMediaSendFragment::newInstance));
+        v -> {
+          SocialMediaActivity.setCurrentFragment(
+              getParentFragmentManager(),
+              R.id.fragment_social_media_send,
+              SocialMediaSendFragment::newInstance);
+          viewModel.setPageTitle(R.string.send);
+        });
   }
 
   private void setupListViewAdapter() {
     ListView listView = mSocialMediaHomeFragBinding.chirpsList;
-    ChirpListAdapter mChirpListAdapter =
-        new ChirpListAdapter(requireActivity(), mSocialMediaViewModel);
+    ChirpListAdapter mChirpListAdapter = new ChirpListAdapter(requireActivity(), viewModel);
     listView.setAdapter(mChirpListAdapter);
   }
 }

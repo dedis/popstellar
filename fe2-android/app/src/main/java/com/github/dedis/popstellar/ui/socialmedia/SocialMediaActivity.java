@@ -1,11 +1,9 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
@@ -13,14 +11,12 @@ import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.databinding.SocialMediaActivityBinding;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.security.GeneralSecurityException;
-import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -30,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
 
   private SocialMediaViewModel viewModel;
+  private SocialMediaActivityBinding binding;
 
   public static final String TAG = SocialMediaActivity.class.getSimpleName();
   public static final String LAO_ID = "LAO_ID";
@@ -39,7 +36,8 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.social_media_activity);
+    binding = SocialMediaActivityBinding.inflate(getLayoutInflater());
+    setContentView(binding.getRoot());
     navigationViewModel = viewModel = obtainViewModel(this);
 
     // When we launch the social media from a lao, it directly sets its id and name
@@ -55,9 +53,8 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
       }
     }
 
-    setupNavigationBar(findViewById(R.id.social_media_nav_bar));
-
-    subscribeToLaoName();
+    setupNavigationBar(binding.socialMediaNavBar);
+    setupTopAppBar();
   }
 
   @Override
@@ -75,75 +72,6 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
 
   public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(SocialMediaViewModel.class);
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.social_media_top_menu, menu);
-
-    // Get the submenu and clear its unique item. The item was needed to create the submenu
-    SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
-
-    // Adding all currently opened lao name to the submenu
-    viewModel
-        .getLaoIdList()
-        .observe(
-            this,
-            idList -> {
-              if (idList != null) {
-                laosList.clear();
-                for (int i = 0; i < idList.size(); ++i) {
-                  String laoId = idList.get(i);
-                  try {
-                    LaoView laoView = viewModel.getLaoView(laoId);
-                    // Creating a unique id using the index of the lao within the list
-                    laosList.add(Menu.NONE, i, Menu.CATEGORY_CONTAINER, laoView.getName());
-                  } catch (UnknownLaoException e) {
-                    throw new IllegalStateException(
-                        "Lao with id " + laoId + " is supposed to be present");
-                  }
-                }
-              }
-            });
-
-    return true;
-  }
-
-  @SuppressLint("NonConstantResourceId")
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Retrieve the index of the lao within the list
-    int i = item.getItemId();
-    List<String> laoIdList = viewModel.getLaoIdList().getValue();
-
-    if (laoIdList != null && i >= 0 && i < laoIdList.size()) {
-      String laoId = laoIdList.get(i);
-
-      try {
-        LaoView laoView = viewModel.getLaoView(laoId);
-        viewModel.setLaoId(laoId);
-        viewModel.setLaoName(laoView.getName());
-      } catch (UnknownLaoException e) {
-        throw new IllegalStateException("Lao with id " + laoId + " is supposed to be present");
-      }
-      return true;
-    }
-    return super.onOptionsItemSelected(item);
-  }
-
-  private void subscribeToLaoName() {
-    // Subscribe to "lao name" string
-    viewModel
-        .getLaoName()
-        .observe(
-            this,
-            newLaoName -> {
-              if (newLaoName == null) {
-                return;
-              }
-              Objects.requireNonNull(getSupportActionBar())
-                  .setTitle(String.format(getString(R.string.social_media_title), newLaoName));
-            });
   }
 
   @Override
@@ -182,6 +110,7 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         getSupportFragmentManager(),
         R.id.fragment_social_media_home,
         SocialMediaHomeFragment::newInstance);
+    viewModel.setPageTitle(R.string.home);
   }
 
   private void openSearchTab() {
@@ -189,6 +118,7 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         getSupportFragmentManager(),
         R.id.fragment_social_media_search,
         SocialMediaSearchFragment::newInstance);
+    viewModel.setPageTitle(R.string.search);
   }
 
   private void openFollowingTab() {
@@ -196,6 +126,11 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         getSupportFragmentManager(),
         R.id.fragment_social_media_following,
         SocialMediaFollowingFragment::newInstance);
+    viewModel.setPageTitle(R.string.following);
+  }
+
+  public void openLao() {
+    startActivity(LaoDetailActivity.newIntentForLao(this, viewModel.getLaoId()));
   }
 
   private void openProfileTab() {
@@ -203,6 +138,28 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         getSupportFragmentManager(),
         R.id.fragment_social_media_profile,
         SocialMediaProfileFragment::newInstance);
+    viewModel.setPageTitle(R.string.profile);
+  }
+
+  private void setupTopAppBar() {
+    viewModel.getPageTitle().observe(this, title -> binding.socialMediaAppBar.setTitle(title));
+
+    binding.socialMediaAppBar.setNavigationOnClickListener(
+        v -> {
+          Fragment fragment =
+              getSupportFragmentManager().findFragmentById(R.id.fragment_container_social_media);
+          if (fragment instanceof SocialMediaHomeFragment) {
+            openLao();
+          } else {
+            if (viewModel.getCurrentTab().getValue() == SocialMediaTab.HOME) {
+              // On reselection the navigation is supposed to do nothing to prevent loops, so we
+              // manually change the fragment
+              openHomeTab();
+            } else {
+              viewModel.setCurrentTab(SocialMediaTab.HOME);
+            }
+          }
+        });
   }
 
   public static Intent newIntent(Context ctx, String laoId, String laoName) {
@@ -210,10 +167,6 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
     intent.putExtra(LAO_ID, laoId);
     intent.putExtra(LAO_NAME, laoName);
     return intent;
-  }
-
-  public static Intent newIntent(Context ctx) {
-    return new Intent(ctx, SocialMediaActivity.class);
   }
 
   /**

@@ -136,7 +136,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   }
 
   public void setPageTitle(String title) {
-    mPageTitle.setValue(title);
+    mPageTitle.postValue(title);
   }
 
   public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {

@@ -263,11 +263,11 @@
   <string name="message_signed">MESSAGE SIGNED</string>
 
   <!-- Social Media -->
-  <string name="home">HOME</string>
-  <string name="search">SEARCH</string>
-  <string name="following">FOLLOWING</string>
-  <string name="profile">PROFILE</string>
-  <string name="send">SEND</string>
+  <string name="home">Home</string>
+  <string name="search">Search</string>
+  <string name="following">Following</string>
+  <string name="profile">Profile</string>
+  <string name="send">Send</string>
   <string name="send_button_desc">button to write a chirp</string>
   <string name="hint_chirp">Your chirp</string>
   <string name="laos_list">Laos list</string>
