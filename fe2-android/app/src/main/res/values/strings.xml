@@ -148,15 +148,14 @@
   <string name="button_text">Cast Vote</string>
 
   <string name="total">Total:</string>
-  <string name="election_setup">Election Setup</string>
   <string name="select_a_voting_method">Select a voting method</string>
   <string name="submit">Submit</string>
   <string name="todo">TODO</string>
   <string name="ballot_option_2">Ballot option 2</string>
 
   <!--  Roll Call -->
-  <string name="roll_call_title">Roll Call</string>
   <string name="roll_call_setup_title">Roll Call Setup</string>
+  <string name="roll_call_title">Roll Call</string>
   <string name="add_attendee_title">Add Attendee</string>
 
   <!-- Election Event -->
@@ -209,7 +208,6 @@
   <string name="confirm_button">Confirm</string>
 
   <string name="token_button">TOKEN</string>
-  <string name="tokens_title">Tokens</string>
   <string name="logout_title">Wallet log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
   <string name="copy_button_descriptor">Button to copy seed</string>
@@ -270,12 +268,10 @@
   <string name="send">Send</string>
   <string name="send_button_desc">button to write a chirp</string>
   <string name="hint_chirp">Your chirp</string>
-  <string name="laos_list">Laos list</string>
   <string name="username">username</string>
   <string name="time_ago">time ago</string>
   <string name="text">text</string>
   <string name="delete_button">delete button</string>
-  <string name="social_media_title">popstellar - %s</string>
 
   <!--  Storage-->
   <string name="nothing_stored">no stored data found</string>
@@ -324,7 +320,6 @@
   <string name="error_storing_data">An error occurred while storing data</string>
   <string name="error_loading_data">An error occurred while loading data</string>
   <string name="error_storage_wallet">An error occurred during the storage of the wallet seed</string>
-  <string name="error_getting_lao">Could not retrieve the LAO</string>
   <string name="qr_code_not_pop_token">Error, this QR code is not a pop token or the key format is invalid</string>
   <string name="qr_code_not_main_pk">Error, this QR code is not a main public key or the key format is invalid</string>
 

@@ -48,7 +48,6 @@
   <dimen name="event_buttons_height">43dp</dimen>
   <dimen name="standard_button_height">55dp</dimen>
   <dimen name="standard_button_width">105dp</dimen>
-  <dimen name="qr_icon_side">40dp</dimen>
 
   <!--  Lao Detail -->
   <dimen name="properties_section_margin">16dp</dimen>
@@ -127,8 +126,6 @@
   <dimen name="qr_icon_start_margin">30dp</dimen>
   <dimen name="qr_close_icon_side">30dp</dimen>
   <dimen name="qr_layout_margin">20dp</dimen>
-  <dimen name="qr_layout_elevation">8dp</dimen>
-  <dimen name="title_max_width">250dp</dimen>
 
   <!--  Container dimensions -->
   <dimen name="container_margin">8dp</dimen>

@@ -142,7 +142,7 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
   }
 
   private void setupTopAppBar() {
-    viewModel.getPageTitle().observe(this, title -> binding.socialMediaAppBar.setTitle(title));
+    viewModel.getPageTitle().observe(this, binding.socialMediaAppBar::setTitle);
 
     binding.socialMediaAppBar.setNavigationOnClickListener(
         v -> {

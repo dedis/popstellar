@@ -35,13 +35,6 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 @HiltViewModel
 public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 

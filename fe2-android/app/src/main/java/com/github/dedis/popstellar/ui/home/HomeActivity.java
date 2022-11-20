@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
@@ -35,7 +34,6 @@ public class HomeActivity extends AppCompatActivity {
 
   private HomeViewModel viewModel;
   private HomeActivityBinding binding;
-  private Menu menu;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +71,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void handleTopAppBar() {
-    viewModel.getPageTitle().observe(this, id -> binding.topAppBar.setTitle(id));
+    viewModel.getPageTitle().observe(this, binding.topAppBar::setTitle);
 
     // Set menu items behaviour
     binding.topAppBar.setOnMenuItemClickListener(

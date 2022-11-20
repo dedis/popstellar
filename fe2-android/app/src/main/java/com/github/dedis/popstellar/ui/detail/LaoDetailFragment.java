@@ -99,7 +99,7 @@ public class LaoDetailFragment extends Fragment {
               getParentFragmentManager(),
               R.id.fragment_create_roll_call_event,
               RollCallCreationFragment::newInstance);
-          viewModel.setPageTitle(getString(R.string.roll_call_title));
+          viewModel.setPageTitle(getString(R.string.roll_call_setup_title));
         };
       case ELECTION:
         return v -> {
