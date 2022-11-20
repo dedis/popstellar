@@ -1090,13 +1090,6 @@ exports[`EventsScreenHeaderLeft renders correctly 1`] = `
                             </View>
                           </RNGestureHandlerButton>
                         </View>
-                        <View
-                          style={
-                            Object {
-                              "width": 41,
-                            }
-                          }
-                        />
                       </View>
                     </View>
                   </View>

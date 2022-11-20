@@ -2814,20 +2814,6 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                             </View>
                           </View>
                         </RCTScrollView>
-                        <View
-                          style={
-                            Object {
-                              "alignItems": "center",
-                              "backgroundColor": "#fff",
-                              "borderColor": "rgb(216, 216, 216)",
-                              "borderTopWidth": 1,
-                              "flexDirection": "row",
-                              "justifyContent": "space-around",
-                              "paddingHorizontal": 16,
-                              "paddingVertical": 16,
-                            }
-                          }
-                        />
                       </View>
                     </View>
                   </View>
