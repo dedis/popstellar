@@ -221,12 +221,12 @@
   <string name="no_seed_storage_found">No wallet storage was found</string>
 
   <!-- Digital Cash -->
-  <string name="digital_cash_send">SEND</string>
-  <string name="digital_cash_issue">ISSUE</string>
+  <string name="digital_cash_send">Send</string>
+  <string name="digital_cash_issue">Issue</string>
   <string name="digital_cash_history">History</string>
-  <string name="digital_cash_receive">RECEIVE</string>
-  <string name="digital_cash_home">HOME</string>
-  <string name="digital_cash_receipt">RECEIPT</string>
+  <string name="digital_cash_receive">Receive</string>
+  <string name="digital_cash_home">Home</string>
+  <string name="digital_cash_receipt">Receipt</string>
   <string name="digital_cash_send_button">Send</string>
   <string name="digital_cash_amount">Amount</string>
   <string name="digital_cash_address">Address</string>
