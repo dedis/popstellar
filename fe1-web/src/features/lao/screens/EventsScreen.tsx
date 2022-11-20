@@ -78,6 +78,7 @@ export const EventsScreenHeader = () => {
  */
 export const EventsScreenHeaderLeft = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
+  const isOrganizer = LaoHooks.useIsLaoOrganizer();
 
   return (
     <View style={styles.backButtonContainer}>
@@ -91,7 +92,7 @@ export const EventsScreenHeaderLeft = () => {
         }}>
         <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
       </PoPTouchableOpacity>
-      <NavigationPadding paddingAmount={1} nextToIcon={false} />
+      <NavigationPadding paddingAmount={isOrganizer ? 1 : 0} nextToIcon />
     </View>
   );
 };
