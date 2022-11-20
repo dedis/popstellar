@@ -4,20 +4,35 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content">
 
-  <EditText
-    android:id="@+id/start_date_edit_text"
+  <com.google.android.material.textfield.TextInputLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:focusableInTouchMode="false"
-    android:hint="@string/start_date_required"
-    android:autofillHints="false" />
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-  <EditText
-    android:id="@+id/end_date_edit_text"
+    <com.google.android.material.textfield.TextInputEditText
+      android:id="@+id/start_date_edit_text"
+
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:focusableInTouchMode="false"
+      android:hint="@string/start_date_required"
+      android:autofillHints="false" />
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <com.google.android.material.textfield.TextInputLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:focusableInTouchMode="false"
-    android:hint="@string/end_date_optional"
-    android:autofillHints="false" />
+    android:layout_marginStart="@dimen/margin_text_horizontal"
+
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+    <com.google.android.material.textfield.TextInputEditText
+      android:id="@+id/end_date_edit_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:focusableInTouchMode="false"
+      android:hint="@string/end_date_optional"
+      android:autofillHints="false" />
+  </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

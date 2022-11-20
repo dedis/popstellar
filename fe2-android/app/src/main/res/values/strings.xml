@@ -80,6 +80,7 @@
   <string name="meeting_title_required">Meeting Title*</string>
 
   <!-- Roll-Call Event -->
+  <string name="roll_call_title_required">Roll Call Title*</string>
   <string name="roll_call_event">Roll-Call Event</string>
   <string name="exception_message_empty_lao_name">Trying to set an empty name for the LAO</string>
   <string name="anonymous_explanation">You can participate in organizations and meetings anonymously by leaving this
@@ -118,7 +119,6 @@
   <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code exactly once.</string>
   <string name="roll_call_add_manually_hint">Add key manually</string>
   <string name="scan_all_attendees_question">Are you sure you have scanned all attendees ?</string>
-  <string name="roll_call_title_required">Roll-Call Title required</string>
   <string name="scan">Scan</string>
   <string name="close_roll_call">Close Roll-Call</string>
 

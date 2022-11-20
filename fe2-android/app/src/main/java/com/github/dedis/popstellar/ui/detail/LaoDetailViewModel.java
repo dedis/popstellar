@@ -160,7 +160,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     String firstLaoId = laoView.getId();
     try {
       PublicKey pk = wallet.generatePoPToken(firstLaoId, rollcall.getPersistentId()).getPublicKey();
-      return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
+      return rollcall.getAttendees().contains(pk) || Boolean.TRUE.equals(isOrganizer().getValue());
     } catch (KeyGenerationException | UninitializedWalletException e) {
       Log.e(TAG, "failed to retrieve public key from wallet", e);
       return false;
@@ -360,10 +360,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       return Single.error(new UnknownLaoException());
     }
 
-    // FIXME Location : Lausanne ?
     CreateRollCall createRollCall =
         new CreateRollCall(
-            title, creation, proposedStart, proposedEnd, "Lausanne", description, laoView.getId());
+            title, creation, proposedStart, proposedEnd, description, description, laoView.getId());
 
     return networkManager
         .getMessageSender()

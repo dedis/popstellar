@@ -11,22 +11,33 @@
       android:id="@+id/roll_call_title"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_marginHorizontal="@dimen/margin_text_horizontal"
       android:orientation="vertical"
       app:layout_constraintTop_toTopOf="parent">
 
-      <EditText
-        android:id="@+id/roll_call_title_text"
+      <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/roll_call_title_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/roll_call_title_required"
-        android:inputType="text"
-        android:autofillHints="false" />
+        android:layout_marginTop="@dimen/margin_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+          android:id="@+id/roll_call_title_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="start|top"
+          android:hint="@string/roll_call_title_required"
+
+          android:inputType="text" />
+      </com.google.android.material.textfield.TextInputLayout>
 
       <include
         android:id="@+id/roll_call_date"
         layout="@layout/event_enter_date_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_text"
         app:layout_constrainedHeight="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/roll_call_title" />
@@ -36,6 +47,7 @@
         layout="@layout/event_enter_time_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_text"
         app:layout_constrainedHeight="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/date" />
@@ -46,19 +58,27 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="vertical"
+        android:layout_marginTop="@dimen/margin_text"
         app:layout_constrainedHeight="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/time">
 
-        <EditText
-          android:id="@+id/roll_call_event_description_text"
+        <com.google.android.material.textfield.TextInputLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:gravity="start"
-          android:hint="@string/event_description"
-          android:inputType="textMultiLine"
-          android:maxLines="10"
-          android:autofillHints="false" />
+          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+          <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/roll_call_event_description_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/event_description"
+            android:gravity="start"
+            android:inputType="textMultiLine"
+            android:maxLines="10"
+            android:minLines="3" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
       </LinearLayout>
     </LinearLayout>
