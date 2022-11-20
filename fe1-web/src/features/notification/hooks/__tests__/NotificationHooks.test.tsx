@@ -18,8 +18,8 @@ import { NotificationHooks } from '../NotificationHooks';
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     notificationTypes: [WitnessNotificationType],
-    useCurrentLaoId: () => mockLaoIdHash,
   } as NotificationReactContext,
 };
 

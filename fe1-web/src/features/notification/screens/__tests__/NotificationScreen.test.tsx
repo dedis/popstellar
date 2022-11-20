@@ -23,7 +23,7 @@ import NotificationScreen, { NotificationScreenRightHeader } from '../Notificati
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
     notificationTypes: [WitnessNotificationType],
   } as NotificationReactContext,
 };

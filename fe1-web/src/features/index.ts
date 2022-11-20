@@ -128,7 +128,7 @@ export function configureFeatures() {
 
   // compose features
   const notificationComposition = notification.compose({
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     notificationTypes: [
       ...witnessConfiguration.notificationTypes,
     ] as NotificationCompositionConfiguration['notificationTypes'],
