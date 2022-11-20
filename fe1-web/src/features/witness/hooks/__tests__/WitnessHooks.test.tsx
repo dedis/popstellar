@@ -16,6 +16,7 @@ const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     enabled: true,
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     addNotification,
     discardNotifications,
     markNotificationAsRead,
@@ -35,6 +36,15 @@ describe('WitnessHooks', () => {
         wrapper,
       });
       expect(result.current).toEqual(mockLaoIdHash);
+    });
+  });
+
+  describe('useConnectedToLao', () => {
+    it('should return the correct value', () => {
+      const { result } = renderHook(() => WitnessHooks.useConnectedToLao(), {
+        wrapper,
+      });
+      expect(result.current).toBeTrue();
     });
   });
 

@@ -117,6 +117,7 @@ export function configureFeatures() {
     enabled: false,
     messageRegistry,
     useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,

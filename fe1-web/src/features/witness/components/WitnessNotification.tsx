@@ -26,6 +26,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   const markNotificationAsRead = WitnessHooks.useMarkNotificationAsRead();
   const isEnabled = WitnessHooks.useIsEnabled();
   const laoId = WitnessHooks.useAssertCurrentLaoId();
+  const isConnected = WitnessHooks.useConnectedToLao();
 
   // if the notification state somehow gets out of sync, remove the corresponding notification
   useEffect(() => {
@@ -71,8 +72,12 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
     <View>
       <Text>{JSON.stringify(notification)}</Text>
       <Text>{JSON.stringify(message)}</Text>
-      <PoPTextButton onPress={onWitness}>{STRINGS.witness_message_witness}</PoPTextButton>
-      <PoPTextButton onPress={onDecline}>{STRINGS.meeting_message_decline}</PoPTextButton>
+      <PoPTextButton onPress={onWitness} disabled={!isConnected}>
+        {STRINGS.witness_message_witness}
+      </PoPTextButton>
+      <PoPTextButton onPress={onDecline} disabled={!isConnected}>
+        {STRINGS.meeting_message_decline}
+      </PoPTextButton>
     </View>
   );
 };

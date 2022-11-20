@@ -22,6 +22,12 @@ export namespace WitnessHooks {
   export const useAssertCurrentLaoId = () => useWitnessContext().useAssertCurrentLaoId();
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  export const useConnectedToLao = () => useWitnessContext().useConnectedToLao();
+
+  /**
    * Gets discard notifications action creator
    * @returns The action creator
    */
