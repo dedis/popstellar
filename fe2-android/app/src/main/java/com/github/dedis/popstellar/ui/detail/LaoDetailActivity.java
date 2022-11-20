@@ -209,6 +209,15 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
     try {
+      if (viewModel == null) {
+        System.out.println("vm null");
+      }
+      if (viewModel.getLaoView() == null) {
+        System.out.println("laoview null");
+      }
+      if (viewModel.getLaoView().getName() == null) {
+        System.out.println("name null");
+      }
       viewModel.setPageTitle(viewModel.getLaoView().getName());
     } catch (UnknownLaoException e) {
       // We don't inform the user because it will happen on every activity start

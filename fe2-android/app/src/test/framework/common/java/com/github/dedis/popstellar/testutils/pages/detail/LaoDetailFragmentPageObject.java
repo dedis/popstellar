@@ -41,6 +41,10 @@ public class LaoDetailFragmentPageObject {
     return onView(withId(R.id.add_roll_call_text));
   }
 
+  public static ViewInteraction qrCodeIcon() {
+    return onView(withId(R.id.lao_toolbar_qr_code));
+  }
+
   public static ViewInteraction eventList() {
     return onView(withId(R.id.event_list));
   }

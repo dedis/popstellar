@@ -18,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:menu="@menu/lao_detail_tool_menu"
+        app:navigationContentDescription="Navigate up"
         app:navigationIcon="@drawable/ic_back_arrow" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -91,9 +92,9 @@
           <TextView
             android:id="@+id/lao_properties_name_title"
             style="@style/properties_section_title"
-            android:layout_marginTop="0dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
             android:text="@string/identity_name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/channel_qr_code" />
@@ -136,8 +137,8 @@
             android:id="@+id/lao_properties_server_text"
             style="@style/properties_section_text"
             android:layout_width="match_parent"
-            android:gravity="start"
             android:layout_height="wrap_content"
+            android:gravity="start"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lao_properties_server_title" />
 

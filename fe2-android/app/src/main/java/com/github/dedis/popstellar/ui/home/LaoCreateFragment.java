@@ -28,6 +28,7 @@ public final class LaoCreateFragment extends Fragment {
 
   @Inject GlobalNetworkManager networkManager;
 
+  private HomeViewModel viewModel;
   private LaoCreateFragmentBinding binding;
   private String initialUrl;
 
@@ -44,6 +45,7 @@ public final class LaoCreateFragment extends Fragment {
     binding = LaoCreateFragmentBinding.inflate(inflater, container, false);
     binding.setLifecycleOwner(getActivity());
     initialUrl = networkManager.getCurrentUrl();
+    viewModel = HomeActivity.obtainViewModel(requireActivity());
 
     setupCancelButton();
     setupTextFields();
