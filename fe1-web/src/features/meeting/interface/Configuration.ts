@@ -80,8 +80,8 @@ interface EventType {
   eventType: string;
   eventName: string;
   navigationNames: {
-    createEvent: typeof STRINGS.navigation_lao_events_create_meeting;
-    screenSingle: typeof STRINGS.navigation_lao_events_view_single_meeting;
+    createEvent: typeof STRINGS.events_create_meeting;
+    screenSingle: typeof STRINGS.events_view_single_meeting;
   };
   ListItemComponent: React.ComponentType<{
     eventId: string;

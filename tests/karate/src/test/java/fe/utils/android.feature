@@ -1,3 +1,4 @@
+@ignore @report=false
 Feature: android page object
 
   Background: Android Preset

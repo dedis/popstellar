@@ -145,7 +145,7 @@ export function configureFeatures() {
     /* components */
     LaoList: laoConfiguration.components.LaoList,
     /* screens */
-    homeNavigationScreens: [...walletComposition.homeScreens],
+    homeNavigationScreens: [],
   });
 
   const eventsComposition = events.compose({
@@ -177,6 +177,7 @@ export function configureFeatures() {
       ...walletComposition.laoScreens,
     ],
     eventsNavigationScreens: [
+      ...eventConfiguration.laoEventScreens,
       ...meetingConfiguration.laoEventScreens,
       ...rollCallConfiguration.laoEventScreens,
       ...evotingConfiguration.laoEventScreens,

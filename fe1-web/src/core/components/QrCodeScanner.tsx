@@ -87,28 +87,28 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
 
   if (!hasCamera) {
     return (
-      <>
+      <View style={styles.container}>
         <Text>{STRINGS.camera_unavailable}</Text>
         <View style={styles.children}>{children}</View>
-      </>
+      </View>
     );
   }
 
   if (!permission) {
     return (
-      <>
+      <View style={styles.container}>
         <Text>{STRINGS.requesting_camera_permissions}</Text>
         <View style={styles.children}>{children}</View>
-      </>
+      </View>
     );
   }
 
   if (!permission.granted) {
     return (
-      <>
+      <View style={styles.container}>
         <Text>{STRINGS.camera_permissions_denied}</Text>
         <View style={styles.children}>{children}</View>
-      </>
+      </View>
     );
   }
 

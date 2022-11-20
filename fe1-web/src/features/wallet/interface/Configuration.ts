@@ -28,6 +28,11 @@ export interface WalletInterface extends FeatureInterface {
      * Returns whether a seed is present in the store
      */
     hasSeed: () => boolean;
+
+    /**
+     * Forgets the current seed
+     */
+    forgetSeed: () => void;
   };
 }
 
@@ -114,7 +119,6 @@ export type WalletReactContext = Pick<
 export interface WalletCompositionInterface extends FeatureInterface {
   appScreens: AppScreen[];
 
-  homeScreens: WalletFeature.HomeScreen[];
   laoScreens: WalletFeature.LaoScreen[];
 
   context: WalletReactContext;

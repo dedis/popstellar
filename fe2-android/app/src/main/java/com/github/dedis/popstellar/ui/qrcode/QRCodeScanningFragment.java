@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.*;
 import android.util.Log;
 import android.view.*;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -84,21 +85,21 @@ public final class QRCodeScanningFragment extends Fragment {
     } else {
       throw new IllegalArgumentException("cannot obtain view model");
     }
+    binding.setScanningAction(viewModel.getScanningAction());
+    binding.manualAddConfirm.setOnClickListener(
+        view -> {
+          String data = binding.manualAddEditText.getText().toString();
+          boolean success = viewModel.addManually(data);
+          if (success) {
+            binding.manualAddEditText.getText().clear();
+          }
+        });
 
     if (viewModel.getScanningAction() == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      binding.setScanningAction(ScanningAction.ADD_ROLL_CALL_ATTENDEE);
       binding.addAttendeeTotalText.setVisibility(View.VISIBLE);
       binding.addAttendeeNumberText.setVisibility(View.VISIBLE);
       binding.addAttendeeConfirm.setVisibility(View.VISIBLE);
 
-      binding.manualAddConfirm.setOnClickListener(
-          view -> {
-            String data = binding.manualAddEditText.getText().toString();
-            boolean success = viewModel.addManually(data);
-            if (success) {
-              binding.manualAddEditText.getText().clear();
-            }
-          });
       // Subscribe to " Nb of attendees"  event
       observeNbAttendeesEvent();
 
@@ -107,17 +108,11 @@ public final class QRCodeScanningFragment extends Fragment {
 
       // set up the listener for the button that closes the roll call
       setupCloseRollCallButton();
-    } else if (viewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
-      binding.setScanningAction(ScanningAction.ADD_WITNESS);
+    }
+
+    if (viewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
       // Subscribe to " Witness scan confirm " event
       observeWitnessScanConfirmEvent();
-    } else if (viewModel.getScanningAction() == ScanningAction.ADD_LAO_PARTICIPANT) {
-      binding.manualAddConfirm.setOnClickListener(
-          view -> {
-            String data = binding.manualAddEditText.getText().toString();
-            viewModel.addManually(data);
-          });
-      binding.setScanningAction(ScanningAction.ADD_LAO_PARTICIPANT);
     }
 
     mPreview = binding.qrCameraPreview;
@@ -238,24 +233,6 @@ public final class QRCodeScanningFragment extends Fragment {
     closeRollCallAlert.show();
   }
 
-  private void setupSuccessPopup(String msg) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-    builder.setTitle("Success");
-    builder.setMessage(msg);
-    builder.setOnDismissListener(dialog -> startCamera());
-    AlertDialog alert = builder.create();
-    mPreview.stop();
-    alert.show();
-    new Handler(Looper.myLooper())
-        .postDelayed(
-            () -> {
-              if (alert.isShowing()) {
-                alert.dismiss();
-              }
-            },
-            2000);
-  }
-
   private void setupWarningPopup(String msg) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
     builder.setTitle("Warning");
@@ -304,7 +281,9 @@ public final class QRCodeScanningFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSuccessPopup("A new witness was added to the the Lao");
+                Toast.makeText(
+                        requireContext(), R.string.add_witness_successful, Toast.LENGTH_SHORT)
+                    .show();
               }
             });
   }
@@ -317,7 +296,9 @@ public final class QRCodeScanningFragment extends Fragment {
             stringEvent -> {
               String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSuccessPopup(event);
+                Toast.makeText(
+                        requireContext(), R.string.add_attendee_successful, Toast.LENGTH_SHORT)
+                    .show();
               }
             });
   }

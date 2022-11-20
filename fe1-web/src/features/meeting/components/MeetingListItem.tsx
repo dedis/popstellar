@@ -18,7 +18,7 @@ const getSubtitle = (meeting: Meeting): string => {
   const location = meeting.location ? `, ${meeting.location}` : '';
 
   if (meeting.start.after(now)) {
-    return `${STRINGS.general_starting_at} ${meeting.start
+    return `${STRINGS.general_starting} ${meeting.start
       .toDate()
       .toLocaleDateString()} ${meeting.start.toDate().toLocaleTimeString()}${
       meeting.location ? `, ${meeting.location}` : ''
@@ -29,7 +29,7 @@ const getSubtitle = (meeting: Meeting): string => {
     return `${STRINGS.general_ongoing}${location}`;
   }
 
-  return `${STRINGS.general_ended_at} ${meeting.end.toDate().toLocaleDateString()} ${meeting.end
+  return `${STRINGS.general_ended} ${meeting.end.toDate().toLocaleDateString()} ${meeting.end
     .toDate()
     .toLocaleTimeString()}${location}`;
 };
@@ -71,8 +71,8 @@ export const MeetingEventType: MeetingInterface['eventTypes'][0] = {
   eventType: Meeting.EVENT_TYPE,
   eventName: STRINGS.meeting_event_name,
   navigationNames: {
-    createEvent: STRINGS.navigation_lao_events_create_meeting,
-    screenSingle: STRINGS.navigation_lao_events_view_single_meeting,
+    createEvent: STRINGS.events_create_meeting,
+    screenSingle: STRINGS.events_view_single_meeting,
   },
   ListItemComponent: MeetingListItem as React.FunctionComponent<{
     eventId: string;

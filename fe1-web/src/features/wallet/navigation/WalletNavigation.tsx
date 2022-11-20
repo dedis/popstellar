@@ -1,19 +1,13 @@
-import { useNavigation } from '@react-navigation/core';
-import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PoPIcon } from 'core/components';
 import { makeIcon } from 'core/components/PoPIcon';
-import { useActionSheet } from 'core/hooks/ActionSheet';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
-import { Color, Icon, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
-import { forget } from '../objects';
 import { WalletHome } from '../screens';
 import WalletSingleRollCall, {
   ViewSingleRollCallScreenHeader,
@@ -21,33 +15,6 @@ import WalletSingleRollCall, {
 } from '../screens/WalletSingleRollCall';
 
 const Stack = createStackNavigator<WalletParamList>();
-
-/* can be in the lao or home navigation but we only need the top app navigation which is always present */
-type NavigationProps = StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>;
-
-const WalletNavigationHeaderRight = () => {
-  const navigation = useNavigation<NavigationProps['navigation']>();
-
-  const showActionSheet = useActionSheet();
-
-  const onPressOptions = () => {
-    showActionSheet([
-      {
-        displayName: STRINGS.wallet_home_logout,
-        action: () => {
-          forget();
-          navigation.navigate(STRINGS.navigation_app_wallet_create_seed);
-        },
-      },
-    ]);
-  };
-
-  return (
-    <TouchableOpacity onPress={onPressOptions}>
-      <PoPIcon name="options" color={Color.inactive} size={Icon.size} />
-    </TouchableOpacity>
-  );
-};
 
 /**
  * Defines the Wallet stack navigation.
@@ -57,23 +24,12 @@ export default function WalletNavigation() {
   const screens = WalletHooks.useWalletNavigationScreens();
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerLeftContainerStyle: {
-          paddingLeft: Spacing.contentSpacing,
-        },
-        headerRightContainerStyle: {
-          paddingRight: Spacing.contentSpacing,
-        },
-        headerTitleStyle: Typography.topNavigationHeading,
-        headerTitleAlign: 'center',
-      }}>
+    <Stack.Navigator screenOptions={stackScreenOptionsWithHeader}>
       <Stack.Screen
         name={STRINGS.navigation_wallet_home}
         component={WalletHome}
         options={{
           headerTitle: STRINGS.navigation_wallet_home_title,
-          headerRight: WalletNavigationHeaderRight,
           headerLeft: () => null,
         }}
       />
@@ -94,8 +50,8 @@ export default function WalletNavigation() {
             options={{
               title: title || id,
               headerTitle: headerTitle || title || id,
-              headerLeft,
-              headerRight,
+              headerLeft: headerLeft || stackScreenOptionsWithHeader.headerLeft,
+              headerRight: headerRight || stackScreenOptionsWithHeader.headerRight,
               headerShown,
             }}
           />
@@ -105,7 +61,7 @@ export default function WalletNavigation() {
   );
 }
 
-export const WalletNavigationScreen: WalletFeature.HomeScreen & WalletFeature.LaoScreen = {
+export const WalletNavigationScreen: WalletFeature.LaoScreen = {
   id: STRINGS.navigation_home_wallet,
   Component: WalletNavigation,
   tabBarIcon: makeIcon('wallet'),

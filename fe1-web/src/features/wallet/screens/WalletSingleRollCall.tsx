@@ -10,6 +10,7 @@ import ModalHeader from 'core/components/ModalHeader';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
+import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -51,7 +52,11 @@ export const ViewSingleRollCallScreenHeader = () => {
   const route = useRoute<NavigationProps['route']>();
   const { rollCallName } = route.params;
 
-  return <Text style={Typography.topNavigationHeading}>{rollCallName}</Text>;
+  return (
+    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
+      {rollCallName}
+    </Text>
+  );
 };
 
 /**
@@ -88,7 +93,9 @@ export const WalletSingleHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={rollCallTokenPublicKey} visibility />
+            <QRCode
+              value={ScannablePopToken.encodePopToken({ pop_token: rollCallTokenPublicKey })}
+            />
           </View>
 
           <Text style={[Typography.small, styles.publicKey]} selectable>

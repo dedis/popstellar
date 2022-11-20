@@ -133,8 +133,8 @@ interface EventType {
   eventType: string;
   eventName: string;
   navigationNames: {
-    createEvent: typeof STRINGS.navigation_lao_events_create_roll_call;
-    screenSingle: typeof STRINGS.navigation_lao_events_view_single_roll_call;
+    createEvent: typeof STRINGS.events_create_roll_call;
+    screenSingle: typeof STRINGS.events_view_single_roll_call;
   };
   ListItemComponent: React.ComponentType<{
     eventId: string;

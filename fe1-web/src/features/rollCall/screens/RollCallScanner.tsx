@@ -1,17 +1,19 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { ConfirmModal, PoPIcon } from 'core/components';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
+import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Color, Icon } from 'core/styles';
+import { ScannablePopToken } from 'core/objects/ScannablePopToken';
+import { Color, Icon, Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -25,19 +27,20 @@ import { makeRollCallSelector } from '../reducer';
  */
 
 const styles = StyleSheet.create({
-  buttonContainer: {
+  container: {
     flex: 1,
-    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
+    marginVertical: Spacing.contentSpacing,
   } as ViewStyle,
-  leftButtons: QrCodeScannerUIElementContainer,
-  rightButtons: QrCodeScannerUIElementContainer,
+  qrCode: {
+    opacity: 0.5,
+  } as ViewStyle,
+  enterManually: {} as ViewStyle,
 });
 
-const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
-
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_open_roll_call>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_open_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -47,10 +50,8 @@ type NavigationProps = CompositeScreenProps<
 const RollCallOpened = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
-  const { rollCallId, initialAttendeePopTokens } = route.params;
-  const [attendeePopTokens, updateAttendeePopTokens] = useState(
-    new Set<string>(initialAttendeePopTokens),
-  );
+  const { rollCallId, attendeePopTokens } = route.params;
+
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
 
@@ -103,23 +104,24 @@ const RollCallOpened = () => {
   const addAttendeePopToken = useCallback(
     (popToken: string) => {
       // if the token is already part of attendeePopTokens, do not trigger a state update
-      if (attendeePopTokens.has(popToken)) {
+      // and return false indicating the pop token was not added since it's a duplicate
+      if (attendeePopTokens.includes(popToken)) {
         return false;
       }
 
-      updateAttendeePopTokens(
-        // use new Set() to trigger a state change. .add() would not still be the same object
-        (prevAttendeePopTokens) => new Set<string>([...prevAttendeePopTokens, popToken]),
-      );
+      navigation.setParams({
+        attendeePopTokens: [...attendeePopTokens, popToken],
+      });
       return true;
     },
-    [updateAttendeePopTokens, attendeePopTokens],
+    [navigation, attendeePopTokens],
   );
 
   const addAttendeePopTokenAndShowToast = (popToken: string) => {
-    if (tokenMatcher.test(popToken)) {
+    try {
+      const token = ScannablePopToken.fromJson(JSON.parse(popToken));
       // only show a toast if an actual *new* token is added
-      if (addAttendeePopToken(popToken)) {
+      if (addAttendeePopToken(token.pop_token)) {
         toast.show(STRINGS.roll_call_scan_participant, {
           type: 'success',
           placement: 'top',
@@ -132,7 +134,7 @@ const RollCallOpened = () => {
           duration: FOUR_SECONDS,
         });
       }
-    } else {
+    } catch {
       toast.show(STRINGS.roll_call_invalid_token, {
         type: 'danger',
         placement: 'top',
@@ -158,30 +160,19 @@ const RollCallOpened = () => {
       <QrCodeScanner
         showCamera={showScanner}
         handleScan={(data: string | null) => data && addAttendeePopTokenAndShowToast(data)}>
-        <View style={styles.buttonContainer}>
-          <View>
-            <View style={styles.leftButtons}>
-              <PoPTouchableOpacity
-                testID="roll_call_open_stop_scanning"
-                onPress={() =>
-                  navigation.navigate(STRINGS.navigation_lao_events_view_single_roll_call, {
-                    eventId: rollCallId,
-                    /* this screen is only reachable for organizers */
-                    isOrganizer: true,
-                    /* pass the just scanned pop tokens back to the single view screen */
-                    attendeePopTokens: [...attendeePopTokens],
-                  })
-                }>
-                <PoPIcon name="close" color={Color.accent} size={Icon.size} />
-              </PoPTouchableOpacity>
-            </View>
+        <View style={styles.container}>
+          <View />
+          <View style={styles.qrCode}>
+            <QrCodeScanOverlay width={300} height={300} />
           </View>
-          <View>
-            <View style={styles.rightButtons}>
+          <View style={styles.enterManually}>
+            <View style={QrCodeScannerUIElementContainer}>
               <PoPTouchableOpacity
-                onPress={() => setInputModalIsVisible(true)}
-                testID="roll_call_open_add_manually">
-                <PoPIcon name="addPerson" color={Color.accent} size={Icon.size} />
+                testID="roll_call_open_add_manually"
+                onPress={() => setInputModalIsVisible(true)}>
+                <Text style={[Typography.base, Typography.accent]}>
+                  {STRINGS.general_enter_manually}
+                </Text>
               </PoPTouchableOpacity>
             </View>
           </View>
@@ -203,8 +194,35 @@ const RollCallOpened = () => {
 
 export default RollCallOpened;
 
+/**
+ * Custom back arrow that navigates back to the single roll call view
+ * and brings along the scanned pop tokens as a parameter
+ */
+export const RollCallOpenedHeaderLeft = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
+  const route = useRoute<NavigationProps['route']>();
+  const { rollCallId, attendeePopTokens } = route.params;
+
+  return (
+    <PoPTouchableOpacity
+      testID="roll_call_open_stop_scanning"
+      onPress={() =>
+        navigation.navigate(STRINGS.navigation_lao_events_view_single_roll_call, {
+          eventId: rollCallId,
+          /* this screen is only reachable for organizers */
+          isOrganizer: true,
+          /* pass the just scanned pop tokens back to the single view screen */
+          attendeePopTokens,
+        })
+      }>
+      <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
+    </PoPTouchableOpacity>
+  );
+};
+
 export const RollCallOpenedScreen: RollCallFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_open_roll_call,
+  id: STRINGS.events_open_roll_call,
+  title: STRINGS.events_open_roll_call_title,
   Component: RollCallOpened,
-  headerShown: false,
+  headerLeft: RollCallOpenedHeaderLeft,
 };

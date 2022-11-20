@@ -181,23 +181,23 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     switch (tab) {
       case EVENTS:
         openEventsTab();
-        break;
+        return true;
       case IDENTITY:
         openIdentityTab();
-        break;
+        return true;
       case WITNESSING:
         openWitnessTab();
-        break;
+        return true;
       case DIGITAL_CASH:
         openDigitalCashTab();
-        break;
+        return false;
       case SOCIAL:
         openSocialMediaTab();
-        break;
+        return false;
       default:
         Log.w(TAG, "Unhandled tab type : " + tab);
+        return false;
     }
-    return true;
   }
 
   @Override

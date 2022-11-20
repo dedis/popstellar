@@ -12,9 +12,7 @@ const PoPTouchableOpacity = React.forwardRef<View, IPropTypes>(
   ({ onPress, containerStyle, style, testID, children }: IPropTypes, ref) => {
     return (
       <Pressable onPress={onPress} style={containerStyle} ref={ref} testID={testID || undefined}>
-        <TouchableOpacity containerStyle={containerStyle} style={style}>
-          {children}
-        </TouchableOpacity>
+        <TouchableOpacity style={style}>{children}</TouchableOpacity>
       </Pressable>
     );
   },

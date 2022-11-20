@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.home;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -25,10 +26,9 @@ public final class LaoCreateFragment extends Fragment {
 
   public static final String TAG = LaoCreateFragment.class.getSimpleName();
 
-  @Inject GlobalNetworkManager globalNetworkManager;
+  @Inject GlobalNetworkManager networkManager;
 
   private LaoCreateFragmentBinding binding;
-  private HomeViewModel viewModel;
   private String initialUrl;
 
   public static LaoCreateFragment newInstance() {
@@ -43,8 +43,7 @@ public final class LaoCreateFragment extends Fragment {
 
     binding = LaoCreateFragmentBinding.inflate(inflater, container, false);
     binding.setLifecycleOwner(getActivity());
-    viewModel = HomeActivity.obtainViewModel(requireActivity());
-    initialUrl = globalNetworkManager.getCurrentUrl();
+    initialUrl = networkManager.getCurrentUrl();
 
     setupCancelButton();
     setupTextFields();
@@ -91,10 +90,18 @@ public final class LaoCreateFragment extends Fragment {
 
   private void setupCreateButton() {
     binding.buttonCreate.setOnClickListener(
-        v ->
-            viewModel.createLao(
-                Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString(),
-                Objects.requireNonNull(binding.serverUrlEntryEditText.getText()).toString()));
+        v -> {
+          String serverAddress =
+              Objects.requireNonNull(binding.serverUrlEntryEditText.getText()).toString();
+          String laoName =
+              Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString();
+          Log.d(TAG, "creating lao with name " + laoName);
+
+          networkManager.connect(serverAddress);
+          requireActivity()
+              .startActivity(
+                  ConnectingActivity.newIntentForCreatingDetail(requireContext(), laoName));
+        });
   }
 
   private void setupCancelButton() {

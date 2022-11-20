@@ -58,7 +58,7 @@ export class RollCall {
   }
 
   public get end() {
-    return this.closedAt || this.proposedEnd;
+    return this.closedAt;
   }
 
   /* Not yet implemented:

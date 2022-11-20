@@ -1,3 +1,4 @@
+@env=android,web
 Feature:
 
   Scenario: Closing a roll call without attendees include only organizer

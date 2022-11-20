@@ -1,23 +1,19 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/core';
 import React, { useMemo } from 'react';
 
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
+import { tabNavigationOptions } from 'core/navigation/ScreenOptions';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import NoCurrentLaoErrorBoundary from '../errors/NoCurrentLaoErrorBoundary';
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
-import LaoHomeScreen, {
-  LaoHomeScreenHeader,
-  LaoHomeScreenHeaderLeft,
-  LaoHomeScreenHeaderRight,
-} from '../screens/LaoHomeScreen';
 import EventsNavigation from './EventsNavigation';
 
-const OrganizationTopTabNavigator = createBottomTabNavigator<LaoParamList>();
+const OrganizationBottomTabNavigator = createBottomTabNavigator<LaoParamList>();
 
 /**
  * Navigation when connected to a lao
@@ -31,21 +27,15 @@ const LaoNavigation: React.FC<unknown> = () => {
     return [
       ...passedScreens,
       {
-        id: STRINGS.navigation_lao_home,
-        title: STRINGS.navigation_lao_lao_title,
-        headerTitle: LaoHomeScreenHeader,
-        Component: LaoHomeScreen,
-        headerRight: LaoHomeScreenHeaderRight,
-        headerLeft: LaoHomeScreenHeaderLeft,
-        tabBarIcon: makeIcon('home'),
-        order: -9999999,
-      } as LaoFeature.LaoScreen,
-      {
         id: STRINGS.navigation_lao_events,
         tabBarIcon: makeIcon('event'),
         Component: EventsNavigation,
         headerShown: false,
         order: 0,
+        tabBarVisible: (routeName) =>
+          // only show the tab bar if we are on the home events screen, not if we are
+          // in a detail screen
+          routeName === undefined || routeName === STRINGS.navigation_lao_events_home,
       } as LaoFeature.LaoScreen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
@@ -53,20 +43,9 @@ const LaoNavigation: React.FC<unknown> = () => {
 
   return (
     <NoCurrentLaoErrorBoundary>
-      <OrganizationTopTabNavigator.Navigator
-        initialRouteName={STRINGS.navigation_lao_home}
-        screenOptions={{
-          tabBarActiveTintColor: Color.accent,
-          tabBarInactiveTintColor: Color.inactive,
-          headerLeftContainerStyle: {
-            paddingLeft: Spacing.contentSpacing,
-          },
-          headerRightContainerStyle: {
-            paddingRight: Spacing.contentSpacing,
-          },
-          headerTitleStyle: Typography.topNavigationHeading,
-          headerTitleAlign: 'center',
-        }}>
+      <OrganizationBottomTabNavigator.Navigator
+        initialRouteName={STRINGS.navigation_lao_events}
+        screenOptions={tabNavigationOptions}>
         {screens.map(
           ({
             id,
@@ -77,27 +56,34 @@ const LaoNavigation: React.FC<unknown> = () => {
             headerLeft,
             headerRight,
             tabBarIcon,
+            tabBarVisible,
             testID,
           }) => (
-            <OrganizationTopTabNavigator.Screen
+            <OrganizationBottomTabNavigator.Screen
               key={id}
               name={id}
               component={Component}
-              options={{
-                title: title || id,
-                headerTitle: headerTitle || title || id,
-                headerLeft,
-                headerRight,
-                tabBarIcon: tabBarIcon || undefined,
-                // hide the item if tabBarIcon is set to null
-                tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
-                headerShown,
-                tabBarTestID: testID,
+              options={({ route }) => {
+                const routeName = getFocusedRouteNameFromRoute(route);
+
+                return {
+                  title: title || id,
+                  headerTitle: headerTitle || title || id,
+                  headerLeft: headerLeft || tabNavigationOptions.headerLeft,
+                  headerRight: headerRight || tabNavigationOptions.headerRight,
+                  tabBarIcon: tabBarIcon || undefined,
+                  // hide the item if tabBarIcon is set to null
+                  tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
+                  headerShown,
+                  tabBarTestID: testID,
+                  tabBarStyle:
+                    tabBarVisible && !tabBarVisible(routeName) ? { display: 'none' } : undefined,
+                };
               }}
             />
           ),
         )}
-      </OrganizationTopTabNavigator.Navigator>
+      </OrganizationBottomTabNavigator.Navigator>
     </NoCurrentLaoErrorBoundary>
   );
 };

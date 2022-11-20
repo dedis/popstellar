@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
 import android.app.Application;
-import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,7 +17,6 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
@@ -31,6 +29,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
@@ -169,20 +172,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
         networkManager, wallet, getApplication().getApplicationContext());
   }
 
-  /**
-   * createLao is invoked when the user tries to create a new LAO. The method creates a `CreateLAO`
-   * message and publishes it to the root channel. It observers the response in the background and
-   * switches to the home screen on success.
-   */
-  public void createLao(String laoName, String serverAddress) {
-    Log.d(TAG, "creating lao with name " + laoName);
-    networkManager.connect(serverAddress);
-    getApplication()
-        .startActivity(
-            ConnectingActivity.newIntentForCreatingDetail(
-                getApplication().getApplicationContext(), laoName));
-  }
-
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {
     wallet.importSeed(seed);
     setIsWalletSetUp(true);
@@ -221,13 +210,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   public void logoutWallet() {
     wallet.logout();
     setIsWalletSetUp(false);
-  }
-
-  public void openConnecting(String laoId) {
-    Intent intent = new Intent(getApplication().getApplicationContext(), ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-    getApplication().startActivity(intent);
   }
 
   /**
