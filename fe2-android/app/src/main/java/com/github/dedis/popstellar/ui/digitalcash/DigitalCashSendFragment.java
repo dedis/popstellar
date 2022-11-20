@@ -96,8 +96,7 @@ public class DigitalCashSendFragment extends Fragment {
                                         requireActivity().getSupportFragmentManager(),
                                         R.id.fragment_digital_cash_receipt,
                                         DigitalCashReceiptFragment::newInstance);
-                                    viewModel.setPageTitle(
-                                        getString(R.string.digital_cash_receipt));
+                                    viewModel.setPageTitle(R.string.digital_cash_receipt);
                                   },
                                   error -> Log.d(TAG, "error posting transaction", error));
                       viewModel.addDisposable(disposable);

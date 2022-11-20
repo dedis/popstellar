@@ -74,7 +74,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
       new MutableLiveData<>();
 
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
-  private final MutableLiveData<String> mPageTitle = new MutableLiveData<>();
+  private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
   private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
   private final LiveData<Set<TransactionObject>> mTransactionHistory;
@@ -131,12 +131,12 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     disposables.dispose();
   }
 
-  public MutableLiveData<String> getPageTitle() {
+  public LiveData<Integer> getPageTitle() {
     return mPageTitle;
   }
 
-  public void setPageTitle(String title) {
-    mPageTitle.postValue(title);
+  public void setPageTitle(int titleId) {
+    mPageTitle.postValue(titleId);
   }
 
   public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {
