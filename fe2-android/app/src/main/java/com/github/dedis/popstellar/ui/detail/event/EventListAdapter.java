@@ -162,7 +162,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 activity.getSupportFragmentManager(),
                 R.id.fragment_election,
                 ElectionFragment::newInstance);
-            viewModel.setPageTitle(activity.getString(R.string.election_title));
           };
       eventViewHolder.eventCard.setOnClickListener(listener);
 
@@ -179,7 +178,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     activity.getSupportFragmentManager(),
                     R.id.fragment_roll_call,
                     () -> RollCallFragment.newInstance(token.getPublicKey()));
-                viewModel.setPageTitle(activity.getString(R.string.roll_call_title));
               } catch (KeyException e) {
                 ErrorUtils.logAndShow(activity, TAG, e, R.string.key_generation_exception);
               } catch (UnknownLaoException e) {

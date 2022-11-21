@@ -88,20 +88,6 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private void setupTopAppBar() {
     viewModel.getPageTitle().observe(this, binding.laoTopAppBar::setTitle);
 
-    // We subscribe to lao updates to display name iff the event list is displayed
-    // This is far from elegant but I don't see a better way
-    viewModel
-        .getCurrentLao()
-        .observe(
-            this,
-            laoView -> {
-              Fragment fragment =
-                  getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao_detail);
-              if (fragment instanceof LaoDetailFragment) {
-                viewModel.setPageTitle(laoView.getName());
-              }
-            });
-
     binding.laoTopAppBar.setNavigationOnClickListener(
         v -> {
           Fragment fragment =
@@ -208,12 +194,6 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private void openEventsTab() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
-    try {
-      viewModel.setPageTitle(viewModel.getLaoView().getName());
-    } catch (UnknownLaoException e) {
-      // We don't inform the user because it will happen on every activity start
-      Log.d(TAG, "Lao name could not be retrieved");
-    }
   }
 
   private void openIdentityTab() {
@@ -221,13 +201,11 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
         getSupportFragmentManager(),
         R.id.fragment_identity,
         () -> IdentityFragment.newInstance(viewModel.getPublicKey()));
-    viewModel.setPageTitle(getString(R.string.tab_identity));
   }
 
   private void openWitnessTab() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_witnessing, WitnessingFragment::newInstance);
-    viewModel.setPageTitle(getString(R.string.witnessing));
   }
 
   private void openDigitalCashTab() {
@@ -246,7 +224,6 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
   private void setupLaoWalletFragment() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
-    viewModel.setPageTitle(getString(R.string.wallet_title));
   }
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {

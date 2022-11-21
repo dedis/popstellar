@@ -181,6 +181,12 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     setupElectionSubmitButton();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(getString(R.string.election_setup_title));
+  }
+
   /** Setups the submit button that creates the new election */
   private void setupElectionSubmitButton() {
     submitButton.setOnClickListener(
@@ -254,13 +260,11 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                       ballotsOptionsFiltered,
                       questionsFiltered)
                   .subscribe(
-                      () -> {
-                        setCurrentFragment(
-                            getParentFragmentManager(),
-                            R.id.fragment_lao_detail,
-                            LaoDetailFragment::newInstance);
-                        viewModel.setPageTitle(viewModel.getLaoView().getName());
-                      },
+                      () ->
+                          setCurrentFragment(
+                              getParentFragmentManager(),
+                              R.id.fragment_lao_detail,
+                              LaoDetailFragment::newInstance),
                       error ->
                           ErrorUtils.logAndShow(
                               requireContext(), TAG, error, R.string.error_create_election)));

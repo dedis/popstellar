@@ -75,7 +75,6 @@ public class CastVoteFragment extends Fragment {
                           getParentFragmentManager(),
                           R.id.fragment_lao_detail,
                           LaoDetailFragment::newInstance);
-                      viewModel.setPageTitle(viewModel.getLaoView().getName());
                       // Toast ? + send back to election screen or details screen ?
                       Toast.makeText(
                               requireContext(), "vote successfully sent !", Toast.LENGTH_LONG)
@@ -146,6 +145,12 @@ public class CastVoteFragment extends Fragment {
 
     voteButton.setOnClickListener(buttonListener);
     return mCastVoteFragBinding.getRoot();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(getString(R.string.vote));
   }
 
   private List<Integer> setEmptyVoteList() {

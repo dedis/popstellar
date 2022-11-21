@@ -20,6 +20,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.*;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
@@ -94,21 +95,17 @@ public class LaoDetailFragment extends Fragment {
   private View.OnClickListener openCreateEvent(EventType type) {
     switch (type) {
       case ROLL_CALL:
-        return v -> {
-          LaoDetailActivity.setCurrentFragment(
-              getParentFragmentManager(),
-              R.id.fragment_create_roll_call_event,
-              RollCallCreationFragment::newInstance);
-          viewModel.setPageTitle(getString(R.string.roll_call_setup_title));
-        };
+        return v ->
+            LaoDetailActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_create_roll_call_event,
+                RollCallCreationFragment::newInstance);
       case ELECTION:
-        return v -> {
-          LaoDetailActivity.setCurrentFragment(
-              getParentFragmentManager(),
-              R.id.fragment_setup_election_event,
-              ElectionSetupFragment::newInstance);
-          viewModel.setPageTitle(getString(R.string.election_setup_title));
-        };
+        return v ->
+            LaoDetailActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_setup_election_event,
+                ElectionSetupFragment::newInstance);
       default:
         return v -> Log.d(TAG, "unknown event type: " + type);
     }
@@ -128,6 +125,16 @@ public class LaoDetailFragment extends Fragment {
               Log.d(TAG, "Got a list update for LAO events");
               mEventListViewEventAdapter.replaceList(events);
             });
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    try {
+      viewModel.setPageTitle(viewModel.getLaoView().getName());
+    } catch (UnknownLaoException e) {
+      Log.d(TAG, "Lao name could not be retrieved");
+    }
   }
 
   private void setupEventListAdapter() {

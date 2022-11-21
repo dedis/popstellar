@@ -93,6 +93,12 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     setupOpenButton();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(getString(R.string.roll_call_setup_title));
+  }
+
   private void setupConfirmButton() {
     confirmButton.setOnClickListener(v -> createRollCall(false));
   }
@@ -143,5 +149,4 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
                       requireContext(), TAG, error, R.string.error_create_rollcall)));
     }
   }
-
 }

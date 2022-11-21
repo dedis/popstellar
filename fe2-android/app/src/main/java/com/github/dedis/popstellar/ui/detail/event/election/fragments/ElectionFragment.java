@@ -138,14 +138,12 @@ public class ElectionFragment extends Fragment {
                   getParentFragmentManager(),
                   R.id.fragment_cast_vote,
                   CastVoteFragment::newInstance);
-              viewModel.setPageTitle(getString(R.string.vote));
               break;
             case RESULTS_READY:
               LaoDetailActivity.setCurrentFragment(
                   getParentFragmentManager(),
                   R.id.fragment_election_result,
                   ElectionResultFragment::newInstance);
-              viewModel.setPageTitle(getString(R.string.election_result_title));
               break;
             default:
               throw new IllegalStateException(
@@ -162,6 +160,12 @@ public class ElectionFragment extends Fragment {
             });
 
     return view;
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(getString(R.string.election_title));
   }
 
   private void setupElectionContent() {
