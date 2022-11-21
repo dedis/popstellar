@@ -110,7 +110,6 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         getSupportFragmentManager(),
         R.id.fragment_social_media_home,
         SocialMediaHomeFragment::newInstance);
-    viewModel.setPageTitle(R.string.home);
   }
 
   private void openSearchTab() {
@@ -118,7 +117,6 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         getSupportFragmentManager(),
         R.id.fragment_social_media_search,
         SocialMediaSearchFragment::newInstance);
-    viewModel.setPageTitle(R.string.search);
   }
 
   private void openFollowingTab() {
@@ -126,7 +124,6 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         getSupportFragmentManager(),
         R.id.fragment_social_media_following,
         SocialMediaFollowingFragment::newInstance);
-    viewModel.setPageTitle(R.string.following);
   }
 
   public void openLao() {
@@ -138,7 +135,6 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         getSupportFragmentManager(),
         R.id.fragment_social_media_profile,
         SocialMediaProfileFragment::newInstance);
-    viewModel.setPageTitle(R.string.profile);
   }
 
   private void setupTopAppBar() {

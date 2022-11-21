@@ -50,15 +50,19 @@ public class SocialMediaHomeFragment extends Fragment {
     setupListViewAdapter();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.home);
+  }
+
   private void setupSendButton() {
     mSocialMediaHomeFragBinding.socialMediaSendFragmentButton.setOnClickListener(
-        v -> {
-          SocialMediaActivity.setCurrentFragment(
-              getParentFragmentManager(),
-              R.id.fragment_social_media_send,
-              SocialMediaSendFragment::newInstance);
-          viewModel.setPageTitle(R.string.send);
-        });
+        v ->
+            SocialMediaActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_social_media_send,
+                SocialMediaSendFragment::newInstance));
   }
 
   private void setupListViewAdapter() {

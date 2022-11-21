@@ -54,6 +54,12 @@ public class SocialMediaSendFragment extends Fragment {
     setupSendChirpButton();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.send);
+  }
+
   private void setupSendChirpButton() {
     mSocialMediaSendFragBinding.sendChirpButton.setOnClickListener(v -> sendNewChirp());
   }
@@ -72,13 +78,11 @@ public class SocialMediaSendFragment extends Fragment {
                   null,
                   Instant.now().getEpochSecond())
               .subscribe(
-                  msg -> {
-                    SocialMediaActivity.setCurrentFragment(
-                        getParentFragmentManager(),
-                        R.id.fragment_social_media_home,
-                        SocialMediaHomeFragment::newInstance);
-                    viewModel.setPageTitle(R.string.home);
-                  },
+                  msg ->
+                      SocialMediaActivity.setCurrentFragment(
+                          getParentFragmentManager(),
+                          R.id.fragment_social_media_home,
+                          SocialMediaHomeFragment::newInstance),
                   error -> {
                     if (error instanceof KeyException
                         || error instanceof GeneralSecurityException) {
