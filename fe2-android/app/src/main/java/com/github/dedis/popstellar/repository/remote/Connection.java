@@ -47,10 +47,10 @@ public class Connection {
     String baseMsg = "Connection to " + url;
 
     if (event instanceof OnConnectionOpened) {
-      Log.d(TAG, baseMsg + " opened");
+      Log.i(TAG, baseMsg + " opened");
     } else if (event instanceof OnConnectionClosed) {
       ShutdownReason reason = ((OnConnectionClosed) event).getShutdownReason();
-      Log.d(TAG, baseMsg + " closed: " + reason);
+      Log.i(TAG, baseMsg + " closed: " + reason);
     } else if (event instanceof OnConnectionFailed) {
       Throwable error = ((OnConnectionFailed) event).getThrowable();
       Log.d(TAG, baseMsg + " failed", error);
