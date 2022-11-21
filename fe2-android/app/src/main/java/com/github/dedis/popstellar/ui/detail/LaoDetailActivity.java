@@ -47,6 +47,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
 
   private LaoDetailViewModel viewModel;
   private LaoDetailActivityBinding binding;
+  private static final int QR_SIDE = 800;
 
   @Inject Gson gson;
   @Inject GlobalNetworkManager networkManager;
@@ -128,7 +129,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
             laoView -> {
               // Set the QR code
               ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), laoView.getId());
-              Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
+              Bitmap myBitmap = QRCode.from(gson.toJson(data)).withSize(QR_SIDE, QR_SIDE).bitmap();
               binding.channelQrCode.setImageBitmap(myBitmap);
 
               binding.laoPropertiesNameText.setText(laoView.getName());
