@@ -39,7 +39,7 @@ export interface EvotingConfiguration {
    * Should be used inside react components
    * @returns The current lao id
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode
@@ -95,7 +95,7 @@ export type EvotingReactContext = Pick<
   EvotingConfiguration,
   /* lao */
   | 'useCurrentLao'
-  | 'useAssertCurrentLaoId'
+  | 'useCurrentLaoId'
   | 'useConnectedToLao'
   | 'useLaoOrganizerBackendPublicKey'
   /* events */

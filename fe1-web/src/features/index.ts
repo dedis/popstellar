@@ -35,7 +35,7 @@ export function configureFeatures() {
     useLaoOrganizerBackendPublicKey: laoConfiguration.hooks.useLaoOrganizerBackendPublicKey,
     /* lao: hooks */
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     /* EVENTS FEATURE */
     /* events: action creators */
@@ -53,7 +53,7 @@ export function configureFeatures() {
     updateEvent: eventConfiguration.actionCreators.updateEvent,
     getEventById: eventConfiguration.functions.getEventById,
     getLaoById: laoConfiguration.functions.getLaoById,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
   });
 
@@ -65,7 +65,7 @@ export function configureFeatures() {
     makeEventByTypeSelector: eventConfiguration.functions.makeEventByTypeSelector,
     getLaoById: laoConfiguration.functions.getLaoById,
     setLaoLastRollCall: laoConfiguration.actionCreators.setLaoLastRollCall,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     generateToken: walletConfiguration.functions.generateToken,
     hasSeed: walletConfiguration.functions.hasSeed,
@@ -75,7 +75,7 @@ export function configureFeatures() {
     keyPairRegistry,
     messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     getEventById: eventConfiguration.functions.getEventById,
@@ -91,7 +91,7 @@ export function configureFeatures() {
     keyPairRegistry: keyPairRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
     getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,
@@ -116,7 +116,7 @@ export function configureFeatures() {
   const witnessConfiguration = witness.configure({
     enabled: false,
     messageRegistry,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
@@ -128,7 +128,7 @@ export function configureFeatures() {
 
   // compose features
   const notificationComposition = notification.compose({
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     notificationTypes: [
       ...witnessConfiguration.notificationTypes,
     ] as NotificationCompositionConfiguration['notificationTypes'],
@@ -159,7 +159,7 @@ export function configureFeatures() {
       ...evotingConfiguration.eventTypes,
     ],
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
   });
 
   const laoComposition = lao.compose({

@@ -13,7 +13,7 @@ import { EventState } from '../objects';
 import { makeEventListSelector } from '../reducer';
 
 const UpcomingEvents = () => {
-  const laoId = EventHooks.useAssertCurrentLaoId();
+  const laoId = EventHooks.useCurrentLaoId();
   const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
   const events = useSelector(eventListSelector);
 

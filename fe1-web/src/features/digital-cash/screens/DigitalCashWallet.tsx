@@ -28,7 +28,7 @@ type NavigationProps = CompositeScreenProps<
 
 const DigitalCashWallet = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
-  const laoId = DigitalCashHooks.useAssertCurrentLaoId();
+  const laoId = DigitalCashHooks.useCurrentLaoId();
 
   const balances = useSelector(useMemo(() => makeBalancesSelector(laoId), [laoId]));
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);

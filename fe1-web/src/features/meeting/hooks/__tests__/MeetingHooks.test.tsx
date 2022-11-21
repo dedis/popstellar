@@ -10,7 +10,7 @@ import { MeetingHooks } from '../index';
 
 const contextValue = {
   [MEETING_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     useConnectedToLao: () => false,
   } as MeetingReactContext,
 };
@@ -20,9 +20,9 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('Meeting hooks', () => {
-  describe('useAssertCurrentLaoId', () => {
+  describe('useuseCurrentLaoIdAssertCurrentLaoId', () => {
     it('should return the current lao id', () => {
-      const { result } = renderHook(() => MeetingHooks.useAssertCurrentLaoId(), { wrapper });
+      const { result } = renderHook(() => MeetingHooks.useCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
     });
   });

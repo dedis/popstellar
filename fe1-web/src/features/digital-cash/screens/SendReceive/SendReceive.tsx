@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 const SendReceive = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
-  const laoId = DigitalCashHooks.useAssertCurrentLaoId();
+  const laoId = DigitalCashHooks.useCurrentLaoId();
   const isConnected = DigitalCashHooks.useConnectedToLao();
 
   const { rollCallId, isCoinbase, scannedPoPToken } = route.params;
@@ -254,7 +254,7 @@ export const SendReceiveHeaderRight = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const route = useRoute<NavigationProps['route']>();
-  const laoId = DigitalCashHooks.useAssertCurrentLaoId();
+  const laoId = DigitalCashHooks.useCurrentLaoId();
 
   const { rollCallId, isCoinbase } = route.params;
 

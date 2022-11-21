@@ -58,7 +58,7 @@ mockStore.dispatch(addElection(mockElectionNotStarted.toState()));
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     useConnectedToLao: () => true,
     useLaoOrganizerBackendPublicKey: () => mockKeyPair.publicKey,
     addEvent: () => mockReduxAction,

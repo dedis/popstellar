@@ -72,7 +72,7 @@ mockStore.dispatch(addRollCall(mockRollCallState));
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     useConnectedToLao: () => true,
     makeEventByTypeSelector,
     generateToken,

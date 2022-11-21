@@ -15,7 +15,7 @@ const markNotificationAsRead = jest.fn();
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     enabled: true,
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     useConnectedToLao: () => true,
     addNotification,
     discardNotifications,
@@ -30,9 +30,9 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('WitnessHooks', () => {
-  describe('useAssertCurrentLaoId', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the correct value', () => {
-      const { result } = renderHook(() => WitnessHooks.useAssertCurrentLaoId(), {
+      const { result } = renderHook(() => WitnessHooks.useCurrentLaoId(), {
         wrapper,
       });
       expect(result.current).toEqual(mockLaoIdHash);

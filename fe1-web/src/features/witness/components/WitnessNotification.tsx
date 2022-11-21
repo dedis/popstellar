@@ -25,7 +25,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   const discardNotifications = WitnessHooks.useDiscardNotifications();
   const markNotificationAsRead = WitnessHooks.useMarkNotificationAsRead();
   const isEnabled = WitnessHooks.useIsEnabled();
-  const laoId = WitnessHooks.useAssertCurrentLaoId();
+  const laoId = WitnessHooks.useCurrentLaoId();
   const isConnected = WitnessHooks.useConnectedToLao();
 
   // if the notification state somehow gets out of sync, remove the corresponding notification

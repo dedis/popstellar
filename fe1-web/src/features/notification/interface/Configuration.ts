@@ -35,7 +35,7 @@ export interface NotificationCompositionConfiguration {
    * A hook returning the current lao id
    * @returns The current lao id
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
 
   notificationTypes: {
     /**
@@ -72,7 +72,7 @@ export interface NotificationCompositionConfiguration {
  */
 export type NotificationReactContext = Pick<
   NotificationCompositionConfiguration,
-  'useAssertCurrentLaoId' | 'notificationTypes'
+  'useCurrentLaoId' | 'notificationTypes'
 >;
 
 export interface NotificationCompositionInterface extends FeatureInterface {

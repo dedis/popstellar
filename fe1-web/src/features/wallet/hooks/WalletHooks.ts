@@ -22,7 +22,7 @@ export namespace WalletHooks {
   /**
    * Gets the current lao id, throws error if there is none
    */
-  export const useAssertCurrentLaoId = () => useWalletContext().useAssertCurrentLaoId();
+  export const useCurrentLaoId = () => useWalletContext().useCurrentLaoId();
 
   /**
    * Gets the current lao, throws error if there is none

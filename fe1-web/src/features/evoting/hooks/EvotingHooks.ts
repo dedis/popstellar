@@ -17,7 +17,7 @@ export namespace EvotingHooks {
    * Gets the current lao id
    * @returns The current lao id
    */
-  export const useAssertCurrentLaoId = () => useEvotingContext().useAssertCurrentLaoId();
+  export const useCurrentLaoId = () => useEvotingContext().useCurrentLaoId();
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode

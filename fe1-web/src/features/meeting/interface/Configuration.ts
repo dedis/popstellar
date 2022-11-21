@@ -26,7 +26,7 @@ export interface MeetingConfiguration {
    * Returns the currently active lao id. Should be used inside react components
    * @returns The current lao id
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode
@@ -67,7 +67,7 @@ export interface MeetingConfiguration {
  */
 export type MeetingReactContext = Pick<
   MeetingConfiguration,
-  'useAssertCurrentLaoId' | 'useConnectedToLao'
+  'useCurrentLaoId' | 'useConnectedToLao'
 >;
 
 /**

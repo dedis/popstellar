@@ -35,7 +35,7 @@ export interface DigitalCashCompositionConfiguration {
    * Returns the currently active lao id. Should be used inside react components.
    * Throws an error if there is no currently active lao
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode
@@ -102,7 +102,7 @@ export interface DigitalCashCompositionConfiguration {
 export type DigitalCashReactContext = Pick<
   DigitalCashCompositionConfiguration,
   /* lao */
-  | 'useAssertCurrentLaoId'
+  | 'useCurrentLaoId'
   | 'useIsLaoOrganizer'
   | 'useConnectedToLao'
 

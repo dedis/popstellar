@@ -25,7 +25,7 @@ export namespace DigitalCashHooks {
   /**
    * Gets the current lao id, throws an error if there is none
    */
-  export const useAssertCurrentLaoId = () => useDigitalCashContext().useAssertCurrentLaoId();
+  export const useCurrentLaoId = () => useDigitalCashContext().useCurrentLaoId();
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode

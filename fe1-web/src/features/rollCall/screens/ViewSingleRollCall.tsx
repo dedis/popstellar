@@ -37,7 +37,7 @@ const ViewSingleRollCall = () => {
   } = route.params;
 
   const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
-  const laoId = RollCallHooks.useAssertCurrentLaoId();
+  const laoId = RollCallHooks.useCurrentLaoId();
   const isConnected = RollCallHooks.useConnectedToLao();
   const rollCall = useSelector(selectRollCall);
 

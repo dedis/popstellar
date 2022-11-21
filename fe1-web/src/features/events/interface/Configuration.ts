@@ -84,7 +84,7 @@ export interface EventCompositionConfiguration {
    * Returns the currently active lao id or throws an error if there is none.
    * Should be used inside react components
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
 
   /**
    * Gets whether the current user is organizer of the current lao
@@ -121,7 +121,7 @@ interface EventType {
 export type EventReactContext = Pick<
   EventCompositionConfiguration,
   /* lao */
-  | 'useAssertCurrentLaoId'
+  | 'useCurrentLaoId'
   | 'useIsLaoOrganizer'
   /* other */
   | 'eventTypes'

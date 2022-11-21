@@ -53,7 +53,7 @@ export interface WalletCompositionConfiguration {
    * Returns the currently active lao id, throws error if there is none.
    * Should be used inside react components
    */
-  useAssertCurrentLaoId: () => Hash | undefined;
+  useCurrentLaoId: () => Hash;
 
   /**
    * Returns the currently active lao, throws error if there is none.
@@ -111,7 +111,7 @@ export type WalletReactContext = Pick<
   | 'walletItemGenerators'
   | 'walletNavigationScreens'
   /* lao */
-  | 'useAssertCurrentLaoId'
+  | 'useCurrentLaoId'
   | 'useCurrentLao'
   | 'useConnectedToLao'
   /* events */
