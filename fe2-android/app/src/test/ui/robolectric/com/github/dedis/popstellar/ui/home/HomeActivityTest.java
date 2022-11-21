@@ -12,16 +12,16 @@ import org.mockito.junit.MockitoJUnit;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
+import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNeutralButton;
-import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
-import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.createButton;
-import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.fragmentContainer;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.UITestUtils.*;
+import static com.github.dedis.popstellar.testutils.pages.home.HomePageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.home.LaoCreatePageObject.createFragmentId;
 import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.confirmButton;
+import static com.github.dedis.popstellar.testutils.pages.home.WalletPageObject.walletId;
+import static org.hamcrest.Matchers.allOf;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -45,6 +45,30 @@ public class HomeActivityTest {
     initializeWallet(activityScenarioRule);
     createButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(createFragmentId()))));
+  }
+
+  @Test
+  public void logOutMenuTest() {
+    initializeWallet(activityScenarioRule);
+
+    // Click on menu icon
+    onView(withContentDescription("More options")).perform(click());
+    walletLogOutMenuItem().perform(click());
+    assertThat(dialogPositiveButton(), allOf(withText("CONFIRM"), isDisplayed()));
+    assertThat(dialogNegativeButton(), allOf(withText("CANCEL"), isDisplayed()));
+    dialogPositiveButton().performClick();
+    fragmentContainer().check(matches(withChild(withId(walletId()))));
+  }
+
+  @Test
+  public void clearDataTest() {
+    initializeWallet(activityScenarioRule);
+
+    // Click on menu icon
+    onView(withContentDescription("More options")).perform(click());
+    clearDataMenuItem().perform(click());
+    assertThat(dialogPositiveButton(), allOf(withText("YES"), isDisplayed()));
+    assertThat(dialogNegativeButton(), allOf(withText("NO"), isDisplayed()));
   }
 
   public static void initializeWallet(
