@@ -108,7 +108,7 @@ public class HomeActivity extends AppCompatActivity {
       viewModel.savePersistentData();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
-      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      Log.d(TAG, "Storage was unsuccessful due to wallet error " + e);
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
     }
   }
