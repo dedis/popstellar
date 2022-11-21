@@ -96,7 +96,6 @@ public class DigitalCashSendFragment extends Fragment {
                                         requireActivity().getSupportFragmentManager(),
                                         R.id.fragment_digital_cash_receipt,
                                         DigitalCashReceiptFragment::newInstance);
-                                    viewModel.setPageTitle(R.string.digital_cash_receipt);
                                   },
                                   error -> Log.d(TAG, "error posting transaction", error));
                       viewModel.addDisposable(disposable);
@@ -118,6 +117,12 @@ public class DigitalCashSendFragment extends Fragment {
     } catch (KeyException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.digital_cash_error_poptoken);
     }
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.digital_cash_send);
   }
 
   public boolean canPostTransaction(LaoView lao, PublicKey publicKey, int currentAmount) {

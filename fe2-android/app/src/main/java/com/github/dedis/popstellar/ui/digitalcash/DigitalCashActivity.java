@@ -114,7 +114,6 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
         getSupportFragmentManager(),
         R.id.fragment_digital_cash_home,
         DigitalCashHomeFragment::newInstance);
-    viewModel.setPageTitle(R.string.digital_cash_home);
   }
 
   private void openHistoryTab() {
@@ -122,7 +121,6 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
         getSupportFragmentManager(),
         R.id.fragment_digital_cash_history,
         DigitalCashHistoryFragment::newInstance);
-    viewModel.setPageTitle(R.string.digital_cash_history);
   }
 
   private void openSendTab() {
@@ -130,7 +128,6 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
         getSupportFragmentManager(),
         R.id.fragment_digital_cash_send,
         DigitalCashSendFragment::newInstance);
-    viewModel.setPageTitle(R.string.digital_cash_send);
   }
 
   private void openReceiveTab() {
@@ -138,7 +135,6 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
         getSupportFragmentManager(),
         R.id.fragment_digital_cash_receive,
         DigitalCashReceiveFragment::newInstance);
-    viewModel.setPageTitle(R.string.digital_cash_receive);
   }
 
   private boolean openIssueTab() {
