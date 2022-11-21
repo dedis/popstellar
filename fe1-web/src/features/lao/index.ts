@@ -42,7 +42,6 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
       useLaoMap: hooks.LaoHooks.useLaoMap,
       useCurrentLao: hooks.LaoHooks.useCurrentLao,
       useCurrentLaoId: hooks.LaoHooks.useCurrentLaoId,
-      useAssertCurrentLaoId: hooks.LaoHooks.useAssertCurrentLaoId,
       useConnectedToLao: hooks.LaoHooks.useConnectedToLao,
       useLaoOrganizerBackendPublicKey: hooks.LaoHooks.useLaoOrganizerBackendPublicKey,
       useDisconnectFromLao: hooks.LaoHooks.useDisconnectFromLao,

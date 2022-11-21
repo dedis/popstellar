@@ -110,15 +110,9 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 
     /**
      * Gets the current lao id
-     * @returns The current lao id or undefined if there is none
-     */
-    useCurrentLaoId: () => Hash | undefined;
-
-    /**
-     * Gets the current lao id
      * @returns The current lao id or throws an exeception if there is none
      */
-    useAssertCurrentLaoId: () => Hash;
+    useCurrentLaoId: () => Hash;
 
     /**
      * Returns true if currently connected to a lao, false if in offline mode

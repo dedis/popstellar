@@ -9,6 +9,7 @@ import { mockKeyPair, mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
 import { encodeLaoConnectionForQRCode } from 'features/home/functions';
+import { NoCurrentLaoError } from 'features/lao/errors/NoCurrentLaoError';
 import { LAO_FEATURE_IDENTIFIER, LaoFeature, LaoReactContext } from 'features/lao/interface';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
@@ -69,11 +70,11 @@ describe('LaoHooks', () => {
       expect(result.current?.valueOf()).toEqual(mockLaoId);
     });
 
-    it('should return the undefined if there is no current lao', () => {
+    it('should throw if there is no current lao', () => {
       const { result } = renderHook(() => LaoHooks.useCurrentLaoId(), {
         wrapper: wrapper(emptyMockStore),
       });
-      expect(result.current).toEqual(undefined);
+      expect(result.error).toBeInstanceOf(NoCurrentLaoError);
     });
   });
 
