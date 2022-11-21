@@ -54,14 +54,12 @@ public class HomeActivity extends AppCompatActivity {
 
     // At start of Activity we display home fragment
     setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
-    viewModel.setPageTitle(R.string.home_title);
 
     restoreStoredState();
 
     if (!viewModel.isWalletSetUp()) {
       setCurrentFragment(
           getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
-      viewModel.setPageTitle(R.string.wallet_setup);
 
       new MaterialAlertDialogBuilder(this)
           .setMessage(R.string.wallet_init_message)
@@ -118,7 +116,6 @@ public class HomeActivity extends AppCompatActivity {
     Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
     if (!(fragment instanceof SeedWalletFragment)) {
       setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new);
-      viewModel.setPageTitle(R.string.home_title);
     }
   }
 
@@ -135,14 +132,12 @@ public class HomeActivity extends AppCompatActivity {
                     getSupportFragmentManager(),
                     R.id.fragment_seed_wallet,
                     SeedWalletFragment::new);
-                viewModel.setPageTitle(R.string.wallet_setup);
               })
           .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
           .show();
     } else {
       setCurrentFragment(
           getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::new);
-      viewModel.setPageTitle(R.string.wallet_setup);
     }
   }
 

@@ -47,13 +47,18 @@ public final class HomeFragment extends Fragment {
     return binding.getRoot();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.home_title);
+  }
+
   private void setupButtonsActions() {
     binding.homeCreateButton.setOnClickListener(
         v -> {
           Log.d(TAG, "Opening Create fragment");
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(), R.id.fragment_lao_create, LaoCreateFragment::newInstance);
-          viewModel.setPageTitle(R.string.lao_create_title);
         });
 
     binding.homeJoinButton.setOnClickListener(
@@ -61,7 +66,6 @@ public final class HomeFragment extends Fragment {
           Log.d(TAG, "Opening join fragment");
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
-          viewModel.setPageTitle(R.string.join_lao_title);
         });
   }
 

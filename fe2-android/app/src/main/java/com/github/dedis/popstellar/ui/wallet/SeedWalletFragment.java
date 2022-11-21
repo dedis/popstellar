@@ -64,6 +64,12 @@ public class SeedWalletFragment extends Fragment {
     setupImportPart();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.wallet_setup);
+  }
+
   private void setupConfirmSeedButton() {
     binding.buttonConfirmSeed.setOnClickListener(
         v -> {
@@ -79,7 +85,6 @@ public class SeedWalletFragment extends Fragment {
                   viewModel.importSeed(binding.seedWalletText.getText().toString());
                   HomeActivity.setCurrentFragment(
                       getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
-                  viewModel.setPageTitle(R.string.home_title);
 
                 } catch (GeneralSecurityException | SeedValidationException e) {
                   Log.e(TAG, "Error importing key", e);
@@ -129,7 +134,6 @@ public class SeedWalletFragment extends Fragment {
           Toast.makeText(requireContext(), R.string.seed_import_success, Toast.LENGTH_SHORT).show();
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(), R.id.fragment_home, HomeFragment::new);
-          viewModel.setPageTitle(R.string.home_title);
         });
   }
 }

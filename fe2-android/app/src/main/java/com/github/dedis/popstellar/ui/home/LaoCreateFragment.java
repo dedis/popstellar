@@ -54,6 +54,12 @@ public final class LaoCreateFragment extends Fragment {
     return binding.getRoot();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.lao_create_title);
+  }
+
   TextWatcher launchWatcher =
       new TextWatcher() {
         @Override
@@ -112,7 +118,6 @@ public final class LaoCreateFragment extends Fragment {
           Objects.requireNonNull(binding.laoNameEntryEditText.getText()).clear();
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
-          viewModel.setPageTitle(R.string.home_title);
         });
   }
 }

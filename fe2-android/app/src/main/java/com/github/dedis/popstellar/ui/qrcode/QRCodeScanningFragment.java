@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrcodeFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -74,7 +75,8 @@ public final class QRCodeScanningFragment extends Fragment {
 
     if (activity instanceof HomeActivity) {
       viewModel = HomeActivity.obtainViewModel(activity);
-
+      HomeViewModel homeViewModel = (HomeViewModel) viewModel;
+      homeViewModel.setPageTitle(R.string.join_lao_title);
     } else if (activity instanceof LaoDetailActivity) {
       viewModel = LaoDetailActivity.obtainViewModel(activity);
 
