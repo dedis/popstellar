@@ -21,7 +21,7 @@ const SingleNotificationScreen = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const { notificationId } = route.params;
 
-  const laoId = NotificationHooks.useCurrentLaoId();
+  const laoId = NotificationHooks.useAssertCurrentLaoId();
 
   const notificationSelector = useMemo(
     () => makeNotificationSelector(laoId.valueOf(), notificationId),

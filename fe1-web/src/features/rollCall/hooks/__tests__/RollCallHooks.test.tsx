@@ -58,6 +58,7 @@ const mockHasSeed = jest.fn();
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => false,
     makeEventByTypeSelector,
     generateToken: mockGenerateToken,
     hasSeed: mockHasSeed,
@@ -71,7 +72,7 @@ const mockStore = configureStore({
     ...rollCallReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 mockStore.dispatch(
   addEvent(mockLaoId, {
     eventType: RollCall.EVENT_TYPE,
@@ -105,6 +106,13 @@ describe('RollCallHooks', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => RollCallHooks.useAssertCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
+    });
+  });
+
+  describe('useConnectedToLao', () => {
+    it('should return whether currently connected to a lao', () => {
+      const { result } = renderHook(() => RollCallHooks.useConnectedToLao(), { wrapper });
+      expect(result.current).toBeFalse();
     });
   });
 

@@ -16,6 +16,7 @@ namespace STRINGS {
   export const general_ended = 'Ended';
   export const general_notice = 'Notice';
   export const general_enter_manually = 'Enter Manually';
+  export const general_offline = 'Offline';
 
   export const general_closed = 'Closed';
   export const general_ongoing = 'Ongoing';
@@ -94,9 +95,6 @@ namespace STRINGS {
   export const navigation_wallet_digital_cash_send_receive_title = 'Your Account';
 
   export const navigation_wallet_digital_cash_wallet_scanner = 'Digital Cash Wallet Scanner';
-
-  export const navigation_wallet_digital_cash_transaction_history =
-    'Digital Cash Transaction History';
 
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';

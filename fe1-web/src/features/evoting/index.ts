@@ -14,6 +14,7 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
   const {
     useCurrentLao,
     useAssertCurrentLaoId,
+    useConnectedToLao,
     useLaoOrganizerBackendPublicKey,
     getEventById,
     addEvent,
@@ -31,6 +32,7 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
       /* lao */
       useCurrentLao,
       useAssertCurrentLaoId,
+      useConnectedToLao,
       useLaoOrganizerBackendPublicKey,
       /* event */
       getEventById,

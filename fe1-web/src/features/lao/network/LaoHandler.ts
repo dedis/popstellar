@@ -24,7 +24,7 @@ export function handleLaoCreateMessage(msg: ProcessableMessage): boolean {
     server_addresses: [msg.receivedFrom],
   });
 
-  dispatch(setCurrentLao(lao.toState()));
+  dispatch(setCurrentLao({ lao: lao.toState(), connected: true }));
   return true;
 }
 

@@ -6,6 +6,7 @@ import { Hash, PopToken } from 'core/objects';
 export namespace WalletFeature {
   export interface Lao {
     id: Hash;
+    name: string;
 
     // ID of the last roll call for which we have a token
     last_tokenized_roll_call_id?: Hash;

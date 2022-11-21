@@ -77,7 +77,7 @@ const mockStore = configureStore({
     ...walletReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 mockStore.dispatch(addRollCall(mockRollCall.toState()));
 
 const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
@@ -85,6 +85,7 @@ const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     makeEventByTypeSelector: makeEventByTypeSelector,
     generateToken: mockGenerateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,

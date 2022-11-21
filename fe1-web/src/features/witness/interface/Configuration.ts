@@ -32,6 +32,12 @@ export interface WitnessConfiguration {
   useAssertCurrentLaoId: () => Hash;
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
+
+  /**
    * Returns the currently active lao id. Should be used outside react components
    * @returns The current lao or undefined if there is none.
    */
@@ -68,6 +74,7 @@ export type WitnessReactContext = Pick<
   WitnessConfiguration,
   | 'enabled'
   | 'useAssertCurrentLaoId'
+  | 'useConnectedToLao'
   | 'addNotification'
   | 'markNotificationAsRead'
   | 'discardNotifications'

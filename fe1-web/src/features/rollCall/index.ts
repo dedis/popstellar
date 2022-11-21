@@ -28,6 +28,7 @@ export function configure(configuration: RollCallConfiguration): RollCallInterfa
     },
     context: {
       useAssertCurrentLaoId: configuration.useAssertCurrentLaoId,
+      useConnectedToLao: configuration.useConnectedToLao,
       makeEventByTypeSelector: configuration.makeEventByTypeSelector,
       generateToken: configuration.generateToken,
       hasSeed: configuration.hasSeed,

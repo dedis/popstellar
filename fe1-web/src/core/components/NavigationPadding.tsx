@@ -11,25 +11,26 @@ import { Icon } from 'core/styles';
  */
 const NavigationPadding = ({ paddingAmount, nextToIcon }: IPropTypes) => {
   // default is a padding of 1
-  const actualPaddingAmount = paddingAmount || 1;
+  const actualPaddingAmount =
+    paddingAmount === undefined || paddingAmount === null ? 1 : paddingAmount;
 
   if (actualPaddingAmount === 0) {
     return null;
   }
 
   if (nextToIcon) {
-    // n times icon size, n-1 times margin, n = actualPaddingAmount
-    return (
-      <View
-        style={{
-          width: Icon.size * actualPaddingAmount + Icon.buttonMargin * (actualPaddingAmount - 1),
-        }}
-      />
-    );
+    // if there already is an icon, n times icon size and margin
+    return <View style={{ width: (Icon.size + Icon.buttonMargin) * actualPaddingAmount }} />;
   }
 
-  // if there already is an icon, n times icon size and margin
-  return <View style={{ width: (Icon.size + Icon.buttonMargin) * actualPaddingAmount }} />;
+  // n times icon size, n-1 times margin, n = actualPaddingAmount
+  return (
+    <View
+      style={{
+        width: Icon.size * actualPaddingAmount + Icon.buttonMargin * (actualPaddingAmount - 1),
+      }}
+    />
+  );
 };
 
 const propTypes = {
@@ -42,7 +43,7 @@ NavigationPadding.propTypes = propTypes;
 NavigationPadding.defaultProps = {
   paddingAmount: 1,
   // if this padding is next to an icon, the amount of padding will be different
-  nextToIcon: true,
+  nextToIcon: false,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

@@ -88,7 +88,7 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * Checks whether the current user is an organizer of the given lao
      * If no laoId is passed, it is checked for the current lao
      */
-    useIsLaoOrganizer: (laoId?: string) => boolean;
+    useIsLaoOrganizer: (laoId?: Hash | string) => boolean;
 
     /**
      * Checks whether the current user is a witness of the current lao
@@ -119,6 +119,12 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @returns The current lao id or throws an exeception if there is none
      */
     useAssertCurrentLaoId: () => Hash;
+
+    /**
+     * Returns true if currently connected to a lao, false if in offline mode
+     * and undefined if there is no current lao
+     */
+    useConnectedToLao: () => boolean | undefined;
 
     /**
      * Returns the public key of the organizer's backend for a given lao id
@@ -185,14 +191,14 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     /**
      * Returns the lao organizer's public key
      */
-    getLaoOrganizer: (laoId: string) => PublicKey | undefined;
+    getLaoOrganizer: (laoId: Hash | string) => PublicKey | undefined;
 
     /**
      * Get a LAOs channel by its id
      * @param laoId The id of the lao whose channel should be returned
      * @returns The channel related to the passed lao id
      */
-    getLaoChannel: (laoId: string) => Channel | undefined;
+    getLaoChannel: (laoId: Hash | string) => Channel | undefined;
 
     /**
      * Resubscribes to a known lao
