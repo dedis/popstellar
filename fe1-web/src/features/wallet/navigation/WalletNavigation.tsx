@@ -31,6 +31,7 @@ export default function WalletNavigation() {
         options={{
           headerTitle: STRINGS.navigation_wallet_home_title,
           headerLeft: () => null,
+          headerRight: () => null,
         }}
       />
       <Stack.Screen
