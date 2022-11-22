@@ -1,8 +1,8 @@
-import { Hash } from 'core/objects';
+import { Hash, HashState, ProtocolError } from 'core/objects';
 import { OmitMethods } from 'core/types';
 
 export interface QuestionState {
-  id: string;
+  id: HashState;
   question: string;
   voting_method: string;
   ballot_options: string[];
@@ -22,10 +22,39 @@ export class Question {
   public readonly write_in: boolean;
 
   constructor(question: OmitMethods<Question>) {
+    if (typeof question.id === 'undefined') {
+      throw new ProtocolError(
+        "Undefined 'id' parameter encountered during construction of 'Question'",
+      );
+    }
     this.id = question.id;
+
+    if (typeof question.question === 'undefined') {
+      throw new ProtocolError(
+        "Undefined 'question' parameter encountered during construction of 'Question'",
+      );
+    }
     this.question = question.question;
+
+    if (typeof question.ballot_options === 'undefined') {
+      throw new ProtocolError(
+        "Undefined 'ballot_options' parameter encountered during construction of 'Question'",
+      );
+    }
     this.ballot_options = question.ballot_options;
+
+    if (typeof question.voting_method === 'undefined') {
+      throw new ProtocolError(
+        "Undefined 'voting_method' parameter encountered during construction of 'Question'",
+      );
+    }
     this.voting_method = question.voting_method;
+
+    if (typeof question.write_in === 'undefined') {
+      throw new ProtocolError(
+        "Undefined 'write_in' parameter encountered during construction of 'Question'",
+      );
+    }
     this.write_in = question.write_in;
   }
 
@@ -37,6 +66,16 @@ export class Question {
       voting_method: this.voting_method,
       write_in: this.write_in,
     };
+  }
+
+  public static fromJson(questionJson: any): Question {
+    return new Question({
+      id: new Hash(questionJson.id),
+      question: questionJson.question,
+      ballot_options: questionJson.ballot_options,
+      voting_method: questionJson.voting_method,
+      write_in: questionJson.write_in,
+    });
   }
 
   public static fromState(questionState: QuestionState): Question {
