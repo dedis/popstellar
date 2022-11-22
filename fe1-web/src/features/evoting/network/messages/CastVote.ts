@@ -81,11 +81,36 @@ export class CastVote implements MessageData {
       throw new ProtocolError(`Invalid cast vote\n\n${errors}`);
     }
 
+    let votes: EncryptedVote[] | Vote[] = [];
+
+    if (obj.votes.length > 0) {
+      if (typeof obj.votes[0].vote === 'number') {
+        // verify that all votes are unencrypted
+        if (obj.votes.some((v: any) => typeof v.vote !== 'number')) {
+          throw new ProtocolError(
+            `Invalid cast vote, votes are not of uniform type, first was unencrypted`,
+          );
+        }
+
+        votes = obj.votes.map(Vote.fromJson);
+      } else if (typeof obj.votes[0].vote === 'string') {
+        // verify that all votes are encrypted
+        if (obj.votes.some((v: any) => typeof v.vote !== 'string')) {
+          throw new ProtocolError(
+            `Invalid cast vote, votes are not of uniform type, first was encrypted`,
+          );
+        }
+        votes = obj.votes.map(EncryptedVote.fromJson);
+      } else {
+        throw new ProtocolError(`Invalid vote '${JSON.stringify(obj.votes[0])}'`);
+      }
+    }
+
     return new CastVote({
-      ...obj,
+      lao: new Hash(obj.lao),
       created_at: new Timestamp(obj.created_at),
       election: new Hash(obj.election),
-      lao: new Hash(obj.lao),
+      votes,
     });
   }
 

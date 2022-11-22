@@ -35,4 +35,12 @@ export class Vote {
       vote: voteState.vote,
     });
   }
+
+  public static fromJson(voteState: VoteState): Vote {
+    return new Vote({
+      id: new Hash(voteState.id),
+      question: new Hash(voteState.question),
+      vote: voteState.vote,
+    });
+  }
 }

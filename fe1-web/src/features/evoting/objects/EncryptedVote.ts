@@ -35,4 +35,12 @@ export class EncryptedVote {
       vote: encryptedVoteState.vote,
     });
   }
+
+  public static fromJson(encryptedVoteState: EncryptedVoteState): EncryptedVote {
+    return new EncryptedVote({
+      id: new Hash(encryptedVoteState.id),
+      question: new Hash(encryptedVoteState.question),
+      vote: encryptedVoteState.vote,
+    });
+  }
 }

@@ -1,7 +1,7 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
-import { EventTags, Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
+import { EventTags, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 
 import { ElectionVersion, Question } from '../../objects';
@@ -181,13 +181,14 @@ export class SetupElection implements MessageData {
 
     return new SetupElection(
       {
-        ...obj,
         id: new Hash(obj.id),
         lao: new Hash(obj.lao),
-        key: obj.key ? new PublicKey(obj.key) : undefined,
         created_at: new Timestamp(obj.created_at),
         start_time: new Timestamp(obj.start_time),
         end_time: new Timestamp(obj.end_time),
+        name: obj.name,
+        questions: obj.questions.map(Question.fromJson),
+        version: obj.version,
       },
       laoId,
     );

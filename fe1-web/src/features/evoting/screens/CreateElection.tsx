@@ -101,8 +101,10 @@ const createElection = (
   // compute the id for all questions and add the write_in property
   const questionsWithId = questions.map((item) =>
     Question.fromState({
-      ...item,
       id: Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), item.question).toString(),
+      question: item.question,
+      ballot_options: item.ballot_options,
+      voting_method: item.voting_method,
       // for now the write_in feature is disabled (2022-03-16, Tyratox)
       write_in: false,
     }),

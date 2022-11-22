@@ -220,10 +220,11 @@ export const handleCastVoteMessage =
       messageId: msg.message_id,
     });
 
-    if (election.registeredVotes.some((votes) => votes.sender === currentVote.sender)) {
+    if (election.registeredVotes.some((votes) => votes.sender.equals(currentVote.sender))) {
       // Update the vote if the person has already voted before
       election.registeredVotes = election.registeredVotes.map((prevVote) =>
-        prevVote.sender === currentVote.sender && prevVote.createdAt < currentVote.createdAt
+        prevVote.sender.equals(currentVote.sender) &&
+        prevVote.createdAt.before(currentVote.createdAt)
           ? currentVote
           : prevVote,
       );
