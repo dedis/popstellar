@@ -1,6 +1,6 @@
 // https://flatuicolors.com/palette/cn
 export const accent = '#3742fa';
-export const accentLight = '#5352ed';
+export const accentLight = '#d3d2fd';
 
 export const secondaryAccent = '#ff4757';
 export const secondaryAccentLight = '#ff6b81';

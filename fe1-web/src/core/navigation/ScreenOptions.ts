@@ -1,4 +1,4 @@
-import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { DrawerNavigationOptions } from '@react-navigation/drawer';
 import { StackNavigationOptions } from '@react-navigation/stack';
 
 import BackButton from 'core/components/BackButton';
@@ -41,9 +41,11 @@ export const stackScreenOptionsWithHeader: StackNavigationOptions = {
   cardStyle: { flex: 1 },
 };
 
-export const tabNavigationOptions: BottomTabNavigationOptions = {
-  tabBarActiveTintColor: Color.accent,
-  tabBarInactiveTintColor: Color.inactive,
+export const drawerNavigationOptions: DrawerNavigationOptions = {
+  drawerActiveBackgroundColor: Color.accentLight,
+  drawerActiveTintColor: Color.accent,
+  drawerInactiveTintColor: Color.inactive,
+
   headerLeftContainerStyle: {
     flexBasis: 'auto',
     paddingLeft: Spacing.contentSpacing,

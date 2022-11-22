@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo, useState } from 'react';
 
+import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { makeIcon } from 'core/components/PoPIcon';
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { PublicKey } from 'core/objects';
@@ -91,6 +92,7 @@ const SocialMediaNavigation = () => {
 
           tabBarActiveTintColor: Color.accent,
           tabBarInactiveTintColor: Color.inactive,
+          headerLeft: DrawerMenuButton,
           headerLeftContainerStyle: {
             paddingLeft: Spacing.contentSpacing,
           },
@@ -118,6 +120,7 @@ export const SocialMediaScreen: SocialFeature.LaoScreen = {
   id: STRINGS.navigation_social_media,
   Component: SocialMediaNavigation,
   headerShown: false,
-  tabBarIcon: makeIcon('socialMedia'),
+  Icon: makeIcon('socialMedia'),
+  headerLeft: DrawerMenuButton,
   order: 10000,
 };

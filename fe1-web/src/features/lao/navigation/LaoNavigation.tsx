@@ -1,11 +1,11 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/core';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
-import { tabNavigationOptions } from 'core/navigation/ScreenOptions';
+import { drawerNavigationOptions } from 'core/navigation/ScreenOptions';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -15,7 +15,7 @@ import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import EventsNavigation from './EventsNavigation';
 
-const OrganizationBottomTabNavigator = createBottomTabNavigator<LaoParamList>();
+const OrganizationBottomTabNavigator = createDrawerNavigator<LaoParamList>();
 
 const styles = StyleSheet.create({
   offlineHeader: {
@@ -64,7 +64,7 @@ const LaoNavigation: React.FC<unknown> = () => {
         ...passedScreens,
         {
           id: STRINGS.navigation_lao_events,
-          tabBarIcon: makeIcon('event'),
+          Icon: makeIcon('event'),
           Component: EventsNavigation,
           headerShown: false,
           order: 0,
@@ -85,7 +85,7 @@ const LaoNavigation: React.FC<unknown> = () => {
     <NoCurrentLaoErrorBoundary>
       <OrganizationBottomTabNavigator.Navigator
         initialRouteName={STRINGS.navigation_lao_events}
-        screenOptions={tabNavigationOptions}>
+        screenOptions={drawerNavigationOptions}>
         {screens.map(
           ({
             id,
@@ -95,7 +95,7 @@ const LaoNavigation: React.FC<unknown> = () => {
             headerShown,
             headerLeft,
             headerRight,
-            tabBarIcon,
+            Icon,
             tabBarVisible,
             testID,
           }) => (
@@ -109,11 +109,9 @@ const LaoNavigation: React.FC<unknown> = () => {
                 return {
                   title: title || id,
                   headerTitle: headerTitle || title || id,
-                  headerLeft: headerLeft || tabNavigationOptions.headerLeft,
-                  headerRight: headerRight || tabNavigationOptions.headerRight,
-                  tabBarIcon: tabBarIcon || undefined,
-                  // hide the item if tabBarIcon is set to null
-                  tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
+                  headerLeft: headerLeft || drawerNavigationOptions.headerLeft,
+                  headerRight: headerRight || drawerNavigationOptions.headerRight,
+                  drawerIcon: Icon,
                   headerShown,
                   tabBarTestID: testID,
                   tabBarStyle:

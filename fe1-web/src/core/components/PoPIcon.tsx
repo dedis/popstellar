@@ -56,10 +56,6 @@ const iconNameMap = {
      * combination of name and family
      */
   } as IonIcon,
-  digitalCash: {
-    iconName: 'attach-money',
-    IconFamily: MaterialIcons,
-  } as MaterialIcon,
   cameraReverse: {
     iconName: 'ios-camera-reverse',
     IconFamily: Ionicons,
@@ -80,8 +76,16 @@ const iconNameMap = {
     iconName: 'ios-create',
     IconFamily: Ionicons,
   } as IonIcon,
+  digitalCash: {
+    iconName: 'attach-money',
+    IconFamily: MaterialIcons,
+  } as MaterialIcon,
   delete: {
     iconName: 'ios-trash',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  drawerMenu: {
+    iconName: 'ios-menu',
     IconFamily: Ionicons,
   } as IonIcon,
   dropdown: {

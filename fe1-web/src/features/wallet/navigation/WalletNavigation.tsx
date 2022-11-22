@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
+import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { makeIcon } from 'core/components/PoPIcon';
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
@@ -30,7 +31,7 @@ export default function WalletNavigation() {
         component={WalletHome}
         options={{
           headerTitle: STRINGS.navigation_wallet_home_title,
-          headerLeft: () => null,
+          headerLeft: DrawerMenuButton,
           headerRight: () => null,
         }}
       />
@@ -65,7 +66,7 @@ export default function WalletNavigation() {
 export const WalletNavigationScreen: WalletFeature.LaoScreen = {
   id: STRINGS.navigation_home_wallet,
   Component: WalletNavigation,
-  tabBarIcon: makeIcon('wallet'),
+  Icon: makeIcon('wallet'),
   order: 99999999,
   headerShown: false,
 };
