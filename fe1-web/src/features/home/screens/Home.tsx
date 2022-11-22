@@ -30,20 +30,20 @@ const Home: FunctionComponent<unknown> = () => {
   const laos = HomeHooks.useLaoList();
   const LaoList = HomeHooks.useLaoListComponent();
 
-  const laoId = HomeHooks.useCurrentLaoId();
+  const isConnected = HomeHooks.useConnectedToLao();
   const disconnectFromLao = HomeHooks.useDisonnectFromLao();
 
   useEffect(() => {
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return navigation.addListener('focus', () => {
       // The screen is now focused, check if we are connected to a lao
-      if (laoId) {
+      if (isConnected) {
         // if we enter this screen and connected to a lao
         // disconnect from this lao
         disconnectFromLao();
       }
     });
-  }, [navigation, laoId, disconnectFromLao]);
+  }, [navigation, isConnected, disconnectFromLao]);
 
   const toolbarItems = useMemo<ToolbarItem[]>(
     () => [
