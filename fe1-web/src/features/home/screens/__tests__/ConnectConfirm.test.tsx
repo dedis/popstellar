@@ -18,7 +18,6 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { subscribeToChannel } from 'core/network';
 import { HOME_FEATURE_IDENTIFIER, HomeReactContext } from 'features/home/interface';
 import { getLaoChannel, resubscribeToLao } from 'features/lao/functions';
-import { LaoHooks } from 'features/lao/hooks';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import ConnectConfirm from '../ConnectConfirm';
@@ -26,7 +25,7 @@ import ConnectConfirm from '../ConnectConfirm';
 const contextValue = {
   [HOME_FEATURE_IDENTIFIER]: {
     addLaoServerAddress: () => mockReduxAction,
-    useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    useConnectedToLao: () => true,
     getLaoChannel: () => mockChannel,
     requestCreateLao: () => Promise.resolve(mockChannel),
     connectToTestLao: () => {},
