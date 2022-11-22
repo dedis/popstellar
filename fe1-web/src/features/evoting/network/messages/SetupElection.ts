@@ -131,7 +131,7 @@ export class SetupElection implements MessageData {
         question.question,
       );
 
-      if (expectedHash.equals(question.id)) {
+      if (!expectedHash.equals(question.id)) {
         throw new ProtocolError(
           "Invalid 'questions.id' parameter encountered during 'SetupElection':" +
             ' re-computing the value yields a different result',
