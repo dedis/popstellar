@@ -4,7 +4,13 @@ import { channelFromIds, getLastPartOfChannel, Hash } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
-import { Election, ElectionStatus, ElectionVersion, RegisteredVote } from '../objects';
+import {
+  Election,
+  ElectionStatus,
+  ElectionVersion,
+  QuestionResult,
+  RegisteredVote,
+} from '../objects';
 import { addElectionKey } from '../reducer';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { ElectionKey } from './messages/ElectionKey';
@@ -207,12 +213,12 @@ export const handleCastVoteMessage =
       return false;
     }
 
-    const currentVote: RegisteredVote = {
-      createdAt: castVoteMsg.created_at.valueOf(),
-      sender: msg.sender.valueOf(),
+    const currentVote = new RegisteredVote({
+      createdAt: castVoteMsg.created_at,
+      sender: msg.sender,
       votes: castVoteMsg.votes,
-      messageId: msg.message_id.valueOf(),
-    };
+      messageId: msg.message_id,
+    });
 
     if (election.registeredVotes.some((votes) => votes.sender === currentVote.sender)) {
       // Update the vote if the person has already voted before
@@ -332,10 +338,13 @@ export const handleElectionResultMessage =
       return false;
     }
 
-    election.questionResult = electionResultMessage.questions.map((q) => ({
-      id: q.id,
-      result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
-    }));
+    election.questionResult = electionResultMessage.questions.map(
+      (q) =>
+        new QuestionResult({
+          id: new Hash(q.id),
+          result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+        }),
+    );
 
     election.electionStatus = ElectionStatus.RESULT;
     updateElection(election);

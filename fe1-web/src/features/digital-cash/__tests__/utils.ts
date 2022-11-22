@@ -65,7 +65,7 @@ export const mockTransactionState: TransactionState = {
   version: 1,
   inputs: [
     {
-      txOutHash: mockCBHash.serialize(),
+      txOutHash: mockCBHash.valueOf(),
       txOutIndex: 0,
       script: {
         type: SCRIPT_TYPE,

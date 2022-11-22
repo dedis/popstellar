@@ -1,5 +1,7 @@
 import base64url from 'base64url';
 
+export type Base64UrlDataState = string;
+
 export class Base64UrlData extends String {
   public constructor(value: string) {
     super(value);
@@ -42,5 +44,38 @@ export class Base64UrlData extends String {
       paddedStr += '=';
     }
     return paddedStr;
+  }
+
+  /**
+   * Returns *some* string representation of this object.
+   * If you need access to the unterlying data type use .valueOf() and
+   * if you want to serialize an instance use .toState() instead
+   */
+  public toString(): string {
+    return super.toString();
+  }
+
+  /**
+   * Returns the primitive value used for representing the Base64UrlData,
+   * a string
+   * If you want to serialize an instance use .toState() instead
+   */
+  public valueOf(): string {
+    return super.valueOf();
+  }
+
+  /**
+   * Returns the serialized version of the base64url that can for instance be stored
+   * in redux stores
+   */
+  public toState(): Base64UrlDataState {
+    return super.valueOf();
+  }
+
+  /**
+   * Deserializes a previously serializes instance of Base64Url
+   */
+  public static fromState(base64UrlDataState: Base64UrlDataState): Base64UrlData {
+    return new Base64UrlData(base64UrlDataState);
   }
 }

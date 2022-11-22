@@ -32,7 +32,7 @@ const contextValue = {
 const mockStore = configureStore({ reducer: combineReducers({ ...notificationReducer }) });
 mockStore.dispatch(
   addNotification({
-    laoId: mockLaoId,
+    laoId: mockLaoId.toState(),
     title: 'a notification',
     timestamp: 0,
     type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
@@ -40,7 +40,7 @@ mockStore.dispatch(
 );
 mockStore.dispatch(
   addNotification({
-    laoId: mockLaoId,
+    laoId: mockLaoId.toState(),
     title: 'another notification',
     timestamp: 1,
     type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,

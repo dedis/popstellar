@@ -59,7 +59,7 @@ const messagesSlice = createSlice({
       prepare(messageIds: Hash | Hash[]): any {
         const msgIds = Array.isArray(messageIds) ? messageIds : [messageIds];
         return {
-          payload: msgIds.map((m: Hash) => m.serialize()),
+          payload: msgIds.map((m: Hash) => m.valueOf()),
         };
       },
       reducer(state, action: PayloadAction<string[]>) {
@@ -140,7 +140,7 @@ export const makeMessageSelector = (messageId: Hash) =>
     // First input: map of message ids to messages
     (state: any) => getMessagesState(state).byId,
     (byId: Record<string, ExtendedMessageState>): ExtendedMessage | undefined => {
-      const serializedMessageId = messageId.serialize();
+      const serializedMessageId = messageId.valueOf();
 
       if (serializedMessageId in byId) {
         return ExtendedMessage.fromState(byId[serializedMessageId]);

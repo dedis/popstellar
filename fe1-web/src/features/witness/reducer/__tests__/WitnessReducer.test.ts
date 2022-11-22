@@ -43,7 +43,7 @@ describe('WitnessReducer', () => {
     it('removes the witnesses message from the store', () => {
       const newState = witnessReduce(
         {
-          allIds: [mockMessageId1.serialize()],
+          allIds: [mockMessageId1.valueOf()],
         } as MessagesToWitnessReducerState,
         removeMessageToWitness(mockMessageId1),
       );
@@ -54,7 +54,7 @@ describe('WitnessReducer', () => {
     it("doesn't do anything of the id is not in the store", () => {
       const newState = witnessReduce(
         {
-          allIds: [mockMessageId1.serialize()],
+          allIds: [mockMessageId1.valueOf()],
         } as MessagesToWitnessReducerState,
         removeMessageToWitness(new Hash('some other id')),
       );
@@ -68,7 +68,7 @@ describe('WitnessReducer', () => {
       expect(
         isMessageToWitness(mockMessageId1, {
           [WITNESS_REDUCER_PATH]: {
-            allIds: [mockMessageId1.serialize()],
+            allIds: [mockMessageId1.valueOf()],
           } as MessagesToWitnessReducerState,
         }),
       ).toBeTrue();

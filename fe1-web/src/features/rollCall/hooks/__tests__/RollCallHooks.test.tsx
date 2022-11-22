@@ -75,7 +75,7 @@ mockStore.dispatch(setCurrentLao(mockLao));
 mockStore.dispatch(
   addEvent(mockLaoId, {
     eventType: RollCall.EVENT_TYPE,
-    id: mockRollCallState.id.valueOf(),
+    id: mockRollCall.id.valueOf(),
     start: mockRollCall.start.valueOf(),
     end: mockRollCall.end?.valueOf(),
   }),

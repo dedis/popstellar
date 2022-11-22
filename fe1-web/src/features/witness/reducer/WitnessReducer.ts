@@ -26,7 +26,7 @@ const messagesToWitnessSlice = createSlice({
       prepare(messageId: Hash) {
         return {
           payload: {
-            messageId: messageId.serialize(),
+            messageId: messageId.valueOf(),
           },
         };
       },
@@ -45,7 +45,7 @@ const messagesToWitnessSlice = createSlice({
       prepare(messageId: Hash) {
         return {
           payload: {
-            messageId: messageId.serialize(),
+            messageId: messageId.valueOf(),
           },
         };
       },
@@ -82,7 +82,7 @@ export const getMessagesToWitnessState = (state: any): MessagesToWitnessReducerS
 export const isMessageToWitness = (messageId: Hash, state: unknown): boolean => {
   const { allIds } = getMessagesToWitnessState(state);
 
-  return allIds.includes(messageId.serialize());
+  return allIds.includes(messageId.valueOf());
 };
 
 export const witnessReduce = messagesToWitnessSlice.reducer;

@@ -34,7 +34,7 @@ import {
 } from 'features/evoting/__tests__/utils';
 import { addElectionKey } from 'features/evoting/reducer/ElectionKeyReducer';
 
-import { Election, ElectionStatus, RegisteredVote } from '../../objects';
+import { Election, ElectionStatus, QuestionResult, RegisteredVote } from '../../objects';
 import {
   handleCastVoteMessage,
   handleElectionEndMessage,
@@ -482,12 +482,12 @@ describe('ElectionHandler', () => {
       expect(mockGetEventById).toHaveBeenCalledWith(mockElection.id);
       expect(mockGetEventById).toHaveBeenCalledTimes(1);
 
-      const newVote: RegisteredVote = {
-        createdAt: castVoteMessage.created_at.valueOf(),
-        sender: mockMessageData.sender.valueOf(),
+      const newVote = new RegisteredVote({
+        createdAt: castVoteMessage.created_at,
+        sender: mockMessageData.sender,
         votes: castVoteMessage.votes,
-        messageId: mockMessageData.message_id.valueOf(),
-      };
+        messageId: mockMessageData.message_id,
+      });
 
       const newRegisteredVotes = [...mockElection.registeredVotes, newVote];
 
@@ -732,10 +732,13 @@ describe('ElectionHandler', () => {
       // check whether updateEvent has been called correctly
       const updatedElection = Election.fromState(mockElectionTerminated.toState());
       updatedElection.electionStatus = ElectionStatus.RESULT;
-      updatedElection.questionResult = mockElectionResultQuestions.map((q) => ({
-        id: q.id,
-        result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
-      }));
+      updatedElection.questionResult = mockElectionResultQuestions.map(
+        (q) =>
+          new QuestionResult({
+            id: new Hash(q.id),
+            result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+          }),
+      );
 
       expect(updateEvent).toHaveBeenCalledWith(updatedElection);
     });

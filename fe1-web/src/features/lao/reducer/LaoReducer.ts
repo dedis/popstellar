@@ -60,7 +60,7 @@ const laosSlice = createSlice({
     // Update a LAO
     updateLao: {
       prepare: (laoId: Hash, laoUpdate: Partial<LaoState>) => ({
-        payload: { laoId: laoId.serialize(), laoUpdate },
+        payload: { laoId: laoId.valueOf(), laoUpdate },
       }),
       reducer: (
         state: Draft<LaoReducerState>,
@@ -81,7 +81,7 @@ const laosSlice = createSlice({
     // Remove a LAO to the list of known LAOs
     removeLao: {
       prepare: (laoId: Hash) => ({
-        payload: { laoId: laoId.serialize() },
+        payload: { laoId: laoId.valueOf() },
       }),
       reducer: (state, action: PayloadAction<{ laoId: string }>) => {
         const { laoId } = action.payload;
@@ -129,7 +129,7 @@ const laosSlice = createSlice({
       prepare(laoId: Hash, serverAddress: string) {
         return {
           payload: {
-            laoId: laoId.serialize(),
+            laoId: laoId.valueOf(),
             serverAddress,
           },
         };
@@ -160,7 +160,7 @@ const laosSlice = createSlice({
       prepare(laoId: Hash, channel: string) {
         return {
           payload: {
-            laoId: laoId.serialize(),
+            laoId: laoId.valueOf(),
             channel,
           },
         };
@@ -191,7 +191,7 @@ const laosSlice = createSlice({
       prepare(laoId: Hash, channel: string) {
         return {
           payload: {
-            laoId: laoId.serialize(),
+            laoId: laoId.valueOf(),
             channel,
           },
         };
@@ -310,7 +310,7 @@ export function makeLao() {
  */
 export const getLaoById = (laoId: Hash | undefined, state: unknown) => {
   const laoMap = getLaosState(state).byId;
-  const serializedLaoId = laoId?.serialize();
+  const serializedLaoId = laoId?.valueOf();
 
   if (!serializedLaoId || !(serializedLaoId in laoMap)) {
     return undefined;
@@ -395,7 +395,7 @@ export const makeIsLaoOrganizerSelector = (laoId?: Hash) =>
     // First input: all LAOs map
     selectLaosById,
     // Second input: current LAO id
-    (state: any) => laoId?.serialize() || getLaosState(state)?.currentId,
+    (state: any) => laoId?.valueOf() || getLaosState(state)?.currentId,
     // Third input: the public key of the user
     (state: any) => getKeyPairState(state)?.keyPair?.publicKey,
     // Selector: returns whether the user is an organizer of the current lao
@@ -418,7 +418,7 @@ export const makeIsLaoWitnessSelector = (laoId?: Hash) =>
     // First input: all LAOs map
     selectLaosById,
     // Second input: current LAO id
-    (state: any) => laoId?.serialize() || getLaosState(state)?.currentId,
+    (state: any) => laoId?.valueOf() || getLaosState(state)?.currentId,
     // Third input: the public key of the user
     (state: any) => getKeyPairState(state)?.keyPair?.publicKey,
     // Selector: returns whether the user is a witness of the current lao

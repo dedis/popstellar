@@ -7,6 +7,7 @@ import { Timestamp, Hash } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
 
 import { WitnessConfiguration, WitnessFeature } from '../interface';
+import { MessageToWitnessNotificationState } from '../objects/MessageToWitnessNotification';
 import { addMessageToWitness, isMessageToWitness } from '../reducer';
 import { getWitnessRegistryEntryType, WitnessingType } from './messages/WitnessRegistry';
 import { requestWitnessMessage } from './WitnessMessageApi';
@@ -83,12 +84,12 @@ export const afterMessageProcessingHandler =
           dispatch(addMessageToWitness(msg.message_id));
           dispatch(
             addNotification({
-              laoId: msg.laoId,
+              laoId: msg.laoId.toState(),
               title: `Witnessing required: ${msg.messageData.object}#${msg.messageData.action}`,
-              timestamp: Timestamp.EpochNow().valueOf(),
+              timestamp: Timestamp.EpochNow().toState(),
               type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
-              messageId: msg.message_id.valueOf(),
-            } as WitnessFeature.MessageToWitnessNotification),
+              messageId: msg.message_id.toState(),
+            } as Omit<MessageToWitnessNotificationState, 'id' | 'hasBeenRead'>),
           );
           break;
 

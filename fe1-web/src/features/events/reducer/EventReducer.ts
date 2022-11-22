@@ -142,7 +142,7 @@ const selectEventsById = (state: any) => getEventState(state).byId;
  * @param laoId The id of the lao the events should be retrieved for
  */
 export const makeEventListSelector = (laoId: Hash) => {
-  const serializedLaoId = laoId.serialize();
+  const serializedLaoId = laoId.valueOf();
 
   return createSelector(
     // First input: Get all event ids for the given lao id

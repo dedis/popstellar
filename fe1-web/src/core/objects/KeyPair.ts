@@ -37,6 +37,9 @@ export class KeyPair {
   }
 
   public toState(): KeyPairState {
-    return JSON.parse(JSON.stringify(this));
+    return {
+      privateKey: this.privateKey.toState(),
+      publicKey: this.publicKey.toState(),
+    };
   }
 }

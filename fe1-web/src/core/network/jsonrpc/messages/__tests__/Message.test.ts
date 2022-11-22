@@ -40,7 +40,7 @@ describe('Message', () => {
       lao: mockLao.id,
       election: Hash.fromStringArray(
         EventTags.ELECTION,
-        mockLaoId.serialize(),
+        mockLaoId.valueOf(),
         '5678',
         '1607277600',
       ),

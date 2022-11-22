@@ -1,4 +1,4 @@
-import { Hash, PublicKey } from 'core/objects';
+import { Hash, HashState, PublicKey, Timestamp, TimestampState } from 'core/objects';
 
 export namespace WitnessFeature {
   export interface Lao {
@@ -15,12 +15,19 @@ export namespace WitnessFeature {
     id: number;
     laoId: Hash;
     hasBeenRead: boolean;
-    timestamp: number;
+    timestamp: Timestamp;
     title: string;
     type: NotificationTypes;
+
+    toState(): NotificationState;
   }
 
-  export interface MessageToWitnessNotification extends Notification {
-    messageId: string;
+  export interface NotificationState {
+    id: number;
+    laoId: HashState;
+    hasBeenRead: boolean;
+    timestamp: TimestampState;
+    title: string;
+    type: NotificationTypes;
   }
 }

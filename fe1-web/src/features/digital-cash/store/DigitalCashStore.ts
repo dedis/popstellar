@@ -14,7 +14,7 @@ export namespace DigitalCashStore {
    * Get all transactions from a lao
    */
   export function getTransactionsById(laoId: Hash): Record<string, TransactionState> {
-    const serializedLaoId = laoId.serialize();
+    const serializedLaoId = laoId.valueOf();
 
     return (
       getDigitalCashState(getStore().getState()).byLaoId[serializedLaoId]?.transactionsByHash || {}
@@ -25,7 +25,7 @@ export namespace DigitalCashStore {
    * Gets all transactions available for this public key in this lao
    */
   export function getTransactionsByPublicKey(laoId: Hash, pk: PublicKey): TransactionState[] {
-    const serializedLaoId = laoId.serialize();
+    const serializedLaoId = laoId.valueOf();
 
     const laoState = getDigitalCashState(getStore().getState()).byLaoId[serializedLaoId];
     if (!laoState) {
@@ -40,7 +40,7 @@ export namespace DigitalCashStore {
    * Gets the balance of a particular public key in a lao
    */
   export function getBalance(laoId: Hash, pk: PublicKey): number {
-    const serializedLaoId = laoId.serialize();
+    const serializedLaoId = laoId.valueOf();
 
     const laoState = getDigitalCashState(getStore().getState()).byLaoId[serializedLaoId];
     if (!laoState) {

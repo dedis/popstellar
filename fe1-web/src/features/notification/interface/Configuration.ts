@@ -3,11 +3,11 @@ import { AnyAction, Reducer } from 'redux';
 
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import { OmitMethods } from 'core/types';
 
+import { Notification, NotificationState } from '../objects/Notification';
 import { NotificationReducerState, NOTIFICATION_REDUCER_PATH } from '../reducer';
 import { NotificationFeature } from './Feature';
-import { Notification } from '../objects/Notification';
-import { OmitMethods } from 'core/types';
 
 export const NOTIFICATION_FEATURE_IDENTIFIER = 'notification';
 
@@ -22,7 +22,9 @@ export interface NotificationConfigurationInterface extends FeatureInterface {
   laoScreens: NotificationFeature.LaoScreen[];
 
   actionCreators: {
-    addNotification: (notification: Omit<OmitMethods<Notification>, 'id' | 'hasBeenRead'>) => AnyAction;
+    addNotification: (
+      notification: Omit<OmitMethods<NotificationState>, 'id' | 'hasBeenRead'>,
+    ) => AnyAction;
     markNotificationAsRead: (args: { laoId: Hash; notificationId: number }) => AnyAction;
     discardNotifications: (args: { laoId: Hash; notificationIds: number[] }) => AnyAction;
   };
@@ -43,12 +45,18 @@ export interface NotificationCompositionConfiguration {
     /**
      * Checks if a given notification is of this type
      */
-    isOfType: (notification: Notification) => boolean;
+    isOfType: (notification: Notification | NotificationState) => boolean;
+
+    /**
+     * Creates a notification instance from a notification state
+     * Throws an exception if the given notification type is not supported
+     */
+    fromState: (notification: NotificationState) => Notification;
 
     /**
      * Callback function that is called when a notification is deleted
      */
-    delete?: (notification: Notification) => void;
+    delete?: (notification: NotificationState) => void;
 
     /**
      * Renders the single notification view for this notification

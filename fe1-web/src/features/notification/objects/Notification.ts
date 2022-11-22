@@ -1,11 +1,11 @@
-import { Hash } from 'core/objects';
+import { Hash, HashState, Timestamp, TimestampState } from 'core/objects';
 import { OmitMethods } from 'core/types';
 
 export interface NotificationState {
   id: number;
-  laoId: string;
+  laoId: HashState;
   hasBeenRead: boolean;
-  timestamp: number;
+  timestamp: TimestampState;
   title: string;
   type: string;
 }
@@ -21,7 +21,7 @@ export class Notification {
   public readonly hasBeenRead: boolean;
 
   /* the time associated with the notification */
-  public readonly timestamp: number;
+  public readonly timestamp: Timestamp;
 
   /* the title that is shown in the notification */
   public readonly title: string;
@@ -39,10 +39,24 @@ export class Notification {
   }
 
   public toState(): NotificationState {
-    return JSON.parse(JSON.stringify(this));
+    return {
+      id: this.id,
+      laoId: this.laoId.toState(),
+      hasBeenRead: this.hasBeenRead,
+      timestamp: this.timestamp.toState(),
+      title: this.title,
+      type: this.type,
+    };
   }
 
-  public static fromNotificationState(notificationState: NotificationState): Notification {
-    return new Notification({ ...notificationState, laoId: new Hash(notificationState.laoId) });
+  public static fromState(notificationState: NotificationState): Notification {
+    return new Notification({
+      id: notificationState.id,
+      laoId: Hash.fromState(notificationState.laoId),
+      hasBeenRead: notificationState.hasBeenRead,
+      timestamp: Timestamp.fromState(notificationState.timestamp),
+      title: notificationState.title,
+      type: notificationState.type,
+    });
   }
 }

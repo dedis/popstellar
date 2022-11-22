@@ -1,7 +1,9 @@
 import { sha256 } from 'js-sha256';
 
-import { Base64UrlData } from './Base64Url';
+import { Base64UrlData } from './Base64UrlData';
 import { PublicKey } from './PublicKey';
+
+export type HashState = string;
 
 /** Enumeration of all possible event tags used in hash creation */
 export enum EventTags {
@@ -80,10 +82,35 @@ export class Hash extends Base64UrlData {
   }
 
   /**
-   * Serializes a hash object to a string which can for instance be stored by redux
-   * @returns The serialized hash
+   * Returns *some* string representation of this object.
+   * If you need access to the unterlying data type use .valueOf() and
+   * if you want to serialize an instance use .toState() instead
    */
-  public serialize(): string {
-    return this.toString();
+  public toString(): string {
+    return super.toString();
+  }
+
+  /**
+   * Returns the primitive value used for representing the Hash,
+   * a string
+   * If you want to serialize an instance use .toState() instead
+   */
+  public valueOf(): string {
+    return super.valueOf();
+  }
+
+  /**
+   * Returns the serialized version of the hash that can for instance be stored
+   * in redux stores
+   */
+  public toState(): HashState {
+    return super.valueOf();
+  }
+
+  /**
+   * Deserializes a previously serializes instance of Hash
+   */
+  public static fromState(hashState: HashState): Hash {
+    return new Hash(hashState);
   }
 }

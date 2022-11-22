@@ -8,17 +8,20 @@ import { makeIcon } from 'core/components/PoPIcon';
 import { makeMessageSelector } from 'core/network/ingestion';
 import { Hash } from 'core/objects';
 import { dispatch } from 'core/redux';
-import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
 import { WitnessHooks } from '../hooks';
 import { WitnessFeature } from '../interface';
 import { requestWitnessMessage } from '../network/WitnessMessageApi';
+import {
+  MessageToWitnessNotification,
+  MessageToWitnessNotificationState,
+} from '../objects/MessageToWitnessNotification';
 import { removeMessageToWitness } from '../reducer';
 
 const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPropTypes) => {
   const messageSelector = useMemo(
-    () => makeMessageSelector(new Hash(notification.messageId)),
+    () => makeMessageSelector(notification.messageId),
     [notification.messageId],
   );
   const message = useSelector(messageSelector);
@@ -80,7 +83,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
 };
 
 const propTypes = {
-  notification: PROPS_TYPE.notification.isRequired,
+  notification: PropTypes.instanceOf(MessageToWitnessNotification).isRequired,
   navigateToNotificationScreen: PropTypes.func.isRequired,
 };
 WitnessNotification.propTypes = propTypes;
@@ -96,17 +99,25 @@ export const WitnessNotificationType = {
    * @returns True if the notification is a witness notification, false otherwise
    */
   isOfType: (
-    notification: WitnessFeature.Notification,
-  ): notification is WitnessFeature.MessageToWitnessNotification =>
+    notification: WitnessFeature.Notification | WitnessFeature.NotificationState,
+  ): notification is MessageToWitnessNotification =>
     'type' in notification &&
     notification.type === WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
+
+  fromState: MessageToWitnessNotification.fromState,
 
   /**
    * Custom cleanup function that removes the message from the witness store
    */
-  delete: ((notification: WitnessFeature.MessageToWitnessNotification) => {
+  delete: (notification: WitnessFeature.NotificationState | MessageToWitnessNotificationState) => {
+    if (!('messageId' in notification)) {
+      throw new Error(
+        `MessageToWitnessNotificationState.delete called on notification of type '${notification.type}'`,
+      );
+    }
+
     dispatch(removeMessageToWitness(new Hash(notification.messageId)));
-  }) as (notification: WitnessFeature.Notification) => void,
+  },
 
   /**
    * The component to render the witness notification

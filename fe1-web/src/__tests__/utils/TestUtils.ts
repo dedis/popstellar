@@ -41,7 +41,7 @@ export const mockLaoId: Hash = Hash.fromStringArray(
   mockLaoName,
 );
 
-export const serializedMockLaoId: string = mockLaoId.serialize();
+export const serializedMockLaoId: string = mockLaoId.valueOf();
 
 export const mockLaoState: LaoState = {
   id: serializedMockLaoId,

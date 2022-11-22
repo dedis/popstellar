@@ -160,25 +160,33 @@ describe('CastVote', () => {
     it('returns true if all fields are defined', () => {
       expect(() => CastVote.validateVotes([])).not.toThrow();
       expect(() =>
-        CastVote.validateVotes([{ id: 'someId', question: 'q', vote: 0 }]),
+        CastVote.validateVotes([
+          new Vote({ id: new Hash('someId'), question: new Hash('q'), vote: 0 }),
+        ]),
       ).not.toThrow();
     });
 
     it('returns false if some fields are undefined', () => {
       expect(() =>
         CastVote.validateVotes([
-          { id: 'someId', question: 'q', vote: undefined as unknown as string },
+          new EncryptedVote({
+            id: new Hash('someId'),
+            question: new Hash('q'),
+            vote: undefined as unknown as string,
+          }),
         ]),
       ).toThrow(ProtocolError);
 
       expect(() =>
         CastVote.validateVotes([
-          { id: 'someId', question: undefined as unknown as string, vote: 0 },
+          new Vote({ id: new Hash('someId'), question: undefined as unknown as Hash, vote: 0 }),
         ]),
       ).toThrow(ProtocolError);
 
       expect(() =>
-        CastVote.validateVotes([{ id: undefined as unknown as string, question: 'q', vote: 0 }]),
+        CastVote.validateVotes([
+          new Vote({ id: undefined as unknown as Hash, question: new Hash('q'), vote: 0 }),
+        ]),
       ).toThrow(ProtocolError);
     });
   });
@@ -194,16 +202,16 @@ describe('CastVote', () => {
           1: q2SelectedOption,
         }),
       ).toEqual([
-        {
-          id: CastVote.computeVoteId(mockElectionOpened, 0, q1SelectedOption).valueOf(),
+        new Vote({
+          id: CastVote.computeVoteId(mockElectionOpened, 0, q1SelectedOption),
           question: mockElectionOpened.questions[0].id,
           vote: q1SelectedOption,
-        },
-        {
-          id: CastVote.computeVoteId(mockElectionOpened, 1, q2SelectedOption).valueOf(),
+        }),
+        new Vote({
+          id: CastVote.computeVoteId(mockElectionOpened, 1, q2SelectedOption),
           question: mockElectionOpened.questions[1].id,
           vote: q2SelectedOption,
-        },
+        }),
       ] as Vote[]);
     });
   });
@@ -310,8 +318,8 @@ describe('CastVote', () => {
   describe('computeSecretVoteId', () => {
     it('should compute the id correctly', () => {
       const mockEncryptedVotes1: EncryptedVote[] = [
-        { id: 'id0', question: 'q0', vote: 'x' },
-        { id: 'id1', question: 'q1', vote: 'a' },
+        new EncryptedVote({ id: new Hash('id0'), question: new Hash('q0'), vote: 'x' }),
+        new EncryptedVote({ id: new Hash('id1'), question: new Hash('q1'), vote: 'a' }),
       ];
 
       expect(

@@ -58,7 +58,7 @@ describe('NotificationReducer', () => {
     it('adds notifications to the store', () => {
       const notification = {
         title: 'some title',
-        laoId: mockLaoId,
+        laoId: mockLaoId.toState(),
         timestamp: 0,
         type: 'some-type',
       };

@@ -2,7 +2,7 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 
 import { mockKeyPair, mockPublicKey2 } from '__tests__/utils';
-import { Hash, PopToken, PublicKey } from 'core/objects';
+import { Hash, PopToken, PublicKey, Timestamp } from 'core/objects';
 import { COINBASE_HASH, SCRIPT_TYPE } from 'resources/const';
 
 import {
@@ -41,7 +41,7 @@ const validCoinbaseState: TransactionState = {
       },
     },
   ],
-  transactionId: mockCBHash.serialize(),
+  transactionId: mockCBHash.valueOf(),
   lockTime: 0,
 };
 
@@ -49,7 +49,7 @@ const validTransactionState1: TransactionState = {
   version: 1,
   inputs: [
     {
-      txOutHash: mockCBHash.serialize(),
+      txOutHash: mockCBHash.valueOf(),
       txOutIndex: 0,
       script: {
         type: SCRIPT_TYPE,
@@ -107,7 +107,7 @@ const randomTransactionState: TransactionState = {
 };
 
 const mockTransactionRecordByHash: Record<string, TransactionState> = {
-  [mockCBHash.serialize()]: Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash).toState(),
+  [mockCBHash.valueOf()]: Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash).toState(),
 };
 // endregion
 
@@ -131,7 +131,7 @@ describe('Transaction', () => {
   it('should be able to create a transaction from a valid partial transaction', () => {
     const transactionObject = {
       version: validCoinbaseState.version,
-      lockTime: validCoinbaseState.lockTime,
+      lockTime: Timestamp.fromState(validCoinbaseState.lockTime),
       inputs: validCoinbaseState.inputs.map((inputState) => TransactionInput.fromState(inputState)),
       outputs: validCoinbaseState.outputs.map((outputState) =>
         TransactionOutput.fromState(outputState),
@@ -147,7 +147,7 @@ describe('Transaction', () => {
 
   it('should fail to create a transaction from a partial transaction without version', () => {
     const transactionObject = {
-      lockTime: validCoinbaseState.lockTime,
+      lockTime: Timestamp.fromState(validCoinbaseState.lockTime),
       inputs: validCoinbaseState.inputs.map((inputState) => TransactionInput.fromState(inputState)),
       outputs: validCoinbaseState.outputs.map((outputState) =>
         TransactionOutput.fromState(outputState),
@@ -169,7 +169,7 @@ describe('Transaction', () => {
 
   it('should fail to create a transaction from a partial transaction without inputs', () => {
     const transactionObject = {
-      lockTime: validCoinbaseState.lockTime,
+      lockTime: Timestamp.fromState(validCoinbaseState.lockTime),
       version: validCoinbaseState.version,
       outputs: validCoinbaseState.outputs.map((outputState) =>
         TransactionOutput.fromState(outputState),
@@ -180,7 +180,7 @@ describe('Transaction', () => {
 
   it('should fail to create a transaction from a partial transaction without outputs', () => {
     const transactionObject = {
-      lockTime: validCoinbaseState.lockTime,
+      lockTime: Timestamp.fromState(validCoinbaseState.lockTime),
       version: validCoinbaseState.version,
       inputs: validCoinbaseState.inputs.map((inputState) => TransactionInput.fromState(inputState)),
     };
@@ -190,7 +190,7 @@ describe('Transaction', () => {
   it('should fail to create a transaction from a partial transaction with empty inputs or outputs', () => {
     const transactionObject = {
       version: validCoinbaseState.version,
-      lockTime: validCoinbaseState.lockTime,
+      lockTime: Timestamp.fromState(validCoinbaseState.lockTime),
       inputs: [],
       outputs: validCoinbaseState.outputs.map((outputState) =>
         TransactionOutput.fromState(outputState),
@@ -200,7 +200,7 @@ describe('Transaction', () => {
 
     const transactionObject1 = {
       version: validCoinbaseState.version,
-      lockTime: validCoinbaseState.lockTime,
+      lockTime: Timestamp.fromState(validCoinbaseState.lockTime),
       inputs: validCoinbaseState.inputs.map((inputState) => TransactionInput.fromState(inputState)),
       outputs: [],
     };

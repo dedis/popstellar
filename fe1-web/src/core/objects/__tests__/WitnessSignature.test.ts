@@ -37,5 +37,5 @@ test('Witness signature should encode and decode properly', () => {
     signature: kp.privateKey.sign(messageId).valueOf(),
   };
 
-  expect(WitnessSignature.fromJson(witSigState).toState()).toEqual(witSigState);
+  expect(WitnessSignature.fromState(witSigState).toState()).toEqual(witSigState);
 });

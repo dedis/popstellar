@@ -80,7 +80,7 @@ const serverSlice = createSlice({
         serverStateUpdate: Partial<LaoServerState>,
       ) => ({
         payload: {
-          laoId: laoId.serialize(),
+          laoId: laoId.valueOf(),
           address,
           serverStateUpdate,
         },
@@ -124,7 +124,7 @@ const serverSlice = createSlice({
 
     removeServer: {
       prepare: (laoId: Hash, address: ServerAddress) => ({
-        payload: { laoId: laoId.serialize(), address },
+        payload: { laoId: laoId.valueOf(), address },
       }),
       reducer: (state, action: PayloadAction<{ laoId: string; address: string }>) => {
         const { laoId, address: serverAddress } = action.payload;
@@ -178,7 +178,7 @@ export const getServerPublicKeyByAddress = (
   state: any,
 ): PublicKey | undefined => {
   const serverState = getServerState(state);
-  const serializedLaoId = laoId.serialize();
+  const serializedLaoId = laoId.valueOf();
 
   if (
     serializedLaoId in serverState.byLaoId &&
@@ -203,7 +203,7 @@ export const makeLaoOrganizerBackendPublicKeySelector = (laoId?: Hash) =>
     (state: any) => getLaosState(state),
     // Selector: returns the server object associated to the given address
     (serverState: ServerReducerState, laoState: LaoReducerState): PublicKey | undefined => {
-      const serializedLaoId = laoId?.serialize();
+      const serializedLaoId = laoId?.valueOf();
 
       // if there is no current lao, return undefined
       if (
@@ -235,7 +235,7 @@ export const makeLaoOrganizerBackendPublicKeySelector = (laoId?: Hash) =>
  * @returns A selector for the server object for the given address or undefined if there is none
  */
 export const makeServerSelector = (laoId: Hash, address: ServerAddress) => {
-  const serializedLaoId = laoId.serialize();
+  const serializedLaoId = laoId.valueOf();
 
   return createSelector(
     // First input: map of lao ids to servers

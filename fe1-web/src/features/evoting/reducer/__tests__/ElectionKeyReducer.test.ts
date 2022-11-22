@@ -4,7 +4,7 @@ import '__tests__/utils/matchers';
 import {
   mockElectionId,
   mockElectionKey,
-  mockElectionKeyString,
+  mockElectionKeyState,
 } from 'features/evoting/__tests__/utils';
 
 import {
@@ -32,7 +32,7 @@ describe('ElectionKeyReducer', () => {
       ).toEqual({
         byElectionId: {
           someElectionId: 'someOtherElectionKey',
-          [mockElectionId.valueOf()]: mockElectionKeyString,
+          [mockElectionId.valueOf()]: mockElectionKeyState,
         },
       } as ElectionKeyReducerState);
     });
@@ -42,7 +42,7 @@ describe('ElectionKeyReducer', () => {
         electionKeyReduce(
           {
             byElectionId: {
-              [mockElectionId.valueOf()]: mockElectionKeyString,
+              [mockElectionId.valueOf()]: mockElectionKeyState,
             },
           } as ElectionKeyReducerState,
           addElectionKey(mockElectionId, mockElectionKey),
@@ -57,7 +57,7 @@ describe('ElectionKeyReducer', () => {
         electionKeyReduce(
           {
             byElectionId: {
-              [mockElectionId.valueOf()]: mockElectionKeyString,
+              [mockElectionId.valueOf()]: mockElectionKeyState,
             },
           } as ElectionKeyReducerState,
           removeElectionKey(mockElectionId.valueOf()),
@@ -86,7 +86,7 @@ describe('getElectionKeyByElectionId', () => {
       getElectionKeyByElectionId(mockElectionId.valueOf(), {
         [ELECTION_KEY_REDUCER_PATH]: {
           byElectionId: {
-            [mockElectionId.valueOf()]: mockElectionKeyString,
+            [mockElectionId.valueOf()]: mockElectionKeyState,
             someOtherId: 'someOtherElectionKey',
           },
         } as ElectionKeyReducerState,
@@ -99,7 +99,7 @@ describe('getElectionKeyByElectionId', () => {
       getElectionKeyByElectionId(mockElectionId.valueOf(), {
         [ELECTION_KEY_REDUCER_PATH]: {
           byElectionId: {
-            someOtherId: mockElectionKeyString,
+            someOtherId: mockElectionKeyState,
           },
         } as ElectionKeyReducerState,
       }),
@@ -113,7 +113,7 @@ describe('makeElectionKeySelector', () => {
       makeElectionKeySelector(mockElectionId)({
         [ELECTION_KEY_REDUCER_PATH]: {
           byElectionId: {
-            [mockElectionId.valueOf()]: mockElectionKeyString,
+            [mockElectionId.valueOf()]: mockElectionKeyState,
             someOtherId: 'someOtherElectionKey',
           },
         } as ElectionKeyReducerState,
@@ -126,7 +126,7 @@ describe('makeElectionKeySelector', () => {
       makeElectionKeySelector(mockElectionId)({
         [ELECTION_KEY_REDUCER_PATH]: {
           byElectionId: {
-            someOtherId: mockElectionKeyString,
+            someOtherId: mockElectionKeyState,
           },
         } as ElectionKeyReducerState,
       }),

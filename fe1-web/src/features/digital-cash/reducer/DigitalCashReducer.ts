@@ -55,7 +55,7 @@ const digitalCashSlice = createSlice({
      */
     addTransaction: {
       prepare: (laoId: Hash, transaction: Transaction) => ({
-        payload: { laoId: laoId.serialize(), transactionState: transaction.toState() },
+        payload: { laoId: laoId.toState(), transactionState: transaction.toState() },
       }),
       reducer: (
         state,

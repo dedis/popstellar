@@ -229,7 +229,7 @@ const SendReceive = () => {
             onChange={setBeneficiary}
             onPress={() => {
               navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
-                rollCallId: rollCallId?.serialize(),
+                rollCallId: rollCallId?.valueOf(),
                 isCoinbase: isCoinbase,
               });
             }}

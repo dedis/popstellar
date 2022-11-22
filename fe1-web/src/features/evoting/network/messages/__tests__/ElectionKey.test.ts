@@ -16,7 +16,7 @@ const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 
 const electionId: Hash = Hash.fromStringArray(
   'Election',
-  mockLaoId.serialize(),
+  mockLaoId.valueOf(),
   TIMESTAMP.toString(),
   mockLaoName,
 );

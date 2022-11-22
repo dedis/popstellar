@@ -40,7 +40,7 @@ describe('NotificationScreen', () => {
     const mockStore = configureStore({ reducer: combineReducers({ ...notificationReducer }) });
     mockStore.dispatch(
       addNotification({
-        laoId: mockLaoId,
+        laoId: mockLaoId.toState(),
         title: 'a notification',
         timestamp: 0,
         type: 'mock-notification',

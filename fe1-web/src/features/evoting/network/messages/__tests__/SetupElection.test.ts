@@ -355,13 +355,13 @@ describe('SetupElection', () => {
 
   describe('validateQuestions', () => {
     it('should throw an error if the question id is wrong', () => {
-      const wrongQuestion: Question = {
-        id: 'id',
+      const wrongQuestion = new Question({
+        id: new Hash('id'),
         question: mockQuestion1,
         voting_method: STRINGS.election_method_Plurality,
         ballot_options: mockBallotOptions,
         write_in: false,
-      };
+      });
       const wrongValidate = () => {
         SetupElection.validateQuestions([wrongQuestion], mockElectionId);
       };

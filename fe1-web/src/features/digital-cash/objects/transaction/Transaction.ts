@@ -1,4 +1,13 @@
-import { Base64UrlData, Hash, KeyPair, PopToken, PublicKey } from 'core/objects';
+import {
+  Base64UrlData,
+  Hash,
+  HashState,
+  KeyPair,
+  PopToken,
+  PublicKey,
+  Timestamp,
+  TimestampState,
+} from 'core/objects';
 import { SCRIPT_TYPE, COINBASE_HASH } from 'resources/const';
 
 import { isDefined } from '../../../../core/types';
@@ -20,8 +29,8 @@ export interface TransactionState {
   version: number;
   inputs: TransactionInputState[];
   outputs: TransactionOutputState[];
-  lockTime: number;
-  transactionId?: string;
+  lockTime: TimestampState;
+  transactionId?: HashState;
 }
 
 /**
@@ -34,7 +43,7 @@ export class Transaction {
 
   public readonly outputs: TransactionOutput[];
 
-  public readonly lockTime: number;
+  public readonly lockTime: Timestamp;
 
   public readonly transactionId: Hash;
 
@@ -352,8 +361,9 @@ export class Transaction {
       inputs: transactionState.inputs.map((input) => TransactionInput.fromState(input)),
       outputs: transactionState.outputs.map((output) => TransactionOutput.fromState(output)),
       transactionId: transactionState.transactionId
-        ? new Hash(transactionState.transactionId)
+        ? Hash.fromState(transactionState.transactionId)
         : undefined,
+      lockTime: Timestamp.fromState(transactionState.lockTime),
     });
   }
 
@@ -363,7 +373,7 @@ export class Transaction {
       inputs: this.inputs.map((input) => input.toState()),
       outputs: this.outputs.map((output) => output.toState()),
       transactionId: this.transactionId.valueOf(),
-      lockTime: this.lockTime,
+      lockTime: this.lockTime.toState(),
     };
   }
 
@@ -372,7 +382,7 @@ export class Transaction {
       version: transactionJSON.version,
       inputs: transactionJSON.inputs.map((input) => TransactionInput.fromJSON(input)),
       outputs: transactionJSON.outputs.map((output) => TransactionOutput.fromJSON(output)),
-      lockTime: transactionJSON.lock_time,
+      lockTime: Timestamp.fromState(transactionJSON.lock_time),
       transactionId,
     });
   }
@@ -382,7 +392,7 @@ export class Transaction {
       version: this.version,
       inputs: this.inputs.map((input) => input.toJSON()),
       outputs: this.outputs.map((output) => output.toJSON()),
-      lock_time: this.lockTime,
+      lock_time: this.lockTime.valueOf(),
     };
   }
 }

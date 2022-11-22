@@ -114,14 +114,17 @@ export class CastVote implements MessageData {
     return (
       ballotArray
         // and add an id to all votes as well as the matching question id
-        .map<Vote>(({ index, selectedOptionIndex }) => ({
-          // generate the vote id
-          id: CastVote.computeVoteId(election, index, selectedOptionIndex).valueOf(),
-          // find matching question id from the election
-          question: election.questions[index].id,
-          // convert the set to an array and sort votes in ascending order
-          vote: selectedOptionIndex,
-        }))
+        .map<Vote>(
+          ({ index, selectedOptionIndex }) =>
+            new Vote({
+              // generate the vote id
+              id: CastVote.computeVoteId(election, index, selectedOptionIndex),
+              // find matching question id from the election
+              question: election.questions[index].id,
+              // convert the set to an array and sort votes in ascending order
+              vote: selectedOptionIndex,
+            }),
+        )
     );
   }
 
@@ -169,14 +172,14 @@ export class CastVote implements MessageData {
 
           const encryptedOptionIndex = electionKey.encrypt(buffer).valueOf();
 
-          return {
+          return new EncryptedVote({
             // generate the vote id based on the **encrypted** option indices
-            id: CastVote.computeSecretVoteId(election, index, encryptedOptionIndex).valueOf(),
+            id: CastVote.computeSecretVoteId(election, index, encryptedOptionIndex),
             // find matching question id from the election
             question: election.questions[index].id,
             // use the encrypted votes
             vote: encryptedOptionIndex,
-          };
+          });
         })
     );
   }
@@ -196,7 +199,7 @@ export class CastVote implements MessageData {
     return Hash.fromStringArray(
       EventTags.VOTE,
       election.id.toString(),
-      election.questions[questionIndex].id,
+      election.questions[questionIndex].id.valueOf(),
       selectionOptionIndex.toString(),
     );
   }
@@ -216,7 +219,7 @@ export class CastVote implements MessageData {
     return Hash.fromStringArray(
       EventTags.VOTE,
       election.id.toString(),
-      election.questions[questionIndex].id,
+      election.questions[questionIndex].id.valueOf(),
       encryptedOptionIndex,
     );
   }

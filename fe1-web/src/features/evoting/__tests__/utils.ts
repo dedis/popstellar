@@ -1,5 +1,5 @@
 import { serializedMockLaoId, mockLaoId } from '__tests__/utils';
-import { Base64UrlData, EventTags, Hash, Timestamp } from 'core/objects';
+import { Base64UrlData, EventTags, Hash, PublicKey, Timestamp } from 'core/objects';
 import { CastVote, ElectionResult, EndElection } from 'features/evoting/network/messages';
 import STRINGS from 'resources/strings';
 
@@ -10,6 +10,7 @@ import {
   RegisteredVote,
   Vote,
   ElectionVersion,
+  QuestionResult,
 } from '../objects';
 import { ElectionPublicKey } from '../objects/ElectionPublicKey';
 
@@ -44,53 +45,53 @@ export const mockBallotOption1 = 'Ballot Option 1';
 export const mockBallotOption2 = 'Ballot Option 2';
 export const mockBallotOptions = [mockBallotOption1, mockBallotOption2];
 
-export const mockQuestionObject1: Question = {
-  id: mockQuestionId1.toString(),
+export const mockQuestionObject1 = new Question({
+  id: mockQuestionId1,
   question: mockQuestion1,
   voting_method: STRINGS.election_method_Plurality,
   ballot_options: mockBallotOptions,
   write_in: false,
-};
+});
 
-export const mockQuestionObject2: Question = {
-  id: mockQuestionId2.toString(),
+export const mockQuestionObject2 = new Question({
+  id: mockQuestionId2,
   question: mockQuestion2,
   voting_method: STRINGS.election_method_Plurality,
   ballot_options: mockBallotOptions,
   write_in: false,
-};
+});
 
 export const mockQuestions: Question[] = [mockQuestionObject1, mockQuestionObject2];
 
 export const mockRegisteredVotes: RegisteredVote[] = [
-  {
-    createdAt: 0,
-    messageId: 'b',
-    sender: 'sender 1',
+  new RegisteredVote({
+    createdAt: new Timestamp(0),
+    messageId: new Hash('b'),
+    sender: new PublicKey('sender 1'),
     votes: [
-      { id: 'id1', question: 'q1', vote: 1 },
-      { id: 'id2', question: 'q2', vote: 0 },
+      new Vote({ id: new Hash('id1'), question: new Hash('q1'), vote: 1 }),
+      new Vote({ id: new Hash('id2'), question: new Hash('q2'), vote: 0 }),
     ],
-  },
-  {
-    createdAt: 1,
-    messageId: 'a',
-    sender: 'sender 2',
+  }),
+  new RegisteredVote({
+    createdAt: new Timestamp(1),
+    messageId: new Hash('a'),
+    sender: new PublicKey('sender 2'),
     votes: [
-      { id: 'id3', question: 'q3', vote: 0 },
-      { id: 'id4', question: 'q4', vote: 1 },
+      new Vote({ id: new Hash('id3'), question: new Hash('q3'), vote: 0 }),
+      new Vote({ id: new Hash('id4'), question: new Hash('q4'), vote: 1 }),
     ],
-  },
-  {
-    createdAt: 2,
-    messageId: '1a',
-    sender: 'sender 3',
+  }),
+  new RegisteredVote({
+    createdAt: new Timestamp(2),
+    messageId: new Hash('1a'),
+    sender: new PublicKey('sender 3'),
     votes: [
-      { id: 'id01', question: 'q01', vote: 1 },
-      { id: 'id00', question: 'q00', vote: 0 },
-      { id: 'id02', question: 'q02', vote: 1 },
+      new Vote({ id: new Hash('id01'), question: new Hash('q01'), vote: 1 }),
+      new Vote({ id: new Hash('id00'), question: new Hash('q00'), vote: 0 }),
+      new Vote({ id: new Hash('id02'), question: new Hash('q02'), vote: 1 }),
     ],
-  },
+  }),
 ];
 
 export const mockElectionNotStarted = new Election({
@@ -151,17 +152,17 @@ export const mockVoteOption2 = 1;
 export const mockVoteId1 = CastVote.computeVoteId(mockElectionNotStarted, 0, mockVoteOption1);
 export const mockVoteId2 = CastVote.computeVoteId(mockElectionNotStarted, 1, mockVoteOption2);
 
-export const mockVote1: Vote = {
-  id: mockVoteId1.toString(),
-  question: mockQuestionId1.valueOf(),
+export const mockVote1 = new Vote({
+  id: mockVoteId1,
+  question: mockQuestionId1,
   vote: 0,
-};
+});
 
-export const mockVote2: Vote = {
-  id: mockVoteId2.toString(),
-  question: mockQuestionId2.valueOf(),
+export const mockVote2 = new Vote({
+  id: mockVoteId2,
+  question: mockQuestionId2,
   vote: 1,
-};
+});
 
 export const mockVotes = [mockVote1];
 
@@ -197,8 +198,8 @@ export const openedSecretBallotElection = new Election({
   registeredVotes: [],
 });
 
-export const mockElectionKeyString = 'uJz8E1KSoBTjJ1aG+WMrZX8RqFbW6OJBBobXydOoQmQ=';
-export const mockEncodedElectionKey = new Base64UrlData(mockElectionKeyString);
+export const mockElectionKeyState = 'uJz8E1KSoBTjJ1aG+WMrZX8RqFbW6OJBBobXydOoQmQ=';
+export const mockEncodedElectionKey = new Base64UrlData(mockElectionKeyState);
 export const mockElectionKey = new ElectionPublicKey(mockEncodedElectionKey);
 
 export const mockElectionPrivateKeyString = 'o1EESXAvTFD34Ss29FVohukOximnyn/qf/PdZu2HCQw=';
@@ -215,8 +216,11 @@ export const mockElectionResults = new Election({
   questions: mockQuestions,
   electionStatus: ElectionStatus.RESULT,
   registeredVotes: mockRegisteredVotes,
-  questionResult: mockElectionResultQuestions.map((q) => ({
-    id: q.id,
-    result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
-  })),
+  questionResult: mockElectionResultQuestions.map(
+    (q) =>
+      new QuestionResult({
+        id: new Hash(q.id),
+        result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+      }),
+  ),
 });

@@ -73,6 +73,6 @@ export class EndElection implements MessageData {
       // see https://github.com/dedis/popstellar/blob/master/docs/messageData.md#ending-an-election-electionend
       .sort((a, b) => (a.valueOf() < b.valueOf() ? -1 : 1));
 
-    return Hash.fromStringArray(...sortedVoteIds);
+    return Hash.fromStringArray(...sortedVoteIds.map((id) => id.valueOf()));
   }
 }

@@ -127,11 +127,11 @@ export class SetupElection implements MessageData {
     questions.forEach((question) => {
       const expectedHash = Hash.fromStringArray(
         EventTags.QUESTION,
-        electionId.serialize(),
+        electionId.valueOf(),
         question.question,
       );
 
-      if (expectedHash.valueOf() !== question.id) {
+      if (expectedHash.equals(question.id)) {
         throw new ProtocolError(
           "Invalid 'questions.id' parameter encountered during 'SetupElection':" +
             ' re-computing the value yields a different result',

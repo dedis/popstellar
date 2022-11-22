@@ -617,22 +617,21 @@ describe('SocialReducer', () => {
     });
 
     it('should return the correct chirps list for an active user', () => {
-      expect(makeChirpsListOfUser(mockLaoId)(chirp1.sender).resultFunc(chirpFilledState3)).toEqual([
-        chirp3,
-        chirp1,
-      ]);
+      expect(
+        makeChirpsListOfUser(mockLaoId)(new PublicKey(chirp1.sender)).resultFunc(chirpFilledState3),
+      ).toEqual([chirp3, chirp1]);
     });
 
     it('should return an empty list for an inactive user', () => {
-      expect(makeChirpsListOfUser(mockLaoId)(chirp2.sender).resultFunc(chirpFilledState1)).toEqual(
-        [],
-      );
+      expect(
+        makeChirpsListOfUser(mockLaoId)(new PublicKey(chirp2.sender)).resultFunc(chirpFilledState1),
+      ).toEqual([]);
     });
 
     it('should return an empty list for an undefined lao', () => {
-      expect(makeChirpsListOfUser(mockLaoId)(chirp2.sender).resultFunc(chirpFilledState1)).toEqual(
-        [],
-      );
+      expect(
+        makeChirpsListOfUser(mockLaoId)(new PublicKey(chirp2.sender)).resultFunc(chirpFilledState1),
+      ).toEqual([]);
     });
   });
 

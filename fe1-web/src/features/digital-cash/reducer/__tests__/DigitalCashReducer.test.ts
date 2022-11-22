@@ -33,7 +33,7 @@ const filledState = {
       },
       allTransactionsHash: [mockTransaction.transactionId],
       transactionsByHash: {
-        [mockTransaction.transactionId.serialize()]: mockTransaction,
+        [mockTransaction.transactionId.valueOf()]: mockTransaction,
       },
       transactionsByPubHash: {
         [mockKPHash.valueOf()]: [mockTransaction.transactionId],

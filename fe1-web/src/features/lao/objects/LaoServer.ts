@@ -1,14 +1,14 @@
-import { Hash } from 'core/objects/Hash';
-import { PublicKey } from 'core/objects/PublicKey';
+import { Hash, HashState } from 'core/objects/Hash';
+import { PublicKey, PublicKeyState } from 'core/objects/PublicKey';
 import { OmitMethods } from 'core/types';
 
 export type ServerAddress = string;
 
 export interface LaoServerState {
-  laoId: string;
+  laoId: HashState;
   address: string;
-  serverPublicKey: string;
-  frontendPublicKey: string;
+  serverPublicKey: PublicKeyState;
+  frontendPublicKey: PublicKeyState;
 }
 
 export class LaoServer {
@@ -70,10 +70,10 @@ export class LaoServer {
    */
   public static fromState(server: LaoServerState): LaoServer {
     return new LaoServer({
-      laoId: new Hash(server.laoId),
+      laoId: Hash.fromState(server.laoId),
       address: server.address,
-      serverPublicKey: new PublicKey(server.serverPublicKey),
-      frontendPublicKey: new PublicKey(server.frontendPublicKey),
+      serverPublicKey: PublicKey.fromState(server.serverPublicKey),
+      frontendPublicKey: PublicKey.fromState(server.frontendPublicKey),
     });
   }
 
@@ -82,6 +82,11 @@ export class LaoServer {
    * @returns Serialized server data
    */
   public toState(): LaoServerState {
-    return JSON.parse(JSON.stringify(this));
+    return {
+      laoId: this.laoId.toState(),
+      address: this.address,
+      serverPublicKey: this.serverPublicKey.toState(),
+      frontendPublicKey: this.frontendPublicKey.toState(),
+    };
   }
 }

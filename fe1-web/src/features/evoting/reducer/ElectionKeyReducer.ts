@@ -32,7 +32,7 @@ const electionKeySlice = createSlice({
   reducers: {
     addElectionKey: {
       prepare: (electionId: Hash, electionKey: ElectionPublicKey) => ({
-        payload: { electionId: electionId.serialize(), electionKey: electionKey.serialize() },
+        payload: { electionId: electionId.toState(), electionKey: electionKey.toState() },
       }),
       reducer: (
         state: Draft<ElectionKeyReducerState>,
@@ -108,7 +108,7 @@ export const makeElectionKeySelector = (electionId: Hash) =>
     (state: any) => getElectionKeyState(state).byElectionId,
     // Selector: returns the election key associated to the given election id
     (byElectionId: ElectionKeyReducerState['byElectionId']): ElectionPublicKey | undefined => {
-      const serializedElectionId = electionId.serialize();
+      const serializedElectionId = electionId.valueOf();
 
       if (serializedElectionId in byElectionId) {
         return new ElectionPublicKey(new Base64UrlData(byElectionId[serializedElectionId]));
