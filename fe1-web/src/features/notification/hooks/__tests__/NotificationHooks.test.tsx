@@ -5,7 +5,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, Store } from 'redux';
 
-import {  mockLaoId } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import {
   NOTIFICATION_FEATURE_IDENTIFIER,
