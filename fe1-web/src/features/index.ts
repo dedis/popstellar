@@ -144,7 +144,7 @@ export function configureFeatures() {
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
     /* hooks */
     useLaoList: laoConfiguration.hooks.useLaoList,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useDisconnectFromLao: laoConfiguration.hooks.useDisconnectFromLao,
     /* components */
     LaoList: laoConfiguration.components.LaoList,
