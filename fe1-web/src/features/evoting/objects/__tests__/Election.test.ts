@@ -67,15 +67,16 @@ describe('Election object', () => {
   it('does a state round trip correctly', () => {
     const e = Election.fromState(election.toState());
     const expectedState = {
-      id: ELECTION_ID.valueOf(),
+      id: ELECTION_ID.toState(),
       lao: mockLaoName,
       name: NAME,
       version: ElectionVersion.OPEN_BALLOT,
-      createdAt: TIMESTAMP_PAST1.valueOf(),
-      start: TIMESTAMP_PAST1.valueOf(),
-      end: TIMESTAMP_PAST2.valueOf(),
-      questions: [question1, question2],
-      registeredVotes: [registeredVotes],
+      createdAt: TIMESTAMP_PAST1.toState(),
+      start: TIMESTAMP_PAST1.toState(),
+      end: TIMESTAMP_PAST2.toState(),
+      questions: [question1.toState(), question2.toState()],
+      registeredVotes: [registeredVotes.toState()],
+      questionResult: undefined,
       electionStatus: ElectionStatus.TERMINATED,
     };
     expect(e.toState()).toStrictEqual(expectedState);

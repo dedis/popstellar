@@ -26,7 +26,7 @@ describe('WitnessReducer', () => {
     it('adds messages to the store', () => {
       const newState = witnessReduce({ allIds: [] }, addMessageToWitness(mockMessageId1));
 
-      expect(newState.allIds).toEqual([mockMessageId1]);
+      expect(newState.allIds).toEqual([mockMessageId1.toState()]);
     });
 
     it("doesn't add a message a second time to the store", () => {
@@ -35,7 +35,7 @@ describe('WitnessReducer', () => {
         addMessageToWitness(mockMessageId1),
       );
 
-      expect(newState.allIds).toEqual([mockMessageId1]);
+      expect(newState.allIds).toEqual([mockMessageId1.toState()]);
     });
   });
 
@@ -59,7 +59,7 @@ describe('WitnessReducer', () => {
         removeMessageToWitness(new Hash('some other id')),
       );
 
-      expect(newState.allIds).toEqual([mockMessageId1]);
+      expect(newState.allIds).toEqual([mockMessageId1.toState()]);
     });
   });
 

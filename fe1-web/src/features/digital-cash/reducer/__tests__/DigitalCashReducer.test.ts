@@ -31,12 +31,12 @@ const filledState = {
       balances: {
         [mockKPHash.valueOf()]: mockTransactionValue,
       },
-      allTransactionsHash: [mockTransaction.transactionId],
+      allTransactionsHash: [mockTransaction.transactionId.toState()],
       transactionsByHash: {
-        [mockTransaction.transactionId.valueOf()]: mockTransaction,
+        [mockTransaction.transactionId.valueOf()]: mockTransaction.toState(),
       },
       transactionsByPubHash: {
-        [mockKPHash.valueOf()]: [mockTransaction.transactionId],
+        [mockKPHash.valueOf()]: [mockTransaction.transactionId.toState()],
       },
     },
   },

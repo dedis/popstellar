@@ -259,14 +259,15 @@ describe('CastVote', () => {
         CastVote.computeVoteId(mockSecretBallotElectionNotStarted, 0, q1SelectedOption).valueOf(),
       );
       // but rather the encrypted one!
-      expect(encryptedVotes[0]).toHaveProperty(
-        'id',
-        CastVote.computeSecretVoteId(
-          mockSecretBallotElectionNotStarted,
-          0,
-          encryptedVotes[0].vote,
-        ).valueOf(),
-      );
+      expect(
+        encryptedVotes[0].id.equals(
+          CastVote.computeSecretVoteId(
+            mockSecretBallotElectionNotStarted,
+            0,
+            encryptedVotes[0].vote,
+          ),
+        ),
+      ).toBeTrue();
 
       expect(encryptedVotes[0]).toHaveProperty(
         'question',
@@ -283,13 +284,8 @@ describe('CastVote', () => {
         CastVote.computeVoteId(mockSecretBallotElectionNotStarted, 1, q2SelectedOption).valueOf(),
       );
       // but rather the encrypted one!
-      expect(encryptedVotes[1]).toHaveProperty(
-        'id',
-        CastVote.computeSecretVoteId(
-          mockSecretBallotElectionNotStarted,
-          1,
-          encryptedVotes[1].vote,
-        ).valueOf(),
+      expect(encryptedVotes[1].id).toEqual(
+        CastVote.computeSecretVoteId(mockSecretBallotElectionNotStarted, 1, encryptedVotes[1].vote),
       );
 
       expect(encryptedVotes[1]).toHaveProperty(

@@ -11,6 +11,7 @@ import {
   NOTIFICATION_FEATURE_IDENTIFIER,
   NotificationReactContext,
 } from 'features/notification/interface/Configuration';
+import { NotificationState } from 'features/notification/objects/Notification';
 import {
   addNotification,
   markNotificationAsRead,
@@ -18,6 +19,7 @@ import {
 } from 'features/notification/reducer';
 import { WitnessNotificationType } from 'features/witness/components';
 import { WitnessFeature } from 'features/witness/interface';
+import { MessageToWitnessNotificationState } from 'features/witness/objects/MessageToWitnessNotification';
 
 import NotificationScreen, { NotificationScreenRightHeader } from '../NotificationScreen';
 
@@ -36,7 +38,8 @@ mockStore.dispatch(
     title: 'a notification',
     timestamp: 0,
     type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
-  }),
+    messageId: 'x',
+  } as MessageToWitnessNotificationState as NotificationState),
 );
 mockStore.dispatch(
   addNotification({
@@ -44,7 +47,8 @@ mockStore.dispatch(
     title: 'another notification',
     timestamp: 1,
     type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
-  }),
+    messageId: 'x',
+  } as MessageToWitnessNotificationState as NotificationState),
 );
 mockStore.dispatch(
   markNotificationAsRead({

@@ -34,11 +34,6 @@ describe('ElectionPublicKey', () => {
       const key = new ElectionPublicKey(mockEncodedElectionKey);
       expect(key.toState()).toBeString();
     });
-
-    it('returns the same value used when calling .fromState()', () => {
-      const key = ElectionPublicKey.fromState(mockElectionKeyState);
-      expect(key.toState()).toEqual(mockElectionKeyState);
-    });
   });
 
   describe('fromState()', () => {

@@ -6,6 +6,7 @@ import {
   mockElectionKey,
   mockElectionKeyState,
 } from 'features/evoting/__tests__/utils';
+import { ElectionPublicKey } from 'features/evoting/objects/ElectionPublicKey';
 
 import {
   addElectionKey,
@@ -21,20 +22,17 @@ describe('ElectionKeyReducer', () => {
   describe('addElectionKey', () => {
     it('should add an election key to the state if its not already present', () => {
       expect(
-        electionKeyReduce(
-          {
-            byElectionId: {
-              someElectionId: 'someOtherElectionKey',
+        ElectionPublicKey.fromState(
+          electionKeyReduce(
+            {
+              byElectionId: {
+                someElectionId: 'someOtherElectionKey',
+              },
             },
-          },
-          addElectionKey(mockElectionId, mockElectionKey),
-        ),
-      ).toEqual({
-        byElectionId: {
-          someElectionId: 'someOtherElectionKey',
-          [mockElectionId.valueOf()]: mockElectionKeyState,
-        },
-      } as ElectionKeyReducerState);
+            addElectionKey(mockElectionId, mockElectionKey),
+          ).byElectionId[mockElectionId.toState()],
+        ).equals(mockElectionKey),
+      ).toBeTrue();
     });
 
     it('should throw an error when trying to add an election key if one is already present', () => {

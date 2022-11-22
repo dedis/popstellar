@@ -52,6 +52,8 @@ export const mockLaoState: LaoState = {
   witnesses: [],
   server_addresses: [],
   subscribed_channels: [channelFromIds(mockLaoId)],
+  last_roll_call_id: undefined,
+  last_tokenized_roll_call_id: undefined,
 };
 export const mockLao = Lao.fromState(mockLaoState);
 

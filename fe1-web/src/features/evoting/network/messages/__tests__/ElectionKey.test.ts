@@ -1,14 +1,16 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLaoId, mockLaoName, mockPublicKey } from '__tests__/utils';
+import { configureTestFeatures, mockLaoId, mockLaoName } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
-import { mockElectionKey } from 'features/evoting/__tests__/utils';
 import { ElectionPublicKey } from 'features/evoting/objects/ElectionPublicKey';
 
 import { ElectionKey } from '../ElectionKey';
+
+// use a less complex data type for json compares
+const mockElectionKey = 'mockElectionKey' as unknown as ElectionPublicKey;
 
 // region test data initialization
 
@@ -35,7 +37,7 @@ const ElectionKeyJson: string = `{
   "object": "${ObjectType.ELECTION}",
   "action": "${ActionType.KEY}",
   "election": "${electionId}",
-  "election_key": "${mockPublicKey}"
+  "election_key": "${mockElectionKey}"
 }`;
 
 // endregion
@@ -46,7 +48,7 @@ beforeAll(() => {
 
 describe('ElectionKey', () => {
   it('should be created correctly from Json', () => {
-    expect(new ElectionKey(sampleElectionKey as MessageDataProperties<ElectionKey>)).toBeJsonEqual(
+    expect(new ElectionKey(sampleElectionKey as MessageDataProperties<ElectionKey>)).toEqual(
       sampleElectionKey,
     );
     const temp = {
@@ -68,7 +70,7 @@ describe('ElectionKey', () => {
       object: ObjectType.ELECTION,
       action: ActionType.NOTIFY_ADD,
       election: electionId.toString(),
-      election_key: mockPublicKey,
+      election_key: mockElectionKey,
     };
     const createFromJson = () => ElectionKey.fromJson(obj);
     expect(createFromJson).toThrow(ProtocolError);
@@ -79,7 +81,7 @@ describe('ElectionKey', () => {
       object: ObjectType.CHIRP,
       action: ActionType.KEY,
       election: electionId.toString(),
-      election_key: mockPublicKey,
+      election_key: mockElectionKey,
     };
     const createFromJson = () => ElectionKey.fromJson(obj);
     expect(createFromJson).toThrow(ProtocolError);

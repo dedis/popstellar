@@ -38,7 +38,7 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
         <View style={List.container}>
           {election.questionResult &&
             election.questionResult.map((questionResult: QuestionResult) => {
-              const question = election.questions.find((q) => q.id === questionResult.id);
+              const question = election.questions.find((q) => q.id.equals(questionResult.id));
 
               if (!question) {
                 throw new Error(
