@@ -11,7 +11,6 @@ import {
   mockKeyPair,
   mockLao,
   mockLaoId,
-  mockLaoIdHash,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { addMessages, messageReducer } from 'core/network/ingestion';
@@ -74,13 +73,13 @@ const msg = ExtendedMessage.fromMessage(
 );
 
 mockStore.dispatch(addMessages(msg.toState()));
-mockStore.dispatch(addMessageToWitness({ messageId: msg.message_id.valueOf() }));
+mockStore.dispatch(addMessageToWitness(msg.message_id));
 mockStore.dispatch(addNotification(mockNotification));
 
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     enabled: true,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     addNotification: (notification) => mockStore.dispatch(addNotification(notification)),
     discardNotifications: (args) => mockStore.dispatch(discardNotifications(args)),

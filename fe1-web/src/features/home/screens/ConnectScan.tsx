@@ -91,7 +91,7 @@ const ConnectScan = () => {
 
       // if we are already connected to a LAO, then only allow new connections
       // to servers for the same LAO id
-      if (laoId && connectToLao.lao !== laoId.valueOf()) {
+      if (laoId && !connectToLao.lao.equals(laoId)) {
         toast.show(
           `The scanned QR code is for a different LAO than the one currently connected to`,
           {

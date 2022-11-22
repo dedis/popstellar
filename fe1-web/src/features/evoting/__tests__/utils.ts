@@ -1,4 +1,4 @@
-import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { serializedMockLaoId, mockLaoId } from '__tests__/utils';
 import { Base64UrlData, EventTags, Hash, Timestamp } from 'core/objects';
 import { CastVote, ElectionResult, EndElection } from 'features/evoting/network/messages';
 import STRINGS from 'resources/strings';
@@ -20,7 +20,7 @@ export const mockElectionName = 'An election';
 
 export const mockElectionId = Hash.fromStringArray(
   EventTags.ELECTION,
-  mockLaoId,
+  serializedMockLaoId,
   TIMESTAMP.toString(),
   mockElectionName,
 );
@@ -94,7 +94,7 @@ export const mockRegisteredVotes: RegisteredVote[] = [
 ];
 
 export const mockElectionNotStarted = new Election({
-  lao: mockLaoIdHash,
+  lao: mockLaoId,
   id: mockElectionId,
   name: mockElectionName,
   version: ElectionVersion.OPEN_BALLOT,
@@ -106,7 +106,7 @@ export const mockElectionNotStarted = new Election({
 });
 
 export const mockSecretBallotElectionNotStarted = new Election({
-  lao: mockLaoIdHash,
+  lao: mockLaoId,
   id: mockElectionId,
   name: mockElectionName,
   version: ElectionVersion.SECRET_BALLOT,
@@ -118,7 +118,7 @@ export const mockSecretBallotElectionNotStarted = new Election({
 });
 
 export const mockElectionOpened = new Election({
-  lao: mockLaoIdHash,
+  lao: mockLaoId,
   id: mockElectionId,
   name: mockElectionName,
   version: ElectionVersion.OPEN_BALLOT,
@@ -131,7 +131,7 @@ export const mockElectionOpened = new Election({
 });
 
 export const mockElectionTerminated = new Election({
-  lao: mockLaoIdHash,
+  lao: mockLaoId,
   id: mockElectionId,
   name: mockElectionName,
   version: ElectionVersion.OPEN_BALLOT,
@@ -185,7 +185,7 @@ export const mockElectionResultQuestions: ElectionResult['questions'] = [
 ];
 
 export const openedSecretBallotElection = new Election({
-  lao: mockLaoIdHash,
+  lao: mockLaoId,
   id: mockElectionId,
   name: 'An election',
   version: ElectionVersion.SECRET_BALLOT,
@@ -205,7 +205,7 @@ export const mockElectionPrivateKeyString = 'o1EESXAvTFD34Ss29FVohukOximnyn/qf/P
 export const mockEncodedElectionPrivateKey = new Base64UrlData(mockElectionPrivateKeyString);
 
 export const mockElectionResults = new Election({
-  lao: mockLaoIdHash,
+  lao: mockLaoId,
   id: mockElectionId,
   name: mockElectionName,
   version: ElectionVersion.OPEN_BALLOT,

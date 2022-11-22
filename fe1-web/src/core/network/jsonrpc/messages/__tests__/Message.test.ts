@@ -38,7 +38,12 @@ describe('Message', () => {
   it('fromData signs the message correctly when ending an election', async () => {
     const messageData = new EndElection({
       lao: mockLao.id,
-      election: Hash.fromStringArray(EventTags.ELECTION, mockLaoId, '5678', '1607277600'),
+      election: Hash.fromStringArray(
+        EventTags.ELECTION,
+        mockLaoId.serialize(),
+        '5678',
+        '1607277600',
+      ),
       created_at: new Timestamp(1607277600),
       registered_votes: new Hash('1234'),
     });

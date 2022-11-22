@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLao, mockLaoId } from '__tests__/utils';
+import { configureTestFeatures, mockLao, serializedMockLaoId } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
@@ -13,7 +13,7 @@ const LOCATION = 'location';
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const FUTURE_TIMESTAMP = new Timestamp(1735686000); // 1st january 2025
 const TIMESTAMP_BEFORE = new Timestamp(1609445600);
-const mockMeetingId = Hash.fromStringArray('M', mockLaoId, TIMESTAMP.toString(), NAME);
+const mockMeetingId = Hash.fromStringArray('M', serializedMockLaoId, TIMESTAMP.toString(), NAME);
 const mockMessageId = Base64UrlData.encode('message_id');
 const mockExtra = { extra: 'extra info' };
 const mockModificationId = Hash.fromStringArray(mockMessageId.toString());

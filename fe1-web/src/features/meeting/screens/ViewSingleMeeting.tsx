@@ -10,6 +10,7 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { Hash } from 'core/objects';
 import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -28,7 +29,7 @@ const ViewSingleMeeting = () => {
   const route = useRoute<NavigationProps['route']>();
   const { eventId: meetingId } = route.params;
 
-  const selectMeeting = useMemo(() => makeMeetingSelector(meetingId), [meetingId]);
+  const selectMeeting = useMemo(() => makeMeetingSelector(new Hash(meetingId)), [meetingId]);
   const meeting = useSelector(selectMeeting);
 
   if (!meeting) {

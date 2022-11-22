@@ -33,7 +33,7 @@ const messagesSlice = createSlice({
   reducers: {
     // Add a Message to the list of known Messages
     addMessages: {
-      prepare(messages: ExtendedMessageState | ExtendedMessageState[]): any {
+      prepare(messages: ExtendedMessageState | ExtendedMessageState[]) {
         const msgs = Array.isArray(messages) ? messages : [messages];
         return { payload: msgs };
       },
@@ -56,10 +56,10 @@ const messagesSlice = createSlice({
 
     // Remove a Message to the list of unprocessed Messages
     processMessages: {
-      prepare(messageIds: String | String[]): any {
+      prepare(messageIds: Hash | Hash[]): any {
         const msgIds = Array.isArray(messageIds) ? messageIds : [messageIds];
         return {
-          payload: msgIds.map((m: String) => m.valueOf()),
+          payload: msgIds.map((m: Hash) => m.serialize()),
         };
       },
       reducer(state, action: PayloadAction<string[]>) {
@@ -81,7 +81,7 @@ const messagesSlice = createSlice({
 
     // Add witness signatures to a message
     addMessageWitnessSignature: {
-      prepare(messageId: Hash | string, witSig: WitnessSignatureState): any {
+      prepare(messageId: Hash, witSig: WitnessSignatureState): any {
         return {
           payload: {
             messageId: messageId.valueOf(),
@@ -123,7 +123,7 @@ export function getMessagesState(state: any): MessageReducerState {
 
 export function getMessage(
   state: MessageReducerState,
-  messageId: Hash | string,
+  messageId: Hash,
 ): ExtendedMessage | undefined {
   const id = messageId.valueOf();
   return id in state.byId ? ExtendedMessage.fromState(state.byId[id]) : undefined;
@@ -135,13 +135,15 @@ export function getMessage(
  * @param messageId The id of the message
  * @returns A redux selector
  */
-export const makeMessageSelector = (messageId: string) =>
+export const makeMessageSelector = (messageId: Hash) =>
   createSelector(
     // First input: map of message ids to messages
     (state: any) => getMessagesState(state).byId,
     (byId: Record<string, ExtendedMessageState>): ExtendedMessage | undefined => {
-      if (messageId in byId) {
-        return ExtendedMessage.fromState(byId[messageId]);
+      const serializedMessageId = messageId.serialize();
+
+      if (serializedMessageId in byId) {
+        return ExtendedMessage.fromState(byId[serializedMessageId]);
       }
 
       return undefined;

@@ -15,7 +15,7 @@ import { CreateMeeting, StateMeeting } from './messages';
  * @param addMeeting - A function to add a meeting
  */
 export const handleMeetingCreateMessage =
-  (addMeeting: (laoId: Hash | string, meeting: Meeting) => void) =>
+  (addMeeting: (laoId: Hash, meeting: Meeting) => void) =>
   (msg: ProcessableMessage): boolean => {
     const makeErr = (err: string) => `meeting#create was not processed: ${err}`;
 
@@ -62,7 +62,7 @@ export const handleMeetingCreateMessage =
 export const handleMeetingStateMessage =
   (
     getLaoById: MeetingConfiguration['getLaoById'],
-    getMeetingById: (meetingId: Hash | string) => Meeting | undefined,
+    getMeetingById: (meetingId: Hash) => Meeting | undefined,
     updateMeeting: (meeting: Meeting) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
@@ -81,7 +81,7 @@ export const handleMeetingStateMessage =
       return false;
     }
 
-    const lao = getLaoById(msg.laoId.valueOf());
+    const lao = getLaoById(msg.laoId);
     if (!lao) {
       console.warn(makeErr(`no known lao with id '${msg.laoId}'`));
       return false;

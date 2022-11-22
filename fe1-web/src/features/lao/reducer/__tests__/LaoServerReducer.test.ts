@@ -4,13 +4,16 @@ import { AnyAction, combineReducers } from 'redux';
 import {
   mockAddress,
   mockKeyPair,
-  mockLaoId,
-  mockLaoState,
+  serializedMockLaoId,
   mockPublicKey,
   mockPublicKey2,
   org,
+  mockLaoId,
+  mockPopToken,
+  mockLao,
 } from '__tests__/utils';
-import { ServerState } from 'features/lao/objects/LaoServer';
+import { Hash } from 'core/objects';
+import { LaoServer } from 'features/lao/objects/LaoServer';
 
 import { laoReducer, serverReducer } from '../index';
 import { setCurrentLao } from '../LaoReducer';
@@ -22,27 +25,30 @@ import {
   serverReduce,
   ServerReducerState,
   updateServer,
-} from '../ServerReducer';
+} from '../LaoServerReducer';
 
 const emptyState = {
   byLaoId: {},
 } as ServerReducerState;
 
 const otherAddress = 'some other address';
-const mockServerState: ServerState = {
+const mockServer = new LaoServer({
   laoId: mockLaoId,
   address: mockAddress,
-  serverPublicKey: mockPublicKey,
-  frontendPublicKey: mockPublicKey2,
-};
-const otherMockServerState: ServerState = {
+  serverPublicKey: mockKeyPair.publicKey,
+  frontendPublicKey: mockPopToken.publicKey,
+});
+const mockServerState = mockServer.toState();
+
+const otherMockServer = new LaoServer({
   laoId: mockLaoId,
   address: otherAddress,
-  serverPublicKey: mockPublicKey2,
-  frontendPublicKey: mockPublicKey,
-};
+  serverPublicKey: mockPopToken.publicKey,
+  frontendPublicKey: mockKeyPair.publicKey,
+});
+const otherMockServerState = otherMockServer.toState();
 
-describe('ServerReducer', () => {
+describe('LaoServerReducer', () => {
   it('should return the initial state', () => {
     expect(serverReduce(undefined, {} as AnyAction)).toEqual(emptyState);
   });
@@ -53,7 +59,7 @@ describe('ServerReducer', () => {
         serverReduce(
           {
             byLaoId: {
-              [mockLaoId]: {
+              [serializedMockLaoId]: {
                 allAddresses: [otherAddress],
                 byAddress: { [otherAddress]: otherMockServerState },
                 backendKeyByFrontendKey: {
@@ -62,11 +68,11 @@ describe('ServerReducer', () => {
               },
             },
           } as ServerReducerState,
-          addServer(mockServerState),
+          addServer(mockServer),
         ),
       ).toEqual({
         byLaoId: {
-          [mockLaoId]: {
+          [serializedMockLaoId]: {
             allAddresses: [otherAddress, mockAddress],
             byAddress: {
               [mockAddress]: mockServerState,
@@ -86,7 +92,7 @@ describe('ServerReducer', () => {
         serverReduce(
           {
             byLaoId: {
-              [mockLaoId]: {
+              [serializedMockLaoId]: {
                 allAddresses: [mockAddress],
                 byAddress: { [mockAddress]: mockServerState },
                 backendKeyByFrontendKey: {
@@ -95,7 +101,7 @@ describe('ServerReducer', () => {
               },
             },
           } as ServerReducerState,
-          addServer(mockServerState),
+          addServer(mockServer),
         );
 
       expect(fn).toThrow(Error);
@@ -108,7 +114,7 @@ describe('ServerReducer', () => {
         serverReduce(
           {
             byLaoId: {
-              [mockLaoId]: {
+              [serializedMockLaoId]: {
                 allAddresses: [otherAddress, mockAddress],
                 byAddress: {
                   [mockAddress]: mockServerState,
@@ -121,14 +127,14 @@ describe('ServerReducer', () => {
               },
             },
           } as ServerReducerState,
-          updateServer({
+          updateServer(mockServer.laoId, mockServer.address, {
             ...mockServerState,
             serverPublicKey: mockPublicKey2,
           }),
         ),
       ).toEqual({
         byLaoId: {
-          [mockLaoId]: {
+          [serializedMockLaoId]: {
             allAddresses: [otherAddress, mockAddress],
             byAddress: {
               [mockAddress]: {
@@ -153,7 +159,7 @@ describe('ServerReducer', () => {
         serverReduce(
           {
             byLaoId: {
-              [mockLaoId]: {
+              [serializedMockLaoId]: {
                 allAddresses: [mockAddress, otherAddress],
                 byAddress: {
                   [mockAddress]: mockServerState,
@@ -166,14 +172,11 @@ describe('ServerReducer', () => {
               },
             },
           } as ServerReducerState,
-          removeServer({
-            laoId: mockLaoId,
-            address: otherAddress,
-          }),
+          removeServer(mockLaoId, otherAddress),
         ),
       ).toEqual({
         byLaoId: {
-          [mockLaoId]: {
+          [serializedMockLaoId]: {
             allAddresses: [mockAddress],
             byAddress: { [mockAddress]: mockServerState },
             backendKeyByFrontendKey: {
@@ -191,7 +194,7 @@ describe('ServerReducer', () => {
         serverReduce(
           {
             byLaoId: {
-              [mockLaoId]: {
+              [serializedMockLaoId]: {
                 allAddresses: [mockAddress, otherAddress],
                 byAddress: {
                   [mockAddress]: mockServerState,
@@ -218,15 +221,17 @@ describe('ServerReducer', () => {
           ...serverReducer,
         }),
       });
-      mockStore.dispatch(setCurrentLao({ lao: mockLaoState }));
+      mockStore.dispatch(setCurrentLao(mockLao));
 
       mockStore.dispatch(
-        addServer({
-          address: mockAddress,
-          laoId: mockLaoId,
-          frontendPublicKey: org.valueOf(),
-          serverPublicKey: mockKeyPair.publicKey.valueOf(),
-        }),
+        addServer(
+          new LaoServer({
+            address: mockAddress,
+            laoId: mockLaoId,
+            frontendPublicKey: org,
+            serverPublicKey: mockKeyPair.publicKey,
+          }),
+        ),
       );
 
       expect(
@@ -242,12 +247,14 @@ describe('ServerReducer', () => {
         }),
       });
       mockStore.dispatch(
-        addServer({
-          address: mockAddress,
-          laoId: mockLaoId,
-          frontendPublicKey: org.valueOf(),
-          serverPublicKey: mockKeyPair.publicKey.valueOf(),
-        }),
+        addServer(
+          new LaoServer({
+            address: mockAddress,
+            laoId: mockLaoId,
+            frontendPublicKey: org,
+            serverPublicKey: mockKeyPair.publicKey,
+          }),
+        ),
       );
 
       expect(
@@ -262,15 +269,17 @@ describe('ServerReducer', () => {
           ...serverReducer,
         }),
       });
-      mockStore.dispatch(setCurrentLao({ lao: mockLaoState }));
+      mockStore.dispatch(setCurrentLao(mockLao));
       // add the organizers public key but for a *different* lao
       mockStore.dispatch(
-        addServer({
-          address: mockAddress,
-          laoId: 'someOtherLao',
-          frontendPublicKey: org.valueOf(),
-          serverPublicKey: mockKeyPair.publicKey.valueOf(),
-        }),
+        addServer(
+          new LaoServer({
+            address: mockAddress,
+            laoId: new Hash('someOtherLao'),
+            frontendPublicKey: org,
+            serverPublicKey: mockKeyPair.publicKey,
+          }),
+        ),
       );
 
       expect(

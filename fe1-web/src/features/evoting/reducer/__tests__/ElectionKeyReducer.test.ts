@@ -27,10 +27,7 @@ describe('ElectionKeyReducer', () => {
               someElectionId: 'someOtherElectionKey',
             },
           },
-          addElectionKey({
-            electionId: mockElectionId.valueOf(),
-            electionKey: mockElectionKeyString,
-          }),
+          addElectionKey(mockElectionId, mockElectionKey),
         ),
       ).toEqual({
         byElectionId: {
@@ -48,10 +45,7 @@ describe('ElectionKeyReducer', () => {
               [mockElectionId.valueOf()]: mockElectionKeyString,
             },
           } as ElectionKeyReducerState,
-          addElectionKey({
-            electionId: mockElectionId.valueOf(),
-            electionKey: mockElectionKeyString,
-          }),
+          addElectionKey(mockElectionId, mockElectionKey),
         );
       }).toThrow();
     });
@@ -116,7 +110,7 @@ describe('getElectionKeyByElectionId', () => {
 describe('makeElectionKeySelector', () => {
   it('returns the correct key for a given election id', () => {
     expect(
-      makeElectionKeySelector(mockElectionId.valueOf())({
+      makeElectionKeySelector(mockElectionId)({
         [ELECTION_KEY_REDUCER_PATH]: {
           byElectionId: {
             [mockElectionId.valueOf()]: mockElectionKeyString,
@@ -129,7 +123,7 @@ describe('makeElectionKeySelector', () => {
 
   it('returns the undefined if no key is found for a given election id', () => {
     expect(
-      makeElectionKeySelector(mockElectionId.valueOf())({
+      makeElectionKeySelector(mockElectionId)({
         [ELECTION_KEY_REDUCER_PATH]: {
           byElectionId: {
             someOtherId: mockElectionKeyString,

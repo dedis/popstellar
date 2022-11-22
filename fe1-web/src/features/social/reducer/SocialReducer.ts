@@ -67,7 +67,7 @@ const socialSlice = createSlice({
   reducers: {
     // Add a chirp to the list of chirps
     addChirp: {
-      prepare(laoId: Hash | string, chirp: ChirpState): any {
+      prepare(laoId: Hash, chirp: ChirpState): any {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -119,7 +119,7 @@ const socialSlice = createSlice({
 
     // Delete a chirp in the list of chirps
     deleteChirp: {
-      prepare(laoId: Hash | string, chirp: ChirpState): any {
+      prepare(laoId: Hash, chirp: ChirpState): any {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -168,7 +168,7 @@ const socialSlice = createSlice({
 
     // Add reactions to a chirp
     addReaction: {
-      prepare(laoId: Hash | string, reaction: ReactionState): any {
+      prepare(laoId: Hash, reaction: ReactionState): any {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -225,16 +225,19 @@ export const getSocialState = (state: any): SocialLaoReducerState => state[SOCIA
 // Selector helper functions
 const selectSocialState = (state: any) => getSocialState(state);
 
-export const makeChirpsList = (laoId: string | undefined) =>
+export const makeChirpsList = (laoId?: Hash) =>
   createSelector(
     // First input: Get all chirps across all LAOs
     selectSocialState,
     (chirpList: SocialLaoReducerState): ChirpState[] => {
-      if (!laoId) {
+      const serializedLaoId = laoId?.serialize();
+
+      if (!serializedLaoId) {
         return [];
       }
-      if (chirpList.byLaoId[laoId]) {
-        const store = chirpList.byLaoId[laoId];
+
+      if (chirpList.byLaoId[serializedLaoId]) {
+        const store = chirpList.byLaoId[serializedLaoId];
         const allChirps: ChirpState[] = [];
         store.allIdsInOrder.forEach((id) => allChirps.push(store.byId[id]));
         return allChirps;
@@ -243,31 +246,34 @@ export const makeChirpsList = (laoId: string | undefined) =>
     },
   );
 
-export const makeChirpsListOfUser =
-  (laoId: string | undefined) => (user: PublicKey | string | undefined) => {
-    const userPublicKey = user?.valueOf();
-    return createSelector(
-      // First input: Get all chirps across all LAOs
-      selectSocialState,
-      (chirpList: SocialLaoReducerState): ChirpState[] => {
-        if (!laoId || !userPublicKey) {
-          return [];
-        }
-        const laoChirps = chirpList.byLaoId[laoId];
-        if (laoChirps) {
-          const allUserChirps: ChirpState[] = [];
-          const userChirps = laoChirps.byUser[userPublicKey];
-          if (userChirps) {
-            userChirps.forEach((id: string) =>
-              allUserChirps.push(chirpList.byLaoId[laoId].byId[id]),
-            );
-            return allUserChirps;
-          }
-        }
+export const makeChirpsListOfUser = (laoId?: Hash) => (user: PublicKey | string | undefined) => {
+  const userPublicKey = user?.valueOf();
+  return createSelector(
+    // First input: Get all chirps across all LAOs
+    selectSocialState,
+    (chirpList: SocialLaoReducerState): ChirpState[] => {
+      const serializedLaoId = laoId?.serialize();
+
+      if (!serializedLaoId || !userPublicKey) {
         return [];
-      },
-    );
-  };
+      }
+
+      const laoChirps = chirpList.byLaoId[serializedLaoId];
+
+      if (laoChirps) {
+        const allUserChirps: ChirpState[] = [];
+        const userChirps = laoChirps.byUser[userPublicKey];
+        if (userChirps) {
+          userChirps.forEach((id: string) =>
+            allUserChirps.push(chirpList.byLaoId[serializedLaoId].byId[id]),
+          );
+          return allUserChirps;
+        }
+      }
+      return [];
+    },
+  );
+};
 
 const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
   '👍': reactionByUser['👍'] ? reactionByUser['👍'].length : 0,
@@ -275,15 +281,18 @@ const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
   '❤️': reactionByUser['❤️'] ? reactionByUser['❤️'].length : 0,
 });
 
-export const makeReactionsList = (laoId: string | undefined) =>
+export const makeReactionsList = (laoId?: Hash) =>
   createSelector(
     selectSocialState,
     (list: SocialLaoReducerState): Record<string, Record<string, number>> => {
-      if (!laoId) {
+      const serializedLaoId = laoId?.serialize();
+
+      if (!serializedLaoId) {
         return {};
       }
-      if (list.byLaoId[laoId]) {
-        const store = list.byLaoId[laoId];
+
+      if (list.byLaoId[serializedLaoId]) {
+        const store = list.byLaoId[serializedLaoId];
         const reactions: Record<string, Record<string, number>> = {};
         store.allIdsInOrder.forEach((id) => {
           const chirpReactions = store.reactionsByChirp[id];

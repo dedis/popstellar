@@ -95,7 +95,7 @@ const ChirpCard = ({ chirp }: IPropTypes) => {
     throw new Error('Impossible to render chirp, current lao id is undefined');
   }
 
-  const reactionList = useMemo(() => makeReactionsList(laoId.valueOf()), [laoId]);
+  const reactionList = useMemo(() => makeReactionsList(laoId), [laoId]);
   const reactions = useSelector(reactionList)[chirp.id.toString()];
 
   const thumbsUp = reactions ? reactions['👍'] : 0;

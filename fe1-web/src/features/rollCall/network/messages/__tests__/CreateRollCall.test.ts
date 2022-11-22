@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { configureTestFeatures, serializedMockLaoId, mockLaoId } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 
@@ -13,7 +13,7 @@ const TIMESTAMP_BEFORE = new Timestamp(1609445600);
 const NAME = 'myRollCall';
 const LOCATION = 'location';
 const DESCRIPTION = 'Roll Call description';
-const rollCallId = Hash.fromStringArray('R', mockLaoId, TIMESTAMP.toString(), NAME);
+const rollCallId = Hash.fromStringArray('R', serializedMockLaoId, TIMESTAMP.toString(), NAME);
 
 const sampleCreateRollCall: Partial<CreateRollCall> = {
   object: ObjectType.ROLL_CALL,
@@ -45,9 +45,7 @@ beforeAll(() => {
 
 describe('CreateRollCall', () => {
   it('should be created correctly from Json', () => {
-    expect(new CreateRollCall(sampleCreateRollCall, mockLaoIdHash)).toBeJsonEqual(
-      sampleCreateRollCall,
-    );
+    expect(new CreateRollCall(sampleCreateRollCall, mockLaoId)).toBeJsonEqual(sampleCreateRollCall);
     let temp: any = {
       object: ObjectType.ROLL_CALL,
       action: ActionType.CREATE,
@@ -59,7 +57,7 @@ describe('CreateRollCall', () => {
       location: LOCATION,
       description: DESCRIPTION,
     };
-    expect(new CreateRollCall(temp, mockLaoIdHash)).toBeJsonEqual(temp);
+    expect(new CreateRollCall(temp, mockLaoId)).toBeJsonEqual(temp);
 
     temp = {
       object: ObjectType.ROLL_CALL,
@@ -71,12 +69,12 @@ describe('CreateRollCall', () => {
       proposed_end: CLOSE_TIMESTAMP,
       location: LOCATION,
     };
-    expect(new CreateRollCall(temp, mockLaoIdHash)).toBeJsonEqual(temp);
+    expect(new CreateRollCall(temp, mockLaoId)).toBeJsonEqual(temp);
   });
 
   it('should be parsed correctly from Json', () => {
     const obj = JSON.parse(createRollCallJson);
-    expect(CreateRollCall.fromJson(obj, mockLaoIdHash)).toBeJsonEqual(sampleCreateRollCall);
+    expect(CreateRollCall.fromJson(obj, mockLaoId)).toBeJsonEqual(sampleCreateRollCall);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
@@ -91,7 +89,7 @@ describe('CreateRollCall', () => {
       location: LOCATION,
       description: DESCRIPTION,
     };
-    const createWrongObj = () => CreateRollCall.fromJson(obj, mockLaoIdHash);
+    const createWrongObj = () => CreateRollCall.fromJson(obj, mockLaoId);
     expect(createWrongObj).toThrow(ProtocolError);
   });
 
@@ -109,7 +107,7 @@ describe('CreateRollCall', () => {
             location: LOCATION,
             description: DESCRIPTION,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -127,7 +125,7 @@ describe('CreateRollCall', () => {
             location: LOCATION,
             description: DESCRIPTION,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -145,7 +143,7 @@ describe('CreateRollCall', () => {
             location: LOCATION,
             description: DESCRIPTION,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -163,7 +161,7 @@ describe('CreateRollCall', () => {
             location: LOCATION,
             description: DESCRIPTION,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -181,7 +179,7 @@ describe('CreateRollCall', () => {
             location: LOCATION,
             description: DESCRIPTION,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -199,7 +197,7 @@ describe('CreateRollCall', () => {
             proposed_end: CLOSE_TIMESTAMP,
             description: DESCRIPTION,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -218,7 +216,7 @@ describe('CreateRollCall', () => {
             location: LOCATION,
             description: DESCRIPTION,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -237,7 +235,7 @@ describe('CreateRollCall', () => {
             location: LOCATION,
             description: DESCRIPTION,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -256,7 +254,7 @@ describe('CreateRollCall', () => {
             location: LOCATION,
             description: DESCRIPTION,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });

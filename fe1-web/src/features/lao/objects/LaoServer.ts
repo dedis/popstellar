@@ -4,7 +4,7 @@ import { OmitMethods } from 'core/types';
 
 export type ServerAddress = string;
 
-export interface ServerState {
+export interface LaoServerState {
   laoId: string;
   address: string;
   serverPublicKey: string;
@@ -68,7 +68,7 @@ export class LaoServer {
    * @param server The serialized server data
    * @returns A deserialized server instance
    */
-  public static fromState(server: ServerState): LaoServer {
+  public static fromState(server: LaoServerState): LaoServer {
     return new LaoServer({
       laoId: new Hash(server.laoId),
       address: server.address,
@@ -81,7 +81,7 @@ export class LaoServer {
    * Serializes a server instance
    * @returns Serialized server data
    */
-  public toState(): ServerState {
+  public toState(): LaoServerState {
     return JSON.parse(JSON.stringify(this));
   }
 }

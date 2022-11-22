@@ -81,7 +81,7 @@ export interface WalletCompositionConfiguration {
   /**
    * Returns a map from rollCallIds to rollCalls for a given lao id
    */
-  useRollCallsByLaoId: (laoId: string) => {
+  useRollCallsByLaoId: (laoId: Hash) => {
     [rollCallId: string]: WalletFeature.RollCall;
   };
 
@@ -91,7 +91,7 @@ export interface WalletCompositionConfiguration {
 
   getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
 
-  useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
+  useRollCallTokensByLaoId: (laoId: Hash) => RollCallToken[];
 
   /**
    * A list of item generators that given a laoId return a list of items

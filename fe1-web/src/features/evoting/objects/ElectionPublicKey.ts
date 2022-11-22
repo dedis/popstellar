@@ -54,4 +54,13 @@ export class ElectionPublicKey {
 
     return Base64UrlData.encode(Buffer.concat([K.marshalBinary(), C.marshalBinary()]));
   }
+
+  /**
+   * Returns the serialized version of the public key that can for instance be stored
+   * in redux stores
+   * @returns The serialized public key
+   */
+  serialize(): string {
+    return this.toString();
+  }
 }

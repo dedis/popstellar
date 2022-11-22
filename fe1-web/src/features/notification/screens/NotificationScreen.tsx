@@ -24,14 +24,8 @@ import {
 const NotificationScreen = () => {
   const laoId = NotificationHooks.useCurrentLaoId();
 
-  const selectUnreadNotifications = useMemo(
-    () => makeUnreadNotificationsSelector(laoId.valueOf()),
-    [laoId],
-  );
-  const selectReadNotifications = useMemo(
-    () => makeReadNotificationsSelector(laoId.valueOf()),
-    [laoId],
-  );
+  const selectUnreadNotifications = useMemo(() => makeUnreadNotificationsSelector(laoId), [laoId]);
+  const selectReadNotifications = useMemo(() => makeReadNotificationsSelector(laoId), [laoId]);
   const unreadNotifications = useSelector(selectUnreadNotifications);
   const readNotifications = useSelector(selectReadNotifications);
 
@@ -64,14 +58,8 @@ export const NotificationScreenRightHeader = () => {
 
   const laoId = NotificationHooks.useCurrentLaoId();
 
-  const selectUnreadNotifications = useMemo(
-    () => makeUnreadNotificationsSelector(laoId.valueOf()),
-    [laoId],
-  );
-  const selectReadNotifications = useMemo(
-    () => makeReadNotificationsSelector(laoId.valueOf()),
-    [laoId],
-  );
+  const selectUnreadNotifications = useMemo(() => makeUnreadNotificationsSelector(laoId), [laoId]);
+  const selectReadNotifications = useMemo(() => makeReadNotificationsSelector(laoId), [laoId]);
   const unreadNotifications = useSelector(selectUnreadNotifications);
   const readNotifications = useSelector(selectReadNotifications);
 
@@ -89,7 +77,7 @@ export const NotificationScreenRightHeader = () => {
     // remove notifications from the notification reducer
     dispatch(
       discardNotifications({
-        laoId: laoId.valueOf(),
+        laoId,
         notificationIds: allNotifications.map((n) => n.id),
       }),
     );

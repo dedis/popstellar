@@ -5,20 +5,10 @@
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 
-export interface NotificationState {
-  /* the id of the notification, is automatically assigned */
-  id: number;
-  /* the id of the lao this notification is associated with */
-  laoId: string;
-  /* whether the notification has been read. is automatically assigned */
-  hasBeenRead: boolean;
-  /* the time associated with the notification */
-  timestamp: number;
-  /* the title that is shown in the notification */
-  title: string;
-  /* this field can be used to differentiate various types of notifications */
-  type: string;
-}
+import { Hash } from 'core/objects';
+import { OmitMethods } from 'core/types';
+
+import { Notification, NotificationState } from '../objects/Notification';
 
 export const NOTIFICATION_REDUCER_PATH = 'notifications';
 
@@ -42,101 +32,128 @@ const notificationSlice = createSlice({
   initialState,
   reducers: {
     // Action called to add a new notification
-    addNotification: (
-      state: Draft<NotificationReducerState>,
-      action: PayloadAction<Omit<NotificationState, 'id' | 'hasBeenRead'>>,
-    ) => {
-      // check if there are already notifications for this lao
-      let laoState = state.byLaoId[action.payload.laoId];
-      if (!laoState) {
-        // if not create a new, empty state for that lao
-        laoState = {
-          byId: {},
-          unreadIds: [],
-          readIds: [],
-          nextId: 0,
+    addNotification: {
+      prepare: (notification: Omit<OmitMethods<Notification>, 'id' | 'hasBeenRead'>) => {
+        return {
+          payload: { ...notification, laoId: notification.laoId.serialize() },
         };
-      }
+      },
+      reducer: (
+        state: Draft<NotificationReducerState>,
+        action: PayloadAction<Omit<NotificationState, 'id' | 'hasBeenRead'>>,
+      ) => {
+        // check if there are already notifications for this lao
+        let laoState = state.byLaoId[action.payload.laoId];
+        if (!laoState) {
+          // if not create a new, empty state for that lao
+          laoState = {
+            byId: {},
+            unreadIds: [],
+            readIds: [],
+            nextId: 0,
+          };
+        }
 
-      const notification: NotificationState = {
-        ...action.payload,
-        id: laoState.nextId,
-        hasBeenRead: false,
-      };
+        const notification: NotificationState = {
+          ...action.payload,
+          id: laoState.nextId,
+          hasBeenRead: false,
+        };
 
-      laoState.nextId += 1;
-      laoState.byId[notification.id] = notification;
-      laoState.unreadIds.push(notification.id);
+        laoState.nextId += 1;
+        laoState.byId[notification.id] = notification;
+        laoState.unreadIds.push(notification.id);
 
-      state.byLaoId[action.payload.laoId] = laoState;
+        state.byLaoId[action.payload.laoId] = laoState;
+      },
     },
 
     // Marks a notification as read
-    markNotificationAsRead: (
-      state: Draft<NotificationReducerState>,
-      action: PayloadAction<{ laoId: string; notificationId: number }>,
-    ) => {
-      const { laoId, notificationId } = action.payload;
+    markNotificationAsRead: {
+      prepare: (action: { laoId: Hash; notificationId: number }) => {
+        return {
+          payload: {
+            laoId: action.laoId.serialize(),
+            notificationId: action.notificationId,
+          },
+        };
+      },
+      reducer: (
+        state: Draft<NotificationReducerState>,
+        action: PayloadAction<{ laoId: string; notificationId: number }>,
+      ) => {
+        const { laoId, notificationId } = action.payload;
 
-      if (!(laoId in state.byLaoId)) {
-        console.warn(
-          `Tried to mark the notification with id ${notificationId} in lao ${laoId} as read but no notifications have been stored`,
-        );
-        return;
-      }
-
-      if (!(notificationId in state.byLaoId[laoId].byId)) {
-        console.warn(
-          `Tried to mark the notification with id ${notificationId} as read but this notification id has never been stored`,
-        );
-        return;
-      }
-
-      if (state.byLaoId[laoId].byId[notificationId].hasBeenRead) {
-        console.warn(`The notification with id ${notificationId} was already marked as read`);
-        return;
-      }
-
-      state.byLaoId[laoId].byId[notificationId].hasBeenRead = true;
-      state.byLaoId[laoId].unreadIds = state.byLaoId[laoId].unreadIds.filter(
-        (id) => id !== notificationId,
-      );
-      state.byLaoId[laoId].readIds.push(notificationId);
-    },
-
-    // Discards a set of notifications
-    discardNotifications: (
-      state: Draft<NotificationReducerState>,
-      action: PayloadAction<{ laoId: string; notificationIds: number[] }>,
-    ) => {
-      const { laoId, notificationIds } = action.payload;
-
-      if (!(laoId in state.byLaoId)) {
-        console.warn(
-          `Tried to discard the notifications with ids ${notificationIds.join(
-            ', ',
-          )} in lao ${laoId} as read but no notifications have been stored`,
-        );
-        return;
-      }
-
-      for (const notificationId of notificationIds) {
-        if (!(notificationId in state.byLaoId[laoId].byId)) {
+        if (!(laoId in state.byLaoId)) {
           console.warn(
-            `Tried to discard the notification with id ${notificationId} but this notification id has never been stored`,
+            `Tried to mark the notification with id ${notificationId} in lao ${laoId} as read but no notifications have been stored`,
           );
           return;
         }
 
-        delete state.byLaoId[laoId].byId[notificationId];
-      }
+        if (!(notificationId in state.byLaoId[laoId].byId)) {
+          console.warn(
+            `Tried to mark the notification with id ${notificationId} as read but this notification id has never been stored`,
+          );
+          return;
+        }
 
-      state.byLaoId[laoId].unreadIds = state.byLaoId[laoId].unreadIds.filter(
-        (id) => !notificationIds.includes(id),
-      );
-      state.byLaoId[laoId].readIds = state.byLaoId[laoId].readIds.filter(
-        (id) => !notificationIds.includes(id),
-      );
+        if (state.byLaoId[laoId].byId[notificationId].hasBeenRead) {
+          console.warn(`The notification with id ${notificationId} was already marked as read`);
+          return;
+        }
+
+        state.byLaoId[laoId].byId[notificationId].hasBeenRead = true;
+        state.byLaoId[laoId].unreadIds = state.byLaoId[laoId].unreadIds.filter(
+          (id) => id !== notificationId,
+        );
+        state.byLaoId[laoId].readIds.push(notificationId);
+      },
+    },
+
+    // Discards a set of notifications
+    discardNotifications: {
+      prepare: (action: { laoId: Hash; notificationIds: number[] }) => {
+        return {
+          payload: {
+            laoId: action.laoId.serialize(),
+            notificationIds: action.notificationIds,
+          },
+        };
+      },
+      reducer: (
+        state: Draft<NotificationReducerState>,
+        action: PayloadAction<{ laoId: string; notificationIds: number[] }>,
+      ) => {
+        const { laoId, notificationIds } = action.payload;
+
+        if (!(laoId in state.byLaoId)) {
+          console.warn(
+            `Tried to discard the notifications with ids ${notificationIds.join(
+              ', ',
+            )} in lao ${laoId} as read but no notifications have been stored`,
+          );
+          return;
+        }
+
+        for (const notificationId of notificationIds) {
+          if (!(notificationId in state.byLaoId[laoId].byId)) {
+            console.warn(
+              `Tried to discard the notification with id ${notificationId} but this notification id has never been stored`,
+            );
+            return;
+          }
+
+          delete state.byLaoId[laoId].byId[notificationId];
+        }
+
+        state.byLaoId[laoId].unreadIds = state.byLaoId[laoId].unreadIds.filter(
+          (id) => !notificationIds.includes(id),
+        );
+        state.byLaoId[laoId].readIds = state.byLaoId[laoId].readIds.filter(
+          (id) => !notificationIds.includes(id),
+        );
+      },
     },
 
     // Discards all notifications
@@ -171,10 +188,12 @@ export const getNotificationState = (state: any): NotificationReducerState =>
  * @param laoId The lao id the selector should be created for
  * @returns The selector
  */
-export const makeUnreadNotificationCountSelector = (laoId: string) =>
-  createSelector(
+export const makeUnreadNotificationCountSelector = (laoId: Hash) => {
+  const serializedLaoId = laoId.serialize();
+
+  return createSelector(
     // First input: all notification ids
-    (state: any) => getNotificationState(state).byLaoId[laoId]?.unreadIds,
+    (state: any) => getNotificationState(state).byLaoId[serializedLaoId]?.unreadIds,
     // Selector: returns the number of unread notifications
     (unreadIds: number[] | undefined): number => {
       if (!unreadIds) {
@@ -184,23 +203,26 @@ export const makeUnreadNotificationCountSelector = (laoId: string) =>
       return unreadIds.length;
     },
   );
+};
 
 /**
  * Creates a selector that returns all unread notifications for a specific lao ordererd with the newest first
  * @param laoId The lao id the selector should be created for
  * @returns The selector
  */
-export const makeUnreadNotificationsSelector = (laoId: string) =>
-  createSelector(
+export const makeUnreadNotificationsSelector = (laoId: Hash) => {
+  const serializedLaoId = laoId.serialize();
+
+  return createSelector(
     // First input: a map containing all notifications
-    (state: any) => getNotificationState(state).byLaoId[laoId]?.byId,
+    (state: any) => getNotificationState(state).byLaoId[serializedLaoId]?.byId,
     // Second input: all ids of unread notifications
-    (state: any) => getNotificationState(state).byLaoId[laoId]?.unreadIds,
+    (state: any) => getNotificationState(state).byLaoId[serializedLaoId]?.unreadIds,
     // Selector: returns all unread notifications for a specific lao
     (
       notificationMap: Record<string, NotificationState> | undefined,
       unreadIds: number[] | undefined,
-    ): NotificationState[] => {
+    ): Notification[] => {
       if (!notificationMap || !unreadIds) {
         return [];
       }
@@ -210,26 +232,29 @@ export const makeUnreadNotificationsSelector = (laoId: string) =>
       // sort in descending order, i.e. newest/latest first
       notifications.sort((a, b) => b.timestamp - a.timestamp);
 
-      return notifications;
+      return notifications.map((n) => Notification.fromNotificationState(n));
     },
   );
+};
 
 /**
  * Creates a selector that returns all read notifications for a specific lao ordererd with the newest first
  * @param laoId The lao id the selector should be created for
  * @returns The selector
  */
-export const makeReadNotificationsSelector = (laoId: string) =>
-  createSelector(
+export const makeReadNotificationsSelector = (laoId: Hash) => {
+  const serializedLaoId = laoId.serialize();
+
+  return createSelector(
     // First input: a map containing all notifications
-    (state: any) => getNotificationState(state).byLaoId[laoId]?.byId,
+    (state: any) => getNotificationState(state).byLaoId[serializedLaoId]?.byId,
     // Second input: all ids of read notifications
-    (state: any) => getNotificationState(state).byLaoId[laoId]?.readIds,
+    (state: any) => getNotificationState(state).byLaoId[serializedLaoId]?.readIds,
     // Selector: returns all read notifications for a specific lao
     (
       notificationMap: Record<string, NotificationState> | undefined,
       readIds: number[] | undefined,
-    ): NotificationState[] => {
+    ): Notification[] => {
       if (!notificationMap || !readIds) {
         return [];
       }
@@ -239,9 +264,10 @@ export const makeReadNotificationsSelector = (laoId: string) =>
       // sort in descending order, i.e. newest/latest first
       notifications.sort((a, b) => b.timestamp - a.timestamp);
 
-      return notifications;
+      return notifications.map((n) => Notification.fromNotificationState(n));
     },
   );
+};
 
 /**
  * Retrives a single notification state by id
@@ -249,13 +275,18 @@ export const makeReadNotificationsSelector = (laoId: string) =>
  * @param notificationId The id of the notification to retrieve
  * @returns A single notification state
  */
-export const makeNotificationSelector = (laoId: string, notificationId: number) =>
+export const makeNotificationSelector = (laoId: Hash, notificationId: number) =>
   createSelector(
     // First input: a map containing all notifications
     (state: any) => getNotificationState(state),
     // Selector: returns the notification for a specific lao and notification id
-    (notificationState: NotificationReducerState): NotificationState | undefined =>
-      notificationState.byLaoId[laoId]?.byId[notificationId],
+    (notificationState: NotificationReducerState): Notification | undefined => {
+      const serializedLaoId = laoId.serialize();
+
+      const state = notificationState.byLaoId[serializedLaoId]?.byId[notificationId];
+
+      return state && Notification.fromNotificationState(state);
+    },
   );
 
 export const notificationReduce = notificationSlice.reducer;

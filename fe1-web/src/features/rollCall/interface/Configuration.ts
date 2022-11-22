@@ -21,7 +21,7 @@ export interface RollCallConfiguration {
   /**
    * Gets the lao associated to the given id. Should be used outside react components
    */
-  getLaoById: (id: string) => RollCallFeature.Lao | undefined;
+  getLaoById: (id: Hash) => RollCallFeature.Lao | undefined;
 
   /**
    * Returns the currently active lao id or throws an error if there is none.
@@ -39,11 +39,7 @@ export interface RollCallConfiguration {
   /**
    * An action cretor that sets the last roll call for a given lao
    */
-  setLaoLastRollCall: (
-    laoId: Hash | string,
-    rollCallId: Hash | string,
-    hasToken: boolean,
-  ) => AnyAction;
+  setLaoLastRollCall: (laoId: Hash, rollCallId: Hash, hasToken: boolean) => AnyAction;
 
   /* Event related functions */
 
@@ -53,7 +49,7 @@ export interface RollCallConfiguration {
    * @param event - The event
    * @returns A redux action causing the state change
    */
-  addEvent: (laoId: Hash | string, event: RollCallFeature.EventState) => AnyAction;
+  addEvent: (laoId: Hash, event: RollCallFeature.EventState) => AnyAction;
 
   /**
    * Creates a redux action for update the stored event state
@@ -78,7 +74,7 @@ export interface RollCallConfiguration {
    * @returns A selector for a map from laoIds to a map of eventIds to events
    */
   makeEventByTypeSelector: (
-    laoId: Hash | string,
+    laoId: Hash,
     eventType: string,
   ) => (state: unknown) => Record<string, RollCallFeature.EventState>;
 
@@ -113,22 +109,19 @@ export interface RollCallInterface extends FeatureInterface {
   eventTypes: EventType[];
 
   functions: {
-    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined;
+    getRollCallById: (rollCallId: Hash) => RollCall | undefined;
   };
 
   hooks: {
-    useRollCallById: (rollCallId: Hash | string | undefined) => RollCall | undefined;
-    useRollCallsByLaoId: (laoId: Hash | string) => {
+    useRollCallById: (rollCallId?: Hash) => RollCall | undefined;
+    useRollCallsByLaoId: (laoId: Hash) => {
       [rollCallId: string]: RollCall;
     };
 
-    useRollCallTokensByLaoId: (laoId: Hash | string) => RollCallToken[];
-    useRollCallTokenByRollCallId: (
-      laoId: Hash | string,
-      rollCallId: string,
-    ) => RollCallToken | undefined;
+    useRollCallTokensByLaoId: (laoId: Hash) => RollCallToken[];
+    useRollCallTokenByRollCallId: (laoId: Hash, rollCallId?: Hash) => RollCallToken | undefined;
 
-    useRollCallAttendeesById: (rollCallId: Hash | string | undefined) => PublicKey[];
+    useRollCallAttendeesById: (rollCallId?: Hash) => PublicKey[];
   };
 
   context: RollCallReactContext;

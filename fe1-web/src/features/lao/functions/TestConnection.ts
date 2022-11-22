@@ -25,6 +25,6 @@ export const openLaoTestConnection = async () => {
     witnesses: [],
   });
 
-  dispatch(setCurrentLao({ lao: sampleLao.toState() }));
+  dispatch(setCurrentLao(sampleLao));
   console.info('Stored test lao in storage : ', sampleLao);
 };

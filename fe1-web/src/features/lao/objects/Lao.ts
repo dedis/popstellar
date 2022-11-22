@@ -81,9 +81,9 @@ export class Lao {
     this.last_tokenized_roll_call_id = obj.last_tokenized_roll_call_id;
     this.server_addresses = obj.server_addresses || [];
 
-    const laoChannel = getLaoChannel(obj.id.valueOf());
+    const laoChannel = getLaoChannel(obj.id);
     if (!laoChannel) {
-      throw new Error(`Obtained invalid lao channel from valid lao id '${obj.id.valueOf()}'???`);
+      throw new Error(`Obtained invalid lao channel from valid lao id '${obj.id.serialize()}'???`);
     }
 
     this.subscribed_channels = obj.subscribed_channels || [laoChannel];

@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
 import { PoPIcon } from 'core/components';
-import { Timestamp } from 'core/objects';
+import { Hash, Timestamp } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -54,7 +54,7 @@ const Subtitle = ({ rollCall }: { rollCall: RollCall }) => {
 const RollCallListItem = (props: IPropTypes) => {
   const { eventId: rollCallId } = props;
 
-  const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
+  const selectRollCall = useMemo(() => makeRollCallSelector(new Hash(rollCallId)), [rollCallId]);
   const rollCall = useSelector(selectRollCall);
 
   if (!rollCall) {

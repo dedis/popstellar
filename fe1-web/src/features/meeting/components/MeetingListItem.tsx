@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
-import { Timestamp } from 'core/objects';
+import { Hash, Timestamp } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -37,7 +37,7 @@ const getSubtitle = (meeting: Meeting): string => {
 const MeetingListItem = (props: IPropTypes) => {
   const { eventId: meetingId } = props;
 
-  const selectMeeting = useMemo(() => makeMeetingSelector(meetingId), [meetingId]);
+  const selectMeeting = useMemo(() => makeMeetingSelector(new Hash(meetingId)), [meetingId]);
   const meeting = useSelector(selectMeeting);
 
   if (!meeting) {

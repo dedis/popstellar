@@ -38,7 +38,7 @@ const LaoProperties = () => {
     <View>
       <View style={styles.qrcodeContainer}>
         <QRCode
-          value={encodeLaoConnection(lao.server_addresses, lao.id.toString())}
+          value={encodeLaoConnection(lao.server_addresses, lao.id)}
           overlayText={STRINGS.lao_qr_code_overlay}
         />
       </View>

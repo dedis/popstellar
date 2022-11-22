@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import { mockNavigate } from '__mocks__/useNavigationMock';
-import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils';
+import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { subscribeToChannel } from 'core/network/CommunicationApi';
 import { Channel, Hash, PublicKey } from 'core/objects';
@@ -22,8 +22,8 @@ const contextValue = {
     useCurrentLao: () => mockLao,
     getCurrentLao: () => mockLao,
     useConnectedToLao: () => true,
-    useCurrentLaoId: () => mockLaoIdHash,
-    getCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
+    getCurrentLaoId: () => mockLaoId,
     useRollCallById: () => undefined,
     useRollCallAttendeesById: () => [],
     generateToken: () => Promise.resolve(mockPopToken),

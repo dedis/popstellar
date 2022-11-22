@@ -5,10 +5,10 @@
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Hash } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import { COINBASE_HASH } from 'resources/const';
 
-import { TransactionState } from '../objects/transaction';
+import { Transaction, TransactionState } from '../objects/transaction';
 
 export interface DigitalCashReducerState {
   /**
@@ -53,64 +53,69 @@ const digitalCashSlice = createSlice({
      * Adds a transaction to the state
      * We are trusting information of the transaction object, we do not verify it
      */
-    addTransaction: (
-      state,
-      action: PayloadAction<{
-        laoId: string;
-        transactionState: TransactionState;
-      }>,
-    ) => {
-      const { laoId, transactionState } = action.payload;
+    addTransaction: {
+      prepare: (laoId: Hash, transaction: Transaction) => ({
+        payload: { laoId: laoId.serialize(), transactionState: transaction.toState() },
+      }),
+      reducer: (
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          transactionState: TransactionState;
+        }>,
+      ) => {
+        const { laoId, transactionState } = action.payload;
 
-      if (!transactionState.transactionId) {
-        throw new Error('The transaction id of the added transaction is not defined');
-      }
-      const transactionHash = transactionState.transactionId;
-
-      /**
-       * If state is empty for given lao or roll call, we should create the initial objects
-       */
-      if (!(laoId in state.byLaoId)) {
-        state.byLaoId[laoId] = {
-          balances: {},
-          allTransactionsHash: [],
-          transactionsByHash: {},
-          transactionsByPubHash: {},
-        };
-      }
-
-      const laoState: DigitalCashReducerState = state.byLaoId[laoId];
-
-      laoState.transactionsByHash[transactionHash] = transactionState;
-      laoState.allTransactionsHash.push(transactionHash);
-
-      /**
-       * Invariant for the digital cash implementation:
-       * Every input of a public key used in an input will be spent in the outputs
-       */
-      transactionState.inputs.forEach((input) => {
-        const pubHash = Hash.fromPublicKey(input.script.publicKey).valueOf();
-
-        // If this is not a coinbase transaction, then as we are sure that all inputs are used
-        if (input.txOutHash !== COINBASE_HASH) {
-          laoState.balances[pubHash] = 0;
-          laoState.transactionsByPubHash[pubHash] = [];
+        if (!transactionState.transactionId) {
+          throw new Error('The transaction id of the added transaction is not defined');
         }
-      });
+        const transactionHash = transactionState.transactionId;
 
-      transactionState.outputs.forEach((output) => {
-        const pubKeyHash = output.script.publicKeyHash.valueOf();
-
-        if (!laoState.balances[pubKeyHash]) {
-          laoState.balances[pubKeyHash] = 0;
+        /**
+         * If state is empty for given lao or roll call, we should create the initial objects
+         */
+        if (!(laoId in state.byLaoId)) {
+          state.byLaoId[laoId] = {
+            balances: {},
+            allTransactionsHash: [],
+            transactionsByHash: {},
+            transactionsByPubHash: {},
+          };
         }
-        laoState.balances[pubKeyHash] += output.value;
 
-        if (!(pubKeyHash in laoState.transactionsByPubHash)) {
-          laoState.transactionsByPubHash[pubKeyHash] = [];
-        }
-        laoState.transactionsByPubHash[pubKeyHash].push(transactionHash);
-      });
+        const laoState: DigitalCashReducerState = state.byLaoId[laoId];
+
+        laoState.transactionsByHash[transactionHash] = transactionState;
+        laoState.allTransactionsHash.push(transactionHash);
+
+        /**
+         * Invariant for the digital cash implementation:
+         * Every input of a public key used in an input will be spent in the outputs
+         */
+        transactionState.inputs.forEach((input) => {
+          const pubHash = Hash.fromPublicKey(input.script.publicKey).valueOf();
+
+          // If this is not a coinbase transaction, then as we are sure that all inputs are used
+          if (input.txOutHash !== COINBASE_HASH) {
+            laoState.balances[pubHash] = 0;
+            laoState.transactionsByPubHash[pubHash] = [];
+          }
+        });
+
+        transactionState.outputs.forEach((output) => {
+          const pubKeyHash = output.script.publicKeyHash.valueOf();
+
+          if (!laoState.balances[pubKeyHash]) {
+            laoState.balances[pubKeyHash] = 0;
+          }
+          laoState.balances[pubKeyHash] += output.value;
+
+          if (!(pubKeyHash in laoState.transactionsByPubHash)) {
+            laoState.transactionsByPubHash[pubKeyHash] = [];
+          }
+          laoState.transactionsByPubHash[pubKeyHash].push(transactionHash);
+        });
+      },
     },
   },
 });
@@ -128,7 +133,7 @@ export const getDigitalCashState = (state: any): DigitalCashLaoReducerState =>
  * Selector for the mapping between public key hashes and balances
  * @param laoId the lao in which to search for the balances mapping
  */
-export const makeBalancesSelector = (laoId: Hash | string) =>
+export const makeBalancesSelector = (laoId: Hash) =>
   createSelector(
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
     (laoState: DigitalCashReducerState | undefined) => {
@@ -141,7 +146,7 @@ export const makeBalancesSelector = (laoId: Hash | string) =>
  * @param laoId the lao in which to search for the balance
  * @param publicKey the public key that possesses this balance
  */
-export const makeBalanceSelector = (laoId: Hash | string, publicKey: string) =>
+export const makeBalanceSelector = (laoId: Hash, publicKey: PublicKey) =>
   createSelector(
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()],
     (laoState: DigitalCashReducerState | undefined) => {
@@ -153,7 +158,7 @@ export const makeBalanceSelector = (laoId: Hash | string, publicKey: string) =>
  * Selector for all transaction states by lao id
  * @param laoId
  */
-export const makeTransactionsSelector = (laoId: Hash | string) =>
+export const makeTransactionsSelector = (laoId: Hash) =>
   createSelector(
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.allTransactionsHash,
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
@@ -172,7 +177,7 @@ export const makeTransactionsSelector = (laoId: Hash | string) =>
  * Selector for the mapping between hashes and the transaction states by lao id
  * @param laoId
  */
-export const makeTransactionsByHashSelector = (laoId: Hash | string) =>
+export const makeTransactionsByHashSelector = (laoId: Hash) =>
   createSelector(
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
     (transactionsByHash: Record<string, TransactionState> | undefined) => {

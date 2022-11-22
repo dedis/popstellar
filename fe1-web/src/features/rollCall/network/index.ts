@@ -22,10 +22,10 @@ export * from './RollCallMessageApi';
  */
 export const configureNetwork = (configuration: RollCallConfiguration) => {
   // getRollCallById bound to the global state
-  const boundGetRollCallById = (rollCallId: Hash | string) =>
+  const boundGetRollCallById = (rollCallId: Hash) =>
     getRollCallById(rollCallId, getStore().getState());
 
-  const addRollCallEvent = (laoId: Hash | string, rollCall: RollCall) => {
+  const addRollCallEvent = (laoId: Hash, rollCall: RollCall) => {
     const rollCallState = rollCall.toState();
 
     dispatch(addRollCall(rollCallState));

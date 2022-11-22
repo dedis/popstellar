@@ -41,7 +41,7 @@ const validCoinbaseState: TransactionState = {
       },
     },
   ],
-  transactionId: mockCBHash,
+  transactionId: mockCBHash.serialize(),
   lockTime: 0,
 };
 
@@ -49,7 +49,7 @@ const validTransactionState1: TransactionState = {
   version: 1,
   inputs: [
     {
-      txOutHash: mockCBHash,
+      txOutHash: mockCBHash.serialize(),
       txOutIndex: 0,
       script: {
         type: SCRIPT_TYPE,
@@ -107,10 +107,7 @@ const randomTransactionState: TransactionState = {
 };
 
 const mockTransactionRecordByHash: Record<string, TransactionState> = {
-  [mockCBHash.valueOf()]: Transaction.fromJSON(
-    mockCoinbaseTransactionJSON,
-    mockCBHash.valueOf(),
-  ).toState(),
+  [mockCBHash.serialize()]: Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash).toState(),
 };
 // endregion
 
@@ -126,7 +123,9 @@ describe('Transaction', () => {
   });
 
   it('should fail to create a transaction with invalid hash', () => {
-    expect(() => Transaction.fromJSON(mockCoinbaseTransactionJSON, 'hash')).toThrow(Error);
+    expect(() => Transaction.fromJSON(mockCoinbaseTransactionJSON, new Hash('hash'))).toThrow(
+      Error,
+    );
   });
 
   it('should be able to create a transaction from a valid partial transaction', () => {

@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import {
   NOTIFICATION_FEATURE_IDENTIFIER,
@@ -23,7 +23,7 @@ import NotificationScreen, { NotificationScreenRightHeader } from '../Notificati
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     notificationTypes: [WitnessNotificationType],
   } as NotificationReactContext,
 };

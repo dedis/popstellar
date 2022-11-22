@@ -15,10 +15,9 @@ import { CreateMeeting, StateMeeting } from './messages';
  */
 export const configureNetwork = (configuration: MeetingConfiguration) => {
   // getMeetingById bound to the global state
-  const boundGetMeetingById = (meetingId: Hash | string) =>
-    getMeetingById(meetingId, getStore().getState());
+  const boundGetMeetingById = (meetingId: Hash) => getMeetingById(meetingId, getStore().getState());
 
-  const addMeetingEvent = (laoId: Hash | string, meeting: Meeting) => {
+  const addMeetingEvent = (laoId: Hash, meeting: Meeting) => {
     const meetingState = meeting.toState();
 
     dispatch(addMeeting(meetingState));

@@ -41,10 +41,7 @@ const ElectionOpened = ({ election, isConnected, isOrganizer }: IPropTypes) => {
     }, {} as Record<string, boolean | undefined>),
   );
 
-  const electionKeySelector = useMemo(
-    () => makeElectionKeySelector(election.id.valueOf()),
-    [election.id],
-  );
+  const electionKeySelector = useMemo(() => makeElectionKeySelector(election.id), [election.id]);
   const electionKey = useSelector(electionKeySelector);
 
   const canCastVote = !!(election.version !== ElectionVersion.SECRET_BALLOT || electionKey);

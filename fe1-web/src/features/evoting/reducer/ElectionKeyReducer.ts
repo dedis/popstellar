@@ -6,7 +6,7 @@
 
 import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 
-import { Base64UrlData } from 'core/objects';
+import { Base64UrlData, Hash } from 'core/objects';
 
 import { ElectionPublicKey } from '../objects/ElectionPublicKey';
 
@@ -30,19 +30,24 @@ const electionKeySlice = createSlice({
   name: ELECTION_KEY_REDUCER_PATH,
   initialState,
   reducers: {
-    addElectionKey: (
-      state: Draft<ElectionKeyReducerState>,
-      action: PayloadAction<{ electionId: string; electionKey: string }>,
-    ) => {
-      const { electionId, electionKey } = action.payload;
+    addElectionKey: {
+      prepare: (electionId: Hash, electionKey: ElectionPublicKey) => ({
+        payload: { electionId: electionId.serialize(), electionKey: electionKey.serialize() },
+      }),
+      reducer: (
+        state: Draft<ElectionKeyReducerState>,
+        action: PayloadAction<{ electionId: string; electionKey: string }>,
+      ) => {
+        const { electionId, electionKey } = action.payload;
 
-      if (electionId in state.byElectionId) {
-        throw new Error(
-          `There is already an election key stored for the election id ${electionId}`,
-        );
-      }
+        if (electionId in state.byElectionId) {
+          throw new Error(
+            `There is already an election key stored for the election id ${electionId}`,
+          );
+        }
 
-      state.byElectionId[electionId] = electionKey;
+        state.byElectionId[electionId] = electionKey;
+      },
     },
 
     removeElectionKey: (state, action: PayloadAction<string>) => {
@@ -97,14 +102,16 @@ export const getElectionKeyByElectionId = (
  * @param electionId The election id
  * @returns A selector for the election key for the given election id or undefined if there is none
  */
-export const makeElectionKeySelector = (electionId: string) =>
+export const makeElectionKeySelector = (electionId: Hash) =>
   createSelector(
     // First input: map of lao ids to servers
     (state: any) => getElectionKeyState(state).byElectionId,
     // Selector: returns the election key associated to the given election id
     (byElectionId: ElectionKeyReducerState['byElectionId']): ElectionPublicKey | undefined => {
-      if (electionId in byElectionId) {
-        return new ElectionPublicKey(new Base64UrlData(byElectionId[electionId]));
+      const serializedElectionId = electionId.serialize();
+
+      if (serializedElectionId in byElectionId) {
+        return new ElectionPublicKey(new Base64UrlData(byElectionId[serializedElectionId]));
       }
 
       return undefined;

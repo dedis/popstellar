@@ -45,7 +45,7 @@ const createMockMessage = (post: PostTransaction) => {
     sender: mockKeyPair.publicKey,
     signature: new Signature('signature'),
     witness_signatures: [],
-    laoId: new Hash(mockLaoId),
+    laoId: mockLaoId,
     messageData: post,
   };
 };

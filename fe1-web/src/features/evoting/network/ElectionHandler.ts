@@ -43,7 +43,7 @@ export const handleElectionKeyMessage =
 
     const electionKeyMessage = msg.messageData as ElectionKey;
     // for now *ALL* election#key messages *MUST* be sent by the backend of the organizer
-    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId.valueOf());
+    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId);
 
     if (!organizerBackendPublicKey) {
       console.warn(makeErr("the organizer backend's public key is unknown"));
@@ -55,12 +55,7 @@ export const handleElectionKeyMessage =
       return false;
     }
 
-    dispatch(
-      addElectionKey({
-        electionId: electionKeyMessage.election.valueOf(),
-        electionKey: electionKeyMessage.election_key.valueOf(),
-      }),
-    );
+    dispatch(addElectionKey(electionKeyMessage.election, electionKeyMessage.election_key));
 
     return true;
   };
@@ -70,7 +65,7 @@ export const handleElectionKeyMessage =
  * @param addElection - A function to add a new election
  */
 export const handleElectionSetupMessage =
-  (addElection: (laoId: Hash | string, election: Election) => void) =>
+  (addElection: (laoId: Hash, election: Election) => void) =>
   (msg: ProcessableMessage): boolean => {
     const makeErr = (err: string) => `election#setup was not processed: ${err}`;
 
@@ -136,7 +131,7 @@ export const handleElectionSetupMessage =
  */
 export const handleElectionOpenMessage =
   (
-    getElectionById: (electionId: Hash | string) => Election | undefined,
+    getElectionById: (electionId: Hash) => Election | undefined,
     updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
@@ -181,7 +176,7 @@ export const handleElectionOpenMessage =
  */
 export const handleCastVoteMessage =
   (
-    getElectionById: (electionId: Hash | string) => Election | undefined,
+    getElectionById: (electionId: Hash) => Election | undefined,
     updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
@@ -241,7 +236,7 @@ export const handleCastVoteMessage =
  */
 export const handleElectionEndMessage =
   (
-    getElectionById: (electionId: Hash | string) => Election | undefined,
+    getElectionById: (electionId: Hash) => Election | undefined,
     updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage) => {
@@ -287,7 +282,7 @@ export const handleElectionEndMessage =
  */
 export const handleElectionResultMessage =
   (
-    getElectionById: (electionId: Hash | string) => Election | undefined,
+    getElectionById: (electionId: Hash) => Election | undefined,
     updateElection: (election: Election) => void,
     getLaoOrganizerBackendPublicKey: EvotingConfiguration['getLaoOrganizerBackendPublicKey'],
   ) =>
@@ -317,7 +312,7 @@ export const handleElectionResultMessage =
     }
 
     // for now *ALL* election#result messages *MUST* be sent by the backend of the organizer
-    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId.valueOf());
+    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId);
 
     if (!organizerBackendPublicKey) {
       console.warn(makeErr("the organizer backend's public key is unknown"));

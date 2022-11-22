@@ -14,7 +14,7 @@ import { PostTransaction } from './messages';
 export const handleTransactionPost =
   (
     addTransaction: (laoId: Hash, transaction: Transaction) => void,
-    getLaoOrganizer: (laoId: string) => PublicKey | undefined,
+    getLaoOrganizer: (laoId: Hash) => PublicKey | undefined,
   ) =>
   (msg: ProcessableMessage): boolean => {
     if (
@@ -35,20 +35,20 @@ export const handleTransactionPost =
     const tx = msg.messageData as PostTransaction;
     console.log(`Handler: Received transaction with id: ${tx.transaction_id.valueOf()}`);
 
-    const organizerPublicKey = getLaoOrganizer(msg.laoId.valueOf());
+    const organizerPublicKey = getLaoOrganizer(msg.laoId);
     if (!organizerPublicKey) {
       console.warn('The organizer public key for this lao id was not found');
       return false;
     }
 
-    const transaction = Transaction.fromJSON(tx.transaction, tx.transaction_id.valueOf());
+    const transaction = Transaction.fromJSON(tx.transaction, tx.transaction_id);
 
     // Check the transaction signatures over the inputs and outputs,
     // and check that the transaction inputs used are consistent with our current state
     if (
       !transaction.checkTransactionValidity(
         organizerPublicKey,
-        DigitalCashStore.getTransactionsById(msg.laoId.valueOf()),
+        DigitalCashStore.getTransactionsById(msg.laoId),
       )
     ) {
       console.warn('Transaction is not valid');

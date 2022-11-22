@@ -102,7 +102,7 @@ export class SetupElection implements MessageData {
     if (!msg.questions) {
       throw new ProtocolError("Undefined 'questions' parameter encountered during 'SetupElection'");
     }
-    SetupElection.validateQuestions(msg.questions, msg.id.toString());
+    SetupElection.validateQuestions(msg.questions, msg.id);
     this.questions = msg.questions;
   }
 
@@ -123,9 +123,13 @@ export class SetupElection implements MessageData {
    * @param questions - The array of questions to be checked
    * @param electionId - The id of the election
    */
-  public static validateQuestions(questions: Question[], electionId: string) {
+  public static validateQuestions(questions: Question[], electionId: Hash) {
     questions.forEach((question) => {
-      const expectedHash = Hash.fromStringArray(EventTags.QUESTION, electionId, question.question);
+      const expectedHash = Hash.fromStringArray(
+        EventTags.QUESTION,
+        electionId.serialize(),
+        question.question,
+      );
 
       if (expectedHash.valueOf() !== question.id) {
         throw new ProtocolError(

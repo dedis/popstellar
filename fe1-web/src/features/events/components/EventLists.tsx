@@ -34,7 +34,7 @@ const EventLists = () => {
   const laoId = EventHooks.useCurrentLaoId();
   const navigation = useNavigation<NavigationProps['navigation']>();
 
-  const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
+  const eventListSelector = useMemo(() => makeEventListSelector(laoId), [laoId]);
   const events = useSelector(eventListSelector);
 
   const [{ pastEvents, currentEvents, upcomingEvents }, setEvents] = useState<{

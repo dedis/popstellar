@@ -34,7 +34,7 @@ export const storeBackendAndConnectToPeers = async (
         address: greetLaoMsg.address,
         serverPublicKey: publicKey,
         frontendPublicKey: greetLaoMsg.frontend,
-      }).toState(),
+      }),
     ),
   );
 

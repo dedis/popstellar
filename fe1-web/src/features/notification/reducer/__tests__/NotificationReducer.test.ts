@@ -1,6 +1,7 @@
 import { describe } from '@jest/globals';
 
-import { mockLaoId } from '__tests__/utils';
+import { mockLaoId, serializedMockLaoId } from '__tests__/utils';
+import { NotificationState } from 'features/notification/objects/Notification';
 
 import {
   addNotification,
@@ -8,7 +9,6 @@ import {
   discardAllNotifications,
   markNotificationAsRead,
   notificationReduce,
-  NotificationState,
   NotificationReducerState,
   makeUnreadNotificationCountSelector,
   NOTIFICATION_REDUCER_PATH,
@@ -19,7 +19,7 @@ import {
 
 const n0 = {
   id: 0,
-  laoId: mockLaoId,
+  laoId: serializedMockLaoId,
   hasBeenRead: true,
   timestamp: 20,
   title: 'some title',
@@ -28,7 +28,7 @@ const n0 = {
 
 const n1 = {
   id: 1,
-  laoId: mockLaoId,
+  laoId: serializedMockLaoId,
   hasBeenRead: false,
   timestamp: 20,
   title: 'some title',
@@ -37,7 +37,7 @@ const n1 = {
 
 const n3 = {
   id: 3,
-  laoId: mockLaoId,
+  laoId: serializedMockLaoId,
   hasBeenRead: true,
   timestamp: 20,
   title: 'some title',
@@ -46,7 +46,7 @@ const n3 = {
 
 const n11 = {
   id: 11,
-  laoId: mockLaoId,
+  laoId: serializedMockLaoId,
   hasBeenRead: false,
   timestamp: 20,
   title: 'some title',
@@ -56,7 +56,7 @@ const n11 = {
 describe('NotificationReducer', () => {
   describe('addNotification', () => {
     it('adds notifications to the store', () => {
-      const notification: Omit<NotificationState, 'id' | 'hasBeenRead'> = {
+      const notification = {
         title: 'some title',
         laoId: mockLaoId,
         timestamp: 0,
@@ -65,14 +65,14 @@ describe('NotificationReducer', () => {
 
       const newState = notificationReduce({ byLaoId: {} }, addNotification(notification));
 
-      expect(newState.byLaoId[mockLaoId].unreadIds).toEqual([0]);
-      expect(newState.byLaoId[mockLaoId].readIds).toEqual([]);
-      expect(newState.byLaoId[mockLaoId].byId).toHaveProperty('0', {
+      expect(newState.byLaoId[serializedMockLaoId].unreadIds).toEqual([0]);
+      expect(newState.byLaoId[serializedMockLaoId].readIds).toEqual([]);
+      expect(newState.byLaoId[serializedMockLaoId].byId).toHaveProperty('0', {
         id: 0,
         hasBeenRead: false,
         ...notification,
       });
-      expect(newState.byLaoId[mockLaoId].nextId).toEqual(1);
+      expect(newState.byLaoId[serializedMockLaoId].nextId).toEqual(1);
     });
   });
 
@@ -81,7 +81,7 @@ describe('NotificationReducer', () => {
       const newState = notificationReduce(
         {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [0, 1],
               readIds: [],
               byId: {
@@ -95,19 +95,19 @@ describe('NotificationReducer', () => {
         discardNotifications({ laoId: mockLaoId, notificationIds: [0] }),
       );
 
-      expect(newState.byLaoId[mockLaoId].unreadIds).toEqual([1]);
-      expect(newState.byLaoId[mockLaoId].readIds).toEqual([]);
-      expect(newState.byLaoId[mockLaoId].byId).toEqual({
+      expect(newState.byLaoId[serializedMockLaoId].unreadIds).toEqual([1]);
+      expect(newState.byLaoId[serializedMockLaoId].readIds).toEqual([]);
+      expect(newState.byLaoId[serializedMockLaoId].byId).toEqual({
         1: n1,
       });
-      expect(newState.byLaoId[mockLaoId].nextId).toEqual(2);
+      expect(newState.byLaoId[serializedMockLaoId].nextId).toEqual(2);
     });
 
     it('removes multiple notifications from the store', () => {
       const newState = notificationReduce(
         {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [0, 1],
               readIds: [3],
               byId: {
@@ -122,19 +122,19 @@ describe('NotificationReducer', () => {
         discardNotifications({ laoId: mockLaoId, notificationIds: [0, 3] }),
       );
 
-      expect(newState.byLaoId[mockLaoId].unreadIds).toEqual([1]);
-      expect(newState.byLaoId[mockLaoId].readIds).toEqual([]);
-      expect(newState.byLaoId[mockLaoId].byId).toEqual({
+      expect(newState.byLaoId[serializedMockLaoId].unreadIds).toEqual([1]);
+      expect(newState.byLaoId[serializedMockLaoId].readIds).toEqual([]);
+      expect(newState.byLaoId[serializedMockLaoId].byId).toEqual({
         1: n1,
       });
-      expect(newState.byLaoId[mockLaoId].nextId).toEqual(4);
+      expect(newState.byLaoId[serializedMockLaoId].nextId).toEqual(4);
     });
 
     it("doesn't do anything if the id does not exist in the store", () => {
       const newState = notificationReduce(
         {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [0],
               readIds: [],
               byId: {
@@ -147,12 +147,12 @@ describe('NotificationReducer', () => {
         discardNotifications({ laoId: mockLaoId, notificationIds: [1] }),
       );
 
-      expect(newState.byLaoId[mockLaoId].unreadIds).toEqual([0]);
-      expect(newState.byLaoId[mockLaoId].readIds).toEqual([]);
-      expect(newState.byLaoId[mockLaoId].byId).toEqual({
+      expect(newState.byLaoId[serializedMockLaoId].unreadIds).toEqual([0]);
+      expect(newState.byLaoId[serializedMockLaoId].readIds).toEqual([]);
+      expect(newState.byLaoId[serializedMockLaoId].byId).toEqual({
         0: n0,
       });
-      expect(newState.byLaoId[mockLaoId].nextId).toEqual(1);
+      expect(newState.byLaoId[serializedMockLaoId].nextId).toEqual(1);
     });
   });
 
@@ -163,7 +163,7 @@ describe('NotificationReducer', () => {
       const newState = notificationReduce(
         {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [10],
               readIds: [0],
               byId: {
@@ -189,7 +189,7 @@ describe('NotificationReducer', () => {
             },
           },
         } as NotificationReducerState,
-        discardAllNotifications(mockLaoId),
+        discardAllNotifications(serializedMockLaoId),
       );
 
       expect(newState.byLaoId).toEqual({
@@ -216,7 +216,7 @@ describe('NotificationReducer', () => {
     it('sets the hasBeenRead flag to true', () => {
       const notification: NotificationState = {
         id: 0,
-        laoId: mockLaoId,
+        laoId: serializedMockLaoId,
         hasBeenRead: false,
         timestamp: 20,
         title: 'some title',
@@ -225,7 +225,7 @@ describe('NotificationReducer', () => {
       const newState = notificationReduce(
         {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [0],
               readIds: [],
               byId: {
@@ -238,20 +238,20 @@ describe('NotificationReducer', () => {
         markNotificationAsRead({ laoId: mockLaoId, notificationId: 0 }),
       );
 
-      expect(newState.byLaoId[mockLaoId].unreadIds).toEqual([]);
-      expect(newState.byLaoId[mockLaoId].readIds).toEqual([0]);
-      expect(newState.byLaoId[mockLaoId].byId).toHaveProperty('0', {
+      expect(newState.byLaoId[serializedMockLaoId].unreadIds).toEqual([]);
+      expect(newState.byLaoId[serializedMockLaoId].readIds).toEqual([0]);
+      expect(newState.byLaoId[serializedMockLaoId].byId).toHaveProperty('0', {
         ...notification,
         hasBeenRead: true,
       });
-      expect(newState.byLaoId[mockLaoId].nextId).toEqual(1);
+      expect(newState.byLaoId[serializedMockLaoId].nextId).toEqual(1);
     });
 
     it("doesn't do anything if the id does not exist in the store", () => {
       const newState = notificationReduce(
         {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [0],
               readIds: [],
               byId: {
@@ -264,12 +264,12 @@ describe('NotificationReducer', () => {
         markNotificationAsRead({ laoId: mockLaoId, notificationId: 1 }),
       );
 
-      expect(newState.byLaoId[mockLaoId].unreadIds).toEqual([0]);
-      expect(newState.byLaoId[mockLaoId].readIds).toEqual([]);
-      expect(newState.byLaoId[mockLaoId].byId).toEqual({
+      expect(newState.byLaoId[serializedMockLaoId].unreadIds).toEqual([0]);
+      expect(newState.byLaoId[serializedMockLaoId].readIds).toEqual([]);
+      expect(newState.byLaoId[serializedMockLaoId].byId).toEqual({
         0: n0,
       });
-      expect(newState.byLaoId[mockLaoId].nextId).toEqual(1);
+      expect(newState.byLaoId[serializedMockLaoId].nextId).toEqual(1);
     });
   });
 });
@@ -280,7 +280,7 @@ describe('makeUnreadNotificationCountSelector', () => {
       makeUnreadNotificationCountSelector(mockLaoId)({
         [NOTIFICATION_REDUCER_PATH]: {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [1, 11],
               readIds: [0, 3],
               byId: {
@@ -304,7 +304,7 @@ describe('makeUnreadNotificationsSelector', () => {
       makeUnreadNotificationsSelector(mockLaoId)({
         [NOTIFICATION_REDUCER_PATH]: {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [1, 11],
               readIds: [0, 3],
               byId: {
@@ -328,7 +328,7 @@ describe('makeReadNotificationsSelector', () => {
       makeReadNotificationsSelector(mockLaoId)({
         [NOTIFICATION_REDUCER_PATH]: {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [1, 11],
               readIds: [0, 3],
               byId: {
@@ -355,7 +355,7 @@ describe('makeNotificationSelector', () => {
       )({
         [NOTIFICATION_REDUCER_PATH]: {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [1, 11],
               readIds: [0, 3],
               byId: {
@@ -380,7 +380,7 @@ describe('makeNotificationSelector', () => {
       )({
         [NOTIFICATION_REDUCER_PATH]: {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               unreadIds: [1, 11],
               readIds: [0, 3],
               byId: {

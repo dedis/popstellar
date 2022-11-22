@@ -4,8 +4,8 @@ import '__tests__/utils/matchers';
 import {
   configureTestFeatures,
   defaultMessageDataFields,
+  serializedMockLaoId,
   mockLaoId,
-  mockLaoIdHash,
 } from '__tests__/utils';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
@@ -21,7 +21,7 @@ const mockEventName = 'myRollCall';
 const mockLocation = 'location';
 const mockStartTime = new Timestamp(1735685990);
 const mockEndTime = new Timestamp(1735686000);
-const mockRollCallId = Hash.fromString('my-roll-call');
+const mockRollCallId = new Hash('my-roll-call');
 
 const checkDataCreateRollCall = (obj: MessageData) => {
   expect(obj.object).toBe(ObjectType.ROLL_CALL);
@@ -59,7 +59,7 @@ const checkDataCreateRollCall = (obj: MessageData) => {
   // Check id
   const expected = Hash.fromStringArray(
     'R',
-    mockLaoId.toString(),
+    serializedMockLaoId.toString(),
     data.creation.toString(),
     data.name,
   );
@@ -81,7 +81,7 @@ const checkDataOpenRollCall = (obj: MessageData) => {
   // Check id
   const expected = Hash.fromStringArray(
     'R',
-    mockLaoId.toString(),
+    serializedMockLaoId.toString(),
     data.opens.toString(),
     data.opened_at.toString(),
   );
@@ -102,7 +102,7 @@ const checkDataReopenRollCall = (obj: MessageData) => {
   // check id
   const expected = Hash.fromStringArray(
     'R',
-    mockLaoId.toString(),
+    serializedMockLaoId.toString(),
     data.opens.toString(),
     data.opened_at.toString(),
   );
@@ -131,7 +131,7 @@ const checkDataCloseRollCall = (obj: MessageData) => {
   // check id
   const expected = Hash.fromStringArray(
     'R',
-    mockLaoId,
+    serializedMockLaoId,
     data.closes.toString(),
     data.closed_at.toString(),
   );
@@ -149,7 +149,7 @@ beforeEach(() => {
 describe('MessageApi', () => {
   it('should create the correct request for requestCreateRollCall without description', async () => {
     await msApi.requestCreateRollCall(
-      mockLaoIdHash,
+      mockLaoId,
       mockEventName,
       mockLocation,
       mockStartTime,
@@ -160,7 +160,7 @@ describe('MessageApi', () => {
   it('should create the correct request for requestCreateRollCall with description', async () => {
     const mockDescription = 'random description';
     await msApi.requestCreateRollCall(
-      mockLaoIdHash,
+      mockLaoId,
       mockEventName,
       mockLocation,
       mockStartTime,
@@ -170,52 +170,52 @@ describe('MessageApi', () => {
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}`);
     checkDataCreateRollCall(msgData);
   });
 
   it('should create the correct request for requestOpenRollCall without start time', async () => {
-    await msApi.requestOpenRollCall(mockLaoIdHash, mockRollCallId);
+    await msApi.requestOpenRollCall(mockLaoId, mockRollCallId);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}`);
     checkDataOpenRollCall(msgData);
   });
 
   it('should create the correct request for requestOpenRollCall with start time', async () => {
-    await msApi.requestOpenRollCall(mockLaoIdHash, mockRollCallId, mockStartTime);
+    await msApi.requestOpenRollCall(mockLaoId, mockRollCallId, mockStartTime);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}`);
     checkDataOpenRollCall(msgData);
   });
 
   it('should create the correct request for requestReopenRollCall without start time', async () => {
-    await msApi.requestReopenRollCall(mockLaoIdHash, mockRollCallId);
+    await msApi.requestReopenRollCall(mockLaoId, mockRollCallId);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}`);
     checkDataReopenRollCall(msgData);
   });
 
   it('should create the correct request for requestReopenRollCall with start time', async () => {
-    await msApi.requestReopenRollCall(mockLaoIdHash, mockRollCallId, mockStartTime);
+    await msApi.requestReopenRollCall(mockLaoId, mockRollCallId, mockStartTime);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}`);
     checkDataReopenRollCall(msgData);
   });
 
   it('should create the correct request for requestCloseRollCall without attendees', async () => {
-    await msApi.requestCloseRollCall(mockLaoIdHash, mockRollCallId, []);
+    await msApi.requestCloseRollCall(mockLaoId, mockRollCallId, []);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}`);
     checkDataCloseRollCall(msgData);
   });
 
@@ -225,21 +225,21 @@ describe('MessageApi', () => {
       'BEW-uVz_NG_prXFuaKrI9Ae0EbBLGWehLQ8aLZFWY4w=',
     ].map((a) => new PublicKey(a));
 
-    await msApi.requestCloseRollCall(mockLaoIdHash, mockRollCallId, attendeePks);
+    await msApi.requestCloseRollCall(mockLaoId, mockRollCallId, attendeePks);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}`);
     expect((msgData as CloseRollCall).attendees).toEqual(attendeePks);
     checkDataCloseRollCall(msgData);
   });
 
   it('should create the correct request for requestCloseRollCall with end time', async () => {
-    await msApi.requestCloseRollCall(mockLaoIdHash, mockRollCallId, [], mockEndTime);
+    await msApi.requestCloseRollCall(mockLaoId, mockRollCallId, [], mockEndTime);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}`);
     expect((msgData as CloseRollCall).closed_at).toEqual(mockEndTime);
     checkDataCloseRollCall(msgData);
   });

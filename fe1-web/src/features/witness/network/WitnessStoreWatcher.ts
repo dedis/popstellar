@@ -36,7 +36,7 @@ export const afterMessageProcessingHandler =
       return;
     }
 
-    const storedMessage = isMessageToWitness(msg.message_id.valueOf(), getStore().getState());
+    const storedMessage = isMessageToWitness(msg.message_id, getStore().getState());
     if (storedMessage) {
       // this message is already stored in the witness reducer
       // and hence does not have to be stored a second time
@@ -80,10 +80,10 @@ export const afterMessageProcessingHandler =
            break;
          } */
 
-          dispatch(addMessageToWitness({ messageId: msg.message_id.valueOf() }));
+          dispatch(addMessageToWitness(msg.message_id));
           dispatch(
             addNotification({
-              laoId: msg.laoId.valueOf(),
+              laoId: msg.laoId,
               title: `Witnessing required: ${msg.messageData.object}#${msg.messageData.action}`,
               timestamp: Timestamp.EpochNow().valueOf(),
               type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,

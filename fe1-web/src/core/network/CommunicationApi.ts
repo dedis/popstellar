@@ -6,16 +6,8 @@ import { storeMessage } from './ingestion';
 import { catchup, subscribe, unsubscribe } from './JsonRpcApi';
 import { NetworkConnection } from './NetworkConnection';
 
-type ChannelSubscriptionHandler = (
-  laoId: Hash | string,
-  dispatch: Dispatch,
-  channel: Channel,
-) => void;
-type ChannelUnsubscriptionHandler = (
-  laoId: Hash | string,
-  dispatch: Dispatch,
-  channel: Channel,
-) => void;
+type ChannelSubscriptionHandler = (laoId: Hash, dispatch: Dispatch, channel: Channel) => void;
+type ChannelUnsubscriptionHandler = (laoId: Hash, dispatch: Dispatch, channel: Channel) => void;
 
 const onChannelSubscriptionHandlers: ChannelSubscriptionHandler[] = [];
 const onChannelUnsubscriptionHandlers: ChannelUnsubscriptionHandler[] = [];
@@ -38,7 +30,7 @@ export const addOnChannelUnsubscriptionHandlers = (handler: ChannelUnsubscriptio
  * @returns A promise to wait on the subscription (and the optional catchup)
  */
 export async function subscribeToChannel(
-  laoId: Hash | string,
+  laoId: Hash,
   dispatch: Dispatch,
   channel: Channel,
   connections?: NetworkConnection[],
@@ -80,7 +72,7 @@ export async function subscribeToChannel(
  * @returns A promise to wait on the unsubscription
  */
 export async function unsubscribeFromChannel(
-  laoId: Hash | string,
+  laoId: Hash,
   dispatch: Dispatch,
   channel: Channel,
   connections?: NetworkConnection[],

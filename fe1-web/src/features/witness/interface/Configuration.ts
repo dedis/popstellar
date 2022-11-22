@@ -58,13 +58,13 @@ export interface WitnessConfiguration {
    * Creates an action that marks a message as read inside the redux store
    * @returns A redux action that can be dispatched
    */
-  markNotificationAsRead: (args: { laoId: string; notificationId: number }) => AnyAction;
+  markNotificationAsRead: (args: { laoId: Hash; notificationId: number }) => AnyAction;
 
   /**
    * Creates an action to discard a notification
    * @returns A redux action that can be dispatched
    */
-  discardNotifications: (args: { laoId: string; notificationIds: number[] }) => AnyAction;
+  discardNotifications: (args: { laoId: Hash; notificationIds: number[] }) => AnyAction;
 }
 
 /**

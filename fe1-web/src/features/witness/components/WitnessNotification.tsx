@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { PoPTextButton } from 'core/components';
 import { makeIcon } from 'core/components/PoPIcon';
 import { makeMessageSelector } from 'core/network/ingestion';
+import { Hash } from 'core/objects';
 import { dispatch } from 'core/redux';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
@@ -17,7 +18,7 @@ import { removeMessageToWitness } from '../reducer';
 
 const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPropTypes) => {
   const messageSelector = useMemo(
-    () => makeMessageSelector(notification.messageId),
+    () => makeMessageSelector(new Hash(notification.messageId)),
     [notification.messageId],
   );
   const message = useSelector(messageSelector);
@@ -31,9 +32,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   // if the notification state somehow gets out of sync, remove the corresponding notification
   useEffect(() => {
     if (!message) {
-      dispatch(
-        discardNotifications({ laoId: laoId.valueOf(), notificationIds: [notification.id] }),
-      );
+      dispatch(discardNotifications({ laoId, notificationIds: [notification.id] }));
       navigateToNotificationScreen();
       console.warn(
         `There was a notification with id ${notification.id} in the redux store referencing a message id (${notification.messageId}) that is not (no longer?) stored`,
@@ -50,20 +49,18 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
 
   const onWitness = () => {
     if (message) {
-      dispatch(
-        discardNotifications({ laoId: laoId.valueOf(), notificationIds: [notification.id] }),
-      );
+      dispatch(discardNotifications({ laoId, notificationIds: [notification.id] }));
       if (isEnabled) {
         requestWitnessMessage(message.channel, message.message_id);
       }
-      dispatch(removeMessageToWitness(message.message_id.valueOf()));
+      dispatch(removeMessageToWitness(message.message_id));
       navigateToNotificationScreen();
     }
   };
 
   const onDecline = () => {
     if (message) {
-      dispatch(markNotificationAsRead({ laoId: laoId.valueOf(), notificationId: notification.id }));
+      dispatch(markNotificationAsRead({ laoId, notificationId: notification.id }));
       navigateToNotificationScreen();
     }
   };
@@ -108,7 +105,7 @@ export const WitnessNotificationType = {
    * Custom cleanup function that removes the message from the witness store
    */
   delete: ((notification: WitnessFeature.MessageToWitnessNotification) => {
-    dispatch(removeMessageToWitness(notification.messageId.valueOf()));
+    dispatch(removeMessageToWitness(new Hash(notification.messageId)));
   }) as (notification: WitnessFeature.Notification) => void,
 
   /**

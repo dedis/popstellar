@@ -367,13 +367,13 @@ export class Transaction {
     };
   }
 
-  public static fromJSON(transactionJSON: TransactionJSON, transactionId: string) {
+  public static fromJSON(transactionJSON: TransactionJSON, transactionId: Hash) {
     return new Transaction({
       version: transactionJSON.version,
       inputs: transactionJSON.inputs.map((input) => TransactionInput.fromJSON(input)),
       outputs: transactionJSON.outputs.map((output) => TransactionOutput.fromJSON(output)),
       lockTime: transactionJSON.lock_time,
-      transactionId: new Hash(transactionId),
+      transactionId,
     });
   }
 

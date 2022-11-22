@@ -4,8 +4,8 @@ import '__tests__/utils/matchers';
 import {
   configureTestFeatures,
   mockLao,
+  serializedMockLaoId,
   mockLaoId,
-  mockLaoIdHash,
   mockLaoName,
 } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
@@ -15,10 +15,15 @@ import { OpenedLaoStore } from 'features/lao/store';
 import { ReopenRollCall } from '../ReopenRollCall';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const rollCallId = Hash.fromStringArray('R', mockLaoId, TIMESTAMP.toString(), mockLaoName);
+const rollCallId = Hash.fromStringArray(
+  'R',
+  serializedMockLaoId,
+  TIMESTAMP.toString(),
+  mockLaoName,
+);
 const rollCallUpdateId = Hash.fromStringArray(
   'R',
-  mockLaoId,
+  serializedMockLaoId,
   rollCallId.toString(),
   TIMESTAMP.toString(),
 );
@@ -46,9 +51,7 @@ beforeAll(() => {
 
 describe('ReopenRollCall', () => {
   it('should be created correctly from Json', () => {
-    expect(new ReopenRollCall(sampleReopenRollCall, mockLaoIdHash)).toBeJsonEqual(
-      sampleReopenRollCall,
-    );
+    expect(new ReopenRollCall(sampleReopenRollCall, mockLaoId)).toBeJsonEqual(sampleReopenRollCall);
     const temp = {
       object: ObjectType.ROLL_CALL,
       action: ActionType.REOPEN,
@@ -56,12 +59,12 @@ describe('ReopenRollCall', () => {
       opens: rollCallId,
       opened_at: TIMESTAMP,
     };
-    expect(new ReopenRollCall(temp, mockLaoIdHash)).toBeJsonEqual(temp);
+    expect(new ReopenRollCall(temp, mockLaoId)).toBeJsonEqual(temp);
   });
 
   it('should be parsed correctly from Json', () => {
     const obj = JSON.parse(reopenRollCallJson);
-    expect(ReopenRollCall.fromJson(obj, mockLaoIdHash)).toBeJsonEqual(sampleReopenRollCall);
+    expect(ReopenRollCall.fromJson(obj, mockLaoId)).toBeJsonEqual(sampleReopenRollCall);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
@@ -72,7 +75,7 @@ describe('ReopenRollCall', () => {
       opens: rollCallId,
       opened_at: TIMESTAMP,
     };
-    const createWrongObj = () => ReopenRollCall.fromJson(obj, mockLaoIdHash);
+    const createWrongObj = () => ReopenRollCall.fromJson(obj, mockLaoId);
     expect(createWrongObj).toThrow(ProtocolError);
   });
 });

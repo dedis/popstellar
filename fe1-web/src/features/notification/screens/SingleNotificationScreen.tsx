@@ -24,7 +24,7 @@ const SingleNotificationScreen = () => {
   const laoId = NotificationHooks.useCurrentLaoId();
 
   const notificationSelector = useMemo(
-    () => makeNotificationSelector(laoId.valueOf(), notificationId),
+    () => makeNotificationSelector(laoId, notificationId),
     [laoId, notificationId],
   );
 

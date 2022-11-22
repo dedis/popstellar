@@ -4,8 +4,10 @@ import { AnyAction, Reducer } from 'redux';
 import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
-import { NotificationReducerState, NOTIFICATION_REDUCER_PATH, NotificationState } from '../reducer';
+import { NotificationReducerState, NOTIFICATION_REDUCER_PATH } from '../reducer';
 import { NotificationFeature } from './Feature';
+import { Notification } from '../objects/Notification';
+import { OmitMethods } from 'core/types';
 
 export const NOTIFICATION_FEATURE_IDENTIFIER = 'notification';
 
@@ -20,9 +22,9 @@ export interface NotificationConfigurationInterface extends FeatureInterface {
   laoScreens: NotificationFeature.LaoScreen[];
 
   actionCreators: {
-    addNotification: (notification: Omit<NotificationState, 'id' | 'hasBeenRead'>) => AnyAction;
-    markNotificationAsRead: (args: { laoId: string; notificationId: number }) => AnyAction;
-    discardNotifications: (args: { laoId: string; notificationIds: number[] }) => AnyAction;
+    addNotification: (notification: Omit<OmitMethods<Notification>, 'id' | 'hasBeenRead'>) => AnyAction;
+    markNotificationAsRead: (args: { laoId: Hash; notificationId: number }) => AnyAction;
+    discardNotifications: (args: { laoId: Hash; notificationIds: number[] }) => AnyAction;
   };
 
   reducers: {
@@ -41,19 +43,19 @@ export interface NotificationCompositionConfiguration {
     /**
      * Checks if a given notification is of this type
      */
-    isOfType: (notification: NotificationState) => boolean;
+    isOfType: (notification: Notification) => boolean;
 
     /**
      * Callback function that is called when a notification is deleted
      */
-    delete?: (notification: NotificationState) => void;
+    delete?: (notification: Notification) => void;
 
     /**
      * Renders the single notification view for this notification
      * type
      */
     Component: React.ComponentType<{
-      notification: NotificationState;
+      notification: Notification;
       navigateToNotificationScreen: () => void;
     }>;
 

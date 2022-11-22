@@ -1,4 +1,4 @@
-import { mockChannel, mockKeyPair, mockLao, mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { mockChannel, mockKeyPair, mockLao, serializedMockLaoId, mockLaoId } from '__tests__/utils';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, EventTags, Hash, Signature, Timestamp } from 'core/objects';
 import { Meeting } from 'features/meeting/objects';
@@ -11,12 +11,12 @@ const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const mockMessageData = {
   receivedAt: TIMESTAMP,
   receivedFrom: 'some address',
-  laoId: mockLaoIdHash,
+  laoId: mockLaoId,
   data: Base64UrlData.encode('some data'),
   sender: mockKeyPair.publicKey,
   signature: Base64UrlData.encode('some data') as Signature,
   channel: mockChannel,
-  message_id: Hash.fromString('some string'),
+  message_id: new Hash('some string'),
   witness_signatures: [],
 };
 
@@ -26,7 +26,7 @@ const mockUpdateEvent = jest.fn();
 const mockMeetingName = 'a meeting';
 const mockMeetingId = Hash.fromStringArray(
   EventTags.MEETING,
-  mockLaoId.toString(),
+  serializedMockLaoId.toString(),
   TIMESTAMP.toString(),
   mockMeetingName,
 );
@@ -104,7 +104,7 @@ describe('MeetingHandler', () => {
               end: mockMeeting.end,
               extra: mockMeeting.extra,
             },
-            mockLaoIdHash,
+            mockLaoId,
           ),
         } as ProcessableMessage),
       ).toBeFalse();
@@ -124,13 +124,13 @@ describe('MeetingHandler', () => {
               end: mockMeeting.end,
               extra: mockMeeting.extra,
             },
-            mockLaoIdHash,
+            mockLaoId,
           ),
         } as ProcessableMessage),
       ).toBeTrue();
 
       expect(mockAddEvent).toHaveBeenCalledTimes(1);
-      expect(mockAddEvent).toHaveBeenCalledWith(mockLaoIdHash, mockMeeting);
+      expect(mockAddEvent).toHaveBeenCalledWith(mockLaoId, mockMeeting);
     });
   });
 

@@ -2,10 +2,12 @@ import 'jest-extended';
 
 import { AnyAction } from 'redux';
 
-import { mockLaoId } from '__tests__/utils/TestUtils';
+import { mockLaoId, serializedMockLaoId } from '__tests__/utils/TestUtils';
+import { Hash } from 'core/objects';
 import { mockElectionNotStarted } from 'features/evoting/__tests__/utils';
 import { Election } from 'features/evoting/objects';
 import {
+  mockRollCall,
   mockRollCallState,
   mockRollCallState2,
   mockRollCallWithAlias,
@@ -39,7 +41,7 @@ describe('EventReducer', () => {
       eventReduce(
         {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               allIds: [],
             },
           },
@@ -54,7 +56,7 @@ describe('EventReducer', () => {
       ),
     ).toEqual({
       byLaoId: {
-        [mockLaoId]: {
+        [serializedMockLaoId]: {
           allIds: [mockRollCallWithAliasState.id],
         },
       },
@@ -74,7 +76,7 @@ describe('EventReducer', () => {
       eventReduce(
         {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               allIds: [mockRollCallState.id],
             },
           },
@@ -94,7 +96,7 @@ describe('EventReducer', () => {
       ),
     ).toEqual({
       byLaoId: {
-        [mockLaoId]: {
+        [serializedMockLaoId]: {
           allIds: [mockRollCallState.id],
         },
       },
@@ -114,7 +116,7 @@ describe('EventReducer', () => {
       eventReduce(
         {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               allIds: [mockRollCallState.id],
             },
           },
@@ -125,11 +127,11 @@ describe('EventReducer', () => {
             },
           },
         } as EventReducerState,
-        removeEvent(mockLaoId, mockRollCallState.id),
+        removeEvent(mockLaoId, mockRollCall.id),
       ),
     ).toEqual({
       byLaoId: {
-        [mockLaoId]: {
+        [serializedMockLaoId]: {
           allIds: [],
         },
       },
@@ -142,7 +144,7 @@ describe('EventReducer', () => {
       eventReduce(
         {
           byLaoId: {
-            [mockLaoId]: {
+            [serializedMockLaoId]: {
               allIds: [mockRollCallState.id, mockRollCallState2.id],
             },
           },
@@ -169,7 +171,7 @@ describe('EventReducer', () => {
 const filledState = {
   [EVENT_REDUCER_PATH]: {
     byLaoId: {
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIds: [mockRollCallState.id],
       },
       someOtherId: {
@@ -219,7 +221,7 @@ describe('makeEventListSelector', () => {
 
 describe('makeEventSelector', () => {
   it('should return the correct value', () => {
-    expect(makeEventSelector(mockRollCallState.id)(filledState)).toEqual({
+    expect(makeEventSelector(mockRollCall.id)(filledState)).toEqual({
       eventType: RollCall.EVENT_TYPE,
       id: mockRollCallState.id,
       start: mockRollCallWithAlias.start.valueOf(),
@@ -229,12 +231,12 @@ describe('makeEventSelector', () => {
 
   it('should throw an error if the given laoId is not stored', () => {
     expect(() =>
-      makeEventSelector(mockRollCallState.id)({ byLaoId: {} } as EventReducerState),
+      makeEventSelector(mockRollCall.id)({ byLaoId: {} } as EventReducerState),
     ).toThrow();
   });
 
   it('should return undefined if the lao does not have an event with the provided id', () => {
-    expect(makeEventSelector('some id')(filledState)).toBeUndefined();
+    expect(makeEventSelector(new Hash('some id'))(filledState)).toBeUndefined();
   });
 });
 

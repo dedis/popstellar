@@ -78,4 +78,12 @@ export class Hash extends Base64UrlData {
     const byteArray = new TextEncoder().encode(str);
     return byteArray.length;
   }
+
+  /**
+   * Serializes a hash object to a string which can for instance be stored by redux
+   * @returns The serialized hash
+   */
+  public serialize(): string {
+    return this.toString();
+  }
 }

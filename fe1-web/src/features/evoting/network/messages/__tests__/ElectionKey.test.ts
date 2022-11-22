@@ -1,16 +1,12 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import {
-  configureTestFeatures,
-  mockKeyPair,
-  mockLaoId,
-  mockLaoName,
-  mockPublicKey,
-} from '__tests__/utils';
+import { configureTestFeatures, mockLaoId, mockLaoName, mockPublicKey } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
+import { mockElectionKey } from 'features/evoting/__tests__/utils';
+import { ElectionPublicKey } from 'features/evoting/objects/ElectionPublicKey';
 
 import { ElectionKey } from '../ElectionKey';
 
@@ -20,7 +16,7 @@ const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 
 const electionId: Hash = Hash.fromStringArray(
   'Election',
-  mockLaoId,
+  mockLaoId.serialize(),
   TIMESTAMP.toString(),
   mockLaoName,
 );
@@ -32,7 +28,7 @@ const sampleElectionKey: Partial<ElectionKey> = {
   object: ObjectType.ELECTION,
   action: ActionType.KEY,
   election: electionId,
-  election_key: mockKeyPair.publicKey,
+  election_key: mockElectionKey,
 };
 
 const ElectionKeyJson: string = `{
@@ -57,7 +53,7 @@ describe('ElectionKey', () => {
       object: ObjectType.ELECTION,
       action: ActionType.KEY,
       election: electionId,
-      election_key: mockKeyPair.publicKey,
+      election_key: mockElectionKey,
     };
     expect(new ElectionKey(temp)).toBeJsonEqual(temp);
   });
@@ -94,7 +90,7 @@ describe('ElectionKey', () => {
       const createWrongObj = () =>
         new ElectionKey({
           election: undefined as unknown as Hash,
-          election_key: mockKeyPair.publicKey,
+          election_key: mockElectionKey,
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -103,7 +99,7 @@ describe('ElectionKey', () => {
       const createWrongObj = () =>
         new ElectionKey({
           election: electionId,
-          election_key: undefined as unknown as PublicKey,
+          election_key: undefined as unknown as ElectionPublicKey,
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -113,7 +109,7 @@ describe('ElectionKey', () => {
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
         election: electionId,
-        election_key: mockKeyPair.publicKey,
+        election_key: mockElectionKey,
       } as MessageDataProperties<ElectionKey>);
 
       expect(msg.object).toEqual(ObjectType.ELECTION);

@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
+import { mockLaoId, mockLaoName } from '__tests__/utils/TestUtils';
 import { Hash, Timestamp } from 'core/objects';
 import STRINGS from 'resources/strings';
 
@@ -113,7 +113,7 @@ describe('Election object', () => {
     it('throws an error when id is undefined', () => {
       const createWrongElection = () =>
         new Election({
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
@@ -146,7 +146,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
           start: TIMESTAMP_PAST1,
@@ -162,7 +162,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           createdAt: TIMESTAMP_PAST1,
           start: TIMESTAMP_PAST1,
@@ -178,7 +178,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           version: ElectionVersion.OPEN_BALLOT,
           start: TIMESTAMP_PAST1,
@@ -194,7 +194,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
@@ -210,7 +210,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
@@ -225,7 +225,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
@@ -240,7 +240,7 @@ describe('Election object', () => {
     it('creates an election when registered_votes is undefined', () => {
       const election = new Election({
         id: ELECTION_ID,
-        lao: mockLaoIdHash,
+        lao: mockLaoId,
         name: NAME,
         version: ElectionVersion.OPEN_BALLOT,
         createdAt: TIMESTAMP_PAST1,
@@ -251,7 +251,7 @@ describe('Election object', () => {
       });
       const expected = new Election({
         id: ELECTION_ID,
-        lao: mockLaoIdHash,
+        lao: mockLaoId,
         name: NAME,
         version: ElectionVersion.OPEN_BALLOT,
         createdAt: TIMESTAMP_PAST1,

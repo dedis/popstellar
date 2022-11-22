@@ -35,23 +35,23 @@ export const org = new PublicKey(mockPublicKey);
 // MOCK LAO
 export const mockLaoName = 'MyLao';
 export const mockLaoCreationTime = new Timestamp(1600000000);
-export const mockLaoIdHash: Hash = Hash.fromStringArray(
+export const mockLaoId: Hash = Hash.fromStringArray(
   org.toString(),
   mockLaoCreationTime.toString(),
   mockLaoName,
 );
 
-export const mockLaoId: string = mockLaoIdHash.toString();
+export const serializedMockLaoId: string = mockLaoId.serialize();
 
 export const mockLaoState: LaoState = {
-  id: mockLaoId,
+  id: serializedMockLaoId,
   name: mockLaoName,
   creation: mockLaoCreationTime.valueOf(),
   last_modified: mockLaoCreationTime.valueOf(),
   organizer: org.valueOf(),
   witnesses: [],
   server_addresses: [],
-  subscribed_channels: [channelFromIds(mockLaoIdHash)],
+  subscribed_channels: [channelFromIds(mockLaoId)],
 };
 export const mockLao = Lao.fromState(mockLaoState);
 

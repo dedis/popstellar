@@ -5,7 +5,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, Store } from 'redux';
 
-import { mockKeyPair, mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
+import { mockKeyPair, mockLao, serializedMockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
 import { encodeLaoConnectionForQRCode } from 'features/home/functions';
@@ -38,7 +38,7 @@ const mockStore = configureStore({
     ...keyPairReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+mockStore.dispatch(setCurrentLao(mockLao));
 
 // setup mock store
 const emptyMockStore = configureStore({ reducer: combineReducers(laoReducer) });
@@ -67,7 +67,7 @@ describe('LaoHooks', () => {
       const { result } = renderHook(() => LaoHooks.useCurrentLaoId(), {
         wrapper: wrapper(mockStore),
       });
-      expect(result.current?.valueOf()).toEqual(mockLaoId);
+      expect(result.current?.valueOf()).toEqual(serializedMockLaoId);
     });
 
     it('should throw if there is no current lao', () => {
@@ -89,7 +89,7 @@ describe('LaoHooks', () => {
     it('returns false if in offline mode (there is a current lao but no connection to it)', () => {
       // setup mock store
       const offlineMockStore = configureStore({ reducer: combineReducers(laoReducer) });
-      offlineMockStore.dispatch(setCurrentLao({ lao: mockLao.toState(), connected: false }));
+      offlineMockStore.dispatch(setCurrentLao(mockLao, false));
 
       const { result } = renderHook(() => LaoHooks.useConnectedToLao(), {
         wrapper: wrapper(offlineMockStore),
@@ -168,7 +168,7 @@ describe('LaoHooks', () => {
       const { result } = renderHook(() => LaoHooks.useLaoMap(), {
         wrapper: wrapper(mockStore),
       });
-      expect(result.current).toEqual({ [mockLaoId]: mockLao });
+      expect(result.current).toEqual({ [serializedMockLaoId]: mockLao });
     });
   });
 

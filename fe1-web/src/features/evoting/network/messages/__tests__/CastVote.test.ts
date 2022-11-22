@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLaoIdHash } from '__tests__/utils';
+import { configureTestFeatures, mockLaoId } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
@@ -28,7 +28,7 @@ const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const sampleCastVote: Partial<CastVote> = {
   object: ObjectType.ELECTION,
   action: ActionType.CAST_VOTE,
-  lao: mockLaoIdHash,
+  lao: mockLaoId,
   election: mockElectionId,
   created_at: TIMESTAMP,
   votes: mockVotes,
@@ -37,7 +37,7 @@ const sampleCastVote: Partial<CastVote> = {
 const CastVoteJson: string = `{
   "object": "${ObjectType.ELECTION}",
   "action": "${ActionType.CAST_VOTE}",
-  "lao": "${mockLaoIdHash}",
+  "lao": "${mockLaoId}",
   "election": "${mockElectionId}",
   "created_at": ${TIMESTAMP},
   "votes": ${JSON.stringify(mockVotes)}
@@ -58,7 +58,7 @@ describe('CastVote', () => {
     const temp = {
       object: ObjectType.ELECTION,
       action: ActionType.CAST_VOTE,
-      lao: mockLaoIdHash,
+      lao: mockLaoId,
       election: mockElectionId,
       created_at: TIMESTAMP,
       votes: [mockVote1, mockVote2],
@@ -75,7 +75,7 @@ describe('CastVote', () => {
     const obj = {
       object: ObjectType.ELECTION,
       action: ActionType.NOTIFY_ADD,
-      lao: mockLaoIdHash.toString(),
+      lao: mockLaoId.toString(),
       election: mockElectionId.toString(),
       created_at: TIMESTAMP.valueOf(),
       votes: [mockVote1, mockVote2],
@@ -88,7 +88,7 @@ describe('CastVote', () => {
     const obj = {
       object: ObjectType.CHIRP,
       action: ActionType.CAST_VOTE,
-      lao: mockLaoIdHash.toString(),
+      lao: mockLaoId.toString(),
       election: mockElectionId.toString(),
       created_at: TIMESTAMP.valueOf(),
       votes: [mockVote1, mockVote2],
@@ -101,7 +101,7 @@ describe('CastVote', () => {
     it('should throw an error if election is undefined', () => {
       const createWrongObj = () =>
         new CastVote({
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           election: undefined as unknown as Hash,
           created_at: TIMESTAMP,
           votes: [mockVote1, mockVote2],
@@ -123,7 +123,7 @@ describe('CastVote', () => {
     it('should throw an error if created_at is undefined', () => {
       const createWrongObj = () =>
         new CastVote({
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           election: mockElectionId,
           votes: [mockVote1, mockVote2],
           created_at: undefined as unknown as Timestamp,
@@ -134,7 +134,7 @@ describe('CastVote', () => {
     it('should throw an error if votes is undefined', () => {
       const createWrongObj = () =>
         new CastVote({
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           election: mockElectionId,
           created_at: TIMESTAMP,
           votes: undefined as unknown as Vote[],
@@ -146,7 +146,7 @@ describe('CastVote', () => {
       const msg = new CastVote({
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
-        lao: mockLaoIdHash,
+        lao: mockLaoId,
         election: mockElectionId,
         created_at: TIMESTAMP,
         votes: [mockVote1, mockVote2],

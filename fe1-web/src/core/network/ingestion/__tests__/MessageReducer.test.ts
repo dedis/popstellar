@@ -11,7 +11,7 @@ import {
   mockPublicKey,
 } from '__tests__/utils';
 import { Message } from 'core/network/jsonrpc/messages';
-import { KeyPair, Timestamp } from 'core/objects';
+import { Hash, KeyPair, Timestamp } from 'core/objects';
 import { AddChirp } from 'features/social/network/messages/chirp';
 
 import { ExtendedMessage, markMessageAsProcessed } from '../ExtendedMessage';
@@ -70,18 +70,19 @@ describe('MessageReducer', () => {
 
   it('should process the message', async () => {
     const extMsg = createExtendedMessage();
-    const msgId = extMsg.message_id.toString();
+    const msgId = extMsg.message_id;
+    const serializedMsgId = msgId.toString();
 
     const filledState = {
-      byId: { [msgId]: extMsg.toState() },
-      allIds: [msgId],
-      unprocessedIds: [msgId],
+      byId: { [serializedMsgId]: extMsg.toState() },
+      allIds: [serializedMsgId],
+      unprocessedIds: [serializedMsgId],
     };
 
     const extMsgProcessed = markMessageAsProcessed(extMsg.toState());
     const processedState = {
-      byId: { [msgId]: extMsgProcessed },
-      allIds: [msgId],
+      byId: { [serializedMsgId]: extMsgProcessed },
+      allIds: [serializedMsgId],
       unprocessedIds: [],
     };
 
@@ -96,7 +97,7 @@ describe('message selectors', () => {
       allIds: ['1234'],
       unprocessedIds: ['1234'],
     };
-    expect(getMessage(state, '1234')).toEqual(undefined);
+    expect(getMessage(state, new Hash('1234'))).toEqual(undefined);
   });
 });
 
@@ -109,7 +110,7 @@ describe('makeMessageSelector', () => {
         unprocessedIds: ['1234'],
       },
     };
-    expect(makeMessageSelector('1234')(state)).toEqual(undefined);
+    expect(makeMessageSelector(new Hash('1234'))(state)).toEqual(undefined);
   });
 
   it('should return the message state', () => {
@@ -125,6 +126,6 @@ describe('makeMessageSelector', () => {
         unprocessedIds: ['1234'],
       },
     };
-    expect(makeMessageSelector('1234')(state)?.toState()).toEqual(extMsgState);
+    expect(makeMessageSelector(new Hash('1234'))(state)?.toState()).toEqual(extMsgState);
   });
 });

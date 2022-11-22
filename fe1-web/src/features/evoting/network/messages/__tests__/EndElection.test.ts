@@ -1,7 +1,12 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
+import {
+  configureTestFeatures,
+  serializedMockLaoId,
+  mockLaoId,
+  mockLaoName,
+} from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
@@ -16,7 +21,7 @@ const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 
 const electionId: Hash = Hash.fromStringArray(
   'Election',
-  mockLaoId,
+  serializedMockLaoId,
   TIMESTAMP.toString(),
   mockLaoName,
 );
@@ -28,7 +33,7 @@ const sampleEndElection: Partial<EndElection> = {
   object: ObjectType.ELECTION,
   action: ActionType.END,
   election: electionId,
-  lao: mockLaoIdHash,
+  lao: mockLaoId,
   created_at: TIMESTAMP,
   registered_votes: mockElectionResultHash,
 };
@@ -37,7 +42,7 @@ const endElectionJson: string = `{
   "object": "${ObjectType.ELECTION}",
   "action": "${ActionType.END}",
   "election": "${electionId}",
-  "lao": "${mockLaoIdHash}",
+  "lao": "${mockLaoId}",
   "created_at": ${TIMESTAMP},
   "registered_votes": "${mockElectionResultHash}"
 }`;
@@ -57,7 +62,7 @@ describe('EndElection', () => {
       object: ObjectType.ELECTION,
       action: ActionType.END,
       election: electionId,
-      lao: mockLaoIdHash,
+      lao: mockLaoId,
       created_at: TIMESTAMP,
       registered_votes: mockElectionResultHash,
     };
@@ -74,7 +79,7 @@ describe('EndElection', () => {
       object: ObjectType.ELECTION,
       action: ActionType.NOTIFY_ADD,
       election: electionId.toString(),
-      lao: mockLaoIdHash.toString(),
+      lao: mockLaoId.toString(),
       created_at: TIMESTAMP.valueOf(),
       registered_votes: mockElectionResultHash,
     };
@@ -87,7 +92,7 @@ describe('EndElection', () => {
       object: ObjectType.CHIRP,
       action: ActionType.OPEN,
       election: electionId.toString(),
-      lao: mockLaoIdHash.toString(),
+      lao: mockLaoId.toString(),
       created_at: TIMESTAMP.valueOf(),
       registered_votes: mockElectionResultHash,
     };
@@ -99,7 +104,7 @@ describe('EndElection', () => {
     it('should throw an error if election is undefined', () => {
       const createWrongObj = () =>
         new EndElection({
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           election: undefined as unknown as Hash,
           created_at: TIMESTAMP,
           registered_votes: mockElectionResultHash,
@@ -122,7 +127,7 @@ describe('EndElection', () => {
       const createWrongObj = () =>
         new EndElection({
           election: electionId,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           created_at: undefined as unknown as Timestamp,
           registered_votes: mockElectionResultHash,
         });
@@ -133,7 +138,7 @@ describe('EndElection', () => {
       const createWrongObj = () =>
         new EndElection({
           election: electionId,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           created_at: TIMESTAMP,
           registered_votes: undefined as unknown as Hash,
         });
@@ -145,7 +150,7 @@ describe('EndElection', () => {
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
         election: electionId,
-        lao: mockLaoIdHash,
+        lao: mockLaoId,
         created_at: TIMESTAMP,
         registered_votes: mockElectionResultHash,
       } as MessageDataProperties<EndElection>);

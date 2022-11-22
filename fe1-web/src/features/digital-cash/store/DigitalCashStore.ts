@@ -1,4 +1,4 @@
-import { Hash } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import { getStore } from 'core/redux';
 
 import { TransactionState } from '../objects/transaction';
@@ -13,15 +13,21 @@ export namespace DigitalCashStore {
   /**
    * Get all transactions from a lao
    */
-  export function getTransactionsById(laoId: string): Record<string, TransactionState> {
-    return getDigitalCashState(getStore().getState()).byLaoId[laoId]?.transactionsByHash || {};
+  export function getTransactionsById(laoId: Hash): Record<string, TransactionState> {
+    const serializedLaoId = laoId.serialize();
+
+    return (
+      getDigitalCashState(getStore().getState()).byLaoId[serializedLaoId]?.transactionsByHash || {}
+    );
   }
 
   /**
    * Gets all transactions available for this public key in this lao
    */
-  export function getTransactionsByPublicKey(laoId: string, pk: string): TransactionState[] {
-    const laoState = getDigitalCashState(getStore().getState()).byLaoId[laoId];
+  export function getTransactionsByPublicKey(laoId: Hash, pk: PublicKey): TransactionState[] {
+    const serializedLaoId = laoId.serialize();
+
+    const laoState = getDigitalCashState(getStore().getState()).byLaoId[serializedLaoId];
     if (!laoState) {
       return [];
     }
@@ -33,8 +39,10 @@ export namespace DigitalCashStore {
   /**
    * Gets the balance of a particular public key in a lao
    */
-  export function getBalance(laoId: string, pk: string): number {
-    const laoState = getDigitalCashState(getStore().getState()).byLaoId[laoId];
+  export function getBalance(laoId: Hash, pk: PublicKey): number {
+    const serializedLaoId = laoId.serialize();
+
+    const laoState = getDigitalCashState(getStore().getState()).byLaoId[serializedLaoId];
     if (!laoState) {
       return 0;
     }

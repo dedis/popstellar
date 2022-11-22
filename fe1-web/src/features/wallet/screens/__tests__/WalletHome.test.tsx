@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockKeyPair, mockLao, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
+import { mockKeyPair, mockLao, serializedMockLaoId, mockLaoId, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EventTags, Hash, PopToken, RollCallToken, Timestamp } from 'core/objects';
 import { getEventById } from 'features/events/functions';
@@ -32,14 +32,14 @@ const mockRCAttendees = ['attendee1', 'attendee2'];
 
 const mockRCIdAliasHash = Hash.fromStringArray(
   EventTags.ROLL_CALL,
-  mockLaoId,
+  serializedMockLaoId,
   mockRCTimestampStart.toString(),
   mockRCName,
 );
 
 const mockRCIdHash = Hash.fromStringArray(
   EventTags.ROLL_CALL,
-  mockLaoId,
+  serializedMockLaoId,
   mockRCIdAliasHash.valueOf(),
   mockRCName,
 );
@@ -60,7 +60,7 @@ const mockRollCallState = {
 };
 const mockRollCall = RollCall.fromState(mockRollCallState);
 const mockRollCallToken: RollCallToken = {
-  laoId: mockLaoIdHash,
+  laoId: mockLaoId,
   rollCallId: mockRollCall.id,
   rollCallName: mockRollCall.name,
   token: PopToken.fromState(mockKeyPair.toState()),
@@ -68,19 +68,19 @@ const mockRollCallToken: RollCallToken = {
 
 const contextValue = (rollCallTokens: RollCallToken[]) => ({
   [WALLET_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useCurrentLao: () => mockLao,
     useConnectedToLao: () => true,
     getEventById,
     useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
     useRollCallTokensByLaoId: () => rollCallTokens,
-    useLaoIds: () => [mockLaoIdHash],
-    useNamesByLaoId: () => ({ [mockLaoId]: mockLaoName }),
+    useLaoIds: () => [mockLaoId],
+    useNamesByLaoId: () => ({ [serializedMockLaoId]: mockLaoName }),
     walletItemGenerators: [],
     walletNavigationScreens: [],
   } as WalletReactContext,
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     generateToken,
     hasSeed,

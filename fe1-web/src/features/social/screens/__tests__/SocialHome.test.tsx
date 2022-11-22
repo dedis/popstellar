@@ -4,7 +4,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
-import { mockLao, mockLaoIdHash, mockLaoState, mockPopToken } from '__tests__/utils';
+import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
@@ -27,8 +27,8 @@ const contextValue = {
     useCurrentLao: () => mockLao,
     getCurrentLao: () => mockLao,
     useConnectedToLao: () => true,
-    useCurrentLaoId: () => mockLaoIdHash,
-    getCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
+    getCurrentLaoId: () => mockLaoId,
     useRollCallById: () => undefined,
     useRollCallAttendeesById: () => [],
     generateToken: () => Promise.resolve(mockPopToken),
@@ -49,7 +49,7 @@ const mockStore = configureStore({
     ...SocialReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao({ lao: mockLaoState }));
+mockStore.dispatch(setCurrentLao(mockLao));
 
 describe('SocialHome', () => {
   it('renders correctly', () => {
@@ -82,7 +82,7 @@ describe('SocialHome', () => {
     fireEvent.press(getByTestId('new_chirp_publish'));
 
     await waitFor(() => {
-      expect(requestAddChirp).toHaveBeenCalledWith(mockPopToken.publicKey, mockText, mockLaoIdHash);
+      expect(requestAddChirp).toHaveBeenCalledWith(mockPopToken.publicKey, mockText, mockLaoId);
       expect(requestAddChirp).toHaveBeenCalledTimes(1);
     });
   });
