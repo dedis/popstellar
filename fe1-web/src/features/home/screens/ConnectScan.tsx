@@ -46,7 +46,6 @@ const ConnectScan = () => {
 
   const toast = useToast();
 
-  const laoId = HomeHooks.useCurrentLaoId();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
   const getLaoById = HomeHooks.useGetLaoById();
   const resubscribeToLao = HomeHooks.useResubscribeToLao();
@@ -87,21 +86,6 @@ const ConnectScan = () => {
 
       if (connectToLao.servers.length === 0) {
         throw new Error('The scanned QR code did not contain any server address');
-      }
-
-      // if we are already connected to a LAO, then only allow new connections
-      // to servers for the same LAO id
-      if (laoId && !connectToLao.lao.equals(laoId)) {
-        toast.show(
-          `The scanned QR code is for a different LAO than the one currently connected to`,
-          {
-            type: 'warning',
-            placement: 'top',
-            duration: FOUR_SECONDS,
-          },
-        );
-
-        return false;
       }
 
       const laoChannel = getLaoChannel(connectToLao.lao);
