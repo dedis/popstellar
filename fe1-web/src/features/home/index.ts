@@ -18,7 +18,7 @@ export function compose(config: HomeCompositionConfiguration): HomeInterface {
       LaoList: config.LaoList,
       homeNavigationScreens: config.homeNavigationScreens,
       getLaoChannel: config.getLaoChannel,
-      useCurrentLaoId: config.useCurrentLaoId,
+      useConnectedToLao: config.useConnectedToLao,
       useDisconnectFromLao: config.useDisconnectFromLao,
       getLaoById: config.getLaoById,
       resubscribeToLao: config.resubscribeToLao,
