@@ -14,7 +14,6 @@ import { subscribeToChannel } from 'core/network';
 import { HOME_FEATURE_IDENTIFIER, HomeReactContext } from 'features/home/interface';
 import { ConnectToLao } from 'features/home/objects';
 import { getLaoChannel, resubscribeToLao } from 'features/lao/functions';
-import { LaoHooks } from 'features/lao/hooks';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import ConnectScan from '../ConnectScan';
@@ -65,7 +64,7 @@ beforeEach(jest.clearAllMocks);
 const contextValue = {
   [HOME_FEATURE_IDENTIFIER]: {
     addLaoServerAddress: () => mockReduxAction,
-    useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    useConnectedToLao: () => true,
     getLaoChannel: () => mockChannel,
     LaoList: () => null,
     connectToTestLao: () => {},
