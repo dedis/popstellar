@@ -47,6 +47,12 @@ public final class HomeFragment extends Fragment {
     return binding.getRoot();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.home_title);
+  }
+
   private void setupButtonsActions() {
     binding.homeCreateButton.setOnClickListener(
         v -> {

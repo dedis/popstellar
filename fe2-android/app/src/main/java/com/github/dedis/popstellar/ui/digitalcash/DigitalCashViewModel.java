@@ -74,6 +74,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
       new MutableLiveData<>();
 
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
+  private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
   private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
   private final LiveData<Set<TransactionObject>> mTransactionHistory;
@@ -110,7 +111,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
               try {
                 if (laoView == null) return new HashSet<>();
                 Set<TransactionObject> historySet =
-                    laoView.getTransactionHistoryByUser()
+                    laoView
+                        .getTransactionHistoryByUser()
                         .get(keyManager.getValidPoPToken(laoView).getPublicKey());
                 if (historySet == null) {
                   return new HashSet<>();
@@ -127,6 +129,14 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   protected void onCleared() {
     super.onCleared();
     disposables.dispose();
+  }
+
+  public LiveData<Integer> getPageTitle() {
+    return mPageTitle;
+  }
+
+  public void setPageTitle(int titleId) {
+    mPageTitle.postValue(titleId);
   }
 
   public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {
@@ -181,7 +191,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
    * Methods that modify the state or post an Event to update the UI.
    */
   public PublicKey getPublicKeyOutString(String encodedPub) throws NoRollCallException {
-    for (PublicKey current : getAttendeesFromLastRollCall()) {
+    for (PublicKey current : Objects.requireNonNull(getAttendeesFromLastRollCall())) {
       if (current.getEncoded().equals(encodedPub)) {
         return current;
       }
@@ -317,7 +327,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   @Nullable
   public List<String> getAttendeesFromTheRollCallList() throws NoRollCallException {
-    return getAttendeesFromLastRollCall().stream()
+    return Objects.requireNonNull(getAttendeesFromLastRollCall()).stream()
         .map(Base64URLData::getEncoded)
         .collect(Collectors.toList());
   }
@@ -347,7 +357,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
                   mCurrentLao.postValue(lao);
                   try {
                     PoPToken token = keyManager.getValidPoPToken(lao);
-                    mTokens.getValue().add(token);
+                    Objects.requireNonNull(mTokens.getValue()).add(token);
                   } catch (KeyException e) {
                     Log.d(TAG, "Could not retrieve token");
                   }
@@ -383,7 +393,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
         getCurrentLaoValue().getTransactionByUser().get(keyPair.getPublicKey());
 
     long amountSender =
-        TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, keyPair.getPublicKey())
+        TransactionObject.getMiniLaoPerReceiverSetTransaction(
+                Objects.requireNonNull(transactions), keyPair.getPublicKey())
             - amountFromReceiver;
     Output outputSender =
         new Output(amountSender, new ScriptOutput(TYPE, keyPair.getPublicKey().computeHash()));
