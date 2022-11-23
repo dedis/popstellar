@@ -277,9 +277,7 @@ export const makeNotificationSelector = (laoId: Hash, notificationId: number) =>
     (notificationState: NotificationReducerState): NotificationState | undefined => {
       const serializedLaoId = laoId.valueOf();
 
-      const state = notificationState.byLaoId[serializedLaoId]?.byId[notificationId];
-
-      return state;
+      return notificationState.byLaoId[serializedLaoId]?.byId[notificationId];
     },
   );
 
