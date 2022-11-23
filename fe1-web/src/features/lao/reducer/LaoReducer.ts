@@ -104,7 +104,7 @@ const laosSlice = createSlice({
     // Connect to a LAO for a given ID
     // Warning: this action is only accepted if we are not already connected to a LAO
     setCurrentLao: {
-      prepare: (lao: Lao, connected?: boolean) => ({
+      prepare: (lao: Lao, connected?: boolean | undefined) => ({
         payload: { lao: lao.toState(), connected },
       }),
       reducer: (state, action: PayloadAction<{ lao: LaoState; connected?: boolean }>) => {
