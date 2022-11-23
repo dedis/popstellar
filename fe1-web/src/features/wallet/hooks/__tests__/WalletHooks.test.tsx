@@ -7,11 +7,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash } from 'core/objects';
 import { mockRollCallToken } from 'features/digital-cash/__tests__/utils';
 import { mockRollCall, mockRollCallState } from 'features/rollCall/__tests__/utils';
-import {
-  WalletFeature,
-  WalletReactContext,
-  WALLET_FEATURE_IDENTIFIER,
-} from 'features/wallet/interface';
+import { WalletReactContext, WALLET_FEATURE_IDENTIFIER } from 'features/wallet/interface';
 
 import { WalletHooks } from '../index';
 
@@ -29,9 +25,6 @@ const useRollCallTokensByLaoId = jest.fn(() => [mockRollCallToken]);
 const allLaoIds: Hash[] = [mockLaoId];
 const laoNameById = { [serializedMockLaoId]: mockLaoName };
 
-const walletItemGenerators: WalletFeature.WalletItemGenerator[] = [];
-const walletNavigationScreens: WalletFeature.WalletScreen[] = [];
-
 const contextValue = {
   [WALLET_FEATURE_IDENTIFIER]: {
     useCurrentLaoId: () => mockLaoId,
@@ -42,8 +35,6 @@ const contextValue = {
     getLaoOrganizer,
     useLaoIds: () => allLaoIds,
     useNamesByLaoId: () => laoNameById,
-    walletItemGenerators,
-    walletNavigationScreens,
     useRollCallTokensByLaoId,
   } as WalletReactContext,
 };
@@ -57,20 +48,6 @@ beforeEach(() => {
 });
 
 describe('WalletHooks', () => {
-  describe('walletItemGenerators', () => {
-    it('should return the current wallet item generators', () => {
-      const { result } = renderHook(() => WalletHooks.useWalletItemGenerators(), { wrapper });
-      expect(result.current).toBe(walletItemGenerators);
-    });
-  });
-
-  describe('walletNavigationScreens', () => {
-    it('should return the current wallet navigation screens', () => {
-      const { result } = renderHook(() => WalletHooks.useWalletNavigationScreens(), { wrapper });
-      expect(result.current).toBe(walletNavigationScreens);
-    });
-  });
-
   describe('useCurrentLaoId', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => WalletHooks.useCurrentLaoId(), { wrapper });

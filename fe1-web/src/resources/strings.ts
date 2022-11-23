@@ -43,7 +43,6 @@ namespace STRINGS {
   /* --- HomeNavigation Strings --- */
   export const navigation_home_home = 'Home';
   export const navigation_home_connect = 'Connect';
-  export const navigation_home_wallet = 'Wallet';
 
   /* --- ConnectionNavigation Strings --- */
   export const navigation_connect_scan = 'Scanning';
@@ -65,6 +64,9 @@ namespace STRINGS {
   export const navigation_lao_notifications = 'Notifications';
   export const navigation_lao_events = 'Events';
   export const navigation_lao_wallet = 'Wallet';
+  export const navigation_lao_wallet_title = 'Tokens';
+  export const navigation_lao_digital_cash = 'Digital Cash';
+  export const navigation_lao_digital_cash_title = 'Digital Cash';
 
   /* --- Lao Home Navigation Strings --- */
   export const navigation_lao_home_identity = 'My identity';
@@ -85,16 +87,15 @@ namespace STRINGS {
 
   /* --- Wallet Navigation Strings --- */
   export const navigation_wallet_home = 'Wallet Home';
-  export const navigation_wallet_home_title = 'Wallet';
-  export const navigation_wallet_setup = 'Wallet Setup';
-  export const navigation_wallet_show_seed = 'New Wallet';
+  export const navigation_wallet_home_title = 'Tokens';
   export const navigation_wallet_single_roll_call = 'Roll Call';
-  export const navigation_wallet_digital_cash_wallet = 'Digital Cash Wallet';
 
-  export const navigation_wallet_digital_cash_send_receive = 'Send & Receive';
-  export const navigation_wallet_digital_cash_send_receive_title = 'Your Account';
-
-  export const navigation_wallet_digital_cash_wallet_scanner = 'Digital Cash Wallet Scanner';
+  /* --- Digital Cash Navigation Strings --- */
+  export const navigation_digital_cash_wallet = 'Digital Cash Wallet';
+  export const navigation_digital_cash_wallet_title = 'Digital Cash Wallet';
+  export const navigation_digital_cash_send_receive = 'Send & Receive';
+  export const navigation_digital_cash_send_receive_title = 'Your Account';
+  export const navigation_digital_cash_wallet_scanner = 'Digital Cash Wallet Scanner';
 
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
