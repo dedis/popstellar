@@ -12,6 +12,7 @@ import {
   clearCurrentLao,
   makeIsLaoOrganizerSelector,
   makeLaoOrganizerBackendPublicKeySelector,
+  selectConnectedToLao,
   selectCurrentLao,
   selectCurrentLaoId,
   selectIsLaoWitness,
@@ -75,8 +76,11 @@ export namespace LaoHooks {
    * Indicates whether we are an organizer of the the given lao
    * If no laoId is passed, it is checked for the current lao
    */
-  export const useIsLaoOrganizer = (laoId?: string): boolean => {
-    const isLaoOrganizerSelector = useMemo(() => makeIsLaoOrganizerSelector(laoId), [laoId]);
+  export const useIsLaoOrganizer = (laoId?: Hash | string): boolean => {
+    const isLaoOrganizerSelector = useMemo(
+      () => makeIsLaoOrganizerSelector(laoId?.valueOf()),
+      [laoId],
+    );
 
     return useSelector(isLaoOrganizerSelector);
   };
@@ -112,6 +116,12 @@ export namespace LaoHooks {
    * @returns The current lao id
    */
   export const useCurrentLaoId = () => useSelector(selectCurrentLaoId);
+
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  export const useConnectedToLao = () => useSelector(selectConnectedToLao);
 
   /**
    * Returns the current lao id or throws an NoCurrentLaoError if there is none

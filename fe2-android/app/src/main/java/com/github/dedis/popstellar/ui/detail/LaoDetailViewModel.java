@@ -71,6 +71,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
+  private final MutableLiveData<String> mPageTitle = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
@@ -586,6 +587,14 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mCurrentLaoName;
   }
 
+  public MutableLiveData<String> getPageTitle() {
+    return mPageTitle;
+  }
+
+  public void setPageTitle(String title) {
+    mPageTitle.postValue(title);
+  }
+
   public LiveData<Boolean> isOrganizer() {
     return mIsOrganizer;
   }
@@ -671,7 +680,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public void setCurrentElectionQuestionVotes(Integer votes, int position) {
-    if (votes == null || position < 0 || position > mCurrentElectionVotes.getValue().size()) {
+    if (votes == null
+        || position < 0
+        || position > Objects.requireNonNull(mCurrentElectionVotes.getValue()).size()) {
       throw new IllegalArgumentException();
     }
     if (mCurrentElectionVotes.getValue().size() <= position) {

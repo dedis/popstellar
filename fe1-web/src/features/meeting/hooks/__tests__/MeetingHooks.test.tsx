@@ -11,6 +11,7 @@ import { MeetingHooks } from '../index';
 const contextValue = {
   [MEETING_FEATURE_IDENTIFIER]: {
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => false,
   } as MeetingReactContext,
 };
 
@@ -19,10 +20,17 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('Meeting hooks', () => {
-  describe('MeetingHooks.useAssertCurrentLaoId', () => {
+  describe('useAssertCurrentLaoId', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => MeetingHooks.useAssertCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
+    });
+  });
+
+  describe('useConnectedToLao', () => {
+    it('should return the current connection state', () => {
+      const { result } = renderHook(() => MeetingHooks.useConnectedToLao(), { wrapper });
+      expect(result.current).toBeFalse();
     });
   });
 });

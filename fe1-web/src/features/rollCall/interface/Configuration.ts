@@ -31,6 +31,12 @@ export interface RollCallConfiguration {
   useAssertCurrentLaoId: () => Hash;
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
+
+  /**
    * An action cretor that sets the last roll call for a given lao
    */
   setLaoLastRollCall: (
@@ -72,7 +78,7 @@ export interface RollCallConfiguration {
    * @returns A selector for a map from laoIds to a map of eventIds to events
    */
   makeEventByTypeSelector: (
-    laoId: string,
+    laoId: Hash | string,
     eventType: string,
   ) => (state: unknown) => Record<string, RollCallFeature.EventState>;
 
@@ -95,7 +101,11 @@ export interface RollCallConfiguration {
  */
 export type RollCallReactContext = Pick<
   RollCallConfiguration,
-  'useAssertCurrentLaoId' | 'makeEventByTypeSelector' | 'generateToken' | 'hasSeed'
+  | 'useAssertCurrentLaoId'
+  | 'useConnectedToLao'
+  | 'makeEventByTypeSelector'
+  | 'generateToken'
+  | 'hasSeed'
 >;
 
 /**
@@ -112,12 +122,15 @@ export interface RollCallInterface extends FeatureInterface {
 
   hooks: {
     useRollCallById: (rollCallId: Hash | string | undefined) => RollCall | undefined;
-    useRollCallsByLaoId: (laoId: string) => {
+    useRollCallsByLaoId: (laoId: Hash | string) => {
       [rollCallId: string]: RollCall;
     };
 
-    useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
-    useRollCallTokenByRollCallId: (laoId: string, rollCallId: string) => RollCallToken | undefined;
+    useRollCallTokensByLaoId: (laoId: Hash | string) => RollCallToken[];
+    useRollCallTokenByRollCallId: (
+      laoId: Hash | string,
+      rollCallId: string,
+    ) => RollCallToken | undefined;
 
     useRollCallAttendeesById: (rollCallId: Hash | string | undefined) => PublicKey[];
   };

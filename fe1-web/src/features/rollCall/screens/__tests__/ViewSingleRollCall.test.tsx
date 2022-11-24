@@ -57,7 +57,7 @@ const mockStore = configureStore({
     ...walletReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 const mockRollCallState = mockRollCallCreated.toState();
 
 mockStore.dispatch(
@@ -73,6 +73,7 @@ mockStore.dispatch(addRollCall(mockRollCallState));
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     makeEventByTypeSelector,
     generateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,

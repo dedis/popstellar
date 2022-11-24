@@ -11,7 +11,6 @@ import STRINGS from 'resources/strings';
 import { ChirpCard, TextInputChirp } from '../components';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
-import { SocialFeature } from '../interface';
 import { requestAddChirp } from '../network/SocialMessageApi';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsList } from '../reducer';
@@ -40,12 +39,21 @@ const SocialHome = () => {
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
+  const isConnected = SocialHooks.useConnectedToLao();
 
   if (laoId === undefined) {
     throw new Error('Impossible to render Social Home, current lao id is undefined');
   }
 
+  // The publish button is disabled in offline mode and when the user public key is not defined
+  const publishDisabled = !isConnected || !currentUserPopTokenPublicKey;
+
   const publishChirp = () => {
+    // button is disabled if publicKey is not set
+    if (!currentUserPopTokenPublicKey) {
+      return;
+    }
+
     requestAddChirp(currentUserPopTokenPublicKey, inputChirp, laoId)
       .then(() => {
         setInputChirp('');
@@ -64,7 +72,7 @@ const SocialHome = () => {
   const chirpList = useSelector(chirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPopTokenPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} />
   );
 
   return (
@@ -79,8 +87,7 @@ const SocialHome = () => {
             value={inputChirp}
             onChangeText={setInputChirp}
             onPress={publishChirp}
-            // The publish button is disabled when the user public key is not defined
-            publishIsDisabledCond={!currentUserPopTokenPublicKey}
+            disabled={publishDisabled}
             currentUserPublicKey={currentUserPopTokenPublicKey}
           />
           <FlatList
@@ -95,8 +102,3 @@ const SocialHome = () => {
 };
 
 export default SocialHome;
-
-export const SocialHomeScreen: SocialFeature.SocialScreen = {
-  id: STRINGS.social_media_navigation_tab_home,
-  Component: SocialHome,
-};

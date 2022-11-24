@@ -20,7 +20,7 @@ const BackButton = ({ padding }: IPropTypes) => {
       <PoPTouchableOpacity onPress={navigation.goBack}>
         <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
       </PoPTouchableOpacity>
-      <NavigationPadding paddingAmount={padding || 0} />
+      <NavigationPadding paddingAmount={padding || 0} nextToIcon />
     </>
   );
 };

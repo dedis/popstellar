@@ -101,6 +101,12 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     setupOpenButton();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(getString(R.string.roll_call_setup_title));
+  }
+
   private void setupConfirmButton() {
     confirmButton.setOnClickListener(v -> createRollCall(false));
   }
@@ -134,22 +140,26 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
               .flatMapCompletable(viewModel::openRollCall)
               .subscribe(
                   // Open the scanning fragment when everything is done
-                  () ->
-                      setCurrentFragment(
-                          getParentFragmentManager(),
-                          R.id.add_attendee_layout,
-                          QRCodeScanningFragment::new),
+                  () -> {
+                    setCurrentFragment(
+                        getParentFragmentManager(),
+                        R.id.add_attendee_layout,
+                        QRCodeScanningFragment::new);
+                    viewModel.setPageTitle(getString(R.string.add_attendee_title));
+                  },
                   error ->
                       ErrorUtils.logAndShow(
                           requireContext(), TAG, error, R.string.error_create_rollcall)));
     } else {
       viewModel.addDisposable(
           createRollCall.subscribe(
-              id ->
-                  setCurrentFragment(
-                      getParentFragmentManager(),
-                      R.id.fragment_lao_detail,
-                      LaoDetailFragment::newInstance),
+              id -> {
+                setCurrentFragment(
+                    getParentFragmentManager(),
+                    R.id.fragment_lao_detail,
+                    LaoDetailFragment::newInstance);
+                viewModel.setPageTitle(viewModel.getLaoView().getName());
+              },
               error ->
                   ErrorUtils.logAndShow(
                       requireContext(), TAG, error, R.string.error_create_rollcall)));

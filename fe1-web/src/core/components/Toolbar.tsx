@@ -24,6 +24,10 @@ const styles = StyleSheet.create({
  * https://developer.apple.com/design/human-interface-guidelines/components/menus-and-actions/toolbars
  */
 const Toolbar = ({ items }: IPropTypes) => {
+  if (items.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.toolbar}>
       {items.map((item) => (

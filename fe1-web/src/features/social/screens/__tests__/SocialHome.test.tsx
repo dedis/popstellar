@@ -9,7 +9,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import { SocialMediaContext } from '../../context';
-import { SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
+import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
 import { requestAddChirp } from '../../network/SocialMessageApi';
 import SocialReducer from '../../reducer/SocialReducer';
 import SocialHome from '../SocialHome';
@@ -22,16 +22,17 @@ jest.mock('features/social/network/SocialMessageApi', () => {
   };
 });
 
-const featureContextValue = {
+const contextValue = {
   [SOCIAL_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
     getCurrentLao: () => mockLao,
+    useConnectedToLao: () => true,
     useCurrentLaoId: () => mockLaoIdHash,
     getCurrentLaoId: () => mockLaoIdHash,
     useRollCallById: () => undefined,
     useRollCallAttendeesById: () => [],
-    generateToken: () => mockPopToken,
-  },
+    generateToken: () => Promise.resolve(mockPopToken),
+  } as SocialReactContext,
 };
 
 const socialContextValue = {
@@ -48,13 +49,13 @@ const mockStore = configureStore({
     ...SocialReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLaoState));
+mockStore.dispatch(setCurrentLao({ lao: mockLaoState }));
 
 describe('SocialHome', () => {
   it('renders correctly', () => {
     const { toJSON } = render(
       <Provider store={mockStore}>
-        <FeatureContext.Provider value={featureContextValue}>
+        <FeatureContext.Provider value={contextValue}>
           <SocialMediaContext.Provider value={socialContextValue}>
             <SocialHome />
           </SocialMediaContext.Provider>
@@ -67,7 +68,7 @@ describe('SocialHome', () => {
   it('is possible to publish chirps', async () => {
     const { getByTestId } = render(
       <Provider store={mockStore}>
-        <FeatureContext.Provider value={featureContextValue}>
+        <FeatureContext.Provider value={contextValue}>
           <SocialMediaContext.Provider value={socialContextValue}>
             <SocialHome />
           </SocialMediaContext.Provider>

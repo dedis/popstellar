@@ -77,22 +77,7 @@ Array [
               "fontSize": 18,
             }
           }
-        >
-          <View
-            style={
-              Object {
-                "flex": 1,
-                "flexDirection": "row",
-                "marginRight": 10,
-              }
-            }
-          >
-            {"name":"chatbubbles","size":16,"color":"black"}
-            <Text>
-                0
-            </Text>
-          </View>
-        </View>
+        />
       </View>
     </View>
     <View
@@ -111,12 +96,29 @@ Array [
           }
         }
       >
-        <time
-          dateTime="2020-12-31T23:00:00.000Z"
-          title="2020-12-31 23:00"
+        <Text
+          style={
+            Array [
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "textAlign": "left",
+              },
+              Object {
+                "fontSize": 16,
+                "lineHeight": 20,
+              },
+            ]
+          }
         >
-          4 months ago
-        </time>
+          <time
+            dateTime="2020-12-31T23:00:00.000Z"
+            title="2020-12-31 23:00"
+          >
+            4 months ago
+          </time>
+        </Text>
       </View>
     </View>
   </View>,
@@ -228,9 +230,53 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="thumbs-up"
             >
-              {"name":"thumbs-up-sharp","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={5}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"thumbs-up-sharp","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
             <Text>
                 1
@@ -258,9 +304,53 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="thumbs-down"
             >
-              {"name":"thumbs-down-sharp","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={6}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"thumbs-down-sharp","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
             <Text>
                 0
@@ -288,24 +378,54 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="heart"
             >
-              {"name":"heart","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={7}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"heart","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
-            <Text>
-                0
-            </Text>
-          </View>
-          <View
-            style={
-              Object {
-                "flex": 1,
-                "flexDirection": "row",
-                "marginRight": 10,
-              }
-            }
-          >
-            {"name":"chatbubbles","size":16,"color":"black"}
             <Text>
                 0
             </Text>
@@ -329,12 +449,29 @@ Array [
           }
         }
       >
-        <time
-          dateTime="2020-12-31T23:00:00.000Z"
-          title="2020-12-31 23:00"
+        <Text
+          style={
+            Array [
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "textAlign": "left",
+              },
+              Object {
+                "fontSize": 16,
+                "lineHeight": 20,
+              },
+            ]
+          }
         >
-          4 months ago
-        </time>
+          <time
+            dateTime="2020-12-31T23:00:00.000Z"
+            title="2020-12-31 23:00"
+          >
+            4 months ago
+          </time>
+        </Text>
       </View>
     </View>
   </View>,
@@ -446,9 +583,53 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="thumbs-up"
             >
-              {"name":"thumbs-up-sharp","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={1}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"thumbs-up-sharp","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
             <Text>
                 1
@@ -476,9 +657,53 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="thumbs-down"
             >
-              {"name":"thumbs-down-sharp","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={2}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"thumbs-down-sharp","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
             <Text>
                 0
@@ -506,24 +731,54 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="heart"
             >
-              {"name":"heart","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={3}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"heart","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
-            <Text>
-                0
-            </Text>
-          </View>
-          <View
-            style={
-              Object {
-                "flex": 1,
-                "flexDirection": "row",
-                "marginRight": 10,
-              }
-            }
-          >
-            {"name":"chatbubbles","size":16,"color":"black"}
             <Text>
                 0
             </Text>
@@ -548,7 +803,6 @@ Array [
         }
       >
         <View
-          accessibilityLabel="deleteChirpButton"
           accessible={true}
           collapsable={false}
           focusable={true}
@@ -561,8 +815,53 @@ Array [
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "marginBottom": 16,
+            }
+          }
+          testID="delete_chirp_1234"
         >
-          {"name":"close-outline","size":20,"color":"red"}
+          <RNGestureHandlerButton
+            collapsable={false}
+            exclusive={true}
+            handlerTag={4}
+            handlerType="NativeViewGestureHandler"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            touchSoundDisabled={false}
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              style={
+                Object {
+                  "opacity": 1,
+                }
+              }
+            >
+              <View
+                style={
+                  Array [
+                    Object {
+                      "backgroundColor": "#3742fa",
+                      "borderColor": "#3742fa",
+                      "borderRadius": 8,
+                      "borderWidth": 1,
+                      "padding": 8,
+                    },
+                  ]
+                }
+              >
+                <View>
+                  {"name":"ios-trash","size":25,"color":"#fff"}
+                </View>
+              </View>
+            </View>
+          </RNGestureHandlerButton>
         </View>
       </View>
       <View
@@ -572,12 +871,29 @@ Array [
           }
         }
       >
-        <time
-          dateTime="2020-12-31T23:00:00.000Z"
-          title="2020-12-31 23:00"
+        <Text
+          style={
+            Array [
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "textAlign": "left",
+              },
+              Object {
+                "fontSize": 16,
+                "lineHeight": 20,
+              },
+            ]
+          }
         >
-          4 months ago
-        </time>
+          <time
+            dateTime="2020-12-31T23:00:00.000Z"
+            title="2020-12-31 23:00"
+          >
+            4 months ago
+          </time>
+        </Text>
       </View>
     </View>
   </View>,
@@ -689,9 +1005,53 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="thumbs-up"
             >
-              {"name":"thumbs-up-sharp","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={16}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"thumbs-up-sharp","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
             <Text>
                 1
@@ -719,9 +1079,53 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="thumbs-down"
             >
-              {"name":"thumbs-down-sharp","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={17}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"thumbs-down-sharp","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
             <Text>
                 0
@@ -749,24 +1153,54 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="heart"
             >
-              {"name":"heart","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={18}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"heart","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
-            <Text>
-                0
-            </Text>
-          </View>
-          <View
-            style={
-              Object {
-                "flex": 1,
-                "flexDirection": "row",
-                "marginRight": 10,
-              }
-            }
-          >
-            {"name":"chatbubbles","size":16,"color":"black"}
             <Text>
                 0
             </Text>
@@ -791,7 +1225,6 @@ Array [
         }
       >
         <View
-          accessibilityLabel="deleteChirpButton"
           accessible={true}
           collapsable={false}
           focusable={true}
@@ -804,8 +1237,53 @@ Array [
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "marginBottom": 16,
+            }
+          }
+          testID="delete_chirp_1234"
         >
-          {"name":"close-outline","size":20,"color":"red"}
+          <RNGestureHandlerButton
+            collapsable={false}
+            exclusive={true}
+            handlerTag={19}
+            handlerType="NativeViewGestureHandler"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            touchSoundDisabled={false}
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              style={
+                Object {
+                  "opacity": 1,
+                }
+              }
+            >
+              <View
+                style={
+                  Array [
+                    Object {
+                      "backgroundColor": "#3742fa",
+                      "borderColor": "#3742fa",
+                      "borderRadius": 8,
+                      "borderWidth": 1,
+                      "padding": 8,
+                    },
+                  ]
+                }
+              >
+                <View>
+                  {"name":"ios-trash","size":25,"color":"#fff"}
+                </View>
+              </View>
+            </View>
+          </RNGestureHandlerButton>
         </View>
       </View>
       <View
@@ -815,12 +1293,29 @@ Array [
           }
         }
       >
-        <time
-          dateTime="2020-12-31T23:00:00.000Z"
-          title="2020-12-31 23:00"
+        <Text
+          style={
+            Array [
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "textAlign": "left",
+              },
+              Object {
+                "fontSize": 16,
+                "lineHeight": 20,
+              },
+            ]
+          }
         >
-          4 months ago
-        </time>
+          <time
+            dateTime="2020-12-31T23:00:00.000Z"
+            title="2020-12-31 23:00"
+          >
+            4 months ago
+          </time>
+        </Text>
       </View>
     </View>
   </View>,
@@ -932,9 +1427,53 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="thumbs-up"
             >
-              {"name":"thumbs-up-sharp","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={20}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"thumbs-up-sharp","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
             <Text>
                 0
@@ -962,9 +1501,53 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="thumbs-down"
             >
-              {"name":"thumbs-down-sharp","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={21}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"thumbs-down-sharp","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
             <Text>
                 0
@@ -992,24 +1575,54 @@ Array [
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={
+                Object {
+                  "marginBottom": 16,
+                }
+              }
               testID="heart"
             >
-              {"name":"heart","size":16,"color":"black"}
+              <RNGestureHandlerButton
+                collapsable={false}
+                exclusive={true}
+                handlerTag={22}
+                handlerType="NativeViewGestureHandler"
+                onGestureEvent={[Function]}
+                onGestureHandlerEvent={[Function]}
+                onGestureHandlerStateChange={[Function]}
+                onHandlerStateChange={[Function]}
+                rippleColor={0}
+                touchSoundDisabled={false}
+              >
+                <View
+                  accessible={true}
+                  collapsable={false}
+                  style={
+                    Object {
+                      "opacity": 1,
+                    }
+                  }
+                >
+                  <View
+                    style={
+                      Array [
+                        Object {
+                          "backgroundColor": "#3742fa",
+                          "borderColor": "#3742fa",
+                          "borderRadius": 8,
+                          "borderWidth": 1,
+                          "padding": 8,
+                        },
+                      ]
+                    }
+                  >
+                    <View>
+                      {"name":"heart","size":25,"color":"#fff"}
+                    </View>
+                  </View>
+                </View>
+              </RNGestureHandlerButton>
             </View>
-            <Text>
-                0
-            </Text>
-          </View>
-          <View
-            style={
-              Object {
-                "flex": 1,
-                "flexDirection": "row",
-                "marginRight": 10,
-              }
-            }
-          >
-            {"name":"chatbubbles","size":16,"color":"black"}
             <Text>
                 0
             </Text>
@@ -1033,12 +1646,29 @@ Array [
           }
         }
       >
-        <time
-          dateTime="2020-12-31T23:00:00.000Z"
-          title="2020-12-31 23:00"
+        <Text
+          style={
+            Array [
+              Object {
+                "color": "#000",
+                "fontSize": 20,
+                "lineHeight": 26,
+                "textAlign": "left",
+              },
+              Object {
+                "fontSize": 16,
+                "lineHeight": 20,
+              },
+            ]
+          }
         >
-          4 months ago
-        </time>
+          <time
+            dateTime="2020-12-31T23:00:00.000Z"
+            title="2020-12-31 23:00"
+          >
+            4 months ago
+          </time>
+        </Text>
       </View>
     </View>
   </View>,

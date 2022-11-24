@@ -908,20 +908,6 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                             </View>
                           </View>
                         </RCTScrollView>
-                        <View
-                          style={
-                            Object {
-                              "alignItems": "center",
-                              "backgroundColor": "#fff",
-                              "borderColor": "rgb(216, 216, 216)",
-                              "borderTopWidth": 1,
-                              "flexDirection": "row",
-                              "justifyContent": "space-around",
-                              "paddingHorizontal": 16,
-                              "paddingVertical": 16,
-                            }
-                          }
-                        />
                       </View>
                     </View>
                   </View>
@@ -1340,20 +1326,6 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                             </Text>
                           </View>
                         </RCTScrollView>
-                        <View
-                          style={
-                            Object {
-                              "alignItems": "center",
-                              "backgroundColor": "#fff",
-                              "borderColor": "rgb(216, 216, 216)",
-                              "borderTopWidth": 1,
-                              "flexDirection": "row",
-                              "justifyContent": "space-around",
-                              "paddingHorizontal": 16,
-                              "paddingVertical": 16,
-                            }
-                          }
-                        />
                       </View>
                     </View>
                   </View>
@@ -1997,20 +1969,6 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                             </View>
                           </View>
                         </RCTScrollView>
-                        <View
-                          style={
-                            Object {
-                              "alignItems": "center",
-                              "backgroundColor": "#fff",
-                              "borderColor": "rgb(216, 216, 216)",
-                              "borderTopWidth": 1,
-                              "flexDirection": "row",
-                              "justifyContent": "space-around",
-                              "paddingHorizontal": 16,
-                              "paddingVertical": 16,
-                            }
-                          }
-                        />
                       </View>
                     </View>
                   </View>
@@ -2654,20 +2612,6 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                             </View>
                           </View>
                         </RCTScrollView>
-                        <View
-                          style={
-                            Object {
-                              "alignItems": "center",
-                              "backgroundColor": "#fff",
-                              "borderColor": "rgb(216, 216, 216)",
-                              "borderTopWidth": 1,
-                              "flexDirection": "row",
-                              "justifyContent": "space-around",
-                              "paddingHorizontal": 16,
-                              "paddingVertical": 16,
-                            }
-                          }
-                        />
                       </View>
                     </View>
                   </View>

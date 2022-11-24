@@ -1,16 +1,17 @@
-import { Ionicons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
-import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import React, { useContext, useMemo, useState } from 'react';
+import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
 import { ConfirmModal, ProfileIcon } from 'core/components';
-import { PublicKey } from 'core/objects';
+import PoPIconButton from 'core/components/PoPIconButton';
+import { Typography } from 'core/styles';
 import { gray } from 'core/styles/color';
 import STRINGS from 'resources/strings';
 
+import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
 import { Chirp } from '../objects';
@@ -84,10 +85,12 @@ const styles = StyleSheet.create({
 
 const FOUR_SECONDS = 4000;
 
-const ChirpCard = (props: IPropTypes) => {
-  const { chirp, currentUserPublicKey } = props;
+const ChirpCard = ({ chirp }: IPropTypes) => {
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
+  const isConnected = SocialHooks.useConnectedToLao();
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
+
   if (laoId === undefined) {
     throw new Error('Impossible to render chirp, current lao id is undefined');
   }
@@ -95,12 +98,13 @@ const ChirpCard = (props: IPropTypes) => {
   const reactionList = useMemo(() => makeReactionsList(laoId.valueOf()), [laoId]);
   const reactions = useSelector(reactionList)[chirp.id.toString()];
 
-  const zero = '  0';
   const thumbsUp = reactions ? reactions['👍'] : 0;
   const thumbsDown = reactions ? reactions['👎'] : 0;
   const heart = reactions ? reactions['❤️'] : 0;
 
   const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false);
+
+  const addReactionDisabled = !isConnected || !currentUserPopTokenPublicKey;
 
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
@@ -113,10 +117,18 @@ const ChirpCard = (props: IPropTypes) => {
   };
 
   // TODO: delete a chirp posted with a PoP token from a previous roll call.
-  const isSender = currentUserPublicKey.valueOf() === chirp.sender.valueOf();
+  const isSender =
+    currentUserPopTokenPublicKey &&
+    currentUserPopTokenPublicKey.valueOf() === chirp.sender.valueOf();
+
+  const deleteDisabled = !isConnected || !currentUserPopTokenPublicKey;
 
   const deleteChirp = () => {
-    requestDeleteChirp(currentUserPublicKey, chirp.id, laoId).catch((err) => {
+    if (!currentUserPopTokenPublicKey) {
+      return;
+    }
+
+    requestDeleteChirp(currentUserPopTokenPublicKey, chirp.id, laoId).catch((err) => {
       toast.show(`Could not remove chirp, error: ${err}`, {
         type: 'danger',
         placement: 'top',
@@ -146,46 +158,54 @@ const ChirpCard = (props: IPropTypes) => {
               {!chirp.isDeleted && (
                 <>
                   <View style={styles.reactionView}>
-                    <Pressable onPress={() => addReaction('👍')} testID="thumbs-up">
-                      <Ionicons name="thumbs-up-sharp" size={16} color="black" />
-                    </Pressable>
+                    <PoPIconButton
+                      name="thumbsUp"
+                      testID="thumbs-up"
+                      onPress={() => addReaction('👍')}
+                      disabled={addReactionDisabled}
+                    />
                     <Text>{`  ${thumbsUp}`}</Text>
                   </View>
                   <View style={styles.reactionView}>
-                    <Pressable onPress={() => addReaction('👎')} testID="thumbs-down">
-                      <Ionicons name="thumbs-down-sharp" size={16} color="black" />
-                    </Pressable>
+                    <PoPIconButton
+                      name="thumbsDown"
+                      testID="thumbs-down"
+                      onPress={() => addReaction('👎')}
+                      disabled={addReactionDisabled}
+                    />
                     <Text>{`  ${thumbsDown}`}</Text>
                   </View>
                   <View style={styles.reactionView}>
-                    <Pressable onPress={() => addReaction('❤️')} testID="heart">
-                      <Ionicons name="heart" size={16} color="black" />
-                    </Pressable>
+                    <PoPIconButton
+                      name="heart"
+                      testID="heart"
+                      onPress={() => addReaction('❤️')}
+                      disabled={addReactionDisabled}
+                    />
                     <Text>{`  ${heart}`}</Text>
                   </View>
                 </>
               )}
-              <View style={styles.reactionView}>
-                <Ionicons name="chatbubbles" size={16} color="black" />
-                <Text>{zero}</Text>
-              </View>
             </View>
           </View>
         </View>
         <View style={styles.bottomView}>
           {isSender && !chirp.isDeleted && (
             <View style={styles.deleteChirpContainer}>
-              <Pressable
+              <PoPIconButton
+                name="delete"
+                testID={`delete_chirp_${chirp.id}`}
                 onPress={() => {
                   setDeleteModalIsVisible(true);
                 }}
-                accessibilityLabel="deleteChirpButton">
-                <Ionicons name="close-outline" size={20} color="red" />
-              </Pressable>
+                disabled={deleteDisabled}
+              />
             </View>
           )}
           <View style={styles.chirpTimeContainer}>
-            <TimeAgo date={chirp.time.valueOf() * 1000} />
+            <Text style={[Typography.base, Typography.small]}>
+              <TimeAgo date={chirp.time.valueOf() * 1000} />
+            </Text>
           </View>
         </View>
       </View>
@@ -203,7 +223,6 @@ const ChirpCard = (props: IPropTypes) => {
 
 const propTypes = {
   chirp: PropTypes.instanceOf(Chirp).isRequired,
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
 };
 
 ChirpCard.prototype = propTypes;

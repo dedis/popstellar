@@ -46,7 +46,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
 
   private final LiveData<List<String>> laoIdList;
-  private final LiveData<Boolean> isSocialMediaEnabled;
+  private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
   /** Dependencies for this class */
   private final Gson gson;
@@ -74,9 +74,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     laoIdList =
         LiveDataReactiveStreams.fromPublisher(
             laoRepository.getAllLaoIds().toFlowable(BackpressureStrategy.BUFFER));
-
-    isSocialMediaEnabled =
-        Transformations.map(laoIdList, laoSet -> laoSet != null && !laoSet.isEmpty());
   }
 
   @Override
@@ -187,6 +184,14 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
   public void setIsWalletSetUp(boolean isSetUp) {
     this.isWalletSetup.setValue(isSetUp);
+  }
+
+  public LiveData<Integer> getPageTitle() {
+    return mPageTitle;
+  }
+
+  public void setPageTitle(int titleId) {
+    mPageTitle.postValue(titleId);
   }
 
   public boolean isWalletSetUp() {

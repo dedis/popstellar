@@ -19,4 +19,10 @@ export namespace MeetingHooks {
    * Should be used inside react components
    */
   export const useAssertCurrentLaoId = () => useMeetingContext().useAssertCurrentLaoId();
+
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  export const useConnectedToLao = () => useMeetingContext().useConnectedToLao();
 }

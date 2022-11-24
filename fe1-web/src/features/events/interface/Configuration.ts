@@ -31,7 +31,7 @@ export interface EventInterface extends FeatureInterface {
      * @returns A selector for a map from laoIds to a map of eventIds to events
      */
     makeEventByTypeSelector: (
-      laoId: string,
+      laoId: Hash | string,
       eventType: string,
     ) => (state: any) => Record<string, EventState>;
 

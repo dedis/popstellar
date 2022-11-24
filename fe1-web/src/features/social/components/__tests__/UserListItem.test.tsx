@@ -5,14 +5,30 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import { mockNavigate } from '__mocks__/useNavigationMock';
+import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils';
+import FeatureContext from 'core/contexts/FeatureContext';
 import { subscribeToChannel } from 'core/network/CommunicationApi';
 import { Channel, Hash, PublicKey } from 'core/objects';
+import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from 'features/social/interface';
 import STRINGS from 'resources/strings';
 
 import UserListItem from '../UserListItem';
 
 const publicKey = new PublicKey('PublicKey');
 const laoId = new Hash('LaoId');
+
+const contextValue = {
+  [SOCIAL_FEATURE_IDENTIFIER]: {
+    useCurrentLao: () => mockLao,
+    getCurrentLao: () => mockLao,
+    useConnectedToLao: () => true,
+    useCurrentLaoId: () => mockLaoIdHash,
+    getCurrentLaoId: () => mockLaoIdHash,
+    useRollCallById: () => undefined,
+    useRollCallAttendeesById: () => [],
+    generateToken: () => Promise.resolve(mockPopToken),
+  } as SocialReactContext,
+};
 
 jest.mock('core/network/CommunicationApi.ts', () => ({
   subscribeToChannel: jest.fn((c: Channel) => Promise.resolve(c)),
@@ -31,7 +47,9 @@ describe('UserListItem', () => {
     const expectedChannel = '/root/LaoId/social/PublicKey';
     const button = render(
       <Provider store={mockStore}>
-        <UserListItem laoId={laoId} publicKey={publicKey} />
+        <FeatureContext.Provider value={contextValue}>
+          <UserListItem laoId={laoId} publicKey={publicKey} />
+        </FeatureContext.Provider>
       </Provider>,
     ).getByText(STRINGS.follow_button);
 
@@ -48,7 +66,9 @@ describe('UserListItem', () => {
   it('calls navigate correctly when clicking on profile', () => {
     const { getByText } = render(
       <Provider store={mockStore}>
-        <UserListItem laoId={laoId} publicKey={publicKey} />
+        <FeatureContext.Provider value={contextValue}>
+          <UserListItem laoId={laoId} publicKey={publicKey} />
+        </FeatureContext.Provider>
       </Provider>,
     );
     const followButton = getByText(STRINGS.follow_button);
@@ -64,7 +84,9 @@ describe('UserListItem', () => {
   it('renders correctly', () => {
     const component = render(
       <Provider store={mockStore}>
-        <UserListItem laoId={laoId} publicKey={publicKey} />
+        <FeatureContext.Provider value={contextValue}>
+          <UserListItem laoId={laoId} publicKey={publicKey} />
+        </FeatureContext.Provider>
       </Provider>,
     ).toJSON();
     expect(component).toMatchSnapshot();
@@ -73,7 +95,9 @@ describe('UserListItem', () => {
   it('renders correctly after clicking on follow', () => {
     const { toJSON, getByText } = render(
       <Provider store={mockStore}>
-        <UserListItem laoId={laoId} publicKey={publicKey} />
+        <FeatureContext.Provider value={contextValue}>
+          <UserListItem laoId={laoId} publicKey={publicKey} />
+        </FeatureContext.Provider>
       </Provider>,
     );
     const button = getByText(STRINGS.follow_button);

@@ -43,6 +43,7 @@ const CreateRollCall = () => {
   const toast = useToast();
 
   const laoId = RollCallHooks.useAssertCurrentLaoId();
+  const isConnected = RollCallHooks.useConnectedToLao();
 
   const [proposedStartTime, setProposedStartTime] = useState(Timestamp.EpochNow());
   const [proposedEndTime, setProposedEndTime] = useState(
@@ -87,7 +88,8 @@ const CreateRollCall = () => {
     );
   };
 
-  const buttonsVisibility: boolean = rollCallName !== '' && rollCallLocation !== '';
+  const confirmButtonEnabled: boolean =
+    isConnected === true && rollCallName !== '' && rollCallLocation !== '';
 
   const createRollCall = () => {
     const description = rollCallDescription === '' ? undefined : rollCallDescription;
@@ -116,7 +118,7 @@ const CreateRollCall = () => {
     {
       id: 'roll_call_confirm_selector',
       title: STRINGS.general_button_confirm,
-      disabled: !buttonsVisibility,
+      disabled: !confirmButtonEnabled,
       onPress: () =>
         onConfirmEventCreation(
           proposedStartTime,

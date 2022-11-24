@@ -87,7 +87,7 @@ const contextValue = {
 };
 
 const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 
 describe('ConnectOpenScan', () => {
   it('renders correctly', () => {
