@@ -451,45 +451,62 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                       }
                                     >
                                       <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        focusable={true}
-                                        onBlur={[Function]}
-                                        onClick={[Function]}
-                                        onFocus={[Function]}
-                                        onResponderGrant={[Function]}
-                                        onResponderMove={[Function]}
-                                        onResponderRelease={[Function]}
-                                        onResponderTerminate={[Function]}
-                                        onResponderTerminationRequest={[Function]}
-                                        onStartShouldSetResponder={[Function]}
+                                        style={
+                                          Object {
+                                            "alignItems": "center",
+                                            "display": "flex",
+                                            "flexDirection": "row",
+                                          }
+                                        }
                                       >
-                                        <RNGestureHandlerButton
+                                        <View
+                                          accessible={true}
                                           collapsable={false}
-                                          exclusive={true}
-                                          handlerTag={2}
-                                          handlerType="NativeViewGestureHandler"
-                                          onGestureEvent={[Function]}
-                                          onGestureHandlerEvent={[Function]}
-                                          onGestureHandlerStateChange={[Function]}
-                                          onHandlerStateChange={[Function]}
-                                          rippleColor={0}
-                                          touchSoundDisabled={false}
+                                          focusable={true}
+                                          onBlur={[Function]}
+                                          onClick={[Function]}
+                                          onFocus={[Function]}
+                                          onResponderGrant={[Function]}
+                                          onResponderMove={[Function]}
+                                          onResponderRelease={[Function]}
+                                          onResponderTerminate={[Function]}
+                                          onResponderTerminationRequest={[Function]}
+                                          onStartShouldSetResponder={[Function]}
                                         >
-                                          <View
-                                            accessible={true}
+                                          <RNGestureHandlerButton
                                             collapsable={false}
-                                            style={
-                                              Object {
-                                                "opacity": 1,
-                                              }
-                                            }
+                                            exclusive={true}
+                                            handlerTag={2}
+                                            handlerType="NativeViewGestureHandler"
+                                            onGestureEvent={[Function]}
+                                            onGestureHandlerEvent={[Function]}
+                                            onGestureHandlerStateChange={[Function]}
+                                            onHandlerStateChange={[Function]}
+                                            rippleColor={0}
+                                            touchSoundDisabled={false}
                                           >
-                                            <View>
-                                              {"name":"ios-menu","size":25,"color":"#8E8E8E"}
+                                            <View
+                                              accessible={true}
+                                              collapsable={false}
+                                              style={
+                                                Object {
+                                                  "opacity": 1,
+                                                }
+                                              }
+                                            >
+                                              <View>
+                                                {"name":"ios-menu","size":25,"color":"#8E8E8E"}
+                                              </View>
                                             </View>
-                                          </View>
-                                        </RNGestureHandlerButton>
+                                          </RNGestureHandlerButton>
+                                        </View>
+                                        <View
+                                          style={
+                                            Object {
+                                              "width": 41,
+                                            }
+                                          }
+                                        />
                                       </View>
                                     </View>
                                     <View

@@ -576,45 +576,62 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                         }
                                                       >
                                                         <View
-                                                          accessible={true}
-                                                          collapsable={false}
-                                                          focusable={true}
-                                                          onBlur={[Function]}
-                                                          onClick={[Function]}
-                                                          onFocus={[Function]}
-                                                          onResponderGrant={[Function]}
-                                                          onResponderMove={[Function]}
-                                                          onResponderRelease={[Function]}
-                                                          onResponderTerminate={[Function]}
-                                                          onResponderTerminationRequest={[Function]}
-                                                          onStartShouldSetResponder={[Function]}
+                                                          style={
+                                                            Object {
+                                                              "alignItems": "center",
+                                                              "display": "flex",
+                                                              "flexDirection": "row",
+                                                            }
+                                                          }
                                                         >
-                                                          <RNGestureHandlerButton
+                                                          <View
+                                                            accessible={true}
                                                             collapsable={false}
-                                                            exclusive={true}
-                                                            handlerTag={3}
-                                                            handlerType="NativeViewGestureHandler"
-                                                            onGestureEvent={[Function]}
-                                                            onGestureHandlerEvent={[Function]}
-                                                            onGestureHandlerStateChange={[Function]}
-                                                            onHandlerStateChange={[Function]}
-                                                            rippleColor={0}
-                                                            touchSoundDisabled={false}
+                                                            focusable={true}
+                                                            onBlur={[Function]}
+                                                            onClick={[Function]}
+                                                            onFocus={[Function]}
+                                                            onResponderGrant={[Function]}
+                                                            onResponderMove={[Function]}
+                                                            onResponderRelease={[Function]}
+                                                            onResponderTerminate={[Function]}
+                                                            onResponderTerminationRequest={[Function]}
+                                                            onStartShouldSetResponder={[Function]}
                                                           >
-                                                            <View
-                                                              accessible={true}
+                                                            <RNGestureHandlerButton
                                                               collapsable={false}
-                                                              style={
-                                                                Object {
-                                                                  "opacity": 1,
-                                                                }
-                                                              }
+                                                              exclusive={true}
+                                                              handlerTag={3}
+                                                              handlerType="NativeViewGestureHandler"
+                                                              onGestureEvent={[Function]}
+                                                              onGestureHandlerEvent={[Function]}
+                                                              onGestureHandlerStateChange={[Function]}
+                                                              onHandlerStateChange={[Function]}
+                                                              rippleColor={0}
+                                                              touchSoundDisabled={false}
                                                             >
-                                                              <View>
-                                                                {"name":"ios-menu","size":25,"color":"#8E8E8E"}
+                                                              <View
+                                                                accessible={true}
+                                                                collapsable={false}
+                                                                style={
+                                                                  Object {
+                                                                    "opacity": 1,
+                                                                  }
+                                                                }
+                                                              >
+                                                                <View>
+                                                                  {"name":"ios-menu","size":25,"color":"#8E8E8E"}
+                                                                </View>
                                                               </View>
-                                                            </View>
-                                                          </RNGestureHandlerButton>
+                                                            </RNGestureHandlerButton>
+                                                          </View>
+                                                          <View
+                                                            style={
+                                                              Object {
+                                                                "width": 41,
+                                                              }
+                                                            }
+                                                          />
                                                         </View>
                                                       </View>
                                                       <View
@@ -1015,42 +1032,43 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     undefined,
                                   ]
                                 }
-                                navigation={
-                                  Object {
-                                    "addListener": [Function],
-                                    "canGoBack": [Function],
-                                    "closeDrawer": [Function],
-                                    "dispatch": [Function],
-                                    "emit": [Function],
-                                    "getId": [Function],
-                                    "getParent": [Function],
-                                    "getState": [Function],
-                                    "goBack": [Function],
-                                    "isFocused": [Function],
-                                    "jumpTo": [Function],
-                                    "navigate": [Function],
-                                    "openDrawer": [Function],
-                                    "pop": [Function],
-                                    "popToTop": [Function],
-                                    "push": [Function],
-                                    "removeListener": [Function],
-                                    "replace": [Function],
-                                    "reset": [Function],
-                                    "setOptions": [Function],
-                                    "setParams": [Function],
-                                    "toggleDrawer": [Function],
-                                  }
-                                }
                                 style={
                                   Array [
                                     Object {
                                       "flex": 1,
                                     },
-                                    undefined,
+                                    Object {
+                                      "margin": 16,
+                                    },
                                   ]
                                 }
                               >
                                 <View>
+                                  <View
+                                    style={
+                                      Object {
+                                        "marginBottom": 8,
+                                      }
+                                    }
+                                  >
+                                    <Text
+                                      style={
+                                        Array [
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "textAlign": "left",
+                                          },
+                                          Object {
+                                            "fontWeight": "bold",
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      MyLao
+                                    </Text>
+                                  </View>
                                   <View
                                     collapsable={false}
                                     style={
@@ -1064,7 +1082,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                           "backgroundColor": "transparent",
                                           "borderRadius": 4,
                                         },
-                                        undefined,
+                                        Object {
+                                          "marginHorizontal": 0,
+                                        },
                                       ]
                                     }
                                   >
@@ -1152,7 +1172,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                           "backgroundColor": "#d3d2fd",
                                           "borderRadius": 4,
                                         },
-                                        undefined,
+                                        Object {
+                                          "marginHorizontal": 0,
+                                        },
                                       ]
                                     }
                                   >
@@ -1245,7 +1267,9 @@ exports[`LaoNavigation renders correctly 1`] = `
                                           "backgroundColor": "transparent",
                                           "borderRadius": 4,
                                         },
-                                        undefined,
+                                        Object {
+                                          "marginHorizontal": 0,
+                                        },
                                       ]
                                     }
                                   >
@@ -1315,6 +1339,99 @@ exports[`LaoNavigation renders correctly 1`] = `
                                             }
                                           >
                                             a title
+                                          </Text>
+                                        </View>
+                                      </View>
+                                    </View>
+                                  </View>
+                                  <View
+                                    collapsable={false}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "marginHorizontal": 10,
+                                          "marginVertical": 4,
+                                          "overflow": "hidden",
+                                        },
+                                        Object {
+                                          "backgroundColor": "transparent",
+                                          "borderRadius": 4,
+                                        },
+                                        Object {
+                                          "marginHorizontal": 0,
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <View
+                                      accessibilityRole="button"
+                                      accessibilityState={
+                                        Object {
+                                          "selected": false,
+                                        }
+                                      }
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <View
+                                        style={
+                                          Array [
+                                            Object {
+                                              "alignItems": "center",
+                                              "flexDirection": "row",
+                                              "padding": 8,
+                                            },
+                                            Object {
+                                              "borderRadius": 4,
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        <View>
+                                          {"name":"logout","size":24,"color":"#8E8E8E"}
+                                        </View>
+                                        <View
+                                          style={
+                                            Array [
+                                              Object {
+                                                "flex": 1,
+                                                "marginRight": 32,
+                                              },
+                                              Object {
+                                                "marginLeft": 32,
+                                                "marginVertical": 5,
+                                              },
+                                            ]
+                                          }
+                                        >
+                                          <Text
+                                            numberOfLines={1}
+                                            style={
+                                              Array [
+                                                Object {
+                                                  "color": "#8E8E8E",
+                                                  "fontWeight": "500",
+                                                },
+                                                undefined,
+                                              ]
+                                            }
+                                          >
+                                            Disconnect
                                           </Text>
                                         </View>
                                       </View>
