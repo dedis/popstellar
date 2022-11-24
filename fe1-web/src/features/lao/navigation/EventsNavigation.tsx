@@ -1,13 +1,16 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
-import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
-import EventsScreen, { EventsScreenHeader, EventsScreenHeaderRight } from '../screens/EventsScreen';
+import EventsScreen, {
+  EventsScreenHeader,
+  EventsScreenHeaderLeft,
+  EventsScreenHeaderRight,
+} from '../screens/EventsScreen';
 
 /**
  * Define the Organizer stack navigation
@@ -31,7 +34,7 @@ export default function EventsNavigation() {
         options={{
           title: STRINGS.navigation_lao_events_home_title,
           headerTitle: EventsScreenHeader,
-          headerLeft: DrawerMenuButton,
+          headerLeft: EventsScreenHeaderLeft,
           headerRight: EventsScreenHeaderRight,
         }}
       />

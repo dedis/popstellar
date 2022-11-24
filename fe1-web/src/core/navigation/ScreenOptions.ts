@@ -1,5 +1,6 @@
 import { DrawerNavigationOptions } from '@react-navigation/drawer';
 import { StackNavigationOptions } from '@react-navigation/stack';
+import { ViewStyle } from 'react-native';
 
 import BackButton from 'core/components/BackButton';
 import NavigationPadding from 'core/components/NavigationPadding';
@@ -45,6 +46,9 @@ export const drawerNavigationOptions: DrawerNavigationOptions = {
   drawerActiveBackgroundColor: Color.accentLight,
   drawerActiveTintColor: Color.accent,
   drawerInactiveTintColor: Color.inactive,
+  drawerItemStyle: {
+    marginHorizontal: 0,
+  } as ViewStyle,
 
   headerLeftContainerStyle: {
     flexBasis: 'auto',

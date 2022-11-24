@@ -68,6 +68,8 @@ namespace STRINGS {
   export const navigation_lao_digital_cash = 'Digital Cash';
   export const navigation_lao_digital_cash_title = 'Digital Cash';
 
+  export const navigation_lao_disconnect_title = 'Disconnect';
+
   /* --- Lao Home Navigation Strings --- */
   export const navigation_lao_home_identity = 'My identity';
 

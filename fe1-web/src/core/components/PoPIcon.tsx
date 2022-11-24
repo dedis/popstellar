@@ -120,6 +120,10 @@ const iconNameMap = {
     iconName: 'ios-list',
     IconFamily: Ionicons,
   } as IonIcon,
+  logout: {
+    iconName: 'logout',
+    IconFamily: MaterialIcons,
+  } as MaterialIcon,
   meeting: {
     iconName: 'ios-calendar',
     IconFamily: Ionicons,

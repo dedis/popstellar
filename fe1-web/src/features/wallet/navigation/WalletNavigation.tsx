@@ -2,6 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
 import DrawerMenuButton from 'core/components/DrawerMenuButton';
+import NavigationPadding from 'core/components/NavigationPadding';
 import { makeIcon } from 'core/components/PoPIcon';
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
@@ -29,7 +30,7 @@ export default function WalletNavigation() {
         options={{
           headerTitle: STRINGS.navigation_wallet_home_title,
           headerLeft: DrawerMenuButton,
-          headerRight: () => null,
+          headerRight: NavigationPadding,
         }}
       />
       <Stack.Screen

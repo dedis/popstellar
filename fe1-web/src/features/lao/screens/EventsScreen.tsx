@@ -1,29 +1,20 @@
-import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
+import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import ModalHeader from 'core/components/ModalHeader';
 import NavigationPadding from 'core/components/NavigationPadding';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { getNetworkManager } from 'core/network';
 import { Color, Icon, ModalStyles, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoProperties } from '../components';
 import { LaoHooks } from '../hooks';
 import { selectIsLaoOrganizer } from '../reducer';
-
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
-  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
->;
 
 /**
  * AttendeeScreen: lists LAO properties and past/ongoing/future events.
@@ -42,7 +33,7 @@ const EventsScreen = () => {
 export default EventsScreen;
 
 const styles = StyleSheet.create({
-  backButtonContainer: {
+  headerLeftContainer: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -77,21 +68,11 @@ export const EventsScreenHeader = () => {
  * Shows a disconnect icon for disconnecting from the lao
  */
 export const EventsScreenHeaderLeft = () => {
-  const navigation = useNavigation<NavigationProps['navigation']>();
   const isOrganizer = LaoHooks.useIsLaoOrganizer();
 
   return (
-    <View style={styles.backButtonContainer}>
-      <PoPTouchableOpacity
-        onPress={() => {
-          getNetworkManager().disconnectFromAll();
-
-          navigation.navigate(STRINGS.navigation_app_home, {
-            screen: STRINGS.navigation_home_home,
-          });
-        }}>
-        <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
-      </PoPTouchableOpacity>
+    <View style={styles.headerLeftContainer}>
+      <DrawerMenuButton />
       <NavigationPadding paddingAmount={isOrganizer ? 1 : 0} nextToIcon />
     </View>
   );
