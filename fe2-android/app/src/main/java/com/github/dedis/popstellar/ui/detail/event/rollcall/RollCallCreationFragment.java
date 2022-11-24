@@ -111,9 +111,16 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     String title = Objects.requireNonNull(binding.rollCallTitleText.getText()).toString();
     String description =
         Objects.requireNonNull(binding.rollCallEventDescriptionText.getText()).toString();
+    String location =
+        Objects.requireNonNull(binding.rollCallEventLocationText.getText().toString());
     Single<String> createRollCall =
         viewModel.createNewRollCall(
-            title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds);
+            title,
+            description,
+            location,
+            creationTimeInSeconds,
+            startTimeInSeconds,
+            endTimeInSeconds);
 
     if (open) {
       viewModel.addDisposable(
@@ -142,5 +149,4 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
                       requireContext(), TAG, error, R.string.error_create_rollcall)));
     }
   }
-
 }

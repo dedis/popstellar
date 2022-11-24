@@ -116,6 +116,7 @@
   <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
   <string name="qrcode_scanning_connect_lao">Scan a QR code to connect to a LAO</string>
   <string name="event_description">Event Description</string>
+  <string name="rc_location_title">Location*</string>
   <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code exactly once.</string>
   <string name="roll_call_add_manually_hint">Add key manually</string>
   <string name="scan_all_attendees_question">Are you sure you have scanned all attendees ?</string>

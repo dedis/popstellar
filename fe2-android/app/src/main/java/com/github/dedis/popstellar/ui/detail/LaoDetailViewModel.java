@@ -343,13 +343,19 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * @param title the title of the roll call
    * @param description the description of the roll call, can be empty
+   * @param location the location of the roll call
    * @param creation the creation time of the roll call
    * @param proposedStart the proposed start time of the roll call
    * @param proposedEnd the proposed end time of the roll call
    * @return A Single emitting the id of the created rollcall
    */
   public Single<String> createNewRollCall(
-      String title, String description, long creation, long proposedStart, long proposedEnd) {
+      String title,
+      String description,
+      String location,
+      long creation,
+      long proposedStart,
+      long proposedEnd) {
     Log.d(TAG, "creating a new roll call with title " + title);
 
     LaoView laoView;
@@ -362,7 +368,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     CreateRollCall createRollCall =
         new CreateRollCall(
-            title, creation, proposedStart, proposedEnd, description, description, laoView.getId());
+            title, creation, proposedStart, proposedEnd, location, description, laoView.getId());
 
     return networkManager
         .getMessageSender()
