@@ -102,7 +102,11 @@ const SocialMediaNavigation = () => {
           headerTitleStyle: Typography.topNavigationHeading,
           headerTitleAlign: 'center',
         })}>
-        <Tab.Screen name={STRINGS.social_media_navigation_tab_home} component={SocialHome} />
+        <Tab.Screen
+          name={STRINGS.social_media_navigation_tab_home}
+          component={SocialHome}
+          options={{ title: STRINGS.social_media_navigation_tab_home_title }}
+        />
         <Tab.Screen
           name={STRINGS.social_media_navigation_tab_search}
           component={SocialSearchNavigation}

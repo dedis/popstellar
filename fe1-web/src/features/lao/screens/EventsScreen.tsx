@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
@@ -9,7 +9,7 @@ import ModalHeader from 'core/components/ModalHeader';
 import NavigationPadding from 'core/components/NavigationPadding';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { Color, Icon, ModalStyles, Typography } from 'core/styles';
+import { Color, Icon, ModalStyles } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoProperties } from '../components';
@@ -48,20 +48,6 @@ const styles = StyleSheet.create({
   },
   lastButton: {},
 });
-
-/**
- * Component rendered in the top middle of the navgiation bar when looking
- * at the lao home screen. Makes sure it shows the name of the lao and
- * not just some static string.
- */
-export const EventsScreenHeader = () => {
-  const lao = LaoHooks.useCurrentLao();
-  return (
-    <Text style={Typography.topNavigationHeading} numberOfLines={1}>
-      {lao.name}
-    </Text>
-  );
-};
 
 /**
  * Component rendered in the top left of the navigation bar

@@ -94,13 +94,14 @@ namespace STRINGS {
 
   /* --- Digital Cash Navigation Strings --- */
   export const navigation_digital_cash_wallet = 'Digital Cash Wallet';
-  export const navigation_digital_cash_wallet_title = 'Digital Cash Wallet';
+  export const navigation_digital_cash_wallet_title = 'Digital Cash';
   export const navigation_digital_cash_send_receive = 'Send & Receive';
   export const navigation_digital_cash_send_receive_title = 'Your Account';
-  export const navigation_digital_cash_wallet_scanner = 'Digital Cash Wallet Scanner';
+  export const navigation_digital_cash_wallet_scanner = 'Digital Cash Scanner';
 
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
+  export const social_media_navigation_tab_home_title = 'Social Media';
   export const social_media_navigation_tab_search = 'Search';
   export const social_media_navigation_tab_follows = 'My Follows';
   export const social_media_navigation_tab_profile = 'My Profile';
