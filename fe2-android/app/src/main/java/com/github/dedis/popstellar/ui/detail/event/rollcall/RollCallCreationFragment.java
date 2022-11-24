@@ -45,9 +45,14 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-          String meetingTitle = rollCallTitleEditText.getText().toString().trim();
+          String rcTitle = rollCallTitleEditText.getText().toString().trim();
+          String location = binding.rollCallEventLocationText.getText().toString().trim();
           boolean areFieldsFilled =
-              !meetingTitle.isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty();
+              !rcTitle.isEmpty()
+                  && !getStartDate().isEmpty()
+                  && !getStartTime().isEmpty()
+                  && !location.isEmpty();
+
           confirmButton.setEnabled(areFieldsFilled);
           openButton.setEnabled(areFieldsFilled);
         }
@@ -77,6 +82,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
     rollCallTitleEditText = binding.rollCallTitleText;
     rollCallTitleEditText.addTextChangedListener(confirmTextWatcher);
+    binding.rollCallEventLocationText.addTextChangedListener(confirmTextWatcher);
 
     openButton = binding.rollCallOpen;
     confirmButton = binding.rollCallConfirm;
