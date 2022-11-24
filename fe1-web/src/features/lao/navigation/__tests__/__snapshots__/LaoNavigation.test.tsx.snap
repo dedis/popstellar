@@ -648,7 +648,11 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                         }
                                                       >
                                                         <Text
+                                                          accessibilityRole="header"
+                                                          aria-level="1"
+                                                          collapsable={false}
                                                           numberOfLines={1}
+                                                          onLayout={[Function]}
                                                           style={
                                                             Object {
                                                               "color": "#000",
@@ -659,7 +663,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                             }
                                                           }
                                                         >
-                                                          MyLao
+                                                          Events
                                                         </Text>
                                                       </View>
                                                       <View
