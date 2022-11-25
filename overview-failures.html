@@ -75,7 +75,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>demo</td>
-      <td>24 Nov 2022, 04:14</td>
+      <td>25 Nov 2022, 04:14</td>
     </tr>
   </tbody>
 </table>
@@ -115,7 +115,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_4269286261.html">be/digitalCash/transaction.feature</a>
+      <a href="report-feature_1_655929658.html">be/election/castVote.feature</a>
     </div>
 
 
@@ -125,14 +125,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.910</span>
+  <span class="lead-duration duration">0.993</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Valid transaction: issue 32 mini-Laos to an attendee</span>
+  <span class="name">Casting a valid vote before time should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -166,960 +166,9 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
-
-  <span class="lead-duration duration">0.884</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def validTransaction =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-3">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-3" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;coin&quot;,
-    &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: &quot;_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;,
-    &quot;transaction&quot;: {
-      &quot;version&quot;: 1,
-      &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
-        &quot;tx_out_index&quot;: 0,
-        &quot;script&quot;: {
-          &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
-          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
-        }
-      }],
-      &quot;outputs&quot;: '#(getValidOutputs)',
-      &quot;lock_time&quot;: 0
-    }
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
-
-  <span class="lead-duration duration">0.011</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
-
-  <span class="lead-duration duration">0.013</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then failed">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-4">
-          <a>match</a>
-      </div>
-      <div id="msg-4" class="collapse collapsable-details  in ">
-        <pre>match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1453451839,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: bad signature&quot;}}
-  {&quot;result&quot;:0}
-
-
-classpath:be/digitalCash/transaction.feature:48</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-5" class="collapse collapsable-details">
-        <pre>04:08:37.773 classpath:be/digitalCash/transaction.feature:48
-Then match answer contains VALID_MESSAGE
-match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1453451839,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: bad signature&quot;}}
-  {&quot;result&quot;:0}
-
-
-classpath:be/digitalCash/transaction.feature:48
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_4269286261.html">be/digitalCash/transaction.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">5.958</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-6">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Transfer valid amount should work</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-6" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-7">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-7" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
-
-  <span class="lead-duration duration">0.938</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def validTransfer =</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-8">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-8" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;coin&quot;,
-    &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: &quot;lCCBbko3JyV5RT6zlIJVv1IpyST3Kc5wByzXvOsyLic=&quot;,
-    &quot;transaction&quot;: {
-      &quot;version&quot;: 1,
-      &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
-        &quot;tx_out_index&quot;: 0,
-        &quot;script&quot;: {
-          &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey&quot;: &quot;2jmj7l5rSw0yVb-vlWAYkK-YBwk=&quot;,
-          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
-        }
-      }],
-      &quot;outputs&quot;: [{
-        &quot;value&quot;: 20,
-        &quot;script&quot;: {
-          &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey_hash&quot;: &quot;2jmj7l5rSw0yVb-vlWAYkK-YBRk=&quot;
-        }
-      }],
-      &quot;lock_time&quot;: 0
-    }
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validTransfer), cashChannel)</span>
-
-  <span class="lead-duration duration">0.005</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And failed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))</span>
-
-  <span class="lead-duration duration">5.013</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-9">
-          <a>js</a>
-      </div>
-      <div id="msg-9" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: frontend.getBackendResponse(JSON.stringify(validTransfer))
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:96)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:67)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/digitalCash/transaction.feature:82</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-10" class="collapse collapsable-details">
-        <pre>04:08:46.897 classpath:be/digitalCash/transaction.feature:82
-And json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))
-js failed:
-&gt;&gt;&gt;&gt;
-01: frontend.getBackendResponse(JSON.stringify(validTransfer))
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:96)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:67)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/digitalCash/transaction.feature:82
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_4269286261.html">be/digitalCash/transaction.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.971</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-11">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Post transaction with invalid transaction id should fail</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-11" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-12">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-12" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
-
-  <span class="lead-duration duration">0.945</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">def validTransaction =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-13">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-13" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;coin&quot;,
-    &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
-    &quot;transaction&quot;: {
-      &quot;version&quot;: 1,
-      &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
-        &quot;tx_out_index&quot;: 0,
-        &quot;script&quot;: {
-          &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
-          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
-        }
-      }],
-      &quot;outputs&quot;: '#(getValidOutputs)',
-      &quot;lock_time&quot;: 0
-    }
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
-
-  <span class="lead-duration duration">0.022</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
-
-  <span class="lead-duration duration">0.002</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then failed">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-14">
-          <a>match</a>
-      </div>
-      <div id="msg-14" class="collapse collapsable-details  in ">
-        <pre>match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1916687667,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: incorrect transaction id&quot;}}
-  {&quot;result&quot;:0}
-
-
-classpath:be/digitalCash/transaction.feature:112</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-15">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-15" class="collapse collapsable-details">
-        <pre>04:08:51.002 classpath:be/digitalCash/transaction.feature:112
-Then match answer contains VALID_MESSAGE
-match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1916687667,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: incorrect transaction id&quot;}}
-  {&quot;result&quot;:0}
-
-
-classpath:be/digitalCash/transaction.feature:112
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_2_655929658.html">be/election/castVote.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.834</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-16">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Casting a valid vote before time should fail</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-16" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-17">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-17" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_open')</span>
 
-  <span class="lead-duration duration">0.808</span>
+  <span class="lead-duration duration">0.961</span>
 
 </div>
 
@@ -1187,10 +236,10 @@ classpath:be/digitalCash/transaction.feature:112
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-18">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-3">
           <a>Doc string</a>
       </div>
-      <div id="msg-18" class="collapse collapsable-details">
+      <div id="msg-3" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -1223,7 +272,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(invalidCastVote), electionChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -1250,7 +299,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))</span>
 
-  <span class="lead-duration duration">0.023</span>
+  <span class="lead-duration duration">0.030</span>
 
 </div>
 
@@ -1288,13 +337,13 @@ classpath:be/digitalCash/transaction.feature:112
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-4">
           <a>match</a>
       </div>
-      <div id="msg-19" class="collapse collapsable-details  in ">
+      <div id="msg-4" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:386430770,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-2063188913,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -1308,15 +357,15 @@ classpath:be/election/castVote.feature:197</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
           <a>Doc string</a>
       </div>
-      <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:10:07.683 classpath:be/election/castVote.feature:197
+      <div id="msg-5" class="collapse collapsable-details">
+        <pre>04:10:16.583 classpath:be/election/castVote.feature:197
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:386430770,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-2063188913,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -1374,7 +423,7 @@ classpath:be/election/castVote.feature:197
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_6_859013492.html">be/election/electionOpen.feature</a>
+      <a href="report-feature_2_859013492.html">be/election/electionOpen.feature</a>
     </div>
 
 
@@ -1384,10 +433,10 @@ classpath:be/election/castVote.feature:197
 </div>
 
 
-  <span class="lead-duration duration">0.785</span>
+  <span class="lead-duration duration">0.916</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-21">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-6">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -1400,14 +449,14 @@ classpath:be/election/castVote.feature:197
   </span>
   <div class="description indention"></div>
 
-  <div id="element-21" class="collapse collapsable-details  in ">
+  <div id="element-6" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-22">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-7">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1419,7 +468,7 @@ classpath:be/election/castVote.feature:197
 
   </div>
 
-  <div id="steps-22" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-7" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -1427,7 +476,7 @@ classpath:be/election/castVote.feature:197
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
 
-  <span class="lead-duration duration">0.759</span>
+  <span class="lead-duration duration">0.884</span>
 
 </div>
 
@@ -1495,10 +544,10 @@ classpath:be/election/castVote.feature:197
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-23">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-8">
           <a>Doc string</a>
       </div>
-      <div id="msg-23" class="collapse collapsable-details">
+      <div id="msg-8" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;election&quot;,
     &quot;action&quot;: &quot;open&quot;,
@@ -1551,7 +600,7 @@ classpath:be/election/castVote.feature:197
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.022</span>
 
 </div>
 
@@ -1589,13 +638,13 @@ classpath:be/election/castVote.feature:197
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-24">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-9">
           <a>match</a>
       </div>
-      <div id="msg-24" class="collapse collapsable-details  in ">
+      <div id="msg-9" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:628991646,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-645627546,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -1609,15 +658,15 @@ classpath:be/election/electionOpen.feature:75</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-25">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
           <a>Doc string</a>
       </div>
-      <div id="msg-25" class="collapse collapsable-details">
-        <pre>04:10:46.460 classpath:be/election/electionOpen.feature:75
+      <div id="msg-10" class="collapse collapsable-details">
+        <pre>04:10:56.284 classpath:be/election/electionOpen.feature:75
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:628991646,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-645627546,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -1675,7 +724,7 @@ classpath:be/election/electionOpen.feature:75
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_7_212298372.html">be/LAO/create.feature</a>
+      <a href="report-feature_3_4046913119.html">be/election/electionEnd.feature</a>
     </div>
 
 
@@ -1685,300 +734,10 @@ classpath:be/election/electionOpen.feature:75
 </div>
 
 
-  <span class="lead-duration duration">0.540</span>
+  <span class="lead-duration duration">0.010</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-26">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao with different public key from the organizer should fail with error response</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-26" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-27">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-27" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given passed">
-  <span class="keyword indention">Given</span>
-  <span class="name">def laoCreateRequest =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-28" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: 1633035721,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* passed">
-  <span class="keyword indention">*</span>
-  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When passed">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
-
-  <span class="lead-duration duration">0.011</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And passed">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
-
-  <span class="lead-duration duration">0.526</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then failed">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains ACCESS_DENIED</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
-          <a>match</a>
-      </div>
-      <div id="msg-29" class="collapse collapsable-details  in ">
-        <pre>match failed: CONTAINS
-  $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1362421542,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
-  {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
-
-    $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}
-    {&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}
-
-      $.error.code | not equal (NUMBER:NUMBER)
-      -4
-      -5
-
-classpath:be/LAO/create.feature:121</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-30">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-30" class="collapse collapsable-details">
-        <pre>04:08:31.866 classpath:be/LAO/create.feature:121
-Then match answer contains ACCESS_DENIED
-match failed: CONTAINS
-  $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1362421542,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
-  {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
-
-    $.error | not equal | match failed for name: 'code' (MAP:MAP)
-    {&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}
-    {&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}
-
-      $.error.code | not equal (NUMBER:NUMBER)
-      -4
-      -5
-
-classpath:be/LAO/create.feature:121
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_8_4046913119.html">be/election/electionEnd.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.018</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-31">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-11">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -1991,14 +750,14 @@ classpath:be/LAO/create.feature:121
   </span>
   <div class="description indention"></div>
 
-  <div id="element-31" class="collapse collapsable-details  in ">
+  <div id="element-11" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-32">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-12">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2010,7 +769,7 @@ classpath:be/LAO/create.feature:121
 
   </div>
 
-  <div id="steps-32" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-12" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2018,7 +777,7 @@ classpath:be/LAO/create.feature:121
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -2029,10 +788,10 @@ classpath:be/LAO/create.feature:121
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-33">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-13">
           <a>js</a>
       </div>
-      <div id="msg-33" class="collapse collapsable-details  in ">
+      <div id="msg-13" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
@@ -2057,11 +816,11 @@ classpath:be/election/electionEnd.feature:24</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-34">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-14">
           <a>Doc string</a>
       </div>
-      <div id="msg-34" class="collapse collapsable-details">
-        <pre>04:10:11.723 classpath:be/election/electionEnd.feature:24
+      <div id="msg-14" class="collapse collapsable-details">
+        <pre>04:10:20.704 classpath:be/election/electionEnd.feature:24
 Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2135,10 +894,10 @@ classpath:be/election/electionEnd.feature:24
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-35">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-15">
           <a>js</a>
       </div>
-      <div id="msg-35" class="collapse collapsable-details  in ">
+      <div id="msg-15" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
@@ -2189,10 +948,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-16">
           <a>Doc string</a>
       </div>
-      <div id="msg-36" class="collapse collapsable-details">
+      <div id="msg-16" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;end&quot;,
@@ -2334,7 +1093,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_8_4046913119.html">be/election/electionEnd.feature</a>
+      <a href="report-feature_3_4046913119.html">be/election/electionEnd.feature</a>
     </div>
 
 
@@ -2344,10 +1103,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.018</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-37">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -2360,14 +1119,14 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-37" class="collapse collapsable-details  in ">
+  <div id="element-17" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-38">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-18">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2379,7 +1138,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   </div>
 
-  <div id="steps-38" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-18" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2387,7 +1146,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.016</span>
 
 </div>
 
@@ -2398,10 +1157,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-39">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
           <a>js</a>
       </div>
-      <div id="msg-39" class="collapse collapsable-details  in ">
+      <div id="msg-19" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
@@ -2426,11 +1185,11 @@ classpath:be/election/electionEnd.feature:44</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-40">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
           <a>Doc string</a>
       </div>
-      <div id="msg-40" class="collapse collapsable-details">
-        <pre>04:10:14.844 classpath:be/election/electionEnd.feature:44
+      <div id="msg-20" class="collapse collapsable-details">
+        <pre>04:10:23.859 classpath:be/election/electionEnd.feature:44
 Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2493,7 +1252,7 @@ classpath:be/election/electionEnd.feature:44
   <span class="keyword indention">&gt; *</span>
   <span class="name">string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2504,10 +1263,10 @@ classpath:be/election/electionEnd.feature:44
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-41">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
           <a>js</a>
       </div>
-      <div id="msg-41" class="collapse collapsable-details  in ">
+      <div id="msg-21" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
@@ -2558,10 +1317,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-42">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-22">
           <a>Doc string</a>
       </div>
-      <div id="msg-42" class="collapse collapsable-details">
+      <div id="msg-22" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;end&quot;,
@@ -2703,7 +1462,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_8_4046913119.html">be/election/electionEnd.feature</a>
+      <a href="report-feature_3_4046913119.html">be/election/electionEnd.feature</a>
     </div>
 
 
@@ -2713,10 +1472,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.031</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-43">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-23">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -2729,14 +1488,14 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-43" class="collapse collapsable-details  in ">
+  <div id="element-23" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-44">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-24">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2748,7 +1507,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   </div>
 
-  <div id="steps-44" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-24" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2756,7 +1515,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.030</span>
 
 </div>
 
@@ -2767,10 +1526,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-45">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-25">
           <a>js</a>
       </div>
-      <div id="msg-45" class="collapse collapsable-details  in ">
+      <div id="msg-25" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
@@ -2795,11 +1554,11 @@ classpath:be/election/electionEnd.feature:63</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-46">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-26">
           <a>Doc string</a>
       </div>
-      <div id="msg-46" class="collapse collapsable-details">
-        <pre>04:10:18.012 classpath:be/election/electionEnd.feature:63
+      <div id="msg-26" class="collapse collapsable-details">
+        <pre>04:10:27.103 classpath:be/election/electionEnd.feature:63
 Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2873,10 +1632,10 @@ classpath:be/election/electionEnd.feature:63
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-47">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
           <a>js</a>
       </div>
-      <div id="msg-47" class="collapse collapsable-details  in ">
+      <div id="msg-27" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
@@ -2927,10 +1686,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-48">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
           <a>Doc string</a>
       </div>
-      <div id="msg-48" class="collapse collapsable-details">
+      <div id="msg-28" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;end&quot;,
@@ -3072,7 +1831,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_8_4046913119.html">be/election/electionEnd.feature</a>
+      <a href="report-feature_3_4046913119.html">be/election/electionEnd.feature</a>
     </div>
 
 
@@ -3082,10 +1841,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.027</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-49">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-29">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -3098,14 +1857,14 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-49" class="collapse collapsable-details  in ">
+  <div id="element-29" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-50">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-30">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -3117,7 +1876,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   </div>
 
-  <div id="steps-50" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-30" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -3125,7 +1884,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.026</span>
 
 </div>
 
@@ -3136,10 +1895,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-51">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-31">
           <a>js</a>
       </div>
-      <div id="msg-51" class="collapse collapsable-details  in ">
+      <div id="msg-31" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
@@ -3164,11 +1923,11 @@ classpath:be/election/electionEnd.feature:82</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-52">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-32">
           <a>Doc string</a>
       </div>
-      <div id="msg-52" class="collapse collapsable-details">
-        <pre>04:10:20.843 classpath:be/election/electionEnd.feature:82
+      <div id="msg-32" class="collapse collapsable-details">
+        <pre>04:10:30.304 classpath:be/election/electionEnd.feature:82
 Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -3231,7 +1990,7 @@ classpath:be/election/electionEnd.feature:82
   <span class="keyword indention">&gt; *</span>
   <span class="name">string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3242,10 +2001,10 @@ classpath:be/election/electionEnd.feature:82
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-53">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-33">
           <a>js</a>
       </div>
-      <div id="msg-53" class="collapse collapsable-details  in ">
+      <div id="msg-33" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
@@ -3296,10 +2055,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-54">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-34">
           <a>Doc string</a>
       </div>
-      <div id="msg-54" class="collapse collapsable-details">
+      <div id="msg-34" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;end&quot;,
@@ -3441,7 +2200,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_8_4046913119.html">be/election/electionEnd.feature</a>
+      <a href="report-feature_3_4046913119.html">be/election/electionEnd.feature</a>
     </div>
 
 
@@ -3451,10 +2210,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.025</span>
+  <span class="lead-duration duration">0.010</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-55">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-35">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -3467,14 +2226,14 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-55" class="collapse collapsable-details  in ">
+  <div id="element-35" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-56">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-36">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -3486,7 +2245,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   </div>
 
-  <div id="steps-56" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-36" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -3494,7 +2253,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.017</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -3505,10 +2264,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-57">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-37">
           <a>js</a>
       </div>
-      <div id="msg-57" class="collapse collapsable-details  in ">
+      <div id="msg-37" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
@@ -3533,11 +2292,11 @@ classpath:be/election/electionEnd.feature:102</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-58">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-38">
           <a>Doc string</a>
       </div>
-      <div id="msg-58" class="collapse collapsable-details">
-        <pre>04:10:24.028 classpath:be/election/electionEnd.feature:102
+      <div id="msg-38" class="collapse collapsable-details">
+        <pre>04:10:33.526 classpath:be/election/electionEnd.feature:102
 Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -3600,7 +2359,7 @@ classpath:be/election/electionEnd.feature:102
   <span class="keyword indention">&gt; *</span>
   <span class="name">string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -3611,10 +2370,10 @@ classpath:be/election/electionEnd.feature:102
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-59">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-39">
           <a>js</a>
       </div>
-      <div id="msg-59" class="collapse collapsable-details  in ">
+      <div id="msg-39" class="collapse collapsable-details  in ">
         <pre>js failed:
 &gt;&gt;&gt;&gt;
 01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
@@ -3665,10 +2424,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-60">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-40">
           <a>Doc string</a>
       </div>
-      <div id="msg-60" class="collapse collapsable-details">
+      <div id="msg-40" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;end&quot;,
@@ -3761,6 +2520,1247 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
 
 
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_5_4269286261.html">be/digitalCash/transaction.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.975</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-41">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Valid transaction: issue 32 mini-Laos to an attendee</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-41" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-42">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-42" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
+
+  <span class="lead-duration duration">0.938</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/simpleScenarios.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def validTransaction =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-43">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-43" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
+        &quot;tx_out_index&quot;: 0,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+        }
+      }],
+      &quot;outputs&quot;: '#(getValidOutputs)',
+      &quot;lock_time&quot;: 0
+    }
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
+
+  <span class="lead-duration duration">0.002</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
+
+  <span class="lead-duration duration">0.033</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then failed">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-44">
+          <a>match</a>
+      </div>
+      <div id="msg-44" class="collapse collapsable-details  in ">
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-871450408,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: bad signature&quot;}}
+  {&quot;result&quot;:0}
+
+
+classpath:be/digitalCash/transaction.feature:48</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-45">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-45" class="collapse collapsable-details">
+        <pre>04:08:45.934 classpath:be/digitalCash/transaction.feature:48
+Then match answer contains VALID_MESSAGE
+match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-871450408,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: bad signature&quot;}}
+  {&quot;result&quot;:0}
+
+
+classpath:be/digitalCash/transaction.feature:48
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_5_4269286261.html">be/digitalCash/transaction.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">5.964</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-46">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Transfer valid amount should work</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-46" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-47">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-47" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
+
+  <span class="lead-duration duration">0.938</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/simpleScenarios.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def validTransfer =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-48">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-48" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;lCCBbko3JyV5RT6zlIJVv1IpyST3Kc5wByzXvOsyLic=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
+        &quot;tx_out_index&quot;: 0,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: &quot;2jmj7l5rSw0yVb-vlWAYkK-YBwk=&quot;,
+          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+        }
+      }],
+      &quot;outputs&quot;: [{
+        &quot;value&quot;: 20,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey_hash&quot;: &quot;2jmj7l5rSw0yVb-vlWAYkK-YBRk=&quot;
+        }
+      }],
+      &quot;lock_time&quot;: 0
+    }
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validTransfer), cashChannel)</span>
+
+  <span class="lead-duration duration">0.006</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And failed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))</span>
+
+  <span class="lead-duration duration">5.019</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-49">
+          <a>js</a>
+      </div>
+      <div id="msg-49" class="collapse collapsable-details  in ">
+        <pre>js failed:
+&gt;&gt;&gt;&gt;
+01: frontend.getBackendResponse(JSON.stringify(validTransfer))
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException
+- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:96)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:67)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/digitalCash/transaction.feature:82</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-50">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-50" class="collapse collapsable-details">
+        <pre>04:08:55.054 classpath:be/digitalCash/transaction.feature:82
+And json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))
+js failed:
+&gt;&gt;&gt;&gt;
+01: frontend.getBackendResponse(JSON.stringify(validTransfer))
+&lt;&lt;&lt;&lt;
+org.graalvm.polyglot.PolyglotException
+- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:96)
+- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:67)
+- &lt;js&gt;.:program(Unnamed:1)
+
+classpath:be/digitalCash/transaction.feature:82
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_5_4269286261.html">be/digitalCash/transaction.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.909</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-51">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Post transaction with invalid transaction id should fail</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-51" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-52">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-52" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
+
+  <span class="lead-duration duration">0.885</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/simpleScenarios.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">def validTransaction =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-53">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-53" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
+        &quot;tx_out_index&quot;: 0,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+        }
+      }],
+      &quot;outputs&quot;: '#(getValidOutputs)',
+      &quot;lock_time&quot;: 0
+    }
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
+
+  <span class="lead-duration duration">0.017</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
+
+  <span class="lead-duration duration">0.005</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then failed">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-54">
+          <a>match</a>
+      </div>
+      <div id="msg-54" class="collapse collapsable-details  in ">
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1578000856,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: incorrect transaction id&quot;}}
+  {&quot;result&quot;:0}
+
+
+classpath:be/digitalCash/transaction.feature:112</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-55">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-55" class="collapse collapsable-details">
+        <pre>04:08:58.876 classpath:be/digitalCash/transaction.feature:112
+Then match answer contains VALID_MESSAGE
+match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1578000856,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: incorrect transaction id&quot;}}
+  {&quot;result&quot;:0}
+
+
+classpath:be/digitalCash/transaction.feature:112
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_6_212298372.html">be/LAO/create.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.536</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-56">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Create Lao with different public key from the organizer should fail with error response</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-56" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-57">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-57" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given passed">
+  <span class="keyword indention">Given</span>
+  <span class="name">def laoCreateRequest =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-58">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-58" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;LAO&quot;,
+  &quot;creation&quot;: 1633035721,
+  &quot;organizer&quot;: '#(getOrganizer)',
+  &quot;witnesses&quot;: []
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* passed">
+  <span class="keyword indention">*</span>
+  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When passed">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
+
+  <span class="lead-duration duration">0.003</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And passed">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
+
+  <span class="lead-duration duration">0.530</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then failed">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains ACCESS_DENIED</span>
+
+  <span class="lead-duration duration">0.001</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-59">
+          <a>match</a>
+      </div>
+      <div id="msg-59" class="collapse collapsable-details  in ">
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:774486235,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
+  {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
+
+    $.error | not equal | match failed for name: 'code' (MAP:MAP)
+    {&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}
+    {&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}
+
+      $.error.code | not equal (NUMBER:NUMBER)
+      -4
+      -5
+
+classpath:be/LAO/create.feature:121</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-60">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-60" class="collapse collapsable-details">
+        <pre>04:08:39.800 classpath:be/LAO/create.feature:121
+Then match answer contains ACCESS_DENIED
+match failed: CONTAINS
+  $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:774486235,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
+  {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
+
+    $.error | not equal | match failed for name: 'code' (MAP:MAP)
+    {&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}
+    {&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}
+
+      $.error.code | not equal (NUMBER:NUMBER)
+      -4
+      -5
+
+classpath:be/LAO/create.feature:121
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
