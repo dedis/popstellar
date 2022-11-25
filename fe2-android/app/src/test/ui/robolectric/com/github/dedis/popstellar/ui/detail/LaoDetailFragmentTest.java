@@ -72,6 +72,7 @@ public class LaoDetailFragmentTest {
   private static final Lao LAO = new Lao(LAO_NAME, PK, 10223421);
   private static final String LAO_ID = LAO.getId();
   private static final String RC_NAME = "Roll-Call Title";
+  private static final String RC_LOCATION = "Not Lausanne";
   private static final String ELECTION_NAME = "an election name";
   private static final String QUESTION = "question";
   private static final String BALLOT_1 = "ballot 1";
@@ -169,7 +170,7 @@ public class LaoDetailFragmentTest {
 
   @Test
   public void confirmingRollCallOpensEventListScreen() {
-    goToRollCallCreationAndEnterTitle();
+    goToRollCallCreationAndEnterTitleAndLocation();
     rollCallCreateConfirmButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(laoDetailFragmentId()))));
   }
@@ -177,7 +178,7 @@ public class LaoDetailFragmentTest {
   @Test
   public void openRollCallOpensPermission() {
     setupViewModel();
-    goToRollCallCreationAndEnterTitle();
+    goToRollCallCreationAndEnterTitleAndLocation();
     rollCreateOpenButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(qrCodeFragmentId()))));
   }
@@ -188,10 +189,11 @@ public class LaoDetailFragmentTest {
     fragmentContainer().check(matches(withChild(withId(laoDetailFragmentId()))));
   }
 
-  private void goToRollCallCreationAndEnterTitle() {
+  private void goToRollCallCreationAndEnterTitleAndLocation() {
     addEventButton().perform(click());
     addRollCallButton().perform(click());
     rollCallCreateTitle().perform(typeText(RC_NAME));
+    rollCallCreateLocation().perform(typeText(RC_LOCATION));
   }
 
   private void createElection() {
