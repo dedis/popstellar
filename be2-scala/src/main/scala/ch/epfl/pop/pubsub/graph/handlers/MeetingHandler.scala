@@ -13,14 +13,14 @@ case object MeetingHandler extends MessageHandler {
   def handleCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask = {
       for {
-        _ <- checkParameters(rpcMessage, s"Unable to handle coin message $rpcMessage. Not a post message")
+        _ <- checkParameters(rpcMessage, s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'")
         _ <- dbAskWritePropagate(rpcMessage)
       } yield ()
     }
 
     Await.ready(ask, duration).value match {
       case Some(Success(_))                        => Left(rpcMessage)
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'", rpcMessage.getId))
+      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCreateMeeting failed : ${ex.message}", rpcMessage.getId))
       case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateMeeting failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }
   }
