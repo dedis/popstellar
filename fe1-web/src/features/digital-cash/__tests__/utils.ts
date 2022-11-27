@@ -17,7 +17,8 @@ export const mockRollCallToken = new RollCallToken({
 
 export const mockDigitalCashContextValue = (isOrganizer: boolean) => ({
   [DIGITAL_CASH_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     useIsLaoOrganizer: () => isOrganizer,
     useRollCallById: () => mockRollCall,
     useRollCallsByLaoId: () => ({

@@ -20,12 +20,12 @@ const connectToTestLao = jest.fn();
 const LaoList = jest.fn();
 const hasSeed = jest.fn();
 const resubscribeToLao = jest.fn();
+const forgetSeed = jest.fn();
 const homeNavigationScreens: HomeFeature.HomeScreen[] = [
   {
     Component: LaoList,
     id: 'x' as HomeFeature.HomeScreen['id'],
     title: 'X',
-    order: 2,
   },
 ];
 
@@ -43,12 +43,13 @@ const contextValue = {
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao,
+    forgetSeed,
   } as HomeReactContext,
 };
 
 // setup mock store
 const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <Provider store={mockStore}>

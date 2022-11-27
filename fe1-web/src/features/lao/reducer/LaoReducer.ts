@@ -20,15 +20,17 @@ export interface LaoReducerState {
   byId: Record<string, LaoState>;
   allIds: string[];
   currentId?: string;
+  connected: boolean;
 }
 
 const initialState: LaoReducerState = {
   byId: {},
   allIds: [],
+  connected: false,
 };
 
-const addLaoReducer = (state: Draft<LaoReducerState>, action: PayloadAction<LaoState>) => {
-  const newLao = action.payload;
+const addLaoReducer = (state: Draft<LaoReducerState>, action: PayloadAction<{ lao: LaoState }>) => {
+  const newLao = action.payload.lao;
 
   if (newLao.id in state.byId) {
     // we already have some data on this lao stored
@@ -53,8 +55,8 @@ const laosSlice = createSlice({
     addLao: addLaoReducer,
 
     // Update a LAO
-    updateLao: (state: Draft<LaoReducerState>, action: PayloadAction<LaoState>) => {
-      const updatedLao = action.payload;
+    updateLao: (state: Draft<LaoReducerState>, action: PayloadAction<{ lao: LaoState }>) => {
+      const updatedLao = action.payload.lao;
 
       if (!(updatedLao.id in state.byId)) {
         return;
@@ -64,8 +66,8 @@ const laosSlice = createSlice({
     },
 
     // Remove a LAO to the list of known LAOs
-    removeLao: (state, action: PayloadAction<Hash>) => {
-      const laoId = action.payload.valueOf();
+    removeLao: (state, action: PayloadAction<{ laoId: Hash }>) => {
+      const laoId = action.payload.laoId.valueOf();
 
       if (laoId in state.byId) {
         delete state.byId[laoId];
@@ -83,18 +85,20 @@ const laosSlice = createSlice({
 
     // Connect to a LAO for a given ID
     // Warning: this action is only accepted if we are not already connected to a LAO
-    setCurrentLao: (state, action: PayloadAction<LaoState>) => {
+    setCurrentLao: (state, action: PayloadAction<{ lao: LaoState; connected?: boolean }>) => {
       addLaoReducer(state, action);
 
       if (state.currentId === undefined) {
-        const lao = action.payload;
+        const { lao } = action.payload;
         state.currentId = lao.id;
+        state.connected = action.payload.connected !== false;
       }
     },
 
     // Disconnected from the current LAO (idempotent)
     clearCurrentLao: (state) => {
       state.currentId = undefined;
+      state.connected = false;
     },
 
     // Add a LAO server address
@@ -305,6 +309,20 @@ export const selectCurrentLaoId = createSelector(
   (state: any) => getLaosState(state).currentId,
   (currentId: string | undefined): Hash | undefined =>
     currentId ? new Hash(currentId) : undefined,
+);
+
+/**
+ * If there is a current lao (currentId set), this function
+ * returns the connected state value (true or false). Otherwise
+ * it returns undefined (i.e. if there is no current lao)
+ */
+export const selectConnectedToLao = createSelector(
+  // First input: current LAO id
+  (state: any) => getLaosState(state).currentId,
+  // First input: connected boolean
+  (state: any) => getLaosState(state).connected,
+  (currentId: string | undefined, connected: boolean): boolean | undefined =>
+    currentId ? connected : undefined,
 );
 
 export const selectLaoIdToNameMap = createSelector(

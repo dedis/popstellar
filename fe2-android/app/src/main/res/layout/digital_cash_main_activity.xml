@@ -1,25 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <FrameLayout
-    android:id="@+id/fragment_container_digital_cash"
+  <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:gravity="center"
-    android:orientation="vertical"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toTopOf="@id/digital_cash_nav_bar" />
+    android:layout_height="match_parent">
 
-  <com.google.android.material.bottomnavigation.BottomNavigationView
-    android:id="@+id/digital_cash_nav_bar"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:labelVisibilityMode="labeled"
-    app:menu="@menu/digital_cash_menu" />
+    <com.google.android.material.appbar.AppBarLayout
+      android:id="@+id/digital_cash_app_bar_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toTopOf="parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+      <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/digital_cash_app_bar"
+        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_back_arrow" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+      android:id="@+id/fragment_container_digital_cash"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:gravity="center"
+      android:orientation="vertical"
+      app:layout_constraintBottom_toTopOf="@id/digital_cash_nav_bar"
+      app:layout_constraintTop_toBottomOf="@+id/digital_cash_app_bar_layout" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+      android:id="@+id/digital_cash_nav_bar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@color/white"
+      app:labelVisibilityMode="labeled"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:menu="@menu/digital_cash_menu" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

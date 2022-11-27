@@ -203,10 +203,10 @@ export const getEvent = (eventId: Hash | string | undefined, state: unknown) => 
  * @param laoId - The id of the lao
  * @param eventType - The type of event
  */
-export const makeEventByTypeSelector = (laoId: string, eventType: string) =>
+export const makeEventByTypeSelector = (laoId: Hash | string, eventType: string) =>
   createSelector(
     // First input: Get all event ids for the given lao id
-    (state: any) => getEventState(state).byLaoId[laoId]?.allIds,
+    (state: any) => getEventState(state).byLaoId[laoId.valueOf()]?.allIds,
     // Second input: Get all events across all LAOs
     selectEventsById,
     // Selector: returns a map of lao ids to a map of event its to event states

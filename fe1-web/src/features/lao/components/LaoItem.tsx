@@ -15,7 +15,7 @@ import STRINGS from 'resources/strings';
 
 import { connectToLao, resubscribeToLao } from '../functions';
 import { Lao } from '../objects';
-import { makeIsLaoOrganizerSelector, makeIsLaoWitnessSelector } from '../reducer';
+import { makeIsLaoOrganizerSelector, makeIsLaoWitnessSelector, setCurrentLao } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<HomeParamList, typeof STRINGS.navigation_home_home>,
@@ -53,12 +53,20 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       await resubscribeToLao(lao, dispatch, connections);
 
       navigation.navigate(STRINGS.navigation_app_lao, {
-        screen: STRINGS.navigation_lao_home,
+        screen: STRINGS.navigation_lao_events,
+        params: { screen: STRINGS.navigation_lao_events_home },
       });
     } catch (err) {
+      dispatch(setCurrentLao({ lao: lao.toState(), connected: false }));
+
+      navigation.navigate(STRINGS.navigation_app_lao, {
+        screen: STRINGS.navigation_lao_events,
+        params: { screen: STRINGS.navigation_lao_events_home },
+      });
+
       console.error(`Failed to establish lao connection: ${err}`);
-      toast.show(`Failed to establish lao connection: ${err}`, {
-        type: 'danger',
+      toast.show(`Failed to establish connection, entering offline mode`, {
+        type: 'warning',
         placement: 'top',
         duration: FOUR_SECONDS,
       });

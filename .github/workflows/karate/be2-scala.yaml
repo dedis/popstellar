@@ -31,26 +31,57 @@ jobs:
         run: sbt assembly
         
       - name: Run Karate tests
+        id: tests
+        continue-on-error: true
         working-directory: ./tests/karate
         run: mvn test -DargLine=-Dkarate.env=scala -Dtest=BackEndTest#fullTest
         
       - name: Publish HTML Report
-        if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
           name: Scala HTML Report
           path: ./tests/karate/target/karate-reports
                   
       - name: Publish Cucumber Report
-        if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
           name: Scala Cucumber Report
           path: ./tests/karate/target/cucumber-html-reports
           
       - name: Publish Server logs
-        if: ${{ always() }} # execute even if previous steps failed
         uses: actions/upload-artifact@v3
         with:
           name: Scala Server Logs
           path: ./tests/karate/scala.log
+          
+      # The next actions are pushing the new report to the defined branch
+      - name: Checkout report branch
+        uses: actions/checkout@v3
+        with:
+          ref: report-karate-be2-scala
+          path: report-repo
+      
+      - name: Update report
+        run: |
+          rm -rf report-repo/*
+          cp -a ./tests/karate/target/cucumber-html-reports/. ./report-repo/
+        
+      - name: Commit files
+        working-directory: ./report-repo
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A
+          git commit -m "Report from ${{ steps.date.outputs.date }}"
+          
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: report-karate-be2-scala
+          directory: report-repo
+          
+      - name: Fail job if the tests were not successful
+        # Catchup of tests failure such that the job fo fail
+        if: steps.tests.outcome == 'failure'
+        run: exit 1

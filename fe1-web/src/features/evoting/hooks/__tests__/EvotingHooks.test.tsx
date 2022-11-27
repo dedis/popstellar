@@ -21,6 +21,7 @@ const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => false,
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
     getEventById: () => undefined,
@@ -46,6 +47,13 @@ describe('EvotingHooks', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => EvotingHooks.useAssertCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
+    });
+  });
+
+  describe('useConnectedToLao', () => {
+    it('should return whether currently connected to a lao', () => {
+      const { result } = renderHook(() => EvotingHooks.useConnectedToLao(), { wrapper });
+      expect(result.current).toBeFalse();
     });
   });
 

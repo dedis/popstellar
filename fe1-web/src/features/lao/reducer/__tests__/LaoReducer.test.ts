@@ -39,6 +39,7 @@ import {
   addLaoServerAddress,
   addSubscribedChannel,
   removeSubscribedChannel,
+  selectConnectedToLao,
 } from '../LaoReducer';
 
 let emptyState: any;
@@ -60,6 +61,7 @@ const initializeData = () => {
   emptyState = {
     byId: {},
     allIds: [],
+    connected: false,
   };
 
   rollCallId = new Hash('1234');
@@ -67,6 +69,7 @@ const initializeData = () => {
   filledState1 = {
     byId: { [mockLaoId]: mockLaoState },
     allIds: [mockLaoId],
+    connected: false,
   };
 
   laoAfterRollCall = new Lao({
@@ -85,6 +88,7 @@ const initializeData = () => {
   filledStateAfterRollCall = {
     byId: { [mockLaoId]: laoAfterRollCall },
     allIds: [mockLaoId],
+    connected: false,
   };
 
   const mockLao2Name = 'Second Lao';
@@ -116,6 +120,7 @@ const initializeData = () => {
   filledStateUpdated = {
     byId: { [mockLaoId]: laoUpdated },
     allIds: [mockLaoId],
+    connected: false,
   };
 
   filledState2 = {
@@ -124,12 +129,14 @@ const initializeData = () => {
       [mockLao2Id]: lao2,
     },
     allIds: [mockLaoId, mockLao2Id],
+    connected: false,
   };
 
   connectedState1 = {
     byId: { [mockLaoId]: mockLaoState },
     allIds: [mockLaoId],
     currentId: mockLaoId,
+    connected: true,
   };
 
   laoRecord = { [mockLaoId]: mockLaoState };
@@ -145,27 +152,27 @@ describe('LaoReducer', () => {
   });
 
   it('should add lao', () => {
-    expect(laoReduce(emptyState, addLao(mockLaoState))).toEqual(filledState1);
+    expect(laoReduce(emptyState, addLao({ lao: mockLaoState }))).toEqual(filledState1);
   });
 
   it('should not add a lao twice', () => {
-    expect(laoReduce(filledState1, addLao(mockLaoState))).toEqual(filledState1);
+    expect(laoReduce(filledState1, addLao({ lao: mockLaoState }))).toEqual(filledState1);
   });
 
   it('should not update lao if it is not in store', () => {
-    expect(laoReduce(filledState1, updateLao(lao2))).toEqual(filledState1);
+    expect(laoReduce(filledState1, updateLao({ lao: lao2 }))).toEqual(filledState1);
   });
 
   it('should update lao if its id is in store', () => {
-    expect(laoReduce(filledState1, updateLao(laoUpdated))).toEqual(filledStateUpdated);
+    expect(laoReduce(filledState1, updateLao({ lao: laoUpdated }))).toEqual(filledStateUpdated);
   });
 
   it('should remove a lao', () => {
-    expect(laoReduce(filledState1, removeLao(mockLaoIdHash))).toEqual(emptyState);
+    expect(laoReduce(filledState1, removeLao({ laoId: mockLaoIdHash }))).toEqual(emptyState);
   });
 
   it('should not remove a non-stored lao', () => {
-    expect(laoReduce(filledState1, removeLao(mockLao2IdHash))).toEqual(filledState1);
+    expect(laoReduce(filledState1, removeLao({ laoId: mockLao2IdHash }))).toEqual(filledState1);
   });
 
   it('should clear all Laos', () => {
@@ -173,7 +180,14 @@ describe('LaoReducer', () => {
   });
 
   it('should connect to lao', () => {
-    expect(laoReduce(emptyState, setCurrentLao(mockLaoState))).toEqual(connectedState1);
+    expect(laoReduce(emptyState, setCurrentLao({ lao: mockLaoState }))).toEqual(connectedState1);
+  });
+
+  it('should allow entering offline mode', () => {
+    expect(laoReduce(emptyState, setCurrentLao({ lao: mockLaoState, connected: false }))).toEqual({
+      ...connectedState1,
+      connected: false,
+    });
   });
 
   it('should disconnect from lao', () => {
@@ -210,6 +224,7 @@ describe('LaoReducer', () => {
           byId: {
             [mockLaoId]: { ...mockLaoState, server_addresses: [] },
           },
+          connected: false,
         } as LaoReducerState,
         addLaoServerAddress(mockLaoId, mockAddress),
       ),
@@ -218,6 +233,7 @@ describe('LaoReducer', () => {
       byId: {
         [mockLaoId]: { ...mockLaoState, server_addresses: [mockAddress] },
       },
+      connected: false,
     } as LaoReducerState);
   });
 });
@@ -230,6 +246,7 @@ it('should add subscribed channels', () => {
         byId: {
           [mockLaoId]: { ...mockLaoState, subscribed_channels: [] },
         },
+        connected: false,
       } as LaoReducerState,
       addSubscribedChannel(mockLaoId, mockChannel),
     ),
@@ -238,6 +255,7 @@ it('should add subscribed channels', () => {
     byId: {
       [mockLaoId]: { ...mockLaoState, subscribed_channels: [mockChannel] },
     },
+    connected: false,
   } as LaoReducerState);
 });
 
@@ -249,6 +267,7 @@ it('should remove subscribed channels', () => {
         byId: {
           [mockLaoId]: { ...mockLaoState, subscribed_channels: [mockChannel] },
         },
+        connected: false,
       } as LaoReducerState,
       removeSubscribedChannel(mockLaoId, mockChannel),
     ),
@@ -257,6 +276,7 @@ it('should remove subscribed channels', () => {
     byId: {
       [mockLaoId]: { ...mockLaoState, subscribed_channels: [] },
     },
+    connected: false,
   } as LaoReducerState);
 });
 
@@ -297,6 +317,7 @@ describe('Lao selector', () => {
             byId: {},
             allIds: [],
             currentId: undefined,
+            connected: false,
           } as LaoReducerState,
         }),
       ).toBeUndefined();
@@ -314,6 +335,51 @@ describe('Lao selector', () => {
           } as LaoReducerState,
         }),
       ).toEqual(mockLao);
+    });
+  });
+
+  describe('selectIsConnected', () => {
+    it('returns true if currently connected to a lao', () => {
+      expect(
+        selectConnectedToLao({
+          [LAO_REDUCER_PATH]: {
+            byId: {
+              [mockLaoId]: mockLao.toState(),
+            },
+            allIds: [mockLaoId],
+            currentId: mockLaoId,
+            connected: true,
+          } as LaoReducerState,
+        }),
+      ).toBeTrue();
+    });
+
+    it('returns false if there is a current lao but no connection was established (offline mode)', () => {
+      expect(
+        selectConnectedToLao({
+          [LAO_REDUCER_PATH]: {
+            byId: {
+              [mockLaoId]: mockLao.toState(),
+            },
+            allIds: [mockLaoId],
+            currentId: mockLaoId,
+            connected: false,
+          } as LaoReducerState,
+        }),
+      ).toBeFalse();
+    });
+
+    it('returns undefined if there is no current lao', () => {
+      expect(
+        selectConnectedToLao({
+          [LAO_REDUCER_PATH]: {
+            byId: {},
+            allIds: [],
+            currentId: undefined,
+            connected: false,
+          } as LaoReducerState,
+        }),
+      ).toBeUndefined();
     });
   });
 });

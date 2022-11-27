@@ -20,7 +20,7 @@ describe('LaoItem', () => {
         ...keyPairReducer,
       }),
     });
-    mockStore.dispatch(addLao(mockLao.toState()));
+    mockStore.dispatch(addLao({ lao: mockLao.toState() }));
     mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
 
     const component = render(
@@ -42,8 +42,10 @@ describe('LaoItem', () => {
     });
     mockStore.dispatch(
       addLao({
-        ...mockLao.toState(),
-        witnesses: [mockPopToken.publicKey.valueOf()],
+        lao: {
+          ...mockLao.toState(),
+          witnesses: [mockPopToken.publicKey.valueOf()],
+        },
       }),
     );
     mockStore.dispatch(setKeyPair(mockPopToken.toState()));
@@ -65,7 +67,7 @@ describe('LaoItem', () => {
         ...keyPairReducer,
       }),
     });
-    mockStore.dispatch(addLao(mockLao.toState()));
+    mockStore.dispatch(addLao({ lao: mockLao.toState() }));
     mockStore.dispatch(setKeyPair(mockPopToken.toState()));
 
     const component = render(

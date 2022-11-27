@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockKeyPair, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
+import { mockKeyPair, mockLao, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EventTags, Hash, PopToken, RollCallToken, Timestamp } from 'core/objects';
 import { getEventById } from 'features/events/functions';
@@ -26,7 +26,7 @@ jest.mock('core/platform/crypto/browser');
 
 const mockRCName = 'myRollCall';
 const mockRCLocation = 'location';
-const mockRCTimestampStart = new Timestamp(1620255600);
+const mockRCTimestampStart = new Timestamp(1620355600);
 const mockRCTimestampEnd = new Timestamp(1620357600);
 const mockRCAttendees = ['attendee1', 'attendee2'];
 
@@ -68,7 +68,9 @@ const mockRollCallToken: RollCallToken = {
 
 const contextValue = (rollCallTokens: RollCallToken[]) => ({
   [WALLET_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLao: () => mockLao,
+    useConnectedToLao: () => true,
     getEventById,
     useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
     useRollCallTokensByLaoId: () => rollCallTokens,
@@ -79,6 +81,7 @@ const contextValue = (rollCallTokens: RollCallToken[]) => ({
   } as WalletReactContext,
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     generateToken,
     hasSeed,
     makeEventByTypeSelector,

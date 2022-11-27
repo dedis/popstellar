@@ -16,6 +16,7 @@ import {
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
@@ -36,7 +37,7 @@ const DEFAULT_ELECTION_DURATION = 3600;
 const VOTING_METHOD = STRINGS.election_method_Plurality;
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_election>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_create_election>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -123,6 +124,7 @@ const CreateElection = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const currentLao = EvotingHooks.useCurrentLao();
+  const isConnected = EvotingHooks.useConnectedToLao();
 
   // form data for the new election
   const [startTime, setStartTime] = useState<Timestamp>(Timestamp.EpochNow());
@@ -139,7 +141,8 @@ const CreateElection = () => {
   const [modalStartIsVisible, setModalStartIsVisible] = useState<boolean>(false);
 
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
-  const buttonsVisibility: boolean = electionName !== '' && !questions.some(isQuestionInvalid);
+  const confirmButtonEnabled: boolean =
+    isConnected === true && electionName !== '' && !questions.some(isQuestionInvalid);
 
   const onCreateElection = () => {
     createElection(currentLao.id, version, electionName, questions, startTime, endTime)
@@ -183,8 +186,24 @@ const CreateElection = () => {
     );
   };
 
+  const toolbarItems: ToolbarItem[] = [
+    {
+      id: 'election_confirm_selector',
+      title: STRINGS.general_button_confirm,
+      disabled: !confirmButtonEnabled,
+      onPress: () =>
+        onConfirmEventCreation(
+          startTime,
+          endTime,
+          onCreateElection,
+          setModalStartIsVisible,
+          setModalEndIsVisible,
+        ),
+    },
+  ];
+
   return (
-    <ScreenWrapper>
+    <ScreenWrapper toolbarItems={toolbarItems}>
       <Text style={[Typography.paragraph, Typography.important]}>
         {STRINGS.election_create_name}
       </Text>
@@ -267,21 +286,6 @@ const CreateElection = () => {
         {STRINGS.election_create_add_question}
       </PoPTextButton>
 
-      <PoPTextButton
-        onPress={() =>
-          onConfirmEventCreation(
-            startTime,
-            endTime,
-            onCreateElection,
-            setModalStartIsVisible,
-            setModalEndIsVisible,
-          )
-        }
-        testID="election_confirm_selector"
-        disabled={!buttonsVisibility}>
-        {STRINGS.general_button_confirm}
-      </PoPTextButton>
-
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}
@@ -303,6 +307,6 @@ const CreateElection = () => {
 export default CreateElection;
 
 export const CreateElectionScreen: EvotingFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_create_election,
+  id: STRINGS.events_create_election,
   Component: CreateElection,
 };

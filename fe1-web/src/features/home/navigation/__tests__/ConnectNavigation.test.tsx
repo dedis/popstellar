@@ -26,11 +26,12 @@ const contextValue = {
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao: () => Promise.resolve(),
+    forgetSeed: () => {},
   } as HomeReactContext,
 };
 
 const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 
 describe('ConnectNavigation', () => {
   it('renders correctly', () => {

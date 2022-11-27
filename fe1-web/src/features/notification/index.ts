@@ -38,7 +38,7 @@ export const compose = (
 ): NotificationCompositionInterface => ({
   identifier: NOTIFICATION_FEATURE_IDENTIFIER,
   context: {
-    useCurrentLaoId: configuration.useCurrentLaoId,
+    useAssertCurrentLaoId: configuration.useAssertCurrentLaoId,
     notificationTypes: configuration.notificationTypes,
   },
 });

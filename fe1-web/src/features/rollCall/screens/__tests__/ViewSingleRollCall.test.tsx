@@ -17,12 +17,12 @@ import { generateToken } from 'features/wallet/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
 
 import { RollCall, RollCallStatus } from '../../objects';
-import ViewSingleRollCall, { ViewSinglRollCallScreenRightHeader } from '../ViewSingleRollCall';
+import ViewSingleRollCall from '../ViewSingleRollCall';
 
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';
 const LOCATION = 'location';
-const TIMESTAMP_START = new Timestamp(1620255600);
+const TIMESTAMP_START = new Timestamp(1620355600);
 const TIMESTAMP_END = new Timestamp(1620357600);
 const ATTENDEES = ['attendee1', 'attendee2'];
 
@@ -31,6 +31,7 @@ const createStateWithStatus: any = (mockStatus: RollCallStatus) => {
     id: ID.valueOf(),
     eventType: RollCall.EVENT_TYPE,
     start: TIMESTAMP_START.valueOf(),
+    closedAt: TIMESTAMP_END.valueOf(),
     name: NAME,
     location: LOCATION,
     creation: TIMESTAMP_START.valueOf(),
@@ -56,7 +57,7 @@ const mockStore = configureStore({
     ...walletReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 const mockRollCallState = mockRollCallCreated.toState();
 
 mockStore.dispatch(
@@ -64,7 +65,7 @@ mockStore.dispatch(
     eventType: RollCall.EVENT_TYPE,
     id: mockRollCallState.id,
     start: mockRollCall.start.valueOf(),
-    end: mockRollCall.end.valueOf(),
+    end: mockRollCall.end?.valueOf(),
   }),
 );
 mockStore.dispatch(addRollCall(mockRollCallState));
@@ -72,6 +73,7 @@ mockStore.dispatch(addRollCall(mockRollCallState));
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     makeEventByTypeSelector,
     generateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
@@ -94,44 +96,6 @@ describe('EventRollCall', () => {
               component={ViewSingleRollCall}
               params={{
                 eventId: rollCall.id.valueOf(),
-                isOrganizer,
-              }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      );
-
-      expect(obj.toJSON()).toMatchSnapshot();
-    };
-
-    describe('organizers', () => {
-      it('created roll calls', testRender(mockRollCallCreated, true));
-      it('opened roll calls', testRender(mockRollCallOpened, true));
-      it('re-opened roll calls', testRender(mockRollCallReopened, true));
-      it('closed roll calls', testRender(mockRollCallClosed, true));
-    });
-
-    describe('non organizers', () => {
-      it('created roll calls', testRender(mockRollCallCreated, false));
-      it('opened roll calls', testRender(mockRollCallOpened, false));
-      it('re-opened roll calls', testRender(mockRollCallReopened, false));
-      it('closed roll calls', testRender(mockRollCallClosed, false));
-    });
-  });
-});
-
-describe('ViewSinglRollCallScreenRightHeader', () => {
-  describe('render correctly', () => {
-    const testRender = (rollCall: RollCall, isOrganizer: boolean) => () => {
-      mockStore.dispatch(updateRollCall(rollCall.toState()));
-
-      const obj = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSinglRollCallScreenRightHeader}
-              params={{
-                eventId: mockRollCallCreated.id.valueOf(),
                 isOrganizer,
               }}
             />

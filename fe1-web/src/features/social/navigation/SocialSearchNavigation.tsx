@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
+import { stackScreenOptionsWithoutHeader } from 'core/navigation/ScreenOptions';
 import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
 import STRINGS from 'resources/strings';
 
@@ -15,10 +16,7 @@ const Stack = createStackNavigator<SocialSearchParamList>();
 
 const SocialSearchNavigation = () => {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}>
+    <Stack.Navigator screenOptions={stackScreenOptionsWithoutHeader}>
       <Stack.Screen
         name={STRINGS.social_media_navigation_tab_attendee_list}
         component={SocialSearch}

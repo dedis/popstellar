@@ -6,11 +6,13 @@
   <string name="no">No</string>
   <string name="add_caps">ADD</string>
 
+  <!--  Roles -->
+  <string name="role">Role</string>
+  <string name="organizer">Organizer</string>
+  <string name="attendee">Attendee</string>
+  <string name="witness">Witness</string>
+
   <!-- bottom nav -->
-  <string name="tab_home">Home</string>
-  <string name="tab_connect">Connect</string>
-  <string name="tab_launch">Launch</string>
-  <string name="tab_wallet">Wallet</string>
   <string name="tab_identity">Identity</string>
   <string name="tab_social_media">Social Media</string>
   <string name="tab_digital_cash">Digital Cash</string>
@@ -19,27 +21,22 @@
 
   <!-- Home -->
   <string name="home_title">My LAOs</string>
-  <string name="text_title_welcome">Welcome to Personhood.Online!</string>
-  <string name="text_body_welcome">
-    \n\n To connect to a local organization (LAO), please tap Connect below.
-    \n\n To launch a new LAO as an organizer, please tap Launch tab below.
-    \n\n Please initialize your wallet to access the functionalities of the app.
-    To do so, please tap Wallet tab below.
-    </string>
-  <string name="attendee">Attendee</string>
-  <string name="organizer">Organizer</string>
+  <string name="join">Join</string>
+  <string name="create">Create</string>
+  <string name="server_url">Server URL</string>
+  <string name="no_lao_text">OOPS, Looks like you don\'t have any Local Autonomous Organization (LAO) yet.\n Join or Create one with the buttons below</string>
 
   <!-- Connect -->
   <string name="allow_camera_text">Please allow the camera to be used by the app</string>
   <string name="allow_camera_button">Allow camera</string>
   <string name="connecting">Connecting to</string>
   <string name="stored_channels">stored channels</string>
+  <string name="creating_new_lao">Creating new LAO</string>
+  <string name="join_lao_title">Join LAO</string>
 
-  <!-- Launch -->
-  <string name="text_title_launch">To launch a new organization, please enter a name for the organization.</string>
-  <string name="text_body_launch">(You can change it later.)\n\n</string>
-  <string name="text_entry_launch">Organization name</string>
-  <string name="text_button_launch">Launch</string>
+  <!-- Lao Create -->
+  <string name="lao_create_title">Create LAO</string>
+  <string name="text_entry_create">Organization name</string>
 
   <!--  Lao Detail-->
   <string name="add_election">New Election</string>
@@ -47,6 +44,10 @@
   <string name="present_header_title">Current</string>
   <string name="future_header_title">Upcoming</string>
   <string name="past_header_title">Previous</string>
+  <string name="qr_icon_title">Lao\'s QR code</string>
+  <string name="lao_properties_title">Lao Properties</string>
+  <string name="lao_properties_server_title">Connected to server</string>
+  <string name="lao_properties_identifier_title">Identifier</string>
 
   <!-- Abstract Event-->
   <string name="open">Open</string>
@@ -109,7 +110,7 @@
   <string name="scheduled_rollcall">SCHEDULED</string>
   <string name="enter_rollcall">ENTER</string>
   <string name="closed_rollcall">CLOSED</string>
-  <string name="attendees_list_rollcall">ATTENDEES</string>
+  <string name="attendees_list_rollcall">Attendees</string>
 
   <string name="back">BACK</string>
 
@@ -147,13 +148,20 @@
   <string name="button_text">Cast Vote</string>
 
   <string name="total">Total:</string>
-  <string name="election_setup">Election Setup</string>
   <string name="select_a_voting_method">Select a voting method</string>
   <string name="submit">Submit</string>
   <string name="todo">TODO</string>
   <string name="ballot_option_2">Ballot option 2</string>
 
+  <!--  Roll Call -->
+  <string name="roll_call_setup_title">Roll Call Setup</string>
+  <string name="roll_call_title">Roll Call</string>
+  <string name="add_attendee_title">Add Attendee</string>
+
   <!-- Election Event -->
+  <string name="election_title">Election</string>
+  <string name="election_result_title">Election Result</string>
+  <string name="election_setup_title">Election Setup</string>
   <string name="closed">Closed</string>
   <string name="finished">Finished</string>
   <string name="election_setup_presentation_title_text">Election Setup</string>
@@ -192,32 +200,30 @@
   <string name="election_scheduled">Election scheduled to start at\n%s</string>
 
   <!-- Wallet -->
-  <string name="button_own_seed">I own a seed</string>
-  <string name="button_new_wallet">New wallet</string>
-  <string name="text_title_wallet">Welcome to your wallet !</string>
-  <string name="text_help_wallet">\n\nYou may import your seed if you own one or create a new wallet.</string>
-  <string name="text_help_new_wallet">\n\nATTENTION: if you create a new wallet remember to write down
-        the given seed and store it in a secure place, this is the only backup to your PoP tokens.</string>
-  <string name="text_seed_wallet">This is the only backup for your PoP tokens - store it securely</string>
+  <string name="wallet_setup">Set up wallet</string>
+  <string name="wallet_init_message">Hello there ! We\'ve noticed your wallet is not set up. To use the app, it must be</string>
+  <string name="text_seed_wallet">This is the only backup for your PoP tokens - store it securely \n Warning ! If you don\'t, your key will be lost forever</string>
+  <string name="wallet_seed_title">Mnemonic wallet seed:</string>
   <string name="confirm_button">Confirm</string>
-  <string name="content_title">Tokens</string>
-  <string name="wallet_empty">Your wallet is empty</string>
-  <string name="tokens_introduction">If you would like to receive tokens, please connect to a LAO and participate in a roll call.\n
-        If you are an organizer, you can look at the attendees\' public tokens of the roll calls you organize.</string>
+
   <string name="token_button">TOKEN</string>
-  <string name="logout_button">LOGOUT</string>
-  <string name="logout_title">Log out</string>
+  <string name="logout_title">Wallet log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
-  <string name="copied_to_clipboard">Copied to clipboard</string>
   <string name="copy_button_descriptor">Button to copy seed</string>
+  <string name="ok">OK</string>
+  <string name="import_seed">Import</string>
+  <string name="stored_seed">Stored seed…</string>
+  <string name="initialize">Initialize</string>
+  <string name="seed_import_success">Seed successfully imported !</string>
+  <string name="no_seed_storage_found">No wallet storage was found</string>
 
   <!-- Digital Cash -->
-  <string name="digital_cash_send">SEND</string>
-  <string name="digital_cash_issue">ISSUE</string>
+  <string name="digital_cash_send">Send</string>
+  <string name="digital_cash_issue">Issue</string>
   <string name="digital_cash_history">History</string>
-  <string name="digital_cash_receive">RECEIVE</string>
-  <string name="digital_cash_home">HOME</string>
-  <string name="digital_cash_receipt">RECEIPT</string>
+  <string name="digital_cash_receive">Receive</string>
+  <string name="digital_cash_home">Home</string>
+  <string name="digital_cash_receipt">Receipt</string>
   <string name="digital_cash_send_button">Send</string>
   <string name="digital_cash_amount">Amount</string>
   <string name="digital_cash_address">Address</string>
@@ -253,31 +259,22 @@
   <string name="sign_message">SIGN MESSAGE</string>
   <string name="message_signed">MESSAGE SIGNED</string>
 
-  <!-- Settings -->
-  <string name="settings">Settings</string>
-  <string name="server_url">Server URL</string>
-  <string name="text_hint_server_url">Enter the server URL</string>
-  <string name="apply_button">APPLY</string>
-
   <!-- Social Media -->
-  <string name="home">HOME</string>
-  <string name="search">SEARCH</string>
-  <string name="following">FOLLOWING</string>
-  <string name="profile">PROFILE</string>
-  <string name="send">SEND</string>
+  <string name="home">Home</string>
+  <string name="search">Search</string>
+  <string name="following">Following</string>
+  <string name="profile">Profile</string>
+  <string name="send">Send</string>
   <string name="send_button_desc">button to write a chirp</string>
   <string name="hint_chirp">Your chirp</string>
-  <string name="laos_list">Laos list</string>
   <string name="username">username</string>
   <string name="time_ago">time ago</string>
   <string name="text">text</string>
   <string name="delete_button">delete button</string>
-  <string name="social_media_title">popstellar - %s</string>
 
   <!--  Storage-->
   <string name="nothing_stored">no stored data found</string>
-  <string name="clear_text">clear</string>
-  <string name="storage_title">Storage</string>
+  <string name="clear_text">Clear all storage</string>
   <string name="clear_confirmation_text">Are you sure you want to clear stored data ? This action is irreversible</string>
   <string name="clear_success">Clearing was successful</string>
   <string name="clear_failure">Clearing was unsuccessful</string>
@@ -295,7 +292,7 @@
   <string name="add_election_description">Add Election</string>
   <string name="add_rc_description">Add Roll call</string>
   <string name="rc_qr_description">Roll call qr code</string>
-  <string name="add_witness_description">Add witness</string>
+  <string name="add_witness_description">Add Witness</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
@@ -314,7 +311,6 @@
   <string name="error_sign_message">Could not send message signature\n%1$s</string>
   <string name="error_update_lao">Could not update the LAO\n%1$s</string>
   <string name="error_subscribe_lao">Could not subscribe to the LAO channel\n%1$s</string>
-  <string name="error_create_lao">Could not create the LAO\n%1$s</string>
   <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
   <string name="error_open_election">Could not open the election\n%1$s</string>
   <string name="error_post_transaction">Could not post a transaction\n%1$s</string>
@@ -335,7 +331,6 @@
   <string name="no_rollcall_exception">No rollcall exist in the LAO</string>
   <string name="seed_validation_exception">Unable to validate seed</string>
   <string name="uninitialized_wallet_exception">The wallet is not initialized</string>
-  <string name="seed_generation_error">Error generating the seed</string>
   <string name="unknown_lao_exception">Unknown Lao</string>
   <string name="unknown_election_exception">Unknown election</string>
   <string name="unknown_chirp_exception">Unknown Chirp</string>

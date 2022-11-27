@@ -218,7 +218,7 @@ describe('ServerReducer', () => {
           ...serverReducer,
         }),
       });
-      mockStore.dispatch(setCurrentLao(mockLaoState));
+      mockStore.dispatch(setCurrentLao({ lao: mockLaoState }));
 
       mockStore.dispatch(
         addServer({
@@ -262,7 +262,7 @@ describe('ServerReducer', () => {
           ...serverReducer,
         }),
       });
-      mockStore.dispatch(setCurrentLao(mockLaoState));
+      mockStore.dispatch(setCurrentLao({ lao: mockLaoState }));
       // add the organizers public key but for a *different* lao
       mockStore.dispatch(
         addServer({

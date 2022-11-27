@@ -9,6 +9,11 @@ export namespace LaoFeature {
 
   export interface LaoScreen extends NavigationTabScreen {
     id: keyof LaoParamList;
+
+    /**
+     * Function that returns whether the tabbar should be visible for the given route name
+     */
+    tabBarVisible?: (routeName?: string) => boolean;
   }
 
   export interface LaoConnection {

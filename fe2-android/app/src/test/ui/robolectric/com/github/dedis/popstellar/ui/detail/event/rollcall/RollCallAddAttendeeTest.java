@@ -1,17 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.UITestUtils.forceTypeText;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.containerId;
-import static com.github.dedis.popstellar.testutils.pages.scanning.QrScanningPageObject.*;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -21,14 +9,15 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.testutils.Base64DataUtils;
+import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
-import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -39,6 +28,18 @@ import org.mockito.junit.MockitoTestRule;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
+
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.UITestUtils.forceTypeText;
+import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.scanning.QrScanningPageObject.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @LargeTest
 @HiltAndroidTest
@@ -75,9 +76,10 @@ public class RollCallAddAttendeeTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
+          when(repository.getLaoView(any())).thenReturn(new LaoView(LAO));
         }
       };
 

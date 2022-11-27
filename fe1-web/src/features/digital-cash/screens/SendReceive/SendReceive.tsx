@@ -17,7 +17,7 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
-import { Hash, PublicKey } from 'core/objects';
+import { PublicKey } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -43,8 +43,10 @@ const styles = StyleSheet.create({
 const SendReceive = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
+  const laoId = DigitalCashHooks.useAssertCurrentLaoId();
+  const isConnected = DigitalCashHooks.useConnectedToLao();
 
-  const { laoId, rollCallId, isCoinbase, scannedPoPToken } = route.params;
+  const { rollCallId, isCoinbase, scannedPoPToken } = route.params;
 
   // will be undefined for the organizer
   const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId || '');
@@ -136,7 +138,7 @@ const SendReceive = () => {
       KeyPairStore.get(),
       beneficiaries,
       Number.parseInt(amount, 10),
-      new Hash(laoId),
+      laoId,
     );
   };
 
@@ -174,7 +176,10 @@ const SendReceive = () => {
   };
 
   const cannotSendTransaction =
-    Number.isNaN(amount) || (!isCoinbase && balance < Number.parseInt(amount, 10)) || amount === '';
+    !isConnected ||
+    Number.isNaN(amount) ||
+    (!isCoinbase && balance < Number.parseInt(amount, 10)) ||
+    amount === '';
 
   return (
     <ScreenWrapper>
@@ -215,7 +220,6 @@ const SendReceive = () => {
             onChange={setBeneficiary}
             onPress={() => {
               navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
-                laoId: laoId.valueOf(),
                 rollCallId: rollCallId,
                 isCoinbase: isCoinbase,
               });
@@ -250,8 +254,9 @@ export const SendReceiveHeaderRight = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const route = useRoute<NavigationProps['route']>();
+  const laoId = DigitalCashHooks.useAssertCurrentLaoId();
 
-  const { laoId, rollCallId, isCoinbase } = route.params;
+  const { rollCallId, isCoinbase } = route.params;
 
   const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId || '');
 
@@ -285,7 +290,7 @@ export const SendReceiveHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={ScannablePopToken.encodePopToken({ pop_token: popToken })} visibility />
+            <QRCode value={ScannablePopToken.encodePopToken({ pop_token: popToken })} />
           </View>
 
           <Text style={[Typography.small, styles.publicKey]} selectable>
