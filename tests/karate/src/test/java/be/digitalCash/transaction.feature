@@ -26,16 +26,16 @@ Feature: Simple Transactions for digital cash
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=",
+            "transaction_id": "yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=",
             "transaction": {
               "version": 1,
               "inputs": [{
-                "tx_out_hash": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=",
+                "tx_out_hash": '#(getTrxHashForCoinIssuance)',
                 "tx_out_index": 0,
                 "script": {
                   "type": "P2PKH",
                   "pubkey": '#(getCoinIssuancePubKey)',
-                  "sig": '#(getCreateSignatureForCoinIssuance)'
+                  "sig": "Wsu3pJj7CpBzw4v__21k4pVtSKBeouz1vd0sXFiLQX9iaEERDDwwMuBFwRKk6E6nwxejH-lrsiprLJSojOvPCQ=="
                 }
               }],
               "outputs": '#(getValidOutputs)',
@@ -49,29 +49,29 @@ Feature: Simple Transactions for digital cash
     And match frontend.receiveNoMoreResponses() == true
 
   Scenario: Transfer valid amount should work
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')
+    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance')
     And def validTransfer =
       """
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "lCCBbko3JyV5RT6zlIJVv1IpyST3Kc5wByzXvOsyLic=",
+            "transaction_id": "X6dMVyy-4YZ3jyePMlqyo53-eYBkO-gVgy7TybVgd78=",
             "transaction": {
               "version": 1,
               "inputs": [{
-                "tx_out_hash": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=",
-                "tx_out_index": 0,
+                "tx_out_hash": "yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=",
+                "tx_out_index": 1,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey": "2jmj7l5rSw0yVb-vlWAYkK-YBwk=",
-                  "sig": '#(getCreateSignatureForCoinIssuance)'
+                  "pubkey": '#(getCoinIssuancePubKey)',
+                  "sig": "uTrQk9yt-pmG7eWA0dQ50Q4_aloIAwkY_smQml1lswjHp8ckUXAF3Th6xxJY_3-7uLNxpRtTzwBcAixPGjThDg=="
                 }
               }],
               "outputs": [{
                 "value": 20,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBRk="
+                  "pubkey_hash": "-_qR4IHwsiq50raa8jURNArds54="
                 }
               }],
               "lock_time": 0
@@ -94,8 +94,8 @@ Feature: Simple Transactions for digital cash
             "transaction": {
               "version": 1,
               "inputs": [{
-                "tx_out_hash": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=",
-                "tx_out_index": 0,
+                "tx_out_hash": "yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=",
+                "tx_out_index": 1,
                 "script": {
                   "type": "P2PKH",
                   "pubkey": '#(getCoinIssuancePubKey)',

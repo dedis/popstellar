@@ -255,23 +255,23 @@
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=",
+            "transaction_id": "yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=",
             "transaction": {
               "version": 1,
               "inputs": [{
-                "tx_out_hash": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=",
+                "tx_out_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
                 "tx_out_index": 0,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-                  "sig": "CAFEBABE"
+                  "pubkey": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+                  "sig": "wVoIYoQFoepkosPxXK8CmnvhRmq0IUczGQR5JOJjX8R7vqrgMOdI311bgzrOIwtACMfGFTJcnryiHiOuB5Z3Dg=="
                 }
               }],
               "outputs": [{
                 "value": 32,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
+                  "pubkey_hash": "-_qR4IHwsiq50raa8jURNArds54="
                 }
               }],
               "lock_time": 0
