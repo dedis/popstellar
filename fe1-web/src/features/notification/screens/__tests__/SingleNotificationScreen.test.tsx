@@ -18,7 +18,7 @@ import SingleNotificationScreen from '../SingleNotificationScreen';
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     notificationTypes: [WitnessNotificationType],
   } as NotificationReactContext,
 };

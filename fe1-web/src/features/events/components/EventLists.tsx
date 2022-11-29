@@ -31,7 +31,7 @@ type NavigationProps = CompositeScreenProps<
  * to 'past', 'present' and 'future' events.
  */
 const EventLists = () => {
-  const laoId = EventHooks.useAssertCurrentLaoId();
+  const laoId = EventHooks.useCurrentLaoId();
   const navigation = useNavigation<NavigationProps['navigation']>();
 
   const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);

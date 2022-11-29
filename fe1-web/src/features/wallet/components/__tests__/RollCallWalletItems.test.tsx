@@ -15,7 +15,7 @@ import RollCallWalletItems from '../RollCallWalletItems';
 
 const contextValue = (useRollCallsByLaoId: Record<string, WalletFeature.RollCall>) => ({
   [WALLET_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     useCurrentLao: () => mockLao,
     useConnectedToLao: () => true,
     useLaoIds: () => [],

@@ -5,7 +5,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
-import { mockLao, mockLaoIdHash } from '__tests__/utils';
+import { mockLao } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HOME_FEATURE_IDENTIFIER, HomeFeature, HomeReactContext } from 'features/home/interface';
 import { LaoHooks } from 'features/lao/hooks';
@@ -38,7 +38,7 @@ const contextValue = {
     LaoList,
     homeNavigationScreens,
     getLaoChannel,
-    useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    useConnectedToLao: () => false,
     hasSeed,
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
@@ -100,10 +100,10 @@ describe('Home hooks', () => {
     });
   });
 
-  describe('useCurrentLaoId', () => {
-    it('should return the the current lao id', () => {
-      const { result } = renderHook(() => HomeHooks.useCurrentLaoId(), { wrapper });
-      expect(result.current).toEqual(mockLaoIdHash);
+  describe('useConnectedToLao', () => {
+    it('should return whether the app is currently connected to a lao', () => {
+      const { result } = renderHook(() => HomeHooks.useConnectedToLao(), { wrapper });
+      expect(result.current).toBeFalse();
     });
   });
 

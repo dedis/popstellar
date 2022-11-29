@@ -27,7 +27,7 @@ export namespace RollCallHooks {
   /**
    * Gets the current lao id or throws an exception if there is none
    */
-  export const useAssertCurrentLaoId = () => useRollCallContext().useAssertCurrentLaoId();
+  export const useCurrentLaoId = () => useRollCallContext().useCurrentLaoId();
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode

@@ -55,7 +55,7 @@ const RollCallOpened = () => {
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
 
-  const laoId = RollCallHooks.useAssertCurrentLaoId();
+  const laoId = RollCallHooks.useCurrentLaoId();
   const generateToken = RollCallHooks.useGenerateToken();
 
   const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);

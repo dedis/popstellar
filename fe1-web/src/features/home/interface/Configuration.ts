@@ -28,10 +28,10 @@ export interface HomeCompositionConfiguration {
   getLaoById(laoId: string): HomeFeature.Lao | undefined;
 
   /**
-   * A hook returning the current lao id
-   * @returns The current lao id
+   * A hook returning if currently connected to a lao
+   * Returns undefined if there is no current lao
    */
-  useCurrentLaoId: () => Hash | undefined;
+  useConnectedToLao: () => boolean | undefined;
 
   /* functions */
 
@@ -102,7 +102,7 @@ export type HomeReactContext = Pick<
   | 'homeNavigationScreens'
   | 'getLaoChannel'
   | 'resubscribeToLao'
-  | 'useCurrentLaoId'
+  | 'useConnectedToLao'
   | 'useDisconnectFromLao'
   | 'getLaoById'
 >;

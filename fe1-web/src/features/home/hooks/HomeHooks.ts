@@ -57,10 +57,10 @@ export namespace HomeHooks {
   export const useGetLaoChannel = () => useHomeContext().getLaoChannel;
 
   /**
-   * Gets the current lao id
-   * @returns The current lao id
+   * A hook returning if currently connected to a lao
+   * Returns undefined if there is no current lao
    */
-  export const useCurrentLaoId = () => useHomeContext().useCurrentLaoId();
+  export const useConnectedToLao = () => useHomeContext().useConnectedToLao();
 
   /**
    * Gets the disconnect from lao function

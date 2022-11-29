@@ -112,12 +112,6 @@ export namespace LaoHooks {
   };
 
   /**
-   * Returns the current lao id or undefined if there is none
-   * @returns The current lao id
-   */
-  export const useCurrentLaoId = () => useSelector(selectCurrentLaoId);
-
-  /**
    * Returns true if currently connected to a lao, false if in offline mode
    * and undefined if there is no current lao
    */
@@ -127,8 +121,8 @@ export namespace LaoHooks {
    * Returns the current lao id or throws an NoCurrentLaoError if there is none
    * @returns The current lao id
    */
-  export const useAssertCurrentLaoId = () => {
-    const laoId = useCurrentLaoId();
+  export const useCurrentLaoId = () => {
+    const laoId = useSelector(selectCurrentLaoId);
 
     if (!laoId) {
       throw new NoCurrentLaoError('Violation of the assertion of the existence of a current lao');

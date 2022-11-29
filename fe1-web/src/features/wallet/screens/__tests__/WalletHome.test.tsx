@@ -68,7 +68,7 @@ const mockRollCallToken: RollCallToken = {
 
 const contextValue = (rollCallTokens: RollCallToken[]) => ({
   [WALLET_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     useCurrentLao: () => mockLao,
     useConnectedToLao: () => true,
     getEventById,
@@ -80,7 +80,7 @@ const contextValue = (rollCallTokens: RollCallToken[]) => ({
     walletNavigationScreens: [],
   } as WalletReactContext,
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     useConnectedToLao: () => true,
     generateToken,
     hasSeed,

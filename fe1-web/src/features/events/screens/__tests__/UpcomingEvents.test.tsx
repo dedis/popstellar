@@ -50,12 +50,12 @@ const FUTURE = 1800000000;
 
 const getContextValue = (isOrganizer: boolean) => ({
   [EVENT_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     eventTypes: [ElectionEventType, MeetingEventType, RollCallEventType],
     useIsLaoOrganizer: () => isOrganizer,
   } as EventReactContext,
   [EVOTING_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     useConnectedToLao: () => true,
     useCurrentLao: () => mockLao,
     addEvent,
@@ -64,17 +64,17 @@ const getContextValue = (isOrganizer: boolean) => ({
     useLaoOrganizerBackendPublicKey: () => mockKeyPair.publicKey,
   } as EvotingReactContext,
   [MEETING_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
   } as MeetingReactContext,
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     useConnectedToLao: () => true,
     generateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
     makeEventByTypeSelector,
   } as RollCallReactContext,
   [WALLET_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoIdHash,
     useCurrentLao: () => mockLao,
     useConnectedToLao: () => true,
     useRollCallsByLaoId: () => ({}),

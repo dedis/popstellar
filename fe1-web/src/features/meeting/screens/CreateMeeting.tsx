@@ -39,7 +39,7 @@ type NavigationProps = CompositeScreenProps<
 const CreateMeeting = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
-  const laoId = MeetingHooks.useAssertCurrentLaoId();
+  const laoId = MeetingHooks.useCurrentLaoId();
   const isConnected = MeetingHooks.useConnectedToLao();
 
   const [meetingName, setMeetingName] = useState('');

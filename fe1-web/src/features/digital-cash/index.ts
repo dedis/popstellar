@@ -33,7 +33,7 @@ export function compose(
     },
     context: {
       useRollCallById: configuration.useRollCallById,
-      useAssertCurrentLaoId: configuration.useAssertCurrentLaoId,
+      useCurrentLaoId: configuration.useCurrentLaoId,
       useConnectedToLao: configuration.useConnectedToLao,
       useIsLaoOrganizer: configuration.useIsLaoOrganizer,
       useRollCallTokensByLaoId: configuration.useRollCallTokensByLaoId,

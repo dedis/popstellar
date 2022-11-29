@@ -28,7 +28,7 @@ export interface RollCallConfiguration {
    * Should be used inside react components
    * @returns The current lao id
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode
@@ -101,11 +101,7 @@ export interface RollCallConfiguration {
  */
 export type RollCallReactContext = Pick<
   RollCallConfiguration,
-  | 'useAssertCurrentLaoId'
-  | 'useConnectedToLao'
-  | 'makeEventByTypeSelector'
-  | 'generateToken'
-  | 'hasSeed'
+  'useCurrentLaoId' | 'useConnectedToLao' | 'makeEventByTypeSelector' | 'generateToken' | 'hasSeed'
 >;
 
 /**
