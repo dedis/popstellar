@@ -50,6 +50,11 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * Attention: react-camera currently has the problem that the onBarCodeScanned property is only set initially, i.e
+ * the function cannot be changed later meaning if we pass a function that references other variables, they will
+ * only have their proper values if they are mutated which in general should be avoided.
+ */
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
