@@ -4,6 +4,12 @@ on:
   schedule:
     # Run the ci on the latest commit of master every day at 4:00 am
     - cron:  '00 04 * * *'
+
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
     
 jobs:
   be2-scala:
