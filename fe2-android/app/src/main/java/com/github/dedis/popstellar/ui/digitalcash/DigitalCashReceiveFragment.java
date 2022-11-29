@@ -21,9 +21,10 @@ import com.google.gson.Gson;
 import net.glxn.qrgen.android.QRCode;
 
 import java.util.Objects;
-import dagger.hilt.android.AndroidEntryPoint;
 
 import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiveFragment#newInstance}
@@ -35,8 +36,8 @@ public class DigitalCashReceiveFragment extends Fragment {
 
   @Inject Gson gson;
 
-  private DigitalCashReceiveFragmentBinding mBinding;
-  private DigitalCashViewModel mViewModel;
+  private DigitalCashReceiveFragmentBinding binding;
+  private DigitalCashViewModel viewModel;
 
   public DigitalCashReceiveFragment() {
     // Required empty constructor
@@ -55,9 +56,9 @@ public class DigitalCashReceiveFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
-    mBinding = DigitalCashReceiveFragmentBinding.inflate(inflater, container, false);
-    return mBinding.getRoot();
+    viewModel = DigitalCashActivity.obtainViewModel(getActivity());
+    binding = DigitalCashReceiveFragmentBinding.inflate(inflater, container, false);
+    return binding.getRoot();
   }
 
   @Override
@@ -65,11 +66,11 @@ public class DigitalCashReceiveFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     try {
-      LaoView laoView = mViewModel.getCurrentLaoValue();
-      PoPToken token = mViewModel.getKeyManager().getValidPoPToken(laoView);
+      LaoView laoView = viewModel.getCurrentLaoValue();
+      PoPToken token = viewModel.getKeyManager().getValidPoPToken(laoView);
       PopTokenData tokenData = new PopTokenData(token.getPublicKey());
       Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
-      mBinding.digitalCashReceiveQr.setImageBitmap(myBitmap);
+      binding.digitalCashReceiveQr.setImageBitmap(myBitmap);
 
       if (laoView.getTransactionByUser().containsKey(token.getPublicKey())) {
         TransactionObject transaction =
@@ -77,14 +78,20 @@ public class DigitalCashReceiveFragment extends Fragment {
                 Objects.requireNonNull(laoView.getTransactionByUser().get(token.getPublicKey())));
         String sender = transaction.getSendersTransaction().get(0).getEncoded();
 
-        mBinding.digitalCashReceiveAddress.setText(String.format("Received from : %n %s", sender));
+        binding.digitalCashReceiveAddress.setText(String.format("Received from : %n %s", sender));
 
-        mBinding.digitalCashReceiveAmount.setText(
+        binding.digitalCashReceiveAmount.setText(
             String.format(
                 "%s LAOcoin", transaction.getMiniLaoPerReceiverFirst(token.getPublicKey())));
       }
     } catch (KeyException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.digital_cash_please_enter_roll_call);
     }
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.digital_cash_receive);
   }
 }

@@ -7,12 +7,13 @@ import { useSelector } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
+import NavigationPadding from 'core/components/NavigationPadding';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { getNetworkManager } from 'core/network';
-import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
+import { Color, Icon, ModalStyles, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoProperties } from '../components';
@@ -41,14 +42,20 @@ const EventsScreen = () => {
 export default EventsScreen;
 
 const styles = StyleSheet.create({
+  backButtonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   buttons: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
   },
   button: {
-    marginLeft: Spacing.x1,
+    marginLeft: Icon.buttonMargin,
   },
+  lastButton: {},
 });
 
 /**
@@ -71,9 +78,10 @@ export const EventsScreenHeader = () => {
  */
 export const EventsScreenHeaderLeft = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
+  const isOrganizer = LaoHooks.useIsLaoOrganizer();
 
   return (
-    <>
+    <View style={styles.backButtonContainer}>
       <PoPTouchableOpacity
         onPress={() => {
           getNetworkManager().disconnectFromAll();
@@ -84,7 +92,8 @@ export const EventsScreenHeaderLeft = () => {
         }}>
         <PoPIcon name="arrowBack" color={Color.inactive} size={Icon.size} />
       </PoPTouchableOpacity>
-    </>
+      <NavigationPadding paddingAmount={isOrganizer ? 1 : 0} nextToIcon />
+    </View>
   );
 };
 
@@ -103,7 +112,7 @@ export const EventsScreenHeaderRight = () => {
     <View style={styles.buttons}>
       <PoPTouchableOpacity
         onPress={() => setModalVisible(!modalVisible)}
-        containerStyle={styles.button}>
+        containerStyle={styles.lastButton}>
         <PoPIcon name="qrCode" color={Color.inactive} size={Icon.size} />
       </PoPTouchableOpacity>
       {isOrganizer && (

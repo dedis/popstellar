@@ -24,7 +24,7 @@ public class SocialMediaSendFragment extends Fragment {
   public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
 
   private SocialMediaSendFragmentBinding mSocialMediaSendFragBinding;
-  private SocialMediaViewModel mSocialMediaViewModel;
+  private SocialMediaViewModel viewModel;
 
   public static SocialMediaSendFragment newInstance() {
     return new SocialMediaSendFragment();
@@ -39,9 +39,9 @@ public class SocialMediaSendFragment extends Fragment {
     mSocialMediaSendFragBinding =
         SocialMediaSendFragmentBinding.inflate(inflater, container, false);
 
-    mSocialMediaViewModel = SocialMediaActivity.obtainViewModel(requireActivity());
+    viewModel = SocialMediaActivity.obtainViewModel(requireActivity());
 
-    mSocialMediaSendFragBinding.setViewModel(mSocialMediaViewModel);
+    mSocialMediaSendFragBinding.setViewModel(viewModel);
     mSocialMediaSendFragBinding.setLifecycleOwner(getViewLifecycleOwner());
 
     return mSocialMediaSendFragBinding.getRoot();
@@ -54,6 +54,12 @@ public class SocialMediaSendFragment extends Fragment {
     setupSendChirpButton();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.send);
+  }
+
   private void setupSendChirpButton() {
     mSocialMediaSendFragBinding.sendChirpButton.setOnClickListener(v -> sendNewChirp());
   }
@@ -62,11 +68,11 @@ public class SocialMediaSendFragment extends Fragment {
     // Trying to send a chirp when no LAO has been chosen in the application will not send it, it
     // will
     // make a toast appear and it will log the error
-    if (mSocialMediaViewModel.getLaoId() == null) {
+    if (viewModel.getLaoId() == null) {
       ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
     } else {
-      mSocialMediaViewModel.addDisposable(
-          mSocialMediaViewModel
+      viewModel.addDisposable(
+          viewModel
               .sendChirp(
                   mSocialMediaSendFragBinding.entryBoxChirp.getText().toString(),
                   null,
@@ -87,7 +93,7 @@ public class SocialMediaSendFragment extends Fragment {
                           requireContext(), TAG, error, R.string.error_sending_chirp);
                     }
                   }));
-      mSocialMediaViewModel.setCurrentTab(SocialMediaTab.HOME);
+      viewModel.setCurrentTab(SocialMediaTab.HOME);
     }
   }
 }

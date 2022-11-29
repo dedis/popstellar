@@ -26,8 +26,8 @@ export const configureNetwork = (configuration: MeetingConfiguration) => {
       configuration.addEvent(laoId, {
         eventType: Meeting.EVENT_TYPE,
         id: meetingState.id,
-        start: meetingState.start,
-        end: meetingState.end,
+        start: meeting.start.valueOf(),
+        end: meeting.end?.valueOf(),
       }),
     );
   };

@@ -34,7 +34,7 @@ import { WALLET_FEATURE_IDENTIFIER, WalletReactContext } from 'features/wallet/i
 import { generateToken } from 'features/wallet/objects';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
 
-import EventList from '../EventList';
+import EventLists from '../EventLists';
 
 const mockStore = configureStore({
   reducer: combineReducers({
@@ -54,6 +54,7 @@ const getContextValue = (isOrganizer: boolean) => ({
   } as EventReactContext,
   [EVOTING_FEATURE_IDENTIFIER]: {
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     useCurrentLao: () => mockLao,
     addEvent,
     updateEvent,
@@ -65,12 +66,15 @@ const getContextValue = (isOrganizer: boolean) => ({
   } as MeetingReactContext,
   [ROLLCALL_FEATURE_IDENTIFIER]: {
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     generateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
     makeEventByTypeSelector,
   } as RollCallReactContext,
   [WALLET_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLao: () => mockLao,
+    useConnectedToLao: () => true,
     useRollCallsByLaoId: () => ({}),
     useLaoIds: () => [mockLaoIdHash],
     useNamesByLaoId: () => ({ [mockLaoId]: mockLaoName }),
@@ -105,17 +109,17 @@ mockStore.dispatch(
     eventType: RollCall.EVENT_TYPE,
     id: mockRollCall.id.valueOf(),
     start: mockRollCall.start.valueOf(),
-    end: mockRollCall.end.valueOf(),
+    end: mockRollCall.end?.valueOf(),
   }),
 );
 mockStore.dispatch(addRollCall(mockRollCall.toState()));
 
-describe('EventList', () => {
+describe('EventLists', () => {
   it('renders correctly for attendees', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={getContextValue(false)}>
-          <MockNavigator component={EventList} />
+          <MockNavigator component={EventLists} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();
@@ -126,7 +130,7 @@ describe('EventList', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={getContextValue(true)}>
-          <MockNavigator component={EventList} />
+          <MockNavigator component={EventLists} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

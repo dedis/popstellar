@@ -7,8 +7,8 @@ import { RollCall, RollCallState, RollCallStatus } from '../objects';
 // MOCK ROLL CALL
 const mockRollCallName = 'myRollCall';
 const mockRollCallLocation = 'location';
-const mockRollCallTimestampCreation = new Timestamp(1620255600);
-const mockRollCallTimestampStart = new Timestamp(1620255600);
+const mockRollCallTimestampCreation = new Timestamp(1620355600);
+const mockRollCallTimestampStart = new Timestamp(1620355600);
 const mockRollCallTimestampEnd = new Timestamp(1620357600);
 const mockRollCallAttendees = [mockKeyPair.publicKey, mockPopToken.publicKey];
 

@@ -49,7 +49,7 @@ describe('EventReducer', () => {
           eventType: RollCall.EVENT_TYPE,
           id: mockRollCallWithAliasState.id,
           start: mockRollCallWithAlias.start.valueOf(),
-          end: mockRollCallWithAlias.end.valueOf(),
+          end: mockRollCallWithAlias.end?.valueOf(),
         }),
       ),
     ).toEqual({
@@ -63,7 +63,7 @@ describe('EventReducer', () => {
           eventType: RollCall.EVENT_TYPE,
           id: mockRollCallWithAliasState.id,
           start: mockRollCallWithAlias.start.valueOf(),
-          end: mockRollCallWithAlias.end.valueOf(),
+          end: mockRollCallWithAlias.end?.valueOf(),
         },
       },
     } as EventReducerState);
@@ -89,7 +89,7 @@ describe('EventReducer', () => {
           eventType: RollCall.EVENT_TYPE,
           id: mockRollCallWithAliasState.id,
           start: mockRollCallWithAlias.start.valueOf(),
-          end: mockRollCallWithAlias.end.valueOf(),
+          end: mockRollCallWithAlias.end?.valueOf(),
         }),
       ),
     ).toEqual({
@@ -103,7 +103,7 @@ describe('EventReducer', () => {
           eventType: RollCall.EVENT_TYPE,
           id: mockRollCallState.id,
           start: mockRollCallWithAlias.start.valueOf(),
-          end: mockRollCallWithAlias.end.valueOf(),
+          end: mockRollCallWithAlias.end?.valueOf(),
         },
       },
     } as EventReducerState);
@@ -181,7 +181,7 @@ const filledState = {
         eventType: RollCall.EVENT_TYPE,
         id: mockRollCallWithAliasState.id,
         start: mockRollCallWithAlias.start.valueOf(),
-        end: mockRollCallWithAlias.end.valueOf(),
+        end: mockRollCallWithAlias.end?.valueOf(),
       },
       otherId: {
         eventType: RollCall.EVENT_TYPE,
@@ -203,7 +203,7 @@ describe('makeEventListSelector', () => {
         eventType: RollCall.EVENT_TYPE,
         id: mockRollCallState.id,
         start: mockRollCallWithAlias.start.valueOf(),
-        end: mockRollCallWithAlias.end.valueOf(),
+        end: mockRollCallWithAlias.end?.valueOf(),
       },
     ]);
   });
@@ -223,7 +223,7 @@ describe('makeEventSelector', () => {
       eventType: RollCall.EVENT_TYPE,
       id: mockRollCallState.id,
       start: mockRollCallWithAlias.start.valueOf(),
-      end: mockRollCallWithAlias.end.valueOf(),
+      end: mockRollCallWithAlias.end?.valueOf(),
     });
   });
 
@@ -245,7 +245,7 @@ describe('makeEventByTypeSelector', () => {
         eventType: RollCall.EVENT_TYPE,
         id: mockRollCallWithAliasState.id,
         start: mockRollCallWithAlias.start.valueOf(),
-        end: mockRollCallWithAlias.end.valueOf(),
+        end: mockRollCallWithAlias.end?.valueOf(),
       },
     });
   });

@@ -72,7 +72,7 @@ jest.mock('core/network', () => {
 beforeEach(jest.clearAllMocks);
 
 const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 
 describe('ConnectNavigation', () => {
   it('renders correctly', () => {

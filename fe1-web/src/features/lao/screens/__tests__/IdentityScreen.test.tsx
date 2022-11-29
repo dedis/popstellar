@@ -33,7 +33,7 @@ const contextValue = {
 
 // set up mock store
 const mockStore = configureStore({ reducer: combineReducers({ ...laoReducer }) });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
 
 describe('LaoHomeScreen', () => {
   it('renders correctly', () => {

@@ -1,8 +1,6 @@
-import { makeIcon } from 'core/components/PoPIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
-import STRINGS from 'resources/strings';
 
 import * as digitalCash from './digital-cash';
 import * as events from './events';
@@ -38,6 +36,7 @@ export function configureFeatures() {
     /* lao: hooks */
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     /* EVENTS FEATURE */
     /* events: action creators */
     addEvent: eventConfiguration.actionCreators.addEvent,
@@ -55,6 +54,7 @@ export function configureFeatures() {
     getEventById: eventConfiguration.functions.getEventById,
     getLaoById: laoConfiguration.functions.getLaoById,
     useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
   });
 
   const rollCallConfiguration = rollCall.configure({
@@ -66,6 +66,7 @@ export function configureFeatures() {
     getLaoById: laoConfiguration.functions.getLaoById,
     setLaoLastRollCall: laoConfiguration.actionCreators.setLaoLastRollCall,
     useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     generateToken: walletConfiguration.functions.generateToken,
     hasSeed: walletConfiguration.functions.hasSeed,
   });
@@ -74,9 +75,9 @@ export function configureFeatures() {
     keyPairRegistry,
     messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-    useLaoIds: laoConfiguration.hooks.useLaoIds,
-    useNamesByLaoId: laoConfiguration.hooks.useNamesByLaoId,
+    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     getEventById: eventConfiguration.functions.getEventById,
     getRollCallById: rollCallConfiguration.functions.getRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
@@ -90,7 +91,8 @@ export function configureFeatures() {
     keyPairRegistry: keyPairRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
     getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,
     useRollCallById: rollCallConfiguration.hooks.useRollCallById,
@@ -105,6 +107,7 @@ export function configureFeatures() {
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useRollCallById: rollCallConfiguration.hooks.useRollCallById,
     useRollCallAttendeesById: rollCallConfiguration.hooks.useRollCallAttendeesById,
     generateToken: walletConfiguration.functions.generateToken,
@@ -114,6 +117,7 @@ export function configureFeatures() {
     enabled: false,
     messageRegistry,
     useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
@@ -124,7 +128,7 @@ export function configureFeatures() {
 
   // compose features
   const notificationComposition = notification.compose({
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
     notificationTypes: [
       ...witnessConfiguration.notificationTypes,
     ] as NotificationCompositionConfiguration['notificationTypes'],
@@ -166,17 +170,12 @@ export function configureFeatures() {
     encodeLaoConnectionForQRCode: homeComposition.functions.encodeLaoConnectionForQRCode,
     /* navigation */
     laoNavigationScreens: [
-      {
-        id: STRINGS.navigation_social_media,
-        Component: socialConfiguration.navigation.SocialMediaNavigation,
-        headerShown: false,
-        tabBarIcon: makeIcon('socialMedia'),
-        order: 10000,
-      },
+      ...socialConfiguration.laoScreens,
       ...notificationConfiguration.laoScreens,
       ...walletComposition.laoScreens,
     ],
     eventsNavigationScreens: [
+      ...eventConfiguration.laoEventScreens,
       ...meetingConfiguration.laoEventScreens,
       ...rollCallConfiguration.laoEventScreens,
       ...evotingConfiguration.laoEventScreens,

@@ -81,6 +81,7 @@ const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     enabled: true,
     useAssertCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     addNotification: (notification) => mockStore.dispatch(addNotification(notification)),
     discardNotifications: (args) => mockStore.dispatch(discardNotifications(args)),
     markNotificationAsRead: (args) => mockStore.dispatch(markNotificationAsRead(args)),

@@ -35,6 +35,12 @@ export interface SocialConfiguration {
   getCurrentLaoId: () => Hash | undefined;
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
+
+  /**
    * Returns the currently active lao id. Should be used inside react components
    * @returns The current lao or undefined if there is none.
    */
@@ -75,6 +81,7 @@ export type SocialReactContext = Pick<
   | 'getCurrentLao'
   | 'useCurrentLaoId'
   | 'getCurrentLaoId'
+  | 'useConnectedToLao'
   /* roll call */
   | 'useRollCallById'
   | 'useRollCallAttendeesById'
@@ -83,10 +90,9 @@ export type SocialReactContext = Pick<
 >;
 
 export interface SocialInterface extends FeatureInterface {
-  socialScreens: SocialFeature.SocialScreen[];
-  socialSearchScreens: SocialFeature.SocialSearchScreen[];
-  context: SocialReactContext;
   reducers: {
     [SOCIAL_REDUCER_PATH]: Reducer<SocialLaoReducerState>;
   };
+  context: SocialReactContext;
+  laoScreens: SocialFeature.LaoScreen[];
 }

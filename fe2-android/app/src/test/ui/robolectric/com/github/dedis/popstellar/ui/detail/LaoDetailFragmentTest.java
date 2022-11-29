@@ -101,7 +101,7 @@ public class LaoDetailFragmentTest {
         protected void before() throws KeyException, UnknownLaoException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString())).thenReturn(laoViewSubject);
-          when(repository.getLaoView(anyString())).thenAnswer(invocation -> new LaoView(LAO));
+          when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
           when(keyManager.getMainPublicKey()).thenReturn(PK);
           when(keyManager.getPoPToken(any(), any())).thenReturn(POP_TOKEN);
           when(networkManager.getMessageSender()).thenReturn(messageSender);
@@ -129,11 +129,6 @@ public class LaoDetailFragmentTest {
                   .putString(fragmentToOpenExtra(), laoDetailValue())
                   .build()));
 
-  @Test
-  public void titleIsDisplayedAndMatches() {
-    titleTextView().check(matches(isDisplayed()));
-    titleTextView().check(matches(withText(LAO_NAME)));
-  }
 
   @Test
   public void showPropertyButtonShowsConnectQRCode() {

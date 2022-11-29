@@ -22,7 +22,7 @@ import {
  * The notification screen component displaying the list of read and unread notifications
  */
 const NotificationScreen = () => {
-  const laoId = NotificationHooks.useCurrentLaoId();
+  const laoId = NotificationHooks.useAssertCurrentLaoId();
 
   const selectUnreadNotifications = useMemo(
     () => makeUnreadNotificationsSelector(laoId.valueOf()),
@@ -62,7 +62,7 @@ export const NotificationScreenRightHeader = () => {
   const showActionSheet = useActionSheet();
   const notificationTypes = NotificationHooks.useNotificationTypes();
 
-  const laoId = NotificationHooks.useCurrentLaoId();
+  const laoId = NotificationHooks.useAssertCurrentLaoId();
 
   const selectUnreadNotifications = useMemo(
     () => makeUnreadNotificationsSelector(laoId.valueOf()),

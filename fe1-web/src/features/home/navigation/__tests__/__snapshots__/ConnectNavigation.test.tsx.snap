@@ -538,7 +538,15 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                           "paddingRight": 16,
                                         }
                                       }
-                                    />
+                                    >
+                                      <View
+                                        style={
+                                          Object {
+                                            "width": 25,
+                                          }
+                                        }
+                                      />
+                                    </View>
                                   </View>
                                 </View>
                               </View>

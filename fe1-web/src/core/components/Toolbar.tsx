@@ -24,6 +24,10 @@ const styles = StyleSheet.create({
  * https://developer.apple.com/design/human-interface-guidelines/components/menus-and-actions/toolbars
  */
 const Toolbar = ({ items }: IPropTypes) => {
+  if (items.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.toolbar}>
       {items.map((item) => (
@@ -31,7 +35,9 @@ const Toolbar = ({ items }: IPropTypes) => {
           onPress={item.onPress}
           key={item.id || item.title}
           buttonStyle={item.buttonStyle}
-          toolbar>
+          disabled={item.disabled}
+          toolbar
+          testID={item.id}>
           {item.title}
         </PoPTextButton>
       ))}
@@ -45,6 +51,8 @@ export const toolbarItemsPropType = PropTypes.arrayOf(
     title: PropTypes.string.isRequired,
     onPress: PropTypes.func.isRequired,
     buttonStyle: PropTypes.oneOf<'primary' | 'secondary'>(['primary', 'secondary']),
+    disabled: PropTypes.bool,
+    width: PropTypes.number,
   }).isRequired,
 );
 

@@ -78,4 +78,11 @@ public class ElectionResultFragment extends Fragment {
     mElectionResultFragBinding.setLifecycleOwner(getActivity());
     return mElectionResultFragBinding.getRoot();
   }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel.setPageTitle(getString(R.string.election_result_title));
+  }
 }

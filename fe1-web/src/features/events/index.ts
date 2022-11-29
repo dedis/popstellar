@@ -7,6 +7,7 @@ import {
   EventInterface,
 } from './interface';
 import { addEvent, clearAllEvents, eventReducer, removeEvent, updateEvent } from './reducer';
+import { UpcomingEventsScreen } from './screens/UpcomingEvents';
 
 /**
  * Configures the events feature
@@ -16,6 +17,7 @@ export function configure(): EventInterface {
     identifier: EVENT_FEATURE_IDENTIFIER,
     functions,
     components: publicComponents,
+    laoEventScreens: [UpcomingEventsScreen],
     actionCreators: {
       addEvent,
       updateEvent,

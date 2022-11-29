@@ -13,7 +13,7 @@ import { setCurrentLao, selectCurrentLao } from '../reducer';
 export namespace OpenedLaoStore {
   export function store(lao: Lao): void {
     const laoState = lao.toState();
-    dispatch(setCurrentLao(laoState));
+    dispatch(setCurrentLao({ lao: laoState }));
   }
 
   export function get(): Lao {

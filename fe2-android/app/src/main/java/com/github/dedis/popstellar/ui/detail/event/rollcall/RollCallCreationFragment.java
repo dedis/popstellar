@@ -29,7 +29,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   public static final String TAG = RollCallCreationFragment.class.getSimpleName();
 
   private RollCallCreateFragmentBinding mFragBinding;
-  private LaoDetailViewModel mLaoDetailViewModel;
+  private LaoDetailViewModel viewModel;
   private EditText rollCallTitleEditText;
   private Button confirmButton;
   private Button openButton;
@@ -68,7 +68,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
     mFragBinding = RollCallCreateFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     setDateAndTimeView(mFragBinding.getRoot());
     addStartDateAndTimeListener(confirmTextWatcher);
@@ -93,6 +93,12 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     setupOpenButton();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(getString(R.string.roll_call_setup_title));
+  }
+
   private void setupConfirmButton() {
     confirmButton.setOnClickListener(v -> createRollCall(false));
   }
@@ -109,32 +115,38 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     String title = mFragBinding.rollCallTitleText.getText().toString();
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
     Single<String> createRollCall =
-        mLaoDetailViewModel.createNewRollCall(
+        viewModel.createNewRollCall(
             title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds);
 
     if (open) {
-      mLaoDetailViewModel.addDisposable(
+      viewModel.addDisposable(
           createRollCall
-              .flatMapCompletable(mLaoDetailViewModel::openRollCall)
+              .flatMapCompletable(viewModel::openRollCall)
               .subscribe(
                   // Open the scanning fragment when everything is done
-                  () -> setCurrentFragment(
-                      getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new),
+                  () -> {
+                    setCurrentFragment(
+                        getParentFragmentManager(),
+                        R.id.add_attendee_layout,
+                        QRCodeScanningFragment::new);
+                    viewModel.setPageTitle(getString(R.string.add_attendee_title));
+                  },
                   error ->
                       ErrorUtils.logAndShow(
                           requireContext(), TAG, error, R.string.error_create_rollcall)));
     } else {
-      mLaoDetailViewModel.addDisposable(
+      viewModel.addDisposable(
           createRollCall.subscribe(
-              id ->
-                  setCurrentFragment(
-                      getParentFragmentManager(),
-                      R.id.fragment_lao_detail,
-                      LaoDetailFragment::newInstance),
+              id -> {
+                setCurrentFragment(
+                    getParentFragmentManager(),
+                    R.id.fragment_lao_detail,
+                    LaoDetailFragment::newInstance);
+                viewModel.setPageTitle(viewModel.getLaoView().getName());
+              },
               error ->
                   ErrorUtils.logAndShow(
                       requireContext(), TAG, error, R.string.error_create_rollcall)));
     }
   }
-
 }

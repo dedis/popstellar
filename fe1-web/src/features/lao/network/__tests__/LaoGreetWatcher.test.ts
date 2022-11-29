@@ -216,7 +216,7 @@ describe('makeLaoGreetStoreWatcher', () => {
       signature: witnessMessage.signature,
     });
 
-    mockStore.dispatch(setCurrentLao(mockLaoState));
+    mockStore.dispatch(setCurrentLao({ lao: mockLaoState }));
     mockStore.dispatch(addMessages([greetLaoMessage.toState(), extendedWitnessMessage.toState()]));
     mockStore.dispatch(
       addUnhandledGreetLaoMessage({

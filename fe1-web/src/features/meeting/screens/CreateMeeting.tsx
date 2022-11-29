@@ -2,18 +2,19 @@ import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { ConfirmModal, DatePicker, DismissModal, Input, PoPTextButton } from 'core/components';
+import { ConfirmModal, DatePicker, DismissModal, Input } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Timestamp } from 'core/objects';
-import { Spacing, Typography } from 'core/styles';
+import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -23,15 +24,8 @@ import { requestCreateMeeting } from '../network/MeetingMessageApi';
 
 const DEFAULT_MEETING_DURATION = 3600;
 
-const styles = StyleSheet.create({
-  buttons: {
-    marginTop: Spacing.x1,
-    zIndex: 0,
-  },
-});
-
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_meeting>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_create_meeting>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -46,6 +40,7 @@ const CreateMeeting = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const laoId = MeetingHooks.useAssertCurrentLaoId();
+  const isConnected = MeetingHooks.useConnectedToLao();
 
   const [meetingName, setMeetingName] = useState('');
   const [startTime, setStartTime] = useState(Timestamp.EpochNow());
@@ -55,7 +50,7 @@ const CreateMeeting = () => {
 
   const [location, setLocation] = useState('');
 
-  const confirmButtonVisibility: boolean = meetingName !== '';
+  const confirmButtonEnabled: boolean = isConnected === true && meetingName !== '';
 
   const createMeeting = () => {
     requestCreateMeeting(laoId, meetingName, startTime, location, endTime)
@@ -100,8 +95,23 @@ const CreateMeeting = () => {
     );
   };
 
+  const toolbarItems: ToolbarItem[] = [
+    {
+      title: STRINGS.meeting_create_meeting,
+      disabled: !confirmButtonEnabled,
+      onPress: () =>
+        onConfirmEventCreation(
+          startTime,
+          endTime,
+          createMeeting,
+          setModalStartIsVisible,
+          setModalEndIsVisible,
+        ),
+    },
+  ];
+
   return (
-    <ScreenWrapper>
+    <ScreenWrapper toolbarItems={toolbarItems}>
       <Text style={[Typography.paragraph, Typography.important]}>
         {STRINGS.meeting_create_name}
       </Text>
@@ -122,22 +132,6 @@ const CreateMeeting = () => {
         onChange={setLocation}
         placeholder={STRINGS.meeting_create_location_placeholder}
       />
-
-      <View style={styles.buttons}>
-        <PoPTextButton
-          onPress={() =>
-            onConfirmEventCreation(
-              startTime,
-              endTime,
-              createMeeting,
-              setModalStartIsVisible,
-              setModalEndIsVisible,
-            )
-          }
-          disabled={!confirmButtonVisibility}>
-          {STRINGS.meeting_create_meeting}
-        </PoPTextButton>
-      </View>
 
       <DismissModal
         visibility={modalEndIsVisible}
@@ -160,6 +154,6 @@ const CreateMeeting = () => {
 export default CreateMeeting;
 
 export const CreateMeetingScreen: MeetingFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_create_meeting,
+  id: STRINGS.events_create_meeting,
   Component: CreateMeeting,
 };

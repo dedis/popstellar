@@ -20,6 +20,7 @@ export function configure(configuration: WitnessConfiguration): WitnessInterface
     context: {
       enabled: configuration.enabled,
       useAssertCurrentLaoId: configuration.useAssertCurrentLaoId,
+      useConnectedToLao: configuration.useConnectedToLao,
       addNotification: configuration.addNotification,
       discardNotifications: configuration.discardNotifications,
       markNotificationAsRead: configuration.markNotificationAsRead,

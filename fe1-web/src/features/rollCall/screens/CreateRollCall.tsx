@@ -5,9 +5,10 @@ import React, { useState } from 'react';
 import { Platform, Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { ConfirmModal, DatePicker, DismissModal, Input, PoPTextButton } from 'core/components';
+import { ConfirmModal, DatePicker, DismissModal, Input } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
@@ -24,7 +25,7 @@ import { requestCreateRollCall } from '../network';
 const DEFAULT_ROLL_CALL_DURATION = 3600;
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_roll_call>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_create_roll_call>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -42,6 +43,7 @@ const CreateRollCall = () => {
   const toast = useToast();
 
   const laoId = RollCallHooks.useAssertCurrentLaoId();
+  const isConnected = RollCallHooks.useConnectedToLao();
 
   const [proposedStartTime, setProposedStartTime] = useState(Timestamp.EpochNow());
   const [proposedEndTime, setProposedEndTime] = useState(
@@ -86,7 +88,8 @@ const CreateRollCall = () => {
     );
   };
 
-  const buttonsVisibility: boolean = rollCallName !== '' && rollCallLocation !== '';
+  const confirmButtonEnabled: boolean =
+    isConnected === true && rollCallName !== '' && rollCallLocation !== '';
 
   const createRollCall = () => {
     const description = rollCallDescription === '' ? undefined : rollCallDescription;
@@ -111,8 +114,24 @@ const CreateRollCall = () => {
       });
   };
 
+  const toolbarItems: ToolbarItem[] = [
+    {
+      id: 'roll_call_confirm_selector',
+      title: STRINGS.general_button_confirm,
+      disabled: !confirmButtonEnabled,
+      onPress: () =>
+        onConfirmEventCreation(
+          proposedStartTime,
+          proposedEndTime,
+          createRollCall,
+          setModalStartIsVisible,
+          setModalEndIsVisible,
+        ),
+    },
+  ];
+
   return (
-    <ScreenWrapper>
+    <ScreenWrapper toolbarItems={toolbarItems}>
       <Text style={[Typography.paragraph, Typography.important]}>
         {STRINGS.roll_call_create_name}
       </Text>
@@ -143,21 +162,6 @@ const CreateRollCall = () => {
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
 
-      <PoPTextButton
-        onPress={() =>
-          onConfirmEventCreation(
-            proposedStartTime,
-            proposedEndTime,
-            createRollCall,
-            setModalStartIsVisible,
-            setModalEndIsVisible,
-          )
-        }
-        disabled={!buttonsVisibility}
-        testID="roll_call_confirm_selector">
-        {STRINGS.general_button_confirm}
-      </PoPTextButton>
-
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}
@@ -179,6 +183,6 @@ const CreateRollCall = () => {
 export default CreateRollCall;
 
 export const CreateRollCallScreen: RollCallFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_create_roll_call,
+  id: STRINGS.events_create_roll_call,
   Component: CreateRollCall,
 };

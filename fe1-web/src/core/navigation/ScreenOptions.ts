@@ -2,11 +2,13 @@ import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { StackNavigationOptions } from '@react-navigation/stack';
 
 import BackButton from 'core/components/BackButton';
+import NavigationPadding from 'core/components/NavigationPadding';
 import { Color, Spacing, Typography } from 'core/styles';
 
 export const stackScreenOptionsWithoutHeader: StackNavigationOptions = {
   headerShown: false,
   headerLeft: BackButton,
+  headerRight: NavigationPadding,
   // Since we explicitly use scroll views for screens, we should disable scrolling for
   // the navigator so that the header sticks to the top of the screen
   // https://github.com/react-navigation/react-navigation/issues/9344#issuecomment-782520454
@@ -32,6 +34,7 @@ export const stackScreenOptionsWithHeader: StackNavigationOptions = {
     borderColor: Color.separator,
   },
   headerLeft: BackButton,
+  headerRight: NavigationPadding,
   // Since we explicitly use scroll views for screens, we should disable scrolling for
   // the navigator so that the header sticks to the top of the screen
   // https://github.com/react-navigation/react-navigation/issues/9344#issuecomment-782520454

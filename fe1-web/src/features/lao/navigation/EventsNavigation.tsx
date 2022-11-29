@@ -48,7 +48,7 @@ export default function EventsNavigation() {
               title: title || id,
               headerTitle: headerTitle || title || id,
               headerLeft: headerLeft || stackScreenOptionsWithHeader.headerLeft,
-              headerRight,
+              headerRight: headerRight || stackScreenOptionsWithHeader.headerRight,
               headerShown,
             }}
           />

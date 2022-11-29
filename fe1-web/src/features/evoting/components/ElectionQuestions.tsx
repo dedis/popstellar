@@ -1,10 +1,9 @@
 import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { List, Typography } from 'core/styles';
-import STRINGS from 'resources/strings';
 
 import { Election, QuestionResult } from '../objects';
 
@@ -36,7 +35,6 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
 
     return (
       <>
-        <Text style={Typography.heading}>{STRINGS.election_results}</Text>
         <View style={List.container}>
           {election.questionResult &&
             election.questionResult.map((questionResult: QuestionResult) => {
@@ -82,7 +80,6 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
                             key={ballotOption.ballotOption}
                             containerStyle={listStyles}
                             style={listStyles}>
-                            <View style={List.iconPlaceholder} />
                             <ListItem.Content style={styles.ballotOptionResult}>
                               <ListItem.Title style={Typography.base}>
                                 {ballotOption.ballotOption}
@@ -106,8 +103,6 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
 
   return (
     <>
-      <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.election_questions}</Text>
-
       <View style={List.container}>
         {election.questions.map((question) => (
           <ListItem.Accordion
@@ -136,7 +131,6 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
 
               return (
                 <ListItem key={ballotOption} containerStyle={listStyles} style={listStyles}>
-                  <View style={List.iconPlaceholder} />
                   <ListItem.Content>
                     <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>
                   </ListItem.Content>

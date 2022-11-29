@@ -25,7 +25,7 @@ describe('LaoList', () => {
 
   it('renders correctly with one item', () => {
     const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
-    mockStore.dispatch(addLao(mockLao.toState()));
+    mockStore.dispatch(addLao({ lao: mockLao.toState() }));
 
     const component = render(
       <Provider store={mockStore}>
