@@ -20,9 +20,9 @@ in the context of the following folders:
 * [tests](https://github.com/dedis/popstellar/tree/master/tests): (WIP) the system-wide, cross-implementation tests
 
 ## Integration Tests
-[![be1-go](https://github.com/dedis/popstellar/actions/workflows/karate/be1-go.yaml/badge.svg)](https://github.com/dedis/popstellar/actions/workflows/karate/be1-go.yaml) [Report](https://htmlpreview.github.io/?https://github.com/dedis/popstellar/blob/report-karate-be1-go/overview-features.html)
+[![be1-go](https://github.com/dedis/popstellar/actions/workflows/karate_be1-go.yaml/badge.svg)](https://github.com/dedis/popstellar/actions/workflows/karate_be1-go.yaml) [Report](https://htmlpreview.github.io/?https://github.com/dedis/popstellar/blob/report-karate-be1-go/overview-features.html)
 
-[![be2-scala](https://github.com/dedis/popstellar/actions/workflows/karate/be2-scala.yaml/badge.svg)](https://github.com/dedis/popstellar/actions/workflows/karate/be2-scala.yaml) [Report](https://htmlpreview.github.io/?https://github.com/dedis/popstellar/blob/report-karate-be2-scala/overview-features.html)
+[![be2-scala](https://github.com/dedis/popstellar/actions/workflows/karate_be2-scala.yaml/badge.svg)](https://github.com/dedis/popstellar/actions/workflows/karate_be2-scala.yaml) [Report](https://htmlpreview.github.io/?https://github.com/dedis/popstellar/blob/report-karate-be2-scala/overview-features.html)
 
 ## Branch organization
 Everyone working on the project,
