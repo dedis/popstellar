@@ -296,6 +296,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -879,6 +880,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

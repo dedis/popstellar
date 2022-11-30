@@ -296,6 +296,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -814,6 +815,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 }
                                               >
                                                 <View
+                                                  pointerEvents="box-none"
                                                   style={
                                                     Array [
                                                       Object {

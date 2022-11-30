@@ -296,6 +296,7 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

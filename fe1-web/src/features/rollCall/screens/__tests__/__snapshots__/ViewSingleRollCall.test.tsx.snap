@@ -296,6 +296,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1218,6 +1219,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1636,6 +1638,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -2279,6 +2282,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -2922,6 +2926,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -3932,6 +3937,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -4438,6 +4444,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -5222,6 +5229,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
