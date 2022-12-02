@@ -22,7 +22,7 @@
   <com.google.android.material.textfield.TextInputLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/margin_text_horizontal"
+    android:layout_marginStart="@dimen/pickers_horizontal_margin"
 
     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
