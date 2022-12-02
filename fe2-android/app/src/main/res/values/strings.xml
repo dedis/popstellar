@@ -334,4 +334,5 @@
   <string name="unknown_lao_exception">Unknown Lao</string>
   <string name="unknown_election_exception">Unknown election</string>
   <string name="unknown_chirp_exception">Unknown Chirp</string>
+  <string name="unknown_roll_call_exception">Unknown Roll Call</string>
 </resources>
