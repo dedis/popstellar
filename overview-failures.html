@@ -75,7 +75,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>demo</td>
-      <td>02 Dec 2022, 04:10</td>
+      <td>03 Dec 2022, 04:10</td>
     </tr>
   </tbody>
 </table>
@@ -125,7 +125,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.172</span>
+  <span class="lead-duration duration">0.253</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -168,7 +168,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">0.164</span>
+  <span class="lead-duration duration">0.237</span>
 
 </div>
 
@@ -277,7 +277,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -304,7 +304,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -331,7 +331,7 @@ $(document).ready(function() {
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -348,7 +348,7 @@ $(document).ready(function() {
       <div id="msg-4" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1435930800,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1488684323,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -366,11 +366,11 @@ classpath:be/digitalCash/transaction.feature:48</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-5" class="collapse collapsable-details">
-        <pre>04:07:41.091 classpath:be/digitalCash/transaction.feature:48
+        <pre>04:07:09.901 classpath:be/digitalCash/transaction.feature:48
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1435930800,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1488684323,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -438,7 +438,7 @@ classpath:be/digitalCash/transaction.feature:48
 </div>
 
 
-  <span class="lead-duration duration">0.183</span>
+  <span class="lead-duration duration">0.163</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-6">
@@ -481,7 +481,7 @@ classpath:be/digitalCash/transaction.feature:48
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">0.176</span>
+  <span class="lead-duration duration">0.150</span>
 
 </div>
 
@@ -596,7 +596,7 @@ classpath:be/digitalCash/transaction.feature:48
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransfer), cashChannel)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.011</span>
 
 </div>
 
@@ -667,7 +667,7 @@ classpath:be/digitalCash/transaction.feature:48
       <div id="msg-9" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1415162326,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1408609009,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -685,11 +685,11 @@ classpath:be/digitalCash/transaction.feature:83</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-10" class="collapse collapsable-details">
-        <pre>04:07:41.619 classpath:be/digitalCash/transaction.feature:83
+        <pre>04:07:10.406 classpath:be/digitalCash/transaction.feature:83
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1415162326,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1408609009,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -757,7 +757,7 @@ classpath:be/digitalCash/transaction.feature:83
 </div>
 
 
-  <span class="lead-duration duration">0.148</span>
+  <span class="lead-duration duration">0.126</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-11">
@@ -800,7 +800,7 @@ classpath:be/digitalCash/transaction.feature:83
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">0.141</span>
+  <span class="lead-duration duration">0.119</span>
 
 </div>
 
@@ -980,7 +980,7 @@ classpath:be/digitalCash/transaction.feature:83
       <div id="msg-14" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:157372850,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the transaction id: transaction id is not valid: 47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU= != _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1639649423,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the transaction id: transaction id is not valid: 47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU= != _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -998,11 +998,11 @@ classpath:be/digitalCash/transaction.feature:112</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-15" class="collapse collapsable-details">
-        <pre>04:07:42.159 classpath:be/digitalCash/transaction.feature:112
+        <pre>04:07:10.857 classpath:be/digitalCash/transaction.feature:112
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:157372850,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the transaction id: transaction id is not valid: 47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU= != _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1639649423,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the transaction id: transaction id is not valid: 47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU= != _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1070,7 +1070,7 @@ classpath:be/digitalCash/transaction.feature:112
 </div>
 
 
-  <span class="lead-duration duration">0.025</span>
+  <span class="lead-duration duration">0.031</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-16">
@@ -1113,7 +1113,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.018</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
@@ -1156,7 +1156,7 @@ classpath:be/election/electionEnd.feature:24</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-19" class="collapse collapsable-details">
-        <pre>04:08:33.849 classpath:be/election/electionEnd.feature:24
+        <pre>04:08:02.708 classpath:be/election/electionEnd.feature:24
 Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -1219,7 +1219,7 @@ classpath:be/election/electionEnd.feature:24
   <span class="keyword indention">&gt; *</span>
   <span class="name">string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -1482,7 +1482,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.014</span>
 
 </div>
 
@@ -1525,7 +1525,7 @@ classpath:be/election/electionEnd.feature:44</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-25" class="collapse collapsable-details">
-        <pre>04:08:34.195 classpath:be/election/electionEnd.feature:44
+        <pre>04:08:03.049 classpath:be/election/electionEnd.feature:44
 Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -1808,7 +1808,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.012</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-28">
@@ -1851,7 +1851,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.011</span>
 
 </div>
 
@@ -1894,7 +1894,7 @@ classpath:be/election/electionEnd.feature:63</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-31" class="collapse collapsable-details">
-        <pre>04:08:34.545 classpath:be/election/electionEnd.feature:63
+        <pre>04:08:03.375 classpath:be/election/electionEnd.feature:63
 Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2177,7 +2177,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.011</span>
+  <span class="lead-duration duration">0.013</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-34">
@@ -2220,7 +2220,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -2263,7 +2263,7 @@ classpath:be/election/electionEnd.feature:82</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-37" class="collapse collapsable-details">
-        <pre>04:08:34.884 classpath:be/election/electionEnd.feature:82
+        <pre>04:08:03.704 classpath:be/election/electionEnd.feature:82
 Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2546,7 +2546,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.011</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-40">
@@ -2589,7 +2589,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.011</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -2632,7 +2632,7 @@ classpath:be/election/electionEnd.feature:102</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-43" class="collapse collapsable-details">
-        <pre>04:08:35.213 classpath:be/election/electionEnd.feature:102
+        <pre>04:08:04.014 classpath:be/election/electionEnd.feature:102
 Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
 js failed:
 &gt;&gt;&gt;&gt;
@@ -2915,7 +2915,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.062</span>
+  <span class="lead-duration duration">0.039</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-46">
@@ -2958,7 +2958,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
-  <span class="lead-duration duration">0.057</span>
+  <span class="lead-duration duration">0.035</span>
 
 </div>
 
@@ -3082,7 +3082,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -3109,7 +3109,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -3153,7 +3153,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
       <div id="msg-49" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:941036791,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:486870734,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -3171,11 +3171,11 @@ classpath:be/rollCall/openRollCall.feature:59</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-50" class="collapse collapsable-details">
-        <pre>04:10:32.499 classpath:be/rollCall/openRollCall.feature:59
+        <pre>04:10:00.621 classpath:be/rollCall/openRollCall.feature:59
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:941036791,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:486870734,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -3243,7 +3243,7 @@ classpath:be/rollCall/openRollCall.feature:59
 </div>
 
 
-  <span class="lead-duration duration">0.054</span>
+  <span class="lead-duration duration">0.057</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-51">
@@ -3286,7 +3286,7 @@ classpath:be/rollCall/openRollCall.feature:59
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
-  <span class="lead-duration duration">0.044</span>
+  <span class="lead-duration duration">0.050</span>
 
 </div>
 
@@ -3383,7 +3383,7 @@ classpath:be/rollCall/openRollCall.feature:59
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.002</span>
 
 </div>
 
@@ -3410,7 +3410,7 @@ classpath:be/rollCall/openRollCall.feature:59
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -3464,7 +3464,7 @@ classpath:be/rollCall/openRollCall.feature:59
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3491,7 +3491,7 @@ classpath:be/rollCall/openRollCall.feature:59
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3535,7 +3535,7 @@ classpath:be/rollCall/openRollCall.feature:59
       <div id="msg-54" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:451922743,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1409368415,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -3553,11 +3553,11 @@ classpath:be/rollCall/openRollCall.feature:119</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-55" class="collapse collapsable-details">
-        <pre>04:10:43.539 classpath:be/rollCall/openRollCall.feature:119
+        <pre>04:10:11.663 classpath:be/rollCall/openRollCall.feature:119
 And match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:451922743,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1409368415,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -3625,7 +3625,7 @@ classpath:be/rollCall/openRollCall.feature:119
 </div>
 
 
-  <span class="lead-duration duration">0.069</span>
+  <span class="lead-duration duration">0.051</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-56">
@@ -3668,7 +3668,7 @@ classpath:be/rollCall/openRollCall.feature:119
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
 
-  <span class="lead-duration duration">0.064</span>
+  <span class="lead-duration duration">0.046</span>
 
 </div>
 
@@ -3864,7 +3864,7 @@ classpath:be/rollCall/openRollCall.feature:119
       <div id="msg-59" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-271177631,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1859272859,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -3882,11 +3882,11 @@ classpath:be/rollCall/closeRollCall.feature:56</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-60" class="collapse collapsable-details">
-        <pre>04:09:37.092 classpath:be/rollCall/closeRollCall.feature:56
+        <pre>04:09:05.326 classpath:be/rollCall/closeRollCall.feature:56
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-271177631,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1859272859,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -3954,7 +3954,7 @@ classpath:be/rollCall/closeRollCall.feature:56
 </div>
 
 
-  <span class="lead-duration duration">0.019</span>
+  <span class="lead-duration duration">0.020</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-61">
@@ -4125,7 +4125,7 @@ classpath:be/rollCall/closeRollCall.feature:56
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validCreateRollCall), laoChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -4152,7 +4152,7 @@ classpath:be/rollCall/closeRollCall.feature:56
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCreateRollCall))</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -4196,7 +4196,7 @@ classpath:be/rollCall/closeRollCall.feature:56
       <div id="msg-64" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1129832641,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1006883521,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -4214,11 +4214,11 @@ classpath:be/rollCall/createRollCall.feature:88</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-65" class="collapse collapsable-details">
-        <pre>04:09:59.245 classpath:be/rollCall/createRollCall.feature:88
+        <pre>04:09:27.466 classpath:be/rollCall/createRollCall.feature:88
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1129832641,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1006883521,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
