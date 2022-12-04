@@ -30,7 +30,7 @@ public class RollCallRepository {
    *
    * @param rollCall the roll call to update/add
    */
-  public void updateRollCall(String laoId, RollCall rollCall) {
+  public void updateRollCall(String laoId, RollCall rollCall, String previousId) {
     if (laoId == null) {
       throw new IllegalArgumentException("Lao id is null");
     }
@@ -40,20 +40,30 @@ public class RollCallRepository {
     Log.d(TAG, "Adding new roll call on lao " + laoId + " : " + rollCall);
 
     // Retrieve Lao data and add the roll call to it
-    getLaoRollCalls(laoId).update(new RollCall(rollCall));
+    getLaoRollCalls(laoId).update(new RollCall(rollCall), previousId);
   }
 
   /**
    * This provides an observable of a roll call that triggers an update when modified
    *
    * @param laoId the id of the Lao
-   * @param rollCallId the id of the roll call
+   * @param persistentId the persistent id of the roll call
    * @return the observable wrapping the wanted roll call
    * @throws UnknownRollCallException if no roll call with the provided id could be found
    */
-  Observable<RollCall> getRollCall(String laoId, String rollCallId)
+  public Observable<RollCall> getRollCallObservable(String laoId, String persistentId)
       throws UnknownRollCallException {
-    return getLaoRollCalls(laoId).getRollCall(rollCallId);
+    return getLaoRollCalls(laoId).getRollCallObservable(persistentId);
+  }
+
+  public RollCall getRollCallWithPersistentId(String laoId, String persistentId)
+      throws UnknownRollCallException {
+    return getLaoRollCalls(laoId).getRollCallWithPersistentId(persistentId);
+  }
+
+  public RollCall getRollCallWithId(String laoId, String rollCallId)
+      throws UnknownRollCallException {
+    return getLaoRollCalls(laoId).getRollCallWithId(rollCallId);
   }
 
   /**
@@ -71,7 +81,8 @@ public class RollCallRepository {
   }
 
   private static final class LaoRollCalls {
-    private final Map<String, RollCall> rollCalls = new HashMap<>();
+    private final Map<String, RollCall> rollCallByPersistentId = new HashMap<>();
+    private final Map<String, RollCall> rollCallById = new HashMap<>();
 
     // This allows to observe a specific roll call(s)
     private final Map<String, Subject<RollCall>> rollCallSubjects = new HashMap<>();
@@ -85,26 +96,43 @@ public class RollCallRepository {
      *
      * @param rollCall the roll call to update/add
      */
-    public synchronized void update(RollCall rollCall) {
+    public synchronized void update(RollCall rollCall, String previousId) {
       // Updating repo data
-      String id = rollCall.getPersistentId();
-      rollCalls.put(id, rollCall);
+      String persistentId = rollCall.getPersistentId();
+      rollCallByPersistentId.put(persistentId, rollCall);
+      rollCallById.remove(previousId);
+      rollCallById.put(rollCall.getId(), rollCall);
 
       // Publish new values on subjects
-      if (rollCallSubjects.containsKey(id)) {
+      if (rollCallSubjects.containsKey(persistentId)) {
         // If it exist we update the subject
         Log.d(TAG, "Updating existing roll call " + rollCall.getName());
-        rollCallSubjects.get(id).onNext(rollCall);
+        rollCallSubjects.get(persistentId).onNext(rollCall);
       } else {
         // If it does not, we create a new subject
         Log.d(TAG, "New roll call, subject created for " + rollCall.getName());
-        rollCallSubjects.put(id, BehaviorSubject.createDefault(rollCall));
+        rollCallSubjects.put(persistentId, BehaviorSubject.createDefault(rollCall));
       }
 
-      rollCallsSubject.onNext(rollCalls.keySet());
+      rollCallsSubject.onNext(this.rollCallByPersistentId.keySet());
     }
 
-    public Observable<RollCall> getRollCall(String id) throws UnknownRollCallException {
+    public RollCall getRollCallWithPersistentId(String persistentId)
+        throws UnknownRollCallException {
+      if (!rollCallByPersistentId.containsKey(persistentId)) {
+        throw new UnknownRollCallException(persistentId);
+      }
+      return rollCallByPersistentId.get(persistentId);
+    }
+
+    public RollCall getRollCallWithId(String id) throws UnknownRollCallException {
+      if (!rollCallById.containsKey(id)) {
+        throw new UnknownRollCallException(id);
+      }
+      return rollCallById.get(id);
+    }
+
+    public Observable<RollCall> getRollCallObservable(String id) throws UnknownRollCallException {
       Observable<RollCall> observable = rollCallSubjects.get(id);
       if (observable == null) {
         throw new UnknownRollCallException(id);

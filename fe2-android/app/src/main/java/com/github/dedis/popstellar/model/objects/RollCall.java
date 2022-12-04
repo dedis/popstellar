@@ -38,6 +38,29 @@ public class RollCall extends Event implements Copyable<RollCall> {
     this.creation = creation;
   }
 
+  public RollCall(
+      String id,
+      String persistentId,
+      String name,
+      long creation,
+      long start,
+      long end,
+      EventState state,
+      Set<PublicKey> attendees,
+      String location,
+      String description) {
+    this.id = id;
+    this.persistentId = persistentId;
+    this.name = name;
+    this.creation = creation;
+    this.start = start;
+    this.end = end;
+    this.state = state;
+    this.attendees = attendees;
+    this.location = location;
+    this.description = description;
+  }
+
   public RollCall(RollCall rollCall) {
     this.id = rollCall.id;
     this.persistentId = rollCall.persistentId;

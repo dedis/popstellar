@@ -18,15 +18,24 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
+        new RollCallRepository(),
         new MessageRepository(),
         keyManager,
         new ServerRepository());
   }
 
   public static DataRegistry buildRegistry(
-      LAORepository laoRepo, SocialMediaRepository socialMediaRepo, KeyManager keyManager) {
+      LAORepository laoRepo,
+      SocialMediaRepository socialMediaRepo,
+      RollCallRepository rollCallRepo,
+      KeyManager keyManager) {
     return buildRegistry(
-        laoRepo, socialMediaRepo, new MessageRepository(), keyManager, new ServerRepository());
+        laoRepo,
+        socialMediaRepo,
+        rollCallRepo,
+        new MessageRepository(),
+        keyManager,
+        new ServerRepository());
   }
 
   public static DataRegistry buildRegistry(
@@ -34,17 +43,24 @@ public class DataRegistryModuleHelper {
       MessageRepository msgRepo,
       KeyManager keyManager,
       ServerRepository serverRepo) {
-    return buildRegistry(laoRepo, new SocialMediaRepository(), msgRepo, keyManager, serverRepo);
+    return buildRegistry(
+        laoRepo,
+        new SocialMediaRepository(),
+        new RollCallRepository(),
+        msgRepo,
+        keyManager,
+        serverRepo);
   }
 
   public static DataRegistry buildRegistry(
       LAORepository laoRepo,
       SocialMediaRepository socialMediaRepo,
+      RollCallRepository rollCallRepo,
       MessageRepository msgRepo,
       KeyManager keyManager,
       ServerRepository serverRepo) {
     LaoHandler laoHandler = new LaoHandler(keyManager, msgRepo, laoRepo, serverRepo);
-    RollCallHandler rollCallHandler = new RollCallHandler(laoRepo);
+    RollCallHandler rollCallHandler = new RollCallHandler(laoRepo, rollCallRepo);
     ElectionHandler electionHandler = new ElectionHandler(msgRepo, laoRepo);
     ConsensusHandler consensusHandler = new ConsensusHandler(laoRepo);
     ChirpHandler chirpHandler = new ChirpHandler(laoRepo, socialMediaRepo);
