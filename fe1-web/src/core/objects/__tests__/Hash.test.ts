@@ -1,6 +1,7 @@
 import 'jest-extended';
 
 import { Hash } from '../Hash';
+import { Timestamp } from '../Timestamp';
 
 test('Hash works against expected data - test vector 0 (ANSI)', () => {
   const hash: Hash = Hash.fromArray('abcd', '1234');
@@ -39,4 +40,21 @@ test('Hash from public key works properly', () => {
   const expectedHash2 = 'SGnNfF533PBEUMYPMqBSQY83z5U=';
   expect(hash1.valueOf()).toEqual(expectedHash1);
   expect(hash2.valueOf()).toEqual(expectedHash2);
+});
+
+test('Hash.fromArray works correctly for different types', () => {
+  const hash = Hash.fromString('some random string');
+  const ts = Timestamp.EpochNow();
+  const num = 10;
+
+  const hash1: Hash = Hash.fromArray('sameHash', ts, num, 'xyz', hash);
+  const hash2: Hash = Hash.fromArray(
+    'sameHash',
+    ts.valueOf().toString(),
+    num.toString(),
+    'xyz',
+    hash.valueOf(),
+  );
+
+  expect(hash1.equals(hash2)).toBe(true);
 });
