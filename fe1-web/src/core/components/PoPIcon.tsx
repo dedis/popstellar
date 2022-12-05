@@ -1,4 +1,4 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -28,6 +28,13 @@ type MaterialIconNames = keyof typeof MaterialIcons['glyphMap'];
 type MaterialIcon = {
   iconName: MaterialIconNames;
   IconFamily: typeof MaterialIcons;
+};
+
+type AndDesignIconNames = keyof typeof AntDesign['glyphMap'];
+
+type AntDesignIcon = {
+  iconName: AndDesignIconNames;
+  IconFamily: typeof AntDesign;
 };
 
 /**
@@ -116,6 +123,10 @@ const iconNameMap = {
     iconName: 'ios-information-circle-outline',
     IconFamily: Ionicons,
   } as IonIcon,
+  invite: {
+    iconName: 'adduser',
+    IconFamily: AntDesign,
+  } as AntDesignIcon,
   list: {
     iconName: 'ios-list',
     IconFamily: Ionicons,

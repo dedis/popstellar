@@ -62,6 +62,7 @@ namespace STRINGS {
   export const navigation_lao_home = 'Lao';
   export const navigation_lao_lao_title = 'LAO';
   export const navigation_lao_notifications = 'Notifications';
+  export const navigation_lao_invite = 'Invite';
   export const navigation_lao_events = 'Events';
   export const navigation_lao_wallet = 'Wallet';
   export const navigation_lao_wallet_title = 'Tokens';

@@ -6,9 +6,11 @@ import {
   DrawerItem,
   DrawerItemList,
 } from '@react-navigation/drawer';
+import Constants from 'expo-constants';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
+import NavigationPadding from 'core/components/NavigationPadding';
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { drawerNavigationOptions } from 'core/navigation/ScreenOptions';
@@ -20,6 +22,7 @@ import STRINGS from 'resources/strings';
 import NoCurrentLaoErrorBoundary from '../errors/NoCurrentLaoErrorBoundary';
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
+import InviteScreen from '../screens/InviteScreen';
 import EventsNavigation from './EventsNavigation';
 
 const LaoNavigator = createDrawerNavigator<LaoParamList>();
@@ -30,12 +33,23 @@ const styles = StyleSheet.create({
     backgroundColor: Color.warning,
     paddingVertical: Spacing.x05,
     paddingHorizontal: Spacing.contentSpacing,
-  },
-  drawerContentWrapper: {
+  } as ViewStyle,
+  drawerWapper: {
+    flex: 1,
+    flexDirection: 'column',
     margin: Spacing.contentSpacing,
+  } as ViewStyle,
+  spacer: {
+    flexGrow: 1,
+  } as ViewStyle,
+  drawerFooter: {
+    paddingBottom: Spacing.contentSpacing,
   } as ViewStyle,
   drawerHeader: {
     marginBottom: Spacing.x05,
+  } as ViewStyle,
+  drawerContentWrapper: {
+    margin: 0,
   } as ViewStyle,
 });
 
@@ -70,29 +84,39 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
   const lao = LaoHooks.useCurrentLao();
 
   return (
-    <DrawerContentScrollView style={styles.drawerContentWrapper}>
-      <View style={styles.drawerHeader}>
-        <Text style={[Typography.base, Typography.important]}>{lao.name}</Text>
-      </View>
-      <DrawerItemList navigation={navigation} descriptors={descriptors} state={state} />
-      <DrawerItem
-        label={STRINGS.navigation_lao_disconnect_title}
-        onPress={() => {
-          getNetworkManager().disconnectFromAll();
+    <View style={styles.drawerWapper}>
+      <DrawerContentScrollView style={styles.drawerContentWrapper}>
+        <View style={styles.drawerHeader}>
+          <Text style={[Typography.base, Typography.important]}>{lao.name}</Text>
+        </View>
+        <DrawerItemList navigation={navigation} descriptors={descriptors} state={state} />
+        <DrawerItem
+          label={STRINGS.navigation_lao_disconnect_title}
+          onPress={() => {
+            getNetworkManager().disconnectFromAll();
 
-          navigation.navigate(STRINGS.navigation_app_home, {
-            screen: STRINGS.navigation_home_home,
-          });
-        }}
-        icon={DisconnectIcon}
-        style={drawerNavigationOptions.drawerItemStyle}
-        labelStyle={drawerNavigationOptions.drawerLabelStyle}
-        activeTintColor={drawerNavigationOptions.drawerActiveTintColor}
-        activeBackgroundColor={drawerNavigationOptions.drawerActiveBackgroundColor}
-        inactiveTintColor={drawerNavigationOptions.drawerInactiveTintColor}
-        inactiveBackgroundColor={drawerNavigationOptions.drawerInactiveBackgroundColor}
-      />
-    </DrawerContentScrollView>
+            navigation.navigate(STRINGS.navigation_app_home, {
+              screen: STRINGS.navigation_home_home,
+            });
+          }}
+          icon={DisconnectIcon}
+          style={drawerNavigationOptions.drawerItemStyle}
+          labelStyle={drawerNavigationOptions.drawerLabelStyle}
+          activeTintColor={drawerNavigationOptions.drawerActiveTintColor}
+          activeBackgroundColor={drawerNavigationOptions.drawerActiveBackgroundColor}
+          inactiveTintColor={drawerNavigationOptions.drawerInactiveTintColor}
+          inactiveBackgroundColor={drawerNavigationOptions.drawerInactiveBackgroundColor}
+        />
+      </DrawerContentScrollView>
+      <View style={styles.spacer} />
+      <View style={styles.drawerFooter}>
+        <Text
+          selectable
+          style={[Typography.base, Typography.centered, Typography.tiny, Typography.inactive]}>
+          {Constants?.expoConfig?.extra?.commitHash}
+        </Text>
+      </View>
+    </View>
   );
 };
 
@@ -107,6 +131,14 @@ const LaoNavigation: React.FC<unknown> = () => {
     return (
       [
         ...passedScreens,
+        {
+          id: STRINGS.navigation_lao_invite,
+          Icon: makeIcon('invite'),
+          Component: InviteScreen,
+          headerShown: true,
+          headerRight: NavigationPadding,
+          order: -1,
+        } as LaoFeature.LaoScreen,
         {
           id: STRINGS.navigation_lao_events,
           Icon: makeIcon('event'),

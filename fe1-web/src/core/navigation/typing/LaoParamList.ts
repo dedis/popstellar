@@ -9,6 +9,7 @@ import { SocialParamList } from './SocialParamList';
 import { WalletParamList } from './WalletParamList';
 
 export type LaoParamList = {
+  [STRINGS.navigation_lao_invite]: undefined;
   [STRINGS.navigation_lao_events]: NavigatorScreenParams<LaoEventsParamList>;
   [STRINGS.navigation_lao_notifications]: NavigatorScreenParams<NotificationParamList>;
   [STRINGS.navigation_social_media]: NavigatorScreenParams<SocialParamList>;
