@@ -56,7 +56,7 @@ const messagesSlice = createSlice({
 
     // Remove a Message to the list of unprocessed Messages
     processMessages: {
-      prepare(messageIds: Hash | Hash[]): any {
+      prepare(messageIds: Hash | Hash[]) {
         const msgIds = Array.isArray(messageIds) ? messageIds : [messageIds];
         return {
           payload: msgIds.map((m: Hash) => m.valueOf()),
@@ -81,7 +81,7 @@ const messagesSlice = createSlice({
 
     // Add witness signatures to a message
     addMessageWitnessSignature: {
-      prepare(messageId: Hash, witSig: WitnessSignatureState): any {
+      prepare(messageId: Hash | string, witSig: WitnessSignatureState) {
         return {
           payload: {
             messageId: messageId.valueOf(),

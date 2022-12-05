@@ -2,6 +2,7 @@ import { sha256 } from 'js-sha256';
 
 import { Base64UrlData } from './Base64UrlData';
 import { PublicKey } from './PublicKey';
+import { Timestamp } from './Timestamp';
 
 export type HashState = string;
 
@@ -22,8 +23,26 @@ export class Hash extends Base64UrlData {
    * @param data values to be hashed
    * @return resulting hash
    */
-  public static fromStringArray(...data: string[]): Hash {
-    const str = data.map((item) => Hash.computeByteLength(item) + item).join('');
+  public static fromArray(...data: (string | number | String | Timestamp)[]): Hash {
+    const str = data
+      .map((item) => {
+        let itemStr: string;
+
+        if (typeof item === 'string') {
+          itemStr = item;
+        } else if (typeof item === 'number') {
+          itemStr = item.toString();
+        } else if (item instanceof String) {
+          itemStr = item.valueOf();
+        } else if (item instanceof Timestamp) {
+          itemStr = item.valueOf().toString();
+        } else {
+          throw new Error(`Invalid input to Hash.from(): ${item}`);
+        }
+
+        return Hash.computeByteLength(itemStr) + itemStr;
+      })
+      .join('');
 
     return Hash.fromString(str);
   }
@@ -96,14 +115,6 @@ export class Hash extends Base64UrlData {
    * If you want to serialize an instance use .toState() instead
    */
   public valueOf(): string {
-    return super.valueOf();
-  }
-
-  /**
-   * Returns the serialized version of the hash that can for instance be stored
-   * in redux stores
-   */
-  public toState(): HashState {
     return super.valueOf();
   }
 

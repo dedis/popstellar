@@ -92,12 +92,12 @@ export class Timestamp extends Number implements Number {
   }
 
   /**
-   * Returns *some* string representation of this object.
+   * Returns the ISO 8601 representation of the timestamp
    * If you need access to the unterlying data type use .valueOf() and
    * if you want to serialize an instance use .toState() instead
    */
   public toString(): string {
-    return super.toString();
+    return this.toDate().toISOString();
   }
 
   /**

@@ -221,11 +221,11 @@ export class CastVote implements MessageData {
     questionIndex: number,
     selectionOptionIndex: number,
   ): Hash {
-    return Hash.fromStringArray(
+    return Hash.fromArray(
       EventTags.VOTE,
-      election.id.toString(),
-      election.questions[questionIndex].id.valueOf(),
-      selectionOptionIndex.toString(),
+      election.id,
+      election.questions[questionIndex].id,
+      selectionOptionIndex,
     );
   }
 
@@ -241,10 +241,10 @@ export class CastVote implements MessageData {
     questionIndex: number,
     encryptedOptionIndex: string,
   ): Hash {
-    return Hash.fromStringArray(
+    return Hash.fromArray(
       EventTags.VOTE,
-      election.id.toString(),
-      election.questions[questionIndex].id.valueOf(),
+      election.id,
+      election.questions[questionIndex].id,
       encryptedOptionIndex,
     );
   }

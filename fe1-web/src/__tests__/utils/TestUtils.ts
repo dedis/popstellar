@@ -35,11 +35,7 @@ export const org = new PublicKey(mockPublicKey);
 // MOCK LAO
 export const mockLaoName = 'MyLao';
 export const mockLaoCreationTime = new Timestamp(1600000000);
-export const mockLaoId: Hash = Hash.fromStringArray(
-  org.toString(),
-  mockLaoCreationTime.toString(),
-  mockLaoName,
-);
+export const mockLaoId: Hash = Hash.fromArray(org, mockLaoCreationTime, mockLaoName);
 
 export const serializedMockLaoId: string = mockLaoId.valueOf();
 

@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, serializedMockLaoId, mockLaoId } from '__tests__/utils';
+import { configureTestFeatures, mockLaoId } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 
@@ -13,7 +13,7 @@ const TIMESTAMP_BEFORE = new Timestamp(1609445600);
 const NAME = 'myRollCall';
 const LOCATION = 'location';
 const DESCRIPTION = 'Roll Call description';
-const rollCallId = Hash.fromStringArray('R', serializedMockLaoId, TIMESTAMP.toString(), NAME);
+const rollCallId = Hash.fromArray('R', mockLaoId, TIMESTAMP, NAME);
 
 const sampleCreateRollCall: Partial<CreateRollCall> = {
   object: ObjectType.ROLL_CALL,

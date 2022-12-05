@@ -93,7 +93,7 @@ const eventSlice = createSlice({
 
     // Remove a Event to the list of known Events
     removeEvent: {
-      prepare(laoId: Hash, eventId: Hash): any {
+      prepare(laoId: Hash, eventId: Hash) {
         return {
           payload: {
             laoId: laoId.valueOf(),

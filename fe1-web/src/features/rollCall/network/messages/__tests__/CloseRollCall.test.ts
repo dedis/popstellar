@@ -3,7 +3,6 @@ import '__tests__/utils/matchers';
 
 import {
   configureTestFeatures,
-  serializedMockLaoId,
   mockLaoId,
   mockLaoName,
   mockPublicKey,
@@ -15,18 +14,8 @@ import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
 import { CloseRollCall } from '../CloseRollCall';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const rollCallId = Hash.fromStringArray(
-  'R',
-  serializedMockLaoId.toString(),
-  TIMESTAMP.toString(),
-  mockLaoName,
-);
-const rollCallCloseId = Hash.fromStringArray(
-  'R',
-  serializedMockLaoId,
-  rollCallId.toString(),
-  TIMESTAMP.toString(),
-);
+const rollCallId = Hash.fromArray('R', mockLaoId, TIMESTAMP, mockLaoName);
+const rollCallCloseId = Hash.fromArray('R', mockLaoId, rollCallId, TIMESTAMP);
 const mockAttendees = [new PublicKey(mockPublicKey2), new PublicKey(mockPublicKey)];
 
 const sampleCloseRollCall: Partial<CloseRollCall> = {

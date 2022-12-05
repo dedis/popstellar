@@ -16,12 +16,7 @@ const mockElectionKey = 'mockElectionKey' as unknown as ElectionPublicKey;
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 
-const electionId: Hash = Hash.fromStringArray(
-  'Election',
-  mockLaoId.valueOf(),
-  TIMESTAMP.toString(),
-  mockLaoName,
-);
+const electionId: Hash = Hash.fromArray('Election', mockLaoId, TIMESTAMP, mockLaoName);
 
 // In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>

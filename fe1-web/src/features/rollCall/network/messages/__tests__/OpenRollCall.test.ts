@@ -1,30 +1,15 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import {
-  configureTestFeatures,
-  serializedMockLaoId,
-  mockLaoId,
-  mockLaoName,
-} from '__tests__/utils';
+import { configureTestFeatures, mockLaoId, mockLaoName } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 
 import { OpenRollCall } from '../OpenRollCall';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const rollCallId = Hash.fromStringArray(
-  'R',
-  serializedMockLaoId,
-  TIMESTAMP.toString(),
-  mockLaoName,
-);
-const rollCallUpdateId = Hash.fromStringArray(
-  'R',
-  serializedMockLaoId,
-  rollCallId.toString(),
-  TIMESTAMP.toString(),
-);
+const rollCallId = Hash.fromArray('R', mockLaoId, TIMESTAMP, mockLaoName);
+const rollCallUpdateId = Hash.fromArray('R', mockLaoId, rollCallId, TIMESTAMP);
 
 const sampleOpenRollCall: Partial<OpenRollCall> = {
   object: ObjectType.ROLL_CALL,

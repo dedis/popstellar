@@ -91,17 +91,12 @@ const createElection = (
   const now = Timestamp.EpochNow();
 
   // compute the id for the new election
-  const electionId = Hash.fromStringArray(
-    EventTags.ELECTION,
-    laoId.toString(),
-    now.toString(),
-    electionName,
-  );
+  const electionId = Hash.fromArray(EventTags.ELECTION, laoId, now, electionName);
 
   // compute the id for all questions and add the write_in property
   const questionsWithId = questions.map((item) =>
     Question.fromState({
-      id: Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), item.question).toString(),
+      id: Hash.fromArray(EventTags.QUESTION, electionId, item.question).toString(),
       question: item.question,
       ballot_options: item.ballot_options,
       voting_method: item.voting_method,
