@@ -59,7 +59,7 @@ const checkDataCreateRollCall = (obj: MessageData) => {
   // Check id
   const expected = Hash.fromStringArray(
     'R',
-    serializedMockLaoId.toString(),
+    serializedMockLaoId,
     data.creation.toString(),
     data.name,
   );
@@ -81,7 +81,7 @@ const checkDataOpenRollCall = (obj: MessageData) => {
   // Check id
   const expected = Hash.fromStringArray(
     'R',
-    serializedMockLaoId.toString(),
+    mockLaoId,
     data.opens.toString(),
     data.opened_at.toString(),
   );
@@ -102,7 +102,7 @@ const checkDataReopenRollCall = (obj: MessageData) => {
   // check id
   const expected = Hash.fromStringArray(
     'R',
-    serializedMockLaoId.toString(),
+    mockLaoId,
     data.opens.toString(),
     data.opened_at.toString(),
   );
@@ -131,7 +131,7 @@ const checkDataCloseRollCall = (obj: MessageData) => {
   // check id
   const expected = Hash.fromStringArray(
     'R',
-    serializedMockLaoId,
+    mockLaoId,
     data.closes.toString(),
     data.closed_at.toString(),
   );

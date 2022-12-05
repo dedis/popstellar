@@ -32,14 +32,14 @@ const mockRCAttendees = ['attendee1', 'attendee2'];
 
 const mockRCIdAliasHash = Hash.fromStringArray(
   EventTags.ROLL_CALL,
-  serializedMockLaoId,
+  mockLaoId,
   mockRCTimestampStart.toString(),
   mockRCName,
 );
 
 const mockRCIdHash = Hash.fromStringArray(
   EventTags.ROLL_CALL,
-  serializedMockLaoId,
+  mockLaoId,
   mockRCIdAliasHash.valueOf(),
   mockRCName,
 );

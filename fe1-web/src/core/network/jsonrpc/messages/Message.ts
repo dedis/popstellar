@@ -104,7 +104,7 @@ export class Message {
         "Undefined 'message_id' parameter encountered during 'Message' creation",
       );
     }
-    const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
+    const expectedHash = Hash.fromStringArray(msg.data, msg.signature);
     if (!expectedHash.equals(msg.message_id)) {
       console.log('Expected Hash was: ', expectedHash);
 
@@ -190,7 +190,7 @@ export class Message {
         data: encodedDataJson,
         sender: publicKey,
         signature: signature,
-        message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
+        message_id: Hash.fromStringArray(encodedDataJson, signature),
         witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
       },
       channel,

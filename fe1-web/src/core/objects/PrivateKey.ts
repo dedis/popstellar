@@ -3,6 +3,8 @@ import { sign } from 'tweetnacl';
 import { Base64UrlData } from './Base64UrlData';
 import { Signature } from './Signature';
 
+export type PrivateKeyState = string;
+
 export class PrivateKey extends Base64UrlData {
   /**
    * Sign some base64 data with the private key
@@ -15,11 +17,9 @@ export class PrivateKey extends Base64UrlData {
   }
 
   /**
-   * Returns the serialized version of the private key that can for instance be stored
-   * in redux stores
-   * @returns The serialized private key
+   * Deserializes a previously serializes instance of PrivateKey
    */
-  toState(): string {
-    return this.toString();
+  public static fromState(keyState: PrivateKeyState): PrivateKey {
+    return new PrivateKey(keyState);
   }
 }

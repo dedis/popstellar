@@ -1,4 +1,4 @@
-import { mockChannel, mockKeyPair, mockLao, serializedMockLaoId, mockLaoId } from '__tests__/utils';
+import { mockChannel, mockKeyPair, mockLao, mockLaoId } from '__tests__/utils';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, EventTags, Hash, Signature, Timestamp } from 'core/objects';
 import { Meeting } from 'features/meeting/objects';
@@ -26,7 +26,7 @@ const mockUpdateEvent = jest.fn();
 const mockMeetingName = 'a meeting';
 const mockMeetingId = Hash.fromStringArray(
   EventTags.MEETING,
-  serializedMockLaoId.toString(),
+  mockLaoId,
   TIMESTAMP.toString(),
   mockMeetingName,
 );

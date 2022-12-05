@@ -1,10 +1,10 @@
-import { PrivateKey } from './PrivateKey';
-import { PublicKey } from './PublicKey';
+import { PrivateKey, PrivateKeyState } from './PrivateKey';
+import { PublicKey, PublicKeyState } from './PublicKey';
 
 // Plain-old-data
 export interface KeyPairState {
-  publicKey: string;
-  privateKey: string;
+  publicKey: PublicKeyState;
+  privateKey: PrivateKeyState;
 }
 
 export class KeyPair {
@@ -31,8 +31,8 @@ export class KeyPair {
 
   public static fromState(kp: KeyPairState): KeyPair {
     return new KeyPair({
-      publicKey: new PublicKey(kp.publicKey),
-      privateKey: new PrivateKey(kp.privateKey),
+      publicKey: PublicKey.fromState(kp.publicKey),
+      privateKey: PrivateKey.fromState(kp.privateKey),
     });
   }
 

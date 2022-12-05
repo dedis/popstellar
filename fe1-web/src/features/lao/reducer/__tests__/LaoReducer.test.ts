@@ -60,11 +60,7 @@ const laoAfterRollCall = new Lao({
 const laoAfterRollCallState = laoAfterRollCall.toState();
 
 const mockLao2Name = 'Second Lao';
-const mockLao2Id = Hash.fromStringArray(
-  org.toString(),
-  mockLaoCreationTime.toString(),
-  mockLao2Name,
-);
+const mockLao2Id = Hash.fromStringArray(org, mockLaoCreationTime.toString(), mockLao2Name);
 const serializedMockLao2Id = mockLao2Id.toString();
 
 const lao2 = new Lao({

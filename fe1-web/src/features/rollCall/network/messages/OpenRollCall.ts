@@ -59,7 +59,7 @@ export class OpenRollCall implements MessageData {
   ): Hash {
     return Hash.fromStringArray(
       EventTags.ROLL_CALL,
-      laoId.valueOf(),
+      laoId,
       rollCallIdToOpen.valueOf(),
       openedAt.toString(),
     );

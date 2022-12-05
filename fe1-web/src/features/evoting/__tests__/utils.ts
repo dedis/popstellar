@@ -1,4 +1,4 @@
-import { serializedMockLaoId, mockLaoId } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import { Base64UrlData, EventTags, Hash, PublicKey, Timestamp } from 'core/objects';
 import { CastVote, ElectionResult, EndElection } from 'features/evoting/network/messages';
 import STRINGS from 'resources/strings';
@@ -21,7 +21,7 @@ export const mockElectionName = 'An election';
 
 export const mockElectionId = Hash.fromStringArray(
   EventTags.ELECTION,
-  serializedMockLaoId,
+  mockLaoId,
   TIMESTAMP.toString(),
   mockElectionName,
 );
@@ -31,13 +31,13 @@ export const mockQuestion2 = 'Mock Question 2';
 
 export const mockQuestionId1: Hash = Hash.fromStringArray(
   EventTags.QUESTION,
-  mockElectionId.toString(),
+  mockElectionId,
   mockQuestion1,
 );
 
 export const mockQuestionId2 = Hash.fromStringArray(
   EventTags.QUESTION,
-  mockElectionId.toString(),
+  mockElectionId,
   mockQuestion2,
 );
 
@@ -166,7 +166,7 @@ export const mockVote2 = new Vote({
 
 export const mockVotes = [mockVote1];
 
-export const mockElectionResultHash = Hash.fromStringArray(mockVoteId1.valueOf());
+export const mockElectionResultHash = Hash.fromStringArray(mockVoteId1);
 
 export const mockElectionResultQuestions: ElectionResult['questions'] = [
   {

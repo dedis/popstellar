@@ -66,7 +66,7 @@ const sampleCreateLaoData: CreateLao = CreateLao.fromJson({
   creation: 1613495222,
   organizer: mockPublicKey.toString(),
   witnesses: [],
-  id: Hash.fromStringArray(mockPublicKey.toString(), '1613495222', 'Random Name').toString(),
+  id: Hash.fromStringArray(mockPublicKey, '1613495222', 'Random Name').toString(),
 });
 
 const sampleCreateLaoDataString: string = JSON.stringify(sampleCreateLaoData);

@@ -61,7 +61,7 @@ export class CloseRollCall implements MessageData {
   public static computeCloseRollCallId(laoId: Hash, rollCallToCloseId: Hash, closedAt: Timestamp) {
     return Hash.fromStringArray(
       EventTags.ROLL_CALL,
-      laoId.toString(),
+      laoId,
       rollCallToCloseId.toString(),
       closedAt.toString(),
     );

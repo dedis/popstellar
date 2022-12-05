@@ -22,8 +22,13 @@ export class Hash extends Base64UrlData {
    * @param data values to be hashed
    * @return resulting hash
    */
-  public static fromStringArray(...data: string[]): Hash {
-    const str = data.map((item) => Hash.computeByteLength(item) + item).join('');
+  public static fromStringArray(...data: String[]): Hash {
+    const str = data
+      .map((item) => {
+        const itemStr = item.valueOf();
+        return Hash.computeByteLength(itemStr) + itemStr;
+      })
+      .join('');
 
     return Hash.fromString(str);
   }
@@ -96,14 +101,6 @@ export class Hash extends Base64UrlData {
    * If you want to serialize an instance use .toState() instead
    */
   public valueOf(): string {
-    return super.valueOf();
-  }
-
-  /**
-   * Returns the serialized version of the hash that can for instance be stored
-   * in redux stores
-   */
-  public toState(): HashState {
     return super.valueOf();
   }
 

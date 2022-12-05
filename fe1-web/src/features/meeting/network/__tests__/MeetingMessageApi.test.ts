@@ -58,12 +58,7 @@ const checkDataCreateMeeting = (obj: MessageData) => {
   }
 
   // check id
-  const expected = Hash.fromStringArray(
-    'M',
-    serializedMockLaoId,
-    data.creation.toString(),
-    data.name,
-  );
+  const expected = Hash.fromStringArray('M', mockLaoId, data.creation.toString(), data.name);
   expect(data.id).toEqual(expected);
 };
 

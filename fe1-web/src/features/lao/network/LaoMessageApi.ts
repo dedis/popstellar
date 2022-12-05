@@ -16,7 +16,7 @@ export async function requestCreateLao(laoName: string): Promise<Channel> {
   const pubKey = KeyPairStore.getPublicKey();
 
   const message = new CreateLao({
-    id: Hash.fromStringArray(pubKey.toString(), time.toString(), laoName),
+    id: Hash.fromStringArray(pubKey, time.toString(), laoName),
     name: laoName,
     creation: time,
     organizer: pubKey,
@@ -34,7 +34,7 @@ export function requestUpdateLao(name: string, witnesses?: PublicKey[]): Promise
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new UpdateLao({
-    id: Hash.fromStringArray(currentLao.organizer.toString(), currentLao.creation.toString(), name),
+    id: Hash.fromStringArray(currentLao.organizer, currentLao.creation.toString(), name),
     name,
     last_modified: time,
     witnesses: witnesses === undefined ? currentLao.witnesses : witnesses,
@@ -48,11 +48,7 @@ export function requestStateLao(): Promise<void> {
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new StateLao({
-    id: Hash.fromStringArray(
-      currentLao.organizer.toString(),
-      currentLao.creation.toString(),
-      currentLao.name,
-    ),
+    id: Hash.fromStringArray(currentLao.organizer, currentLao.creation.toString(), currentLao.name),
     name: currentLao.name,
     creation: currentLao.creation,
     last_modified: Timestamp.EpochNow(),

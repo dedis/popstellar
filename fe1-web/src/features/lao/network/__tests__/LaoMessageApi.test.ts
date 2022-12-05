@@ -45,11 +45,7 @@ const checkDataCreateLao = (obj: MessageData) => {
   expect(data.witnesses).toBeDistinctArray();
 
   // check id
-  const expected: Hash = Hash.fromStringArray(
-    data.organizer.toString(),
-    data.creation.toString(),
-    data.name,
-  );
+  const expected: Hash = Hash.fromStringArray(data.organizer, data.creation.toString(), data.name);
   expect(data.id).toBeJsonEqual(expected);
 };
 
@@ -79,7 +75,7 @@ const checkDataUpdateLao = (obj: MessageData) => {
 
   // check id
   const expected = Hash.fromStringArray(
-    OpenedLaoStore.get().organizer.toString(),
+    OpenedLaoStore.get().organizer,
     OpenedLaoStore.get().creation.toString(),
     data.name,
   );
@@ -120,7 +116,7 @@ const checkDataStateLao = (obj: MessageData) => {
 
   // check id
   const expected = Hash.fromStringArray(
-    data.organizer.toString(),
+    data.organizer,
     OpenedLaoStore.get().creation.toString(),
     data.name,
   );

@@ -223,8 +223,8 @@ export class CastVote implements MessageData {
   ): Hash {
     return Hash.fromStringArray(
       EventTags.VOTE,
-      election.id.toString(),
-      election.questions[questionIndex].id.valueOf(),
+      election.id,
+      election.questions[questionIndex].id,
       selectionOptionIndex.toString(),
     );
   }
@@ -243,8 +243,8 @@ export class CastVote implements MessageData {
   ): Hash {
     return Hash.fromStringArray(
       EventTags.VOTE,
-      election.id.toString(),
-      election.questions[questionIndex].id.valueOf(),
+      election.id,
+      election.questions[questionIndex].id,
       encryptedOptionIndex,
     );
   }

@@ -36,7 +36,7 @@ export const org = new PublicKey(mockPublicKey);
 export const mockLaoName = 'MyLao';
 export const mockLaoCreationTime = new Timestamp(1600000000);
 export const mockLaoId: Hash = Hash.fromStringArray(
-  org.toString(),
+  org,
   mockLaoCreationTime.toString(),
   mockLaoName,
 );

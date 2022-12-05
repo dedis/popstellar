@@ -112,7 +112,7 @@ export class StateMeeting implements MessageData {
     /*
     const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(
-      EventTags.MEETING, lao.id.toString(), lao.creation.toString(), MEETING_NAME,
+      EventTags.MEETING, lao.id, lao.creation.toString(), MEETING_NAME,
     );
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError(

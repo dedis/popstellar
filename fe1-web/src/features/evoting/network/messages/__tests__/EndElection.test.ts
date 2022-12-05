@@ -1,12 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import {
-  configureTestFeatures,
-  serializedMockLaoId,
-  mockLaoId,
-  mockLaoName,
-} from '__tests__/utils';
+import { configureTestFeatures, mockLaoId, mockLaoName } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
@@ -21,7 +16,7 @@ const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 
 const electionId: Hash = Hash.fromStringArray(
   'Election',
-  serializedMockLaoId,
+  mockLaoId,
   TIMESTAMP.toString(),
   mockLaoName,
 );

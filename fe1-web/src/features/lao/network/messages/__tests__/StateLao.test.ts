@@ -11,13 +11,13 @@ import {
   org,
 } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Base64UrlData, Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
+import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
 
 import { StateLao } from '../StateLao';
 
 const TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 const mockWitnesses = [new PublicKey(mockPublicKey), new PublicKey(mockPublicKey2)];
-const mockModificationId = Hash.fromStringArray(Base64UrlData.encode('message_id').toString());
+const mockModificationId = Hash.fromStringArray('message_id');
 
 const sampleStateLao: Partial<StateLao> = {
   object: ObjectType.LAO,

@@ -71,7 +71,7 @@ describe('MessageReducer', () => {
   it('should process the message', async () => {
     const extMsg = createExtendedMessage();
     const msgId = extMsg.message_id;
-    const serializedMsgId = msgId.toString();
+    const serializedMsgId = msgId.toState();
 
     const filledState = {
       byId: { [serializedMsgId]: extMsg.toState() },

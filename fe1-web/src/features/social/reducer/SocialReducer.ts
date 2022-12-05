@@ -67,7 +67,7 @@ const socialSlice = createSlice({
   reducers: {
     // Add a chirp to the list of chirps
     addChirp: {
-      prepare(laoId: Hash, chirp: ChirpState): any {
+      prepare(laoId: Hash, chirp: ChirpState) {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -119,7 +119,7 @@ const socialSlice = createSlice({
 
     // Delete a chirp in the list of chirps
     deleteChirp: {
-      prepare(laoId: Hash, chirp: ChirpState): any {
+      prepare(laoId: Hash, chirp: ChirpState) {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -168,7 +168,7 @@ const socialSlice = createSlice({
 
     // Add reactions to a chirp
     addReaction: {
-      prepare(laoId: Hash, reaction: ReactionState): any {
+      prepare(laoId: Hash, reaction: ReactionState) {
         return {
           payload: {
             laoId: laoId.valueOf(),
