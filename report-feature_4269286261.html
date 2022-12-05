@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>demo</td>
-      <td>04 Dec 2022, 04:10</td>
+      <td>05 Dec 2022, 04:10</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >3</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="12598900679">12.598</td>
+          <td class="duration" data-value="12574566008">12.574</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.348</span>
+  <span class="lead-duration duration">0.361</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.277</span>
+  <span class="lead-duration duration">0.271</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.019</span>
+  <span class="lead-duration duration">0.018</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.050</span>
+  <span class="lead-duration duration">0.070</span>
 
 </div>
 
@@ -463,7 +463,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.241</span>
+  <span class="lead-duration duration">0.283</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-3">
@@ -506,7 +506,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">0.224</span>
+  <span class="lead-duration duration">0.264</span>
 
 </div>
 
@@ -615,7 +615,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -642,7 +642,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -669,7 +669,7 @@ $(document).ready(function() {
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -686,7 +686,7 @@ $(document).ready(function() {
       <div id="msg-6" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-392155067,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1150887083,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -704,11 +704,11 @@ classpath:be/digitalCash/transaction.feature:48</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-7" class="collapse collapsable-details">
-        <pre>04:07:13.500 classpath:be/digitalCash/transaction.feature:48
+        <pre>04:07:18.015 classpath:be/digitalCash/transaction.feature:48
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-392155067,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1150887083,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -770,7 +770,7 @@ classpath:be/digitalCash/transaction.feature:48
 </div>
 
 
-  <span class="lead-duration duration">0.303</span>
+  <span class="lead-duration duration">0.323</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-8">
@@ -813,7 +813,7 @@ classpath:be/digitalCash/transaction.feature:48
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.272</span>
+  <span class="lead-duration duration">0.263</span>
 
 </div>
 
@@ -867,7 +867,7 @@ classpath:be/digitalCash/transaction.feature:48
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.011</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
@@ -921,7 +921,7 @@ classpath:be/digitalCash/transaction.feature:48
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.019</span>
+  <span class="lead-duration duration">0.038</span>
 
 </div>
 
@@ -1042,7 +1042,7 @@ classpath:be/digitalCash/transaction.feature:48
 </div>
 
 
-  <span class="lead-duration duration">0.097</span>
+  <span class="lead-duration duration">0.229</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
@@ -1085,7 +1085,7 @@ classpath:be/digitalCash/transaction.feature:48
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">0.092</span>
+  <span class="lead-duration duration">0.222</span>
 
 </div>
 
@@ -1200,7 +1200,7 @@ classpath:be/digitalCash/transaction.feature:48
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransfer), cashChannel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -1271,7 +1271,7 @@ classpath:be/digitalCash/transaction.feature:48
       <div id="msg-13" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1006417610,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1076217636,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1289,11 +1289,11 @@ classpath:be/digitalCash/transaction.feature:83</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-14" class="collapse collapsable-details">
-        <pre>04:07:13.918 classpath:be/digitalCash/transaction.feature:83
+        <pre>04:07:18.593 classpath:be/digitalCash/transaction.feature:83
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1006417610,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1076217636,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the signature: failed to verify signature : schnorr: signature of invalid length 6 instead of 64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1355,7 +1355,7 @@ classpath:be/digitalCash/transaction.feature:83
 </div>
 
 
-  <span class="lead-duration duration">0.304</span>
+  <span class="lead-duration duration">0.322</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-15">
@@ -1398,7 +1398,7 @@ classpath:be/digitalCash/transaction.feature:83
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.265</span>
+  <span class="lead-duration duration">0.268</span>
 
 </div>
 
@@ -1452,7 +1452,7 @@ classpath:be/digitalCash/transaction.feature:83
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.023</span>
 
 </div>
 
@@ -1506,7 +1506,7 @@ classpath:be/digitalCash/transaction.feature:83
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.022</span>
+  <span class="lead-duration duration">0.030</span>
 
 </div>
 
@@ -1627,7 +1627,7 @@ classpath:be/digitalCash/transaction.feature:83
 </div>
 
 
-  <span class="lead-duration duration">0.198</span>
+  <span class="lead-duration duration">0.140</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
@@ -1670,7 +1670,7 @@ classpath:be/digitalCash/transaction.feature:83
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">0.186</span>
+  <span class="lead-duration duration">0.131</span>
 
 </div>
 
@@ -1779,7 +1779,7 @@ classpath:be/digitalCash/transaction.feature:83
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -1806,7 +1806,7 @@ classpath:be/digitalCash/transaction.feature:83
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1850,7 +1850,7 @@ classpath:be/digitalCash/transaction.feature:83
       <div id="msg-20" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:385698414,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the transaction id: transaction id is not valid: 47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU= != _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1726806126,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the transaction id: transaction id is not valid: 47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU= != _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1868,11 +1868,11 @@ classpath:be/digitalCash/transaction.feature:112</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-21" class="collapse collapsable-details">
-        <pre>04:07:14.437 classpath:be/digitalCash/transaction.feature:112
+        <pre>04:07:19.078 classpath:be/digitalCash/transaction.feature:112
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:385698414,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the transaction id: transaction id is not valid: 47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU= != _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1726806126,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;invalid message field: failed to publish: failed to handle a publish message: failed to process message: failed to process action 'coin#post_transaction': invalid coin#postTransaction message: failed to verify the transaction id: transaction id is not valid: 47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU= != _6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1934,7 +1934,7 @@ classpath:be/digitalCash/transaction.feature:112
 </div>
 
 
-  <span class="lead-duration duration">0.361</span>
+  <span class="lead-duration duration">0.311</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
@@ -1977,7 +1977,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.267</span>
+  <span class="lead-duration duration">0.262</span>
 
 </div>
 
@@ -2031,7 +2031,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.032</span>
+  <span class="lead-duration duration">0.022</span>
 
 </div>
 
@@ -2085,7 +2085,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.058</span>
+  <span class="lead-duration duration">0.025</span>
 
 </div>
 
@@ -2139,7 +2139,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2206,7 +2206,7 @@ classpath:be/digitalCash/transaction.feature:112
 </div>
 
 
-  <span class="lead-duration duration">5.332</span>
+  <span class="lead-duration duration">5.134</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-24">
@@ -2249,7 +2249,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">0.311</span>
+  <span class="lead-duration duration">0.126</span>
 
 </div>
 
@@ -2303,7 +2303,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">And</span>
   <span class="name">def invalidTransaction =</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2358,7 +2358,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(invalidTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -2385,7 +2385,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2477,7 +2477,7 @@ classpath:be/digitalCash/transaction.feature:112
 </div>
 
 
-  <span class="lead-duration duration">0.308</span>
+  <span class="lead-duration duration">0.307</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-27">
@@ -2520,7 +2520,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">0.261</span>
+  <span class="lead-duration duration">0.262</span>
 
 </div>
 
@@ -2628,7 +2628,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.032</span>
+  <span class="lead-duration duration">0.030</span>
 
 </div>
 
@@ -2749,7 +2749,7 @@ classpath:be/digitalCash/transaction.feature:112
 </div>
 
 
-  <span class="lead-duration duration">5.102</span>
+  <span class="lead-duration duration">5.161</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-29">
@@ -2792,7 +2792,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">0.096</span>
+  <span class="lead-duration duration">0.148</span>
 
 </div>
 
@@ -2901,7 +2901,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(invalidTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.010</span>
 
 </div>
 
@@ -2928,7 +2928,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
