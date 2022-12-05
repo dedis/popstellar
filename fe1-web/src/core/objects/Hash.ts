@@ -101,15 +101,6 @@ export class Hash extends Base64UrlData {
   }
 
   /**
-   * Returns *some* string representation of this object.
-   * If you need access to the unterlying data type use .valueOf() and
-   * if you want to serialize an instance use .toState() instead
-   */
-  public toString(): string {
-    return super.toString();
-  }
-
-  /**
    * Returns the primitive value used for representing the Hash,
    * a string
    * If you want to serialize an instance use .toState() instead
