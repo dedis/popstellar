@@ -500,13 +500,6 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                             </View>
                                           </RNGestureHandlerButton>
                                         </View>
-                                        <View
-                                          style={
-                                            Object {
-                                              "width": 41,
-                                            }
-                                          }
-                                        />
                                       </View>
                                     </View>
                                     <View
@@ -566,59 +559,11 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                         }
                                       >
                                         <View
-                                          accessible={true}
-                                          collapsable={false}
-                                          focusable={true}
-                                          onBlur={[Function]}
-                                          onClick={[Function]}
-                                          onFocus={[Function]}
-                                          onResponderGrant={[Function]}
-                                          onResponderMove={[Function]}
-                                          onResponderRelease={[Function]}
-                                          onResponderTerminate={[Function]}
-                                          onResponderTerminationRequest={[Function]}
-                                          onStartShouldSetResponder={[Function]}
-                                          style={Object {}}
-                                        >
-                                          <RNGestureHandlerButton
-                                            collapsable={false}
-                                            exclusive={true}
-                                            handlerTag={3}
-                                            handlerType="NativeViewGestureHandler"
-                                            onGestureEvent={[Function]}
-                                            onGestureHandlerEvent={[Function]}
-                                            onGestureHandlerStateChange={[Function]}
-                                            onHandlerStateChange={[Function]}
-                                            rippleColor={0}
-                                            touchSoundDisabled={false}
-                                          >
-                                            <View
-                                              accessible={true}
-                                              collapsable={false}
-                                              style={
-                                                Object {
-                                                  "opacity": 1,
-                                                }
-                                              }
-                                            >
-                                              <View>
-                                                {"name":"ios-qr-code","size":25,"color":"#8E8E8E"}
-                                              </View>
-                                            </View>
-                                          </RNGestureHandlerButton>
-                                        </View>
-                                        <View
                                           style={
                                             Object {
                                               "marginLeft": 16,
                                             }
                                           }
-                                        />
-                                        <Modal
-                                          hardwareAccelerated={false}
-                                          onRequestClose={[Function]}
-                                          transparent={true}
-                                          visible={false}
                                         />
                                       </View>
                                     </View>
@@ -731,7 +676,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                     <View
                                       collapsable={false}
                                       forwardedRef={[Function]}
-                                      handlerTag={4}
+                                      handlerTag={3}
                                       handlerType="PanGestureHandler"
                                       needsOffscreenAlphaCompositing={false}
                                       onGestureHandlerEvent={[Function]}
@@ -792,7 +737,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                             >
                                               <RCTScrollView
                                                 collapsable={false}
-                                                handlerTag={5}
+                                                handlerTag={4}
                                                 handlerType="NativeViewGestureHandler"
                                                 onGestureHandlerEvent={[Function]}
                                                 onGestureHandlerStateChange={[Function]}

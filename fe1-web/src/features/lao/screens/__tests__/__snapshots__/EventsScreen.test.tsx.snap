@@ -1087,52 +1087,11 @@ exports[`EventsScreenHeaderRight renders correctly 1`] = `
                         }
                       >
                         <View
-                          accessible={true}
-                          collapsable={false}
-                          focusable={true}
-                          onBlur={[Function]}
-                          onClick={[Function]}
-                          onFocus={[Function]}
-                          onResponderGrant={[Function]}
-                          onResponderMove={[Function]}
-                          onResponderRelease={[Function]}
-                          onResponderTerminate={[Function]}
-                          onResponderTerminationRequest={[Function]}
-                          onStartShouldSetResponder={[Function]}
-                          style={Object {}}
-                        >
-                          <RNGestureHandlerButton
-                            collapsable={false}
-                            exclusive={true}
-                            handlerTag={6}
-                            handlerType="NativeViewGestureHandler"
-                            onGestureEvent={[Function]}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            onHandlerStateChange={[Function]}
-                            rippleColor={0}
-                            touchSoundDisabled={false}
-                          >
-                            <View
-                              accessible={true}
-                              collapsable={false}
-                              style={
-                                Object {
-                                  "opacity": 1,
-                                }
-                              }
-                            >
-                              <View>
-                                {"name":"ios-qr-code","size":25,"color":"#8E8E8E"}
-                              </View>
-                            </View>
-                          </RNGestureHandlerButton>
-                        </View>
-                        <Modal
-                          hardwareAccelerated={false}
-                          onRequestClose={[Function]}
-                          transparent={true}
-                          visible={false}
+                          style={
+                            Object {
+                              "width": 25,
+                            }
+                          }
                         />
                       </View>
                     </View>

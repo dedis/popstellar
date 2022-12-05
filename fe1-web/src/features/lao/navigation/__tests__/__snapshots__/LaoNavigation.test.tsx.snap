@@ -625,13 +625,6 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                               </View>
                                                             </RNGestureHandlerButton>
                                                           </View>
-                                                          <View
-                                                            style={
-                                                              Object {
-                                                                "width": 41,
-                                                              }
-                                                            }
-                                                          />
                                                         </View>
                                                       </View>
                                                       <View
@@ -691,59 +684,11 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                           }
                                                         >
                                                           <View
-                                                            accessible={true}
-                                                            collapsable={false}
-                                                            focusable={true}
-                                                            onBlur={[Function]}
-                                                            onClick={[Function]}
-                                                            onFocus={[Function]}
-                                                            onResponderGrant={[Function]}
-                                                            onResponderMove={[Function]}
-                                                            onResponderRelease={[Function]}
-                                                            onResponderTerminate={[Function]}
-                                                            onResponderTerminationRequest={[Function]}
-                                                            onStartShouldSetResponder={[Function]}
-                                                            style={Object {}}
-                                                          >
-                                                            <RNGestureHandlerButton
-                                                              collapsable={false}
-                                                              exclusive={true}
-                                                              handlerTag={4}
-                                                              handlerType="NativeViewGestureHandler"
-                                                              onGestureEvent={[Function]}
-                                                              onGestureHandlerEvent={[Function]}
-                                                              onGestureHandlerStateChange={[Function]}
-                                                              onHandlerStateChange={[Function]}
-                                                              rippleColor={0}
-                                                              touchSoundDisabled={false}
-                                                            >
-                                                              <View
-                                                                accessible={true}
-                                                                collapsable={false}
-                                                                style={
-                                                                  Object {
-                                                                    "opacity": 1,
-                                                                  }
-                                                                }
-                                                              >
-                                                                <View>
-                                                                  {"name":"ios-qr-code","size":25,"color":"#8E8E8E"}
-                                                                </View>
-                                                              </View>
-                                                            </RNGestureHandlerButton>
-                                                          </View>
-                                                          <View
                                                             style={
                                                               Object {
                                                                 "marginLeft": 16,
                                                               }
                                                             }
-                                                          />
-                                                          <Modal
-                                                            hardwareAccelerated={false}
-                                                            onRequestClose={[Function]}
-                                                            transparent={true}
-                                                            visible={false}
                                                           />
                                                         </View>
                                                       </View>
@@ -856,7 +801,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                       <View
                                                         collapsable={false}
                                                         forwardedRef={[Function]}
-                                                        handlerTag={5}
+                                                        handlerTag={4}
                                                         handlerType="PanGestureHandler"
                                                         needsOffscreenAlphaCompositing={false}
                                                         onGestureHandlerEvent={[Function]}
@@ -917,7 +862,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                               >
                                                                 <RCTScrollView
                                                                   collapsable={false}
-                                                                  handlerTag={6}
+                                                                  handlerTag={5}
                                                                   handlerType="NativeViewGestureHandler"
                                                                   onGestureHandlerEvent={[Function]}
                                                                   onGestureHandlerStateChange={[Function]}
@@ -1025,424 +970,565 @@ exports[`LaoNavigation renders correctly 1`] = `
                                 }
                               }
                             >
-                              <RCTScrollView
-                                contentContainerStyle={
-                                  Array [
-                                    Object {
-                                      "paddingEnd": 0,
-                                      "paddingStart": 0,
-                                      "paddingTop": 4,
-                                    },
-                                    undefined,
-                                  ]
-                                }
+                              <View
                                 style={
-                                  Array [
-                                    Object {
-                                      "flex": 1,
-                                    },
-                                    Object {
-                                      "margin": 16,
-                                    },
-                                  ]
+                                  Object {
+                                    "flex": 1,
+                                    "flexDirection": "column",
+                                    "margin": 16,
+                                  }
                                 }
                               >
-                                <View>
-                                  <View
-                                    style={
+                                <RCTScrollView
+                                  contentContainerStyle={
+                                    Array [
                                       Object {
-                                        "marginBottom": 8,
+                                        "paddingEnd": 0,
+                                        "paddingStart": 0,
+                                        "paddingTop": 4,
+                                      },
+                                      undefined,
+                                    ]
+                                  }
+                                  style={
+                                    Array [
+                                      Object {
+                                        "flex": 1,
+                                      },
+                                      Object {
+                                        "margin": 0,
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <View>
+                                    <View
+                                      style={
+                                        Object {
+                                          "marginBottom": 8,
+                                        }
                                       }
-                                    }
-                                  >
-                                    <Text
+                                    >
+                                      <Text
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "textAlign": "left",
+                                            },
+                                            Object {
+                                              "fontWeight": "bold",
+                                            },
+                                          ]
+                                        }
+                                      >
+                                        MyLao
+                                      </Text>
+                                    </View>
+                                    <View
+                                      collapsable={false}
                                       style={
                                         Array [
                                           Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
+                                            "marginHorizontal": 10,
+                                            "marginVertical": 4,
+                                            "overflow": "hidden",
                                           },
                                           Object {
-                                            "fontWeight": "bold",
+                                            "backgroundColor": "transparent",
+                                            "borderRadius": 4,
+                                          },
+                                          Object {
+                                            "marginHorizontal": 0,
                                           },
                                         ]
                                       }
                                     >
-                                      MyLao
-                                    </Text>
-                                  </View>
-                                  <View
-                                    collapsable={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "marginHorizontal": 10,
-                                          "marginVertical": 4,
-                                          "overflow": "hidden",
-                                        },
-                                        Object {
-                                          "backgroundColor": "transparent",
-                                          "borderRadius": 4,
-                                        },
-                                        Object {
-                                          "marginHorizontal": 0,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <View
-                                      accessibilityRole="button"
-                                      accessibilityState={
-                                        Object {
-                                          "selected": false,
-                                        }
-                                      }
-                                      accessible={true}
-                                      collapsable={false}
-                                      focusable={true}
-                                      onBlur={[Function]}
-                                      onClick={[Function]}
-                                      onFocus={[Function]}
-                                      onResponderGrant={[Function]}
-                                      onResponderMove={[Function]}
-                                      onResponderRelease={[Function]}
-                                      onResponderTerminate={[Function]}
-                                      onResponderTerminationRequest={[Function]}
-                                      onStartShouldSetResponder={[Function]}
-                                      style={
-                                        Object {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
                                       <View
+                                        accessibilityRole="button"
+                                        accessibilityState={
+                                          Object {
+                                            "selected": false,
+                                          }
+                                        }
+                                        accessible={true}
+                                        collapsable={false}
+                                        focusable={true}
+                                        onBlur={[Function]}
+                                        onClick={[Function]}
+                                        onFocus={[Function]}
+                                        onResponderGrant={[Function]}
+                                        onResponderMove={[Function]}
+                                        onResponderRelease={[Function]}
+                                        onResponderTerminate={[Function]}
+                                        onResponderTerminationRequest={[Function]}
+                                        onStartShouldSetResponder={[Function]}
                                         style={
-                                          Array [
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                              "padding": 8,
-                                            },
-                                            Object {
-                                              "borderRadius": 4,
-                                            },
-                                          ]
+                                          Object {
+                                            "opacity": 1,
+                                          }
                                         }
                                       >
                                         <View
                                           style={
                                             Array [
                                               Object {
-                                                "flex": 1,
-                                                "marginRight": 32,
+                                                "alignItems": "center",
+                                                "flexDirection": "row",
+                                                "padding": 8,
                                               },
                                               Object {
-                                                "marginLeft": 0,
-                                                "marginVertical": 5,
+                                                "borderRadius": 4,
                                               },
                                             ]
                                           }
                                         >
-                                          <Text
-                                            numberOfLines={1}
+                                          <View
                                             style={
                                               Array [
                                                 Object {
-                                                  "color": "#8E8E8E",
-                                                  "fontWeight": "500",
+                                                  "flex": 1,
+                                                  "marginRight": 32,
                                                 },
-                                                undefined,
+                                                Object {
+                                                  "marginLeft": 0,
+                                                  "marginVertical": 5,
+                                                },
                                               ]
                                             }
                                           >
-                                            screen2
-                                          </Text>
+                                            <Text
+                                              numberOfLines={1}
+                                              style={
+                                                Array [
+                                                  Object {
+                                                    "color": "#8E8E8E",
+                                                    "fontWeight": "500",
+                                                  },
+                                                  undefined,
+                                                ]
+                                              }
+                                            >
+                                              screen2
+                                            </Text>
+                                          </View>
                                         </View>
                                       </View>
                                     </View>
-                                  </View>
-                                  <View
-                                    collapsable={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "marginHorizontal": 10,
-                                          "marginVertical": 4,
-                                          "overflow": "hidden",
-                                        },
-                                        Object {
-                                          "backgroundColor": "#d3d2fd",
-                                          "borderRadius": 4,
-                                        },
-                                        Object {
-                                          "marginHorizontal": 0,
-                                        },
-                                      ]
-                                    }
-                                  >
                                     <View
-                                      accessibilityRole="button"
-                                      accessibilityState={
-                                        Object {
-                                          "selected": true,
-                                        }
-                                      }
-                                      accessible={true}
                                       collapsable={false}
-                                      focusable={true}
-                                      onBlur={[Function]}
-                                      onClick={[Function]}
-                                      onFocus={[Function]}
-                                      onResponderGrant={[Function]}
-                                      onResponderMove={[Function]}
-                                      onResponderRelease={[Function]}
-                                      onResponderTerminate={[Function]}
-                                      onResponderTerminationRequest={[Function]}
-                                      onStartShouldSetResponder={[Function]}
                                       style={
-                                        Object {
-                                          "opacity": 1,
-                                        }
+                                        Array [
+                                          Object {
+                                            "marginHorizontal": 10,
+                                            "marginVertical": 4,
+                                            "overflow": "hidden",
+                                          },
+                                          Object {
+                                            "backgroundColor": "transparent",
+                                            "borderRadius": 4,
+                                          },
+                                          Object {
+                                            "marginHorizontal": 0,
+                                          },
+                                        ]
                                       }
                                     >
                                       <View
-                                        style={
-                                          Array [
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                              "padding": 8,
-                                            },
-                                            Object {
-                                              "borderRadius": 4,
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        <View
-                                          style={Object {}}
-                                        >
-                                          {"name":"ios-calendar","size":24,"color":"#3742fa"}
-                                        </View>
-                                        <View
-                                          style={
-                                            Array [
-                                              Object {
-                                                "flex": 1,
-                                                "marginRight": 32,
-                                              },
-                                              Object {
-                                                "marginLeft": 32,
-                                                "marginVertical": 5,
-                                              },
-                                            ]
+                                        accessibilityRole="button"
+                                        accessibilityState={
+                                          Object {
+                                            "selected": false,
                                           }
-                                        >
-                                          <Text
-                                            numberOfLines={1}
-                                            style={
-                                              Array [
-                                                Object {
-                                                  "color": "#3742fa",
-                                                  "fontWeight": "500",
-                                                },
-                                                undefined,
-                                              ]
-                                            }
-                                          >
-                                            Events
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
-                                  <View
-                                    collapsable={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "marginHorizontal": 10,
-                                          "marginVertical": 4,
-                                          "overflow": "hidden",
-                                        },
-                                        Object {
-                                          "backgroundColor": "transparent",
-                                          "borderRadius": 4,
-                                        },
-                                        Object {
-                                          "marginHorizontal": 0,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <View
-                                      accessibilityRole="button"
-                                      accessibilityState={
-                                        Object {
-                                          "selected": false,
                                         }
-                                      }
-                                      accessible={true}
-                                      collapsable={false}
-                                      focusable={true}
-                                      onBlur={[Function]}
-                                      onClick={[Function]}
-                                      onFocus={[Function]}
-                                      onResponderGrant={[Function]}
-                                      onResponderMove={[Function]}
-                                      onResponderRelease={[Function]}
-                                      onResponderTerminate={[Function]}
-                                      onResponderTerminationRequest={[Function]}
-                                      onStartShouldSetResponder={[Function]}
-                                      style={
-                                        Object {
-                                          "opacity": 1,
-                                        }
-                                      }
-                                    >
-                                      <View
+                                        accessible={true}
+                                        collapsable={false}
+                                        focusable={true}
+                                        onBlur={[Function]}
+                                        onClick={[Function]}
+                                        onFocus={[Function]}
+                                        onResponderGrant={[Function]}
+                                        onResponderMove={[Function]}
+                                        onResponderRelease={[Function]}
+                                        onResponderTerminate={[Function]}
+                                        onResponderTerminationRequest={[Function]}
+                                        onStartShouldSetResponder={[Function]}
                                         style={
-                                          Array [
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                              "padding": 8,
-                                            },
-                                            Object {
-                                              "borderRadius": 4,
-                                            },
-                                          ]
+                                          Object {
+                                            "opacity": 1,
+                                          }
                                         }
                                       >
                                         <View
                                           style={
                                             Array [
                                               Object {
-                                                "flex": 1,
-                                                "marginRight": 32,
+                                                "alignItems": "center",
+                                                "flexDirection": "row",
+                                                "padding": 8,
                                               },
                                               Object {
-                                                "marginLeft": 0,
-                                                "marginVertical": 5,
+                                                "borderRadius": 4,
                                               },
                                             ]
                                           }
                                         >
-                                          <Text
-                                            numberOfLines={1}
+                                          <View>
+                                            {"name":"adduser","size":24,"color":"#8E8E8E"}
+                                          </View>
+                                          <View
                                             style={
                                               Array [
                                                 Object {
-                                                  "color": "#8E8E8E",
-                                                  "fontWeight": "500",
+                                                  "flex": 1,
+                                                  "marginRight": 32,
                                                 },
-                                                undefined,
+                                                Object {
+                                                  "marginLeft": 32,
+                                                  "marginVertical": 5,
+                                                },
                                               ]
                                             }
                                           >
-                                            a title
-                                          </Text>
+                                            <Text
+                                              numberOfLines={1}
+                                              style={
+                                                Array [
+                                                  Object {
+                                                    "color": "#8E8E8E",
+                                                    "fontWeight": "500",
+                                                  },
+                                                  undefined,
+                                                ]
+                                              }
+                                            >
+                                              Invite
+                                            </Text>
+                                          </View>
                                         </View>
                                       </View>
                                     </View>
-                                  </View>
-                                  <View
-                                    collapsable={false}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "marginHorizontal": 10,
-                                          "marginVertical": 4,
-                                          "overflow": "hidden",
-                                        },
-                                        Object {
-                                          "backgroundColor": "transparent",
-                                          "borderRadius": 4,
-                                        },
-                                        Object {
-                                          "marginHorizontal": 0,
-                                        },
-                                      ]
-                                    }
-                                  >
                                     <View
-                                      accessibilityRole="button"
-                                      accessibilityState={
-                                        Object {
-                                          "selected": false,
-                                        }
-                                      }
-                                      accessible={true}
                                       collapsable={false}
-                                      focusable={true}
-                                      onBlur={[Function]}
-                                      onClick={[Function]}
-                                      onFocus={[Function]}
-                                      onResponderGrant={[Function]}
-                                      onResponderMove={[Function]}
-                                      onResponderRelease={[Function]}
-                                      onResponderTerminate={[Function]}
-                                      onResponderTerminationRequest={[Function]}
-                                      onStartShouldSetResponder={[Function]}
                                       style={
-                                        Object {
-                                          "opacity": 1,
-                                        }
+                                        Array [
+                                          Object {
+                                            "marginHorizontal": 10,
+                                            "marginVertical": 4,
+                                            "overflow": "hidden",
+                                          },
+                                          Object {
+                                            "backgroundColor": "#d3d2fd",
+                                            "borderRadius": 4,
+                                          },
+                                          Object {
+                                            "marginHorizontal": 0,
+                                          },
+                                        ]
                                       }
                                     >
                                       <View
+                                        accessibilityRole="button"
+                                        accessibilityState={
+                                          Object {
+                                            "selected": true,
+                                          }
+                                        }
+                                        accessible={true}
+                                        collapsable={false}
+                                        focusable={true}
+                                        onBlur={[Function]}
+                                        onClick={[Function]}
+                                        onFocus={[Function]}
+                                        onResponderGrant={[Function]}
+                                        onResponderMove={[Function]}
+                                        onResponderRelease={[Function]}
+                                        onResponderTerminate={[Function]}
+                                        onResponderTerminationRequest={[Function]}
+                                        onStartShouldSetResponder={[Function]}
                                         style={
-                                          Array [
-                                            Object {
-                                              "alignItems": "center",
-                                              "flexDirection": "row",
-                                              "padding": 8,
-                                            },
-                                            Object {
-                                              "borderRadius": 4,
-                                            },
-                                          ]
+                                          Object {
+                                            "opacity": 1,
+                                          }
                                         }
                                       >
-                                        <View>
-                                          {"name":"logout","size":24,"color":"#8E8E8E"}
-                                        </View>
                                         <View
                                           style={
                                             Array [
                                               Object {
-                                                "flex": 1,
-                                                "marginRight": 32,
+                                                "alignItems": "center",
+                                                "flexDirection": "row",
+                                                "padding": 8,
                                               },
                                               Object {
-                                                "marginLeft": 32,
-                                                "marginVertical": 5,
+                                                "borderRadius": 4,
                                               },
                                             ]
                                           }
                                         >
-                                          <Text
-                                            numberOfLines={1}
+                                          <View
+                                            style={Object {}}
+                                          >
+                                            {"name":"ios-calendar","size":24,"color":"#3742fa"}
+                                          </View>
+                                          <View
                                             style={
                                               Array [
                                                 Object {
-                                                  "color": "#8E8E8E",
-                                                  "fontWeight": "500",
+                                                  "flex": 1,
+                                                  "marginRight": 32,
                                                 },
-                                                undefined,
+                                                Object {
+                                                  "marginLeft": 32,
+                                                  "marginVertical": 5,
+                                                },
                                               ]
                                             }
                                           >
-                                            Disconnect
-                                          </Text>
+                                            <Text
+                                              numberOfLines={1}
+                                              style={
+                                                Array [
+                                                  Object {
+                                                    "color": "#3742fa",
+                                                    "fontWeight": "500",
+                                                  },
+                                                  undefined,
+                                                ]
+                                              }
+                                            >
+                                              Events
+                                            </Text>
+                                          </View>
+                                        </View>
+                                      </View>
+                                    </View>
+                                    <View
+                                      collapsable={false}
+                                      style={
+                                        Array [
+                                          Object {
+                                            "marginHorizontal": 10,
+                                            "marginVertical": 4,
+                                            "overflow": "hidden",
+                                          },
+                                          Object {
+                                            "backgroundColor": "transparent",
+                                            "borderRadius": 4,
+                                          },
+                                          Object {
+                                            "marginHorizontal": 0,
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <View
+                                        accessibilityRole="button"
+                                        accessibilityState={
+                                          Object {
+                                            "selected": false,
+                                          }
+                                        }
+                                        accessible={true}
+                                        collapsable={false}
+                                        focusable={true}
+                                        onBlur={[Function]}
+                                        onClick={[Function]}
+                                        onFocus={[Function]}
+                                        onResponderGrant={[Function]}
+                                        onResponderMove={[Function]}
+                                        onResponderRelease={[Function]}
+                                        onResponderTerminate={[Function]}
+                                        onResponderTerminationRequest={[Function]}
+                                        onStartShouldSetResponder={[Function]}
+                                        style={
+                                          Object {
+                                            "opacity": 1,
+                                          }
+                                        }
+                                      >
+                                        <View
+                                          style={
+                                            Array [
+                                              Object {
+                                                "alignItems": "center",
+                                                "flexDirection": "row",
+                                                "padding": 8,
+                                              },
+                                              Object {
+                                                "borderRadius": 4,
+                                              },
+                                            ]
+                                          }
+                                        >
+                                          <View
+                                            style={
+                                              Array [
+                                                Object {
+                                                  "flex": 1,
+                                                  "marginRight": 32,
+                                                },
+                                                Object {
+                                                  "marginLeft": 0,
+                                                  "marginVertical": 5,
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <Text
+                                              numberOfLines={1}
+                                              style={
+                                                Array [
+                                                  Object {
+                                                    "color": "#8E8E8E",
+                                                    "fontWeight": "500",
+                                                  },
+                                                  undefined,
+                                                ]
+                                              }
+                                            >
+                                              a title
+                                            </Text>
+                                          </View>
+                                        </View>
+                                      </View>
+                                    </View>
+                                    <View
+                                      collapsable={false}
+                                      style={
+                                        Array [
+                                          Object {
+                                            "marginHorizontal": 10,
+                                            "marginVertical": 4,
+                                            "overflow": "hidden",
+                                          },
+                                          Object {
+                                            "backgroundColor": "transparent",
+                                            "borderRadius": 4,
+                                          },
+                                          Object {
+                                            "marginHorizontal": 0,
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      <View
+                                        accessibilityRole="button"
+                                        accessibilityState={
+                                          Object {
+                                            "selected": false,
+                                          }
+                                        }
+                                        accessible={true}
+                                        collapsable={false}
+                                        focusable={true}
+                                        onBlur={[Function]}
+                                        onClick={[Function]}
+                                        onFocus={[Function]}
+                                        onResponderGrant={[Function]}
+                                        onResponderMove={[Function]}
+                                        onResponderRelease={[Function]}
+                                        onResponderTerminate={[Function]}
+                                        onResponderTerminationRequest={[Function]}
+                                        onStartShouldSetResponder={[Function]}
+                                        style={
+                                          Object {
+                                            "opacity": 1,
+                                          }
+                                        }
+                                      >
+                                        <View
+                                          style={
+                                            Array [
+                                              Object {
+                                                "alignItems": "center",
+                                                "flexDirection": "row",
+                                                "padding": 8,
+                                              },
+                                              Object {
+                                                "borderRadius": 4,
+                                              },
+                                            ]
+                                          }
+                                        >
+                                          <View>
+                                            {"name":"logout","size":24,"color":"#8E8E8E"}
+                                          </View>
+                                          <View
+                                            style={
+                                              Array [
+                                                Object {
+                                                  "flex": 1,
+                                                  "marginRight": 32,
+                                                },
+                                                Object {
+                                                  "marginLeft": 32,
+                                                  "marginVertical": 5,
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            <Text
+                                              numberOfLines={1}
+                                              style={
+                                                Array [
+                                                  Object {
+                                                    "color": "#8E8E8E",
+                                                    "fontWeight": "500",
+                                                  },
+                                                  undefined,
+                                                ]
+                                              }
+                                            >
+                                              Disconnect
+                                            </Text>
+                                          </View>
                                         </View>
                                       </View>
                                     </View>
                                   </View>
+                                </RCTScrollView>
+                                <View
+                                  style={
+                                    Object {
+                                      "flexGrow": 1,
+                                    }
+                                  }
+                                />
+                                <View
+                                  style={
+                                    Object {
+                                      "paddingBottom": 16,
+                                    }
+                                  }
+                                >
+                                  <Text
+                                    selectable={true}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "fontSize": 12,
+                                          "lineHeight": 14,
+                                        },
+                                        Object {
+                                          "color": "#8E8E8E",
+                                        },
+                                      ]
+                                    }
+                                  />
                                 </View>
-                              </RCTScrollView>
+                              </View>
                             </View>
                           </View>
                         </View>
