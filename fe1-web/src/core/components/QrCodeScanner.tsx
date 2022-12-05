@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
  * Attention: react-camera currently has the problem that the onBarCodeScanned property is only set initially, i.e
  * the function cannot be changed later meaning if we pass a function that references other variables, they will
  * only have their proper values if they are mutated which in general should be avoided.
+ * (2022-12-05, Tyratox) Issue to track this: https://github.com/dedis/popstellar/issues/1306
  */
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
   const [permission, requestPermission] = Camera.useCameraPermissions();
