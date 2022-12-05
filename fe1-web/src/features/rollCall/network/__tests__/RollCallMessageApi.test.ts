@@ -57,12 +57,7 @@ const checkDataCreateRollCall = (obj: MessageData) => {
   }
 
   // Check id
-  const expected = Hash.fromStringArray(
-    'R',
-    serializedMockLaoId,
-    data.creation.toString(),
-    data.name,
-  );
+  const expected = Hash.fromArray('R', serializedMockLaoId, data.creation, data.name);
   expect(data.id).toEqual(expected);
 };
 
@@ -79,12 +74,7 @@ const checkDataOpenRollCall = (obj: MessageData) => {
   expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 
   // Check id
-  const expected = Hash.fromStringArray(
-    'R',
-    mockLaoId,
-    data.opens.toString(),
-    data.opened_at.toString(),
-  );
+  const expected = Hash.fromArray('R', mockLaoId, data.opens, data.opened_at);
   expect(data.update_id).toEqual(expected);
 };
 
@@ -100,12 +90,7 @@ const checkDataReopenRollCall = (obj: MessageData) => {
   expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 
   // check id
-  const expected = Hash.fromStringArray(
-    'R',
-    mockLaoId,
-    data.opens.toString(),
-    data.opened_at.toString(),
-  );
+  const expected = Hash.fromArray('R', mockLaoId, data.opens, data.opened_at);
   expect(data.update_id).toEqual(expected);
 };
 
@@ -129,12 +114,7 @@ const checkDataCloseRollCall = (obj: MessageData) => {
   expect(data.attendees).toBeDistinctArray();
 
   // check id
-  const expected = Hash.fromStringArray(
-    'R',
-    mockLaoId,
-    data.closes.toString(),
-    data.closed_at.toString(),
-  );
+  const expected = Hash.fromArray('R', mockLaoId, data.closes, data.closed_at);
   expect(data.update_id).toEqual(expected);
 };
 

@@ -94,25 +94,22 @@ export class Transaction {
    */
   private readonly hashTransaction = (): Hash => {
     // Recursively concatenating fields by lexicographic order of their names
-    const dataInputs = this.inputs.flatMap((input) => {
+    const dataInputs: (string | number | String | Timestamp)[] = this.inputs.flatMap((input) => {
       return [
-        input.script.publicKey.valueOf(),
-        input.script.signature.valueOf(),
+        input.script.publicKey,
+        input.script.signature,
         input.script.type,
-        input.txOutHash.valueOf(),
-        input.txOutIndex.toString(),
+        input.txOutHash,
+        input.txOutIndex,
       ];
     });
     const dataOutputs = this.outputs.flatMap((output) => {
-      return [output.script.publicKeyHash.valueOf(), output.script.type, output.value.toString()];
+      return [output.script.publicKeyHash, output.script.type, output.value];
     });
-    const data = dataInputs
-      .concat([this.lockTime.toString()])
-      .concat(dataOutputs)
-      .concat([this.version.toString()]);
+    const data = dataInputs.concat([this.lockTime]).concat(dataOutputs).concat([this.version]);
 
     // Hash will take care of concatenating each fields length
-    return Hash.fromStringArray(...data);
+    return Hash.fromArray(...data);
   };
 
   /**

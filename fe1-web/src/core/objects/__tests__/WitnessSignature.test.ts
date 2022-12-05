@@ -9,7 +9,7 @@ const kp = KeyPair.fromState({
   privateKey: testKeyPair.privateKey,
 });
 
-const messageId: Hash = Hash.fromStringArray('messageId');
+const messageId: Hash = Hash.fromArray('messageId');
 
 test('Witness signature verify works correctly', () => {
   const witnessSignature: WitnessSignature = new WitnessSignature({
@@ -26,7 +26,7 @@ test('Witness signature verify fails correctly', () => {
     signature: kp.privateKey.sign(messageId),
   });
 
-  const otherId = Hash.fromStringArray('wrongMessage');
+  const otherId = Hash.fromArray('wrongMessage');
 
   expect(witnessSignature.verify(otherId)).toBeFalse();
 });

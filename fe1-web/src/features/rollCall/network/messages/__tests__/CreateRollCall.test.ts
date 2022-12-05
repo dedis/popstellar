@@ -13,7 +13,7 @@ const TIMESTAMP_BEFORE = new Timestamp(1609445600);
 const NAME = 'myRollCall';
 const LOCATION = 'location';
 const DESCRIPTION = 'Roll Call description';
-const rollCallId = Hash.fromStringArray('R', mockLaoId, TIMESTAMP.toString(), NAME);
+const rollCallId = Hash.fromArray('R', mockLaoId, TIMESTAMP, NAME);
 
 const sampleCreateRollCall: Partial<CreateRollCall> = {
   object: ObjectType.ROLL_CALL,

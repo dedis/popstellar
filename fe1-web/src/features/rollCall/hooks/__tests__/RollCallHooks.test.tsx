@@ -22,7 +22,7 @@ import { RollCallHooks } from '../index';
 
 const mockLaoName2 = 'MyLao';
 const mockLaoCreationTime2 = new Timestamp(1600009000);
-const mockLaoId2: Hash = Hash.fromStringArray(org, mockLaoCreationTime2.toString(), mockLaoName2);
+const mockLaoId2: Hash = Hash.fromArray(org, mockLaoCreationTime2, mockLaoName2);
 
 const mockRollCallName3 = 'myRollCall3';
 const mockRollCallLocation3 = 'location3';

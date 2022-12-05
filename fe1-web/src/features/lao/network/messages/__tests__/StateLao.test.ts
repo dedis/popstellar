@@ -17,7 +17,7 @@ import { StateLao } from '../StateLao';
 
 const TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 const mockWitnesses = [new PublicKey(mockPublicKey), new PublicKey(mockPublicKey2)];
-const mockModificationId = Hash.fromStringArray('message_id');
+const mockModificationId = Hash.fromArray('message_id');
 
 const sampleStateLao: Partial<StateLao> = {
   object: ObjectType.LAO,

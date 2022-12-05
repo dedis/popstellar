@@ -93,7 +93,7 @@ export class CreateRollCall implements MessageData {
    * @returns The id of the roll call
    */
   public static computeRollCallId(laoId: Hash, createdAt: Timestamp, name: string) {
-    return Hash.fromStringArray(EventTags.ROLL_CALL, laoId, createdAt.toString(), name);
+    return Hash.fromArray(EventTags.ROLL_CALL, laoId, createdAt, name);
   }
 
   /**

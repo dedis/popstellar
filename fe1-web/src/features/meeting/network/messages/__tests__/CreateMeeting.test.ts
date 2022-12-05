@@ -11,7 +11,7 @@ const NAME = 'myMeeting';
 const LOCATION = 'location';
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const FUTURE_TIMESTAMP = new Timestamp(1735686000); // 1st january 2025
-const mockMeetingId = Hash.fromStringArray('M', mockLaoId, TIMESTAMP.toString(), NAME);
+const mockMeetingId = Hash.fromArray('M', mockLaoId, TIMESTAMP, NAME);
 const mockExtra = { extra: 'extra info' };
 
 const sampleCreateMeeting: Partial<CreateMeeting> = {

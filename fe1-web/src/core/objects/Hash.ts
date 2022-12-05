@@ -2,6 +2,7 @@ import { sha256 } from 'js-sha256';
 
 import { Base64UrlData } from './Base64UrlData';
 import { PublicKey } from './PublicKey';
+import { Timestamp } from './Timestamp';
 
 export type HashState = string;
 
@@ -22,10 +23,23 @@ export class Hash extends Base64UrlData {
    * @param data values to be hashed
    * @return resulting hash
    */
-  public static fromStringArray(...data: String[]): Hash {
+  public static fromArray(...data: (string | number | String | Timestamp)[]): Hash {
     const str = data
       .map((item) => {
-        const itemStr = item.valueOf();
+        let itemStr: string;
+
+        if (typeof item === 'string') {
+          itemStr = item;
+        } else if (typeof item === 'number') {
+          itemStr = item.toString();
+        } else if (item instanceof String) {
+          itemStr = item.valueOf();
+        } else if (item instanceof Timestamp) {
+          itemStr = item.valueOf().toString();
+        } else {
+          throw new Error(`Invalid input to Hash.from(): ${item}`);
+        }
+
         return Hash.computeByteLength(itemStr) + itemStr;
       })
       .join('');

@@ -14,12 +14,7 @@ import { EndElection } from '../EndElection';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 
-const electionId: Hash = Hash.fromStringArray(
-  'Election',
-  mockLaoId,
-  TIMESTAMP.toString(),
-  mockLaoName,
-);
+const electionId: Hash = Hash.fromArray('Election', mockLaoId, TIMESTAMP, mockLaoName);
 
 // In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>

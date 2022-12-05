@@ -85,7 +85,7 @@ export class StateLao implements MessageData {
     if (!msg.id) {
       throw new ProtocolError(makeErr('id'));
     }
-    const expectedHash = Hash.fromStringArray(msg.organizer, msg.creation.toString(), msg.name);
+    const expectedHash = Hash.fromArray(msg.organizer, msg.creation, msg.name);
     if (!expectedHash.equals(msg.id)) {
       throw new ProtocolError("Invalid 'id' parameter encountered during 'StateLao'");
     }

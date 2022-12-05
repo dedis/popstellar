@@ -111,8 +111,8 @@ export class StateMeeting implements MessageData {
     // FIXME: implementation not finished, get event from storage,
     /*
     const lao: Lao = OpenedLaoStore.get();
-    const expectedHash = Hash.fromStringArray(
-      EventTags.MEETING, lao.id, lao.creation.toString(), MEETING_NAME,
+    const expectedHash = Hash.fromArray(
+      EventTags.MEETING, lao.id, lao.creation, MEETING_NAME,
     );
     if (!expectedHash.equals(msg.id))
       throw new ProtocolError(

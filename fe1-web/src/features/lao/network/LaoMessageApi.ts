@@ -16,7 +16,7 @@ export async function requestCreateLao(laoName: string): Promise<Channel> {
   const pubKey = KeyPairStore.getPublicKey();
 
   const message = new CreateLao({
-    id: Hash.fromStringArray(pubKey, time.toString(), laoName),
+    id: Hash.fromArray(pubKey, time, laoName),
     name: laoName,
     creation: time,
     organizer: pubKey,
@@ -34,7 +34,7 @@ export function requestUpdateLao(name: string, witnesses?: PublicKey[]): Promise
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new UpdateLao({
-    id: Hash.fromStringArray(currentLao.organizer, currentLao.creation.toString(), name),
+    id: Hash.fromArray(currentLao.organizer, currentLao.creation, name),
     name,
     last_modified: time,
     witnesses: witnesses === undefined ? currentLao.witnesses : witnesses,
@@ -48,13 +48,13 @@ export function requestStateLao(): Promise<void> {
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new StateLao({
-    id: Hash.fromStringArray(currentLao.organizer, currentLao.creation.toString(), currentLao.name),
+    id: Hash.fromArray(currentLao.organizer, currentLao.creation, currentLao.name),
     name: currentLao.name,
     creation: currentLao.creation,
     last_modified: Timestamp.EpochNow(),
     organizer: currentLao.organizer,
     witnesses: currentLao.witnesses,
-    modification_id: Hash.fromStringArray(), // FIXME need modification_id from storage
+    modification_id: Hash.fromArray(), // FIXME need modification_id from storage
     modification_signatures: [], // FIXME need modification_signatures from storage
   });
 

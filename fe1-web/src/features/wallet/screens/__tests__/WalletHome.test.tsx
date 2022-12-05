@@ -30,19 +30,14 @@ const mockRCTimestampStart = new Timestamp(1620355600);
 const mockRCTimestampEnd = new Timestamp(1620357600);
 const mockRCAttendees = ['attendee1', 'attendee2'];
 
-const mockRCIdAliasHash = Hash.fromStringArray(
+const mockRCIdAliasHash = Hash.fromArray(
   EventTags.ROLL_CALL,
   mockLaoId,
-  mockRCTimestampStart.toString(),
+  mockRCTimestampStart,
   mockRCName,
 );
 
-const mockRCIdHash = Hash.fromStringArray(
-  EventTags.ROLL_CALL,
-  mockLaoId,
-  mockRCIdAliasHash.valueOf(),
-  mockRCName,
-);
+const mockRCIdHash = Hash.fromArray(EventTags.ROLL_CALL, mockLaoId, mockRCIdAliasHash, mockRCName);
 
 const mockRollCallState = {
   id: mockRCIdHash.valueOf(),

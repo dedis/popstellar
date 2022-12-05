@@ -13,10 +13,10 @@ const LOCATION = 'location';
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const FUTURE_TIMESTAMP = new Timestamp(1735686000); // 1st january 2025
 const TIMESTAMP_BEFORE = new Timestamp(1609445600);
-const mockMeetingId = Hash.fromStringArray('M', mockLaoId, TIMESTAMP.toString(), NAME);
+const mockMeetingId = Hash.fromArray('M', mockLaoId, TIMESTAMP, NAME);
 const mockMessageId = Base64UrlData.encode('message_id');
 const mockExtra = { extra: 'extra info' };
-const mockModificationId = Hash.fromStringArray(mockMessageId);
+const mockModificationId = Hash.fromArray(mockMessageId);
 
 const sampleStateMeeting: Partial<StateMeeting> = {
   object: ObjectType.MEETING,

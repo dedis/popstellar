@@ -40,7 +40,7 @@ export async function requestCreateElection(
   const message = new SetupElection(
     {
       version: version,
-      id: Hash.fromStringArray(EventTags.ELECTION, laoId, time.toString(), name),
+      id: Hash.fromArray(EventTags.ELECTION, laoId, time, name),
       lao: laoId,
       name: name,
       created_at: time,

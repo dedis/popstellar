@@ -24,12 +24,7 @@ const mockAddEvent = jest.fn();
 const mockUpdateEvent = jest.fn();
 
 const mockMeetingName = 'a meeting';
-const mockMeetingId = Hash.fromStringArray(
-  EventTags.MEETING,
-  mockLaoId,
-  TIMESTAMP.toString(),
-  mockMeetingName,
-);
+const mockMeetingId = Hash.fromArray(EventTags.MEETING, mockLaoId, TIMESTAMP, mockMeetingName);
 
 const mockMeeting = new Meeting({
   id: mockMeetingId,

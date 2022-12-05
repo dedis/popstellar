@@ -8,13 +8,8 @@ import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { OpenRollCall } from '../OpenRollCall';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const rollCallId = Hash.fromStringArray('R', mockLaoId, TIMESTAMP.toString(), mockLaoName);
-const rollCallUpdateId = Hash.fromStringArray(
-  'R',
-  mockLaoId,
-  rollCallId.toString(),
-  TIMESTAMP.toString(),
-);
+const rollCallId = Hash.fromArray('R', mockLaoId, TIMESTAMP, mockLaoName);
+const rollCallUpdateId = Hash.fromArray('R', mockLaoId, rollCallId, TIMESTAMP);
 
 const sampleOpenRollCall: Partial<OpenRollCall> = {
   object: ObjectType.ROLL_CALL,

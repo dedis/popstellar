@@ -53,7 +53,7 @@ function checkMessage(obj: any): void {
   expect(obj.signature).toBeJsonEqual(signExpected);
 
   expect(obj.message_id).toBeBase64Url();
-  const hashExpected = Hash.fromStringArray(obj.data, obj.signature);
+  const hashExpected = Hash.fromArray(obj.data, obj.signature);
   expect(obj.message_id).toBeJsonEqual(hashExpected);
 
   expect(obj.witness_signatures).toBeKeySignatureArray('publicKey', 'signature');
@@ -66,7 +66,7 @@ const sampleCreateLaoData: CreateLao = CreateLao.fromJson({
   creation: 1613495222,
   organizer: mockPublicKey.toString(),
   witnesses: [],
-  id: Hash.fromStringArray(mockPublicKey, '1613495222', 'Random Name').toString(),
+  id: Hash.fromArray(mockPublicKey, '1613495222', 'Random Name').toString(),
 });
 
 const sampleCreateLaoDataString: string = JSON.stringify(sampleCreateLaoData);
@@ -82,10 +82,7 @@ function embeddedMessage(data: string, channel: string, id: number = 0): string 
                 "data": "${data64.toString()}",
                 "sender": "${mockPublicKey.toString()}",
                 "signature": "${mockSecretKey.sign(data64).toString()}",
-                "message_id": "${Hash.fromStringArray(
-                  data64.toString(),
-                  mockSecretKey.sign(data64).toString(),
-                )}",
+                "message_id": "${Hash.fromArray(data64, mockSecretKey.sign(data64))}",
                 "witness_signatures": [
                 ]
             }

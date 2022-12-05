@@ -114,7 +114,7 @@ export class SetupElection implements MessageData {
    * @param name The name of the election
    */
   public static computeElectionId(laoId: Hash, createdAt: Timestamp, name: string) {
-    return Hash.fromStringArray(EventTags.ELECTION, laoId, createdAt.toString(), name);
+    return Hash.fromArray(EventTags.ELECTION, laoId, createdAt, name);
   }
 
   /**
@@ -125,7 +125,7 @@ export class SetupElection implements MessageData {
    */
   public static validateQuestions(questions: Question[], electionId: Hash) {
     questions.forEach((question) => {
-      const expectedHash = Hash.fromStringArray(EventTags.QUESTION, electionId, question.question);
+      const expectedHash = Hash.fromArray(EventTags.QUESTION, electionId, question.question);
 
       if (!expectedHash.equals(question.id)) {
         throw new ProtocolError(
