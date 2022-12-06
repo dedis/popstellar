@@ -14,8 +14,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -98,7 +97,8 @@ public class RollCallHandlerTest {
   }
 
   @Test
-  public void testHandleCreateRollCall() throws DataHandlingException, UnknownLaoException {
+  public void testHandleCreateRollCall()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
     // Create the create Roll Call message
     CreateRollCall createRollCall =
         new CreateRollCall(
@@ -134,7 +134,8 @@ public class RollCallHandlerTest {
   }
 
   @Test
-  public void testHandleOpenRollCall() throws DataHandlingException, UnknownLaoException {
+  public void testHandleOpenRollCall()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
@@ -164,7 +165,8 @@ public class RollCallHandlerTest {
   }
 
   @Test
-  public void testHandleCloseRollCall() throws DataHandlingException, UnknownLaoException {
+  public void testHandleCloseRollCall()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
     // Create the close Roll Call message
     CloseRollCall closeRollCall =
         new CloseRollCall(

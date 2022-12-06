@@ -6,7 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.PublicKeySign;
@@ -42,6 +42,7 @@ public class KeyManagerTest {
   @Rule public InstantTaskExecutorRule executorRule = new InstantTaskExecutorRule();
 
   @Inject @DeviceKeyset AndroidKeysetManager androidKeysetManager;
+  @Inject RollCallRepository rollCallRepo;
   @Mock private Wallet wallet;
 
   @Before
@@ -81,11 +82,13 @@ public class KeyManagerTest {
     rollCall1.setState(EventState.CLOSED);
     rollCall2.setState(EventState.CLOSED);
 
-    lao.updateRollCall(rollCall1.getId(), rollCall1);
-    lao.updateRollCall(rollCall2.getId(), rollCall2);
+    rollCallRepo.updateRollCall(lao.getId(), rollCall1, rollCall1.getId());
+    rollCallRepo.updateRollCall(lao.getId(), rollCall2, rollCall2.getId());
 
     KeyManager manager = new KeyManager(androidKeysetManager, wallet);
-    assertEquals(token, manager.getValidPoPToken(new LaoView(lao)));
+    assertEquals(
+        token,
+        manager.getValidPoPToken(lao.getId(), rollCallRepo.getLastClosedRollCall(lao.getId())));
     assertEquals(token, manager.getValidPoPToken(lao.getId(), rollCall1));
 
     // make sure that rollcall1 was taken and not rollcall2 as the oldest is rollcall 1
@@ -100,25 +103,32 @@ public class KeyManagerTest {
     Lao lao = new Lao("lao", Base64DataUtils.generatePublicKey(), 54213424);
     RollCall rollCall = new RollCall(lao.getId(), 5421364, "rollcall");
     rollCall.setState(EventState.CLOSED);
-    lao.updateRollCall(rollCall.getId(), rollCall);
-
+    rollCallRepo.updateRollCall(lao.getId(), rollCall, rollCall.getId());
     KeyManager manager = new KeyManager(androidKeysetManager, wallet);
 
     // Test with every possible errors
     when(wallet.recoverKey(any(), any(), any()))
         .thenThrow(new KeyGenerationException(new GeneralSecurityException()));
-    assertThrows(KeyGenerationException.class, () -> manager.getValidPoPToken(new LaoView(lao)));
+    assertThrows(
+        KeyGenerationException.class,
+        () ->
+            manager.getValidPoPToken(lao.getId(), rollCallRepo.getLastClosedRollCall(lao.getId())));
     verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.getId()), any());
     reset(wallet);
 
     when(wallet.recoverKey(any(), any(), any())).thenThrow(new UninitializedWalletException());
     assertThrows(
-        UninitializedWalletException.class, () -> manager.getValidPoPToken(new LaoView(lao)));
+        UninitializedWalletException.class,
+        () ->
+            manager.getValidPoPToken(lao.getId(), rollCallRepo.getLastClosedRollCall(lao.getId())));
     verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.getId()), any());
     reset(wallet);
 
     when(wallet.recoverKey(any(), any(), any())).thenThrow(new InvalidPoPTokenException(token));
-    assertThrows(InvalidPoPTokenException.class, () -> manager.getValidPoPToken(new LaoView(lao)));
+    assertThrows(
+        InvalidPoPTokenException.class,
+        () ->
+            manager.getValidPoPToken(lao.getId(), rollCallRepo.getLastClosedRollCall(lao.getId())));
     verify(wallet, times(1)).recoverKey(eq(lao.getId()), eq(rollCall.getId()), any());
   }
 
@@ -128,6 +138,9 @@ public class KeyManagerTest {
     Lao lao = new Lao("lao", Base64DataUtils.generatePublicKey(), 54213424);
 
     KeyManager manager = new KeyManager(androidKeysetManager, wallet);
-    assertThrows(NoRollCallException.class, () -> manager.getValidPoPToken(new LaoView(lao)));
+    assertThrows(
+        NoRollCallException.class,
+        () ->
+            manager.getValidPoPToken(lao.getId(), rollCallRepo.getLastClosedRollCall(lao.getId())));
   }
 }

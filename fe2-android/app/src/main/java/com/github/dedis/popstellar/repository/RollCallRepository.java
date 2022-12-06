@@ -6,9 +6,11 @@ import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.util.*;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
@@ -24,6 +26,11 @@ import io.reactivex.subjects.Subject;
 public class RollCallRepository {
   public static final String TAG = RollCallRepository.class.getSimpleName();
   private final Map<String, LaoRollCalls> rollCallsByLao = new HashMap<>();
+
+  @Inject
+  public RollCallRepository() {
+    // Constructor required by Hilt
+  }
 
   /**
    * This either updates the roll call in the repository or adds it if absent
@@ -73,6 +80,13 @@ public class RollCallRepository {
    */
   public Observable<Set<String>> getRollCallsInLao(String laoId) {
     return getLaoRollCalls(laoId).getRollCallsSubject();
+  }
+
+  public RollCall getLastClosedRollCall(String laoId) throws NoRollCallException {
+    return getLaoRollCalls(laoId).rollCallByPersistentId.values().stream()
+        .filter(RollCall::isClosed)
+        .max(Comparator.comparing(RollCall::getEnd))
+        .orElseThrow(() -> new NoRollCallException(laoId));
   }
 
   @NonNull
