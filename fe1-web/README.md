@@ -11,9 +11,9 @@ npm start
 
 > If the Exception *Tried to register two views with the same name NRCSafeAreaProvider*, [follow these steps](https://github.com/th3rdwave/react-native-safe-area-context/issues/110#issuecomment-660407790) :
 >
-> - delete  `node_modules` folder
+> - delete `node_modules` folder
 > - run `npm install`
-> - delete  `node_modules/expo/node_modules/react-native-safe-area-context` folder
+> - delete `node_modules/expo/node_modules/react-native-safe-area-context` folder
 > - run `expo r -c`
 >
 > The following times, running the command  `expo start` is enough
