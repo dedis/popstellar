@@ -115,9 +115,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
               try {
                 if (laoView == null) return new HashSet<>();
                 Set<TransactionObject> historySet =
-                    laoView
-                        .getTransactionHistoryByUser()
-                        .get(keyManager.getValidPoPToken(laoView).getPublicKey());
+                    laoView.getTransactionHistoryByUser().get(this.getValidToken().getPublicKey());
                 if (historySet == null) {
                   return new HashSet<>();
                 }
@@ -234,8 +232,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     }
 
     // Find correct keypair
-    return Single.fromCallable(
-            () -> coinBase ? keyManager.getMainKeyPair() : keyManager.getValidPoPToken(laoView))
+    return Single.fromCallable(() -> coinBase ? keyManager.getMainKeyPair() : this.getValidToken())
         .flatMapCompletable(
             keyPair -> {
               PostTransactionCoin postTxn =
@@ -344,6 +341,10 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     return mCurrentLao.getValue();
   }
 
+  public PoPToken getValidToken() throws KeyException {
+    return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
+  }
+
   public void subscribeToLao(String laoId) {
     disposables.add(
         laoRepository
@@ -360,8 +361,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
                           + lao.getTransactionHistoryByUser().toString());
                   mCurrentLao.postValue(lao);
                   try {
-                    PoPToken token = keyManager.getValidPoPToken(lao);
-                    Objects.requireNonNull(mTokens.getValue()).add(token);
+                    Objects.requireNonNull(mTokens.getValue()).add(getValidToken());
                   } catch (KeyException e) {
                     Log.d(TAG, "Could not retrieve token");
                   }
