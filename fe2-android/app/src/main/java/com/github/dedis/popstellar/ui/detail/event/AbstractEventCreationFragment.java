@@ -52,9 +52,6 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private EditText startTimeEditText;
   private EditText endTimeEditText;
 
-  // This is to avoid clearing the fields on each click
-  private boolean toBeCleared = true;
-
   public void setDateAndTimeView(View view) {
     long currentMillis = System.currentTimeMillis();
     long suggestedEndMillis = currentMillis + ONE_HOUR; // Adding one hour
@@ -91,51 +88,46 @@ public abstract class AbstractEventCreationFragment extends Fragment {
 
     startDateEditText.setOnClickListener(
         v -> {
-          clearDates();
+          // When the user click on start date we clear start and end dates
+          startDateEditText.getText().clear();
+          startDate = null;
+          endDateEditText.getText().clear();
+          endDate = null;
+
           openPickerDialog(
               DatePickerFragment.newInstance(), DatePickerFragment.TAG, this::onStartDate);
         });
 
     endDateEditText.setOnClickListener(
         v -> {
-          clearDates();
+          // When the user click on end date we only clear end dates
+          endDateEditText.getText().clear();
+          endDate = null;
+
           openPickerDialog(
               DatePickerFragment.newInstance(), DatePickerFragment.TAG, this::onEndDate);
         });
 
     startTimeEditText.setOnClickListener(
         v -> {
-          clearDates();
+          // When the user clicks on start time we clear both start time and end time
+          startTimeEditText.getText().clear();
+          startTime = null;
+          endTimeEditText.getText().clear();
+          endTime = null;
+
           openPickerDialog(
               TimePickerFragment.newInstance(), TimePickerFragment.TAG, this::onStartTime);
         });
 
     endTimeEditText.setOnClickListener(
         v -> {
-          clearDates();
+          // When the user clicks on end time we only clear end time
+          endTimeEditText.getText().clear();
+          endTime = null;
+
           openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onEndTime);
         });
-  }
-
-  /**
-   * When the user want to change the suggested time, it would be cumbersome without clearing the
-   * suggested fields. So on the first click on one of those fields we clear them all, but not on
-   * subsequent ones
-   */
-  private void clearDates() {
-    // Should only be cleared on the first click on those fields, to erase suggested time
-    if (toBeCleared) {
-      startDateEditText.getText().clear();
-      startTimeEditText.getText().clear();
-      endDateEditText.getText().clear();
-      endTimeEditText.getText().clear();
-
-      startDate = null;
-      startTime = null;
-      endDate = null;
-      endTime = null;
-      toBeCleared = false;
-    }
   }
 
   private void openPickerDialog(
