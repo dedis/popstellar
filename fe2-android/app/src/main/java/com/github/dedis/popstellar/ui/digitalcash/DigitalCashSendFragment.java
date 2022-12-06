@@ -179,7 +179,7 @@ public class DigitalCashSendFragment extends Fragment {
    */
   private Completable postTransaction(Map<String, String> publicKeyAmount) {
     // Add some check if have money
-    if (viewModel.getLaoId().getValue() == null) {
+    if (viewModel.getLaoId() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();

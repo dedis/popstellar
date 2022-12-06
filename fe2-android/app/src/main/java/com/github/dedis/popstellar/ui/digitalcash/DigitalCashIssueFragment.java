@@ -192,7 +192,7 @@ public class DigitalCashIssueFragment extends Fragment {
    *     issue to
    */
   private void postTransaction(Map<String, String> publicKeyAmount) {
-    if (viewModel.getLaoId().getValue() == null) {
+    if (viewModel.getLaoId() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
