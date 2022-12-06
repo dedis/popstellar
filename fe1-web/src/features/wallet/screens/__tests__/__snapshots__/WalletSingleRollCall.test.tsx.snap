@@ -296,6 +296,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -343,6 +344,13 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -682,6 +690,7 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -729,6 +738,13 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -1068,6 +1084,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1115,6 +1132,13 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>

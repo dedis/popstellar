@@ -296,6 +296,7 @@ exports[`LaoHomeScreen renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -343,6 +344,13 @@ exports[`LaoHomeScreen renders correctly 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>

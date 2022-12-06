@@ -296,6 +296,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -343,6 +344,13 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -477,7 +485,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -879,6 +887,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -926,6 +935,13 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -1048,7 +1064,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",

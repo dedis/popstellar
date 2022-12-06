@@ -296,6 +296,7 @@ exports[`LaoList renders correctly with no item 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -643,6 +644,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -793,7 +795,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                                     },
                                     "primary": "#2089dc",
                                     "searchBg": "#303337",
-                                    "secondary": "#03dac4",
+                                    "secondary": "#ad1457",
                                     "success": "#52c41a",
                                     "warning": "#faad14",
                                     "white": "#ffffff",

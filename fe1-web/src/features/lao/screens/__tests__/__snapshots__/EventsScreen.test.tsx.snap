@@ -296,6 +296,7 @@ exports[`EventsScreen renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -343,6 +344,13 @@ exports[`EventsScreen renders correctly 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View />
@@ -657,6 +665,7 @@ exports[`EventsScreenHeaderLeft renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -712,6 +721,8 @@ exports[`EventsScreenHeaderLeft renders correctly 1`] = `
                         >
                           <RNGestureHandlerButton
                             collapsable={false}
+                            delayLongPress={600}
+                            enabled={true}
                             exclusive={true}
                             handlerTag={4}
                             handlerType="NativeViewGestureHandler"
@@ -1047,6 +1058,7 @@ exports[`EventsScreenHeaderRight renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

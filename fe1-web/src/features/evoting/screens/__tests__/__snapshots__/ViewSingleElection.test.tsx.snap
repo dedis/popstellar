@@ -296,6 +296,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -343,6 +344,13 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -510,7 +518,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -728,7 +736,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -873,7 +881,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -1016,7 +1024,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -1234,7 +1242,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -1379,7 +1387,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -1741,6 +1749,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1788,6 +1797,13 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -1962,7 +1978,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -2176,7 +2192,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -2302,7 +2318,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -2437,7 +2453,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -2651,7 +2667,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -2777,7 +2793,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -3124,6 +3140,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -3171,6 +3188,13 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -3499,6 +3523,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -3546,6 +3571,13 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -3752,7 +3784,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -4052,7 +4084,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -4264,7 +4296,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -4392,7 +4424,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -4692,7 +4724,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -4904,7 +4936,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -4973,6 +5005,8 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={19}
                               handlerType="NativeViewGestureHandler"
@@ -5340,6 +5374,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -5387,6 +5422,13 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -5573,7 +5615,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -5787,7 +5829,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -5913,7 +5955,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -6048,7 +6090,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -6262,7 +6304,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -6388,7 +6430,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -6735,6 +6777,7 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -7073,6 +7116,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -7120,6 +7164,13 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -7287,7 +7338,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -7505,7 +7556,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -7650,7 +7701,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -7793,7 +7844,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -8011,7 +8062,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -8156,7 +8207,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -8518,6 +8569,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -8565,6 +8617,13 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -8739,7 +8798,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -8930,7 +8989,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -9056,7 +9115,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -9191,7 +9250,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -9382,7 +9441,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -9508,7 +9567,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -9577,6 +9636,8 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={3}
                               handlerType="NativeViewGestureHandler"
@@ -9944,6 +10005,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -9991,6 +10053,13 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -10319,6 +10388,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -10366,6 +10436,13 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -10572,7 +10649,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -10849,7 +10926,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -11038,7 +11115,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -11166,7 +11243,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -11443,7 +11520,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -11632,7 +11709,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -11701,6 +11778,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={6}
                               handlerType="NativeViewGestureHandler"
@@ -11781,6 +11860,8 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={7}
                               handlerType="NativeViewGestureHandler"
@@ -12148,6 +12229,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -12195,6 +12277,13 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -12381,7 +12470,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -12595,7 +12684,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -12721,7 +12810,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -12856,7 +12945,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -13070,7 +13159,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -13196,7 +13285,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -13543,6 +13632,7 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

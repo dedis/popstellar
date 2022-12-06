@@ -296,6 +296,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -343,6 +344,13 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -491,7 +499,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -723,7 +731,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -869,7 +877,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -1218,6 +1226,7 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1265,6 +1274,13 @@ exports[`EventRollCall render correctly non organizers created roll calls 1`] = 
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -1636,6 +1652,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1683,6 +1700,13 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -1845,7 +1869,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -2279,6 +2303,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -2326,6 +2351,13 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -2488,7 +2520,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -2922,6 +2954,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -2969,6 +3002,13 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -3117,7 +3157,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -3349,7 +3389,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -3495,7 +3535,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                             },
                                             "primary": "#2089dc",
                                             "searchBg": "#303337",
-                                            "secondary": "#03dac4",
+                                            "secondary": "#ad1457",
                                             "success": "#52c41a",
                                             "warning": "#faad14",
                                             "white": "#ffffff",
@@ -3565,6 +3605,8 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={14}
                               handlerType="NativeViewGestureHandler"
@@ -3932,6 +3974,7 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -3979,6 +4022,13 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -4071,6 +4121,8 @@ exports[`EventRollCall render correctly organizers created roll calls 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={3}
                               handlerType="NativeViewGestureHandler"
@@ -4438,6 +4490,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -4485,6 +4538,13 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -4644,7 +4704,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -4776,6 +4836,8 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={6}
                               handlerType="NativeViewGestureHandler"
@@ -4855,6 +4917,8 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={7}
                               handlerType="NativeViewGestureHandler"
@@ -5222,6 +5286,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -5269,6 +5334,13 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -5428,7 +5500,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -5583,6 +5655,8 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={10}
                               handlerType="NativeViewGestureHandler"
@@ -5662,6 +5736,8 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={11}
                               handlerType="NativeViewGestureHandler"

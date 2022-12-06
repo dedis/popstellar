@@ -296,6 +296,7 @@ exports[`SendReceive renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -343,6 +344,13 @@ exports[`SendReceive renders correctly 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -470,6 +478,8 @@ exports[`SendReceive renders correctly 1`] = `
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
+                                      delayLongPress={600}
+                                      enabled={true}
                                       exclusive={true}
                                       handlerTag={3}
                                       handlerType="NativeViewGestureHandler"
@@ -587,6 +597,8 @@ exports[`SendReceive renders correctly 1`] = `
                             >
                               <RNGestureHandlerButton
                                 collapsable={false}
+                                delayLongPress={600}
+                                enabled={true}
                                 exclusive={true}
                                 handlerTag={4}
                                 handlerType="NativeViewGestureHandler"
@@ -959,6 +971,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1006,6 +1019,13 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -1133,6 +1153,8 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
+                                      delayLongPress={600}
+                                      enabled={true}
                                       exclusive={true}
                                       handlerTag={7}
                                       handlerType="NativeViewGestureHandler"
@@ -1250,6 +1272,8 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                             >
                               <RNGestureHandlerButton
                                 collapsable={false}
+                                delayLongPress={600}
+                                enabled={true}
                                 exclusive={true}
                                 handlerTag={8}
                                 handlerType="NativeViewGestureHandler"

@@ -296,6 +296,7 @@ exports[`EventLists renders correctly for attendees 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -439,7 +440,7 @@ exports[`EventLists renders correctly for attendees 1`] = `
                                     },
                                     "primary": "#2089dc",
                                     "searchBg": "#303337",
-                                    "secondary": "#03dac4",
+                                    "secondary": "#ad1457",
                                     "success": "#52c41a",
                                     "warning": "#faad14",
                                     "white": "#ffffff",
@@ -623,7 +624,7 @@ exports[`EventLists renders correctly for attendees 1`] = `
                                       },
                                       "primary": "#2089dc",
                                       "searchBg": "#303337",
-                                      "secondary": "#03dac4",
+                                      "secondary": "#ad1457",
                                       "success": "#52c41a",
                                       "warning": "#faad14",
                                       "white": "#ffffff",
@@ -839,7 +840,7 @@ exports[`EventLists renders correctly for attendees 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#03dac4",
+                                        "secondary": "#ad1457",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
@@ -1039,7 +1040,7 @@ exports[`EventLists renders correctly for attendees 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#03dac4",
+                                        "secondary": "#ad1457",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
@@ -1433,6 +1434,7 @@ exports[`EventLists renders correctly for organizers 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1576,7 +1578,7 @@ exports[`EventLists renders correctly for organizers 1`] = `
                                     },
                                     "primary": "#2089dc",
                                     "searchBg": "#303337",
-                                    "secondary": "#03dac4",
+                                    "secondary": "#ad1457",
                                     "success": "#52c41a",
                                     "warning": "#faad14",
                                     "white": "#ffffff",
@@ -1783,7 +1785,7 @@ exports[`EventLists renders correctly for organizers 1`] = `
                                       },
                                       "primary": "#2089dc",
                                       "searchBg": "#303337",
-                                      "secondary": "#03dac4",
+                                      "secondary": "#ad1457",
                                       "success": "#52c41a",
                                       "warning": "#faad14",
                                       "white": "#ffffff",
@@ -2022,7 +2024,7 @@ exports[`EventLists renders correctly for organizers 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#03dac4",
+                                        "secondary": "#ad1457",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
@@ -2245,7 +2247,7 @@ exports[`EventLists renders correctly for organizers 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#03dac4",
+                                        "secondary": "#ad1457",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",

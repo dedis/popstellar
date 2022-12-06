@@ -296,6 +296,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -343,6 +344,13 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -419,6 +427,8 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={3}
                               handlerType="NativeViewGestureHandler"
@@ -498,6 +508,8 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={4}
                               handlerType="NativeViewGestureHandler"
@@ -865,6 +877,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -912,6 +925,13 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                             Object {
                               "padding": 16,
                             }
+                          }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
                           }
                         >
                           <View>
@@ -988,6 +1008,8 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={7}
                               handlerType="NativeViewGestureHandler"
@@ -1067,6 +1089,8 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={8}
                               handlerType="NativeViewGestureHandler"
