@@ -21,6 +21,10 @@ async function configAsync(env, argv) {
   config.resolve.alias = {
     ...config.resolve.alias,
     ...aliases,
+    // make sure only a single version of react is loaded.
+    // at the moment (06-12-2022) react-camera otherwise loads a second version of react
+    // making the application crash
+    react: path.resolve('./node_modules/react')
   };
 
   return config;
