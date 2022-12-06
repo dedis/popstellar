@@ -206,7 +206,7 @@ const ConnectScan = () => {
         <View style={styles.enterManually}>
           <View style={QrCodeScannerUIElementContainer}>
             <PoPTouchableOpacity
-              onPress={() => navigation.push(STRINGS.navigation_connect_confirm)}>
+              onPress={() => navigation.navigate(STRINGS.navigation_connect_confirm)}>
               <Text style={[Typography.base, Typography.accent]}>
                 {STRINGS.general_enter_manually}
               </Text>
