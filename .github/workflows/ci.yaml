@@ -75,7 +75,7 @@ jobs:
 
       - name: Run test
         if: ${{ always() }} # execute even if previous steps failed
-        run: npm run test -- --runInBand
+        run: npm run test -- --runInBand --ci
 
       - name: Run code analysis
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '16.x' }} # execute even if previous steps failed
