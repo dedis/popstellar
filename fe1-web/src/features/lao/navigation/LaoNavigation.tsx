@@ -39,9 +39,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     margin: Spacing.contentSpacing,
   } as ViewStyle,
-  spacer: {
-    flexGrow: 1,
-  } as ViewStyle,
+  spacer: {} as ViewStyle,
   drawerFooter: {
     paddingBottom: Spacing.contentSpacing,
   } as ViewStyle,
