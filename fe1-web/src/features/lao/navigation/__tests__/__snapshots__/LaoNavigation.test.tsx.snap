@@ -1491,11 +1491,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                                   </View>
                                 </RCTScrollView>
                                 <View
-                                  style={
-                                    Object {
-                                      "flexGrow": 1,
-                                    }
-                                  }
+                                  style={Object {}}
                                 />
                                 <View
                                   style={
