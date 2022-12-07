@@ -1,12 +1,39 @@
 package com.github.dedis.popstellar.ui.detail.event.election;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.swipeLeft;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.containerId;
+import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
+import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
+import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
+import static com.github.dedis.popstellar.testutils.pages.detail.event.election.CastVoteFragmentPageObject.castVoteButton;
+import static com.github.dedis.popstellar.testutils.pages.detail.event.election.CastVoteFragmentPageObject.castVoteElectionName;
+import static com.github.dedis.popstellar.testutils.pages.detail.event.election.CastVoteFragmentPageObject.castVoteLaoTitle;
+import static com.github.dedis.popstellar.testutils.pages.detail.event.election.CastVoteFragmentPageObject.castVotePager;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.github.dedis.popstellar.model.network.method.message.data.election.*;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
@@ -22,7 +49,9 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -31,22 +60,10 @@ import org.mockito.junit.MockitoTestRule;
 
 import java.util.Arrays;
 
-import dagger.hilt.android.testing.*;
+import dagger.hilt.android.testing.BindValue;
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.subjects.BehaviorSubject;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeLeft;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.detail.event.election.CastVoteFragmentPageObject.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -99,7 +116,6 @@ public class CastVoteFragmentTest {
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           initializeElection();
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
-          when(keyManager.getValidPoPToken(any())).thenReturn(generatePoPToken());
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
           messageSenderHelper.setupMock();
