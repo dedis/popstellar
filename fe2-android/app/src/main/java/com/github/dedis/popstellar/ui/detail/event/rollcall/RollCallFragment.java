@@ -124,9 +124,14 @@ public class RollCallFragment extends Fragment {
             setCurrentFragment(
                 getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new));
 
-    viewModel
-        .getLaoEvents()
-        .observe(getViewLifecycleOwner(), eventState -> setUpStateDependantContent());
+    viewModel.addDisposable(
+        viewModel
+            .getRollCall(rollCall.getPersistentId())
+            .subscribe(
+                rc -> setUpStateDependantContent(),
+                error ->
+                    ErrorUtils.logAndShow(
+                        requireContext(), TAG, error, R.string.unknown_roll_call_exception)));
 
     retrieveAndDisplayPublicKey();
 
