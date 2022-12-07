@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useContext } from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { TextBlock } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { PublicKey } from 'core/objects';
+import { Typography } from 'core/styles';
 import { gray } from 'core/styles/color';
 import STRINGS from 'resources/strings';
 
@@ -58,7 +58,7 @@ const SocialSearch = () => {
     <ScreenWrapper>
       <View style={styles.viewCenter}>
         <View style={styles.titleTextView}>
-          <TextBlock text={STRINGS.attendees_of_last_roll_call} />
+          <Text style={Typography.base}>{STRINGS.attendees_of_last_roll_call}</Text>
         </View>
         <View style={styles.attendeesList}>
           <FlatList

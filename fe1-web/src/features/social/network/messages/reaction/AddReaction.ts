@@ -50,7 +50,8 @@ export class AddReaction implements MessageData {
     }
 
     return new AddReaction({
-      ...obj,
+      reaction_codepoint: obj.reaction_codepoint,
+      chirp_id: new Hash(obj.chirp_id),
       timestamp: new Timestamp(obj.timestamp),
     });
   }

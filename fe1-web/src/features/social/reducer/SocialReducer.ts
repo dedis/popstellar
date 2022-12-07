@@ -229,7 +229,7 @@ export const makeChirpsList = (laoId?: Hash) =>
   createSelector(
     // First input: Get all chirps across all LAOs
     selectSocialState,
-    (chirpList: SocialLaoReducerState): ChirpState[] => {
+    (chirpList: SocialLaoReducerState): Chirp[] => {
       const serializedLaoId = laoId?.valueOf();
 
       if (!serializedLaoId) {
@@ -240,7 +240,8 @@ export const makeChirpsList = (laoId?: Hash) =>
         const store = chirpList.byLaoId[serializedLaoId];
         const allChirps: ChirpState[] = [];
         store.allIdsInOrder.forEach((id) => allChirps.push(store.byId[id]));
-        return allChirps;
+
+        return allChirps.map(Chirp.fromState);
       }
       return [];
     },
@@ -251,7 +252,7 @@ export const makeChirpsListOfUser = (laoId?: Hash) => (user?: PublicKey) => {
   return createSelector(
     // First input: Get all chirps across all LAOs
     selectSocialState,
-    (chirpList: SocialLaoReducerState): ChirpState[] => {
+    (chirpList: SocialLaoReducerState): Chirp[] => {
       const serializedLaoId = laoId?.valueOf();
 
       if (!serializedLaoId || !userPublicKey) {
@@ -267,7 +268,7 @@ export const makeChirpsListOfUser = (laoId?: Hash) => (user?: PublicKey) => {
           userChirps.forEach((id: string) =>
             allUserChirps.push(chirpList.byLaoId[serializedLaoId].byId[id]),
           );
-          return allUserChirps;
+          return allUserChirps.map(Chirp.fromState);
         }
       }
       return [];

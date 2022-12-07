@@ -7,8 +7,13 @@ import { Color, Icon } from '../styles';
 import PoPButton from './PoPButton';
 import PoPIcon, { PopIconName } from './PoPIcon';
 
+const SIZE_MAP = {
+  normal: Icon.size,
+  small: Icon.smallSize,
+};
+
 const PoPIconButton = (props: IPropTypes) => {
-  const { onPress, buttonStyle, disabled, negative, toolbar, testID, name } = props;
+  const { onPress, buttonStyle, disabled, negative, toolbar, size, testID, name } = props;
 
   return (
     <PoPButton
@@ -18,7 +23,11 @@ const PoPIconButton = (props: IPropTypes) => {
       negative={negative}
       toolbar={toolbar}
       testID={testID}>
-      <PoPIcon name={name} size={Icon.size} color={Color.contrast} />
+      <PoPIcon
+        name={name}
+        size={SIZE_MAP[size]}
+        color={buttonStyle === 'primary' ? Color.contrast : Color.accent}
+      />
     </PoPButton>
   );
 };
@@ -28,6 +37,7 @@ const propTypes = {
   // primary: colored background, negative text
   // secondary: outlined button
   buttonStyle: PropTypes.oneOf<'primary' | 'secondary'>(['primary', 'secondary']),
+  size: PropTypes.oneOf<'normal' | 'small'>(['normal', 'small']),
   // changes background color / border color to be gray
   disabled: PropTypes.bool,
   // changes background color / border color to be white
@@ -42,12 +52,16 @@ PoPIconButton.propTypes = propTypes;
 
 PoPIconButton.defaultProps = {
   buttonStyle: 'primary',
+  size: 'normal',
   disabled: false,
   negative: false,
   toolbar: false,
   testID: undefined,
 };
 
-type IPropTypes = ExtendType<PropTypes.InferProps<typeof propTypes>, { name: PopIconName }>;
+type IPropTypes = ExtendType<
+  PropTypes.InferProps<typeof propTypes>,
+  { name: PopIconName; size: 'normal' | 'small' }
+>;
 
 export default PoPIconButton;

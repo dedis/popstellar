@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { useContext, useMemo } from 'react';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { ProfileIcon, TextBlock } from 'core/components';
+import { ProfileIcon } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
-import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 
@@ -36,33 +36,34 @@ const SocialProfile = () => {
   if (!currentUserPopTokenPublicKey) {
     return (
       <View style={styles.textUnavailableView}>
-        <TextBlock text={STRINGS.social_media_your_profile_unavailable} />
+        <Text style={Typography.base}>{STRINGS.social_media_your_profile_unavailable}</Text>
       </View>
     );
   }
 
-  const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} />
-  );
-
   return (
     <ScreenWrapper>
-      <View style={styles.viewCenter}>
-        <View style={styles.topView}>
-          <ProfileIcon publicKey={currentUserPopTokenPublicKey} size={8} scale={10} />
-          <View style={styles.textView}>
-            <Text style={styles.profileText}>{currentUserPopTokenPublicKey.valueOf()}</Text>
-            <Text>{`${userChirpList.length} ${
-              userChirpList.length === 1 ? 'chirp' : 'chirps'
-            }`}</Text>
-          </View>
+      <View>
+        <ProfileIcon publicKey={currentUserPopTokenPublicKey} size={8} scale={10} />
+        <View style={styles.textView}>
+          <Text style={[Typography.base, Typography.important]} numberOfLines={1}>
+            {currentUserPopTokenPublicKey.valueOf()}
+          </Text>
+          <Text>{`${userChirpList.length} ${
+            userChirpList.length === 1 ? 'chirp' : 'chirps'
+          }`}</Text>
         </View>
-        <View style={styles.userFeed}>
-          <FlatList
-            data={userChirpList}
-            renderItem={renderChirpState}
-            keyExtractor={(item) => item.id.toString()}
-          />
+      </View>
+      <View style={styles.userFeed}>
+        <View style={List.container}>
+          {userChirpList.map((chirp, i) => (
+            <ChirpCard
+              key={chirp.id.toString()}
+              chirp={chirp}
+              isFirstItem={false /* no round borders at the top */}
+              isLastItem={i === userChirpList.length - 1}
+            />
+          ))}
         </View>
       </View>
     </ScreenWrapper>

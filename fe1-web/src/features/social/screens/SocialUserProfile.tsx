@@ -1,21 +1,21 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { ProfileIcon, TextBlock } from 'core/components';
+import { ProfileIcon } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
 import { PublicKey } from 'core/objects';
+import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
 import BackButton from '../components/BackButton';
 import { SocialHooks } from '../hooks';
-import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 
@@ -46,28 +46,26 @@ const SocialUserProfile = () => {
   const userChirps = makeChirpsListOfUser(laoId)(userPublicKey);
   const userChirpList = useSelector(userChirps);
 
-  const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} />
-  );
-
   const displayNoUser = () => (
-    <View style={socialMediaProfileStyles.viewCenter}>
-      <View style={socialMediaProfileStyles.topView}>
+    <View>
+      <View>
         <View style={styles.userInnerView}>
           <BackButton
             navigationTabName={STRINGS.social_media_navigation_tab_attendee_list}
             testID="backButtonUserProfile"
           />
         </View>
-        <TextBlock text="Impossible to load profile of user: public key not provided." />
+        <Text style={Typography.base}>
+          Impossible to load profile of user: public key not provided.
+        </Text>
       </View>
     </View>
   );
 
   const displayUser = () => (
     <ScreenWrapper>
-      <View style={socialMediaProfileStyles.viewCenter}>
-        <View style={socialMediaProfileStyles.topView}>
+      <View>
+        <View>
           <View style={styles.userInnerView}>
             <BackButton
               navigationTabName={STRINGS.social_media_navigation_tab_attendee_list}
@@ -76,18 +74,25 @@ const SocialUserProfile = () => {
           </View>
           <ProfileIcon publicKey={userPublicKey} size={8} scale={10} />
           <View style={socialMediaProfileStyles.textView}>
-            <Text style={socialMediaProfileStyles.profileText}>{userPkString}</Text>
+            <Text style={[Typography.base, Typography.important]} numberOfLines={1}>
+              {userPkString}
+            </Text>
             <Text>{`${userChirpList.length} ${
               userChirpList.length === 1 ? 'chirp' : 'chirps'
             }`}</Text>
           </View>
         </View>
         <View style={socialMediaProfileStyles.userFeed}>
-          <FlatList
-            data={userChirpList}
-            renderItem={renderChirpState}
-            keyExtractor={(item) => item.id.toString()}
-          />
+          <View style={List.container}>
+            {userChirpList.map((chirp, i) => (
+              <ChirpCard
+                key={chirp.id.toString()}
+                chirp={chirp}
+                isFirstItem={false /* no round borders at the top */}
+                isLastItem={i === userChirpList.length - 1}
+              />
+            ))}
+          </View>
         </View>
       </View>
     </ScreenWrapper>
