@@ -1,7 +1,7 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { ProfileIcon } from 'core/components';
@@ -14,14 +14,9 @@ import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
-import BackButton from '../components/BackButton';
 import { SocialHooks } from '../hooks';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
-
-const styles = StyleSheet.create({
-  userInnerView: { marginBottom: 15 } as ViewStyle,
-});
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<SocialSearchParamList, typeof STRINGS.social_media_navigation_tab_user_profile>,
@@ -49,12 +44,6 @@ const SocialUserProfile = () => {
   const displayNoUser = () => (
     <View>
       <View>
-        <View style={styles.userInnerView}>
-          <BackButton
-            navigationTabName={STRINGS.social_media_navigation_tab_attendee_list}
-            testID="backButtonUserProfile"
-          />
-        </View>
         <Text style={Typography.base}>
           Impossible to load profile of user: public key not provided.
         </Text>
@@ -66,12 +55,6 @@ const SocialUserProfile = () => {
     <ScreenWrapper>
       <View>
         <View>
-          <View style={styles.userInnerView}>
-            <BackButton
-              navigationTabName={STRINGS.social_media_navigation_tab_attendee_list}
-              testID="backButtonUserProfile"
-            />
-          </View>
           <ProfileIcon publicKey={userPublicKey} size={8} scale={10} />
           <View style={socialMediaProfileStyles.textView}>
             <Text style={[Typography.base, Typography.important]} numberOfLines={1}>

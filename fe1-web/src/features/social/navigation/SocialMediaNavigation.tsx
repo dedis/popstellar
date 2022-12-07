@@ -110,6 +110,7 @@ const SocialMediaNavigation = () => {
         <Tab.Screen
           name={STRINGS.social_media_navigation_tab_search}
           component={SocialSearchNavigation}
+          options={{ headerShown: false }}
         />
         <Tab.Screen name={STRINGS.social_media_navigation_tab_follows} component={SocialFollows} />
         <Tab.Screen name={STRINGS.social_media_navigation_tab_profile} component={SocialProfile} />

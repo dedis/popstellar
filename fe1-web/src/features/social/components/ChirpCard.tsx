@@ -23,7 +23,6 @@ import { makeReactionsList } from '../reducer';
  */
 
 const styles = StyleSheet.create({
-  container: {} as ViewStyle,
   profileIcon: {
     alignSelf: 'flex-start',
   } as ViewStyle,
@@ -114,90 +113,85 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
   }
 
   return (
-    <>
-      <ListItem
-        containerStyle={[listStyle, styles.container]}
-        style={[listStyle, styles.container]}
-        bottomDivider>
-        <View style={[List.icon, styles.profileIcon]}>
-          <ProfileIcon publicKey={chirp.sender} />
-        </View>
-        <ListItem.Content>
-          <ListItem.Title style={Typography.base} numberOfLines={1}>
-            {chirp.sender.valueOf()}
-          </ListItem.Title>
-          <ListItem.Subtitle>
-            {chirp.isDeleted ? (
-              <Text style={[Typography.base, Typography.inactive]}>{STRINGS.deleted_chirp}</Text>
-            ) : (
-              <Text style={Typography.base}>{chirp.text}</Text>
-            )}
-          </ListItem.Subtitle>
-          <View style={styles.reactionsView}>
-            {!chirp.isDeleted && (
-              <>
+    <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
+      <View style={[List.icon, styles.profileIcon]}>
+        <ProfileIcon publicKey={chirp.sender} />
+      </View>
+      <ListItem.Content>
+        <ListItem.Title style={Typography.base} numberOfLines={1}>
+          {chirp.sender.valueOf()}
+        </ListItem.Title>
+        <ListItem.Subtitle>
+          {chirp.isDeleted ? (
+            <Text style={[Typography.base, Typography.inactive]}>{STRINGS.deleted_chirp}</Text>
+          ) : (
+            <Text style={Typography.base}>{chirp.text}</Text>
+          )}
+        </ListItem.Subtitle>
+        <View style={styles.reactionsView}>
+          {!chirp.isDeleted && (
+            <>
+              <View style={styles.reactionView}>
+                <PoPIconButton
+                  name="thumbsUp"
+                  testID="thumbs-up"
+                  onPress={() => addReaction('👍')}
+                  disabled={addReactionDisabled}
+                  size="small"
+                  toolbar
+                />
+                <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
+                  {thumbsUp}
+                </Text>
+              </View>
+              <View style={styles.reactionView}>
+                <PoPIconButton
+                  name="thumbsDown"
+                  testID="thumbs-down"
+                  onPress={() => addReaction('👎')}
+                  disabled={addReactionDisabled}
+                  size="small"
+                  toolbar
+                />
+                <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
+                  {thumbsDown}
+                </Text>
+              </View>
+              <View style={styles.reactionView}>
+                <PoPIconButton
+                  name="heart"
+                  testID="heart"
+                  onPress={() => addReaction('❤️')}
+                  disabled={addReactionDisabled}
+                  size="small"
+                  toolbar
+                />
+                <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
+                  {heart}
+                </Text>
+              </View>
+              {actionSheetOptions.length > 0 && (
                 <View style={styles.reactionView}>
                   <PoPIconButton
-                    name="thumbsUp"
-                    testID="thumbs-up"
-                    onPress={() => addReaction('👍')}
-                    disabled={addReactionDisabled}
+                    name="options"
+                    testID="options"
+                    onPress={() => showActionSheet(actionSheetOptions)}
                     size="small"
                     toolbar
                   />
-                  <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
-                    {thumbsUp}
-                  </Text>
                 </View>
-                <View style={styles.reactionView}>
-                  <PoPIconButton
-                    name="thumbsDown"
-                    testID="thumbs-down"
-                    onPress={() => addReaction('👎')}
-                    disabled={addReactionDisabled}
-                    size="small"
-                    toolbar
-                  />
-                  <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
-                    {thumbsDown}
-                  </Text>
-                </View>
-                <View style={styles.reactionView}>
-                  <PoPIconButton
-                    name="heart"
-                    testID="heart"
-                    onPress={() => addReaction('❤️')}
-                    disabled={addReactionDisabled}
-                    size="small"
-                    toolbar
-                  />
-                  <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
-                    {heart}
-                  </Text>
-                </View>
-                {actionSheetOptions.length > 0 && (
-                  <View style={styles.reactionView}>
-                    <PoPIconButton
-                      name="options"
-                      testID="options"
-                      onPress={() => showActionSheet(actionSheetOptions)}
-                      size="small"
-                      toolbar
-                    />
-                  </View>
-                )}
-              </>
-            )}
-            <View style={styles.chirpButtonSpacer} />
-            <View style={styles.chirpTimeContainer}>
-              <Text style={[Typography.base, Typography.small]}>
-                <TimeAgo date={chirp.time.valueOf() * 1000} />
-              </Text>
-            </View>
+              )}
+            </>
+          )}
+          <View style={styles.chirpButtonSpacer} />
+          <View style={styles.chirpTimeContainer}>
+            <Text style={[Typography.base, Typography.small]}>
+              <TimeAgo date={chirp.time.valueOf() * 1000} />
+            </Text>
           </View>
-        </ListItem.Content>
-      </ListItem>
-    </>
+        </View>
+      </ListItem.Content>
+    </ListItem>
   );
 };
 
