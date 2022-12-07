@@ -41,7 +41,6 @@ import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -88,16 +87,14 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final LiveData<String> mCurrentLaoName =
       Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
   //  Multiple events from Lao may be concatenated using Stream.concat()
-  private final LiveData<List<com.github.dedis.popstellar.model.objects.event.Event>> mLaoEvents =
+  private final LiveData<List<Election>> mElections =
       Transformations.map(
           mCurrentLao,
           laoView ->
               laoView == null
                   ? new ArrayList<>()
-                  : Stream.concat(
-                          laoView.getRollCalls().values().stream(),
-                          laoView.getElections().values().stream())
-                      .collect(Collectors.toList()));
+                  : new ArrayList<>(laoView.getElections().values()));
+
   private final LiveData<List<WitnessMessage>> mWitnessMessages =
       Transformations.map(
           mCurrentLao,
@@ -570,8 +567,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     this.scanningAction = scanningAction;
   }
 
-  public LiveData<List<com.github.dedis.popstellar.model.objects.event.Event>> getLaoEvents() {
-    return mLaoEvents;
+  public LiveData<List<Election>> getElections() {
+    return mElections;
   }
 
   public LiveData<LaoView> getCurrentLao() {
