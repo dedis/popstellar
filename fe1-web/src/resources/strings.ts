@@ -104,7 +104,6 @@ namespace STRINGS {
   export const social_media_navigation_tab_home = 'Home';
   export const social_media_navigation_tab_home_title = 'Feed';
   export const social_media_navigation_tab_search = 'Search';
-  export const social_media_navigation_tab_follows = 'My Follows';
   export const social_media_navigation_tab_profile = 'My Profile';
   export const social_media_navigation_tab_user_profile = 'User profile';
   export const social_media_navigation_tab_attendee_list = 'List of attendees';

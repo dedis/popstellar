@@ -12,7 +12,7 @@ import STRINGS from 'resources/strings';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import { SocialFollows, SocialHome, SocialProfile } from '../screens';
+import { SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
 const Tab = createBottomTabNavigator<SocialParamList>();
@@ -28,9 +28,6 @@ const iconSelector =
         break;
       case STRINGS.social_media_navigation_tab_search:
         iconName = 'search';
-        break;
-      case STRINGS.social_media_navigation_tab_follows:
-        iconName = 'people';
         break;
       case STRINGS.social_media_navigation_tab_profile:
         iconName = 'person';
@@ -112,7 +109,6 @@ const SocialMediaNavigation = () => {
           component={SocialSearchNavigation}
           options={{ headerShown: false }}
         />
-        <Tab.Screen name={STRINGS.social_media_navigation_tab_follows} component={SocialFollows} />
         <Tab.Screen name={STRINGS.social_media_navigation_tab_profile} component={SocialProfile} />
       </Tab.Navigator>
     </SocialMediaContext.Provider>
