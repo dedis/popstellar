@@ -296,6 +296,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1741,6 +1742,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -3124,6 +3126,7 @@ exports[`ViewSingleElection renders correctly non organizers open secret ballot 
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -3499,6 +3502,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -5340,6 +5344,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -6735,6 +6740,7 @@ exports[`ViewSingleElection renders correctly non organizers undefined election 
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -7073,6 +7079,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -8518,6 +8525,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -9944,6 +9952,7 @@ exports[`ViewSingleElection renders correctly organizers open secret ballot elec
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -10319,6 +10328,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -12148,6 +12158,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -13543,6 +13554,7 @@ exports[`ViewSingleElection renders correctly organizers undefined election stat
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

@@ -5,7 +5,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.*;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -35,7 +36,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
-import io.reactivex.*;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
@@ -51,8 +52,8 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    * LiveData objects for capturing events
    */
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
-  private final LiveData<List<String>> laoIdList;
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
+  private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
   /*
    * Dependencies for this class
@@ -86,10 +87,6 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     this.wallet = wallet;
 
     disposables = new CompositeDisposable();
-
-    laoIdList =
-        LiveDataReactiveStreams.fromPublisher(
-            this.laoRepository.getAllLaoIds().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   @Override
@@ -105,12 +102,12 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     return mNumberCharsLeft;
   }
 
-  public LiveData<List<String>> getLaoIdList() {
-    return laoIdList;
-  }
-
   public LiveData<String> getLaoName() {
     return mLaoName;
+  }
+
+  public LiveData<Integer> getPageTitle() {
+    return mPageTitle;
   }
 
   /*
@@ -127,6 +124,10 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
 
   public void setLaoName(String laoName) {
     mLaoName.setValue(laoName);
+  }
+
+  public void setPageTitle(int titleId) {
+    mPageTitle.postValue(titleId);
   }
 
   /**

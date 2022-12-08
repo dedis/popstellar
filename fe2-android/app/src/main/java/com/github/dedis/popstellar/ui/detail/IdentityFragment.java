@@ -94,6 +94,13 @@ public class IdentityFragment extends Fragment {
     return view;
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel.setPageTitle(getString(R.string.tab_identity));
+  }
+
   /** Hide fields when user wants to be anonymous */
   private void hideIdentityInformation() {
     qrCode.setVisibility(View.GONE);

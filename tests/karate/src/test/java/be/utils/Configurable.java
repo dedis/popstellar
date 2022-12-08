@@ -1,5 +1,7 @@
 package be.utils;
 
+import java.io.IOException;
+
 public interface Configurable {
   /**
    * Maximum attempts to delete/reset database before failing
@@ -8,7 +10,7 @@ public interface Configurable {
   /**
    * Returns the command to start the server.
    */
-  String[] getCmd();
+  String[] getCmd() throws IOException;
 
   /**
    * Returns the working directory.

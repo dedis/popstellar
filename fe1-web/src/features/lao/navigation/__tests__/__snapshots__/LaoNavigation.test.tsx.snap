@@ -296,6 +296,7 @@ exports[`LaoNavigation renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -489,11 +490,23 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                 }
                                               >
                                                 <View
-                                                  accessibilityElementsHidden={false}
-                                                  importantForAccessibility="auto"
-                                                  onLayout={[Function]}
                                                   pointerEvents="box-none"
-                                                  style={null}
+                                                  style={
+                                                    Array [
+                                                      Object {
+                                                        "flex": 1,
+                                                        "overflow": "hidden",
+                                                      },
+                                                      Array [
+                                                        Object {
+                                                          "backgroundColor": "rgb(242, 242, 242)",
+                                                        },
+                                                        Object {
+                                                          "flex": 1,
+                                                        },
+                                                      ],
+                                                    ]
+                                                  }
                                                 >
                                                   <View
                                                     collapsable={false}
