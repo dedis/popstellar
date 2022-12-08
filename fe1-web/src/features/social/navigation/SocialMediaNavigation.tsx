@@ -20,14 +20,14 @@ const Tab = createBottomTabNavigator<SocialParamList>();
 const iconSelector =
   (routeName: string) =>
   ({ color }: { color: string }) => {
-    let iconName: 'home' | 'search' | 'people' | 'person' | 'stop';
+    let iconName: 'home' | 'people' | 'person' | 'stop';
 
     switch (routeName) {
       case STRINGS.social_media_navigation_tab_home:
         iconName = 'home';
         break;
       case STRINGS.social_media_navigation_tab_search:
-        iconName = 'search';
+        iconName = 'people';
         break;
       case STRINGS.social_media_navigation_tab_profile:
         iconName = 'person';
