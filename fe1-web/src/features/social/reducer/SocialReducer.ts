@@ -7,7 +7,7 @@ import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 
-import { Chirp, ChirpState, ReactionState } from '../objects';
+import { Chirp, ChirpState, Reaction, ReactionState } from '../objects';
 
 /**
  * Stores all the Social Media related content
@@ -67,11 +67,11 @@ const socialSlice = createSlice({
   reducers: {
     // Add a chirp to the list of chirps
     addChirp: {
-      prepare(laoId: Hash, chirp: ChirpState) {
+      prepare(laoId: Hash, chirp: Chirp) {
         return {
           payload: {
-            laoId: laoId.valueOf(),
-            chirp: chirp,
+            laoId: laoId.toState(),
+            chirp: chirp.toState(),
           },
         };
       },
@@ -119,11 +119,11 @@ const socialSlice = createSlice({
 
     // Delete a chirp in the list of chirps
     deleteChirp: {
-      prepare(laoId: Hash, chirp: ChirpState) {
+      prepare(laoId: Hash, chirp: Chirp) {
         return {
           payload: {
             laoId: laoId.valueOf(),
-            chirp: chirp,
+            chirp: chirp.toState(),
           },
         };
       },
@@ -168,11 +168,11 @@ const socialSlice = createSlice({
 
     // Add reactions to a chirp
     addReaction: {
-      prepare(laoId: Hash, reaction: ReactionState) {
+      prepare(laoId: Hash, reaction: Reaction) {
         return {
           payload: {
             laoId: laoId.valueOf(),
-            reaction: reaction,
+            reaction: reaction.toState(),
           },
         };
       },

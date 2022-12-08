@@ -174,7 +174,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <View style={styles.reactionView}>
                   <PoPIconButton
                     name="options"
-                    testID="options"
+                    testID="chirp_action_options"
                     onPress={() => showActionSheet(actionSheetOptions)}
                     size="small"
                     toolbar

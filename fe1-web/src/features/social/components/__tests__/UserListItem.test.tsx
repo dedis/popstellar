@@ -48,7 +48,12 @@ describe('UserListItem', () => {
     const button = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <UserListItem laoId={laoId} publicKey={publicKey} />
+          <UserListItem
+            laoId={laoId}
+            publicKey={publicKey}
+            isFirstItem={false}
+            isLastItem={false}
+          />
         </FeatureContext.Provider>
       </Provider>,
     ).getByText(STRINGS.follow_button);
@@ -67,7 +72,12 @@ describe('UserListItem', () => {
     const { getByText } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <UserListItem laoId={laoId} publicKey={publicKey} />
+          <UserListItem
+            laoId={laoId}
+            publicKey={publicKey}
+            isFirstItem={false}
+            isLastItem={false}
+          />
         </FeatureContext.Provider>
       </Provider>,
     );
@@ -85,7 +95,12 @@ describe('UserListItem', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <UserListItem laoId={laoId} publicKey={publicKey} />
+          <UserListItem
+            laoId={laoId}
+            publicKey={publicKey}
+            isFirstItem={false}
+            isLastItem={false}
+          />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();
@@ -96,7 +111,12 @@ describe('UserListItem', () => {
     const { toJSON, getByText } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <UserListItem laoId={laoId} publicKey={publicKey} />
+          <UserListItem
+            laoId={laoId}
+            publicKey={publicKey}
+            isFirstItem={false}
+            isLastItem={false}
+          />
         </FeatureContext.Provider>
       </Provider>,
     );
