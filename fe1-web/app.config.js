@@ -18,7 +18,7 @@ module.exports = {
     updates: {
       fallbackToCacheTimeout: 0,
     },
-    assetBundlePatterns: ['**/*'],
+    assetBundlePatterns: ["./src/resources/**/*"],
     ios: {
       supportsTablet: true,
     },
