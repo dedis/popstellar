@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
@@ -7,13 +7,9 @@ import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { SocialMediaContext } from 'features/social/context';
-import STRINGS from 'resources/strings';
 
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
-import {
-  requestAddReaction as mockRequestAddReaction,
-  requestDeleteChirp as mockRequestDeleteChirp,
-} from '../../network/SocialMessageApi';
+import { requestAddReaction as mockRequestAddReaction } from '../../network/SocialMessageApi';
 import { Chirp } from '../../objects';
 import ChirpCard from '../ChirpCard';
 
