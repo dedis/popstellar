@@ -61,7 +61,7 @@ describe('Home', () => {
   it('renders correctly with an non-empty list of LAOs', () => {
     // setup mock store
     const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
-    mockStore.dispatch(addLao({ lao: mockLao.toState() }));
+    mockStore.dispatch(addLao(mockLao));
     // ensure the mock store contains the mock lao
     expect(selectLaosList(mockStore.getState())).toEqual([mockLao]);
 

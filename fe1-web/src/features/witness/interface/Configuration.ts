@@ -52,19 +52,21 @@ export interface WitnessConfiguration {
    * Creates an action to add a notification to the redux store
    * @returns A redux action that can be dispatched
    */
-  addNotification: (notification: Omit<WitnessFeature.Notification, 'id'>) => AnyAction;
+  addNotification: (
+    notification: Omit<WitnessFeature.NotificationState, 'id' | 'hasBeenRead'>,
+  ) => AnyAction;
 
   /**
    * Creates an action that marks a message as read inside the redux store
    * @returns A redux action that can be dispatched
    */
-  markNotificationAsRead: (args: { laoId: string; notificationId: number }) => AnyAction;
+  markNotificationAsRead: (args: { laoId: Hash; notificationId: number }) => AnyAction;
 
   /**
    * Creates an action to discard a notification
    * @returns A redux action that can be dispatched
    */
-  discardNotifications: (args: { laoId: string; notificationIds: number[] }) => AnyAction;
+  discardNotifications: (args: { laoId: Hash; notificationIds: number[] }) => AnyAction;
 }
 
 /**
@@ -85,9 +87,11 @@ export type WitnessReactContext = Pick<
  */
 export interface WitnessInterface extends FeatureInterface {
   notificationTypes: {
-    isOfType: (notification: WitnessFeature.Notification) => boolean;
+    isOfType: (
+      notification: WitnessFeature.Notification | WitnessFeature.NotificationState,
+    ) => boolean;
 
-    delete?: (notification: WitnessFeature.Notification) => void;
+    delete?: (notification: WitnessFeature.NotificationState) => void;
 
     Component: React.ComponentType<{
       notification: WitnessFeature.Notification;

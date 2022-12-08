@@ -30,7 +30,7 @@ const contextValue = {
 };
 
 const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
-mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+mockStore.dispatch(setCurrentLao(mockLao));
 
 describe('ConnectNavigation', () => {
   it('renders correctly', () => {

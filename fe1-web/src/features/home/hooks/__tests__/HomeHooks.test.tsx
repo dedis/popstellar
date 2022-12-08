@@ -49,7 +49,7 @@ const contextValue = {
 
 // setup mock store
 const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
-mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+mockStore.dispatch(setCurrentLao(mockLao));
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <Provider store={mockStore}>

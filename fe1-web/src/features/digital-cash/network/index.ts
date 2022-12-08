@@ -17,15 +17,10 @@ export * from './DigitalCashMessageApi';
  */
 export function configureNetwork(
   registry: MessageRegistry,
-  getLaoOrganizer: (laoId: string) => PublicKey | undefined,
+  getLaoOrganizer: (laoId: Hash) => PublicKey | undefined,
 ) {
   const addTransactionToState = (laoId: Hash, transaction: Transaction) => {
-    dispatch(
-      addTransaction({
-        laoId: laoId.valueOf(),
-        transactionState: transaction.toState(),
-      }),
-    );
+    dispatch(addTransaction(laoId, transaction));
   };
 
   registry.add(

@@ -29,7 +29,7 @@ import STRINGS from 'resources/strings';
 import { EvotingHooks } from '../hooks';
 import { EvotingFeature } from '../interface';
 import { requestCreateElection } from '../network/ElectionMessageApi';
-import { ElectionVersion, Question } from '../objects';
+import { ElectionVersion, Question, QuestionState } from '../objects';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
@@ -48,7 +48,7 @@ type NavigationProps = CompositeScreenProps<
 // does not yet contain the id of the questions, this is computed
 // only on creation of the election
 // ALSO: for now the write_in feature is disabled (2022-03-16, Tyratox)
-type NewQuestion = Omit<Question, 'id' | 'write_in'>;
+type NewQuestion = Omit<QuestionState, 'id' | 'write_in'>;
 
 const EMPTY_QUESTION: NewQuestion = {
   question: '',
@@ -91,20 +91,19 @@ const createElection = (
   const now = Timestamp.EpochNow();
 
   // compute the id for the new election
-  const electionId = Hash.fromStringArray(
-    EventTags.ELECTION,
-    laoId.toString(),
-    now.toString(),
-    electionName,
-  );
+  const electionId = Hash.fromArray(EventTags.ELECTION, laoId, now, electionName);
 
   // compute the id for all questions and add the write_in property
-  const questionsWithId = questions.map((item) => ({
-    ...item,
-    id: Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), item.question).toString(),
-    // for now the write_in feature is disabled (2022-03-16, Tyratox)
-    write_in: false,
-  }));
+  const questionsWithId = questions.map((item) =>
+    Question.fromState({
+      id: Hash.fromArray(EventTags.QUESTION, electionId, item.question).toString(),
+      question: item.question,
+      ballot_options: item.ballot_options,
+      voting_method: item.voting_method,
+      // for now the write_in feature is disabled (2022-03-16, Tyratox)
+      write_in: false,
+    }),
+  );
 
   return requestCreateElection(
     laoId,

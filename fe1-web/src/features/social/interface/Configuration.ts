@@ -54,14 +54,14 @@ export interface SocialConfiguration {
    * @param rollCallId
    * @returns The roll call or undefined if not found
    */
-  useRollCallById: (rollCallId: Hash | string | undefined) => SocialFeature.RollCall | undefined;
+  useRollCallById: (rollCallId?: Hash) => SocialFeature.RollCall | undefined;
 
   /**
    * Gets the list of attendees for a roll call. Should be used inside react components.
    * @param rollCallId - The id of the roll call
    * @returns The list of public keys of the attendees
    */
-  useRollCallAttendeesById: (rollCallId: Hash | string | undefined) => PublicKey[];
+  useRollCallAttendeesById: (rollCallId?: Hash) => PublicKey[];
 
   /* Events */
 

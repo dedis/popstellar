@@ -35,11 +35,8 @@ export namespace RollCallHooks {
    */
   export const useConnectedToLao = () => useRollCallContext().useConnectedToLao();
 
-  export const useRollCallById = (rollCallId: Hash | string | undefined) => {
-    const rollCallSelector = useMemo(
-      () => makeRollCallSelector(rollCallId?.valueOf()),
-      [rollCallId],
-    );
+  export const useRollCallById = (rollCallId: Hash | undefined) => {
+    const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
     return useSelector(rollCallSelector);
   };
 
@@ -47,9 +44,9 @@ export namespace RollCallHooks {
    * Gets the list of attendees for a roll call.
    * @param rollCallId - The id of the roll call
    */
-  export const useAttendeesByRollCallId = (rollCallId: Hash | string | undefined) => {
+  export const useAttendeesByRollCallId = (rollCallId: Hash | undefined) => {
     const rollCallAttendeesSelector = useMemo(
-      () => makeRollCallAttendeesListSelector(rollCallId?.valueOf()),
+      () => makeRollCallAttendeesListSelector(rollCallId),
       [rollCallId],
     );
     return useSelector(rollCallAttendeesSelector);
@@ -66,7 +63,7 @@ export namespace RollCallHooks {
   export const useHasSeed = () => useRollCallContext().hasSeed;
 
   export const useRollCallsByLaoId = (
-    laoId: Hash | string,
+    laoId: Hash,
   ): {
     [rollCallId: string]: RollCall;
   } => {
@@ -93,7 +90,7 @@ export namespace RollCallHooks {
     return useSelector(rollCallByIdSelector);
   };
 
-  export const useRollCallTokensByLaoId = (laoId: Hash | string): RollCallToken[] => {
+  export const useRollCallTokensByLaoId = (laoId: Hash): RollCallToken[] => {
     const rollCalls = useRollCallsByLaoId(laoId);
     const generate = useRollCallContext().generateToken;
 
@@ -134,8 +131,8 @@ export namespace RollCallHooks {
   };
 
   export const useRollCallTokenByRollCallId = (
-    laoId: Hash | string,
-    rollCallId: string,
+    laoId: Hash,
+    rollCallId?: Hash,
   ): RollCallToken | undefined => {
     const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
     const rollCall = useSelector(rollCallSelector);

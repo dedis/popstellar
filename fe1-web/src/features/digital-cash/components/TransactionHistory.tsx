@@ -192,8 +192,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
 };
 
 const propTypes = {
-  laoId: PropTypes.oneOfType([PropTypes.instanceOf(Hash).isRequired, PropTypes.string.isRequired])
-    .isRequired,
+  laoId: PropTypes.instanceOf(Hash).isRequired,
 };
 
 TransactionHistory.propTypes = propTypes;

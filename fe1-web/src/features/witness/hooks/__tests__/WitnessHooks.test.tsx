@@ -2,7 +2,7 @@ import { describe } from '@jest/globals';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 
-import { mockLaoIdHash } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { WitnessReactContext, WITNESS_FEATURE_IDENTIFIER } from 'features/witness/interface';
 
@@ -15,7 +15,7 @@ const markNotificationAsRead = jest.fn();
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     enabled: true,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     addNotification,
     discardNotifications,
@@ -35,7 +35,7 @@ describe('WitnessHooks', () => {
       const { result } = renderHook(() => WitnessHooks.useCurrentLaoId(), {
         wrapper,
       });
-      expect(result.current).toEqual(mockLaoIdHash);
+      expect(result.current).toEqual(mockLaoId);
     });
   });
 

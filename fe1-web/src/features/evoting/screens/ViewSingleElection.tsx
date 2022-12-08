@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { Hash } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import ElectionNotStarted from '../components/ElectionNotStarted';
@@ -32,7 +33,7 @@ const ViewSingleElection = () => {
   const route = useRoute<NavigationProps['route']>();
   const { eventId: electionId, isOrganizer } = route.params;
 
-  const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
+  const selectElection = useMemo(() => makeElectionSelector(new Hash(electionId)), [electionId]);
   const election = useSelector(selectElection);
   const isConnected = EvotingHooks.useConnectedToLao();
 

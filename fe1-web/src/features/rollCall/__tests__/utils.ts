@@ -1,4 +1,4 @@
-import { mockKeyPair, mockLaoIdHash, mockPopToken } from '__tests__/utils';
+import { mockKeyPair, mockLaoId, mockPopToken } from '__tests__/utils';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { CreateRollCall, OpenRollCall } from '../network/messages';
@@ -13,11 +13,7 @@ const mockRollCallTimestampEnd = new Timestamp(1620357600);
 const mockRollCallAttendees = [mockKeyPair.publicKey, mockPopToken.publicKey];
 
 export const mockRollCall = new RollCall({
-  id: CreateRollCall.computeRollCallId(
-    mockLaoIdHash,
-    mockRollCallTimestampCreation,
-    mockRollCallName,
-  ),
+  id: CreateRollCall.computeRollCallId(mockLaoId, mockRollCallTimestampCreation, mockRollCallName),
   start: mockRollCallTimestampStart,
   end: mockRollCallTimestampEnd,
   name: mockRollCallName,
@@ -37,11 +33,7 @@ const mockRollCall2Location = 'on pluto';
 
 // same roll id as 'mockRollCall' but a different location
 export const mockRollCall2 = new RollCall({
-  id: CreateRollCall.computeRollCallId(
-    mockLaoIdHash,
-    mockRollCallTimestampCreation,
-    mockRollCallName,
-  ),
+  id: CreateRollCall.computeRollCallId(mockLaoId, mockRollCallTimestampCreation, mockRollCallName),
   start: mockRollCallTimestampStart,
   end: mockRollCallTimestampEnd,
   name: mockRollCallName,
@@ -63,7 +55,7 @@ const mockRollCallWithAliasOpenedAt = new Timestamp(1620357600);
 export const mockRollCallWithAlias = new RollCall({
   id: mockRollCall.id,
   idAlias: OpenRollCall.computeOpenRollCallId(
-    mockLaoIdHash,
+    mockLaoId,
     mockRollCall.id,
     mockRollCallWithAliasOpenedAt,
   ),

@@ -2,7 +2,7 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoIdHash } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { makeEventByTypeSelector } from 'features/events/reducer';
 import { RollCallReactContext, ROLLCALL_FEATURE_IDENTIFIER } from 'features/rollCall/interface';
@@ -11,7 +11,7 @@ import CreateRollCall from '../CreateRollCall';
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     makeEventByTypeSelector,
     generateToken: jest.fn(),

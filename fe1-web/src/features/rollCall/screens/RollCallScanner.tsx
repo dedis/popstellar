@@ -12,6 +12,7 @@ import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { Hash } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -58,7 +59,7 @@ const RollCallOpened = () => {
   const laoId = RollCallHooks.useCurrentLaoId();
   const generateToken = RollCallHooks.useGenerateToken();
 
-  const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
+  const rollCallSelector = useMemo(() => makeRollCallSelector(new Hash(rollCallId)), [rollCallId]);
   const rollCall = useSelector(rollCallSelector);
 
   // this is needed as otherwise the camera may stay turned on

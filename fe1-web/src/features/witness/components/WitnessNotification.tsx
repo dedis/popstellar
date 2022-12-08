@@ -6,13 +6,17 @@ import { useSelector } from 'react-redux';
 import { PoPTextButton } from 'core/components';
 import { makeIcon } from 'core/components/PoPIcon';
 import { makeMessageSelector } from 'core/network/ingestion';
+import { Hash } from 'core/objects';
 import { dispatch } from 'core/redux';
-import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
 import { WitnessHooks } from '../hooks';
 import { WitnessFeature } from '../interface';
 import { requestWitnessMessage } from '../network/WitnessMessageApi';
+import {
+  MessageToWitnessNotification,
+  MessageToWitnessNotificationState,
+} from '../objects/MessageToWitnessNotification';
 import { removeMessageToWitness } from '../reducer';
 
 const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPropTypes) => {
@@ -31,9 +35,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   // if the notification state somehow gets out of sync, remove the corresponding notification
   useEffect(() => {
     if (!message) {
-      dispatch(
-        discardNotifications({ laoId: laoId.valueOf(), notificationIds: [notification.id] }),
-      );
+      dispatch(discardNotifications({ laoId, notificationIds: [notification.id] }));
       navigateToNotificationScreen();
       console.warn(
         `There was a notification with id ${notification.id} in the redux store referencing a message id (${notification.messageId}) that is not (no longer?) stored`,
@@ -50,20 +52,18 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
 
   const onWitness = () => {
     if (message) {
-      dispatch(
-        discardNotifications({ laoId: laoId.valueOf(), notificationIds: [notification.id] }),
-      );
+      dispatch(discardNotifications({ laoId, notificationIds: [notification.id] }));
       if (isEnabled) {
         requestWitnessMessage(message.channel, message.message_id);
       }
-      dispatch(removeMessageToWitness(message.message_id.valueOf()));
+      dispatch(removeMessageToWitness(message.message_id));
       navigateToNotificationScreen();
     }
   };
 
   const onDecline = () => {
     if (message) {
-      dispatch(markNotificationAsRead({ laoId: laoId.valueOf(), notificationId: notification.id }));
+      dispatch(markNotificationAsRead({ laoId, notificationId: notification.id }));
       navigateToNotificationScreen();
     }
   };
@@ -83,7 +83,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
 };
 
 const propTypes = {
-  notification: PROPS_TYPE.notification.isRequired,
+  notification: PropTypes.instanceOf(MessageToWitnessNotification).isRequired,
   navigateToNotificationScreen: PropTypes.func.isRequired,
 };
 WitnessNotification.propTypes = propTypes;
@@ -99,17 +99,25 @@ export const WitnessNotificationType = {
    * @returns True if the notification is a witness notification, false otherwise
    */
   isOfType: (
-    notification: WitnessFeature.Notification,
-  ): notification is WitnessFeature.MessageToWitnessNotification =>
+    notification: WitnessFeature.Notification | WitnessFeature.NotificationState,
+  ): notification is MessageToWitnessNotification =>
     'type' in notification &&
     notification.type === WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
+
+  fromState: MessageToWitnessNotification.fromState,
 
   /**
    * Custom cleanup function that removes the message from the witness store
    */
-  delete: ((notification: WitnessFeature.MessageToWitnessNotification) => {
-    dispatch(removeMessageToWitness(notification.messageId.valueOf()));
-  }) as (notification: WitnessFeature.Notification) => void,
+  delete: (notification: WitnessFeature.NotificationState | MessageToWitnessNotificationState) => {
+    if (!('messageId' in notification)) {
+      throw new Error(
+        `MessageToWitnessNotificationState.delete called on notification of type '${notification.type}'`,
+      );
+    }
+
+    dispatch(removeMessageToWitness(new Hash(notification.messageId)));
+  },
 
   /**
    * The component to render the witness notification

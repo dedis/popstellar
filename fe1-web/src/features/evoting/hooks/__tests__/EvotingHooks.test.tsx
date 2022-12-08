@@ -4,11 +4,10 @@ import React from 'react';
 
 import {
   mockLao,
-  mockLaoIdHash,
+  mockLaoId,
   messageRegistryInstance,
   mockReduxAction,
   mockKeyPair,
-  mockLaoId,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EvotingReactContext, EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
@@ -20,7 +19,7 @@ const onConfirmEventCreation = jest.fn();
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => false,
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
@@ -46,7 +45,7 @@ describe('EvotingHooks', () => {
   describe('useCurrentLaoId', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => EvotingHooks.useCurrentLaoId(), { wrapper });
-      expect(result.current).toEqual(mockLaoIdHash);
+      expect(result.current).toEqual(mockLaoId);
     });
   });
 

@@ -26,8 +26,8 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
 
-  const isWitnessSelector = makeIsLaoWitnessSelector(lao.id.valueOf());
-  const isOrganizerSelector = makeIsLaoOrganizerSelector(lao.id.valueOf());
+  const isWitnessSelector = makeIsLaoWitnessSelector(lao.id);
+  const isOrganizerSelector = makeIsLaoOrganizerSelector(lao.id);
 
   const isWitness = useSelector(isWitnessSelector);
   const isOrganizer = useSelector(isOrganizerSelector);
@@ -57,7 +57,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
         params: { screen: STRINGS.navigation_lao_events_home },
       });
     } catch (err) {
-      dispatch(setCurrentLao({ lao: lao.toState(), connected: false }));
+      dispatch(setCurrentLao(lao, false));
 
       navigation.navigate(STRINGS.navigation_app_lao, {
         screen: STRINGS.navigation_lao_events,

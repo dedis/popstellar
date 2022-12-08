@@ -52,27 +52,45 @@ const laosSlice = createSlice({
   initialState,
   reducers: {
     // Add a LAO to the list of known LAOs
-    addLao: addLaoReducer,
+    addLao: {
+      prepare: (lao: Lao) => ({ payload: { lao: lao.toState() } }),
+      reducer: addLaoReducer,
+    },
 
     // Update a LAO
-    updateLao: (state: Draft<LaoReducerState>, action: PayloadAction<{ lao: LaoState }>) => {
-      const updatedLao = action.payload.lao;
+    updateLao: {
+      prepare: (laoId: Hash, laoUpdate: Partial<LaoState>) => ({
+        payload: { laoId: laoId.valueOf(), laoUpdate },
+      }),
+      reducer: (
+        state: Draft<LaoReducerState>,
+        action: PayloadAction<{ laoId: string; laoUpdate: Partial<LaoState> }>,
+      ) => {
+        const { laoId, laoUpdate } = action.payload;
 
-      if (!(updatedLao.id in state.byId)) {
-        return;
-      }
+        if (!(laoId in state.byId)) {
+          return;
+        }
 
-      state.byId[updatedLao.id] = updatedLao;
+        const updatedLao: LaoState = { ...state.byId[laoId], ...laoUpdate };
+
+        state.byId[updatedLao.id] = updatedLao;
+      },
     },
 
     // Remove a LAO to the list of known LAOs
-    removeLao: (state, action: PayloadAction<{ laoId: Hash }>) => {
-      const laoId = action.payload.laoId.valueOf();
+    removeLao: {
+      prepare: (laoId: Hash) => ({
+        payload: { laoId: laoId.valueOf() },
+      }),
+      reducer: (state, action: PayloadAction<{ laoId: string }>) => {
+        const { laoId } = action.payload;
 
-      if (laoId in state.byId) {
-        delete state.byId[laoId];
-        state.allIds = state.allIds.filter((id) => id !== laoId);
-      }
+        if (laoId in state.byId) {
+          delete state.byId[laoId];
+          state.allIds = state.allIds.filter((id) => id !== laoId);
+        }
+      },
     },
 
     // Empty the list of known LAOs ("reset")
@@ -85,14 +103,19 @@ const laosSlice = createSlice({
 
     // Connect to a LAO for a given ID
     // Warning: this action is only accepted if we are not already connected to a LAO
-    setCurrentLao: (state, action: PayloadAction<{ lao: LaoState; connected?: boolean }>) => {
-      addLaoReducer(state, action);
+    setCurrentLao: {
+      prepare: (lao: Lao, connected: boolean | undefined = undefined) => ({
+        payload: { lao: lao.toState(), connected },
+      }),
+      reducer: (state, action: PayloadAction<{ lao: LaoState; connected?: boolean }>) => {
+        addLaoReducer(state, action);
 
-      if (state.currentId === undefined) {
-        const { lao } = action.payload;
-        state.currentId = lao.id;
-        state.connected = action.payload.connected !== false;
-      }
+        if (state.currentId === undefined) {
+          const { lao } = action.payload;
+          state.currentId = lao.id;
+          state.connected = action.payload.connected !== false;
+        }
+      },
     },
 
     // Disconnected from the current LAO (idempotent)
@@ -103,7 +126,7 @@ const laosSlice = createSlice({
 
     // Add a LAO server address
     addLaoServerAddress: {
-      prepare(laoId: Hash | string, serverAddress: string) {
+      prepare(laoId: Hash, serverAddress: string) {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -134,7 +157,7 @@ const laosSlice = createSlice({
 
     // Add a subscribed to channel
     addSubscribedChannel: {
-      prepare(laoId: Hash | string, channel: string) {
+      prepare(laoId: Hash, channel: string) {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -165,7 +188,7 @@ const laosSlice = createSlice({
 
     // Add a subscribed to channel
     removeSubscribedChannel: {
-      prepare(laoId: Hash | string, channel: string) {
+      prepare(laoId: Hash, channel: string) {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -195,15 +218,13 @@ const laosSlice = createSlice({
 
     // Update the last roll call observed in the LAO and for which we have a token
     setLaoLastRollCall: {
-      prepare(laoId: Hash | string, rollCallId: Hash | string, hasToken: boolean): any {
-        return {
-          payload: {
-            laoId: laoId.valueOf(),
-            rollCallId: rollCallId.valueOf(),
-            hasToken: hasToken,
-          },
-        };
-      },
+      prepare: (laoId: Hash, rollCallId: Hash, hasToken: boolean) => ({
+        payload: {
+          laoId: laoId.valueOf(),
+          rollCallId: rollCallId.valueOf(),
+          hasToken: hasToken,
+        },
+      }),
       reducer(
         state,
         action: PayloadAction<{
@@ -287,14 +308,15 @@ export function makeLao() {
  * @param laoId The id of the lao
  * @param state The redux state
  */
-export const getLaoById = (laoId: string, state: unknown) => {
+export const getLaoById = (laoId: Hash | undefined, state: unknown) => {
   const laoMap = getLaosState(state).byId;
+  const serializedLaoId = laoId?.valueOf();
 
-  if (!(laoId in laoMap)) {
+  if (!serializedLaoId || !(serializedLaoId in laoMap)) {
     return undefined;
   }
 
-  return Lao.fromState(laoMap[laoId]);
+  return Lao.fromState(laoMap[serializedLaoId]);
 };
 
 /**
@@ -368,12 +390,12 @@ export const selectLaosMap = createSelector(
  * of the given lao. Defaults to the current lao.
  * @param laoId Id of the lao the selector should be created for
  */
-export const makeIsLaoOrganizerSelector = (laoId?: string) =>
+export const makeIsLaoOrganizerSelector = (laoId?: Hash) =>
   createSelector(
     // First input: all LAOs map
     selectLaosById,
     // Second input: current LAO id
-    (state: any) => laoId || getLaosState(state)?.currentId,
+    (state: any) => laoId?.valueOf() || getLaosState(state)?.currentId,
     // Third input: the public key of the user
     (state: any) => getKeyPairState(state)?.keyPair?.publicKey,
     // Selector: returns whether the user is an organizer of the current lao
@@ -391,12 +413,12 @@ export const selectIsLaoOrganizer = makeIsLaoOrganizerSelector();
  * of the given lao. Defaults to the current lao.
  * @param laoId Id of the lao the selector should be created for
  */
-export const makeIsLaoWitnessSelector = (laoId?: string) =>
+export const makeIsLaoWitnessSelector = (laoId?: Hash) =>
   createSelector(
     // First input: all LAOs map
     selectLaosById,
     // Second input: current LAO id
-    (state: any) => laoId || getLaosState(state)?.currentId,
+    (state: any) => laoId?.valueOf() || getLaosState(state)?.currentId,
     // Third input: the public key of the user
     (state: any) => getKeyPairState(state)?.keyPair?.publicKey,
     // Selector: returns whether the user is a witness of the current lao

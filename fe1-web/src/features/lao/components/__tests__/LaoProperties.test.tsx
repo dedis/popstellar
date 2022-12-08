@@ -11,7 +11,7 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
 import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LAO_FEATURE_IDENTIFIER, LaoReactContext } from 'features/lao/interface';
-import { LaoState } from 'features/lao/objects';
+import { Lao, LaoState } from 'features/lao/objects';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import LaoProperties from '../LaoProperties';
@@ -39,7 +39,7 @@ describe('LaoProperties', () => {
         ...keyPairReducer,
       }),
     });
-    mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+    mockStore.dispatch(setCurrentLao(mockLao));
     mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
 
     const component = render(
@@ -60,12 +60,12 @@ describe('LaoProperties', () => {
       }),
     });
     mockStore.dispatch(
-      setCurrentLao({
-        lao: {
+      setCurrentLao(
+        Lao.fromState({
           ...mockLao.toState(),
           witnesses: [mockPopToken.publicKey.valueOf()],
-        } as LaoState,
-      }),
+        } as LaoState),
+      ),
     );
     mockStore.dispatch(setKeyPair(mockPopToken.toState()));
 
@@ -86,7 +86,7 @@ describe('LaoProperties', () => {
         ...keyPairReducer,
       }),
     });
-    mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+    mockStore.dispatch(setCurrentLao(mockLao));
     mockStore.dispatch(setKeyPair(mockPopToken.toState()));
 
     const component = render(

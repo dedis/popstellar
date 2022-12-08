@@ -35,7 +35,7 @@ const mockStore = configureStore({
     ...keyPairReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+mockStore.dispatch(setCurrentLao(mockLao));
 mockStore.dispatch(setKeyPair(mockPopToken.toState()));
 
 describe('EventsScreen', () => {

@@ -28,7 +28,7 @@ const SocialProfile = () => {
   }
 
   const userChirps = useMemo(
-    () => makeChirpsListOfUser(laoId.valueOf())(currentUserPopTokenPublicKey),
+    () => makeChirpsListOfUser(laoId)(currentUserPopTokenPublicKey),
     [currentUserPopTokenPublicKey, laoId],
   );
   const userChirpList = useSelector(userChirps);

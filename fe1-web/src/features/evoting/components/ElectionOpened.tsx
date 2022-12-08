@@ -36,15 +36,12 @@ const ElectionOpened = ({ election, isConnected, isOrganizer }: IPropTypes) => {
       // this makes the reduce efficient. creating a new object
       // in every iteration is not necessary
       // eslint-disable-next-line no-param-reassign
-      obj[question.id] = true;
+      obj[question.id.toString()] = true;
       return obj;
     }, {} as Record<string, boolean | undefined>),
   );
 
-  const electionKeySelector = useMemo(
-    () => makeElectionKeySelector(election.id.valueOf()),
-    [election.id],
-  );
+  const electionKeySelector = useMemo(() => makeElectionKeySelector(election.id), [election.id]);
   const electionKey = useSelector(electionKeySelector);
 
   const canCastVote = !!(election.version !== ElectionVersion.SECRET_BALLOT || electionKey);
@@ -136,66 +133,70 @@ const ElectionOpened = ({ election, isConnected, isOrganizer }: IPropTypes) => {
       <ElectionVersionNotice election={election} />
 
       <View style={[List.container, styles.questionList]}>
-        {election.questions.map((question, questionIndex) => (
-          <ListItem.Accordion
-            key={question.id}
-            containerStyle={List.accordionItem}
-            content={
-              <ListItem.Content>
-                <ListItem.Title style={[Typography.base, Typography.important]}>
-                  {question.question}
-                </ListItem.Title>
-              </ListItem.Content>
-            }
-            onPress={() =>
-              setIsQuestionOpen({
-                ...isQuestionOpen,
-                [question.id]: !isQuestionOpen[question.id],
-              })
-            }
-            isExpanded={!!isQuestionOpen[question.id]}>
-            {question.ballot_options.map((ballotOption, ballotOptionIndex) => {
-              const listStyle = List.getListItemStyles(
-                ballotOptionIndex === 0,
-                ballotOptionIndex === question.ballot_options.length - 1,
-              );
+        {election.questions.map((question, questionIndex) => {
+          const questionId = question.id.toString();
 
-              if (!isQuestionOpen[question.id]) {
-                listStyle.push(List.hiddenItem);
+          return (
+            <ListItem.Accordion
+              key={questionId}
+              containerStyle={List.accordionItem}
+              content={
+                <ListItem.Content>
+                  <ListItem.Title style={[Typography.base, Typography.important]}>
+                    {question.question}
+                  </ListItem.Title>
+                </ListItem.Content>
               }
+              onPress={() =>
+                setIsQuestionOpen({
+                  ...isQuestionOpen,
+                  [questionId]: !isQuestionOpen[questionId],
+                })
+              }
+              isExpanded={!!isQuestionOpen[questionId]}>
+              {question.ballot_options.map((ballotOption, ballotOptionIndex) => {
+                const listStyle = List.getListItemStyles(
+                  ballotOptionIndex === 0,
+                  ballotOptionIndex === question.ballot_options.length - 1,
+                );
 
-              const onPress = () => {
-                setSelectedBallots({
-                  ...selectedBallots,
-                  [questionIndex]: ballotOptionIndex,
-                });
-              };
+                if (!isQuestionOpen[questionId]) {
+                  listStyle.push(List.hiddenItem);
+                }
 
-              return (
-                <ListItem
-                  key={ballotOption}
-                  containerStyle={listStyle}
-                  style={listStyle}
-                  onPress={onPress}>
-                  <ListItem.CheckBox
-                    testID={`questions_${questionIndex}_ballots_option_${ballotOptionIndex}_checkbox`}
-                    size={Icon.size}
-                    checked={selectedBallots[questionIndex] === ballotOptionIndex}
-                    onPress={() =>
-                      setSelectedBallots({
-                        ...selectedBallots,
-                        [questionIndex]: ballotOptionIndex,
-                      })
-                    }
-                  />
-                  <ListItem.Content>
-                    <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>
-                  </ListItem.Content>
-                </ListItem>
-              );
-            })}
-          </ListItem.Accordion>
-        ))}
+                const onPress = () => {
+                  setSelectedBallots({
+                    ...selectedBallots,
+                    [questionIndex]: ballotOptionIndex,
+                  });
+                };
+
+                return (
+                  <ListItem
+                    key={ballotOption}
+                    containerStyle={listStyle}
+                    style={listStyle}
+                    onPress={onPress}>
+                    <ListItem.CheckBox
+                      testID={`questions_${questionIndex}_ballots_option_${ballotOptionIndex}_checkbox`}
+                      size={Icon.size}
+                      checked={selectedBallots[questionIndex] === ballotOptionIndex}
+                      onPress={() =>
+                        setSelectedBallots({
+                          ...selectedBallots,
+                          [questionIndex]: ballotOptionIndex,
+                        })
+                      }
+                    />
+                    <ListItem.Content>
+                      <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>
+                    </ListItem.Content>
+                  </ListItem>
+                );
+              })}
+            </ListItem.Accordion>
+          );
+        })}
       </View>
     </ScreenWrapper>
   );

@@ -43,7 +43,7 @@ const SocialUserProfile = () => {
     throw new Error('Impossible to render Social Profile, current lao id is undefined');
   }
 
-  const userChirps = makeChirpsListOfUser(laoId.valueOf())(userPublicKey);
+  const userChirps = makeChirpsListOfUser(laoId)(userPublicKey);
   const userChirpList = useSelector(userChirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (

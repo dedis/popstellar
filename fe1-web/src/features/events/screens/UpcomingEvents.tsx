@@ -14,7 +14,7 @@ import { makeEventListSelector } from '../reducer';
 
 const UpcomingEvents = () => {
   const laoId = EventHooks.useCurrentLaoId();
-  const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
+  const eventListSelector = useMemo(() => makeEventListSelector(laoId), [laoId]);
   const events = useSelector(eventListSelector);
 
   const [upcomingEvents, setEvents] = useState<EventState[]>(

@@ -4,7 +4,7 @@ import React from 'react';
 import MockNavigator from '__tests__/components/MockNavigator';
 import {
   mockLao,
-  mockLaoIdHash,
+  mockLaoId,
   messageRegistryInstance,
   mockReduxAction,
   mockKeyPair,
@@ -17,7 +17,7 @@ import CreateElection from '../CreateElection';
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
     getCurrentLao: () => mockLao,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     useCurrentLao: () => mockLao,
     addEvent: () => mockReduxAction,

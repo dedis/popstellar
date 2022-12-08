@@ -10,7 +10,6 @@ import {
   mockKeyPair,
   mockLao,
   mockLaoId,
-  mockLaoIdHash,
   mockReduxAction,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
@@ -58,7 +57,7 @@ mockStore.dispatch(addElection(mockElectionNotStarted.toState()));
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     useLaoOrganizerBackendPublicKey: () => mockKeyPair.publicKey,
     addEvent: () => mockReduxAction,

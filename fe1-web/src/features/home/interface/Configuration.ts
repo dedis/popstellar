@@ -18,14 +18,14 @@ export interface HomeCompositionConfiguration {
    * @param laoId The id of the lao whose channel should be returned
    * @returns The channel related to the passed lao id or undefined it the lao id is invalid
    */
-  getLaoChannel(laoId: string): Channel | undefined;
+  getLaoChannel(laoId: Hash): Channel | undefined;
 
   /**
    * Gets a lao from the store by its id
    * @param laoId The id of the lao
    * @returns A lao or undefined if none was found
    */
-  getLaoById(laoId: string): HomeFeature.Lao | undefined;
+  getLaoById(laoId: Hash): HomeFeature.Lao | undefined;
 
   /**
    * A hook returning if currently connected to a lao
@@ -58,7 +58,7 @@ export interface HomeCompositionConfiguration {
    * @param address The address that should be added
    * @returns A redux action
    */
-  addLaoServerAddress: (laoId: Hash | string, address: string) => AnyAction;
+  addLaoServerAddress: (laoId: Hash, address: string) => AnyAction;
 
   /* hooks */
 
@@ -120,7 +120,7 @@ export interface HomeInterface extends FeatureInterface {
      * @param laoId The lao id
      * @returns The encoded data
      */
-    encodeLaoConnectionForQRCode: (servers: string[], laoId: string) => string;
+    encodeLaoConnectionForQRCode: (servers: string[], laoId: Hash) => string;
   };
   context: HomeReactContext;
 }

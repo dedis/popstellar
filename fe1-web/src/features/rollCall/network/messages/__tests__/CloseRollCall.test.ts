@@ -4,7 +4,6 @@ import '__tests__/utils/matchers';
 import {
   configureTestFeatures,
   mockLaoId,
-  mockLaoIdHash,
   mockLaoName,
   mockPublicKey,
   mockPublicKey2,
@@ -15,18 +14,8 @@ import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
 import { CloseRollCall } from '../CloseRollCall';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const rollCallId = Hash.fromStringArray(
-  'R',
-  mockLaoId.toString(),
-  TIMESTAMP.toString(),
-  mockLaoName,
-);
-const rollCallCloseId = Hash.fromStringArray(
-  'R',
-  mockLaoId,
-  rollCallId.toString(),
-  TIMESTAMP.toString(),
-);
+const rollCallId = Hash.fromArray('R', mockLaoId, TIMESTAMP, mockLaoName);
+const rollCallCloseId = Hash.fromArray('R', mockLaoId, rollCallId, TIMESTAMP);
 const mockAttendees = [new PublicKey(mockPublicKey2), new PublicKey(mockPublicKey)];
 
 const sampleCloseRollCall: Partial<CloseRollCall> = {
@@ -53,9 +42,7 @@ beforeAll(() => {
 
 describe('CloseRollCall', () => {
   it('should be created correctly from Json', () => {
-    expect(new CloseRollCall(sampleCloseRollCall, mockLaoIdHash)).toBeJsonEqual(
-      sampleCloseRollCall,
-    );
+    expect(new CloseRollCall(sampleCloseRollCall, mockLaoId)).toBeJsonEqual(sampleCloseRollCall);
     const temp = {
       object: ObjectType.ROLL_CALL,
       action: ActionType.CLOSE,
@@ -64,12 +51,12 @@ describe('CloseRollCall', () => {
       closed_at: TIMESTAMP,
       attendees: mockAttendees,
     };
-    expect(new CloseRollCall(temp, mockLaoIdHash)).toBeJsonEqual(temp);
+    expect(new CloseRollCall(temp, mockLaoId)).toBeJsonEqual(temp);
   });
 
   it('should be parsed correctly from Json', () => {
     const obj = JSON.parse(closeRollCallJson);
-    expect(CloseRollCall.fromJson(obj, mockLaoIdHash)).toBeJsonEqual(sampleCloseRollCall);
+    expect(CloseRollCall.fromJson(obj, mockLaoId)).toBeJsonEqual(sampleCloseRollCall);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
@@ -81,7 +68,7 @@ describe('CloseRollCall', () => {
       closed_at: TIMESTAMP,
       attendees: mockAttendees,
     };
-    const createWrongObj = () => CloseRollCall.fromJson(obj, mockLaoIdHash);
+    const createWrongObj = () => CloseRollCall.fromJson(obj, mockLaoId);
     expect(createWrongObj).toThrow(ProtocolError);
   });
 
@@ -96,7 +83,7 @@ describe('CloseRollCall', () => {
             closes: rollCallId,
             attendees: mockAttendees,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -111,7 +98,7 @@ describe('CloseRollCall', () => {
             closes: rollCallId,
             closed_at: TIMESTAMP,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -126,7 +113,7 @@ describe('CloseRollCall', () => {
             closed_at: TIMESTAMP,
             attendees: mockAttendees,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -141,7 +128,7 @@ describe('CloseRollCall', () => {
             closed_at: TIMESTAMP,
             attendees: mockAttendees,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -157,7 +144,7 @@ describe('CloseRollCall', () => {
             closed_at: TIMESTAMP,
             attendees: mockAttendees,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });

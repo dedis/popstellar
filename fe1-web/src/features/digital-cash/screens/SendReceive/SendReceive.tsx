@@ -17,7 +17,7 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
-import { PublicKey } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -46,10 +46,14 @@ const SendReceive = () => {
   const laoId = DigitalCashHooks.useCurrentLaoId();
   const isConnected = DigitalCashHooks.useConnectedToLao();
 
-  const { rollCallId, isCoinbase, scannedPoPToken } = route.params;
+  const { rollCallId: serializedRollCallId, isCoinbase, scannedPoPToken } = route.params;
+  const rollCallId = useMemo(
+    () => (serializedRollCallId ? new Hash(serializedRollCallId) : undefined),
+    [serializedRollCallId],
+  );
 
   // will be undefined for the organizer
-  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId || '');
+  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
 
   const allRollCalls = DigitalCashHooks.useRollCallsByLaoId(laoId);
 
@@ -59,8 +63,13 @@ const SendReceive = () => {
   );
 
   // will always be '' in non-coinbase transactions, indicates a single beneficiary
-  const [selectedRollCallId, setSelectedRollCallId] = useState<string>('');
-  const selectedRollCall = DigitalCashHooks.useRollCallById(selectedRollCallId || '');
+  const [serializedSelectedRollCallId, setSerializedSelectedRollCallId] = useState<string>('');
+  const selectedRollCallId = useMemo(
+    () => new Hash(serializedSelectedRollCallId),
+    [serializedSelectedRollCallId],
+  );
+
+  const selectedRollCall = DigitalCashHooks.useRollCallById(selectedRollCallId);
 
   const [beneficiary, setBeneficiary] = useState('');
   const [amount, setAmount] = useState('');
@@ -78,7 +87,7 @@ const SendReceive = () => {
     }
 
     if (rollCallToken) {
-      return makeBalanceSelector(laoId, rollCallToken.token.publicKey.valueOf());
+      return makeBalanceSelector(laoId, rollCallToken.token.publicKey);
     }
 
     return () => 0;
@@ -123,7 +132,7 @@ const SendReceive = () => {
   const sendCoinbaseTransaction = () => {
     let beneficiaries: PublicKey[] = [];
 
-    if (selectedRollCallId !== '') {
+    if (serializedSelectedRollCallId !== '') {
       if (!selectedRollCall) {
         throw new Error(
           'Something went terribly wrong, an invalid roll call id could be selected by the user!',
@@ -196,10 +205,10 @@ const SendReceive = () => {
         </Text>
         {isCoinbase && (
           <DropdownSelector
-            selected={selectedRollCallId}
+            selected={serializedSelectedRollCallId}
             onChange={(value) => {
               if (value !== null) {
-                setSelectedRollCallId(value);
+                setSerializedSelectedRollCallId(value);
               }
             }}
             options={[
@@ -214,13 +223,13 @@ const SendReceive = () => {
             ]}
           />
         )}
-        {selectedRollCallId === '' && (
+        {serializedSelectedRollCallId === '' && (
           <ScannerInput
             value={beneficiary}
             onChange={setBeneficiary}
             onPress={() => {
               navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
-                rollCallId: rollCallId,
+                rollCallId: rollCallId?.valueOf(),
                 isCoinbase: isCoinbase,
               });
             }}
@@ -256,9 +265,13 @@ export const SendReceiveHeaderRight = () => {
   const route = useRoute<NavigationProps['route']>();
   const laoId = DigitalCashHooks.useCurrentLaoId();
 
-  const { rollCallId, isCoinbase } = route.params;
+  const { rollCallId: serializedRollCallId, isCoinbase } = route.params;
+  const rollCallId = useMemo(
+    () => (serializedRollCallId ? new Hash(serializedRollCallId) : undefined),
+    [serializedRollCallId],
+  );
 
-  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId || '');
+  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
 
   const popToken = useMemo(() => rollCallToken?.token.publicKey.valueOf() || '', [rollCallToken]);
 

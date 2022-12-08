@@ -1,4 +1,8 @@
-import { Hash, Timestamp } from 'core/objects';
+import { Hash, HashState, Timestamp, TimestampState } from 'core/objects';
+
+import { Question, QuestionState } from './Question';
+import { QuestionResult, QuestionResultState } from './QuestionResult';
+import { RegisteredVote, RegisteredVoteState } from './RegisteredVote';
 
 /**
  * Object to represent an election and all its components.
@@ -17,59 +21,21 @@ export enum ElectionVersion {
 }
 
 export interface ElectionState {
-  id: string;
-  lao: string;
+  id: HashState;
+  lao: HashState;
   name: string;
   version: ElectionVersion;
-  createdAt: number;
-  start: number;
-  end: number;
-  questions: Question[];
+  createdAt: TimestampState;
+  start: TimestampState;
+  end: TimestampState;
+  questions: QuestionState[];
   electionStatus: ElectionStatus;
-  registeredVotes: RegisteredVote[];
-  questionResult?: QuestionResult[];
-}
-
-export interface Question {
-  id: string;
-  question: string;
-  voting_method: string;
-  ballot_options: string[];
-  // cannot remove this here as the protocol still requires the property to be there
-  write_in: boolean;
-}
-
-export interface Vote {
-  id: string;
-  question: string;
-  vote: number;
-}
-
-export interface EncryptedVote {
-  id: string;
-  question: string;
-  vote: string;
+  registeredVotes: RegisteredVoteState[];
+  questionResult?: QuestionResultState[];
 }
 
 // This type ensures that for each question there is a unique set of option indices
 export type SelectedBallots = { [questionIndex: number]: number };
-
-export interface RegisteredVote {
-  createdAt: number;
-  sender: string;
-  votes: Vote[] | EncryptedVote[];
-  messageId: string;
-}
-
-export interface MajorityResult {
-  ballotOption: string;
-  count: number;
-}
-
-export interface QuestionResult {
-  id: string;
-  result: MajorityResult[];
-}
 
 export class Election {
   public static EVENT_TYPE = 'ELECTION';
@@ -148,30 +114,42 @@ export class Election {
   }
 
   /**
+   * Creates an ElectionState from the current Election object.
+   */
+  public toState(): ElectionState {
+    return {
+      lao: this.lao.toState(),
+      id: this.id.toState(),
+      name: this.name,
+      version: this.version,
+      createdAt: this.createdAt.toState(),
+      start: this.start.toState(),
+      end: this.end.toState(),
+      questions: this.questions.map((q) => q.toState()),
+      registeredVotes: this.registeredVotes.map((vote) => vote.toState()),
+      electionStatus: this.electionStatus,
+      questionResult: this.questionResult?.map((result) => result.toState()),
+    };
+  }
+
+  /**
    * Creates an Election from an ElectionState.
    *
    * @param electionState
    */
   public static fromState(electionState: ElectionState): Election {
     return new Election({
-      lao: new Hash(electionState.lao),
-      id: new Hash(electionState.id),
+      lao: Hash.fromState(electionState.lao),
+      id: Hash.fromState(electionState.id),
       name: electionState.name,
       version: electionState.version,
-      createdAt: new Timestamp(electionState.createdAt),
-      start: new Timestamp(electionState.start),
-      end: new Timestamp(electionState.end),
-      questions: electionState.questions,
-      registeredVotes: electionState.registeredVotes,
+      createdAt: Timestamp.fromState(electionState.createdAt),
+      start: Timestamp.fromState(electionState.start),
+      end: Timestamp.fromState(electionState.end),
+      questions: electionState.questions.map(Question.fromState),
+      registeredVotes: electionState.registeredVotes.map(RegisteredVote.fromState),
       electionStatus: electionState.electionStatus,
-      questionResult: electionState.questionResult,
+      questionResult: electionState.questionResult?.map(QuestionResult.fromState),
     });
-  }
-
-  /**
-   * Creates an ElectionState from the current Election object.
-   */
-  public toState(): ElectionState {
-    return JSON.parse(JSON.stringify(this));
   }
 }

@@ -68,7 +68,7 @@ const SocialHome = () => {
       });
   };
 
-  const chirps = useMemo(() => makeChirpsList(laoId.valueOf()), [laoId]);
+  const chirps = useMemo(() => makeChirpsList(laoId), [laoId]);
   const chirpList = useSelector(chirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (

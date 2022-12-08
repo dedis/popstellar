@@ -1,7 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 
-import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils/TestUtils';
+import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
@@ -64,8 +64,8 @@ const contextValue = {
     useCurrentLao: () => mockLao,
     getCurrentLao: () => mockLao,
     useConnectedToLao: () => true,
-    useCurrentLaoId: () => mockLaoIdHash,
-    getCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
+    getCurrentLaoId: () => mockLaoId,
     useRollCallById: () => undefined,
     useRollCallAttendeesById: () => [],
     generateToken: () => Promise.resolve(mockPopToken),
@@ -129,21 +129,21 @@ describe('ChirpCard', () => {
       const { getByTestId } = renderChirp(chirp, true);
       const thumbsUpButton = getByTestId('thumbs-up');
       fireEvent.press(thumbsUpButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID, mockLaoIdHash);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID, mockLaoId);
     });
 
     it('adds thumbs down correctly', () => {
       const { getByTestId } = renderChirp(chirp, true);
       const thumbsDownButton = getByTestId('thumbs-down');
       fireEvent.press(thumbsDownButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoIdHash);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoId);
     });
 
     it('adds heart correctly', () => {
       const { getByTestId } = renderChirp(chirp, true);
       const heartButton = getByTestId('heart');
       fireEvent.press(heartButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID, mockLaoIdHash);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID, mockLaoId);
     });
   });
 });

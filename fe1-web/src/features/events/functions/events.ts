@@ -9,7 +9,7 @@ import { getEvent } from '../reducer';
  * @param eventId The id of the event to retrieve
  * @returns The event
  */
-export const getEventById = (eventId: Hash | string) => getEvent(eventId, getStore().getState());
+export const getEventById = (eventId: Hash) => getEvent(eventId, getStore().getState());
 
 export { makeEventByTypeSelector, makeEventSelector } from '../reducer';
 

@@ -5,7 +5,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers, Store } from 'redux';
 
-import { mockLaoIdHash } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import {
   NOTIFICATION_FEATURE_IDENTIFIER,
@@ -18,7 +18,7 @@ import { NotificationHooks } from '../NotificationHooks';
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     notificationTypes: [WitnessNotificationType],
   } as NotificationReactContext,
 };

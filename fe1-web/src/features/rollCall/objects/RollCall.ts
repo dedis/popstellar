@@ -1,4 +1,12 @@
-import { Hash, PopToken, PublicKey, Timestamp } from 'core/objects';
+import {
+  Hash,
+  HashState,
+  PopToken,
+  PublicKey,
+  PublicKeyState,
+  Timestamp,
+  TimestampState,
+} from 'core/objects';
 
 /**
  * Object to represent a roll call.
@@ -12,18 +20,18 @@ export enum RollCallStatus {
 }
 
 export interface RollCallState {
-  id: string;
-  idAlias?: string;
+  id: HashState;
+  idAlias?: HashState;
   name: string;
   location: string;
   description?: string;
-  creation: number;
-  proposedStart: number;
-  proposedEnd: number;
-  openedAt?: number;
-  closedAt?: number;
+  creation: TimestampState;
+  proposedStart: TimestampState;
+  proposedEnd: TimestampState;
+  openedAt?: TimestampState;
+  closedAt?: TimestampState;
   status: number;
-  attendees?: string[];
+  attendees?: PublicKeyState[];
 }
 
 export class RollCall {
@@ -111,37 +119,6 @@ export class RollCall {
   }
 
   /**
-   * Creates a RollCall object from a RollCallState object.
-   *
-   * @param rollCallState
-   */
-  public static fromState(rollCallState: RollCallState): RollCall {
-    return new RollCall({
-      id: new Hash(rollCallState.id),
-      idAlias: rollCallState.idAlias ? new Hash(rollCallState.idAlias) : undefined,
-      name: rollCallState.name,
-      location: rollCallState.location,
-      description: rollCallState.description,
-      creation: new Timestamp(rollCallState.creation),
-      proposedStart: new Timestamp(rollCallState.proposedStart),
-      proposedEnd: new Timestamp(rollCallState.proposedEnd),
-      openedAt:
-        rollCallState.openedAt !== undefined ? new Timestamp(rollCallState.openedAt) : undefined,
-      closedAt:
-        rollCallState.closedAt !== undefined ? new Timestamp(rollCallState.closedAt) : undefined,
-      status: rollCallState.status,
-      attendees: rollCallState.attendees?.map((a) => new PublicKey(a)),
-    });
-  }
-
-  /**
-   * Creates a RollCallState object from the current RollCall object.
-   */
-  public toState(): RollCallState {
-    return JSON.parse(JSON.stringify(this));
-  }
-
-  /**
    * Checks if a pop token is contained in the current roll call.
    *
    * @param token - The pop token to search for
@@ -153,5 +130,51 @@ export class RollCall {
     }
 
     return this.attendees.some((attendee: PublicKey) => attendee.equals(token.publicKey));
+  }
+
+  /**
+   * Creates a RollCallState object from the current RollCall object.
+   */
+  public toState(): RollCallState {
+    return {
+      id: this.id.toState(),
+      idAlias: this.idAlias?.toState(),
+      name: this.name,
+      location: this.location,
+      description: this.description,
+      creation: this.creation.toState(),
+      proposedStart: this.proposedStart.toState(),
+      proposedEnd: this.proposedEnd.toState(),
+      openedAt: this.openedAt?.toState(),
+      closedAt: this.closedAt?.toState(),
+      status: this.status,
+      attendees: this.attendees?.map((attendee) => attendee.toState()),
+    };
+  }
+
+  /**
+   * Creates a RollCall object from a RollCallState object.
+   */
+  public static fromState(rollCallState: RollCallState): RollCall {
+    return new RollCall({
+      id: Hash.fromState(rollCallState.id),
+      idAlias: rollCallState.idAlias ? Hash.fromState(rollCallState.idAlias) : undefined,
+      name: rollCallState.name,
+      location: rollCallState.location,
+      description: rollCallState.description,
+      creation: Timestamp.fromState(rollCallState.creation),
+      proposedStart: Timestamp.fromState(rollCallState.proposedStart),
+      proposedEnd: Timestamp.fromState(rollCallState.proposedEnd),
+      openedAt:
+        rollCallState.openedAt !== undefined
+          ? Timestamp.fromState(rollCallState.openedAt)
+          : undefined,
+      closedAt:
+        rollCallState.closedAt !== undefined
+          ? Timestamp.fromState(rollCallState.closedAt)
+          : undefined,
+      status: rollCallState.status,
+      attendees: rollCallState.attendees?.map((a) => PublicKey.fromState(a)),
+    });
   }
 }
