@@ -131,9 +131,9 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
         style={
           Object {
             "backgroundColor": "transparent",
-            "color": "#000",
-            "fontSize": 20,
-            "lineHeight": 26,
+            "color": "#8E8E8E",
+            "fontSize": 16,
+            "lineHeight": 20,
             "textAlign": "left",
           }
         }
@@ -356,9 +356,9 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
         style={
           Object {
             "backgroundColor": "transparent",
-            "color": "#000",
-            "fontSize": 20,
-            "lineHeight": 26,
+            "color": "#8E8E8E",
+            "fontSize": 16,
+            "lineHeight": 20,
             "textAlign": "left",
           }
         }
@@ -843,9 +843,9 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
         style={
           Object {
             "backgroundColor": "transparent",
-            "color": "#000",
-            "fontSize": 20,
-            "lineHeight": 26,
+            "color": "#8E8E8E",
+            "fontSize": 16,
+            "lineHeight": 20,
             "textAlign": "left",
           }
         }
@@ -1398,9 +1398,9 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
         style={
           Object {
             "backgroundColor": "transparent",
-            "color": "#000",
-            "fontSize": 20,
-            "lineHeight": 26,
+            "color": "#8E8E8E",
+            "fontSize": 16,
+            "lineHeight": 20,
             "textAlign": "left",
           }
         }
@@ -1953,9 +1953,9 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
         style={
           Object {
             "backgroundColor": "transparent",
-            "color": "#000",
-            "fontSize": 20,
-            "lineHeight": 26,
+            "color": "#8E8E8E",
+            "fontSize": 16,
+            "lineHeight": 20,
             "textAlign": "left",
           }
         }

@@ -118,7 +118,9 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
         <ProfileIcon publicKey={chirp.sender} />
       </View>
       <ListItem.Content>
-        <ListItem.Title style={Typography.base} numberOfLines={1}>
+        <ListItem.Title
+          style={[Typography.base, Typography.small, Typography.inactive]}
+          numberOfLines={1}>
           {chirp.sender.valueOf()}
         </ListItem.Title>
         <ListItem.Subtitle>
