@@ -22,7 +22,7 @@
     "depcruise-graph-archi": "depcruise --config .depcruise.js --output-type cdot -- src | dot -T svg > dist/archi.svg",
     "depcruise-graph-focus": "depcruise --config .depcruise.js --focus %npm_config_pkgfocus% --output-type dot -- src | dot -T svg > dist/focus.svg",
     "docs": "typedoc",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package --error-on-fail"
   },
   "dependencies": {
     "@dedis/kyber": "^3.4.4",
