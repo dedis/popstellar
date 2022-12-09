@@ -36,9 +36,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Setup expo action
-        uses: expo/expo-github-action@v5
+        uses: expo/expo-github-action@v7
         with:
-          expo-version: 6.x
+          expo-version: latest
 
       - name: Setup node cache
         uses: actions/cache@v2
