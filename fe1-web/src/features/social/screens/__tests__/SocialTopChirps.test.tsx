@@ -19,7 +19,7 @@ import {
 import { SocialMediaContext } from '../../context';
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
 import SocialReducer, { addChirp, addReaction } from '../../reducer/SocialReducer';
-import SocialHome from '../SocialHome';
+import SocialTopChirps from '../SocialTopChirps';
 
 jest.mock('features/social/network/SocialMessageApi', () => {
   const actual = jest.requireActual('features/social/network/SocialMessageApi');
@@ -72,7 +72,7 @@ describe('SocialTopChirps', () => {
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <SocialMediaContext.Provider value={socialContextValue}>
-            <SocialHome />
+            <SocialTopChirps />
           </SocialMediaContext.Provider>
         </FeatureContext.Provider>
       </Provider>,
