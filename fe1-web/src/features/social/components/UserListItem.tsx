@@ -45,7 +45,10 @@ const styles = StyleSheet.create({
 });
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<SocialSearchParamList, typeof STRINGS.social_media_navigation_tab_attendee_list>,
+  StackScreenProps<
+    SocialSearchParamList,
+    typeof STRINGS.social_media_search_navigation_attendee_list
+  >,
   CompositeScreenProps<
     StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_search>,
     CompositeScreenProps<
@@ -79,7 +82,7 @@ const UserListItem = ({ laoId, publicKey, isFirstItem, isLastItem }: IPropTypes)
   };
 
   const goToUserProfile = () => {
-    navigation.navigate(STRINGS.social_media_navigation_tab_user_profile, {
+    navigation.navigate(STRINGS.social_media_search_navigation_user_profile, {
       userPkString: publicKey.valueOf(),
     });
   };
