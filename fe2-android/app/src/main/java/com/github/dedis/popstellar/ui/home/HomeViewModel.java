@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
 import android.app.Application;
-import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -9,40 +8,35 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.Constants;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
-import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
-import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 @HiltViewModel
-public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCodeScanningViewModel {
+public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
 
@@ -52,12 +46,11 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
   private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
 
   private final LiveData<List<String>> laoIdList;
-  private final LiveData<Boolean> isSocialMediaEnabled;
+  private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
   /** Dependencies for this class */
   private final Gson gson;
 
-  private final KeyManager keyManager;
   private final Wallet wallet;
   private final GlobalNetworkManager networkManager;
   private final LAORepository laoRepository;
@@ -70,12 +63,10 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
       Gson gson,
       Wallet wallet,
       LAORepository laoRepository,
-      KeyManager keyManager,
       GlobalNetworkManager networkManager) {
     super(application);
 
     this.gson = gson;
-    this.keyManager = keyManager;
     this.wallet = wallet;
     this.networkManager = networkManager;
     this.laoRepository = laoRepository;
@@ -83,9 +74,6 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
     laoIdList =
         LiveDataReactiveStreams.fromPublisher(
             laoRepository.getAllLaoIds().toFlowable(BackpressureStrategy.BUFFER));
-
-    isSocialMediaEnabled =
-        Transformations.map(laoIdList, laoSet -> laoSet != null && !laoSet.isEmpty());
   }
 
   @Override
@@ -133,7 +121,7 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
     networkManager.connect(laoData.server);
     getApplication()
         .startActivity(
-            ConnectingActivity.newIntentForDetail(
+            ConnectingActivity.newIntentForJoiningDetail(
                 getApplication().getApplicationContext(), laoData.lao));
   }
 
@@ -145,6 +133,13 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
 
     if (!isWalletSetUp()) {
       Log.d(TAG, "Restoring wallet");
+      String[] seed = data.getWalletSeed();
+      Log.d(TAG, "seed is " + Arrays.toString(seed));
+      if (seed.length == 0) {
+        ErrorUtils.logAndShow(
+            getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
+        return;
+      }
       String appended = String.join(" ", data.getWalletSeed());
       try {
         importSeed(appended);
@@ -170,33 +165,9 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
         networkManager, wallet, getApplication().getApplicationContext());
   }
 
-  /**
-   * launchLao is invoked when the user tries to create a new LAO. The method creates a `CreateLAO`
-   * message and publishes it to the root channel. It observers the response in the background and
-   * switches to the home screen on success.
-   *
-   * @return a single containing the id of the launched lao if it was successful
-   */
-  public Single<String> launchLao(String laoName) {
-    Log.d(TAG, "creating lao with name " + laoName);
-    CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey());
-    Lao lao = new Lao(createLao.getId());
-
-    return networkManager
-        .getMessageSender()
-        .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
-        .doOnComplete(() -> Log.d(TAG, "got success result for create lao with id " + lao.getId()))
-        .andThen(networkManager.getMessageSender().subscribe(lao.getChannel()))
-        .toSingleDefault(lao.getId());
-  }
-
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {
     wallet.importSeed(seed);
     setIsWalletSetUp(true);
-  }
-
-  public void newSeed() throws GeneralSecurityException {
-    wallet.newSeed();
   }
 
   public LiveData<List<String>> getLaoIdList() {
@@ -207,16 +178,20 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
     return laoRepository.getLaoView(laoId);
   }
 
-  public LiveData<Boolean> isSocialMediaEnabled() {
-    return isSocialMediaEnabled;
-  }
-
   public LiveData<Boolean> getIsWalletSetUpEvent() {
     return isWalletSetup;
   }
 
   public void setIsWalletSetUp(boolean isSetUp) {
     this.isWalletSetup.setValue(isSetUp);
+  }
+
+  public LiveData<Integer> getPageTitle() {
+    return mPageTitle;
+  }
+
+  public void setPageTitle(int titleId) {
+    mPageTitle.postValue(titleId);
   }
 
   public boolean isWalletSetUp() {
@@ -228,13 +203,6 @@ public class HomeViewModel extends NavigationViewModel<HomeTab> implements QRCod
   public void logoutWallet() {
     wallet.logout();
     setIsWalletSetUp(false);
-  }
-
-  public void openConnecting(String laoId) {
-    Intent intent = new Intent(getApplication().getApplicationContext(), ConnectingActivity.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-    getApplication().startActivity(intent);
   }
 
   /**

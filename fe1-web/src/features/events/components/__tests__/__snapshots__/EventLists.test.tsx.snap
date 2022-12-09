@@ -296,6 +296,7 @@ exports[`EventLists renders correctly for attendees 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1433,6 +1434,7 @@ exports[`EventLists renders correctly for organizers 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

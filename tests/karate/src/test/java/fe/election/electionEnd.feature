@@ -1,3 +1,4 @@
+@env=android,web
 Feature:
 
   Scenario: Casting a vote sends the correct message to the backend
