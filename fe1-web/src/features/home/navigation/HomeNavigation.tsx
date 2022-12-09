@@ -1,106 +1,69 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import React, { useMemo } from 'react';
 
+import NavigationPadding from 'core/components/NavigationPadding';
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { HomeParamList } from 'core/navigation/typing/HomeParamList';
-import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
 import { HomeFeature } from '../interface';
 import { Home } from '../screens';
+import { HomeHeaderRight } from '../screens/Home';
 import ConnectNavigation from './ConnectNavigation';
+
+const homeScreens: HomeFeature.HomeScreen[] = [
+  {
+    id: STRINGS.navigation_home_home,
+    title: STRINGS.home_navigation_title,
+    Component: Home,
+    tabBarIcon: makeIcon('list'),
+    headerLeft: () => <NavigationPadding paddingAmount={1} />,
+    headerRight: HomeHeaderRight,
+  } as HomeFeature.HomeScreen,
+  {
+    id: STRINGS.navigation_home_connect,
+    title: STRINGS.navigation_home_connect,
+    Component: ConnectNavigation,
+    headerShown: false,
+  },
+];
 
 /**
  * The main tab navigation component. It creates a tab navigator between the Home, Connect, Launch
  * and Wallet components.
  */
-const HomeNavigator = createBottomTabNavigator<HomeParamList>();
-
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<HomeParamList, typeof STRINGS.navigation_home_home>,
-  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_home>
->;
+const HomeNavigator = createStackNavigator<HomeParamList>();
 
 const HomeNavigation = () => {
-  const navigation = useNavigation<NavigationProps['navigation']>();
-
   const navigationScreens = HomeHooks.useHomeNavigationScreens();
 
   const screens: HomeFeature.HomeScreen[] = useMemo(() => {
     return [
       ...navigationScreens,
       // add home screen to the navigation
-      {
-        id: STRINGS.navigation_home_home,
-        title: STRINGS.home_navigation_title,
-        Component: Home,
-        tabBarIcon: makeIcon('list'),
-        order: -99999999,
-      } as HomeFeature.HomeScreen,
-      {
-        id: STRINGS.navigation_home_mock_connect,
-        title: STRINGS.navigation_app_connect,
-        Component: ConnectNavigation,
-        tabPress: (e) => {
-          // prevent navigation
-          e.preventDefault();
-          navigation.navigate(STRINGS.navigation_app_connect);
-        },
-        tabBarIcon: makeIcon('scan'),
-        order: -10000,
-      } as HomeFeature.HomeScreen,
-      // sort screens by order before rendering them
-    ].sort((a, b) => a.order - b.order);
-  }, [navigation, navigationScreens]);
+      ...homeScreens,
+    ];
+  }, [navigationScreens]);
 
   return (
     <HomeNavigator.Navigator
       initialRouteName={STRINGS.navigation_home_home}
-      screenOptions={{
-        tabBarActiveTintColor: Color.accent,
-        tabBarInactiveTintColor: Color.inactive,
-        headerLeftContainerStyle: {
-          paddingLeft: Spacing.contentSpacing,
-        },
-        headerRightContainerStyle: {
-          paddingRight: Spacing.contentSpacing,
-        },
-        headerTitleStyle: Typography.topNavigationHeading,
-        headerTitleAlign: 'center',
-      }}>
+      screenOptions={stackScreenOptionsWithHeader}>
       {screens.map(
-        ({
-          id,
-          title,
-          headerTitle,
-          headerShown,
-          Component,
-          tabBarIcon,
-          tabPress,
-          headerLeft,
-          headerRight,
-          testID,
-        }) => (
+        ({ id, title, headerTitle, headerShown, Component, headerLeft, headerRight }) => (
           <HomeNavigator.Screen
             key={id}
             name={id}
             component={Component}
-            listeners={{ tabPress }}
             options={{
               title: title || id,
               headerTitle: headerTitle || title || id,
-              headerLeft,
-              headerRight,
-              tabBarIcon: tabBarIcon || undefined,
-              // hide the item if tabBarIcon is set to null
-              tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
+              headerLeft: headerLeft || stackScreenOptionsWithHeader.headerLeft,
+              headerRight: headerRight || stackScreenOptionsWithHeader.headerRight,
               headerShown,
-              tabBarTestID: testID,
             }}
           />
         ),

@@ -30,11 +30,6 @@ exports[`PoPButton renders correctly without disabled 1`] = `
     onGestureHandlerStateChange={[Function]}
     onHandlerStateChange={[Function]}
     rippleColor={0}
-    style={
-      Object {
-        "marginBottom": 16,
-      }
-    }
     touchSoundDisabled={false}
   >
     <View
@@ -52,7 +47,7 @@ exports[`PoPButton renders correctly without disabled 1`] = `
             Object {
               "backgroundColor": "#3742fa",
               "borderColor": "#3742fa",
-              "borderRadius": 16,
+              "borderRadius": 8,
               "borderWidth": 1,
               "padding": 8,
             },

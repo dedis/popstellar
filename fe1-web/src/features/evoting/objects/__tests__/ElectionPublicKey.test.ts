@@ -4,7 +4,11 @@ import '__tests__/utils/matchers';
 import { curve } from '@dedis/kyber';
 
 import { Base64UrlData } from 'core/objects';
-import { mockEncodedElectionKey, mockElectionKeyString } from 'features/evoting/__tests__/utils';
+import {
+  mockEncodedElectionKey,
+  mockElectionKeyState,
+  mockElectionKey,
+} from 'features/evoting/__tests__/utils';
 
 import { ElectionPublicKey } from '../ElectionPublicKey';
 
@@ -13,7 +17,7 @@ const ed25519 = curve.newCurve('edwards25519');
 describe('ElectionPublicKey', () => {
   describe('constructor', () => {
     it('does not throw an error', () => {
-      expect(() => new ElectionPublicKey(new Base64UrlData(mockElectionKeyString))).not.toThrow();
+      expect(() => new ElectionPublicKey(new Base64UrlData(mockElectionKeyState))).not.toThrow();
       expect(() => new ElectionPublicKey(mockEncodedElectionKey)).not.toThrow();
     });
   });
@@ -22,6 +26,25 @@ describe('ElectionPublicKey', () => {
     it('converts the key to a string', () => {
       const key = new ElectionPublicKey(mockEncodedElectionKey);
       expect(key.toString()).toBeString();
+    });
+  });
+
+  describe('toState()', () => {
+    it('converts the key to a string', () => {
+      const key = new ElectionPublicKey(mockEncodedElectionKey);
+      expect(key.toState()).toBeString();
+    });
+  });
+
+  describe('fromState()', () => {
+    it('converts from the state representation to a class instance', () => {
+      const key = ElectionPublicKey.fromState(mockElectionKeyState);
+      expect(key).toBeInstanceOf(ElectionPublicKey);
+    });
+
+    it('equals the instance .toState() was called on', () => {
+      const state = mockElectionKey.toState();
+      expect(ElectionPublicKey.fromState(state).equals(mockElectionKey)).toBeTrue();
     });
   });
 

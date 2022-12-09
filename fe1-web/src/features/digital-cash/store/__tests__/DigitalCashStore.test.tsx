@@ -1,6 +1,7 @@
 import 'jest-extended';
 
 import { mockKeyPair, mockLaoId } from '__tests__/utils';
+import { Hash, PublicKey } from 'core/objects';
 import { getDigitalCashState } from 'features/digital-cash/reducer';
 
 import {
@@ -37,35 +38,34 @@ jest.mock('features/digital-cash/reducer/DigitalCashReducer');
 
 describe('Digital Cash Store', () => {
   it('should be able to recover a balance', () => {
-    expect(DigitalCashStore.getBalance(mockLaoId, mockKeyPair.publicKey.valueOf())).toEqual(
+    expect(DigitalCashStore.getBalance(mockLaoId, mockKeyPair.publicKey)).toEqual(
       mockTransactionValue,
     );
   });
 
   it('should recover 0 as a balance if public key is not found', () => {
-    expect(DigitalCashStore.getBalance(mockLaoId, 'pk')).toEqual(0);
+    expect(DigitalCashStore.getBalance(mockLaoId, new PublicKey('pk'))).toEqual(0);
   });
 
   it('should recover 0 as a balance if lao id is not found', () => {
-    expect(DigitalCashStore.getBalance('mockId', mockKeyPair.publicKey.valueOf())).toEqual(0);
+    expect(DigitalCashStore.getBalance(new Hash('mockId'), mockKeyPair.publicKey)).toEqual(0);
   });
 
   it('should recover the transaction by public key correctly', () => {
-    expect(
-      DigitalCashStore.getTransactionsByPublicKey(
-        mockLaoId.valueOf(),
-        mockKeyPair.publicKey.valueOf(),
-      ),
-    ).toEqual([mockTransaction]);
+    expect(DigitalCashStore.getTransactionsByPublicKey(mockLaoId, mockKeyPair.publicKey)).toEqual([
+      mockTransaction,
+    ]);
   });
 
   it('should recover an empty array if lao id is not found', () => {
     expect(
-      DigitalCashStore.getTransactionsByPublicKey('mockId', mockKeyPair.publicKey.valueOf()),
+      DigitalCashStore.getTransactionsByPublicKey(new Hash('mockId'), mockKeyPair.publicKey),
     ).toEqual([]);
   });
 
   it('should recover an empty array if public key is not found', () => {
-    expect(DigitalCashStore.getTransactionsByPublicKey('mockId', 'publicKey')).toEqual([]);
+    expect(
+      DigitalCashStore.getTransactionsByPublicKey(new Hash('mockId'), new PublicKey('publicKey')),
+    ).toEqual([]);
   });
 });

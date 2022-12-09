@@ -30,12 +30,12 @@ import net.glxn.qrgen.android.QRCode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
-import static com.github.dedis.popstellar.utility.Constants.*;
-
-import javax.inject.Inject;
+import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
@@ -131,6 +131,12 @@ public class RollCallFragment extends Fragment {
     retrieveAndDisplayPublicKey();
 
     return binding.getRoot();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(getString(R.string.roll_call_title));
   }
 
   private void setUpStateDependantContent() {

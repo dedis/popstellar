@@ -2,8 +2,8 @@ import 'jest-extended';
 
 import { AnyAction } from 'redux';
 
-import { mockLaoId } from '__tests__/utils';
-import { Hash } from 'core/objects';
+import { mockLaoId, serializedMockLaoId } from '__tests__/utils';
+import { PublicKey } from 'core/objects';
 
 import {
   mockCBHash,
@@ -19,7 +19,7 @@ import {
   DIGITAL_CASH_REDUCER_PATH,
 } from '../DigitalCashReducer';
 
-const mockTransaction = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash).toState();
+const mockTransaction = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash);
 
 const emptyState = {
   byLaoId: {},
@@ -27,16 +27,16 @@ const emptyState = {
 
 const filledState = {
   byLaoId: {
-    [mockLaoId.valueOf()]: {
+    [serializedMockLaoId.valueOf()]: {
       balances: {
         [mockKPHash.valueOf()]: mockTransactionValue,
       },
-      allTransactionsHash: [mockTransaction.transactionId],
+      allTransactionsHash: [mockTransaction.transactionId.toState()],
       transactionsByHash: {
-        [mockTransaction.transactionId!]: mockTransaction,
+        [mockTransaction.transactionId.valueOf()]: mockTransaction.toState(),
       },
       transactionsByPubHash: {
-        [mockKPHash.valueOf()]: [mockTransaction.transactionId],
+        [mockKPHash.valueOf()]: [mockTransaction.transactionId.toState()],
       },
     },
   },
@@ -48,20 +48,17 @@ describe('Digital Cash reducer', () => {
   });
 
   it('should handle a transaction being added from empty state', () => {
-    expect(
-      digitalCashReduce(
-        emptyState,
-        addTransaction({ laoId: mockLaoId, transactionState: mockTransaction }),
-      ),
-    ).toEqual(filledState);
+    expect(digitalCashReduce(emptyState, addTransaction(mockLaoId, mockTransaction))).toEqual(
+      filledState,
+    );
   });
 
   describe('make balance selector', () => {
     it('should be able to recover a balance', () => {
       expect(
         makeBalanceSelector(
-          new Hash(mockLaoId),
-          mockCoinbaseTransactionJSON.inputs[0].script.pubkey,
+          mockLaoId,
+          new PublicKey(mockCoinbaseTransactionJSON.inputs[0].script.pubkey),
         )({ [DIGITAL_CASH_REDUCER_PATH]: filledState }),
       ).toEqual(100);
     });
@@ -69,8 +66,8 @@ describe('Digital Cash reducer', () => {
     it('should return 0 when public key is not found', () => {
       expect(
         makeBalanceSelector(
-          new Hash(mockLaoId),
-          'pubkey',
+          mockLaoId,
+          new PublicKey('pubkey'),
         )({ [DIGITAL_CASH_REDUCER_PATH]: filledState }),
       ).toEqual(0);
     });

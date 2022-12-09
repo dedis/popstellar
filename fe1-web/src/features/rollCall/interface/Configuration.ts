@@ -21,23 +21,25 @@ export interface RollCallConfiguration {
   /**
    * Gets the lao associated to the given id. Should be used outside react components
    */
-  getLaoById: (id: string) => RollCallFeature.Lao | undefined;
+  getLaoById: (id: Hash) => RollCallFeature.Lao | undefined;
 
   /**
    * Returns the currently active lao id or throws an error if there is none.
    * Should be used inside react components
    * @returns The current lao id
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
+
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
 
   /**
    * An action cretor that sets the last roll call for a given lao
    */
-  setLaoLastRollCall: (
-    laoId: Hash | string,
-    rollCallId: Hash | string,
-    hasToken: boolean,
-  ) => AnyAction;
+  setLaoLastRollCall: (laoId: Hash, rollCallId: Hash, hasToken: boolean) => AnyAction;
 
   /* Event related functions */
 
@@ -47,7 +49,7 @@ export interface RollCallConfiguration {
    * @param event - The event
    * @returns A redux action causing the state change
    */
-  addEvent: (laoId: Hash | string, event: RollCallFeature.EventState) => AnyAction;
+  addEvent: (laoId: Hash, event: RollCallFeature.EventState) => AnyAction;
 
   /**
    * Creates a redux action for update the stored event state
@@ -72,7 +74,7 @@ export interface RollCallConfiguration {
    * @returns A selector for a map from laoIds to a map of eventIds to events
    */
   makeEventByTypeSelector: (
-    laoId: string,
+    laoId: Hash,
     eventType: string,
   ) => (state: unknown) => Record<string, RollCallFeature.EventState>;
 
@@ -95,7 +97,7 @@ export interface RollCallConfiguration {
  */
 export type RollCallReactContext = Pick<
   RollCallConfiguration,
-  'useAssertCurrentLaoId' | 'makeEventByTypeSelector' | 'generateToken' | 'hasSeed'
+  'useCurrentLaoId' | 'useConnectedToLao' | 'makeEventByTypeSelector' | 'generateToken' | 'hasSeed'
 >;
 
 /**
@@ -107,19 +109,19 @@ export interface RollCallInterface extends FeatureInterface {
   eventTypes: EventType[];
 
   functions: {
-    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined;
+    getRollCallById: (rollCallId: Hash) => RollCall | undefined;
   };
 
   hooks: {
-    useRollCallById: (rollCallId: Hash | string | undefined) => RollCall | undefined;
-    useRollCallsByLaoId: (laoId: string) => {
+    useRollCallById: (rollCallId?: Hash) => RollCall | undefined;
+    useRollCallsByLaoId: (laoId: Hash) => {
       [rollCallId: string]: RollCall;
     };
 
-    useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
-    useRollCallTokenByRollCallId: (laoId: string, rollCallId: string) => RollCallToken | undefined;
+    useRollCallTokensByLaoId: (laoId: Hash) => RollCallToken[];
+    useRollCallTokenByRollCallId: (laoId: Hash, rollCallId?: Hash) => RollCallToken | undefined;
 
-    useRollCallAttendeesById: (rollCallId: Hash | string | undefined) => PublicKey[];
+    useRollCallAttendeesById: (rollCallId?: Hash) => PublicKey[];
   };
 
   context: RollCallReactContext;
@@ -133,8 +135,8 @@ interface EventType {
   eventType: string;
   eventName: string;
   navigationNames: {
-    createEvent: typeof STRINGS.navigation_lao_events_create_roll_call;
-    screenSingle: typeof STRINGS.navigation_lao_events_view_single_roll_call;
+    createEvent: typeof STRINGS.events_create_roll_call;
+    screenSingle: typeof STRINGS.events_view_single_roll_call;
   };
   ListItemComponent: React.ComponentType<{
     eventId: string;

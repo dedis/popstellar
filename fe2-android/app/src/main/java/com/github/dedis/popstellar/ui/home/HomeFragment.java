@@ -9,7 +9,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.*;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
+import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -40,8 +42,31 @@ public final class HomeFragment extends Fragment {
 
     setupListAdapter();
     setupListUpdates();
+    setupButtonsActions();
 
     return binding.getRoot();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.home_title);
+  }
+
+  private void setupButtonsActions() {
+    binding.homeCreateButton.setOnClickListener(
+        v -> {
+          Log.d(TAG, "Opening Create fragment");
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(), R.id.fragment_lao_create, LaoCreateFragment::newInstance);
+        });
+
+    binding.homeJoinButton.setOnClickListener(
+        v -> {
+          Log.d(TAG, "Opening join fragment");
+          HomeActivity.setCurrentFragment(
+              getParentFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
+        });
   }
 
   private void setupListUpdates() {
@@ -51,13 +76,11 @@ public final class HomeFragment extends Fragment {
             requireActivity(),
             laoIds -> {
               Log.d(TAG, "Got a list update");
-
               laoListAdapter.setList(laoIds);
 
               if (!laoIds.isEmpty()) {
-                binding.welcomeScreen.setVisibility(View.GONE);
-                binding.listScreen.setVisibility(View.VISIBLE);
-                binding.homeTitle.setVisibility(View.VISIBLE);
+                binding.homeNoLaoText.setVisibility(View.GONE);
+                binding.laoList.setVisibility(View.VISIBLE);
               }
             });
   }

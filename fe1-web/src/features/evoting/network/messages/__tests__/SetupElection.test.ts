@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { configureTestFeatures, serializedMockLaoId, mockLaoId } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
@@ -32,7 +32,7 @@ const sampleSetupElectionOpenBallot: Partial<SetupElection> = {
   object: ObjectType.ELECTION,
   action: ActionType.SETUP,
   id: mockElectionId,
-  lao: mockLaoIdHash,
+  lao: mockLaoId,
   name: mockElectionName,
   version: ElectionVersion.OPEN_BALLOT,
   created_at: TIMESTAMP,
@@ -45,7 +45,7 @@ const setupElectionOpenBallotJson: string = `{
   "object": "${ObjectType.ELECTION}",
   "action": "${ActionType.SETUP}",
   "id": "${mockElectionId.valueOf()}",
-  "lao": "${mockLaoId}",
+  "lao": "${serializedMockLaoId}",
   "name": "${mockElectionName}",
   "version": "${ElectionVersion.OPEN_BALLOT}",
   "created_at": ${TIMESTAMP.valueOf()},
@@ -66,7 +66,7 @@ describe('SetupElection', () => {
       expect(
         new SetupElection(
           sampleSetupElectionOpenBallot as MessageDataProperties<SetupElection>,
-          mockLaoIdHash,
+          mockLaoId,
         ),
       ).toEqual(sampleSetupElectionOpenBallot);
       const temp = {
@@ -74,19 +74,19 @@ describe('SetupElection', () => {
         action: ActionType.SETUP,
         version: ElectionVersion.OPEN_BALLOT,
         id: mockElectionId,
-        lao: mockLaoIdHash,
+        lao: mockLaoId,
         name: mockElectionName,
         created_at: TIMESTAMP,
         start_time: TIMESTAMP,
         end_time: CLOSE_TIMESTAMP,
         questions: [mockQuestionObject1, mockQuestionObject2],
       };
-      expect(new SetupElection(temp, mockLaoIdHash)).toBeJsonEqual(temp);
+      expect(new SetupElection(temp, mockLaoId)).toBeJsonEqual(temp);
     });
 
     it('should be parsed correctly from Json', () => {
       const obj = JSON.parse(setupElectionOpenBallotJson);
-      const msg = SetupElection.fromJson(obj, mockLaoIdHash);
+      const msg = SetupElection.fromJson(obj, mockLaoId);
 
       expect(msg.id).toBeInstanceOf(Hash);
       expect(msg.lao).toBeInstanceOf(Hash);
@@ -102,7 +102,7 @@ describe('SetupElection', () => {
         object: ObjectType.ELECTION,
         action: ActionType.NOTIFY_ADD,
         id: mockElectionId.toString(),
-        lao: mockLaoIdHash.toString(),
+        lao: mockLaoId.toString(),
         name: mockElectionName,
         version: ElectionVersion.OPEN_BALLOT,
         created_at: TIMESTAMP.valueOf(),
@@ -110,7 +110,7 @@ describe('SetupElection', () => {
         end_time: CLOSE_TIMESTAMP.valueOf(),
         questions: [mockQuestionObject1, mockQuestionObject2],
       };
-      const createFromJson = () => SetupElection.fromJson(obj, mockLaoIdHash);
+      const createFromJson = () => SetupElection.fromJson(obj, mockLaoId);
       expect(createFromJson).toThrow(ProtocolError);
     });
 
@@ -120,14 +120,14 @@ describe('SetupElection', () => {
         action: ActionType.SETUP,
         version: ElectionVersion.OPEN_BALLOT,
         id: mockElectionId.toString(),
-        lao: mockLaoIdHash.toString(),
+        lao: mockLaoId.toString(),
         name: mockElectionName,
         created_at: TIMESTAMP.valueOf(),
         start_time: TIMESTAMP.valueOf(),
         end_time: CLOSE_TIMESTAMP.valueOf(),
         questions: [mockQuestionObject1, mockQuestionObject2],
       };
-      const createFromJson = () => SetupElection.fromJson(obj, mockLaoIdHash);
+      const createFromJson = () => SetupElection.fromJson(obj, mockLaoId);
       expect(createFromJson).toThrow(ProtocolError);
     });
 
@@ -138,14 +138,14 @@ describe('SetupElection', () => {
             {
               version: ElectionVersion.OPEN_BALLOT,
               id: undefined as unknown as Hash,
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
               questions: [mockQuestionObject1, mockQuestionObject2],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -163,7 +163,7 @@ describe('SetupElection', () => {
               end_time: CLOSE_TIMESTAMP,
               questions: [mockQuestionObject1, mockQuestionObject2],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -174,14 +174,14 @@ describe('SetupElection', () => {
             {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               name: undefined as unknown as string,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
               questions: [mockQuestionObject1, mockQuestionObject2],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -192,14 +192,14 @@ describe('SetupElection', () => {
             {
               version: undefined as unknown as string,
               id: mockElectionId,
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
               questions: [mockQuestionObject1, mockQuestionObject2],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -210,14 +210,14 @@ describe('SetupElection', () => {
             {
               version: '1.0.0',
               id: mockElectionId,
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
               questions: [mockQuestionObject1, mockQuestionObject2],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -228,14 +228,14 @@ describe('SetupElection', () => {
             {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               name: mockElectionName,
               created_at: undefined as unknown as Timestamp,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
               questions: [mockQuestionObject1, mockQuestionObject2],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -246,14 +246,14 @@ describe('SetupElection', () => {
             {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: undefined as unknown as Timestamp,
               end_time: CLOSE_TIMESTAMP,
               questions: [mockQuestionObject1, mockQuestionObject2],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -264,14 +264,14 @@ describe('SetupElection', () => {
             {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: undefined as unknown as Timestamp,
               questions: [mockQuestionObject1, mockQuestionObject2],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -282,14 +282,14 @@ describe('SetupElection', () => {
             {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP,
               end_time: CLOSE_TIMESTAMP,
               questions: undefined as unknown as Question[],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -300,14 +300,14 @@ describe('SetupElection', () => {
             {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               name: mockElectionName,
               created_at: TIMESTAMP,
               start_time: TIMESTAMP_BEFORE,
               end_time: CLOSE_TIMESTAMP,
               questions: [mockQuestionObject1, mockQuestionObject2],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -318,14 +318,14 @@ describe('SetupElection', () => {
             {
               version: ElectionVersion.OPEN_BALLOT,
               id: mockElectionId,
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               name: mockElectionName,
               created_at: TIMESTAMP_BEFORE,
               start_time: TIMESTAMP,
               end_time: TIMESTAMP_BEFORE,
               questions: [mockQuestionObject1, mockQuestionObject2],
             },
-            mockLaoIdHash,
+            mockLaoId,
           );
         expect(createWrongObj).toThrow(ProtocolError);
       });
@@ -338,14 +338,14 @@ describe('SetupElection', () => {
           action: ActionType.NOTIFY_ADD,
           version: ElectionVersion.OPEN_BALLOT,
           id: mockElectionId,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: mockElectionName,
           created_at: TIMESTAMP,
           start_time: TIMESTAMP,
           end_time: CLOSE_TIMESTAMP,
           questions: [mockQuestionObject1, mockQuestionObject2],
         } as MessageDataProperties<SetupElection>,
-        mockLaoIdHash,
+        mockLaoId,
       );
 
       expect(msg.object).toEqual(ObjectType.ELECTION);
@@ -355,15 +355,15 @@ describe('SetupElection', () => {
 
   describe('validateQuestions', () => {
     it('should throw an error if the question id is wrong', () => {
-      const wrongQuestion: Question = {
-        id: 'id',
+      const wrongQuestion = new Question({
+        id: new Hash('id'),
         question: mockQuestion1,
         voting_method: STRINGS.election_method_Plurality,
         ballot_options: mockBallotOptions,
         write_in: false,
-      };
+      });
       const wrongValidate = () => {
-        SetupElection.validateQuestions([wrongQuestion], mockElectionId.valueOf());
+        SetupElection.validateQuestions([wrongQuestion], mockElectionId);
       };
       expect(wrongValidate).toThrow(ProtocolError);
     });

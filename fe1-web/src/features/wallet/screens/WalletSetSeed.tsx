@@ -41,10 +41,7 @@ const WalletSetSeed = () => {
     try {
       await Wallet.importMnemonic(seed);
       navigation.navigate(STRINGS.navigation_app_home, {
-        screen: STRINGS.navigation_home_wallet,
-        params: {
-          screen: STRINGS.navigation_wallet_home,
-        },
+        screen: STRINGS.navigation_home_home,
       });
     } catch (e) {
       console.error(e);

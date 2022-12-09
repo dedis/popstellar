@@ -29,9 +29,15 @@ export namespace SocialHooks {
   export const useCurrentLaoId = () => useSocialContext().useCurrentLaoId();
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  export const useConnectedToLao = () => useSocialContext().useConnectedToLao();
+
+  /**
    * Gets the roll call for a given id
    */
-  export const useRollCallById = (rollCallId: Hash | string | undefined) =>
+  export const useRollCallById = (rollCallId: Hash | undefined) =>
     useSocialContext().useRollCallById(rollCallId);
 
   /**
@@ -43,6 +49,6 @@ export namespace SocialHooks {
    * Gets the attendees list for a roll call given its id.
    * @param rollCallId
    */
-  export const useRollCallAttendeesById = (rollCallId: Hash | string | undefined) =>
+  export const useRollCallAttendeesById = (rollCallId: Hash | undefined) =>
     useSocialContext().useRollCallAttendeesById(rollCallId);
 }

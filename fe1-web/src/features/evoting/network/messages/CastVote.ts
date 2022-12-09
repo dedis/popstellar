@@ -81,11 +81,36 @@ export class CastVote implements MessageData {
       throw new ProtocolError(`Invalid cast vote\n\n${errors}`);
     }
 
+    let votes: EncryptedVote[] | Vote[] = [];
+
+    if (obj.votes.length > 0) {
+      if (typeof obj.votes[0].vote === 'number') {
+        // verify that all votes are unencrypted
+        if (obj.votes.some((v: any) => typeof v.vote !== 'number')) {
+          throw new ProtocolError(
+            `Invalid cast vote, votes are not of uniform type, first was unencrypted`,
+          );
+        }
+
+        votes = obj.votes.map(Vote.fromJson);
+      } else if (typeof obj.votes[0].vote === 'string') {
+        // verify that all votes are encrypted
+        if (obj.votes.some((v: any) => typeof v.vote !== 'string')) {
+          throw new ProtocolError(
+            `Invalid cast vote, votes are not of uniform type, first was encrypted`,
+          );
+        }
+        votes = obj.votes.map(EncryptedVote.fromJson);
+      } else {
+        throw new ProtocolError(`Invalid vote '${JSON.stringify(obj.votes[0])}'`);
+      }
+    }
+
     return new CastVote({
-      ...obj,
+      lao: new Hash(obj.lao),
       created_at: new Timestamp(obj.created_at),
       election: new Hash(obj.election),
-      lao: new Hash(obj.lao),
+      votes,
     });
   }
 
@@ -114,14 +139,17 @@ export class CastVote implements MessageData {
     return (
       ballotArray
         // and add an id to all votes as well as the matching question id
-        .map<Vote>(({ index, selectedOptionIndex }) => ({
-          // generate the vote id
-          id: CastVote.computeVoteId(election, index, selectedOptionIndex).valueOf(),
-          // find matching question id from the election
-          question: election.questions[index].id,
-          // convert the set to an array and sort votes in ascending order
-          vote: selectedOptionIndex,
-        }))
+        .map<Vote>(
+          ({ index, selectedOptionIndex }) =>
+            new Vote({
+              // generate the vote id
+              id: CastVote.computeVoteId(election, index, selectedOptionIndex),
+              // find matching question id from the election
+              question: election.questions[index].id,
+              // convert the set to an array and sort votes in ascending order
+              vote: selectedOptionIndex,
+            }),
+        )
     );
   }
 
@@ -169,14 +197,14 @@ export class CastVote implements MessageData {
 
           const encryptedOptionIndex = electionKey.encrypt(buffer).valueOf();
 
-          return {
+          return new EncryptedVote({
             // generate the vote id based on the **encrypted** option indices
-            id: CastVote.computeSecretVoteId(election, index, encryptedOptionIndex).valueOf(),
+            id: CastVote.computeSecretVoteId(election, index, encryptedOptionIndex),
             // find matching question id from the election
             question: election.questions[index].id,
             // use the encrypted votes
             vote: encryptedOptionIndex,
-          };
+          });
         })
     );
   }
@@ -193,11 +221,11 @@ export class CastVote implements MessageData {
     questionIndex: number,
     selectionOptionIndex: number,
   ): Hash {
-    return Hash.fromStringArray(
+    return Hash.fromArray(
       EventTags.VOTE,
-      election.id.toString(),
+      election.id,
       election.questions[questionIndex].id,
-      selectionOptionIndex.toString(),
+      selectionOptionIndex,
     );
   }
 
@@ -213,9 +241,9 @@ export class CastVote implements MessageData {
     questionIndex: number,
     encryptedOptionIndex: string,
   ): Hash {
-    return Hash.fromStringArray(
+    return Hash.fromArray(
       EventTags.VOTE,
-      election.id.toString(),
+      election.id,
       election.questions[questionIndex].id,
       encryptedOptionIndex,
     );

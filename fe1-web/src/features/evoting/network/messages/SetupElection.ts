@@ -1,7 +1,7 @@
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
-import { EventTags, Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
+import { EventTags, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 
 import { ElectionVersion, Question } from '../../objects';
@@ -102,7 +102,7 @@ export class SetupElection implements MessageData {
     if (!msg.questions) {
       throw new ProtocolError("Undefined 'questions' parameter encountered during 'SetupElection'");
     }
-    SetupElection.validateQuestions(msg.questions, msg.id.toString());
+    SetupElection.validateQuestions(msg.questions, msg.id);
     this.questions = msg.questions;
   }
 
@@ -114,7 +114,7 @@ export class SetupElection implements MessageData {
    * @param name The name of the election
    */
   public static computeElectionId(laoId: Hash, createdAt: Timestamp, name: string) {
-    return Hash.fromStringArray(EventTags.ELECTION, laoId.toString(), createdAt.toString(), name);
+    return Hash.fromArray(EventTags.ELECTION, laoId, createdAt, name);
   }
 
   /**
@@ -123,11 +123,11 @@ export class SetupElection implements MessageData {
    * @param questions - The array of questions to be checked
    * @param electionId - The id of the election
    */
-  public static validateQuestions(questions: Question[], electionId: string) {
+  public static validateQuestions(questions: Question[], electionId: Hash) {
     questions.forEach((question) => {
-      const expectedHash = Hash.fromStringArray(EventTags.QUESTION, electionId, question.question);
+      const expectedHash = Hash.fromArray(EventTags.QUESTION, electionId, question.question);
 
-      if (expectedHash.valueOf() !== question.id) {
+      if (!expectedHash.equals(question.id)) {
         throw new ProtocolError(
           "Invalid 'questions.id' parameter encountered during 'SetupElection':" +
             ' re-computing the value yields a different result',
@@ -177,13 +177,14 @@ export class SetupElection implements MessageData {
 
     return new SetupElection(
       {
-        ...obj,
         id: new Hash(obj.id),
         lao: new Hash(obj.lao),
-        key: obj.key ? new PublicKey(obj.key) : undefined,
         created_at: new Timestamp(obj.created_at),
         start_time: new Timestamp(obj.start_time),
         end_time: new Timestamp(obj.end_time),
+        name: obj.name,
+        questions: obj.questions.map(Question.fromJson),
+        version: obj.version,
       },
       laoId,
     );

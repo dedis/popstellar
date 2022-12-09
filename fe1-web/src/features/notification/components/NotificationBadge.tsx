@@ -22,7 +22,7 @@ const NotificationBadgeStyles = StyleSheet.create({
 const NotificationBadge = () => {
   const laoId = NotificationHooks.useCurrentLaoId();
   const selectUnreadNotificationCount = useMemo(
-    () => makeUnreadNotificationCountSelector(laoId.valueOf()),
+    () => makeUnreadNotificationCountSelector(laoId),
     [laoId],
   );
   const count = useSelector(selectUnreadNotificationCount);

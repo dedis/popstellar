@@ -33,11 +33,7 @@ const DigitalCashWalletItems = ({ laoId }: IPropTypes) => {
       <ListItem
         containerStyle={listStyles}
         style={listStyles}
-        onPress={() =>
-          navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet, {
-            laoId: laoId.valueOf(),
-          })
-        }>
+        onPress={() => navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet)}>
         <View style={List.icon}>
           <PoPIcon name="digitalCash" color={Color.primary} size={Icon.size} />
         </View>
