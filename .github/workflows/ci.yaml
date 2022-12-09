@@ -49,12 +49,10 @@ jobs:
             ${{ runner.os }}-
 
       - name: Setup expo
-        run: |
-          npm install -g @expo/cli
+        run: npm install -g @expo/cli
 		  
 	  - name: Setup npm dependencies
-        run: |
-          npm install
+        run: npm install
 
       - name: Check npm security issues
         run: npm audit fix
