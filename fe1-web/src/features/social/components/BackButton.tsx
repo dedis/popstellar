@@ -13,7 +13,10 @@ import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamL
 import STRINGS from 'resources/strings';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<SocialSearchParamList, typeof STRINGS.social_media_search_navigation_user_profile>,
+  StackScreenProps<
+    SocialSearchParamList,
+    typeof STRINGS.social_media_search_navigation_user_profile
+  >,
   CompositeScreenProps<
     StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_search>,
     CompositeScreenProps<
