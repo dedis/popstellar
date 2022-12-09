@@ -50,8 +50,8 @@ jobs:
 
       - name: Setup expo
         run: npm install -g @expo/cli
-		  
-	  - name: Setup npm dependencies
+
+      - name: Setup npm dependencies
         run: npm install
 
       - name: Check npm security issues
