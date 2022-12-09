@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaSearchFragmentBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -37,5 +38,12 @@ public class SocialMediaSearchFragment extends Fragment {
     mSocialMediaSearchFragBinding.setLifecycleOwner(getViewLifecycleOwner());
 
     return mSocialMediaSearchFragBinding.getRoot();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    SocialMediaViewModel viewModel = SocialMediaActivity.obtainViewModel(requireActivity());
+    viewModel.setPageTitle(R.string.search);
   }
 }

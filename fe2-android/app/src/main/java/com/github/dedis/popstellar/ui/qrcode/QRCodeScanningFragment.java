@@ -3,9 +3,10 @@ package com.github.dedis.popstellar.ui.qrcode;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.os.*;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -18,6 +19,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrcodeFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -73,7 +75,8 @@ public final class QRCodeScanningFragment extends Fragment {
 
     if (activity instanceof HomeActivity) {
       viewModel = HomeActivity.obtainViewModel(activity);
-
+      HomeViewModel homeViewModel = (HomeViewModel) viewModel;
+      homeViewModel.setPageTitle(R.string.join_lao_title);
     } else if (activity instanceof LaoDetailActivity) {
       viewModel = LaoDetailActivity.obtainViewModel(activity);
 
@@ -99,6 +102,9 @@ public final class QRCodeScanningFragment extends Fragment {
       binding.addAttendeeNumberText.setVisibility(View.VISIBLE);
       binding.addAttendeeConfirm.setVisibility(View.VISIBLE);
 
+      LaoDetailViewModel laoDetailViewModel = (LaoDetailViewModel) viewModel;
+      laoDetailViewModel.setPageTitle(getString(R.string.add_attendee_title));
+
       // Subscribe to " Nb of attendees"  event
       observeNbAttendeesEvent();
 
@@ -110,6 +116,9 @@ public final class QRCodeScanningFragment extends Fragment {
     }
 
     if (viewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
+      LaoDetailViewModel laoDetailViewModel = (LaoDetailViewModel) viewModel;
+      laoDetailViewModel.setPageTitle(getString(R.string.add_witness_description));
+
       // Subscribe to " Witness scan confirm " event
       observeWitnessScanConfirmEvent();
     }
@@ -227,24 +236,6 @@ public final class QRCodeScanningFragment extends Fragment {
     closeRollCallAlert.show();
   }
 
-  private void setupSuccessPopup(String msg) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-    builder.setTitle("Success");
-    builder.setMessage(msg);
-    builder.setOnDismissListener(dialog -> startCamera());
-    AlertDialog alert = builder.create();
-    mPreview.stop();
-    alert.show();
-    new Handler(Looper.myLooper())
-        .postDelayed(
-            () -> {
-              if (alert.isShowing()) {
-                alert.dismiss();
-              }
-            },
-            2000);
-  }
-
   private void setupWarningPopup(String msg) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
     builder.setTitle("Warning");
@@ -293,7 +284,9 @@ public final class QRCodeScanningFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSuccessPopup("A new witness was added to the the Lao");
+                Toast.makeText(
+                        requireContext(), R.string.add_witness_successful, Toast.LENGTH_SHORT)
+                    .show();
               }
             });
   }
@@ -306,7 +299,9 @@ public final class QRCodeScanningFragment extends Fragment {
             stringEvent -> {
               String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSuccessPopup(event);
+                Toast.makeText(
+                        requireContext(), R.string.add_attendee_successful, Toast.LENGTH_SHORT)
+                    .show();
               }
             });
   }
