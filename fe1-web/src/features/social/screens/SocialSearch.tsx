@@ -41,7 +41,6 @@ const SocialSearch = () => {
         {attendees.map((attendee, i) => (
           <UserListItem
             key={attendee.toString()}
-            laoId={currentLao.id}
             publicKey={attendee}
             isFirstItem={i === 0}
             isLastItem={i === attendees.length - 1}

@@ -3,23 +3,17 @@ import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
-import { useDispatch } from 'react-redux';
 
 import { PoPTextButton, ProfileIcon } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
-import { subscribeToChannel } from 'core/network';
-import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
+import { PublicKey } from 'core/objects';
 import { List, Spacing, Typography } from 'core/styles';
-import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
-
-import { SocialHooks } from '../hooks';
 
 /**
  * Component that shows a user's profile picture, his public key and two buttons:
@@ -58,28 +52,8 @@ type NavigationProps = CompositeScreenProps<
   >
 >;
 
-const UserListItem = ({ laoId, publicKey, isFirstItem, isLastItem }: IPropTypes) => {
-  const [isFollowing, setIsFollowing] = useState(false);
-  const isConnected = SocialHooks.useConnectedToLao();
-
+const UserListItem = ({ publicKey, isFirstItem, isLastItem }: IPropTypes) => {
   const navigation = useNavigation<NavigationProps['navigation']>();
-  const toast = useToast();
-
-  const dispatch = useDispatch();
-
-  const followUser = () => {
-    subscribeToChannel(laoId, dispatch, getUserSocialChannel(laoId, publicKey)).catch((error) => {
-      console.error(
-        `Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`,
-      );
-      toast.show(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`, {
-        type: 'danger',
-        placement: 'top',
-        duration: FOUR_SECONDS,
-      });
-    });
-    setIsFollowing(true);
-  };
 
   const goToUserProfile = () => {
     navigation.navigate(STRINGS.social_media_search_navigation_user_profile, {
@@ -100,11 +74,6 @@ const UserListItem = ({ laoId, publicKey, isFirstItem, isLastItem }: IPropTypes)
         </ListItem.Title>
         <View style={styles.buttonsView}>
           <View style={styles.buttonView}>
-            <PoPTextButton onPress={followUser} disabled={isFollowing || !isConnected} toolbar>
-              {STRINGS.follow_button}
-            </PoPTextButton>
-          </View>
-          <View style={styles.buttonView}>
             <PoPTextButton onPress={goToUserProfile} toolbar>
               {STRINGS.profile_button}
             </PoPTextButton>
@@ -116,7 +85,6 @@ const UserListItem = ({ laoId, publicKey, isFirstItem, isLastItem }: IPropTypes)
 };
 
 const propTypes = {
-  laoId: PropTypes.instanceOf(Hash).isRequired,
   publicKey: PropTypes.instanceOf(PublicKey).isRequired,
   isFirstItem: PropTypes.bool.isRequired,
   isLastItem: PropTypes.bool.isRequired,

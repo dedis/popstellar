@@ -140,7 +140,6 @@ namespace STRINGS {
   export const your_chirp = 'Your chirp';
   export const deleted_chirp = 'This chirp was deleted';
   export const attendees_of_last_roll_call = 'Attendees of last roll-call';
-  export const follow_button = 'Follow';
   export const profile_button = 'Profile';
   export const social_media_delete_chirp = 'Delete Chirp';
   export const social_media_your_profile_unavailable =
