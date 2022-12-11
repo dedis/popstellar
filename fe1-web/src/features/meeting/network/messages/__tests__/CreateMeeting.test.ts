@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { configureTestFeatures, mockLaoId } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, Timestamp } from 'core/objects';
 
@@ -11,7 +11,7 @@ const NAME = 'myMeeting';
 const LOCATION = 'location';
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const FUTURE_TIMESTAMP = new Timestamp(1735686000); // 1st january 2025
-const mockMeetingId = Hash.fromStringArray('M', mockLaoId, TIMESTAMP.toString(), NAME);
+const mockMeetingId = Hash.fromArray('M', mockLaoId, TIMESTAMP, NAME);
 const mockExtra = { extra: 'extra info' };
 
 const sampleCreateMeeting: Partial<CreateMeeting> = {
@@ -44,9 +44,7 @@ beforeAll(() => {
 
 describe('CreateMeeting', () => {
   it('should be created correctly from Json', () => {
-    expect(new CreateMeeting(sampleCreateMeeting, mockLaoIdHash)).toBeJsonEqual(
-      sampleCreateMeeting,
-    );
+    expect(new CreateMeeting(sampleCreateMeeting, mockLaoId)).toBeJsonEqual(sampleCreateMeeting);
 
     let temp: any = {
       object: ObjectType.MEETING,
@@ -59,7 +57,7 @@ describe('CreateMeeting', () => {
       end: FUTURE_TIMESTAMP,
       extra: mockExtra,
     };
-    expect(new CreateMeeting(temp, mockLaoIdHash)).toBeJsonEqual(temp);
+    expect(new CreateMeeting(temp, mockLaoId)).toBeJsonEqual(temp);
 
     temp = {
       object: ObjectType.MEETING,
@@ -69,12 +67,12 @@ describe('CreateMeeting', () => {
       creation: TIMESTAMP,
       start: TIMESTAMP,
     };
-    expect(new CreateMeeting(temp, mockLaoIdHash)).toBeJsonEqual(temp);
+    expect(new CreateMeeting(temp, mockLaoId)).toBeJsonEqual(temp);
   });
 
   it('should be parsed correctly from Json', () => {
     const obj = JSON.parse(createMeetingJson);
-    expect(CreateMeeting.fromJson(obj, mockLaoIdHash)).toBeJsonEqual(sampleCreateMeeting);
+    expect(CreateMeeting.fromJson(obj, mockLaoId)).toBeJsonEqual(sampleCreateMeeting);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
@@ -89,7 +87,7 @@ describe('CreateMeeting', () => {
       end: FUTURE_TIMESTAMP,
       extra: mockExtra,
     };
-    const createWrongObj = () => CreateMeeting.fromJson(obj, mockLaoIdHash);
+    const createWrongObj = () => CreateMeeting.fromJson(obj, mockLaoId);
     expect(createWrongObj).toThrow(ProtocolError);
   });
 
@@ -107,7 +105,7 @@ describe('CreateMeeting', () => {
             end: FUTURE_TIMESTAMP,
             extra: mockExtra,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -125,7 +123,7 @@ describe('CreateMeeting', () => {
             end: FUTURE_TIMESTAMP,
             extra: mockExtra,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -143,7 +141,7 @@ describe('CreateMeeting', () => {
             end: FUTURE_TIMESTAMP,
             extra: mockExtra,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -161,7 +159,7 @@ describe('CreateMeeting', () => {
             end: FUTURE_TIMESTAMP,
             extra: mockExtra,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -181,7 +179,7 @@ describe('CreateMeeting', () => {
             end: TIMESTAMP_BEFORE,
             extra: mockExtra,
           },
-          mockLaoIdHash,
+          mockLaoId,
         );
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -203,7 +201,7 @@ describe('CreateMeeting', () => {
               end: FUTURE_TIMESTAMP,
               extra: mockExtra,
             },
-            mockLaoIdHash,
+            mockLaoId,
           ),
       ).not.toThrow();
     });
@@ -223,7 +221,7 @@ describe('CreateMeeting', () => {
               end: FUTURE_TIMESTAMP,
               extra: mockExtra,
             },
-            mockLaoIdHash,
+            mockLaoId,
           ),
       ).toThrow(ProtocolError);
     });

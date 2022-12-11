@@ -296,6 +296,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -333,8 +334,8 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                               "backgroundColor": "#fff",
                             },
                             Object {
-                              "borderBottomLeftRadius": 16,
-                              "borderBottomRightRadius": 16,
+                              "borderBottomLeftRadius": 8,
+                              "borderBottomRightRadius": 8,
                             },
                           ]
                         }
@@ -344,8 +345,8 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                             Object {
                               "alignItems": "center",
                               "backgroundColor": "#fff",
-                              "borderBottomLeftRadius": 16,
-                              "borderBottomRightRadius": 16,
+                              "borderBottomLeftRadius": 8,
+                              "borderBottomRightRadius": 8,
                               "borderColor": "#bcbbc1",
                               "flexDirection": "row",
                               "padding": 14,
@@ -793,6 +794,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -830,8 +832,8 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                               "backgroundColor": "#fff",
                             },
                             Object {
-                              "borderBottomLeftRadius": 16,
-                              "borderBottomRightRadius": 16,
+                              "borderBottomLeftRadius": 8,
+                              "borderBottomRightRadius": 8,
                             },
                           ]
                         }
@@ -841,8 +843,8 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                             Object {
                               "alignItems": "center",
                               "backgroundColor": "#fff",
-                              "borderBottomLeftRadius": 16,
-                              "borderBottomRightRadius": 16,
+                              "borderBottomLeftRadius": 8,
+                              "borderBottomRightRadius": 8,
                               "borderColor": "#bcbbc1",
                               "flexDirection": "row",
                               "padding": 14,

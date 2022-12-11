@@ -24,32 +24,43 @@ const SingleNotificationScreen = () => {
   const laoId = NotificationHooks.useCurrentLaoId();
 
   const notificationSelector = useMemo(
-    () => makeNotificationSelector(laoId.valueOf(), notificationId),
+    () => makeNotificationSelector(laoId, notificationId),
     [laoId, notificationId],
   );
 
-  const notification = useSelector(notificationSelector);
+  const notificationState = useSelector(notificationSelector);
   const notificationTypes = NotificationHooks.useNotificationTypes();
 
   // search the notification type component list for a fitting comonent to render
   // this notification. undefined if there is none
-  const Component = useMemo(() => {
-    if (notification) {
-      return notificationTypes.find((c) => c.isOfType(notification))?.Component;
+  const { notification, Component } = useMemo(() => {
+    if (notificationState) {
+      const notificationType = notificationTypes.find((c) => c.isOfType(notificationState));
+      if (!notificationType) {
+        throw new Error(`Unkown notification type ${notificationState.type}`);
+      }
+
+      return {
+        notification: notificationType.fromState(notificationState),
+        Component: notificationType.Component,
+      };
     }
-    return undefined;
-  }, [notification, notificationTypes]);
+    return {
+      notification: undefined,
+      Component: undefined,
+    };
+  }, [notificationState, notificationTypes]);
 
   return (
     <ScreenWrapper>
-      {Component && notification ? (
+      {notification && Component && notificationState ? (
         <Component
           notification={notification}
           navigateToNotificationScreen={() => navigation.goBack()}
         />
       ) : (
         <Text>
-          Unkown notification type &apos{notification?.type}&apos. Please report this as a bug.
+          Unkown notification type &apos{notificationState?.type}&apos. Please report this as a bug.
         </Text>
       )}
     </ScreenWrapper>

@@ -12,7 +12,11 @@ import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LAO_FEATURE_IDENTIFIER, LaoReactContext } from 'features/lao/interface';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
-import EventsScreen from '../EventsScreen';
+import EventsScreen, {
+  EventsScreenHeader,
+  EventsScreenHeaderLeft,
+  EventsScreenHeaderRight,
+} from '../EventsScreen';
 
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
@@ -31,15 +35,54 @@ const mockStore = configureStore({
     ...keyPairReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao));
 mockStore.dispatch(setKeyPair(mockPopToken.toState()));
 
-describe('AttendeeScreen', () => {
+describe('EventsScreen', () => {
   it('renders correctly', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <MockNavigator component={EventsScreen} />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+});
+
+describe('EventsScreenHeader', () => {
+  it('renders correctly', () => {
+    const component = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={EventsScreenHeader} />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+});
+
+describe('EventsScreenHeaderLeft', () => {
+  it('renders correctly', () => {
+    const component = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={EventsScreenHeaderLeft} />
+        </FeatureContext.Provider>
+      </Provider>,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+});
+
+describe('EventsScreenHeaderRight', () => {
+  it('renders correctly', () => {
+    const component = render(
+      <Provider store={mockStore}>
+        <FeatureContext.Provider value={contextValue}>
+          <MockNavigator component={EventsScreenHeaderRight} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

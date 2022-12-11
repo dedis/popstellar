@@ -108,7 +108,7 @@ const Identity = () => {
             value={ScannableIdentity.encodeIdentity({
               main_public_key: KeyPairStore.getPublicKey().toString(),
             })}
-            visibility={!isAnonymous}
+            visible={!isAnonymous}
           />
         </>
       )}

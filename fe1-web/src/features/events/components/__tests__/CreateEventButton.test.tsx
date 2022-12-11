@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoIdHash } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EVENT_FEATURE_IDENTIFIER, EventReactContext } from 'features/events/interface';
 import { eventReducer } from 'features/events/reducer';
@@ -31,7 +31,7 @@ const mockStore = configureStore({
 
 const contextValue = {
   [EVENT_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     eventTypes: [ElectionEventType, MeetingEventType, RollCallEventType],
     useIsLaoOrganizer: () => false,
   } as EventReactContext,

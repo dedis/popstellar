@@ -259,16 +259,6 @@ public class ElectionSetupFragmentTest {
 
   @Test
   public void canChooseStartTimeBeforeEndTimeWhenSameDayEvent() {
-    startDateView().perform(click());
-    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
-    dialogPositiveButton().performClick();
-    startDateView().check(matches(withText(DATE)));
-
-    endDateView().perform(click());
-    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
-    dialogPositiveButton().performClick();
-    endDateView().check(matches(withText(DATE)));
-
     endTimeView().perform(click());
     getLastDialog(TimePickerDialog.class).updateTime(HOURS, MINUTES);
     dialogPositiveButton().performClick();
@@ -387,7 +377,7 @@ public class ElectionSetupFragmentTest {
 
     // Submit and intercept the ElectionSetup message
     long minCreation = Instant.now().getEpochSecond();
-    submit().perform(click());
+    submit().perform(scrollTo()).perform(click());
     ElectionSetup electionSetup = getInterceptedElectionSetupMsg();
     long maxCreation = Instant.now().getEpochSecond();
 

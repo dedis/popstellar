@@ -1,29 +1,22 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import {
-  configureTestFeatures,
-  mockKeyPair,
-  mockLaoId,
-  mockLaoName,
-  mockPublicKey,
-} from '__tests__/utils';
+import { configureTestFeatures, mockLaoId, mockLaoName } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
+import { ElectionPublicKey } from 'features/evoting/objects/ElectionPublicKey';
 
 import { ElectionKey } from '../ElectionKey';
+
+// use a less complex data type for json compares
+const mockElectionKey = 'mockElectionKey' as unknown as ElectionPublicKey;
 
 // region test data initialization
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 
-const electionId: Hash = Hash.fromStringArray(
-  'Election',
-  mockLaoId,
-  TIMESTAMP.toString(),
-  mockLaoName,
-);
+const electionId: Hash = Hash.fromArray('Election', mockLaoId, TIMESTAMP, mockLaoName);
 
 // In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>
@@ -32,14 +25,14 @@ const sampleElectionKey: Partial<ElectionKey> = {
   object: ObjectType.ELECTION,
   action: ActionType.KEY,
   election: electionId,
-  election_key: mockKeyPair.publicKey,
+  election_key: mockElectionKey,
 };
 
 const ElectionKeyJson: string = `{
   "object": "${ObjectType.ELECTION}",
   "action": "${ActionType.KEY}",
   "election": "${electionId}",
-  "election_key": "${mockPublicKey}"
+  "election_key": "${mockElectionKey}"
 }`;
 
 // endregion
@@ -50,14 +43,14 @@ beforeAll(() => {
 
 describe('ElectionKey', () => {
   it('should be created correctly from Json', () => {
-    expect(new ElectionKey(sampleElectionKey as MessageDataProperties<ElectionKey>)).toBeJsonEqual(
+    expect(new ElectionKey(sampleElectionKey as MessageDataProperties<ElectionKey>)).toEqual(
       sampleElectionKey,
     );
     const temp = {
       object: ObjectType.ELECTION,
       action: ActionType.KEY,
       election: electionId,
-      election_key: mockKeyPair.publicKey,
+      election_key: mockElectionKey,
     };
     expect(new ElectionKey(temp)).toBeJsonEqual(temp);
   });
@@ -72,7 +65,7 @@ describe('ElectionKey', () => {
       object: ObjectType.ELECTION,
       action: ActionType.NOTIFY_ADD,
       election: electionId.toString(),
-      election_key: mockPublicKey,
+      election_key: mockElectionKey,
     };
     const createFromJson = () => ElectionKey.fromJson(obj);
     expect(createFromJson).toThrow(ProtocolError);
@@ -83,7 +76,7 @@ describe('ElectionKey', () => {
       object: ObjectType.CHIRP,
       action: ActionType.KEY,
       election: electionId.toString(),
-      election_key: mockPublicKey,
+      election_key: mockElectionKey,
     };
     const createFromJson = () => ElectionKey.fromJson(obj);
     expect(createFromJson).toThrow(ProtocolError);
@@ -94,7 +87,7 @@ describe('ElectionKey', () => {
       const createWrongObj = () =>
         new ElectionKey({
           election: undefined as unknown as Hash,
-          election_key: mockKeyPair.publicKey,
+          election_key: mockElectionKey,
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -103,7 +96,7 @@ describe('ElectionKey', () => {
       const createWrongObj = () =>
         new ElectionKey({
           election: electionId,
-          election_key: undefined as unknown as PublicKey,
+          election_key: undefined as unknown as ElectionPublicKey,
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -113,7 +106,7 @@ describe('ElectionKey', () => {
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
         election: electionId,
-        election_key: mockKeyPair.publicKey,
+        election_key: mockElectionKey,
       } as MessageDataProperties<ElectionKey>);
 
       expect(msg.object).toEqual(ObjectType.ELECTION);

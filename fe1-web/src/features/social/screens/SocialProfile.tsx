@@ -10,7 +10,6 @@ import STRINGS from 'resources/strings';
 import { ChirpCard } from '../components';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
-import { SocialFeature } from '../interface';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
@@ -29,7 +28,7 @@ const SocialProfile = () => {
   }
 
   const userChirps = useMemo(
-    () => makeChirpsListOfUser(laoId.valueOf())(currentUserPopTokenPublicKey),
+    () => makeChirpsListOfUser(laoId)(currentUserPopTokenPublicKey),
     [currentUserPopTokenPublicKey, laoId],
   );
   const userChirpList = useSelector(userChirps);
@@ -43,7 +42,7 @@ const SocialProfile = () => {
   }
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPopTokenPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} />
   );
 
   return (
@@ -71,8 +70,3 @@ const SocialProfile = () => {
 };
 
 export default SocialProfile;
-
-export const SocialProfileScreen: SocialFeature.SocialScreen = {
-  id: STRINGS.social_media_navigation_tab_profile,
-  Component: SocialProfile,
-};

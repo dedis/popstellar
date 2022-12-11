@@ -83,11 +83,6 @@ exports[`UserListItem renders correctly 1`] = `
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "marginBottom": 16,
-              }
-            }
             touchSoundDisabled={false}
           >
             <View
@@ -105,7 +100,7 @@ exports[`UserListItem renders correctly 1`] = `
                     Object {
                       "backgroundColor": "#3742fa",
                       "borderColor": "#3742fa",
-                      "borderRadius": 16,
+                      "borderRadius": 8,
                       "borderWidth": 1,
                       "padding": 8,
                     },
@@ -173,11 +168,6 @@ exports[`UserListItem renders correctly 1`] = `
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "marginBottom": 16,
-              }
-            }
             touchSoundDisabled={false}
           >
             <View
@@ -195,7 +185,7 @@ exports[`UserListItem renders correctly 1`] = `
                     Object {
                       "backgroundColor": "#3742fa",
                       "borderColor": "#3742fa",
-                      "borderRadius": 16,
+                      "borderRadius": 8,
                       "borderWidth": 1,
                       "padding": 8,
                     },
@@ -319,11 +309,6 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "marginBottom": 16,
-              }
-            }
             touchSoundDisabled={false}
           >
             <View
@@ -341,7 +326,7 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
                     Object {
                       "backgroundColor": "#3742fa",
                       "borderColor": "#3742fa",
-                      "borderRadius": 16,
+                      "borderRadius": 8,
                       "borderWidth": 1,
                       "padding": 8,
                     },
@@ -413,11 +398,6 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "marginBottom": 16,
-              }
-            }
             touchSoundDisabled={false}
           >
             <View
@@ -435,7 +415,7 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
                     Object {
                       "backgroundColor": "#3742fa",
                       "borderColor": "#3742fa",
-                      "borderRadius": 16,
+                      "borderRadius": 8,
                       "borderWidth": 1,
                       "padding": 8,
                     },

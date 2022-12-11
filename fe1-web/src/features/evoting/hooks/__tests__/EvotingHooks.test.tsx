@@ -4,11 +4,10 @@ import React from 'react';
 
 import {
   mockLao,
-  mockLaoIdHash,
+  mockLaoId,
   messageRegistryInstance,
   mockReduxAction,
   mockKeyPair,
-  mockLaoId,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EvotingReactContext, EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
@@ -20,7 +19,8 @@ const onConfirmEventCreation = jest.fn();
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
+    useConnectedToLao: () => false,
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
     getEventById: () => undefined,
@@ -42,10 +42,17 @@ describe('EvotingHooks', () => {
     });
   });
 
-  describe('useAssertCurrentLaoId', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the current lao id', () => {
-      const { result } = renderHook(() => EvotingHooks.useAssertCurrentLaoId(), { wrapper });
-      expect(result.current).toEqual(mockLaoIdHash);
+      const { result } = renderHook(() => EvotingHooks.useCurrentLaoId(), { wrapper });
+      expect(result.current).toEqual(mockLaoId);
+    });
+  });
+
+  describe('useConnectedToLao', () => {
+    it('should return whether currently connected to a lao', () => {
+      const { result } = renderHook(() => EvotingHooks.useConnectedToLao(), { wrapper });
+      expect(result.current).toBeFalse();
     });
   });
 

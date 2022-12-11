@@ -296,6 +296,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -326,45 +327,53 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        handlerTag={4}
-                        handlerType="NativeViewGestureHandler"
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
-                              }
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={4}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
+                          }
+                        >
+                          <View>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
                               }
-                            }
-                          >
-                            myRollCall
-                          </Text>
-                        </View>
-                      </RCTScrollView>
+                            >
+                              You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
+                              }
+                            >
+                              myRollCall
+                            </Text>
+                          </View>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -674,6 +683,7 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -704,45 +714,53 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        handlerTag={6}
-                        handlerType="NativeViewGestureHandler"
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
-                              }
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={6}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
+                          }
+                        >
+                          <View>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
                               }
-                            }
-                          >
-                            myRollCall
-                          </Text>
-                        </View>
-                      </RCTScrollView>
+                            >
+                              You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
+                              }
+                            >
+                              myRollCall
+                            </Text>
+                          </View>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -1052,6 +1070,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1082,45 +1101,53 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        handlerTag={2}
-                        handlerType="NativeViewGestureHandler"
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
-                              }
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={2}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
+                          }
+                        >
+                          <View>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
                               }
-                            }
-                          >
-                            myRollCall
-                          </Text>
-                        </View>
-                      </RCTScrollView>
+                            >
+                              You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
+                              }
+                            >
+                              myRollCall
+                            </Text>
+                          </View>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>

@@ -13,7 +13,7 @@ import { WalletFeature } from '../interface';
 import RollCallWalletItem from './RollCallWalletItem';
 
 const RollCallWalletItems = ({ laoId }: IPropTypes) => {
-  const tokens = WalletHooks.useRollCallTokensByLaoId(laoId.valueOf());
+  const tokens = WalletHooks.useRollCallTokensByLaoId(laoId);
 
   if (tokens.length > 0) {
     return (

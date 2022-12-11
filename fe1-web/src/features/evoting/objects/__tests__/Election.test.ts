@@ -1,8 +1,8 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
-import { Hash, Timestamp } from 'core/objects';
+import { mockLaoId, mockLaoName } from '__tests__/utils/TestUtils';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import {
@@ -12,89 +12,74 @@ import {
   RegisteredVote,
   Vote,
   ElectionVersion,
-} from '../Election';
-import { ElectionState } from '../index';
+} from '../index';
 
-let question1: Question;
-let question2: Question;
-let vote1: Vote;
-let registeredVotes: RegisteredVote;
-let electionState: ElectionState;
-let QUESTIONS: Question[];
-let REGISTERED_VOTES: RegisteredVote[];
+const question1 = new Question({
+  id: new Hash('q1'),
+  question: 'Question1',
+  voting_method: STRINGS.election_method_Plurality,
+  ballot_options: ['Answer1.1', 'Answer1.2', 'Answer 1.3'],
+  write_in: false,
+});
 
-const initializeData = () => {
-  question1 = {
-    id: 'q1',
-    question: 'Question1',
-    voting_method: STRINGS.election_method_Plurality,
-    ballot_options: ['Answer1.1', 'Answer1.2', 'Answer 1.3'],
-    write_in: false,
-  };
+const question2 = new Question({
+  id: new Hash('q2'),
+  question: 'Question2',
+  voting_method: STRINGS.election_method_Plurality,
+  ballot_options: ['Answer2.1', 'Answer2.2'],
+  write_in: false,
+});
 
-  question2 = {
-    id: 'q2',
-    question: 'Question2',
-    voting_method: STRINGS.election_method_Plurality,
-    ballot_options: ['Answer2.1', 'Answer2.2'],
-    write_in: false,
-  };
+const vote1 = new Vote({
+  id: new Hash('v1'),
+  question: new Hash('q1'),
+  vote: 0,
+});
+const registeredVotes = new RegisteredVote({
+  createdAt: new Timestamp(1520255700),
+  sender: new PublicKey('Sender1'),
+  votes: [vote1],
+  messageId: new Hash('messageId1'),
+});
 
-  vote1 = {
-    id: 'v1',
-    question: 'q1',
-    vote: 0,
-  };
+const election = new Election({
+  id: new Hash('electionId'),
+  lao: new Hash('MyLao'),
+  name: 'MyElection',
+  version: ElectionVersion.OPEN_BALLOT,
+  createdAt: new Timestamp(1520255600),
+  start: new Timestamp(1520255600),
+  end: new Timestamp(1520275600),
+  questions: [question1, question2],
+  electionStatus: ElectionStatus.TERMINATED,
+  registeredVotes: [registeredVotes],
+});
 
-  registeredVotes = {
-    createdAt: 1520255700,
-    sender: 'Sender1',
-    votes: [vote1],
-    messageId: 'messageId1',
-  };
-
-  electionState = {
-    id: 'electionId',
-    lao: 'MyLao',
-    name: 'MyElection',
-    version: ElectionVersion.OPEN_BALLOT,
-    createdAt: 1520255600,
-    start: 1520255600,
-    end: 1520275600,
-    questions: [question1, question2],
-    electionStatus: ElectionStatus.TERMINATED,
-    registeredVotes: [registeredVotes],
-  };
-
-  QUESTIONS = [question1, question2];
-  REGISTERED_VOTES = [registeredVotes];
-};
+const QUESTIONS: Question[] = [question1, question2];
+const REGISTERED_VOTES: RegisteredVote[] = [registeredVotes];
 
 const TIMESTAMP_PAST1 = new Timestamp(1520255600);
 const TIMESTAMP_PAST2 = new Timestamp(1520275600);
 const ELECTION_ID = new Hash('electionId');
 const NAME = 'MyElection';
 
-beforeEach(() => {
-  initializeData();
-});
-
 describe('Election object', () => {
   it('does a state round trip correctly', () => {
-    const election = Election.fromState(electionState);
+    const e = Election.fromState(election.toState());
     const expectedState = {
-      id: ELECTION_ID.valueOf(),
+      id: ELECTION_ID.toState(),
       lao: mockLaoName,
       name: NAME,
       version: ElectionVersion.OPEN_BALLOT,
-      createdAt: TIMESTAMP_PAST1.valueOf(),
-      start: TIMESTAMP_PAST1.valueOf(),
-      end: TIMESTAMP_PAST2.valueOf(),
-      questions: [question1, question2],
-      registeredVotes: [registeredVotes],
+      createdAt: TIMESTAMP_PAST1.toState(),
+      start: TIMESTAMP_PAST1.toState(),
+      end: TIMESTAMP_PAST2.toState(),
+      questions: [question1.toState(), question2.toState()],
+      registeredVotes: [registeredVotes.toState()],
+      questionResult: undefined,
       electionStatus: ElectionStatus.TERMINATED,
     };
-    expect(election.toState()).toStrictEqual(expectedState);
+    expect(e.toState()).toStrictEqual(expectedState);
   });
 
   describe('constructor', () => {
@@ -113,7 +98,7 @@ describe('Election object', () => {
     it('throws an error when id is undefined', () => {
       const createWrongElection = () =>
         new Election({
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
@@ -146,7 +131,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
           start: TIMESTAMP_PAST1,
@@ -162,7 +147,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           createdAt: TIMESTAMP_PAST1,
           start: TIMESTAMP_PAST1,
@@ -178,7 +163,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           version: ElectionVersion.OPEN_BALLOT,
           start: TIMESTAMP_PAST1,
@@ -194,7 +179,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
@@ -210,7 +195,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
@@ -225,7 +210,7 @@ describe('Election object', () => {
       const createWrongElection = () =>
         new Election({
           id: ELECTION_ID,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           name: NAME,
           version: ElectionVersion.OPEN_BALLOT,
           createdAt: TIMESTAMP_PAST1,
@@ -238,9 +223,9 @@ describe('Election object', () => {
     });
 
     it('creates an election when registered_votes is undefined', () => {
-      const election = new Election({
+      const e = new Election({
         id: ELECTION_ID,
-        lao: mockLaoIdHash,
+        lao: mockLaoId,
         name: NAME,
         version: ElectionVersion.OPEN_BALLOT,
         createdAt: TIMESTAMP_PAST1,
@@ -251,7 +236,7 @@ describe('Election object', () => {
       });
       const expected = new Election({
         id: ELECTION_ID,
-        lao: mockLaoIdHash,
+        lao: mockLaoId,
         name: NAME,
         version: ElectionVersion.OPEN_BALLOT,
         createdAt: TIMESTAMP_PAST1,
@@ -261,7 +246,7 @@ describe('Election object', () => {
         registeredVotes: [],
         electionStatus: ElectionStatus.NOT_STARTED,
       });
-      expect(election).toStrictEqual(expected);
+      expect(e).toStrictEqual(expected);
     });
   });
 });

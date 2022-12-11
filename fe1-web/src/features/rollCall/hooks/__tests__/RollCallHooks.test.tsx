@@ -5,7 +5,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
-import { mockLao, mockLaoId, mockLaoIdHash, org } from '__tests__/utils';
+import { mockLao, mockLaoId, org } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, Timestamp } from 'core/objects';
 import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
@@ -22,12 +22,7 @@ import { RollCallHooks } from '../index';
 
 const mockLaoName2 = 'MyLao';
 const mockLaoCreationTime2 = new Timestamp(1600009000);
-const mockLaoIdHash2: Hash = Hash.fromStringArray(
-  org.toString(),
-  mockLaoCreationTime2.toString(),
-  mockLaoName2,
-);
-const mockLaoId2 = mockLaoIdHash2.valueOf();
+const mockLaoId2: Hash = Hash.fromArray(org, mockLaoCreationTime2, mockLaoName2);
 
 const mockRollCallName3 = 'myRollCall3';
 const mockRollCallLocation3 = 'location3';
@@ -37,7 +32,7 @@ const mockRollCallTimestampEnd3 = new Timestamp(1620357900);
 
 const mockRollCall3 = new RollCall({
   id: CreateRollCall.computeRollCallId(
-    mockLaoIdHash2,
+    mockLaoId2,
     mockRollCallTimestampCreation3,
     mockRollCallName3,
   ),
@@ -57,7 +52,8 @@ const mockHasSeed = jest.fn();
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
+    useConnectedToLao: () => false,
     makeEventByTypeSelector,
     generateToken: mockGenerateToken,
     hasSeed: mockHasSeed,
@@ -71,13 +67,13 @@ const mockStore = configureStore({
     ...rollCallReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao));
 mockStore.dispatch(
   addEvent(mockLaoId, {
     eventType: RollCall.EVENT_TYPE,
-    id: mockRollCallState.id.valueOf(),
+    id: mockRollCall.id.valueOf(),
     start: mockRollCall.start.valueOf(),
-    end: mockRollCall.end.valueOf(),
+    end: mockRollCall.end?.valueOf(),
   }),
 );
 mockStore.dispatch(addRollCall(mockRollCallState));
@@ -87,7 +83,7 @@ mockStore.dispatch(
     eventType: RollCall.EVENT_TYPE,
     id: mockRollCall3.id.valueOf(),
     start: mockRollCall3.start.valueOf(),
-    end: mockRollCall3.end.valueOf(),
+    end: mockRollCall3.end?.valueOf(),
   }),
 );
 mockStore.dispatch(addRollCall(mockRollCall3.toState()));
@@ -101,10 +97,17 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('RollCallHooks', () => {
-  describe('useAssertCurrentLaoId', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the current lao id', () => {
-      const { result } = renderHook(() => RollCallHooks.useAssertCurrentLaoId(), { wrapper });
-      expect(result.current).toEqual(mockLaoIdHash);
+      const { result } = renderHook(() => RollCallHooks.useCurrentLaoId(), { wrapper });
+      expect(result.current).toEqual(mockLaoId);
+    });
+  });
+
+  describe('useConnectedToLao', () => {
+    it('should return whether currently connected to a lao', () => {
+      const { result } = renderHook(() => RollCallHooks.useConnectedToLao(), { wrapper });
+      expect(result.current).toBeFalse();
     });
   });
 

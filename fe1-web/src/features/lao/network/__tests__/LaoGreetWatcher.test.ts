@@ -5,10 +5,10 @@ import {
   configureTestFeatures,
   mockAddress,
   mockKeyPair,
+  serializedMockLaoId,
   mockLaoId,
-  mockLaoIdHash,
-  mockLaoState,
   mockPopToken,
+  mockLao,
 } from '__tests__/utils';
 import {
   addMessages,
@@ -37,7 +37,7 @@ import { GreetLao } from '../messages/GreetLao';
 
 const mockHandleLaoGreetSignature = jest.fn();
 const t = new Timestamp(1600000000);
-const mockChannel: Channel = `${ROOT_CHANNEL}/${mockLaoId}`;
+const mockChannel: Channel = `${ROOT_CHANNEL}/${serializedMockLaoId}`;
 
 // setup the test features to enable ExtendedMessage.fromData
 configureTestFeatures();
@@ -71,7 +71,7 @@ describe('handleLaoGreet', () => {
       object: ObjectType.LAO,
       action: ActionType.GREET,
       address: mockAddress,
-      lao: mockLaoIdHash,
+      lao: mockLaoId,
       peers: [],
       frontend: mockPopToken.publicKey,
     });
@@ -93,7 +93,7 @@ describe('handleLaoGreet', () => {
           address: greetLaoMsg.address,
           serverPublicKey: msg.sender,
           frontendPublicKey: greetLaoMsg.frontend,
-        }).toState(),
+        }),
       ),
     );
     // and the greeting message should have been marked as handled
@@ -119,7 +119,7 @@ describe('makeLaoGreetStoreWatcher', () => {
           object: ObjectType.LAO,
           action: ActionType.GREET,
           address: mockAddress,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           peers: [],
           frontend: mockPopToken.publicKey,
         }),
@@ -145,7 +145,7 @@ describe('makeLaoGreetStoreWatcher', () => {
           object: ObjectType.LAO,
           action: ActionType.GREET,
           address: mockAddress,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           peers: [],
           frontend: mockPopToken.publicKey,
         }),
@@ -185,7 +185,7 @@ describe('makeLaoGreetStoreWatcher', () => {
           object: ObjectType.LAO,
           action: ActionType.GREET,
           address: mockAddress,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           peers: [],
           frontend: mockPopToken.publicKey,
         }),
@@ -216,7 +216,7 @@ describe('makeLaoGreetStoreWatcher', () => {
       signature: witnessMessage.signature,
     });
 
-    mockStore.dispatch(setCurrentLao(mockLaoState));
+    mockStore.dispatch(setCurrentLao(mockLao));
     mockStore.dispatch(addMessages([greetLaoMessage.toState(), extendedWitnessMessage.toState()]));
     mockStore.dispatch(
       addUnhandledGreetLaoMessage({

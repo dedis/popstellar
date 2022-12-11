@@ -27,13 +27,16 @@ export namespace RollCallHooks {
   /**
    * Gets the current lao id or throws an exception if there is none
    */
-  export const useAssertCurrentLaoId = () => useRollCallContext().useAssertCurrentLaoId();
+  export const useCurrentLaoId = () => useRollCallContext().useCurrentLaoId();
 
-  export const useRollCallById = (rollCallId: Hash | string | undefined) => {
-    const rollCallSelector = useMemo(
-      () => makeRollCallSelector(rollCallId?.valueOf()),
-      [rollCallId],
-    );
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  export const useConnectedToLao = () => useRollCallContext().useConnectedToLao();
+
+  export const useRollCallById = (rollCallId: Hash | undefined) => {
+    const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
     return useSelector(rollCallSelector);
   };
 
@@ -41,9 +44,9 @@ export namespace RollCallHooks {
    * Gets the list of attendees for a roll call.
    * @param rollCallId - The id of the roll call
    */
-  export const useAttendeesByRollCallId = (rollCallId: Hash | string | undefined) => {
+  export const useAttendeesByRollCallId = (rollCallId: Hash | undefined) => {
     const rollCallAttendeesSelector = useMemo(
-      () => makeRollCallAttendeesListSelector(rollCallId?.valueOf()),
+      () => makeRollCallAttendeesListSelector(rollCallId),
       [rollCallId],
     );
     return useSelector(rollCallAttendeesSelector);
@@ -60,7 +63,7 @@ export namespace RollCallHooks {
   export const useHasSeed = () => useRollCallContext().hasSeed;
 
   export const useRollCallsByLaoId = (
-    laoId: string,
+    laoId: Hash,
   ): {
     [rollCallId: string]: RollCall;
   } => {
@@ -87,7 +90,7 @@ export namespace RollCallHooks {
     return useSelector(rollCallByIdSelector);
   };
 
-  export const useRollCallTokensByLaoId = (laoId: string): RollCallToken[] => {
+  export const useRollCallTokensByLaoId = (laoId: Hash): RollCallToken[] => {
     const rollCalls = useRollCallsByLaoId(laoId);
     const generate = useRollCallContext().generateToken;
 
@@ -97,7 +100,7 @@ export namespace RollCallHooks {
       // allows the promise to be cancelled in cases of re-rendering the component
       let wasCanceled = false;
 
-      const laoIdHash = new Hash(laoId);
+      const laoIdHash = new Hash(laoId.valueOf());
       const tokens = Object.values(rollCalls).map((rc) =>
         generate(laoIdHash, rc.id).then((popToken) => {
           // If the token participated in the roll call, create a RollCallToken object
@@ -128,8 +131,8 @@ export namespace RollCallHooks {
   };
 
   export const useRollCallTokenByRollCallId = (
-    laoId: string,
-    rollCallId: string,
+    laoId: Hash,
+    rollCallId?: Hash,
   ): RollCallToken | undefined => {
     const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
     const rollCall = useSelector(rollCallSelector);
@@ -145,13 +148,15 @@ export namespace RollCallHooks {
         return undefined;
       }
 
-      generate(new Hash(laoId), rollCall.id)
+      const laoIdHash = new Hash(laoId.valueOf());
+
+      generate(laoIdHash, rollCall.id)
         .then(
           (popToken): RollCallToken => ({
             rollCallId: rollCall.id,
             rollCallName: rollCall.name,
             token: popToken,
-            laoId: new Hash(laoId),
+            laoId: laoIdHash,
           }),
         )
         .then((newRollCallToken) => {

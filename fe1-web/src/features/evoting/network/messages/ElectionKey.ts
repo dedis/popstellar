@@ -2,6 +2,7 @@ import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messag
 import { validateDataObject } from 'core/network/validation';
 import { Hash, ProtocolError, PublicKey } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
+import { ElectionPublicKey } from 'features/evoting/objects/ElectionPublicKey';
 
 /** Data received when obtaining an election key */
 export class ElectionKey implements MessageData {
@@ -11,7 +12,7 @@ export class ElectionKey implements MessageData {
 
   public readonly election: Hash;
 
-  public readonly election_key: PublicKey;
+  public readonly election_key: ElectionPublicKey;
 
   constructor(msg: MessageDataProperties<ElectionKey>) {
     if (!msg.election) {

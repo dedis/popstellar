@@ -4,7 +4,13 @@ import { channelFromIds, getLastPartOfChannel, Hash } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { EvotingConfiguration } from '../interface';
-import { Election, ElectionStatus, ElectionVersion, RegisteredVote } from '../objects';
+import {
+  Election,
+  ElectionStatus,
+  ElectionVersion,
+  QuestionResult,
+  RegisteredVote,
+} from '../objects';
 import { addElectionKey } from '../reducer';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { ElectionKey } from './messages/ElectionKey';
@@ -43,7 +49,7 @@ export const handleElectionKeyMessage =
 
     const electionKeyMessage = msg.messageData as ElectionKey;
     // for now *ALL* election#key messages *MUST* be sent by the backend of the organizer
-    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId.valueOf());
+    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId);
 
     if (!organizerBackendPublicKey) {
       console.warn(makeErr("the organizer backend's public key is unknown"));
@@ -55,12 +61,7 @@ export const handleElectionKeyMessage =
       return false;
     }
 
-    dispatch(
-      addElectionKey({
-        electionId: electionKeyMessage.election.valueOf(),
-        electionKey: electionKeyMessage.election_key.valueOf(),
-      }),
-    );
+    dispatch(addElectionKey(electionKeyMessage.election, electionKeyMessage.election_key));
 
     return true;
   };
@@ -70,7 +71,7 @@ export const handleElectionKeyMessage =
  * @param addElection - A function to add a new election
  */
 export const handleElectionSetupMessage =
-  (addElection: (laoId: Hash | string, election: Election) => void) =>
+  (addElection: (laoId: Hash, election: Election) => void) =>
   (msg: ProcessableMessage): boolean => {
     const makeErr = (err: string) => `election#setup was not processed: ${err}`;
 
@@ -136,7 +137,7 @@ export const handleElectionSetupMessage =
  */
 export const handleElectionOpenMessage =
   (
-    getElectionById: (electionId: Hash | string) => Election | undefined,
+    getElectionById: (electionId: Hash) => Election | undefined,
     updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
@@ -181,7 +182,7 @@ export const handleElectionOpenMessage =
  */
 export const handleCastVoteMessage =
   (
-    getElectionById: (electionId: Hash | string) => Election | undefined,
+    getElectionById: (electionId: Hash) => Election | undefined,
     updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
@@ -212,17 +213,18 @@ export const handleCastVoteMessage =
       return false;
     }
 
-    const currentVote: RegisteredVote = {
-      createdAt: castVoteMsg.created_at.valueOf(),
-      sender: msg.sender.valueOf(),
+    const currentVote = new RegisteredVote({
+      createdAt: castVoteMsg.created_at,
+      sender: msg.sender,
       votes: castVoteMsg.votes,
-      messageId: msg.message_id.valueOf(),
-    };
+      messageId: msg.message_id,
+    });
 
-    if (election.registeredVotes.some((votes) => votes.sender === currentVote.sender)) {
+    if (election.registeredVotes.some((votes) => votes.sender.equals(currentVote.sender))) {
       // Update the vote if the person has already voted before
       election.registeredVotes = election.registeredVotes.map((prevVote) =>
-        prevVote.sender === currentVote.sender && prevVote.createdAt < currentVote.createdAt
+        prevVote.sender.equals(currentVote.sender) &&
+        prevVote.createdAt.before(currentVote.createdAt)
           ? currentVote
           : prevVote,
       );
@@ -241,7 +243,7 @@ export const handleCastVoteMessage =
  */
 export const handleElectionEndMessage =
   (
-    getElectionById: (electionId: Hash | string) => Election | undefined,
+    getElectionById: (electionId: Hash) => Election | undefined,
     updateElection: (election: Election) => void,
   ) =>
   (msg: ProcessableMessage) => {
@@ -287,7 +289,7 @@ export const handleElectionEndMessage =
  */
 export const handleElectionResultMessage =
   (
-    getElectionById: (electionId: Hash | string) => Election | undefined,
+    getElectionById: (electionId: Hash) => Election | undefined,
     updateElection: (election: Election) => void,
     getLaoOrganizerBackendPublicKey: EvotingConfiguration['getLaoOrganizerBackendPublicKey'],
   ) =>
@@ -317,7 +319,7 @@ export const handleElectionResultMessage =
     }
 
     // for now *ALL* election#result messages *MUST* be sent by the backend of the organizer
-    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId.valueOf());
+    const organizerBackendPublicKey = getLaoOrganizerBackendPublicKey(msg.laoId);
 
     if (!organizerBackendPublicKey) {
       console.warn(makeErr("the organizer backend's public key is unknown"));
@@ -337,10 +339,13 @@ export const handleElectionResultMessage =
       return false;
     }
 
-    election.questionResult = electionResultMessage.questions.map((q) => ({
-      id: q.id,
-      result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
-    }));
+    election.questionResult = electionResultMessage.questions.map(
+      (q) =>
+        new QuestionResult({
+          id: new Hash(q.id),
+          result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+        }),
+    );
 
     election.electionStatus = ElectionStatus.RESULT;
     updateElection(election);

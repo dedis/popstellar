@@ -1,4 +1,4 @@
-import { Hash } from 'core/objects';
+import { Hash, HashState } from 'core/objects';
 
 export interface TransactionOutputJSON {
   value: number;
@@ -15,7 +15,7 @@ export interface TransactionOutputState {
 }
 export interface TransactionOutputScriptState {
   type: string;
-  publicKeyHash: string;
+  publicKeyHash: HashState;
 }
 export interface TransactionOutputScript {
   type: string;
@@ -53,17 +53,17 @@ export class TransactionOutput {
       ...state,
       script: {
         ...state.script,
-        publicKeyHash: new Hash(state.script.publicKeyHash),
+        publicKeyHash: Hash.fromState(state.script.publicKeyHash),
       },
     });
   }
 
   public toState(): TransactionOutputState {
     return {
-      ...this,
+      value: this.value,
       script: {
-        ...this.script,
-        publicKeyHash: this.script.publicKeyHash.valueOf(),
+        type: this.script.type,
+        publicKeyHash: this.script.publicKeyHash.toState(),
       },
     };
   }

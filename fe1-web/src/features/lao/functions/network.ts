@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { NetworkConnection } from 'core/network/NetworkConnection';
 
-import { Lao, LaoState } from '../objects/Lao';
+import { Lao } from '../objects/Lao';
 
 /**
  * Connects to a known lao
@@ -20,7 +20,7 @@ export const connectToLao = (lao: Lao): Promise<NetworkConnection[]> =>
  * @param connections An optional list of connections on which the subscribe messages should be sent
  */
 export const resubscribeToLao = async (
-  lao: Lao | LaoState,
+  lao: Lao,
   dispatch: Dispatch,
   connections?: NetworkConnection[],
 ) => {

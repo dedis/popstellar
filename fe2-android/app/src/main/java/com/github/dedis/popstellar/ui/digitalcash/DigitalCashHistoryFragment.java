@@ -25,7 +25,7 @@ public class DigitalCashHistoryFragment extends Fragment {
     RecyclerView transactionList = view.findViewById(R.id.transaction_history_list);
     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
     RecyclerView.ItemDecoration decoration =
-        new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+        new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
     HistoryListAdapter adapter =
         new HistoryListAdapter(
             viewModel.getTransactionHistory().getValue(), viewModel.getTokens().getValue());
@@ -38,7 +38,7 @@ public class DigitalCashHistoryFragment extends Fragment {
     viewModel
         .getTransactionHistory()
         .observe(
-            getActivity(),
+            requireActivity(),
             transactionObjects -> {
               if (transactionObjects != null) {
                 transactionObjects.forEach(object -> Log.d(TAG, "Object is " + object.toString()));
@@ -47,5 +47,12 @@ public class DigitalCashHistoryFragment extends Fragment {
               }
             });
     return view;
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    DigitalCashViewModel viewModel = DigitalCashActivity.obtainViewModel(requireActivity());
+    viewModel.setPageTitle(R.string.digital_cash_history);
   }
 }

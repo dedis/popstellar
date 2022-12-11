@@ -45,7 +45,7 @@ const createMockMessage = (post: PostTransaction) => {
     sender: mockKeyPair.publicKey,
     signature: new Signature('signature'),
     witness_signatures: [],
-    laoId: new Hash(mockLaoId),
+    laoId: mockLaoId,
     messageData: post,
   };
 };
@@ -64,7 +64,7 @@ describe('DigitalCash handler', () => {
 
     expect(mockAddTransaction).toHaveBeenCalledTimes(1);
     const [laoId, transaction] = mockAddTransaction.mock.calls[0];
-    expect(laoId.valueOf()).toBe(mockLaoId);
+    expect(laoId).toEqual(mockLaoId);
     expect(transaction.toState()).toEqual(mockTransactionState);
   });
 

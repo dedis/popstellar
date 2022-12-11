@@ -39,14 +39,20 @@ export interface EvotingConfiguration {
    * Should be used inside react components
    * @returns The current lao id
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
+
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
 
   /**
    * Given a lao id, this function returns the public key of the backend
    * @param laoId The id of the lao
    * @returns The public key of the lao organizer's backend or undefined if none is known
    */
-  useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+  useLaoOrganizerBackendPublicKey: (laoId: Hash) => PublicKey | undefined;
 
   /* Event related functions */
 
@@ -56,7 +62,7 @@ export interface EvotingConfiguration {
    * @param event - The event
    * @returns A redux action causing the state change
    */
-  addEvent: (laoId: Hash | string, event: EvotingFeature.EventState) => AnyAction;
+  addEvent: (laoId: Hash, event: EvotingFeature.EventState) => AnyAction;
 
   /**
    * Creates a redux action for update the stored event state
@@ -79,7 +85,7 @@ export interface EvotingConfiguration {
    * @param laoId The id of the lao
    * @returns The public key or undefined if none is known
    */
-  getLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+  getLaoOrganizerBackendPublicKey: (laoId: Hash) => PublicKey | undefined;
 }
 
 /**
@@ -89,7 +95,8 @@ export type EvotingReactContext = Pick<
   EvotingConfiguration,
   /* lao */
   | 'useCurrentLao'
-  | 'useAssertCurrentLaoId'
+  | 'useCurrentLaoId'
+  | 'useConnectedToLao'
   | 'useLaoOrganizerBackendPublicKey'
   /* events */
   | 'getEventById'
@@ -117,8 +124,8 @@ interface EventType {
   eventType: string;
   eventName: string;
   navigationNames: {
-    createEvent: typeof STRINGS.navigation_lao_events_create_election;
-    screenSingle: typeof STRINGS.navigation_lao_events_view_single_election;
+    createEvent: typeof STRINGS.events_create_election;
+    screenSingle: typeof STRINGS.events_view_single_election;
   };
   ListItemComponent: React.ComponentType<{
     eventId: string;
