@@ -57,12 +57,7 @@ export class OpenRollCall implements MessageData {
     rollCallIdToOpen: Hash,
     openedAt: Timestamp,
   ): Hash {
-    return Hash.fromStringArray(
-      EventTags.ROLL_CALL,
-      laoId.valueOf(),
-      rollCallIdToOpen.valueOf(),
-      openedAt.toString(),
-    );
+    return Hash.fromArray(EventTags.ROLL_CALL, laoId, rollCallIdToOpen, openedAt);
   }
 
   /**

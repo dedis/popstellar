@@ -82,7 +82,7 @@ export class CreateMeeting implements MessageData {
    * @param name The name of the meeting
    */
   public static computeMeetingId(laoId: Hash, createdAt: Timestamp, name: string) {
-    return Hash.fromStringArray(EventTags.MEETING, laoId.toString(), createdAt.toString(), name);
+    return Hash.fromArray(EventTags.MEETING, laoId, createdAt, name);
   }
 
   /**

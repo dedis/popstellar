@@ -5,9 +5,9 @@ import { Channel, channelFromIds, Hash } from 'core/objects';
  * @param laoId The id of the lao whose channel should be returned
  * @returns The channel related to the passed lao id or undefined it the lao id is invalid
  */
-export const getLaoChannel = (laoId: string): Channel | undefined => {
+export const getLaoChannel = (laoId: Hash): Channel | undefined => {
   try {
-    return channelFromIds(new Hash(laoId));
+    return channelFromIds(laoId);
   } catch (error) {
     console.error(`Cannot connect to LAO '${laoId}' as it is an invalid LAO ID`, error);
   }

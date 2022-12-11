@@ -1,15 +1,14 @@
 import { Hash } from './Hash';
-import { PublicKey } from './PublicKey';
-import { Signature } from './Signature';
+import { PublicKey, PublicKeyState } from './PublicKey';
+import { Signature, SignatureState } from './Signature';
 
 /**
  * WitnessSignatureState is the interface that should match JSON.stringify(WitnessSignature)
  * It is used to store witness signatures in a way compatible with the Redux store.
  */
 export interface WitnessSignatureState {
-  witness: string;
-
-  signature: string;
+  witness: PublicKeyState;
+  signature: SignatureState;
 }
 
 export class WitnessSignature {
@@ -46,7 +45,17 @@ export class WitnessSignature {
     });
   }
 
+  public static fromState(ws: WitnessSignatureState): WitnessSignature {
+    return new WitnessSignature({
+      witness: PublicKey.fromState(ws.witness),
+      signature: Signature.fromState(ws.signature),
+    });
+  }
+
   public toState(): WitnessSignatureState {
-    return JSON.parse(JSON.stringify(this));
+    return {
+      signature: this.signature.toState(),
+      witness: this.witness.toState(),
+    };
   }
 }

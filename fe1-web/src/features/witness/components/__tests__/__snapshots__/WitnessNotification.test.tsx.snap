@@ -3,7 +3,7 @@
 exports[`WitnessNotification renders correctly 1`] = `
 <View>
   <Text>
-    {"id":0,"laoId":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=","title":"a notification","timestamp":0,"type":"message-to-witness","hasBeenRead":false,"messageId":"some message id"}
+    {"id":0,"laoId":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=","hasBeenRead":false,"timestamp":0,"title":"a notification","type":"message-to-witness","messageId":"some message id"}
   </Text>
   <Text />
   <View
@@ -35,11 +35,6 @@ exports[`WitnessNotification renders correctly 1`] = `
       onGestureHandlerStateChange={[Function]}
       onHandlerStateChange={[Function]}
       rippleColor={0}
-      style={
-        Object {
-          "marginBottom": 16,
-        }
-      }
       touchSoundDisabled={false}
     >
       <View
@@ -57,7 +52,7 @@ exports[`WitnessNotification renders correctly 1`] = `
               Object {
                 "backgroundColor": "#3742fa",
                 "borderColor": "#3742fa",
-                "borderRadius": 16,
+                "borderRadius": 8,
                 "borderWidth": 1,
                 "padding": 8,
               },
@@ -117,11 +112,6 @@ exports[`WitnessNotification renders correctly 1`] = `
       onGestureHandlerStateChange={[Function]}
       onHandlerStateChange={[Function]}
       rippleColor={0}
-      style={
-        Object {
-          "marginBottom": 16,
-        }
-      }
       touchSoundDisabled={false}
     >
       <View
@@ -139,7 +129,7 @@ exports[`WitnessNotification renders correctly 1`] = `
               Object {
                 "backgroundColor": "#3742fa",
                 "borderColor": "#3742fa",
-                "borderRadius": 16,
+                "borderRadius": 8,
                 "borderWidth": 1,
                 "padding": 8,
               },

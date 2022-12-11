@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockKeyPair, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
+import { mockKeyPair, mockLao, serializedMockLaoId, mockLaoId, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EventTags, Hash, PopToken, RollCallToken, Timestamp } from 'core/objects';
 import { getEventById } from 'features/events/functions';
@@ -26,23 +26,18 @@ jest.mock('core/platform/crypto/browser');
 
 const mockRCName = 'myRollCall';
 const mockRCLocation = 'location';
-const mockRCTimestampStart = new Timestamp(1620255600);
+const mockRCTimestampStart = new Timestamp(1620355600);
 const mockRCTimestampEnd = new Timestamp(1620357600);
 const mockRCAttendees = ['attendee1', 'attendee2'];
 
-const mockRCIdAliasHash = Hash.fromStringArray(
+const mockRCIdAliasHash = Hash.fromArray(
   EventTags.ROLL_CALL,
   mockLaoId,
-  mockRCTimestampStart.toString(),
+  mockRCTimestampStart,
   mockRCName,
 );
 
-const mockRCIdHash = Hash.fromStringArray(
-  EventTags.ROLL_CALL,
-  mockLaoId,
-  mockRCIdAliasHash.valueOf(),
-  mockRCName,
-);
+const mockRCIdHash = Hash.fromArray(EventTags.ROLL_CALL, mockLaoId, mockRCIdAliasHash, mockRCName);
 
 const mockRollCallState = {
   id: mockRCIdHash.valueOf(),
@@ -60,7 +55,7 @@ const mockRollCallState = {
 };
 const mockRollCall = RollCall.fromState(mockRollCallState);
 const mockRollCallToken: RollCallToken = {
-  laoId: mockLaoIdHash,
+  laoId: mockLaoId,
   rollCallId: mockRollCall.id,
   rollCallName: mockRollCall.name,
   token: PopToken.fromState(mockKeyPair.toState()),
@@ -68,17 +63,20 @@ const mockRollCallToken: RollCallToken = {
 
 const contextValue = (rollCallTokens: RollCallToken[]) => ({
   [WALLET_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
+    useCurrentLao: () => mockLao,
+    useConnectedToLao: () => true,
     getEventById,
     useRollCallsByLaoId: RollCallHooks.useRollCallsByLaoId,
     useRollCallTokensByLaoId: () => rollCallTokens,
-    useLaoIds: () => [mockLaoIdHash],
-    useNamesByLaoId: () => ({ [mockLaoId]: mockLaoName }),
+    useLaoIds: () => [mockLaoId],
+    useNamesByLaoId: () => ({ [serializedMockLaoId]: mockLaoName }),
     walletItemGenerators: [],
     walletNavigationScreens: [],
   } as WalletReactContext,
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
+    useConnectedToLao: () => true,
     generateToken,
     hasSeed,
     makeEventByTypeSelector,

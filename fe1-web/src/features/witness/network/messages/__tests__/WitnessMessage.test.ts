@@ -3,11 +3,11 @@ import '__tests__/utils/matchers';
 
 import { mockKeyPair, mockPopToken } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Base64UrlData, ProtocolError, Signature } from 'core/objects';
+import { Hash, ProtocolError, Signature } from 'core/objects';
 
 import { WitnessMessage } from '../WitnessMessage';
 
-const mockMessageId = Base64UrlData.encode('message_id');
+const mockMessageId = new Hash('message_id');
 const mockSignature = mockKeyPair.privateKey.sign(mockMessageId);
 
 const sampleWitnessMessage: Partial<WitnessMessage> = {

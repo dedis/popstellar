@@ -3,7 +3,7 @@ import { Store } from 'redux';
 import { getNetworkManager } from 'core/network';
 import { getMessagesState } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
-import { Hash, PublicKey, WitnessSignatureState } from 'core/objects';
+import { Hash, PublicKey, WitnessSignature, WitnessSignatureState } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { LaoServer } from '../objects/LaoServer';
@@ -34,7 +34,7 @@ export const storeBackendAndConnectToPeers = async (
         address: greetLaoMsg.address,
         serverPublicKey: publicKey,
         frontendPublicKey: greetLaoMsg.frontend,
-      }).toState(),
+      }),
     ),
   );
 
@@ -113,7 +113,7 @@ export const makeLaoGreetStoreWatcher = (
       // check whether the signatures are different from the ones retrieved the last time
       if (signaturesByMessageId[messageId] !== previousSignaturesByMessageId[messageId]) {
         // if it is different, check if the lao organizer's key signed it
-        const signatures = signaturesByMessageId[messageId];
+        const signatures = signaturesByMessageId[messageId].map(WitnessSignature.fromState);
 
         // for this, retrieve the message from the store
         if (!(messageId in messageState.byId)) {
@@ -130,14 +130,10 @@ export const makeLaoGreetStoreWatcher = (
             `The message with id ${messageId} was received from lao with id ${laoId} but this lao is not stored in the lao reducer`,
           );
         }
-        const organizerFrontendPublicKey = laoState.byId[laoId].organizer;
+        const organizerFrontendPublicKey = new PublicKey(laoState.byId[laoId].organizer);
 
         // check if the *new* set of signatures includes that of the organizer
-        if (
-          signatures.find(
-            (signature) => signature.witness.valueOf() === organizerFrontendPublicKey.valueOf(),
-          )
-        ) {
+        if (signatures.find((signature) => signature.witness.equals(organizerFrontendPublicKey))) {
           // if it does, call the callback
           laoGreetSignatureHandler(
             greetLaoMessage.message_id,

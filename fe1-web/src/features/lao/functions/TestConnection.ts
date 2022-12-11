@@ -18,13 +18,13 @@ export const openLaoTestConnection = async () => {
   const time = new Timestamp(1609455600);
   const sampleLao: Lao = new Lao({
     name: 'name de la Lao',
-    id: new Hash('myLaoId'), // Hash.fromStringArray(org.toString(), time.toString(), 'name')
+    id: new Hash('myLaoId'), // Hash.fromArray(org, time, 'name')
     creation: time,
     last_modified: time,
     organizer: org,
     witnesses: [],
   });
 
-  dispatch(setCurrentLao(sampleLao.toState()));
+  dispatch(setCurrentLao(sampleLao));
   console.info('Stored test lao in storage : ', sampleLao);
 };

@@ -44,6 +44,10 @@ type MaterialIcon = {
  * used and what name should be passed to it.
  */
 const iconNameMap = {
+  arrowBack: {
+    iconName: 'ios-arrow-back',
+    IconFamily: Ionicons,
+  } as IonIcon,
   addPerson: {
     iconName: 'ios-person-add',
     IconFamily: Ionicons,
@@ -90,6 +94,10 @@ const iconNameMap = {
   } as MaterialIcon,
   event: {
     iconName: 'ios-calendar',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  heart: {
+    iconName: 'heart',
     IconFamily: Ionicons,
   } as IonIcon,
   home: {
@@ -140,6 +148,14 @@ const iconNameMap = {
     iconName: 'ios-people',
     IconFamily: Ionicons,
   } as IonIcon,
+  thumbsDown: {
+    iconName: 'thumbs-down-sharp',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  thumbsUp: {
+    iconName: 'thumbs-up-sharp',
+    IconFamily: Ionicons,
+  } as IonIcon,
   wallet: {
     iconName: 'ios-wallet',
     IconFamily: Ionicons,
@@ -153,6 +169,8 @@ const iconNameMap = {
     IconFamily: Ionicons,
   } as IonIcon,
 };
+
+export type PopIconName = keyof typeof iconNameMap;
 
 const styles = StyleSheet.create({
   focused: {},
@@ -194,7 +212,7 @@ PoPIcon.defaultProps = {
 type IconPropTypes = ExtendType<
   PropTypes.InferProps<typeof iconPropTypes>,
   {
-    name: keyof typeof iconNameMap;
+    name: PopIconName;
     color: string;
     size: number;
   }
@@ -202,7 +220,7 @@ type IconPropTypes = ExtendType<
 
 export default PoPIcon;
 
-export const makeIcon = (name: keyof typeof iconNameMap) => {
+export const makeIcon = (name: PopIconName) => {
   // we need to cast it here to a more generic type due to limitations
   // in the static type checking
   const Entry = iconNameMap[name] as {

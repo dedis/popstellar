@@ -42,7 +42,7 @@ const mockStore = configureStore({
     ...keyPairReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao));
 mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
 
 describe('OrganizerNavigation', () => {

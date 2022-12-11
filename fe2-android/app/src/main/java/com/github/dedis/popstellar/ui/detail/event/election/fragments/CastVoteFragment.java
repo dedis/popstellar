@@ -21,8 +21,7 @@ import com.github.dedis.popstellar.ui.detail.event.election.adapters.CastVoteVie
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
@@ -38,24 +37,24 @@ public class CastVoteFragment extends Fragment {
   public static final String TAG = CastVoteFragment.class.getSimpleName();
 
   private Button voteButton;
-  private LaoDetailViewModel mLaoDetailViewModel;
+  private LaoDetailViewModel viewModel;
 
   private final View.OnClickListener buttonListener =
       v -> {
         voteButton.setEnabled(false);
         List<ElectionVote> electionVotes = new ArrayList<>();
         List<ElectionQuestion> electionQuestions =
-            mLaoDetailViewModel.getCurrentElection().getElectionQuestions();
+            viewModel.getCurrentElection().getElectionQuestions();
         for (int i = 0; i < electionQuestions.size(); i++) {
           ElectionQuestion electionQuestion = electionQuestions.get(i);
 
           // Attendee should not be able to send cast vote if he didn't vote for all questions
-          List<Integer> votes = mLaoDetailViewModel.getCurrentElectionVotes().getValue();
-          if (votes.size() < electionQuestions.size()) {
+          List<Integer> votes = viewModel.getCurrentElectionVotes().getValue();
+          if (Objects.requireNonNull(votes).size() < electionQuestions.size()) {
             return;
           }
 
-          Integer vote = mLaoDetailViewModel.getCurrentElectionVotes().getValue().get(i);
+          Integer vote = viewModel.getCurrentElectionVotes().getValue().get(i);
           // Only one vote should be selected.
           ElectionVote electionVote =
               new ElectionVote(
@@ -63,12 +62,12 @@ public class CastVoteFragment extends Fragment {
                   vote,
                   electionQuestion.getWriteIn(),
                   null,
-                  mLaoDetailViewModel.getCurrentElection().getId());
+                  viewModel.getCurrentElection().getId());
           electionVotes.add(electionVote);
         }
 
-        mLaoDetailViewModel.addDisposable(
-            mLaoDetailViewModel
+        viewModel.addDisposable(
+            viewModel
                 .sendVote(electionVotes)
                 .subscribe(
                     () -> {
@@ -101,7 +100,7 @@ public class CastVoteFragment extends Fragment {
     // Inflate the layout for this fragment
     CastVoteFragmentBinding mCastVoteFragBinding =
         CastVoteFragmentBinding.inflate(inflater, container, false);
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     TextView laoNameView = mCastVoteFragBinding.castVoteLaoName;
     TextView electionNameView = mCastVoteFragBinding.castVoteElectionName;
@@ -112,14 +111,14 @@ public class CastVoteFragment extends Fragment {
     // Getting laoView
     LaoView laoView;
     try {
-      laoView = mLaoDetailViewModel.getLaoView();
+      laoView = viewModel.getLaoView();
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return null;
     }
 
     // Getting election
-    Election election = mLaoDetailViewModel.getCurrentElection();
+    Election election = viewModel.getCurrentElection();
     if (election == null) {
       Log.e(TAG, "The current election of the LaoDetailViewModel is null");
       return null;
@@ -132,12 +131,12 @@ public class CastVoteFragment extends Fragment {
     electionNameView.setText(election.getName());
 
     // Setting up the votes for the adapter
-    mLaoDetailViewModel.setCurrentElectionVotes(setEmptyVoteList());
+    viewModel.setCurrentElectionVotes(setEmptyVoteList());
 
     // Setting the viewPager and its adapter
     ViewPager2 viewPager2 = mCastVoteFragBinding.castVotePager;
     CastVoteViewPagerAdapter adapter =
-        new CastVoteViewPagerAdapter(mLaoDetailViewModel, mCastVoteFragBinding);
+        new CastVoteViewPagerAdapter(viewModel, mCastVoteFragBinding);
     viewPager2.setAdapter(adapter);
     viewPager2.setPageTransformer(new ZoomOutTransformer());
     // Setting the indicator for horizontal swipe
@@ -146,6 +145,12 @@ public class CastVoteFragment extends Fragment {
 
     voteButton.setOnClickListener(buttonListener);
     return mCastVoteFragBinding.getRoot();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(getString(R.string.vote));
   }
 
   private List<Integer> setEmptyVoteList() {

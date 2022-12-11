@@ -31,7 +31,7 @@ export interface LaoCompositionConfiguration {
    * Given the lao server address and the lao id, this computes the data
    * that is encoded in a QR code that can be used to connect to a LAO
    */
-  encodeLaoConnectionForQRCode: (servers: string[], laoId: string) => string;
+  encodeLaoConnectionForQRCode: (servers: string[], laoId: Hash) => string;
 
   /* other */
 
@@ -60,16 +60,12 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     /**
      * Creates a redux action to add a server address for a given lao
      */
-    addLaoServerAddress: (laoId: Hash | string, serverAddress: string) => AnyAction;
+    addLaoServerAddress: (laoId: Hash, serverAddress: string) => AnyAction;
 
     /**
      * Creates a redux action to set the last roll call for a given lao
      */
-    setLaoLastRollCall: (
-      laoId: Hash | string,
-      rollCallId: Hash | string,
-      hasToken: boolean,
-    ) => AnyAction;
+    setLaoLastRollCall: (laoId: Hash, rollCallId: Hash, hasToken: boolean) => AnyAction;
   };
 
   /* hooks */
@@ -88,7 +84,7 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * Checks whether the current user is an organizer of the given lao
      * If no laoId is passed, it is checked for the current lao
      */
-    useIsLaoOrganizer: (laoId?: string) => boolean;
+    useIsLaoOrganizer: (laoId?: Hash) => boolean;
 
     /**
      * Checks whether the current user is a witness of the current lao
@@ -110,22 +106,22 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 
     /**
      * Gets the current lao id
-     * @returns The current lao id or undefined if there is none
-     */
-    useCurrentLaoId: () => Hash | undefined;
-
-    /**
-     * Gets the current lao id
      * @returns The current lao id or throws an exeception if there is none
      */
-    useAssertCurrentLaoId: () => Hash;
+    useCurrentLaoId: () => Hash;
+
+    /**
+     * Returns true if currently connected to a lao, false if in offline mode
+     * and undefined if there is no current lao
+     */
+    useConnectedToLao: () => boolean | undefined;
 
     /**
      * Returns the public key of the organizer's backend for a given lao id
      * @param laoId The lao id for which the key should be retrieved
      * @returns The public key or undefined if there is none
      */
-    useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+    useLaoOrganizerBackendPublicKey: (laoId: Hash) => PublicKey | undefined;
 
     /**
      * Returns the function to disconnect from the current lao
@@ -150,7 +146,7 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * Gets a lao by its id
      * @returns The lao with the given id or undefined if there is none
      */
-    getLaoById: (laoId: string) => Lao | undefined;
+    getLaoById: (laoId: Hash) => Lao | undefined;
 
     /**
      * Gets the current lao id
@@ -163,7 +159,7 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @param laoId The lao id
      * @returns The organizer's backend public key for the given lao or undefined if it is not known
      */
-    getLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+    getLaoOrganizerBackendPublicKey: (laoId: Hash) => PublicKey | undefined;
 
     /**
      * Sends a network request to create a new lao and returns
@@ -185,14 +181,14 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     /**
      * Returns the lao organizer's public key
      */
-    getLaoOrganizer: (laoId: string) => PublicKey | undefined;
+    getLaoOrganizer: (laoId: Hash) => PublicKey | undefined;
 
     /**
      * Get a LAOs channel by its id
      * @param laoId The id of the lao whose channel should be returned
      * @returns The channel related to the passed lao id
      */
-    getLaoChannel: (laoId: string) => Channel | undefined;
+    getLaoChannel: (laoId: Hash) => Channel | undefined;
 
     /**
      * Resubscribes to a known lao

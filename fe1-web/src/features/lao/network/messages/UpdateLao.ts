@@ -42,11 +42,7 @@ export class UpdateLao implements MessageData {
       throw new ProtocolError("Undefined 'id' parameter encountered during 'UpdateLao'");
     }
     const lao: Lao = OpenedLaoStore.get();
-    const expectedHash = Hash.fromStringArray(
-      lao.organizer.toString(),
-      lao.creation.toString(),
-      msg.name,
-    );
+    const expectedHash = Hash.fromArray(lao.organizer, lao.creation, msg.name);
     if (!expectedHash.equals(msg.id)) {
       throw new ProtocolError(
         "Invalid 'id' parameter encountered during 'UpdateLao': unexpected id value",

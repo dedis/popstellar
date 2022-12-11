@@ -52,14 +52,14 @@ const TextInputChirp = (props: IPropTypes) => {
     numberOfLines,
     onPress,
     onChangeText,
-    publishIsDisabledCond,
+    disabled: alwaysDisabled,
     currentUserPublicKey,
     testID,
   } = props;
 
   const [charsLeft, setCharsLeft] = useState(MAX_CHIRP_CHARS);
   const textIsRed = charsLeft < 0;
-  const publishIsDisabled = textIsRed || charsLeft === MAX_CHIRP_CHARS || publishIsDisabledCond;
+  const disabled = textIsRed || charsLeft === MAX_CHIRP_CHARS || alwaysDisabled;
 
   return (
     <View style={styles.container}>
@@ -76,10 +76,10 @@ const TextInputChirp = (props: IPropTypes) => {
       <View style={styles.rightView}>
         <TextInput
           value={value}
-          placeholder={placeholder}
+          placeholder={placeholder || undefined}
           multiline
           selectTextOnFocus
-          numberOfLines={numberOfLines}
+          numberOfLines={numberOfLines || undefined}
           style={styles.textInput}
           onChangeText={(input: string) => {
             onChangeText(input);
@@ -92,7 +92,7 @@ const TextInputChirp = (props: IPropTypes) => {
           <Button
             title={STRINGS.button_publish}
             onPress={() => onPress()}
-            disabled={publishIsDisabled}
+            disabled={disabled === true}
             testID={testID ? `${testID}_publish` : undefined}
           />
         </View>
@@ -107,7 +107,7 @@ const propTypes = {
   numberOfLines: PropTypes.number,
   onPress: PropTypes.func.isRequired,
   onChangeText: PropTypes.func.isRequired,
-  publishIsDisabledCond: PropTypes.bool,
+  disabled: PropTypes.bool,
   currentUserPublicKey: PropTypes.instanceOf(PublicKey),
   testID: PropTypes.string,
 };
@@ -117,20 +117,11 @@ TextInputChirp.propTypes = propTypes;
 TextInputChirp.defaultProps = {
   placeholder: STRINGS.your_chirp,
   numberOfLines: 5,
-  publishIsDisabledCond: false,
+  disabled: false,
   currentUserPublicKey: undefined,
   testID: undefined,
 };
 
-type IPropTypes = {
-  value: string;
-  placeholder: string;
-  numberOfLines: number;
-  onPress: Function;
-  onChangeText: Function;
-  publishIsDisabledCond: boolean;
-  currentUserPublicKey: PublicKey;
-  testID?: string;
-};
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default TextInputChirp;

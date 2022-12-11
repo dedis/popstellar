@@ -99,7 +99,7 @@ describe('MeetingReducer', () => {
             },
             allIds: [mockMeetingState.id],
           } as MeetingReducerState,
-          removeMeeting(mockMeetingState.id),
+          removeMeeting(mockMeeting.id),
         ),
       ).toEqual({
         byId: {},
@@ -114,7 +114,7 @@ describe('MeetingReducer', () => {
             byId: {},
             allIds: [],
           } as MeetingReducerState,
-          removeMeeting(mockMeetingState.id),
+          removeMeeting(mockMeeting.id),
         ),
       ).toThrow();
     });
@@ -122,7 +122,7 @@ describe('MeetingReducer', () => {
 
   describe('makeMeetingSelector', () => {
     it('returns the constructed meeting', () => {
-      const meeting = makeMeetingSelector(mockMeetingState.id)({
+      const meeting = makeMeetingSelector(mockMeeting.id)({
         [MEETING_REDUCER_PATH]: {
           byId: { [mockMeetingState.id]: mockMeetingState },
           allIds: [mockMeetingState.id],
@@ -133,7 +133,7 @@ describe('MeetingReducer', () => {
     });
 
     it('returns undefined if the id of the meeting is not in the store', () => {
-      const meeting = makeMeetingSelector(mockMeetingState.id)({
+      const meeting = makeMeetingSelector(mockMeeting.id)({
         [MEETING_REDUCER_PATH]: {
           byId: {},
           allIds: [],
