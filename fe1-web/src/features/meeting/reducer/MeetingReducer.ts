@@ -50,7 +50,7 @@ const meetingSlice = createSlice({
       state.byId[updatedMeeting.id] = updatedMeeting;
     },
 
-    removeMeeting: (state, action: PayloadAction<Hash | string>) => {
+    removeMeeting: (state, action: PayloadAction<Hash>) => {
       const meetingId = action.payload.valueOf();
 
       if (!(meetingId in state.byId)) {
@@ -78,7 +78,7 @@ export default {
  * @param meetingId The if of the meeting / event to retrieve
  * @returns The selector
  */
-export const makeMeetingSelector = (meetingId: Hash | string) => {
+export const makeMeetingSelector = (meetingId: Hash) => {
   const meetingIdString = meetingId.valueOf();
 
   return createSelector(
@@ -102,7 +102,7 @@ export const makeMeetingSelector = (meetingId: Hash | string) => {
  * @param state The redux state
  * @returns The constructed meeting or undefined if the id is not found
  */
-export const getMeetingById = (meetingId: Hash | string, state: unknown) => {
+export const getMeetingById = (meetingId: Hash, state: unknown) => {
   const meetingIdString = meetingId.valueOf();
 
   const meetingById = getMeetingState(state).byId;

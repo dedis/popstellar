@@ -276,7 +276,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={7}
+                handlerTag={3}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -296,6 +296,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -327,6 +328,123 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                       }
                     >
                       <View>
+                        <View
+                          style={
+                            Object {
+                              "marginVertical": 8,
+                            }
+                          }
+                        >
+                          <qrcode
+                            overlayText="Scan to
+Connect"
+                            value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                          />
+                        </View>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Name
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          >
+                            MyLao
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Your role
+                          </Text>
+                          
+
+                          <Text>
+                            Attendee
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            You are currently connected to
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          />
+                        </Text>
                         <Text
                           style={
                             Object {
@@ -406,238 +524,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                             =
                           </Text>
                         </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            Your role
-                          </Text>
-                          
-
-                          <Text>
-                            Attendee
-                          </Text>
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            You are currently connected to
-                          </Text>
-                          
-
-                          <Text
-                            selectable={true}
-                          />
-                        </Text>
-                        <View
-                          accessible={true}
-                          collapsable={false}
-                          focusable={true}
-                          onBlur={[Function]}
-                          onClick={[Function]}
-                          onFocus={[Function]}
-                          onResponderGrant={[Function]}
-                          onResponderMove={[Function]}
-                          onResponderRelease={[Function]}
-                          onResponderTerminate={[Function]}
-                          onResponderTerminationRequest={[Function]}
-                          onStartShouldSetResponder={[Function]}
-                          style={
-                            Object {
-                              "marginBottom": 16,
-                            }
-                          }
-                        >
-                          <RNGestureHandlerButton
-                            collapsable={false}
-                            exclusive={true}
-                            handlerTag={8}
-                            handlerType="NativeViewGestureHandler"
-                            onGestureEvent={[Function]}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            onHandlerStateChange={[Function]}
-                            rippleColor={0}
-                            style={
-                              Object {
-                                "marginBottom": 16,
-                              }
-                            }
-                            touchSoundDisabled={false}
-                          >
-                            <View
-                              accessible={true}
-                              collapsable={false}
-                              style={
-                                Object {
-                                  "opacity": 1,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  Array [
-                                    Object {
-                                      "backgroundColor": "#3742fa",
-                                      "borderColor": "#3742fa",
-                                      "borderRadius": 16,
-                                      "borderWidth": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "textAlign": "center",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Add connection
-                                </Text>
-                              </View>
-                            </View>
-                          </RNGestureHandlerButton>
-                        </View>
-                        <View
-                          accessible={true}
-                          collapsable={false}
-                          focusable={true}
-                          onBlur={[Function]}
-                          onClick={[Function]}
-                          onFocus={[Function]}
-                          onResponderGrant={[Function]}
-                          onResponderMove={[Function]}
-                          onResponderRelease={[Function]}
-                          onResponderTerminate={[Function]}
-                          onResponderTerminationRequest={[Function]}
-                          onStartShouldSetResponder={[Function]}
-                          style={
-                            Object {
-                              "marginBottom": 16,
-                            }
-                          }
-                        >
-                          <RNGestureHandlerButton
-                            collapsable={false}
-                            exclusive={true}
-                            handlerTag={9}
-                            handlerType="NativeViewGestureHandler"
-                            onGestureEvent={[Function]}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            onHandlerStateChange={[Function]}
-                            rippleColor={0}
-                            style={
-                              Object {
-                                "marginBottom": 16,
-                              }
-                            }
-                            touchSoundDisabled={false}
-                          >
-                            <View
-                              accessible={true}
-                              collapsable={false}
-                              style={
-                                Object {
-                                  "opacity": 1,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  Array [
-                                    Object {
-                                      "backgroundColor": "#3742fa",
-                                      "borderColor": "#3742fa",
-                                      "borderRadius": 16,
-                                      "borderWidth": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "textAlign": "center",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Disconnect
-                                </Text>
-                              </View>
-                            </View>
-                          </RNGestureHandlerButton>
-                        </View>
                       </View>
                     </View>
                   </View>
@@ -948,6 +834,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -979,6 +866,123 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                       }
                     >
                       <View>
+                        <View
+                          style={
+                            Object {
+                              "marginVertical": 8,
+                            }
+                          }
+                        >
+                          <qrcode
+                            overlayText="Scan to
+Connect"
+                            value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                          />
+                        </View>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Name
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          >
+                            MyLao
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Your role
+                          </Text>
+                          
+
+                          <Text>
+                            Organizer
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            You are currently connected to
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          />
+                        </Text>
                         <Text
                           style={
                             Object {
@@ -1058,238 +1062,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                             =
                           </Text>
                         </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            Your role
-                          </Text>
-                          
-
-                          <Text>
-                            Organizer
-                          </Text>
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            You are currently connected to
-                          </Text>
-                          
-
-                          <Text
-                            selectable={true}
-                          />
-                        </Text>
-                        <View
-                          accessible={true}
-                          collapsable={false}
-                          focusable={true}
-                          onBlur={[Function]}
-                          onClick={[Function]}
-                          onFocus={[Function]}
-                          onResponderGrant={[Function]}
-                          onResponderMove={[Function]}
-                          onResponderRelease={[Function]}
-                          onResponderTerminate={[Function]}
-                          onResponderTerminationRequest={[Function]}
-                          onStartShouldSetResponder={[Function]}
-                          style={
-                            Object {
-                              "marginBottom": 16,
-                            }
-                          }
-                        >
-                          <RNGestureHandlerButton
-                            collapsable={false}
-                            exclusive={true}
-                            handlerTag={2}
-                            handlerType="NativeViewGestureHandler"
-                            onGestureEvent={[Function]}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            onHandlerStateChange={[Function]}
-                            rippleColor={0}
-                            style={
-                              Object {
-                                "marginBottom": 16,
-                              }
-                            }
-                            touchSoundDisabled={false}
-                          >
-                            <View
-                              accessible={true}
-                              collapsable={false}
-                              style={
-                                Object {
-                                  "opacity": 1,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  Array [
-                                    Object {
-                                      "backgroundColor": "#3742fa",
-                                      "borderColor": "#3742fa",
-                                      "borderRadius": 16,
-                                      "borderWidth": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "textAlign": "center",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Add connection
-                                </Text>
-                              </View>
-                            </View>
-                          </RNGestureHandlerButton>
-                        </View>
-                        <View
-                          accessible={true}
-                          collapsable={false}
-                          focusable={true}
-                          onBlur={[Function]}
-                          onClick={[Function]}
-                          onFocus={[Function]}
-                          onResponderGrant={[Function]}
-                          onResponderMove={[Function]}
-                          onResponderRelease={[Function]}
-                          onResponderTerminate={[Function]}
-                          onResponderTerminationRequest={[Function]}
-                          onStartShouldSetResponder={[Function]}
-                          style={
-                            Object {
-                              "marginBottom": 16,
-                            }
-                          }
-                        >
-                          <RNGestureHandlerButton
-                            collapsable={false}
-                            exclusive={true}
-                            handlerTag={3}
-                            handlerType="NativeViewGestureHandler"
-                            onGestureEvent={[Function]}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            onHandlerStateChange={[Function]}
-                            rippleColor={0}
-                            style={
-                              Object {
-                                "marginBottom": 16,
-                              }
-                            }
-                            touchSoundDisabled={false}
-                          >
-                            <View
-                              accessible={true}
-                              collapsable={false}
-                              style={
-                                Object {
-                                  "opacity": 1,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  Array [
-                                    Object {
-                                      "backgroundColor": "#3742fa",
-                                      "borderColor": "#3742fa",
-                                      "borderRadius": 16,
-                                      "borderWidth": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "textAlign": "center",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Disconnect
-                                </Text>
-                              </View>
-                            </View>
-                          </RNGestureHandlerButton>
-                        </View>
                       </View>
                     </View>
                   </View>
@@ -1580,7 +1352,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={4}
+                handlerTag={2}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1600,6 +1372,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1631,6 +1404,123 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                       }
                     >
                       <View>
+                        <View
+                          style={
+                            Object {
+                              "marginVertical": 8,
+                            }
+                          }
+                        >
+                          <qrcode
+                            overlayText="Scan to
+Connect"
+                            value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                          />
+                        </View>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Name
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          >
+                            MyLao
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            Your role
+                          </Text>
+                          
+
+                          <Text>
+                            Witness
+                          </Text>
+                        </Text>
+                        <Text
+                          style={
+                            Object {
+                              "color": "#000",
+                              "fontSize": 20,
+                              "lineHeight": 26,
+                              "marginBottom": 16,
+                              "textAlign": "left",
+                            }
+                          }
+                        >
+                          <Text
+                            style={
+                              Array [
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                },
+                                Object {
+                                  "fontWeight": "bold",
+                                },
+                              ]
+                            }
+                          >
+                            You are currently connected to
+                          </Text>
+                          
+
+                          <Text
+                            selectable={true}
+                          />
+                        </Text>
                         <Text
                           style={
                             Object {
@@ -1710,238 +1600,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                             =
                           </Text>
                         </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            Your role
-                          </Text>
-                          
-
-                          <Text>
-                            Witness
-                          </Text>
-                        </Text>
-                        <Text
-                          style={
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "marginBottom": 16,
-                              "textAlign": "left",
-                            }
-                          }
-                        >
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            You are currently connected to
-                          </Text>
-                          
-
-                          <Text
-                            selectable={true}
-                          />
-                        </Text>
-                        <View
-                          accessible={true}
-                          collapsable={false}
-                          focusable={true}
-                          onBlur={[Function]}
-                          onClick={[Function]}
-                          onFocus={[Function]}
-                          onResponderGrant={[Function]}
-                          onResponderMove={[Function]}
-                          onResponderRelease={[Function]}
-                          onResponderTerminate={[Function]}
-                          onResponderTerminationRequest={[Function]}
-                          onStartShouldSetResponder={[Function]}
-                          style={
-                            Object {
-                              "marginBottom": 16,
-                            }
-                          }
-                        >
-                          <RNGestureHandlerButton
-                            collapsable={false}
-                            exclusive={true}
-                            handlerTag={5}
-                            handlerType="NativeViewGestureHandler"
-                            onGestureEvent={[Function]}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            onHandlerStateChange={[Function]}
-                            rippleColor={0}
-                            style={
-                              Object {
-                                "marginBottom": 16,
-                              }
-                            }
-                            touchSoundDisabled={false}
-                          >
-                            <View
-                              accessible={true}
-                              collapsable={false}
-                              style={
-                                Object {
-                                  "opacity": 1,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  Array [
-                                    Object {
-                                      "backgroundColor": "#3742fa",
-                                      "borderColor": "#3742fa",
-                                      "borderRadius": 16,
-                                      "borderWidth": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "textAlign": "center",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Add connection
-                                </Text>
-                              </View>
-                            </View>
-                          </RNGestureHandlerButton>
-                        </View>
-                        <View
-                          accessible={true}
-                          collapsable={false}
-                          focusable={true}
-                          onBlur={[Function]}
-                          onClick={[Function]}
-                          onFocus={[Function]}
-                          onResponderGrant={[Function]}
-                          onResponderMove={[Function]}
-                          onResponderRelease={[Function]}
-                          onResponderTerminate={[Function]}
-                          onResponderTerminationRequest={[Function]}
-                          onStartShouldSetResponder={[Function]}
-                          style={
-                            Object {
-                              "marginBottom": 16,
-                            }
-                          }
-                        >
-                          <RNGestureHandlerButton
-                            collapsable={false}
-                            exclusive={true}
-                            handlerTag={6}
-                            handlerType="NativeViewGestureHandler"
-                            onGestureEvent={[Function]}
-                            onGestureHandlerEvent={[Function]}
-                            onGestureHandlerStateChange={[Function]}
-                            onHandlerStateChange={[Function]}
-                            rippleColor={0}
-                            style={
-                              Object {
-                                "marginBottom": 16,
-                              }
-                            }
-                            touchSoundDisabled={false}
-                          >
-                            <View
-                              accessible={true}
-                              collapsable={false}
-                              style={
-                                Object {
-                                  "opacity": 1,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  Array [
-                                    Object {
-                                      "backgroundColor": "#3742fa",
-                                      "borderColor": "#3742fa",
-                                      "borderRadius": 16,
-                                      "borderWidth": 1,
-                                      "padding": 8,
-                                    },
-                                  ]
-                                }
-                              >
-                                <Text
-                                  style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "textAlign": "center",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  Disconnect
-                                </Text>
-                              </View>
-                            </View>
-                          </RNGestureHandlerButton>
-                        </View>
                       </View>
                     </View>
                   </View>

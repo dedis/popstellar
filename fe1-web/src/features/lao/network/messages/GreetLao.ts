@@ -67,7 +67,7 @@ export class GreetLao implements MessageData {
 
     return new GreetLao({
       lao: new Hash(obj.lao),
-      frontend: obj.frontend,
+      frontend: new PublicKey(obj.frontend),
       address: obj.address,
       peers: obj.peers,
     });

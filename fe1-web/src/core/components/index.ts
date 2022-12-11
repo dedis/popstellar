@@ -15,7 +15,6 @@ export { default as DeleteButton } from './DeleteButton';
 export { default as DismissModal } from './DismissModal';
 export { default as DropdownSelector } from './DropdownSelector';
 export { default as CollapsibleContainer } from './CollapsibleContainer';
-export { default as ParagraphBlock } from './ParagraphBlock';
 export { default as ProfileIcon } from './ProfileIcon';
 export { default as QRCode } from './QRCode';
 export { default as RecorderButton } from './RecorderButton';

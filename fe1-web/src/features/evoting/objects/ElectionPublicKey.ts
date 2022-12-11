@@ -1,8 +1,10 @@
 import { curve, Point } from '@dedis/kyber';
 
-import { Base64UrlData } from 'core/objects';
+import { Base64UrlData, Base64UrlDataState } from 'core/objects';
 
 const ed25519 = curve.newCurve('edwards25519');
+
+export type ElectionPublicKeyState = Base64UrlDataState;
 
 export class ElectionPublicKey {
   public point: Point;
@@ -12,10 +14,6 @@ export class ElectionPublicKey {
     point.unmarshalBinary(encodedKey.toBuffer());
 
     this.point = point;
-  }
-
-  toString(): string {
-    return Base64UrlData.encode(this.point.marshalBinary()).valueOf();
   }
 
   toBase64(): Base64UrlData {
@@ -53,5 +51,28 @@ export class ElectionPublicKey {
     const C = S.add(S, M);
 
     return Base64UrlData.encode(Buffer.concat([K.marshalBinary(), C.marshalBinary()]));
+  }
+
+  /**
+   * Returns *some* string representation of this object.
+   * If you want to serialize an instance use .toState() instead
+   */
+  toString(): string {
+    return this.toState();
+  }
+
+  /**
+   * Returns the serialized version of the base64url that can for instance be stored
+   * in redux stores
+   */
+  public toState(): ElectionPublicKeyState {
+    return Base64UrlData.encode(this.point.marshalBinary()).valueOf();
+  }
+
+  /**
+   * Deserializes a previously serializes instance of Base64Url
+   */
+  public static fromState(electionPublicKeyState: ElectionPublicKeyState): ElectionPublicKey {
+    return new ElectionPublicKey(Base64UrlData.fromState(electionPublicKeyState));
   }
 }

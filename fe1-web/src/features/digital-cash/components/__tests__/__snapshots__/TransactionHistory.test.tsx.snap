@@ -296,6 +296,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -329,7 +330,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                       <View
                         style={
                           Object {
-                            "borderRadius": 16,
+                            "borderRadius": 8,
                             "marginBottom": 16,
                           }
                         }

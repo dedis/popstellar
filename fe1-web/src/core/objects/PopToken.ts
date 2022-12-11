@@ -1,4 +1,4 @@
-import { Base64UrlData } from './Base64Url';
+import { Base64UrlData } from './Base64UrlData';
 import { KeyPair, KeyPairState } from './KeyPair';
 import { PrivateKey } from './PrivateKey';
 import { PublicKey } from './PublicKey';

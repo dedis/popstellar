@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.ui.qrcode;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.os.*;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrcodeFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -74,7 +75,8 @@ public final class QRCodeScanningFragment extends Fragment {
 
     if (activity instanceof HomeActivity) {
       viewModel = HomeActivity.obtainViewModel(activity);
-
+      HomeViewModel homeViewModel = (HomeViewModel) viewModel;
+      homeViewModel.setPageTitle(R.string.join_lao_title);
     } else if (activity instanceof LaoDetailActivity) {
       viewModel = LaoDetailActivity.obtainViewModel(activity);
 
@@ -100,6 +102,9 @@ public final class QRCodeScanningFragment extends Fragment {
       binding.addAttendeeNumberText.setVisibility(View.VISIBLE);
       binding.addAttendeeConfirm.setVisibility(View.VISIBLE);
 
+      LaoDetailViewModel laoDetailViewModel = (LaoDetailViewModel) viewModel;
+      laoDetailViewModel.setPageTitle(getString(R.string.add_attendee_title));
+
       // Subscribe to " Nb of attendees"  event
       observeNbAttendeesEvent();
 
@@ -111,6 +116,9 @@ public final class QRCodeScanningFragment extends Fragment {
     }
 
     if (viewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
+      LaoDetailViewModel laoDetailViewModel = (LaoDetailViewModel) viewModel;
+      laoDetailViewModel.setPageTitle(getString(R.string.add_witness_description));
+
       // Subscribe to " Witness scan confirm " event
       observeWitnessScanConfirmEvent();
     }

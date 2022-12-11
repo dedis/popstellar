@@ -31,7 +31,6 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
   return {
     identifier: WALLET_FEATURE_IDENTIFIER,
     appScreens: [WalletCreateSeedScreen, WalletSetSeedScreen],
-    homeScreens: [WalletNavigationScreen],
     laoScreens: [WalletNavigationScreen],
     reducers: {
       ...walletReducer,
@@ -40,8 +39,8 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
       useRollCallTokensByLaoId: configuration.useRollCallTokensByLaoId,
       useRollCallsByLaoId: configuration.useRollCallsByLaoId,
       useCurrentLaoId: configuration.useCurrentLaoId,
-      useLaoIds: configuration.useLaoIds,
-      useNamesByLaoId: configuration.useNamesByLaoId,
+      useCurrentLao: configuration.useCurrentLao,
+      useConnectedToLao: configuration.useConnectedToLao,
       walletItemGenerators: configuration.walletItemGenerators,
       walletNavigationScreens: configuration.walletNavigationScreens,
     },

@@ -22,10 +22,10 @@ export * from './RollCallMessageApi';
  */
 export const configureNetwork = (configuration: RollCallConfiguration) => {
   // getRollCallById bound to the global state
-  const boundGetRollCallById = (rollCallId: Hash | string) =>
+  const boundGetRollCallById = (rollCallId: Hash) =>
     getRollCallById(rollCallId, getStore().getState());
 
-  const addRollCallEvent = (laoId: Hash | string, rollCall: RollCall) => {
+  const addRollCallEvent = (laoId: Hash, rollCall: RollCall) => {
     const rollCallState = rollCall.toState();
 
     dispatch(addRollCall(rollCallState));
@@ -34,7 +34,7 @@ export const configureNetwork = (configuration: RollCallConfiguration) => {
         eventType: RollCall.EVENT_TYPE,
         id: rollCallState.id,
         start: rollCall.start.valueOf(),
-        end: rollCall.end.valueOf(),
+        end: rollCall.end?.valueOf(),
       }),
     );
   };
@@ -48,7 +48,7 @@ export const configureNetwork = (configuration: RollCallConfiguration) => {
         eventType: RollCall.EVENT_TYPE,
         id: rollCallState.id,
         start: rollCall.start.valueOf(),
-        end: rollCall.end.valueOf(),
+        end: rollCall.end?.valueOf(),
       }),
     );
   };

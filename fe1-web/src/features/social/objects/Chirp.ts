@@ -1,15 +1,22 @@
-import { Hash, PublicKey, Timestamp } from 'core/objects';
+import {
+  Hash,
+  HashState,
+  PublicKey,
+  PublicKeyState,
+  Timestamp,
+  TimestampState,
+} from 'core/objects';
 
 /**
  * Object to represent a Chirp.
  */
 
 export interface ChirpState {
-  id: string;
-  sender: string;
+  id: HashState;
+  sender: PublicKeyState;
   text: string;
-  time: number;
-  parentId?: string;
+  time: TimestampState;
+  parentId?: HashState;
   isDeleted: boolean;
 }
 
@@ -64,11 +71,11 @@ export class Chirp {
    */
   public static fromState(chirpState: ChirpState): Chirp {
     return new Chirp({
-      id: new Hash(chirpState.id),
-      sender: new PublicKey(chirpState.sender),
+      id: Hash.fromState(chirpState.id),
+      sender: PublicKey.fromState(chirpState.sender),
       text: chirpState.text,
-      time: new Timestamp(chirpState.time),
-      parentId: chirpState.parentId ? new Hash(chirpState.parentId) : undefined,
+      time: Timestamp.fromState(chirpState.time),
+      parentId: chirpState.parentId ? Hash.fromState(chirpState.parentId) : undefined,
       isDeleted: chirpState.isDeleted,
     });
   }
@@ -77,6 +84,13 @@ export class Chirp {
    * Creates a ChirpState object from the current Chirp object.
    */
   public toState(): ChirpState {
-    return JSON.parse(JSON.stringify(this));
+    return {
+      id: this.id.toState(),
+      sender: this.sender.toState(),
+      text: this.text,
+      time: this.time.toState(),
+      parentId: this.parentId?.toState(),
+      isDeleted: this.isDeleted,
+    };
   }
 }

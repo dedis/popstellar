@@ -1,5 +1,5 @@
 import { validateConnectToLao } from 'core/network/validation';
-import { ProtocolError } from 'core/objects';
+import { Hash, ProtocolError } from 'core/objects';
 
 /**
  * Object containing the server url and Lao id to generate the QR code of a Lao.
@@ -7,7 +7,8 @@ import { ProtocolError } from 'core/objects';
 export class ConnectToLao {
   public readonly servers: string[];
 
-  public readonly lao: string;
+  // is the lao id, named lao because it is the name encoded in the qr code
+  public readonly lao: Hash;
 
   constructor(connectToLao: Partial<ConnectToLao>) {
     if (connectToLao === undefined || connectToLao === null) {
@@ -36,7 +37,7 @@ export class ConnectToLao {
     }
 
     return new ConnectToLao({
-      ...obj,
+      lao: new Hash(obj.lao),
       /* in the future the qr code should encode a list of servers */
       servers: [obj.server],
     });

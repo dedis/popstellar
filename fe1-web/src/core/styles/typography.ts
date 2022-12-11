@@ -6,6 +6,7 @@ import {
   secondaryAccent as secondaryColor,
   primary as primaryColor,
   error as errorColor,
+  inactive as inactiveColor,
 } from './color';
 import { x1 } from './spacing';
 
@@ -35,6 +36,10 @@ export const negative: TextStyle = {
 
 export const secondary: TextStyle = {
   color: secondaryColor,
+};
+
+export const inactive: TextStyle = {
+  color: inactiveColor,
 };
 
 export const paragraph: TextStyle = {

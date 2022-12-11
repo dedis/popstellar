@@ -3,7 +3,7 @@ import '__tests__/utils/matchers';
 
 import testKeyPair from 'test_data/keypair.json';
 
-import { configureTestFeatures, mockLao, mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { configureTestFeatures, mockLao, serializedMockLaoId, mockLaoId } from '__tests__/utils';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
 import { Hash, PublicKey } from 'core/objects';
@@ -43,22 +43,22 @@ describe('MessageApi', () => {
     await msApi.requestAddChirp(
       new PublicKey(testKeyPair.publicKey),
       mockText,
-      mockLaoIdHash,
+      mockLaoId,
       parentId,
     );
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}/social/${testKeyPair.publicKey}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}/social/${testKeyPair.publicKey}`);
     checkDataAddChirp(msgData);
   });
 
   it('should create the correct request for requestAddChirp without parentId', async () => {
-    await msApi.requestAddChirp(new PublicKey(testKeyPair.publicKey), mockText, mockLaoIdHash);
+    await msApi.requestAddChirp(new PublicKey(testKeyPair.publicKey), mockText, mockLaoId);
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}/social/${testKeyPair.publicKey}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}/social/${testKeyPair.publicKey}`);
     checkDataAddChirp(msgData);
   });
 });

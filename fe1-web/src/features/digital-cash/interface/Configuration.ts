@@ -32,23 +32,29 @@ export interface DigitalCashCompositionConfiguration {
   getCurrentLaoId: () => Hash | undefined;
 
   /**
-   * Returns the currently active lao id. Should be used inside react components
-   * @returns The current lao or undefined if there is none.
+   * Returns the currently active lao id. Should be used inside react components.
+   * Throws an error if there is no currently active lao
    */
-  useCurrentLaoId: () => Hash | undefined;
+  useCurrentLaoId: () => Hash;
+
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
 
   /**
    * Gets whether the current user is organizer of the given lao
    * To use only in a React component
    */
-  useIsLaoOrganizer: (laoId: string) => boolean;
+  useIsLaoOrganizer: (laoId: Hash) => boolean;
 
   /**
    * Gets the organizer's public key of the given lao
    * @param laoId
    * @returns the organizer's public key or undefined if lao not found
    */
-  getLaoOrganizer: (laoId: string) => PublicKey | undefined;
+  getLaoOrganizer: (laoId: Hash) => PublicKey | undefined;
 
   /* Roll Calls */
 
@@ -58,14 +64,14 @@ export interface DigitalCashCompositionConfiguration {
    * @param rollCallId
    * @returns The roll call or undefined if not found
    */
-  useRollCallById: (rollCallId: Hash | string) => DigitalCashFeature.RollCall | undefined;
+  useRollCallById: (rollCallId?: Hash) => DigitalCashFeature.RollCall | undefined;
 
   /**
    * Gets all roll calls associated to this lao id
    * To use only in a React component
    * @param laoId
    */
-  useRollCallsByLaoId: (laoId: string) => {
+  useRollCallsByLaoId: (laoId: Hash) => {
     [rollCallId: string]: DigitalCashFeature.RollCall;
   };
 
@@ -76,7 +82,7 @@ export interface DigitalCashCompositionConfiguration {
    * To use only in a React component
    * @param laoId
    */
-  useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
+  useRollCallTokensByLaoId: (laoId: Hash) => RollCallToken[];
 
   /**
    * Gets the roll call token associated to this lao and this roll call for the current user and its seed
@@ -84,7 +90,7 @@ export interface DigitalCashCompositionConfiguration {
    * @param rollCallId
    * @returns the RollCallToken or undefined if not found in the roll call
    */
-  useRollCallTokenByRollCallId: (laoId: string, rollCallId: string) => RollCallToken | undefined;
+  useRollCallTokenByRollCallId: (laoId: Hash, rollCallId?: Hash) => RollCallToken | undefined;
 }
 
 /**
@@ -95,6 +101,7 @@ export type DigitalCashReactContext = Pick<
   /* lao */
   | 'useCurrentLaoId'
   | 'useIsLaoOrganizer'
+  | 'useConnectedToLao'
 
   /* roll call */
   | 'useRollCallById'

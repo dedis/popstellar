@@ -1,4 +1,4 @@
-import { Base64UrlData } from '../Base64Url';
+import { Base64UrlData } from '../Base64UrlData';
 
 test('Base64Url should encode and decode properly', () => {
   const string: string = 'string';

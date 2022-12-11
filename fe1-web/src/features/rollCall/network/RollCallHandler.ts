@@ -12,7 +12,7 @@ import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './m
  * @param addRollCall - A function to add a new roll call
  */
 export const handleRollCallCreateMessage =
-  (addRollCall: (laoId: Hash | string, rollCall: RollCall) => void) =>
+  (addRollCall: (laoId: Hash, rollCall: RollCall) => void) =>
   (msg: ProcessableMessage): boolean => {
     const makeErr = (err: string) => `roll_call#create was not processed: ${err}`;
 
@@ -57,7 +57,7 @@ export const handleRollCallCreateMessage =
  */
 export const handleRollCallOpenMessage =
   (
-    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
+    getRollCallById: (rollCallId: Hash) => RollCall | undefined,
     updateRollCall: (rollCall: RollCall) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
@@ -107,7 +107,7 @@ export const handleRollCallOpenMessage =
  */
 export const handleRollCallCloseMessage =
   (
-    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
+    getRollCallById: (rollCallId: Hash) => RollCall | undefined,
     updateRollCall: (rollCall: RollCall) => void,
     generateToken: RollCallConfiguration['generateToken'],
     setLaoLastRollCall: RollCallConfiguration['setLaoLastRollCall'],
@@ -196,7 +196,7 @@ export const handleRollCallCloseMessage =
  */
 export const handleRollCallReopenMessage =
   (
-    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
+    getRollCallById: (rollCallId: Hash) => RollCall | undefined,
     updateRollCall: (rollCall: RollCall) => void,
   ) =>
   (msg: ProcessableMessage) => {

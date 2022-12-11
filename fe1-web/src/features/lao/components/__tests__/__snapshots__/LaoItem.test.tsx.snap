@@ -296,6 +296,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -861,6 +862,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1403,6 +1405,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

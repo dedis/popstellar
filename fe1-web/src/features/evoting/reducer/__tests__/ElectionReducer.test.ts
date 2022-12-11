@@ -103,7 +103,7 @@ describe('ElectionReducer', () => {
             },
             allIds: [mockElectionState.id],
           } as ElectionReducerState,
-          removeElection(mockElectionState.id),
+          removeElection(mockElection.id),
         ),
       ).toEqual({
         byId: {},
@@ -118,7 +118,7 @@ describe('ElectionReducer', () => {
             byId: {},
             allIds: [],
           } as ElectionReducerState,
-          removeElection(mockElectionState.id),
+          removeElection(mockElection.id),
         ),
       ).toThrow();
     });
@@ -126,7 +126,7 @@ describe('ElectionReducer', () => {
 
   describe('makeElectionSelector', () => {
     it('returns the constructed election', () => {
-      const election = makeElectionSelector(mockElectionState.id)({
+      const election = makeElectionSelector(mockElection.id)({
         [ELECTION_REDUCER_PATH]: {
           byId: { [mockElectionState.id]: mockElectionState },
           allIds: [mockElectionState.id],
@@ -137,7 +137,7 @@ describe('ElectionReducer', () => {
     });
 
     it('returns undefined if the id of the election is not in the store', () => {
-      const election = makeElectionSelector(mockElectionState.id)({
+      const election = makeElectionSelector(mockElection.id)({
         [ELECTION_REDUCER_PATH]: {
           byId: {},
           allIds: [],

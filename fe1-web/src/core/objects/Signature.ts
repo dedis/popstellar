@@ -1,7 +1,9 @@
 import { sign } from 'tweetnacl';
 
-import { Base64UrlData } from './Base64Url';
+import { Base64UrlData } from './Base64UrlData';
 import { PublicKey } from './PublicKey';
+
+export type SignatureState = string;
 
 export class Signature extends Base64UrlData {
   /**
@@ -17,5 +19,29 @@ export class Signature extends Base64UrlData {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Returns the primitive value used for representing the Signature,
+   * a string
+   * If you want to serialize an instance use .toState() instead
+   */
+  public valueOf(): string {
+    return super.valueOf();
+  }
+
+  /**
+   * Returns the serialized version of the signature that can for instance be stored
+   * in redux stores
+   */
+  public toState(): SignatureState {
+    return super.valueOf();
+  }
+
+  /**
+   * Deserializes a previously serializes instance of Signature
+   */
+  public static fromState(signatureState: SignatureState): Signature {
+    return new Signature(signatureState);
   }
 }

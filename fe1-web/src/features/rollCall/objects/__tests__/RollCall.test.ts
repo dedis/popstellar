@@ -7,7 +7,7 @@ import { RollCall, RollCallStatus } from '../RollCall';
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';
 const LOCATION = 'location';
-const TIMESTAMP_START = new Timestamp(1620255600);
+const TIMESTAMP_START = new Timestamp(1620355600);
 const TIMESTAMP_END = new Timestamp(1620357600);
 const ATTENDEES = ['attendee1', 'attendee2'];
 const token = new PopToken({
@@ -31,6 +31,10 @@ describe('RollCall object', () => {
       id: ID.valueOf(),
       name: NAME,
       location: LOCATION,
+      closedAt: undefined,
+      description: undefined,
+      idAlias: undefined,
+      openedAt: undefined,
       creation: TIMESTAMP_START.valueOf(),
       proposedStart: TIMESTAMP_START.valueOf(),
       proposedEnd: TIMESTAMP_END.valueOf(),
@@ -61,6 +65,7 @@ describe('RollCall object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
+      description: undefined,
       proposedStart: TIMESTAMP_START.valueOf(),
       openedAt: TIMESTAMP_START.valueOf(),
       proposedEnd: TIMESTAMP_END.valueOf(),

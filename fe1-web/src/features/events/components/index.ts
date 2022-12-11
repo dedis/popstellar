@@ -1,5 +1,5 @@
 import CreateEventButton from './CreateEventButton';
-import EventList from './EventList';
+import EventList from './EventLists';
 
 export { default as EventListItem } from './EventListItem';
 
