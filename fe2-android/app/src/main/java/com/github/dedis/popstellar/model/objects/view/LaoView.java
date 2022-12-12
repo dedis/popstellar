@@ -7,7 +7,6 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.util.*;
 
@@ -98,10 +97,6 @@ public final class LaoView {
     //    return optional.map(ElectInstance::new); // If empty returns empty optional, if not
     // returns optional with copy of retrieved ElectInstance
     return lao.getElectInstance(messageId);
-  }
-
-  public RollCall getMostRecentRollCall() throws NoRollCallException {
-    return new RollCall(lao.lastRollCallClosed());
   }
 
   public Map<String, RollCall> getRollCalls() {

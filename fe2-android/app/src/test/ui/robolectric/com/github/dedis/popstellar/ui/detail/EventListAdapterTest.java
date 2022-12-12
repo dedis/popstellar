@@ -98,7 +98,8 @@ public class EventListAdapterTest {
             activity -> {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
               EventListAdapter adapter =
-                  new EventListAdapter(new ArrayList<>(), laoDetailViewModel, activity);
+                  new EventListAdapter(
+                      new ArrayList<>(), new ArrayList<>(), laoDetailViewModel, activity);
               assertEquals(3, adapter.getItemCount());
             });
   }
@@ -114,7 +115,10 @@ public class EventListAdapterTest {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
               EventListAdapter adapter =
                   new EventListAdapter(
-                      Arrays.asList(ROLL_CALL, ROLL_CALL2), laoDetailViewModel, activity);
+                      Arrays.asList(ROLL_CALL, ROLL_CALL2),
+                      new ArrayList<>(),
+                      laoDetailViewModel,
+                      activity);
               assertEquals(5, adapter.getItemCount());
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(0));
               assertEquals(EventListAdapter.TYPE_EVENT, adapter.getItemViewType(1));
@@ -135,8 +139,11 @@ public class EventListAdapterTest {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
               EventListAdapter adapter =
                   new EventListAdapter(
-                      Arrays.asList(ROLL_CALL, ROLL_CALL2), laoDetailViewModel, activity);
-              adapter.replaceList(Collections.singletonList(ROLL_CALL2));
+                      Arrays.asList(ROLL_CALL, ROLL_CALL2),
+                      new ArrayList<>(),
+                      laoDetailViewModel,
+                      activity);
+              adapter.replaceRollCalls(Collections.singletonList(ROLL_CALL2));
               assertEquals(4, adapter.getItemCount());
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(0));
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(1));
