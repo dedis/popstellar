@@ -101,8 +101,12 @@ namespace STRINGS {
   export const navigation_digital_cash_wallet_scanner = 'Digital Cash Scanner';
 
   /* --- Social Media Navigation Strings --- */
-  export const social_media_navigation_tab_home = 'Home';
+  export const social_media_navigation_tab_home = 'Social Media Home Navigtion';
   export const social_media_navigation_tab_home_title = 'Feed';
+
+  export const social_media_home_navigation_home = 'Social Media Home';
+  export const social_media_home_navigation_home_title = 'Feed';
+  export const social_media_home_navigation_new_chirp = 'New Chirp';
 
   export const social_media_navigation_tab_search = 'User List';
   export const social_media_navigation_tab_top_chirps = 'Top Chirps';

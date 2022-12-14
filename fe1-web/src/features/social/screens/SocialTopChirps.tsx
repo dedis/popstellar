@@ -10,10 +10,6 @@ import { ChirpCard } from '../components';
 import { SocialHooks } from '../hooks';
 import { makeChirpsList, makeReactionsList } from '../reducer';
 
-/**
- * UI for the profile of the current user.
- */
-
 const SocialTopChirps = () => {
   const laoId = SocialHooks.useCurrentLaoId();
   if (laoId === undefined) {

@@ -12,8 +12,9 @@ import STRINGS from 'resources/strings';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import { SocialHome, SocialProfile, SocialTopChirps } from '../screens';
-import SocialSearchNavigation from './SocialSearchNavigation';
+import { SocialProfile, SocialTopChirps } from '../screens';
+import SocialHomeNavigation from './HomeNavigation';
+import SocialSearchNavigation from './SearchNavigation';
 
 const Tab = createBottomTabNavigator<SocialParamList>();
 
@@ -104,8 +105,8 @@ const SocialMediaNavigation = () => {
         })}>
         <Tab.Screen
           name={STRINGS.social_media_navigation_tab_home}
-          component={SocialHome}
-          options={{ title: STRINGS.social_media_navigation_tab_home_title }}
+          component={SocialHomeNavigation}
+          options={{ title: STRINGS.social_media_navigation_tab_home_title, headerShown: false }}
         />
         <Tab.Screen
           name={STRINGS.social_media_navigation_tab_top_chirps}
