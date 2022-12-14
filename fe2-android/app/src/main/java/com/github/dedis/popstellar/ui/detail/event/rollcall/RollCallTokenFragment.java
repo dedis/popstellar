@@ -34,7 +34,6 @@ public class RollCallTokenFragment extends Fragment {
   public static final String EXTRA_ID = "rollcall_id";
 
   @Inject Wallet wallet;
-  private LaoDetailViewModel viewModel;
   private RollCallTokenFragmentBinding mRollCallTokenFragmentBinding;
 
   public static RollCallTokenFragment newInstance(String rollCallId) {
@@ -54,7 +53,7 @@ public class RollCallTokenFragment extends Fragment {
     mRollCallTokenFragmentBinding =
         RollCallTokenFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     String rollCallId = requireArguments().getString(EXTRA_ID);
     RollCall rollCall = null;
@@ -64,6 +63,7 @@ public class RollCallTokenFragment extends Fragment {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.no_rollcall_exception);
       LaoDetailActivity.setCurrentFragment(
           getParentFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
+      return null;
     }
 
     String firstLaoId = viewModel.getLaoId();
@@ -76,6 +76,7 @@ public class RollCallTokenFragment extends Fragment {
       Log.d(TAG, "failed to retrieve token from wallet", e);
       LaoDetailActivity.setCurrentFragment(
           getParentFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
+      return null;
     }
 
     mRollCallTokenFragmentBinding.rollcallName.setText("Roll Call: " + rollCall.getName());

@@ -50,13 +50,13 @@ public class AttendeesListFragment extends Fragment {
 
     String id = requireArguments().getString(EXTRA_ID);
 
-    RollCall rollCall = null;
     try {
       rollCall = viewModel.getRollCall(id);
     } catch (UnknownRollCallException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.no_rollcall_exception);
       LaoDetailActivity.setCurrentFragment(
           getParentFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
+      return null;
     }
 
     mAttendeesListBinding.rollcallName.setText("Roll Call: " + rollCall.getName());
