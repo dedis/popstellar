@@ -52,7 +52,6 @@ public class ElectionHandlerTest extends TestCase {
 
   private static final long openedAt = 1633099883;
   private Lao lao;
-  private RollCall rollCall;
   private Election election;
   private Election electionEncrypted;
   private ElectionQuestion electionQuestion;
@@ -82,9 +81,6 @@ public class ElectionHandlerTest extends TestCase {
     // Create one LAO
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
     lao.setLastModified(lao.getCreation());
-
-    // Create one Roll Call and add it to the LAO
-    rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
 
     // Create one Election and add it to the LAO
     election =

@@ -115,14 +115,6 @@ public class RollCallFragmentTest {
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
           messageSenderHelper.setupMock();
 
-          ROLL_CALL.setState(EventState.CLOSED);
-          ROLL_CALL.setLocation(LOCATION);
-          ROLL_CALL.setStart(ROLL_CALL_START);
-          ROLL_CALL.setLocation(LOCATION);
-          ROLL_CALL.setEnd(ROLL_CALL_END);
-          ROLL_CALL.setDescription(ROLL_CALL_DESC);
-          ROLL_CALL.setState(EventState.CREATED);
-
           Set<String> rcList = Collections.singleton(ROLL_CALL.getId());
           BehaviorSubject<Set<String>> rcObservable = BehaviorSubject.createDefault(rcList);
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);

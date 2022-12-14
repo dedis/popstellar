@@ -21,9 +21,6 @@ public class LaoTest {
 
   private static final String LAO_NAME_1 = "LAO name 1";
   private static final PublicKey ORGANIZER = generatePublicKey();
-  private static final String rollCallId1 = "rollCallId1";
-  private static final String rollCallId2 = "rollCallId2";
-  private static final String rollCallId3 = "rollCallId3";
   private static final String electionId1 = "electionId1";
   private static final String electionId2 = "electionId2";
   private static final String electionId3 = "electionId3";
@@ -33,14 +30,7 @@ public class LaoTest {
       Sets.newSet(generatePublicKey(), null, generatePublicKey());
 
   private static final Lao LAO_1 = new Lao(LAO_NAME_1, ORGANIZER, Instant.now().getEpochSecond());
-  private static final Map<String, RollCall> rollCalls =
-      new HashMap<String, RollCall>() {
-        {
-          put(rollCallId1, new RollCall(rollCallId1));
-          put(rollCallId2, new RollCall(rollCallId2));
-          put(rollCallId3, new RollCall(rollCallId3));
-        }
-      };
+
   private static final Map<String, Election> elections =
       new HashMap<String, Election>() {
         {

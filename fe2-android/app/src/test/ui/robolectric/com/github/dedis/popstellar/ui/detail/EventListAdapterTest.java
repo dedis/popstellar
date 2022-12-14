@@ -37,8 +37,31 @@ import static org.mockito.Mockito.when;
 public class EventListAdapterTest {
   private static final Lao LAO = new Lao("LAO", Base64DataUtils.generatePublicKey(), 10223421);
   private static final String LAO_ID = LAO.getId();
-  private static final RollCall ROLL_CALL = new RollCall("12345");
-  private static final RollCall ROLL_CALL2 = new RollCall("54321");
+  private final RollCall ROLL_CALL =
+      new RollCall(
+          LAO.getId(),
+          LAO.getId(),
+          "ROLL_CALL_TITLE",
+          0L,
+          1L,
+          2L,
+          EventState.CREATED,
+          new HashSet<>(),
+          "not lausanne",
+          "no");
+
+  private final RollCall ROLL_CALL2 =
+      new RollCall(
+          "12345",
+          "12345",
+          "Name",
+          2L,
+          3L,
+          4L,
+          EventState.CREATED,
+          new HashSet<>(),
+          "nowhere",
+          "foo");
 
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock Wallet wallet;
@@ -106,8 +129,8 @@ public class EventListAdapterTest {
 
   @Test
   public void viewTypeAdapterTest() {
-    ROLL_CALL.setState(EventState.OPENED);
-    ROLL_CALL2.setState(EventState.CREATED);
+    RollCall rollCall = RollCall.openRollCall(ROLL_CALL);
+    RollCall rollCall2 = new RollCall(ROLL_CALL2);
     activityScenarioRule
         .getScenario()
         .onActivity(
@@ -115,7 +138,7 @@ public class EventListAdapterTest {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
               EventListAdapter adapter =
                   new EventListAdapter(
-                      Arrays.asList(ROLL_CALL, ROLL_CALL2),
+                      Arrays.asList(rollCall, rollCall2),
                       new ArrayList<>(),
                       laoDetailViewModel,
                       activity);
@@ -130,8 +153,8 @@ public class EventListAdapterTest {
 
   @Test
   public void replaceListTest() {
-    ROLL_CALL.setState(EventState.OPENED);
-    ROLL_CALL2.setState(EventState.CREATED);
+    RollCall rollCall = RollCall.openRollCall(ROLL_CALL);
+    RollCall rollCall2 = new RollCall(ROLL_CALL2);
     activityScenarioRule
         .getScenario()
         .onActivity(
@@ -139,11 +162,11 @@ public class EventListAdapterTest {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
               EventListAdapter adapter =
                   new EventListAdapter(
-                      Arrays.asList(ROLL_CALL, ROLL_CALL2),
+                      Arrays.asList(rollCall, rollCall2),
                       new ArrayList<>(),
                       laoDetailViewModel,
                       activity);
-              adapter.replaceRollCalls(Collections.singletonList(ROLL_CALL2));
+              adapter.replaceRollCalls(Collections.singletonList(rollCall2));
               assertEquals(4, adapter.getItemCount());
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(0));
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(1));

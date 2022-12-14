@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 
 import java.security.GeneralSecurityException;
+import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -76,11 +77,36 @@ public class KeyManagerTest {
 
     // create LAO and RollCalls
     Lao lao = new Lao("lao", Base64DataUtils.generatePublicKey(), 54213424);
-    RollCall rollCall1 = new RollCall(lao.getId(), 5421364, "rollcall1");
-    RollCall rollCall2 = new RollCall(lao.getId(), 5421363, "rollcall2");
-
-    rollCall1.setState(EventState.CLOSED);
-    rollCall2.setState(EventState.CLOSED);
+    String rollCallName1 = "rollcall1";
+    String rollCallName2 = "rollcall2";
+    long creation1 = 5421364;
+    long creation2 = 5421363;
+    String id1 = RollCall.generateCreateRollCallId(lao.getId(), creation1, rollCallName1);
+    String id2 = RollCall.generateCreateRollCallId(lao.getId(), creation2, rollCallName2);
+    RollCall rollCall1 =
+        new RollCall(
+            id1,
+            id1,
+            rollCallName1,
+            creation1,
+            creation1 + 1,
+            creation1 + 75,
+            EventState.CLOSED,
+            new HashSet<>(),
+            "location",
+            "desc");
+    RollCall rollCall2 =
+        new RollCall(
+            id2,
+            id2,
+            rollCallName2,
+            creation2,
+            creation2 + 1,
+            creation2 + 75,
+            EventState.CLOSED,
+            new HashSet<>(),
+            "EPFL",
+            "do not come");
 
     rollCallRepo.updateRollCall(lao.getId(), rollCall1, rollCall1.getId());
     rollCallRepo.updateRollCall(lao.getId(), rollCall2, rollCall2.getId());
@@ -101,8 +127,20 @@ public class KeyManagerTest {
 
     // create LAO and RollCall
     Lao lao = new Lao("lao", Base64DataUtils.generatePublicKey(), 54213424);
-    RollCall rollCall = new RollCall(lao.getId(), 5421364, "rollcall");
-    rollCall.setState(EventState.CLOSED);
+    String id = RollCall.generateCreateRollCallId(lao.getId(), 5421364, "rollcall");
+    RollCall rollCall =
+        new RollCall(
+            id,
+            id,
+            "rollcall",
+            5421364,
+            5421364 + 1,
+            5421364 + 145,
+            EventState.CLOSED,
+            new HashSet<>(),
+            "ETHZ",
+            "do come");
+
     rollCallRepo.updateRollCall(lao.getId(), rollCall, rollCall.getId());
     KeyManager manager = new KeyManager(androidKeysetManager, wallet);
 

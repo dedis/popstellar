@@ -100,7 +100,7 @@ public class TransactionCoinHandlerTest {
     lao.setLastModified(lao.getCreation());
 
     // Create one Roll Call and add it to the LAO
-    rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
+    // rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
 
     // Add the LAO to the LAORepository
     laoRepo.updateLao(lao);
@@ -111,7 +111,11 @@ public class TransactionCoinHandlerTest {
 
     CloseRollCall closeRollCall =
         new CloseRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
+            CREATE_LAO.getId(),
+            RollCall.generateCreateRollCallId(
+                lao.getId(), Instant.now().getEpochSecond(), "roll call 1"),
+            Long.MAX_VALUE,
+            new ArrayList<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, gson);
     messageRepo.addMessage(message);
     coinChannel = lao.getChannel().subChannel("coin").subChannel(SENDER.getEncoded());

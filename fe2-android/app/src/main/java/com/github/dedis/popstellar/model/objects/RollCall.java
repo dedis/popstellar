@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.event.*;
@@ -9,34 +10,24 @@ import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.*;
 
+/**
+ * Class representing a roll call object It is immutable in practice. However in a few tests in
+ * RollCallFragmentTest, state is mutably changed because of legacy code in LaoDetailViewModel (the
+ * currentRollCall setting to be precise) (Johann Plüss : 15.12.2022)
+ */
 public class RollCall extends Event implements Copyable<RollCall> {
 
-  private String id;
+  private final String id;
   private final String persistentId;
-  private String name;
-  private long creation;
-  private long start;
-  private long end;
+  private final String name;
+  private final long creation;
+  private final long start;
+  private final long end;
   private EventState state;
-  private Set<PublicKey> attendees;
+  private final Set<PublicKey> attendees;
 
-  private String location;
-  private String description;
-
-  public RollCall(String id) {
-    this.id = id;
-    this.persistentId = id;
-    this.attendees = new HashSet<>();
-  }
-
-  public RollCall(String laoId, long creation, String name) {
-    this(generateCreateRollCallId(laoId, creation, name));
-    if (name == null) {
-      throw new IllegalArgumentException("The name of the RollCall is null");
-    }
-    this.name = name;
-    this.creation = creation;
-  }
+  private final String location;
+  private final String description;
 
   public RollCall(
       String id,
@@ -78,10 +69,6 @@ public class RollCall extends Event implements Copyable<RollCall> {
     return id;
   }
 
-  public void setId(String id) {
-    this.id = id;
-  }
-
   public String getPersistentId() {
     return persistentId;
   }
@@ -90,34 +77,19 @@ public class RollCall extends Event implements Copyable<RollCall> {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public long getCreation() {
     return creation;
-  }
-
-  public void setCreation(long creation) {
-    this.creation = creation;
   }
 
   public long getStart() {
     return start;
   }
 
-  public void setStart(long start) {
-    this.start = start;
-  }
-
   public long getEnd() {
     return end;
   }
 
-  public void setEnd(long end) {
-    this.end = end;
-  }
-
+  @VisibleForTesting
   public void setState(EventState state) {
     this.state = state;
   }
@@ -126,24 +98,12 @@ public class RollCall extends Event implements Copyable<RollCall> {
     return attendees;
   }
 
-  public void setAttendees(Set<PublicKey> attendees) {
-    this.attendees = attendees;
-  }
-
   public String getLocation() {
     return location;
   }
 
-  public void setLocation(String location) {
-    this.location = location;
-  }
-
   public String getDescription() {
     return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   @Override
@@ -206,6 +166,20 @@ public class RollCall extends Event implements Copyable<RollCall> {
    */
   public static String generateCloseRollCallId(String laoId, String closes, long closedAt) {
     return Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, closes, Long.toString(closedAt));
+  }
+
+  public static RollCall openRollCall(RollCall rollCall) {
+    return setRollCallState(rollCall, EventState.OPENED);
+  }
+
+  public static RollCall closeRollCall(RollCall rollCall) {
+    return setRollCallState(rollCall, EventState.CLOSED);
+  }
+
+  private static RollCall setRollCallState(RollCall rollCall, EventState state) {
+    RollCall updatedRollCall = new RollCall(rollCall);
+    updatedRollCall.state = state;
+    return updatedRollCall;
   }
 
   /**
