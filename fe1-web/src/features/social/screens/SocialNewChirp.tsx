@@ -2,6 +2,7 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { useContext, useState } from 'react';
+import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
@@ -9,6 +10,7 @@ import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialHomeParamList } from 'core/navigation/typing/SocialHomeParamList';
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
+import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -73,6 +75,11 @@ const SocialNewChirp = () => {
         disabled={publishDisabled}
         currentUserPublicKey={currentUserPopTokenPublicKey}
       />
+      {!currentUserPopTokenPublicKey && (
+        <ScreenWrapper>
+          <Text style={Typography.base}>{STRINGS.social_media_create_chirp_no_pop_token}</Text>
+        </ScreenWrapper>
+      )}
     </ScreenWrapper>
   );
 };

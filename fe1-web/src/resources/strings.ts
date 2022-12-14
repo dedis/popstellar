@@ -146,6 +146,8 @@ namespace STRINGS {
   export const attendees_of_last_roll_call = 'Attendees of last roll-call';
   export const profile_button = 'Profile';
   export const social_media_delete_chirp = 'Delete Chirp';
+  export const social_media_create_chirp_no_pop_token =
+    'In order to post chirps, you first need to participate in a roll-call';
   export const social_media_your_profile_unavailable =
     'You do not have a social media profile yet, be sure to have participated in a roll-call.';
   export const modal_chirp_deletion_title = 'Chirp deletion';
