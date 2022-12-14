@@ -160,9 +160,9 @@ export const handleRollCallCloseMessage =
 
         const promises: Promise<unknown>[] = [];
 
-        // subscribe to all roll call attendee's social media channels
-        promises.push(
-          ...(rollCall.attendees?.map((attendee) =>
+        if (rollCall.attendees) {
+          // subscribe to all roll call attendee's social media channels
+          const subscriptionPromises = rollCall.attendees.map((attendee) =>
             subscribeToChannel(laoId, dispatch, getUserSocialChannel(laoId, attendee)).catch(
               (err) => {
                 console.error(
@@ -171,8 +171,11 @@ export const handleRollCallCloseMessage =
                 );
               },
             ),
-          ) || []),
-        );
+          );
+
+          // push all promises into the array
+          promises.push(...subscriptionPromises);
+        }
 
         // everyone is automatically subscribed to the reaction channel after the roll call
         promises.push(
