@@ -126,6 +126,7 @@ public class RollCallFragmentTest {
           Set<String> rcList = Collections.singleton(ROLL_CALL.getId());
           BehaviorSubject<Set<String>> rcObservable = BehaviorSubject.createDefault(rcList);
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
+          when(rollCallRepo.getRollCallWithId(any(), any())).thenReturn(ROLL_CALL);
           when(rollCallRepo.getRollCallsInLao(any())).thenReturn(rcObservable);
           when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
           when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);

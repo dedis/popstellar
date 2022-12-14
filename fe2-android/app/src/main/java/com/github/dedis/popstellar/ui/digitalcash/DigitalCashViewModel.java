@@ -365,7 +365,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
                   } catch (KeyException e) {
                     Log.d(TAG, "Could not retrieve token");
                   }
-                }));
+                },
+                error -> Log.d(TAG, "Error on lao propagation " + error)));
   }
 
   public boolean canPerformTransaction(

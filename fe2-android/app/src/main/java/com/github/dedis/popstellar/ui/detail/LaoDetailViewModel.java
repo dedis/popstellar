@@ -586,7 +586,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   @VisibleForTesting
   public void setCurrentLao(LaoView laoView) {
     laoId = laoView.getId();
-    mCurrentLao.postValue(laoView);
+    mCurrentLao.setValue(laoView);
   }
 
   public LiveData<String> getCurrentLaoName() {
@@ -794,8 +794,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                               })
                           .collect(Collectors.toList());
 
-                  mRollCalls.postValue(rollCallList);
-                  mAttendedRollCalls.postValue(
+                  mRollCalls.setValue(rollCallList);
+                  mAttendedRollCalls.setValue(
                       rollCallList.stream()
                           .filter(rollCall -> rollCall.isClosed() && attendedOrOrganized(rollCall))
                           .collect(Collectors.toList()));

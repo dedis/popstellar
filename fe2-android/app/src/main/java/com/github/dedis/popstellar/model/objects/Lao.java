@@ -185,9 +185,7 @@ public final class Lao implements Copyable<Lao> {
     }
     /* Change the transaction per public key in transacionperUser
     for the sender and the receiver*/
-    if (this.getRollCalls().values().isEmpty()) {
-      throw new IllegalStateException("A transaction need a roll call creation ");
-    }
+
     if (this.pubKeyByHash.isEmpty()) {
       throw new IllegalStateException("A transaction need attendees !");
     }

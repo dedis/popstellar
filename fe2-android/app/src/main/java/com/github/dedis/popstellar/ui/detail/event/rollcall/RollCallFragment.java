@@ -77,6 +77,9 @@ public class RollCallFragment extends Fragment {
     binding = RollCallFragmentBinding.inflate(inflater, container, false);
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     rollCall = viewModel.getCurrentRollCall();
+    if (rollCall == null) {
+      return null;
+    }
 
     setUpStateDependantContent();
 

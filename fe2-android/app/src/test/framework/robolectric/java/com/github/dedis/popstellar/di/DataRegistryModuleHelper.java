@@ -25,6 +25,17 @@ public class DataRegistryModuleHelper {
   }
 
   public static DataRegistry buildRegistry(
+      LAORepository laoRepository, KeyManager keyManager, RollCallRepository rollCallRepo) {
+    return buildRegistry(
+        laoRepository,
+        new SocialMediaRepository(),
+        rollCallRepo,
+        new MessageRepository(),
+        keyManager,
+        new ServerRepository());
+  }
+
+  public static DataRegistry buildRegistry(
       LAORepository laoRepo,
       SocialMediaRepository socialMediaRepo,
       RollCallRepository rollCallRepo,
