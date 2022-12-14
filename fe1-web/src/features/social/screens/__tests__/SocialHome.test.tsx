@@ -11,7 +11,7 @@ import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 import { SocialMediaContext } from '../../context';
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
 import { requestAddChirp } from '../../network/SocialMessageApi';
-import SocialReducer from '../../reducer/SocialReducer';
+import socialReducer from '../../reducer/SocialReducer';
 import SocialHome from '../SocialHome';
 
 jest.mock('features/social/network/SocialMessageApi', () => {
@@ -46,7 +46,7 @@ beforeEach(() => {
 const mockStore = configureStore({
   reducer: combineReducers({
     ...laoReducer,
-    ...SocialReducer,
+    ...socialReducer,
   }),
 });
 mockStore.dispatch(setCurrentLao(mockLao));
