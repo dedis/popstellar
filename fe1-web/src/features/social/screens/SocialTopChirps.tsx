@@ -1,14 +1,12 @@
 import * as React from 'react';
-import { useContext, useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { useMemo } from 'react';
+import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { List, Typography } from 'core/styles';
-import STRINGS from 'resources/strings';
+import { List } from 'core/styles';
 
 import { ChirpCard } from '../components';
-import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { makeChirpsList, makeReactionsList } from '../reducer';
 
@@ -17,8 +15,6 @@ import { makeChirpsList, makeReactionsList } from '../reducer';
  */
 
 const SocialTopChirps = () => {
-  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
-
   const laoId = SocialHooks.useCurrentLaoId();
   if (laoId === undefined) {
     throw new Error('Impossible to render Social Home, current lao id is undefined');
@@ -42,14 +38,6 @@ const SocialTopChirps = () => {
       return scoreB - scoreA;
     });
   }, [chirps, reactions]);
-
-  if (!currentUserPopTokenPublicKey) {
-    return (
-      <View>
-        <Text style={Typography.base}>{STRINGS.social_media_your_profile_unavailable}</Text>
-      </View>
-    );
-  }
 
   return (
     <ScreenWrapper>
