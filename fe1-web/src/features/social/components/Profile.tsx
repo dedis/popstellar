@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { ListRenderItemInfo, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
 import { ProfileIcon } from 'core/components';
@@ -8,6 +9,7 @@ import { PublicKey } from 'core/objects';
 import { Border, Color, List, Spacing, Typography } from 'core/styles';
 
 import { SocialHooks } from '../hooks';
+import { Chirp } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import ChirpCard from './ChirpCard';
 
@@ -32,6 +34,17 @@ const Profile = ({ publicKey }: IPropTypes) => {
   const userChirps = useMemo(() => makeChirpsListOfUser(laoId)(publicKey), [publicKey, laoId]);
   const userChirpList = useSelector(userChirps);
 
+  const renderChirp = useCallback(
+    ({ item: chirp, index: i }: ListRenderItemInfo<Chirp>) => (
+      <ChirpCard
+        chirp={chirp}
+        isFirstItem={false /* no round borders at the top */}
+        isLastItem={i === userChirpList.length - 1}
+      />
+    ),
+    [userChirpList],
+  );
+
   return (
     <View>
       <View>
@@ -47,14 +60,11 @@ const Profile = ({ publicKey }: IPropTypes) => {
       </View>
       <View style={styles.userFeed}>
         <View style={List.container}>
-          {userChirpList.map((chirp, i) => (
-            <ChirpCard
-              key={chirp.id.toString()}
-              chirp={chirp}
-              isFirstItem={false /* no round borders at the top */}
-              isLastItem={i === userChirpList.length - 1}
-            />
-          ))}
+          <FlatList
+            data={userChirpList}
+            renderItem={renderChirp}
+            keyExtractor={(item) => item.id.toString()}
+          />
         </View>
       </View>
     </View>

@@ -1,5 +1,6 @@
-import React, { useContext, useMemo, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
+import { ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
@@ -11,6 +12,7 @@ import { ChirpCard, TextInputChirp } from '../components';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { requestAddChirp } from '../network/SocialMessageApi';
+import { Chirp } from '../objects';
 import { makeChirpsList } from '../reducer';
 
 /**
@@ -63,6 +65,13 @@ const SocialHome = () => {
   const chirps = useMemo(() => makeChirpsList(laoId), [laoId]);
   const chirpList = useSelector(chirps);
 
+  const renderChirp = useCallback(
+    ({ item: chirp, index: i }: ListRenderItemInfo<Chirp>) => (
+      <ChirpCard chirp={chirp} isFirstItem={i === 0} isLastItem={i === chirpList.length - 1} />
+    ),
+    [chirpList],
+  );
+
   return (
     <ScreenWrapper>
       <View style={styles.userFeed}>
@@ -75,14 +84,11 @@ const SocialHome = () => {
           currentUserPublicKey={currentUserPopTokenPublicKey}
         />
         <View style={[List.container, styles.chirpList]}>
-          {chirpList.map((chirp, i) => (
-            <ChirpCard
-              key={chirp.id.toString()}
-              chirp={chirp}
-              isFirstItem={i === 0}
-              isLastItem={i === chirpList.length - 1}
-            />
-          ))}
+          <FlatList
+            data={chirpList}
+            renderItem={renderChirp}
+            keyExtractor={(item) => item.id.toString()}
+          />
         </View>
       </View>
     </ScreenWrapper>
