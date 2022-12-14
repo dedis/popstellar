@@ -129,7 +129,7 @@ public class RollCallFragment extends Fragment {
 
     viewModel.addDisposable(
         viewModel
-            .getRollCall(rollCall.getPersistentId())
+            .getRollCallObservable(rollCall.getPersistentId())
             .subscribe(
                 rc -> setUpStateDependantContent(),
                 error ->

@@ -12,7 +12,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -113,22 +112,13 @@ public class LaoDetailFragmentTest {
           when(repository.getLaoObservable(anyString())).thenReturn(laoViewSubject);
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
           when(rollCallRepo.getRollCallWithId(any(), any())).thenReturn(ROLL_CALL);
-          when(rollCallRepo.getRollCallsInLao(any())).thenReturn(rcObservable);
+          when(rollCallRepo.getRollCallsObservableInLao(any())).thenReturn(rcObservable);
           when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
           when(keyManager.getMainPublicKey()).thenReturn(PK);
           when(keyManager.getPoPToken(any(), any())).thenReturn(POP_TOKEN);
           when(networkManager.getMessageSender()).thenReturn(messageSender);
 
-          when(messageSender.publish(any(), any(), any()))
-              .then(
-                  args -> {
-                    Object obj = args.getArgument(2);
-                    if (obj instanceof CreateRollCall) {
-                      CreateRollCall createRollCall = (CreateRollCall) obj;
-                      LAO.updateRollCall(createRollCall.getId(), buildRcFromCreate(createRollCall));
-                    }
-                    return Completable.complete();
-                  });
+          when(messageSender.publish(any(), any(), any())).thenReturn(Completable.complete());
         }
       };
 
@@ -278,18 +268,5 @@ public class LaoDetailFragmentTest {
             });
     // Recreate the fragment because the viewModel needed to be modified before start
     activityScenarioRule.getScenario().recreate();
-  }
-
-  private RollCall buildRcFromCreate(CreateRollCall createRollCall) {
-    RollCall rollCall = new RollCall(createRollCall.getId());
-    rollCall.setCreation(createRollCall.getCreation());
-    rollCall.setState(EventState.CREATED);
-    rollCall.setStart(createRollCall.getProposedStart());
-    rollCall.setEnd(createRollCall.getProposedEnd());
-    rollCall.setName(createRollCall.getName());
-    rollCall.setLocation(createRollCall.getLocation());
-    rollCall.setLocation(createRollCall.getLocation());
-    rollCall.setDescription(createRollCall.getDescription().orElse(""));
-    return rollCall;
   }
 }

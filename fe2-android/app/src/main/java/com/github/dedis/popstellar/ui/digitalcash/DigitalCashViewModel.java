@@ -341,6 +341,10 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     return mCurrentLao.getValue();
   }
 
+  public Set<PublicKey> getAllAttendees() {
+    return rollCallRepo.getAllAttendeesInLao(laoId);
+  }
+
   public PoPToken getValidToken() throws KeyException {
     return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
   }

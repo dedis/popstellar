@@ -172,7 +172,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return keyManager.getMainPublicKey();
   }
 
-  public Observable<RollCall> getRollCall(String persistentId) {
+  public Observable<RollCall> getRollCallObservable(String persistentId) {
     try {
       return rollCallRepo
           .getRollCallObservable(laoId, persistentId)
@@ -180,6 +180,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     } catch (UnknownRollCallException e) {
       return Observable.error(new UnknownRollCallException(persistentId));
     }
+  }
+
+  public RollCall getRollCall(String persistentId) throws UnknownRollCallException {
+    return rollCallRepo.getRollCallWithPersistentId(laoId, persistentId);
   }
 
   public MutableLiveData<List<RollCall>> getRollCalls() {
@@ -775,7 +779,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   public void subscribeToRollCalls(String laoId) {
     disposables.add(
         rollCallRepo
-            .getRollCallsInLao(laoId)
+            .getRollCallsObservableInLao(laoId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -803,14 +807,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                 error -> Log.d(TAG, "Error updating Roll Call : " + error)));
   }
 
-  private void updateCurrentObjects(LaoView laoView) {
+  private void updateCurrentObjects(LaoView laoView) throws UnknownRollCallException {
     if (currentRollCall != null) {
-      Optional<RollCall> rcOption =
-          laoView.getRollCallWithPersistentId(currentRollCall.getPersistentId());
-      if (!rcOption.isPresent()) {
-        throw new IllegalStateException("Roll call must be present if in current id");
-      }
-      currentRollCall = rcOption.get();
+      currentRollCall =
+          rollCallRepo.getRollCallWithPersistentId(laoId, currentRollCall.getPersistentId());
     }
     if (currentElection != null) {
       Optional<Election> electionOption = laoView.getElection(currentElection.getId());

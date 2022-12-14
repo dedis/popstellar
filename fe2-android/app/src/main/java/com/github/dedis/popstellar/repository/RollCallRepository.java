@@ -5,10 +5,12 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -78,8 +80,18 @@ public class RollCallRepository {
    * @return an observable set of ids who correspond to the set of roll calls published on the given
    *     lao
    */
-  public Observable<Set<String>> getRollCallsInLao(String laoId) {
+  public Observable<Set<String>> getRollCallsObservableInLao(String laoId) {
     return getLaoRollCalls(laoId).getRollCallsSubject();
+  }
+
+  /**
+   * Returns the set of all attendees who have ever attended a roll call in the lao
+   *
+   * @param laoId the id of the considered lao
+   * @return the set of all attendees who have ever attended a roll call in the lao
+   */
+  public Set<PublicKey> getAllAttendeesInLao(String laoId) {
+    return getLaoRollCalls(laoId).getAllAttendees();
   }
 
   public RollCall getLastClosedRollCall(String laoId) throws NoRollCallException {
@@ -157,6 +169,14 @@ public class RollCallRepository {
 
     public Observable<Set<String>> getRollCallsSubject() {
       return rollCallsSubject.map(HashSet::new);
+    }
+
+    public Set<PublicKey> getAllAttendees() {
+      // For all roll calls we add all attendees to the returned set
+      return rollCallByPersistentId.values().stream()
+          .map(RollCall::getAttendees)
+          .flatMap(Collection::stream)
+          .collect(Collectors.toSet());
     }
   }
 }

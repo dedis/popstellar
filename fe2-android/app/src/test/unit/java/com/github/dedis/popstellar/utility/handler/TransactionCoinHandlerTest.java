@@ -101,12 +101,6 @@ public class TransactionCoinHandlerTest {
 
     // Create one Roll Call and add it to the LAO
     rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
-    lao.setRollCalls(
-        new HashMap<String, RollCall>() {
-          {
-            put(rollCall.getId(), rollCall);
-          }
-        });
 
     // Add the LAO to the LAORepository
     laoRepo.updateLao(lao);

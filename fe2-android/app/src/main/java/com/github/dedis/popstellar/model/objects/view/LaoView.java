@@ -65,17 +65,6 @@ public final class LaoView {
     return lao.getChannel();
   }
 
-  public Optional<RollCall> getRollCall(String id) {
-    Optional<RollCall> optional = lao.getRollCall(id);
-    return optional.map(RollCall::new); // If empty returns empty optional, if not
-    // returns optional with copy of retrieved RollCall
-  }
-
-  public Optional<RollCall> getRollCallWithPersistentId(String persistentId) {
-    Optional<RollCall> optional = lao.getRollCallWithPersistentId(persistentId);
-    return optional.map(RollCall::new); // If empty returns empty optional, if not
-    // returns optional with copy of retrieved RollCall
-  }
 
   public Optional<Election> getElection(String id) {
     Optional<Election> electionOption = lao.getElection(id);
@@ -97,10 +86,6 @@ public final class LaoView {
     //    return optional.map(ElectInstance::new); // If empty returns empty optional, if not
     // returns optional with copy of retrieved ElectInstance
     return lao.getElectInstance(messageId);
-  }
-
-  public Map<String, RollCall> getRollCalls() {
-    return Copyable.copy(lao.getRollCalls());
   }
 
   public Map<String, Election> getElections() {
