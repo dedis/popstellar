@@ -1,7 +1,9 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { ListRenderItemInfo, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { PublicKey } from 'core/objects';
 import { List, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -30,6 +32,18 @@ const SocialSearch = () => {
   const rollCallId = currentLao.last_tokenized_roll_call_id;
   const attendees = SocialHooks.useRollCallAttendeesById(rollCallId);
 
+  const renderAttendee = React.useCallback(
+    ({ item: attendee, index: i }: ListRenderItemInfo<PublicKey>) => (
+      <UserListItem
+        laoId={currentLao.id}
+        publicKey={attendee}
+        isFirstItem={i === 0}
+        isLastItem={i === attendees.length - 1}
+      />
+    ),
+    [currentLao.id, attendees],
+  );
+
   return (
     <ScreenWrapper>
       <View style={styles.titleTextView}>
@@ -38,15 +52,11 @@ const SocialSearch = () => {
         </Text>
       </View>
       <View style={List.container}>
-        {attendees.map((attendee, i) => (
-          <UserListItem
-            key={attendee.toString()}
-            laoId={currentLao.id}
-            publicKey={attendee}
-            isFirstItem={i === 0}
-            isLastItem={i === attendees.length - 1}
-          />
-        ))}
+        <FlatList
+          data={attendees}
+          renderItem={renderAttendee}
+          keyExtractor={(attendee) => attendee.toString()}
+        />
       </View>
     </ScreenWrapper>
   );
