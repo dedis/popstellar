@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
@@ -21,6 +22,8 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.junit.Rule;
@@ -33,8 +36,7 @@ import org.mockito.junit.MockitoTestRule;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
@@ -70,9 +72,21 @@ public class RollCallFragmentTest {
   private static final DateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
 
-  private final RollCall ROLL_CALL = new RollCall(LAO.getId(), CREATION, ROLL_CALL_TITLE);
+  private final RollCall ROLL_CALL =
+      new RollCall(
+          LAO.getId(),
+          LAO.getId(),
+          ROLL_CALL_TITLE,
+          CREATION,
+          ROLL_CALL_START,
+          ROLL_CALL_END,
+          EventState.CREATED,
+          new HashSet<>(),
+          LOCATION,
+          ROLL_CALL_DESC);
 
   @BindValue @Mock LAORepository repository;
+  @BindValue @Mock RollCallRepository rollCallRepo;
   @BindValue @Mock GlobalNetworkManager networkManager;
   @BindValue @Mock KeyManager keyManager;
 
@@ -90,7 +104,8 @@ public class RollCallFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws UnknownLaoException {
+        protected void before()
+            throws UnknownLaoException, UnknownRollCallException, NoRollCallException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
@@ -107,6 +122,15 @@ public class RollCallFragmentTest {
           ROLL_CALL.setEnd(ROLL_CALL_END);
           ROLL_CALL.setDescription(ROLL_CALL_DESC);
           ROLL_CALL.setState(EventState.CREATED);
+
+          Set<String> rcList = Collections.singleton(ROLL_CALL.getId());
+          BehaviorSubject<Set<String>> rcObservable = BehaviorSubject.createDefault(rcList);
+          when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
+          when(rollCallRepo.getRollCallsInLao(any())).thenReturn(rcObservable);
+          when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
+          when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
+          when(rollCallRepo.getRollCallObservable(any(), any()))
+              .thenReturn(BehaviorSubject.createDefault(ROLL_CALL));
 
           LAO.updateRollCall(ROLL_CALL.getId(), ROLL_CALL);
         }
@@ -151,6 +175,7 @@ public class RollCallFragmentTest {
 
   @Test
   public void managementButtonIsDisplayed() {
+    setupViewModel();
     managementButton().check(matches(isDisplayed()));
   }
 
@@ -216,6 +241,7 @@ public class RollCallFragmentTest {
 
   @Test
   public void statusClosedTest() {
+    setupViewModel();
     closeRollCall();
     rollCallStatusText().check(matches(withText("Closed")));
   }

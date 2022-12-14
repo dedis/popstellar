@@ -103,31 +103,6 @@ public class LaoTest {
   }
 
   @Test
-  public void updateRollCalls() {
-
-    LAO_1.setRollCalls(new HashMap<>(rollCalls));
-    RollCall r1 = new RollCall("New r1 id");
-    LAO_1.updateRollCall(rollCallId1, r1);
-    assertFalse(LAO_1.getRollCalls().containsKey(rollCallId1));
-    assertTrue(LAO_1.getRollCalls().containsKey("New r1 id"));
-    assertTrue(LAO_1.getRollCalls().containsKey(rollCallId2));
-    assertTrue(LAO_1.getRollCalls().containsKey(rollCallId3));
-    assertSame(LAO_1.getRollCalls().get("New r1 id"), r1);
-
-    // we create a different roll call that has the same Id as the first one
-    RollCall r2 = new RollCall(r1.getId());
-
-    LAO_1.updateRollCall(r1.getId(), r2);
-    assertNotSame(LAO_1.getRollCalls().get(r1.getId()), r1);
-    assertSame(LAO_1.getRollCalls().get(r1.getId()), r2);
-  }
-
-  @Test
-  public void updateRollCallWithNull() {
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.updateRollCall("random", null));
-  }
-
-  @Test
   public void updateElections() {
     LAO_1.setElections(new HashMap<>(elections));
     Election e1 =
