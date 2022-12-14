@@ -277,15 +277,15 @@ export const makeChirpsListOfUser = (laoId?: Hash) => (user?: PublicKey) => {
 };
 
 const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
-  '👍': reactionByUser['👍'] ? reactionByUser['👍'].length : 0,
-  '👎': reactionByUser['👎'] ? reactionByUser['👎'].length : 0,
-  '❤️': reactionByUser['❤️'] ? reactionByUser['❤️'].length : 0,
+  '👍': reactionByUser['👍'] ? reactionByUser['👍'].map(PublicKey.fromState) : [],
+  '👎': reactionByUser['👎'] ? reactionByUser['👎'].map(PublicKey.fromState) : [],
+  '❤️': reactionByUser['❤️'] ? reactionByUser['❤️'].map(PublicKey.fromState) : [],
 });
 
 export const makeReactionsList = (laoId?: Hash) =>
   createSelector(
     selectSocialState,
-    (list: SocialLaoReducerState): Record<string, Record<string, number>> => {
+    (list: SocialLaoReducerState): Record<string, Record<string, PublicKey[]>> => {
       const serializedLaoId = laoId?.valueOf();
 
       if (!serializedLaoId) {
@@ -294,7 +294,7 @@ export const makeReactionsList = (laoId?: Hash) =>
 
       if (list.byLaoId[serializedLaoId]) {
         const store = list.byLaoId[serializedLaoId];
-        const reactions: Record<string, Record<string, number>> = {};
+        const reactions: Record<string, Record<string, PublicKey[]>> = {};
         store.allIdsInOrder.forEach((id) => {
           const chirpReactions = store.reactionsByChirp[id];
           if (chirpReactions) {

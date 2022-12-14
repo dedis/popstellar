@@ -2053,6 +2053,10 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                         "borderWidth": 1,
                         "padding": 8,
                       },
+                      Object {
+                        "backgroundColor": "#8E8E8E",
+                        "borderColor": "#8E8E8E",
+                      },
                     ]
                   }
                 >
@@ -2142,6 +2146,10 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                         "borderWidth": 1,
                         "padding": 8,
                       },
+                      Object {
+                        "backgroundColor": "#8E8E8E",
+                        "borderColor": "#8E8E8E",
+                      },
                     ]
                   }
                 >
@@ -2230,6 +2238,10 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                         "borderRadius": 8,
                         "borderWidth": 1,
                         "padding": 8,
+                      },
+                      Object {
+                        "backgroundColor": "#8E8E8E",
+                        "borderColor": "#8E8E8E",
                       },
                     ]
                   }

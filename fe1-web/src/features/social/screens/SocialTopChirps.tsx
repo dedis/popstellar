@@ -28,8 +28,14 @@ const SocialTopChirps = () => {
       const reactionsA = reactions[a.id.toState()] || {};
       const reactionsB = reactions[b.id.toState()] || {};
 
-      const scoreA = (reactionsA['👍'] || 0) + (reactionsA['❤️'] || 0) - (reactionsA['👎'] || 0);
-      const scoreB = (reactionsB['👍'] || 0) + (reactionsB['❤️'] || 0) - (reactionsB['👎'] || 0);
+      const scoreA =
+        (reactionsA['👍']?.length || 0) +
+        (reactionsA['❤️']?.length || 0) -
+        (reactionsA['👎']?.length || 0);
+      const scoreB =
+        (reactionsB['👍']?.length || 0) +
+        (reactionsB['❤️']?.length || 0) -
+        (reactionsB['👎']?.length || 0);
 
       return scoreB - scoreA;
     });

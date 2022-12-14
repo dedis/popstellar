@@ -582,9 +582,9 @@ describe('SocialReducer', () => {
     it('should return the first reaction state', () => {
       expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState11)).toEqual({
         [mockChirpId1.toString()]: {
-          '👍': 1,
-          '👎': 0,
-          '❤️': 0,
+          '👍': [mockSender1],
+          '👎': [],
+          '❤️': [],
         },
       });
     });
@@ -592,9 +592,9 @@ describe('SocialReducer', () => {
     it('should add reaction count correctly', () => {
       expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState22)).toEqual({
         [mockChirpId1.toString()]: {
-          '👍': 1,
-          '👎': 0,
-          '❤️': 1,
+          '👍': [mockSender1],
+          '👎': [],
+          '❤️': [mockSender1],
         },
       });
     });
@@ -602,19 +602,9 @@ describe('SocialReducer', () => {
     it('should increment counter for new sender', () => {
       expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState33)).toEqual({
         [mockChirpId1.toString()]: {
-          '👍': 2,
-          '👎': 0,
-          '❤️': 1,
-        },
-      });
-    });
-
-    it('should not count a sender twice for a reaction', () => {
-      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState33)).toEqual({
-        [mockChirpId1.toString()]: {
-          '👍': 2,
-          '👎': 0,
-          '❤️': 1,
+          '👍': [mockSender1, mockSender2],
+          '👎': [],
+          '❤️': [mockSender1],
         },
       });
     });
@@ -622,14 +612,14 @@ describe('SocialReducer', () => {
     it('should return state of two reaction', () => {
       expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState44)).toEqual({
         [mockChirpId1.toString()]: {
-          '👍': 1,
-          '👎': 0,
-          '❤️': 0,
+          '👍': [mockSender1],
+          '👎': [],
+          '❤️': [],
         },
         [mockChirpId2.toString()]: {
-          '👍': 1,
-          '👎': 0,
-          '❤️': 0,
+          '👍': [mockSender2],
+          '👎': [],
+          '❤️': [],
         },
       });
     });
