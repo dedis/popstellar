@@ -97,7 +97,6 @@ public class RollCallHandlerTest {
             new HashSet<>(),
             "somewhere",
             "desc");
-    rollCall.setLocation("EPFL");
     rollCallRepo.updateRollCall(LAO.getId(), rollCall, rollCall.getId());
 
     // Add the LAO to the LAORepository
