@@ -215,7 +215,34 @@ exports[`SocialHome renders correctly 1`] = `
               },
             ]
           }
-        />
+        >
+          <RCTScrollView
+            collapsable={false}
+            data={Array []}
+            getItem={[Function]}
+            getItemCount={[Function]}
+            handlerTag={3}
+            handlerType="NativeViewGestureHandler"
+            keyExtractor={[Function]}
+            onContentSizeChange={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onLayout={[Function]}
+            onMomentumScrollBegin={[Function]}
+            onMomentumScrollEnd={[Function]}
+            onScroll={[Function]}
+            onScrollBeginDrag={[Function]}
+            onScrollEndDrag={[Function]}
+            removeClippedSubviews={false}
+            renderItem={[Function]}
+            renderScrollComponent={[Function]}
+            scrollEventThrottle={50}
+            stickyHeaderIndices={Array []}
+            viewabilityConfigCallbackPairs={Array []}
+          >
+            <View />
+          </RCTScrollView>
+        </View>
       </View>
     </View>
   </RCTScrollView>
