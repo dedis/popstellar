@@ -101,6 +101,8 @@ namespace STRINGS {
   export const navigation_digital_cash_wallet_scanner = 'Digital Cash Scanner';
 
   /* --- Social Media Navigation Strings --- */
+  export const social_media_navigation_user_profile = 'User profile';
+
   export const social_media_navigation_tab_home = 'Social Media Home Navigtion';
   export const social_media_navigation_tab_home_title = 'Feed';
 
@@ -108,12 +110,20 @@ namespace STRINGS {
   export const social_media_home_navigation_home_title = 'Feed';
   export const social_media_home_navigation_new_chirp = 'New Chirp';
 
-  export const social_media_navigation_tab_search = 'User List';
-  export const social_media_navigation_tab_top_chirps = 'Top Chirps';
-  export const social_media_navigation_tab_profile = 'My Profile';
+  export const social_media_navigation_tab_search = 'User List Navigation';
+  export const social_media_navigation_tab_search_title = 'User List';
 
-  export const social_media_search_navigation_user_profile = 'User profile';
-  export const social_media_search_navigation_attendee_list = 'List of attendees';
+  export const social_media_search_navigation_attendee_list = 'List of roll call attendees';
+
+  export const social_media_navigation_tab_top_chirps = 'Top Chirps Navigation';
+  export const social_media_navigation_tab_top_chirps_title = 'Top Chirps';
+
+  export const social_media_top_chirps_navigation_top_chirps = 'Top Chirps';
+
+  export const social_media_navigation_tab_profile = 'My Profile Navigation';
+  export const social_media_navigation_tab_profile_title = 'My Profile';
+
+  export const social_media_profile_navigation_profile = 'My Profile';
 
   /* --- Lao Strings --- */
   export const lao_properties_modal_heading = 'Lao Properties';
@@ -143,8 +153,6 @@ namespace STRINGS {
   export const button_publish = 'Publish';
   export const your_chirp = 'Your chirp';
   export const deleted_chirp = 'This chirp was deleted';
-  export const attendees_of_last_roll_call = 'Attendees of last roll-call';
-  export const profile_button = 'Profile';
   export const social_media_delete_chirp = 'Delete Chirp';
   export const social_media_create_chirps_yet =
     'So far nobody has published a chirp and you could be the first one to do so!';

@@ -10,8 +10,8 @@ import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { SocialHomeParamList } from 'core/navigation/typing/SocialHomeParamList';
-import { SocialParamList } from 'core/navigation/typing/SocialParamList';
+import { SocialHomeParamList } from 'core/navigation/typing/social/SocialHomeParamList';
+import { SocialParamList } from 'core/navigation/typing/social/SocialParamList';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 

@@ -6,7 +6,12 @@ import { Text } from 'react-native';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
+import {
+  SocialHomeParamList,
+  SocialProfileParamList,
+  SocialTopChirpsParamList,
+} from 'core/navigation/typing/social';
+import { SocialSearchParamList } from 'core/navigation/typing/social/SocialSearchParamList';
 import { PublicKey } from 'core/objects';
 import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -16,8 +21,8 @@ import { SocialHooks } from '../hooks';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<
-    SocialSearchParamList,
-    typeof STRINGS.social_media_search_navigation_user_profile
+    SocialHomeParamList | SocialTopChirpsParamList | SocialSearchParamList | SocialProfileParamList,
+    typeof STRINGS.social_media_navigation_user_profile
   >,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,

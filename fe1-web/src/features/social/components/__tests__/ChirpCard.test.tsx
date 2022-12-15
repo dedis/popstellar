@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 
+import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { useActionSheet } from 'core/hooks/ActionSheet';
@@ -87,7 +88,9 @@ describe('ChirpCard', () => {
     return render(
       <FeatureContext.Provider value={contextValue}>
         <SocialMediaContext.Provider value={isSender ? senderContext : nonSenderContext}>
-          <ChirpCard chirp={c} isFirstItem={false} isLastItem={false} />
+          <MockNavigator
+            component={() => <ChirpCard chirp={c} isFirstItem={false} isLastItem={false} />}
+          />
         </SocialMediaContext.Provider>
       </FeatureContext.Provider>,
     );

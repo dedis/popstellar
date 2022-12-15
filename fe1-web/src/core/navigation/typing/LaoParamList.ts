@@ -5,7 +5,7 @@ import STRINGS from 'resources/strings';
 import { DigitalCashParamList } from './DigitalCashParamList';
 import { LaoEventsParamList } from './LaoEventsParamList';
 import { NotificationParamList } from './NotificationParamList';
-import { SocialParamList } from './SocialParamList';
+import { SocialParamList } from './social/SocialParamList';
 import { WalletParamList } from './WalletParamList';
 
 export type LaoParamList = {

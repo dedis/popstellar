@@ -4,6 +4,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
+import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
@@ -72,7 +73,7 @@ describe('SocialTopChirps', () => {
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <SocialMediaContext.Provider value={socialContextValue}>
-            <SocialTopChirps />
+            <MockNavigator component={SocialTopChirps} />
           </SocialMediaContext.Provider>
         </FeatureContext.Provider>
       </Provider>,
