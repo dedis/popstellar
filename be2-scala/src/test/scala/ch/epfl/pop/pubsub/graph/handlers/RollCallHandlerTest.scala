@@ -36,7 +36,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
           system.log.info(s"Received - error $x")
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-NACK")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbRollCallNotCreated: AskableActorRef = {
@@ -63,7 +63,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
           system.log.info(s"Received - error $x")
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-RollCallNotCreated")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbRollCallAlreadyCreated: AskableActorRef = {
@@ -86,7 +86,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
           system.log.info(s"Received - error $x")
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-RollCallAlreadyCreated")
+    system.actorOf(dbActorMock)
   }
 
   test("CreateRollCall should fail if the database fails storing the message") {
