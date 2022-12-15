@@ -7,7 +7,6 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import { mockSender1 } from 'features/social/__tests__/utils';
 import { SocialMediaContext } from 'features/social/context';
 
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
@@ -56,11 +55,9 @@ jest.mock('features/social/network/SocialMessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useSelector: jest.fn(() => ({
-    1234: {
-      '👍': [mockSender1],
-      '👎': [],
-      '❤️': [],
-    },
+    '👍': 1,
+    '👎': 0,
+    '❤️': 0,
   })),
 }));
 
