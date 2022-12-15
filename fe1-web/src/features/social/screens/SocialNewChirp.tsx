@@ -65,7 +65,7 @@ const SocialNewChirp = () => {
         console.error('Failed to post chirp, error:', err);
         toast.show(`Failed to post chirp, error: ${err}`, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       });

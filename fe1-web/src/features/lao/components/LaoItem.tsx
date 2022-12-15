@@ -67,7 +67,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       console.error(`Failed to establish lao connection: ${err}`);
       toast.show(`Failed to establish connection, entering offline mode`, {
         type: 'warning',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }

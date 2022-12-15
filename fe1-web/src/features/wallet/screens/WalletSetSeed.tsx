@@ -47,7 +47,7 @@ const WalletSetSeed = () => {
       console.error(e);
       toast.show(STRINGS.wallet_set_seed_error, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }

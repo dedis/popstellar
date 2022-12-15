@@ -13,6 +13,9 @@ export const warning = '#ffa502';
 export const info = '#3498db';
 export const error = '#e74c3c';
 
+// We want this to be distinct from the colors used for toasts
+export const offlineMode = '#f1c40f';
+
 export const inactive = '#8E8E8E';
 
 export const transparent = 'transparent';
