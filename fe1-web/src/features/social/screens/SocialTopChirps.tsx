@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { useMemo } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { List } from 'core/styles';
+import { List, Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
 import { SocialHooks } from '../hooks';
@@ -41,19 +42,27 @@ const SocialTopChirps = () => {
     });
   }, [chirps, reactions]);
 
+  if (sortedChirpList.length === 0) {
+    return (
+      <ScreenWrapper>
+        <Text style={[Typography.base, Typography.paragraph]}>
+          {STRINGS.social_media_create_chirps_yet}
+        </Text>
+      </ScreenWrapper>
+    );
+  }
+
   return (
     <ScreenWrapper>
-      <View>
-        <View style={List.container}>
-          {sortedChirpList.map((chirp, i) => (
-            <ChirpCard
-              key={chirp.id.toString()}
-              chirp={chirp}
-              isFirstItem={i === 0}
-              isLastItem={i === chirps.length - 1}
-            />
-          ))}
-        </View>
+      <View style={List.container}>
+        {sortedChirpList.map((chirp, i) => (
+          <ChirpCard
+            key={chirp.id.toString()}
+            chirp={chirp}
+            isFirstItem={i === 0}
+            isLastItem={i === chirps.length - 1}
+          />
+        ))}
       </View>
     </ScreenWrapper>
   );

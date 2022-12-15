@@ -21,54 +21,48 @@ exports[`SocialHome renders correctly 1`] = `
     }
   >
     <View>
-      <View
+      <Text
         style={
-          Object {
-            "flexDirection": "column",
-          }
+          Array [
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+          ]
         }
       >
-        <View
-          style={
-            Array [
-              Object {
-                "borderRadius": 8,
-                "marginBottom": 16,
-              },
-              Object {
-                "marginTop": 16,
-              },
-            ]
-          }
-        >
-          <RCTScrollView
-            collapsable={false}
-            data={Array []}
-            getItem={[Function]}
-            getItemCount={[Function]}
-            handlerTag={2}
-            handlerType="NativeViewGestureHandler"
-            keyExtractor={[Function]}
-            onContentSizeChange={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            onLayout={[Function]}
-            onMomentumScrollBegin={[Function]}
-            onMomentumScrollEnd={[Function]}
-            onScroll={[Function]}
-            onScrollBeginDrag={[Function]}
-            onScrollEndDrag={[Function]}
-            removeClippedSubviews={false}
-            renderItem={[Function]}
-            renderScrollComponent={[Function]}
-            scrollEventThrottle={50}
-            stickyHeaderIndices={Array []}
-            viewabilityConfigCallbackPairs={Array []}
-          >
-            <View />
-          </RCTScrollView>
-        </View>
-      </View>
+        So far nobody has published a chirp and you could be the first one to do so!
+      </Text>
+      <Text
+        style={
+          Array [
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+          ]
+        }
+      >
+        The button for doing so is located in the navigation bar all the way to the right. Be creative ✨
+      </Text>
     </View>
   </RCTScrollView>
 </View>

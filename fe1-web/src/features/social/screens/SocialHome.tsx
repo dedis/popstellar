@@ -1,7 +1,7 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useCallback, useMemo } from 'react';
-import { ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
+import React, { useCallback, useContext, useMemo } from 'react';
+import { ListRenderItemInfo, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
@@ -12,10 +12,11 @@ import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialHomeParamList } from 'core/navigation/typing/SocialHomeParamList';
 import { SocialParamList } from 'core/navigation/typing/SocialParamList';
-import { Color, Icon, List, Spacing } from 'core/styles';
+import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
+import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { Chirp } from '../objects';
 import { makeChirpsList } from '../reducer';
@@ -31,21 +32,9 @@ type NavigationProps = CompositeScreenProps<
   >
 >;
 
-/**
- * UI for the Social Media home screen component
- */
-
-const styles = StyleSheet.create({
-  userFeed: {
-    flexDirection: 'column',
-  } as ViewStyle,
-  chirpList: {
-    marginTop: Spacing.x1,
-  } as ViewStyle,
-});
-
 const SocialHome = () => {
   const laoId = SocialHooks.useCurrentLaoId();
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
 
   if (laoId === undefined) {
     throw new Error('Impossible to render Social Home, current lao id is undefined');
@@ -61,16 +50,33 @@ const SocialHome = () => {
     [chirpList],
   );
 
+  if (chirpList.length === 0) {
+    return (
+      <ScreenWrapper>
+        <Text style={[Typography.base, Typography.paragraph]}>
+          {STRINGS.social_media_create_chirps_yet}
+        </Text>
+        {currentUserPopTokenPublicKey ? (
+          <Text style={[Typography.base, Typography.paragraph]}>
+            {STRINGS.social_media_howto_create_chirps}
+          </Text>
+        ) : (
+          <Text style={[Typography.base, Typography.paragraph]}>
+            {STRINGS.social_media_create_chirp_no_pop_token}
+          </Text>
+        )}
+      </ScreenWrapper>
+    );
+  }
+
   return (
     <ScreenWrapper>
-      <View style={styles.userFeed}>
-        <View style={[List.container, styles.chirpList]}>
-          <FlatList
-            data={chirpList}
-            renderItem={renderChirp}
-            keyExtractor={(item) => item.id.toString()}
-          />
-        </View>
+      <View style={List.container}>
+        <FlatList
+          data={chirpList}
+          renderItem={renderChirp}
+          keyExtractor={(item) => item.id.toString()}
+        />
       </View>
     </ScreenWrapper>
   );

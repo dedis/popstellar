@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useContext } from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { Typography } from 'core/styles';
@@ -18,9 +18,9 @@ const SocialProfile = () => {
 
   if (!currentUserPopTokenPublicKey) {
     return (
-      <View>
+      <ScreenWrapper>
         <Text style={Typography.base}>{STRINGS.social_media_your_profile_unavailable}</Text>
-      </View>
+      </ScreenWrapper>
     );
   }
 

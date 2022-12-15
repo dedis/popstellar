@@ -43,6 +43,14 @@ const SocialSearch = () => {
     [attendees],
   );
 
+  if (!rollCallId) {
+    return (
+      <ScreenWrapper>
+        <Text style={Typography.base}>{STRINGS.social_media_user_list_unavailable}</Text>
+      </ScreenWrapper>
+    );
+  }
+
   return (
     <ScreenWrapper>
       <View style={styles.titleTextView}>
