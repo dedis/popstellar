@@ -14,6 +14,21 @@ const EventList = ({ title, isDefaultExpanded, toggleable, events }: IPropTypes)
     return null;
   }
 
+  const eventList = events.map((event, idx) => (
+    <EventListItem
+      key={event.id}
+      eventId={event.id}
+      eventType={event.eventType}
+      isFirstItem={idx === 0}
+      isLastItem={idx === events.length - 1}
+      testID={`current_event_selector_${idx}`}
+    />
+  ));
+
+  if (!toggleable) {
+    return <>{eventList}</>;
+  }
+
   return (
     <ListItem.Accordion
       containerStyle={List.accordionItem}
@@ -25,22 +40,13 @@ const EventList = ({ title, isDefaultExpanded, toggleable, events }: IPropTypes)
       }
       isExpanded={showItems}
       onPress={toggleable ? () => setShowItems(!showItems) : undefined}>
-      {events.map((event, idx) => (
-        <EventListItem
-          key={event.id}
-          eventId={event.id}
-          eventType={event.eventType}
-          isFirstItem={idx === 0}
-          isLastItem={idx === events.length - 1}
-          testID={`current_event_selector_${idx}`}
-        />
-      ))}
+      {eventList}
     </ListItem.Accordion>
   );
 };
 
 const propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   events: PropTypes.arrayOf(eventStatePropType).isRequired,
   isDefaultExpanded: PropTypes.bool,
   toggleable: PropTypes.bool,
@@ -48,6 +54,7 @@ const propTypes = {
 EventList.propTypes = propTypes;
 
 EventList.defaultProps = {
+  title: '',
   isDefaultExpanded: false,
   toggleable: true,
 };

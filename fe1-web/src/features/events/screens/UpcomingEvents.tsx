@@ -33,7 +33,7 @@ const UpcomingEvents = () => {
 
   return (
     <ScreenWrapper>
-      <EventList title={STRINGS.events_list_upcoming} toggleable={false} events={upcomingEvents} />
+      <EventList toggleable={false} events={upcomingEvents} />
     </ScreenWrapper>
   );
 };
