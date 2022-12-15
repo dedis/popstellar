@@ -39,7 +39,7 @@ const EventList = ({ title, isDefaultExpanded, toggleable, events }: IPropTypes)
         </ListItem.Content>
       }
       isExpanded={showItems}
-      onPress={toggleable ? () => setShowItems(!showItems) : undefined}>
+      onPress={() => setShowItems(!showItems)}>
       {eventList}
     </ListItem.Accordion>
   );
