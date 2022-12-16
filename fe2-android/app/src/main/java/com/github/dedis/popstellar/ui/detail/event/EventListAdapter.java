@@ -183,7 +183,9 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 setCurrentFragment(
                     activity.getSupportFragmentManager(),
                     R.id.fragment_roll_call,
-                    () -> RollCallFragment.newInstance(token.getPublicKey()));
+                    () ->
+                        RollCallFragment.newInstance(
+                            token.getPublicKey(), rollCall.getPersistentId()));
               } catch (KeyException e) {
                 ErrorUtils.logAndShow(activity, TAG, e, R.string.key_generation_exception);
               } catch (UnknownLaoException e) {
