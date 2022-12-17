@@ -130,7 +130,6 @@ public class EventListAdapterTest {
   @Test
   public void viewTypeAdapterTest() {
     RollCall rollCall = RollCall.openRollCall(ROLL_CALL);
-    RollCall rollCall2 = new RollCall(ROLL_CALL2);
     activityScenarioRule
         .getScenario()
         .onActivity(
@@ -138,7 +137,7 @@ public class EventListAdapterTest {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
               EventListAdapter adapter =
                   new EventListAdapter(
-                      Arrays.asList(rollCall, rollCall2),
+                      Arrays.asList(rollCall, ROLL_CALL2),
                       new ArrayList<>(),
                       laoDetailViewModel,
                       activity);
@@ -154,7 +153,6 @@ public class EventListAdapterTest {
   @Test
   public void replaceListTest() {
     RollCall rollCall = RollCall.openRollCall(ROLL_CALL);
-    RollCall rollCall2 = new RollCall(ROLL_CALL2);
     activityScenarioRule
         .getScenario()
         .onActivity(
@@ -162,11 +160,11 @@ public class EventListAdapterTest {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
               EventListAdapter adapter =
                   new EventListAdapter(
-                      Arrays.asList(rollCall, rollCall2),
+                      Arrays.asList(rollCall, ROLL_CALL2),
                       new ArrayList<>(),
                       laoDetailViewModel,
                       activity);
-              adapter.replaceRollCalls(Collections.singletonList(rollCall2));
+              adapter.replaceRollCalls(Collections.singletonList(ROLL_CALL2));
               assertEquals(4, adapter.getItemCount());
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(0));
               assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(1));
