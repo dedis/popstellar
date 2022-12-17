@@ -167,10 +167,6 @@ public class RollCallFragment extends Fragment {
   }
 
   private void setUpStateDependantContent() {
-    if (rollCall == null) {
-      Log.d(TAG, "Current roll call is null");
-      return;
-    }
     setupTime(); // Suggested time is updated in case of early/late close/open/reopen
 
     EventState rcState = rollCall.getState();
