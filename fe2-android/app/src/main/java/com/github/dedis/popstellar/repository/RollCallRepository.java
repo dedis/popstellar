@@ -46,7 +46,7 @@ public class RollCallRepository {
     if (rollCall == null) {
       throw new IllegalArgumentException("Roll call is null");
     }
-    Log.d(TAG, "Adding new roll call on lao " + laoId + " : " + rollCall);
+    Log.d(TAG, "Updating roll call on lao " + laoId + " : " + rollCall);
 
     // Retrieve Lao data and add the roll call to it
     getLaoRollCalls(laoId).update(new RollCall(rollCall), previousId);
