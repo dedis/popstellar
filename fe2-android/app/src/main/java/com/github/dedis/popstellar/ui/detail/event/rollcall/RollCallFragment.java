@@ -86,9 +86,6 @@ public class RollCallFragment extends Fragment {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
       return null;
     }
-    if (rollCall == null) {
-      return null;
-    }
 
     setUpStateDependantContent();
 
