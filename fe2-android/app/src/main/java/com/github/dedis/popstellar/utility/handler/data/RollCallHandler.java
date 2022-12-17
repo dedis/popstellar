@@ -67,7 +67,7 @@ public final class RollCallHandler {
     Lao lao = laoView.createLaoCopy();
     lao.updateWitnessMessage(messageId, createRollCallWitnessMessage(messageId, rollCall));
 
-    rollCallRepo.updateRollCall(laoView.getId(), rollCall, rollCall.getId());
+    rollCallRepo.updateRollCall(laoView.getId(), rollCall);
     laoRepo.updateLao(lao);
   }
 
@@ -106,7 +106,7 @@ public final class RollCallHandler {
     Lao lao = laoView.createLaoCopy();
     lao.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
 
-    rollCallRepo.updateRollCall(laoView.getId(), rollCall, opens);
+    rollCallRepo.updateRollCall(laoView.getId(), rollCall);
     laoRepo.updateLao(lao);
   }
 
@@ -146,7 +146,7 @@ public final class RollCallHandler {
         .setEnd(closeRollCall.getClosedAt());
 
     RollCall rollCall = builder.build();
-    rollCallRepo.updateRollCall(laoView.getId(), rollCall, closes);
+    rollCallRepo.updateRollCall(laoView.getId(), rollCall);
 
     Lao lao = laoView.createLaoCopy();
     lao.updateTransactionHashMap(closeRollCall.getAttendees());

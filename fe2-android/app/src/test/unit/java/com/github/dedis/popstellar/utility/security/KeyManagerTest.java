@@ -108,8 +108,8 @@ public class KeyManagerTest {
             "EPFL",
             "do not come");
 
-    rollCallRepo.updateRollCall(lao.getId(), rollCall1, rollCall1.getId());
-    rollCallRepo.updateRollCall(lao.getId(), rollCall2, rollCall2.getId());
+    rollCallRepo.updateRollCall(lao.getId(), rollCall1);
+    rollCallRepo.updateRollCall(lao.getId(), rollCall2);
 
     KeyManager manager = new KeyManager(androidKeysetManager, wallet);
     assertEquals(
@@ -141,7 +141,7 @@ public class KeyManagerTest {
             "ETHZ",
             "do come");
 
-    rollCallRepo.updateRollCall(lao.getId(), rollCall, rollCall.getId());
+    rollCallRepo.updateRollCall(lao.getId(), rollCall);
     KeyManager manager = new KeyManager(androidKeysetManager, wallet);
 
     // Test with every possible errors

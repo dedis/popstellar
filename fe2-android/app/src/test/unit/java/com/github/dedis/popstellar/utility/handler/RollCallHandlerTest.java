@@ -97,7 +97,7 @@ public class RollCallHandlerTest {
             new HashSet<>(),
             "somewhere",
             "desc");
-    rollCallRepo.updateRollCall(LAO.getId(), rollCall, rollCall.getId());
+    rollCallRepo.updateRollCall(LAO.getId(), rollCall);
 
     // Add the LAO to the LAORepository
     laoRepo.updateLao(LAO);
