@@ -1,21 +1,16 @@
 package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
-import com.github.dedis.popstellar.model.Copyable;
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.*;
 
-/**
- * Class representing a roll call object It is immutable in practice. However in a few tests in
- * RollCallFragmentTest, state is mutably changed because of legacy code in LaoDetailViewModel (the
- * currentRollCall setting to be precise) (Johann Plüss : 15.12.2022)
- */
-public class RollCall extends Event implements Copyable<RollCall> {
+@Immutable
+public class RollCall extends Event {
 
   private final String id;
   private final String persistentId;
@@ -52,7 +47,7 @@ public class RollCall extends Event implements Copyable<RollCall> {
     this.description = description;
   }
 
-  public RollCall(RollCall rollCall) {
+  private RollCall(RollCall rollCall) {
     this.id = rollCall.id;
     this.persistentId = rollCall.persistentId;
     this.name = rollCall.name;
@@ -87,11 +82,6 @@ public class RollCall extends Event implements Copyable<RollCall> {
 
   public long getEnd() {
     return end;
-  }
-
-  @VisibleForTesting
-  public void setState(EventState state) {
-    this.state = state;
   }
 
   public Set<PublicKey> getAttendees() {
@@ -187,11 +177,6 @@ public class RollCall extends Event implements Copyable<RollCall> {
    */
   public boolean isClosed() {
     return EventState.CLOSED.equals(state);
-  }
-
-  @Override
-  public RollCall copy() {
-    return new RollCall(this);
   }
 
   @NonNull

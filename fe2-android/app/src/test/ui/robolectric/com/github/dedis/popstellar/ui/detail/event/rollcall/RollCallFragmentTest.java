@@ -19,11 +19,9 @@ import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
-import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.junit.Rule;
@@ -85,6 +83,9 @@ public class RollCallFragmentTest {
           LOCATION,
           ROLL_CALL_DESC);
 
+  private final BehaviorSubject<RollCall> rollCallSubject =
+      BehaviorSubject.createDefault(ROLL_CALL);
+
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock RollCallRepository rollCallRepo;
   @BindValue @Mock GlobalNetworkManager networkManager;
@@ -104,8 +105,7 @@ public class RollCallFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before()
-            throws UnknownLaoException, UnknownRollCallException, NoRollCallException {
+        protected void before() throws UnknownLaoException, UnknownRollCallException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
@@ -117,13 +117,12 @@ public class RollCallFragmentTest {
 
           Set<String> rcList = Collections.singleton(ROLL_CALL.getId());
           BehaviorSubject<Set<String>> rcObservable = BehaviorSubject.createDefault(rcList);
+          when(rollCallRepo.getRollCallWithPersistentId(any(), any()))
+              .thenReturn(RollCall.closeRollCall(ROLL_CALL));
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(rollCallRepo.getRollCallWithId(any(), any())).thenReturn(ROLL_CALL);
           when(rollCallRepo.getRollCallsObservableInLao(any())).thenReturn(rcObservable);
-          when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
-          when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
-          when(rollCallRepo.getRollCallObservable(any(), any()))
-              .thenReturn(BehaviorSubject.createDefault(ROLL_CALL));
+          when(rollCallRepo.getRollCallObservable(any(), any())).thenReturn(rollCallSubject);
         }
       };
 
@@ -138,17 +137,18 @@ public class RollCallFragmentTest {
           containerId(),
           RollCallFragment.class,
           () -> RollCallFragment.newInstance(ROLL_CALL),
-          new BundleBuilder().putString(Constants.RC_PK_EXTRA, SENDER.getEncoded()).build());
+          new BundleBuilder()
+              .putString(Constants.ROLL_CALL_ID, ROLL_CALL.getPersistentId())
+              .putString(Constants.RC_PK_EXTRA, SENDER.getEncoded())
+              .build());
 
   @Test
   public void rollCallTitleMatches() {
-    setupViewModel();
     rollCallTitle().check(matches(withText(ROLL_CALL_TITLE)));
   }
 
   @Test
   public void statusCreatedTest() {
-    setupViewModel();
     rollCallStatusText().check(matches(withText("Closed")));
   }
 
@@ -159,26 +159,22 @@ public class RollCallFragmentTest {
     String startTimeText = DATE_FORMAT.format(startTime);
     String endTimeText = DATE_FORMAT.format(endTime);
 
-    setupViewModel();
     rollCallStartTime().check(matches(withText(startTimeText)));
     rollCallEndTime().check(matches(withText(endTimeText)));
   }
 
   @Test
   public void managementButtonIsDisplayed() {
-    setupViewModel();
     managementButton().check(matches(isDisplayed()));
   }
 
   @Test
   public void scanButtonIsNotDisplayedWhenCreatedTest() {
-    setupViewModel();
     rollCallScanButton().check(matches(withEffectiveVisibility(Visibility.GONE)));
   }
 
   @Test
   public void managementButtonOpensRollCallWhenCreated() {
-    setupViewModel();
     managementButton().check(matches(withText("OPEN")));
     managementButton().perform(click());
     // Wait for the main thread to finish executing the calls made above
@@ -192,22 +188,21 @@ public class RollCallFragmentTest {
 
   @Test
   public void statusOpenedTest() {
-    openRollCall();
-    setupViewModel();
+    rollCallSubject.onNext(RollCall.openRollCall(ROLL_CALL));
+
     rollCallStatusText().check(matches(withText("Open")));
   }
 
   @Test
   public void scanButtonIsDisplayedWhenOpenedTest() {
-    openRollCall();
-    setupViewModel();
+    rollCallSubject.onNext(RollCall.openRollCall(ROLL_CALL));
+
     rollCallScanButton().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
   }
 
   @Test
   public void managementButtonCloseRollCallWhenOpened() {
-    openRollCall();
-    setupViewModel();
+    rollCallSubject.onNext(RollCall.openRollCall(ROLL_CALL));
 
     // Mock the fact that the rollcall was successfully opened
     managementButton().check(matches(withText("CLOSE")));
@@ -223,8 +218,7 @@ public class RollCallFragmentTest {
 
   @Test
   public void scanButtonOpenScanningTest() {
-    openRollCall();
-    setupViewModel();
+    rollCallSubject.onNext(RollCall.openRollCall(ROLL_CALL));
 
     rollCallScanButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(qrCodeFragmentId()))));
@@ -232,44 +226,20 @@ public class RollCallFragmentTest {
 
   @Test
   public void statusClosedTest() {
-    setupViewModel();
-    closeRollCall();
+    rollCallSubject.onNext(RollCall.closeRollCall(ROLL_CALL));
     rollCallStatusText().check(matches(withText("Closed")));
   }
 
   @Test
   public void scanButtonIsNotDisplayedWhenClosedTest() {
-    closeRollCall();
-    setupViewModel();
+    rollCallSubject.onNext(RollCall.closeRollCall(ROLL_CALL));
     rollCallScanButton().check(matches(withEffectiveVisibility(Visibility.GONE)));
   }
 
   @Test
   public void managementButtonClosedTest() {
-    closeRollCall();
-    setupViewModel();
+    rollCallSubject.onNext(RollCall.closeRollCall(ROLL_CALL));
     managementButton().check(matches(withText("REOPEN")));
   }
 
-  private void openRollCall() {
-    ROLL_CALL.setState(EventState.OPENED);
-  }
-
-  private void closeRollCall() {
-    ROLL_CALL.setState(EventState.CLOSED);
-  }
-
-  private void setupViewModel() {
-    activityScenarioRule
-        .getScenario()
-        .onActivity(
-            activity -> {
-              LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
-              //    laoDetailViewModel.setCurrentLao(new LaoView(LAO));
-              laoDetailViewModel.setCurrentRollCall(ROLL_CALL);
-              laoDetailViewModel.setCurrentRollCallId(ROLL_CALL.getId());
-            });
-    // Recreate the fragment because the viewModel needed to be modified before start
-    activityScenarioRule.getScenario().recreate();
-  }
 }

@@ -49,7 +49,7 @@ public class RollCallRepository {
     Log.d(TAG, "Adding new roll call on lao " + laoId + " : " + rollCall);
 
     // Retrieve Lao data and add the roll call to it
-    getLaoRollCalls(laoId).update(new RollCall(rollCall), previousId);
+    getLaoRollCalls(laoId).update(rollCall, previousId);
   }
 
   /**
@@ -163,7 +163,7 @@ public class RollCallRepository {
       if (observable == null) {
         throw new UnknownRollCallException(id);
       } else {
-        return observable.map(RollCall::new);
+        return observable;
       }
     }
 
