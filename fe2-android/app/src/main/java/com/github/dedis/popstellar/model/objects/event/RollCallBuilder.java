@@ -25,6 +25,21 @@ public class RollCallBuilder {
     return this;
   }
 
+  public RollCallBuilder() {}
+
+  public RollCallBuilder(RollCall rollCall) {
+    this.id = rollCall.getId();
+    this.persistentId = rollCall.getPersistentId();
+    this.name = rollCall.getName();
+    this.creation = rollCall.getCreation();
+    this.start = rollCall.getStart();
+    this.end = rollCall.getEnd();
+    this.state = rollCall.getState();
+    this.attendees = new HashSet<>(rollCall.getAttendees());
+    this.location = rollCall.getLocation();
+    this.description = rollCall.getLocation();
+  }
+
   public RollCallBuilder setPersistentId(String id) {
     persistentId = id;
     return this;

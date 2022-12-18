@@ -7,7 +7,8 @@ import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Set;
 
 @Immutable
 public class RollCall extends Event {
@@ -18,7 +19,7 @@ public class RollCall extends Event {
   private final long creation;
   private final long start;
   private final long end;
-  private EventState state;
+  private final EventState state;
   private final Set<PublicKey> attendees;
 
   private final String location;
@@ -45,19 +46,6 @@ public class RollCall extends Event {
     this.attendees = attendees;
     this.location = location;
     this.description = description;
-  }
-
-  private RollCall(RollCall rollCall) {
-    this.id = rollCall.id;
-    this.persistentId = rollCall.persistentId;
-    this.name = rollCall.name;
-    this.creation = rollCall.creation;
-    this.start = rollCall.start;
-    this.end = rollCall.end;
-    this.state = rollCall.state;
-    this.attendees = new HashSet<>(rollCall.attendees);
-    this.location = rollCall.location;
-    this.description = rollCall.description;
   }
 
   public String getId() {
@@ -167,9 +155,7 @@ public class RollCall extends Event {
   }
 
   private static RollCall setRollCallState(RollCall rollCall, EventState state) {
-    RollCall updatedRollCall = new RollCall(rollCall);
-    updatedRollCall.state = state;
-    return updatedRollCall;
+    return new RollCallBuilder(rollCall).setState(state).build();
   }
 
   /**
