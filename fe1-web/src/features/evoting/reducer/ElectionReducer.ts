@@ -50,7 +50,7 @@ const electionSlice = createSlice({
       state.byId[updatedElection.id] = updatedElection;
     },
 
-    removeElection: (state, action: PayloadAction<Hash | string>) => {
+    removeElection: (state, action: PayloadAction<Hash>) => {
       const electionId = action.payload.valueOf();
 
       if (!(electionId in state.byId)) {
@@ -78,12 +78,12 @@ export default {
  * @param electionId The if of the election / event to retrieve
  * @returns The selector
  */
-export const makeElectionSelector = (electionId: Hash | string) => {
+export const makeElectionSelector = (electionId: Hash) => {
   const electionIdString = electionId.valueOf();
 
   return createSelector(
     // First input: a map of ids to elections
-    (state) => getElectionState(state).byId,
+    (state: any) => getElectionState(state).byId,
     // Selector: returns the selected election
     (electionById: Record<string, ElectionState>): Election | undefined => {
       if (!(electionIdString in electionById)) {
@@ -102,7 +102,7 @@ export const makeElectionSelector = (electionId: Hash | string) => {
  * @param state The redux state
  * @returns The constructed election or undefined if the id is not found
  */
-export const getElectionById = (electionId: Hash | string, state: unknown) => {
+export const getElectionById = (electionId: Hash, state: unknown) => {
   const electionIdString = electionId.valueOf();
   const electionById = getElectionState(state).byId;
 

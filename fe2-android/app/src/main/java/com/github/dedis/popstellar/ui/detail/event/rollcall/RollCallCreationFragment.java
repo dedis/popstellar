@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
-import android.Manifest;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,15 +14,14 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallCreateFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
-import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+
+import java.util.Objects;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Single;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static androidx.core.content.ContextCompat.checkSelfPermission;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */
@@ -32,8 +30,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
   public static final String TAG = RollCallCreationFragment.class.getSimpleName();
 
-  private RollCallCreateFragmentBinding mFragBinding;
-  private LaoDetailViewModel mLaoDetailViewModel;
+  private RollCallCreateFragmentBinding binding;
+  private LaoDetailViewModel viewModel;
   private EditText rollCallTitleEditText;
   private Button confirmButton;
   private Button openButton;
@@ -47,9 +45,14 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-          String meetingTitle = rollCallTitleEditText.getText().toString().trim();
+          String rcTitle = rollCallTitleEditText.getText().toString().trim();
+          String location = binding.rollCallEventLocationText.getText().toString().trim();
           boolean areFieldsFilled =
-              !meetingTitle.isEmpty() && !getStartDate().isEmpty() && !getStartTime().isEmpty();
+              !rcTitle.isEmpty()
+                  && !getStartDate().isEmpty()
+                  && !getStartTime().isEmpty()
+                  && !location.isEmpty();
+
           confirmButton.setEnabled(areFieldsFilled);
           openButton.setEnabled(areFieldsFilled);
         }
@@ -70,33 +73,38 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-    mFragBinding = RollCallCreateFragmentBinding.inflate(inflater, container, false);
+    binding = RollCallCreateFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    setDateAndTimeView(mFragBinding.getRoot());
+    setDateAndTimeView(binding.getRoot());
     addStartDateAndTimeListener(confirmTextWatcher);
 
-    rollCallTitleEditText = mFragBinding.rollCallTitleText;
+    rollCallTitleEditText = binding.rollCallTitleText;
     rollCallTitleEditText.addTextChangedListener(confirmTextWatcher);
+    binding.rollCallEventLocationText.addTextChangedListener(confirmTextWatcher);
 
-    openButton = mFragBinding.rollCallOpen;
-    confirmButton = mFragBinding.rollCallConfirm;
+    openButton = binding.rollCallOpen;
+    confirmButton = binding.rollCallConfirm;
     confirmButton.setEnabled(false);
     openButton.setEnabled(false);
 
-    mFragBinding.setLifecycleOwner(getActivity());
+    binding.setLifecycleOwner(getActivity());
 
-    return mFragBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-
     setupConfirmButton();
     setupOpenButton();
-    setupCancelButton();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(getString(R.string.roll_call_setup_title));
   }
 
   private void setupConfirmButton() {
@@ -107,56 +115,54 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     openButton.setOnClickListener(v -> createRollCall(true));
   }
 
-  private void setupCancelButton() {
-    mFragBinding.rollCallCancel.setOnClickListener(
-        v -> mLaoDetailViewModel.setCurrentTab(LaoTab.EVENTS));
-  }
-
   private void createRollCall(boolean open) {
     if (!computeTimesInSeconds()) {
       return;
     }
 
-    String title = mFragBinding.rollCallTitleText.getText().toString();
-    String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
+    String title = Objects.requireNonNull(binding.rollCallTitleText.getText()).toString();
+    String description =
+        Objects.requireNonNull(binding.rollCallEventDescriptionText.getText()).toString();
+    String location =
+        Objects.requireNonNull(binding.rollCallEventLocationText.getText().toString());
     Single<String> createRollCall =
-        mLaoDetailViewModel.createNewRollCall(
-            title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds);
+        viewModel.createNewRollCall(
+            title,
+            description,
+            location,
+            creationTimeInSeconds,
+            startTimeInSeconds,
+            endTimeInSeconds);
 
     if (open) {
-      mLaoDetailViewModel.addDisposable(
+      viewModel.addDisposable(
           createRollCall
-              .flatMapCompletable(mLaoDetailViewModel::openRollCall)
+              .flatMapCompletable(viewModel::openRollCall)
               .subscribe(
                   // Open the scanning fragment when everything is done
-                  this::openScanning,
+                  () -> {
+                    setCurrentFragment(
+                        getParentFragmentManager(),
+                        R.id.add_attendee_layout,
+                        QRCodeScanningFragment::new);
+                    viewModel.setPageTitle(getString(R.string.add_attendee_title));
+                  },
                   error ->
                       ErrorUtils.logAndShow(
                           requireContext(), TAG, error, R.string.error_create_rollcall)));
     } else {
-      mLaoDetailViewModel.addDisposable(
+      viewModel.addDisposable(
           createRollCall.subscribe(
-              id ->
-                  setCurrentFragment(
-                      getParentFragmentManager(),
-                      R.id.fragment_lao_detail,
-                      LaoDetailFragment::newInstance),
+              id -> {
+                setCurrentFragment(
+                    getParentFragmentManager(),
+                    R.id.fragment_lao_detail,
+                    LaoDetailFragment::newInstance);
+                viewModel.setPageTitle(viewModel.getLaoView().getName());
+              },
               error ->
                   ErrorUtils.logAndShow(
                       requireContext(), TAG, error, R.string.error_create_rollcall)));
-    }
-  }
-
-  private void openScanning() {
-    if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PERMISSION_GRANTED) {
-      setCurrentFragment(
-          getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new);
-    } else {
-      setCurrentFragment(
-          getParentFragmentManager(),
-          R.id.fragment_camera_perm,
-          () ->
-              CameraPermissionFragment.newInstance(requireActivity().getActivityResultRegistry()));
     }
   }
 }

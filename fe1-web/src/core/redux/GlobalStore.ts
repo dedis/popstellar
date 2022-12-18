@@ -1,10 +1,18 @@
-// Core storage module for the React app
-import { ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
-import { Action, AnyAction, applyMiddleware, createStore, Store } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import { Persistor, persistStore } from 'redux-persist';
+import { configureStore, ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
+import { Action, AnyAction, applyMiddleware, Store } from 'redux';
+import {
+  FLUSH,
+  PAUSE,
+  PERSIST,
+  Persistor,
+  persistStore,
+  PURGE,
+  REGISTER,
+  REHYDRATE,
+} from 'redux-persist';
 import thunkMiddleware from 'redux-thunk';
 
+// Core storage module for the React app
 // Import all the reducers, defining how storage is organized and accessed
 import { makeRootReducer } from './RootReducer';
 
@@ -22,9 +30,16 @@ const noopReducer = {
 };
 
 // Initialize the store and expose its configuration
-const composeEnhancers = composeWithDevTools({ trace: true, traceLimit: 25 });
-const composedEnhancer = composeEnhancers(applyMiddleware(thunkMiddleware));
-export const store: Store = createStore(makeRootReducer(noopReducer), composedEnhancer);
+export const store: Store = configureStore({
+  reducer: makeRootReducer(noopReducer),
+  enhancers: [applyMiddleware(thunkMiddleware)],
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+});
 
 /**
  * The type of functions that are executed as soon as the redux store is rehydrated

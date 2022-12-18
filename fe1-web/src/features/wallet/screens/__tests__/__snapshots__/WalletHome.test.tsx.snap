@@ -31,6 +31,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={3}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -284,6 +296,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -314,222 +327,41 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <View
-                            style={
-                              Object {
-                                "borderRadius": 16,
-                                "marginBottom": 16,
-                              }
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={4}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            <View
-                              accessible={true}
-                              focusable={true}
-                              onClick={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
-                              style={
-                                Object {
-                                  "backgroundColor": "rgb(242, 242, 242)",
-                                  "paddingLeft": 0,
-                                  "paddingRight": 0,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  Object {
-                                    "alignItems": "center",
-                                    "backgroundColor": "rgb(242, 242, 242)",
-                                    "borderColor": "#bcbbc1",
-                                    "flexDirection": "row",
-                                    "padding": 14,
-                                    "paddingLeft": 0,
-                                    "paddingRight": 0,
-                                  }
-                                }
-                                testID="padView"
-                              >
-                                <View
-                                  style={
-                                    Array [
-                                      Object {
-                                        "alignItems": "flex-start",
-                                        "flex": 1,
-                                        "justifyContent": "center",
-                                      },
-                                      undefined,
-                                    ]
-                                  }
-                                  theme={
-                                    Object {
-                                      "colors": Object {
-                                        "black": "#242424",
-                                        "disabled": "hsl(208, 8%, 90%)",
-                                        "divider": "#bcbbc1",
-                                        "error": "#ff190c",
-                                        "grey0": "#393e42",
-                                        "grey1": "#43484d",
-                                        "grey2": "#5e6977",
-                                        "grey3": "#86939e",
-                                        "grey4": "#bdc6cf",
-                                        "grey5": "#e1e8ee",
-                                        "greyOutline": "#bbb",
-                                        "platform": Object {
-                                          "android": Object {
-                                            "error": "#f44336",
-                                            "grey": "rgba(0, 0, 0, 0.54)",
-                                            "primary": "#2196f3",
-                                            "searchBg": "#dcdce1",
-                                            "secondary": "#9C27B0",
-                                            "success": "#4caf50",
-                                            "warning": "#ffeb3b",
-                                          },
-                                          "default": Object {
-                                            "error": "#ff3b30",
-                                            "grey": "#7d7d7d",
-                                            "primary": "#007aff",
-                                            "searchBg": "#dcdce1",
-                                            "secondary": "#5856d6",
-                                            "success": "#4cd964",
-                                            "warning": "#ffcc00",
-                                          },
-                                          "ios": Object {
-                                            "error": "#ff3b30",
-                                            "grey": "#7d7d7d",
-                                            "primary": "#007aff",
-                                            "searchBg": "#dcdce1",
-                                            "secondary": "#5856d6",
-                                            "success": "#4cd964",
-                                            "warning": "#ffcc00",
-                                          },
-                                          "web": Object {
-                                            "error": "#ff190c",
-                                            "grey": "#393e42",
-                                            "primary": "#2089dc",
-                                            "searchBg": "#303337",
-                                            "secondary": "#ca71eb",
-                                            "success": "#52c41a",
-                                            "warning": "#faad14",
-                                          },
-                                        },
-                                        "primary": "#2089dc",
-                                        "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
-                                        "success": "#52c41a",
-                                        "warning": "#faad14",
-                                        "white": "#ffffff",
-                                      },
-                                    }
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Object {
-                                        "backgroundColor": "transparent",
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "fontWeight": "bold",
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      }
-                                    }
-                                    testID="listItemTitle"
-                                  >
-                                    MyLao
-                                  </Text>
-                                </View>
-                                <View
-                                  style={
-                                    Object {
-                                      "paddingLeft": 16,
-                                    }
-                                  }
-                                />
-                                <View
-                                  style={
-                                    Object {
-                                      "transform": Array [
-                                        Object {
-                                          "rotate": "0deg",
-                                        },
-                                      ],
-                                    }
-                                  }
-                                >
-                                  <View
-                                    style={
-                                      Object {
-                                        "overflow": "hidden",
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      <View
-                                        style={
-                                          Object {
-                                            "alignItems": "center",
-                                            "backgroundColor": "transparent",
-                                            "justifyContent": "center",
-                                          }
-                                        }
-                                      >
-                                        <Text
-                                          allowFontScaling={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": undefined,
-                                                "fontSize": 24,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "material-community",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="iconIcon"
-                                        >
-                                          󰅀
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
+                          }
+                        >
+                          <View>
                             <View
                               style={
                                 Object {
-                                  "maxHeight": "0%",
-                                  "opacity": 0,
+                                  "borderRadius": 8,
+                                  "marginBottom": 16,
                                 }
                               }
                             >
                               <View
                                 accessible={true}
+                                collapsable={false}
                                 focusable={true}
+                                onBlur={[Function]}
                                 onClick={[Function]}
+                                onFocus={[Function]}
                                 onResponderGrant={[Function]}
                                 onResponderMove={[Function]}
                                 onResponderRelease={[Function]}
@@ -542,8 +374,8 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                       "backgroundColor": "#fff",
                                     },
                                     Object {
-                                      "borderBottomLeftRadius": 16,
-                                      "borderBottomRightRadius": 16,
+                                      "borderBottomLeftRadius": 8,
+                                      "borderBottomRightRadius": 8,
                                     },
                                   ]
                                 }
@@ -553,14 +385,14 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
-                                      "borderBottomLeftRadius": 16,
-                                      "borderBottomRightRadius": 16,
+                                      "borderBottomLeftRadius": 8,
+                                      "borderBottomRightRadius": 8,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -594,6 +426,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -645,15 +478,23 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -668,6 +509,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                       myRollCall
                                     </Text>
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -695,8 +537,20 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                         "overflow": "hidden",
                                       }
                                     }
+                                    testID="RNE__ICON__CONTAINER"
                                   >
-                                    <View>
+                                    <View
+                                      accessibilityRole="button"
+                                      android_ripple={
+                                        Object {
+                                          "borderless": false,
+                                          "color": "rgba(0, 0, 0, 0.3)",
+                                          "radius": -5,
+                                        }
+                                      }
+                                      disabled={false}
+                                      testID="RNE__ICON__CONTAINER_ACTION"
+                                    >
                                       <View
                                         style={
                                           Object {
@@ -705,6 +559,7 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                                             "justifyContent": "center",
                                           }
                                         }
+                                        testID="RNE__ICON"
                                       >
                                         <Text />
                                       </View>
@@ -714,8 +569,8 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                               </View>
                             </View>
                           </View>
-                        </View>
-                      </RCTScrollView>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -760,6 +615,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -775,6 +631,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -790,7 +647,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -809,7 +665,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -840,6 +695,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -853,6 +709,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -867,7 +724,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -882,6 +738,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -908,7 +765,16 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -984,7 +850,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -995,6 +860,8 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1013,6 +880,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1043,193 +911,31 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <View
-                            style={
-                              Object {
-                                "borderRadius": 16,
-                                "marginBottom": 16,
-                              }
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={2}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            <View
-                              accessible={true}
-                              focusable={true}
-                              onClick={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
-                              style={
-                                Object {
-                                  "backgroundColor": "rgb(242, 242, 242)",
-                                  "paddingLeft": 0,
-                                  "paddingRight": 0,
-                                }
-                              }
-                            >
-                              <View
-                                style={
-                                  Object {
-                                    "alignItems": "center",
-                                    "backgroundColor": "rgb(242, 242, 242)",
-                                    "borderColor": "#bcbbc1",
-                                    "flexDirection": "row",
-                                    "padding": 14,
-                                    "paddingLeft": 0,
-                                    "paddingRight": 0,
-                                  }
-                                }
-                                testID="padView"
-                              >
-                                <View
-                                  style={
-                                    Array [
-                                      Object {
-                                        "alignItems": "flex-start",
-                                        "flex": 1,
-                                        "justifyContent": "center",
-                                      },
-                                      undefined,
-                                    ]
-                                  }
-                                  theme={
-                                    Object {
-                                      "colors": Object {
-                                        "black": "#242424",
-                                        "disabled": "hsl(208, 8%, 90%)",
-                                        "divider": "#bcbbc1",
-                                        "error": "#ff190c",
-                                        "grey0": "#393e42",
-                                        "grey1": "#43484d",
-                                        "grey2": "#5e6977",
-                                        "grey3": "#86939e",
-                                        "grey4": "#bdc6cf",
-                                        "grey5": "#e1e8ee",
-                                        "greyOutline": "#bbb",
-                                        "platform": Object {
-                                          "android": Object {
-                                            "error": "#f44336",
-                                            "grey": "rgba(0, 0, 0, 0.54)",
-                                            "primary": "#2196f3",
-                                            "searchBg": "#dcdce1",
-                                            "secondary": "#9C27B0",
-                                            "success": "#4caf50",
-                                            "warning": "#ffeb3b",
-                                          },
-                                          "default": Object {
-                                            "error": "#ff3b30",
-                                            "grey": "#7d7d7d",
-                                            "primary": "#007aff",
-                                            "searchBg": "#dcdce1",
-                                            "secondary": "#5856d6",
-                                            "success": "#4cd964",
-                                            "warning": "#ffcc00",
-                                          },
-                                          "ios": Object {
-                                            "error": "#ff3b30",
-                                            "grey": "#7d7d7d",
-                                            "primary": "#007aff",
-                                            "searchBg": "#dcdce1",
-                                            "secondary": "#5856d6",
-                                            "success": "#4cd964",
-                                            "warning": "#ffcc00",
-                                          },
-                                          "web": Object {
-                                            "error": "#ff190c",
-                                            "grey": "#393e42",
-                                            "primary": "#2089dc",
-                                            "searchBg": "#303337",
-                                            "secondary": "#ca71eb",
-                                            "success": "#52c41a",
-                                            "warning": "#faad14",
-                                          },
-                                        },
-                                        "primary": "#2089dc",
-                                        "searchBg": "#303337",
-                                        "secondary": "#ca71eb",
-                                        "success": "#52c41a",
-                                        "warning": "#faad14",
-                                        "white": "#ffffff",
-                                      },
-                                    }
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Object {
-                                        "backgroundColor": "transparent",
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "fontWeight": "bold",
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      }
-                                    }
-                                    testID="listItemTitle"
-                                  >
-                                    MyLao
-                                  </Text>
-                                </View>
-                                <View
-                                  style={
-                                    Object {
-                                      "paddingLeft": 16,
-                                    }
-                                  }
-                                />
-                                <View
-                                  style={
-                                    Object {
-                                      "transform": Array [
-                                        Object {
-                                          "rotate": "0deg",
-                                        },
-                                      ],
-                                    }
-                                  }
-                                >
-                                  <View
-                                    style={
-                                      Object {
-                                        "overflow": "hidden",
-                                      }
-                                    }
-                                  >
-                                    <View>
-                                      <View
-                                        style={
-                                          Object {
-                                            "alignItems": "center",
-                                            "backgroundColor": "transparent",
-                                            "justifyContent": "center",
-                                          }
-                                        }
-                                      >
-                                        <Text />
-                                      </View>
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
+                          }
+                        >
+                          <View>
                             <View
                               style={
                                 Object {
-                                  "maxHeight": "0%",
-                                  "opacity": 0,
+                                  "borderRadius": 8,
+                                  "marginBottom": 16,
                                 }
                               }
                             >
@@ -1240,8 +946,8 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                       "backgroundColor": "#fff",
                                     },
                                     Object {
-                                      "borderBottomLeftRadius": 16,
-                                      "borderBottomRightRadius": 16,
+                                      "borderBottomLeftRadius": 8,
+                                      "borderBottomRightRadius": 8,
                                     },
                                   ]
                                 }
@@ -1251,14 +957,14 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                     Object {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
-                                      "borderBottomLeftRadius": 16,
-                                      "borderBottomRightRadius": 16,
+                                      "borderBottomLeftRadius": 8,
+                                      "borderBottomRightRadius": 8,
                                       "borderColor": "#bcbbc1",
                                       "flexDirection": "row",
                                       "padding": 14,
                                     }
                                   }
-                                  testID="padView"
+                                  testID="RNE__LISTITEM__padView"
                                 >
                                   <View
                                     style={
@@ -1292,6 +998,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                     theme={
                                       Object {
                                         "colors": Object {
+                                          "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
                                           "divider": "#bcbbc1",
@@ -1343,15 +1050,23 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ca71eb",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
+                                        },
+                                        "spacing": Object {
+                                          "lg": 12,
+                                          "md": 8,
+                                          "sm": 4,
+                                          "xl": 24,
+                                          "xs": 2,
                                         },
                                       }
                                     }
                                   >
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -1366,6 +1081,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                       No PoP tokens
                                     </Text>
                                     <Text
+                                      accessibilityRole="text"
                                       style={
                                         Object {
                                           "backgroundColor": "transparent",
@@ -1383,8 +1099,8 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                               </View>
                             </View>
                           </View>
-                        </View>
-                      </RCTScrollView>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>

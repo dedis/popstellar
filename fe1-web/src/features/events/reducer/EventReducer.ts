@@ -45,7 +45,7 @@ const eventSlice = createSlice({
   reducers: {
     // Add a Event to the list of known Events
     addEvent: {
-      prepare(laoId: Hash | string, event: EventState) {
+      prepare(laoId: Hash, event: EventState) {
         return {
           payload: {
             laoId: laoId.valueOf(),
@@ -93,8 +93,13 @@ const eventSlice = createSlice({
 
     // Remove a Event to the list of known Events
     removeEvent: {
-      prepare(laoId: Hash | string, eventId: Hash | string): any {
-        return { payload: { laoId: laoId.valueOf(), eventId: eventId.valueOf() } };
+      prepare(laoId: Hash, eventId: Hash) {
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            eventId: eventId.valueOf(),
+          },
+        };
       },
       reducer(
         state,
@@ -130,16 +135,20 @@ export const { addEvent, updateEvent, removeEvent, clearAllEvents } = eventSlice
 
 export const getEventState = (state: any): EventReducerState => state[EVENT_REDUCER_PATH];
 
+const selectEventsById = (state: any) => getEventState(state).byId;
+
 /**
  * Creates a selector that returns a list of all events for a given lao id
  * @param laoId The id of the lao the events should be retrieved for
  */
-export const makeEventListSelector = (laoId: string) =>
-  createSelector(
-    // First input: Get all events across all LAOs
-    (state) => getEventState(state).byLaoId[laoId]?.allIds,
-    // First input: Get all events across all LAOs
-    (state) => getEventState(state).byId,
+export const makeEventListSelector = (laoId: Hash) => {
+  const serializedLaoId = laoId.valueOf();
+
+  return createSelector(
+    // First input: Get all event ids for the given lao id
+    (state: any) => getEventState(state).byLaoId[serializedLaoId]?.allIds,
+    // Second input: Get all events across all LAOs
+    selectEventsById,
     // Selector: returns an array of EventStates -- should it return an array of Event objects?
     (allIds: string[] | undefined, byId): EventState[] => {
       if (!allIds) {
@@ -149,18 +158,19 @@ export const makeEventListSelector = (laoId: string) =>
       return allIds.map((id) => byId[id]);
     },
   );
+};
 
 /**
  * Creates a selector that returns a specific event
  * @param eventId - The id of the event
  * @returns The selector
  */
-export const makeEventSelector = (eventId: Hash | string | undefined) => {
+export const makeEventSelector = (eventId: Hash | undefined) => {
   const eventIdString = eventId?.valueOf() || 'undefined';
 
   return createSelector(
     // First input: Get all events for a given lao
-    (state) => getEventState(state).byId,
+    selectEventsById,
     // Selector: returns the state of a given event
     (eventsById): EventState | undefined => {
       if (!eventIdString || !(eventIdString in eventsById)) {
@@ -178,7 +188,7 @@ export const makeEventSelector = (eventId: Hash | string | undefined) => {
  * @param state - The redux state
  * @returns The event
  */
-export const getEvent = (eventId: Hash | string | undefined, state: unknown) => {
+export const getEvent = (eventId: Hash | undefined, state: unknown) => {
   const eventIdString = eventId?.valueOf() || 'undefined';
   const eventState = getEventState(state);
   const eventsById = eventState.byId;
@@ -193,14 +203,15 @@ export const getEvent = (eventId: Hash | string | undefined, state: unknown) => 
 /**
  * Returns all events of a certain type for a certain lao.
  *
- * @param eventType
+ * @param laoId - The id of the lao
+ * @param eventType - The type of event
  */
-export const makeEventByTypeSelector = (laoId: string, eventType: string) =>
+export const makeEventByTypeSelector = (laoId: Hash, eventType: string) =>
   createSelector(
     // First input: Get all event ids for the given lao id
-    (state) => getEventState(state).byLaoId[laoId]?.allIds,
+    (state: any) => getEventState(state).byLaoId[laoId.valueOf()]?.allIds,
     // Second input: Get all events across all LAOs
-    (state) => getEventState(state).byId,
+    selectEventsById,
     // Selector: returns a map of lao ids to a map of event its to event states
     (
       eventIds: string[] | undefined,

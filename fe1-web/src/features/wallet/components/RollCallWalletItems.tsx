@@ -1,7 +1,7 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 
 import { PoPIcon } from 'core/components';
 import { Hash } from 'core/objects';
@@ -13,7 +13,7 @@ import { WalletFeature } from '../interface';
 import RollCallWalletItem from './RollCallWalletItem';
 
 const RollCallWalletItems = ({ laoId }: IPropTypes) => {
-  const tokens = WalletHooks.useRollCallTokensByLaoId(laoId.valueOf());
+  const tokens = WalletHooks.useRollCallTokensByLaoId(laoId);
 
   if (tokens.length > 0) {
     return (

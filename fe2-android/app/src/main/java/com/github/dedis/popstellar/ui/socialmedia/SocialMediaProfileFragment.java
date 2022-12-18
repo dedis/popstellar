@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaProfileFragmentBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -37,5 +38,12 @@ public class SocialMediaProfileFragment extends Fragment {
     mSocialMediaProfileFragBinding.setLifecycleOwner(getViewLifecycleOwner());
 
     return mSocialMediaProfileFragBinding.getRoot();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    SocialMediaViewModel viewModel = SocialMediaActivity.obtainViewModel(requireActivity());
+    viewModel.setPageTitle(R.string.profile);
   }
 }

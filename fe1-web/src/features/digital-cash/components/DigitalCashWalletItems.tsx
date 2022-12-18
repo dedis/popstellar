@@ -1,9 +1,9 @@
 import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 
 import { PoPIcon } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -33,11 +33,7 @@ const DigitalCashWalletItems = ({ laoId }: IPropTypes) => {
       <ListItem
         containerStyle={listStyles}
         style={listStyles}
-        onPress={() =>
-          navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet, {
-            laoId: laoId.valueOf(),
-          })
-        }>
+        onPress={() => navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet)}>
         <View style={List.icon}>
           <PoPIcon name="digitalCash" color={Color.primary} size={Icon.size} />
         </View>

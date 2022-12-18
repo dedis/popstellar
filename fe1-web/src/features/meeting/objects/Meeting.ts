@@ -1,17 +1,17 @@
-import { Hash, Timestamp } from 'core/objects';
+import { Hash, HashState, Timestamp, TimestampState } from 'core/objects';
 
 /**
  * Object to represent a meeting.
  */
 
 export interface MeetingState {
-  id: string;
-  start: number;
-  end?: number;
+  id: HashState;
+  start: TimestampState;
+  end?: TimestampState;
   name: string;
-  location: string;
-  creation: number;
-  lastModified: number;
+  location?: string;
+  creation: TimestampState;
+  lastModified: TimestampState;
   extra: object;
 }
 
@@ -71,15 +71,15 @@ export class Meeting {
    */
   public static fromState(meetingState: MeetingState): Meeting {
     return new Meeting({
-      id: new Hash(meetingState.id),
+      id: Hash.fromState(meetingState.id),
       name: meetingState.name,
       location: meetingState.location,
-      creation: new Timestamp(meetingState.creation),
-      lastModified: new Timestamp(
+      creation: Timestamp.fromState(meetingState.creation),
+      lastModified: Timestamp.fromState(
         meetingState.lastModified ? meetingState.lastModified : meetingState.creation,
       ),
-      start: new Timestamp(meetingState.start),
-      end: meetingState.end ? new Timestamp(meetingState.end) : undefined,
+      start: Timestamp.fromState(meetingState.start),
+      end: meetingState.end ? Timestamp.fromState(meetingState.end) : undefined,
       extra: meetingState.extra ? { ...meetingState.extra } : {},
     });
   }
@@ -88,6 +88,15 @@ export class Meeting {
    * Creates a MeetingState from the current Meeting object.
    */
   public toState(): MeetingState {
-    return JSON.parse(JSON.stringify(this));
+    return {
+      id: this.id.toState(),
+      start: this.start.toState(),
+      end: this.end?.toState(),
+      name: this.name,
+      location: this.location,
+      creation: this.creation.toState(),
+      lastModified: this.lastModified.toState(),
+      extra: JSON.parse(JSON.stringify(this.extra)),
+    };
   }
 }

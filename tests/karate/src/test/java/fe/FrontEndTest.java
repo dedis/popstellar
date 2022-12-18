@@ -1,51 +1,57 @@
 package fe;
 
+import com.intuit.karate.Results;
+import com.intuit.karate.Runner;
 import com.intuit.karate.junit5.Karate;
+import common.utils.Reporting;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FrontEndTest {
 
+  /**
+   * This test will execute all front-end tests with the web front-end
+   * It will not generate a clean report, but it can be used in development
+   *
+   * @return the Karate builder
+   */
   @Karate.Test
-  Karate testCreateLAO() {
-    return Karate.run("classpath:fe/LAO/create_lao.feature");
+  Karate testWeb() {
+    return Karate.run()
+      .relativeTo(getClass())
+      .karateEnv("web");
   }
 
+  /**
+   * This test will execute all front-end tests with android front-end
+   * It will not generate a clean report, but it can be used in development
+   *
+   * @return the Karate builder
+   */
   @Karate.Test
-  Karate testCreateRC() {
-    return Karate.run("classpath:fe/RollCall/rollCallCreation.feature");
+  Karate testAndroid() {
+    return Karate.run()
+      .relativeTo(getClass())
+      .karateEnv("android");
   }
 
-  @Karate.Test
-  Karate testOpenRC() {
-    return Karate.run("classpath:fe/RollCall/rollCallOpen.feature");
-  }
+  /**
+   * This is the main front-end test, it is made to be executed from the command line :
+   * <p>
+   * <code>mvn test -DargLine=-Dkarate.env=env -Dtest=FrontEndTest#fullTest</code>
+   * <p>
+   * It will execute all frontend tests and generate a report
+   */
+  @Test
+  void fullTest() {
+    Results results = Runner
+      .builder()
+      .relativeTo(getClass())
+      .outputCucumberJson(true)
+      .parallel(1);
 
-  @Karate.Test
-  Karate testCloseRC() {
-    return Karate.run("classpath:fe/RollCall/rollCallClose.feature");
-  }
-
-  @Karate.Test
-  Karate testReopenRC() {
-    return Karate.run("classpath:fe/RollCall/rollCallReopen.feature");
-  }
-
-  @Karate.Test
-  Karate testElectionSetup() {
-    return Karate.run("classpath:fe/election/electionSetup.feature");
-  }
-
-  @Karate.Test
-  Karate testElectionOpen() {
-    return Karate.run("classpath:fe/election/electionOpen.feature");
-  }
-
-  @Karate.Test
-  Karate testCastVote() {
-    return Karate.run("classpath:fe/election/castVote.feature");
-  }
-
-  @Karate.Test
-  Karate testElectionEnd() {
-    return Karate.run("classpath:fe/election/electionEnd.feature");
+    Reporting.generateReport(results.getReportDir());
+    assertEquals(0, results.getFailCount(), results.getErrorMessages());
   }
 }

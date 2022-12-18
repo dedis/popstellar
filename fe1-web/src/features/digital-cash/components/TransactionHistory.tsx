@@ -1,10 +1,11 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Modal, View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 import ModalHeader from 'core/components/ModalHeader';
+import { Hash } from 'core/objects';
 import { List, ModalStyles, Typography } from 'core/styles';
 import { COINBASE_HASH } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -191,7 +192,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
 };
 
 const propTypes = {
-  laoId: PropTypes.string.isRequired,
+  laoId: PropTypes.instanceOf(Hash).isRequired,
 };
 
 TransactionHistory.propTypes = propTypes;

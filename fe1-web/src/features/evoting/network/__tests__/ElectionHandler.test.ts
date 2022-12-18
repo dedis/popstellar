@@ -5,8 +5,8 @@ import {
   configureTestFeatures,
   mockChannel,
   mockKeyPair,
+  serializedMockLaoId,
   mockLaoId,
-  mockLaoIdHash,
   mockPopToken,
 } from '__tests__/utils';
 import { subscribeToChannel } from 'core/network';
@@ -23,6 +23,7 @@ import {
 import { dispatch } from 'core/redux';
 import {
   mockElectionId,
+  mockElectionKey,
   mockElectionNotStarted,
   mockElectionOpened,
   mockElectionResultQuestions,
@@ -33,7 +34,7 @@ import {
 } from 'features/evoting/__tests__/utils';
 import { addElectionKey } from 'features/evoting/reducer/ElectionKeyReducer';
 
-import { Election, ElectionStatus, RegisteredVote } from '../../objects';
+import { Election, ElectionStatus, QuestionResult, RegisteredVote } from '../../objects';
 import {
   handleCastVoteMessage,
   handleElectionEndMessage,
@@ -51,12 +52,12 @@ const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const mockMessageData = {
   receivedAt: TIMESTAMP,
   receivedFrom: 'some address',
-  laoId: mockLaoIdHash,
+  laoId: mockLaoId,
   data: Base64UrlData.encode('some data'),
   sender: mockKeyPair.publicKey,
   signature: Base64UrlData.encode('some data') as Signature,
-  channel: `${ROOT_CHANNEL}/${mockLaoId}/${mockElectionId.valueOf()}`,
-  message_id: Hash.fromString('some string'),
+  channel: `${ROOT_CHANNEL}/${serializedMockLaoId}/${mockElectionId.valueOf()}`,
+  message_id: new Hash('some string'),
   witness_signatures: [],
 };
 
@@ -139,7 +140,7 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            election_key: mockKeyPair.publicKey,
+            election_key: mockElectionKey,
           } as ElectionKey,
         }),
       ).toBeFalse();
@@ -155,7 +156,7 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            election_key: mockKeyPair.publicKey,
+            election_key: mockElectionKey,
           } as ElectionKey,
         }),
       ).toBeFalse();
@@ -171,7 +172,7 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            election_key: mockKeyPair.publicKey,
+            election_key: mockElectionKey,
           } as ElectionKey,
         }),
       ).toBeFalse();
@@ -187,17 +188,12 @@ describe('ElectionHandler', () => {
             object: ObjectType.ELECTION,
             action: ActionType.KEY,
             election: mockElectionId,
-            election_key: mockKeyPair.publicKey,
+            election_key: mockElectionKey,
           } as ElectionKey,
         }),
       ).toBeTrue();
 
-      expect(dispatch).toHaveBeenCalledWith(
-        addElectionKey({
-          electionId: mockElectionId.valueOf(),
-          electionKey: mockKeyPair.publicKey.valueOf(),
-        }),
-      );
+      expect(dispatch).toHaveBeenCalledWith(addElectionKey(mockElectionId, mockElectionKey));
       expect(dispatch).toHaveBeenCalledTimes(1);
     });
   });
@@ -240,7 +236,7 @@ describe('ElectionHandler', () => {
           laoId: undefined,
           messageData: new SetupElection(
             {
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               id: mockElectionNotStarted.id,
               name: mockElectionNotStarted.name,
               version: mockElectionNotStarted.version,
@@ -249,7 +245,7 @@ describe('ElectionHandler', () => {
               end_time: mockElectionNotStarted.end,
               questions: mockElectionNotStarted.questions,
             },
-            mockLaoIdHash,
+            mockLaoId,
           ),
         }),
       ).toBeFalse();
@@ -263,7 +259,7 @@ describe('ElectionHandler', () => {
           ...mockMessageData,
           messageData: new SetupElection(
             {
-              lao: mockLaoIdHash,
+              lao: mockLaoId,
               id: mockElectionNotStarted.id,
               name: mockElectionNotStarted.name,
               version: mockElectionNotStarted.version,
@@ -272,7 +268,7 @@ describe('ElectionHandler', () => {
               end_time: mockElectionNotStarted.end,
               questions: mockElectionNotStarted.questions,
             },
-            mockLaoIdHash,
+            mockLaoId,
           ),
         }),
       ).toBeTrue();
@@ -292,7 +288,7 @@ describe('ElectionHandler', () => {
       );
 
       // check whether addEvent has been called correctly
-      expect(addEvent).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted);
+      expect(addEvent).toHaveBeenCalledWith(mockLaoId, mockElectionNotStarted);
       expect(addEvent).toHaveBeenCalledTimes(1);
     });
   });
@@ -337,7 +333,7 @@ describe('ElectionHandler', () => {
           ...mockMessageData,
           laoId: undefined,
           messageData: new OpenElection({
-            lao: mockLaoIdHash,
+            lao: mockLaoId,
             election: mockElectionId,
             opened_at: TIMESTAMP,
           }),
@@ -373,7 +369,7 @@ describe('ElectionHandler', () => {
         )({
           ...mockMessageData,
           messageData: new OpenElection({
-            lao: mockLaoIdHash,
+            lao: mockLaoId,
             election: mockElectionId,
             opened_at: TIMESTAMP,
           }),
@@ -433,7 +429,7 @@ describe('ElectionHandler', () => {
           ...mockMessageData,
           laoId: undefined,
           messageData: new CastVote({
-            lao: mockLaoIdHash,
+            lao: mockLaoId,
             election: mockElectionId,
             created_at: TIMESTAMP,
             votes: [mockVote1, mockVote2],
@@ -466,7 +462,7 @@ describe('ElectionHandler', () => {
       });
 
       const castVoteMessage = new CastVote({
-        lao: mockLaoIdHash,
+        lao: mockLaoId,
         election: mockElection.id,
         created_at: TIMESTAMP,
         votes: [mockVote1, mockVote2],
@@ -486,12 +482,12 @@ describe('ElectionHandler', () => {
       expect(mockGetEventById).toHaveBeenCalledWith(mockElection.id);
       expect(mockGetEventById).toHaveBeenCalledTimes(1);
 
-      const newVote: RegisteredVote = {
-        createdAt: castVoteMessage.created_at.valueOf(),
-        sender: mockMessageData.sender.valueOf(),
+      const newVote = new RegisteredVote({
+        createdAt: castVoteMessage.created_at,
+        sender: mockMessageData.sender,
         votes: castVoteMessage.votes,
-        messageId: mockMessageData.message_id.valueOf(),
-      };
+        messageId: mockMessageData.message_id,
+      });
 
       const newRegisteredVotes = [...mockElection.registeredVotes, newVote];
 
@@ -543,7 +539,7 @@ describe('ElectionHandler', () => {
           ...mockMessageData,
           laoId: undefined,
           messageData: new EndElection({
-            lao: mockLaoIdHash,
+            lao: mockLaoId,
             election: mockElectionId,
             created_at: TIMESTAMP,
             registered_votes: mockRegistedVotesHash,
@@ -580,7 +576,7 @@ describe('ElectionHandler', () => {
         )({
           ...mockMessageData,
           messageData: new EndElection({
-            lao: mockLaoIdHash,
+            lao: mockLaoId,
             election: mockElectionId,
             created_at: TIMESTAMP,
             registered_votes: mockRegistedVotesHash,
@@ -736,10 +732,13 @@ describe('ElectionHandler', () => {
       // check whether updateEvent has been called correctly
       const updatedElection = Election.fromState(mockElectionTerminated.toState());
       updatedElection.electionStatus = ElectionStatus.RESULT;
-      updatedElection.questionResult = mockElectionResultQuestions.map((q) => ({
-        id: q.id,
-        result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
-      }));
+      updatedElection.questionResult = mockElectionResultQuestions.map(
+        (q) =>
+          new QuestionResult({
+            id: new Hash(q.id),
+            result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+          }),
+      );
 
       expect(updateEvent).toHaveBeenCalledWith(updatedElection);
     });

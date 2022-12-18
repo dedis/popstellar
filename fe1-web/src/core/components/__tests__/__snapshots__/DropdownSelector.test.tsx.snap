@@ -33,6 +33,7 @@ exports[`DropdownSelector renders correclty with an invalid preselected value 1`
         },
       ]
     }
+    numberOfLines={1}
     onChange={[Function]}
     selectedIndex={0}
     style={
@@ -80,6 +81,7 @@ exports[`DropdownSelector renders correctly with preselected value 1`] = `
         },
       ]
     }
+    numberOfLines={1}
     onChange={[Function]}
     selectedIndex={0}
     style={
@@ -127,6 +129,7 @@ exports[`DropdownSelector renders correctly without preselected value 1`] = `
         },
       ]
     }
+    numberOfLines={1}
     onChange={[Function]}
     selectedIndex={0}
     style={

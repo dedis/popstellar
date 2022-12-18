@@ -5,6 +5,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -21,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 
+import java.security.GeneralSecurityException;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
@@ -33,6 +36,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +51,7 @@ public class LaoDetailActivityTest {
   @Inject Gson gson;
 
   @BindValue @Mock LAORepository laoRepository;
+  @BindValue @Mock Wallet wallet;
 
   // Hilt rule
   private final HiltAndroidRule hiltAndroidRule = new HiltAndroidRule(this);
@@ -54,12 +59,29 @@ public class LaoDetailActivityTest {
   private final TestRule setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws UnknownLaoException {
+        protected void before() throws UnknownLaoException, GeneralSecurityException {
           hiltAndroidRule.inject();
-          when(laoRepository.getLaoView(anyString())).thenAnswer(invocation -> new LaoView(LAO));
+          when(laoRepository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
           when(laoRepository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
+
+          when(wallet.exportSeed())
+              .thenReturn(
+                  new String[] {
+                    "jar",
+                    "together",
+                    "minor",
+                    "alley",
+                    "glow",
+                    "hybrid",
+                    "village",
+                    "creek",
+                    "meadow",
+                    "atom",
+                    "travel",
+                    "bracket"
+                  });
         }
       };
   // Activity scenario rule that starts the activity.

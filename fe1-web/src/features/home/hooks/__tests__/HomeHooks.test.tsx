@@ -1,14 +1,15 @@
 import { describe } from '@jest/globals';
+import { configureStore } from '@reduxjs/toolkit';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
-import { mockLao, mockLaoIdHash } from '__tests__/utils';
+import { mockLao } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { HomeFeature, HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
+import { HOME_FEATURE_IDENTIFIER, HomeFeature, HomeReactContext } from 'features/home/interface';
 import { LaoHooks } from 'features/lao/hooks';
-import { setCurrentLao, laoReducer } from 'features/lao/reducer';
+import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import { HomeHooks } from '../index';
 
@@ -19,8 +20,13 @@ const connectToTestLao = jest.fn();
 const LaoList = jest.fn();
 const hasSeed = jest.fn();
 const resubscribeToLao = jest.fn();
+const forgetSeed = jest.fn();
 const homeNavigationScreens: HomeFeature.HomeScreen[] = [
-  { Component: LaoList, id: 'x' as HomeFeature.HomeScreen['id'], title: 'X', order: 2 },
+  {
+    Component: LaoList,
+    id: 'x' as HomeFeature.HomeScreen['id'],
+    title: 'X',
+  },
 ];
 
 const contextValue = {
@@ -32,19 +38,20 @@ const contextValue = {
     LaoList,
     homeNavigationScreens,
     getLaoChannel,
-    useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    useConnectedToLao: () => false,
     hasSeed,
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao,
+    forgetSeed,
   } as HomeReactContext,
 };
 
 // setup mock store
-const mockStore = createStore(combineReducers(laoReducer));
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
+mockStore.dispatch(setCurrentLao(mockLao));
 
-const wrapper = ({ children }: { children: React.ReactChildren }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) => (
   <Provider store={mockStore}>
     <FeatureContext.Provider value={contextValue}>{children}</FeatureContext.Provider>
   </Provider>
@@ -93,10 +100,10 @@ describe('Home hooks', () => {
     });
   });
 
-  describe('useCurrentLaoId', () => {
-    it('should return the the current lao id', () => {
-      const { result } = renderHook(() => HomeHooks.useCurrentLaoId(), { wrapper });
-      expect(result.current).toEqual(mockLaoIdHash);
+  describe('useConnectedToLao', () => {
+    it('should return whether the app is currently connected to a lao', () => {
+      const { result } = renderHook(() => HomeHooks.useConnectedToLao(), { wrapper });
+      expect(result.current).toBeFalse();
     });
   });
 

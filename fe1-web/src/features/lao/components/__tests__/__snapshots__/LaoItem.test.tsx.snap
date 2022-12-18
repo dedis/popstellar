@@ -31,6 +31,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`LaoItem renders correctly as attendee 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`LaoItem renders correctly as attendee 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`LaoItem renders correctly as attendee 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`LaoItem renders correctly as attendee 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`LaoItem renders correctly as attendee 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={3}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -284,6 +296,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -316,8 +329,11 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                     >
                       <View
                         accessible={true}
+                        collapsable={false}
                         focusable={true}
+                        onBlur={[Function]}
                         onClick={[Function]}
+                        onFocus={[Function]}
                         onResponderGrant={[Function]}
                         onResponderMove={[Function]}
                         onResponderRelease={[Function]}
@@ -343,7 +359,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                               "padding": 14,
                             }
                           }
-                          testID="padView"
+                          testID="RNE__LISTITEM__padView"
                         >
                           <View
                             style={
@@ -359,6 +375,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                             theme={
                               Object {
                                 "colors": Object {
+                                  "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
                                   "divider": "#bcbbc1",
@@ -410,15 +427,23 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#ca71eb",
+                                  "secondary": "#03dac4",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
+                                },
+                                "spacing": Object {
+                                  "lg": 12,
+                                  "md": 8,
+                                  "sm": 4,
+                                  "xl": 24,
+                                  "xs": 2,
                                 },
                               }
                             }
                           >
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -433,6 +458,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                               MyLao
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -448,6 +474,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                               Attendee
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -457,9 +484,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                                 }
                               }
                               testID="listItemTitle"
-                            >
-                              
-                            </Text>
+                            />
                           </View>
                           <View
                             style={
@@ -475,8 +500,20 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                                 "overflow": "hidden",
                               }
                             }
+                            testID="RNE__ICON__CONTAINER"
                           >
-                            <View>
+                            <View
+                              accessibilityRole="button"
+                              android_ripple={
+                                Object {
+                                  "borderless": false,
+                                  "color": "rgba(0, 0, 0, 0.3)",
+                                  "radius": -5,
+                                }
+                              }
+                              disabled={false}
+                              testID="RNE__ICON__CONTAINER_ACTION"
+                            >
                               <View
                                 style={
                                   Object {
@@ -485,9 +522,11 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                                     "justifyContent": "center",
                                   }
                                 }
+                                testID="RNE__ICON"
                               >
                                 <Text
                                   allowFontScaling={false}
+                                  selectable={false}
                                   style={
                                     Array [
                                       Object {
@@ -505,7 +544,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                                       Object {},
                                     ]
                                   }
-                                  testID="iconIcon"
+                                  testID="RNE__ICON__Component"
                                 >
                                   
                                 </Text>
@@ -558,6 +597,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -573,6 +613,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -588,7 +629,6 @@ exports[`LaoItem renders correctly as organizer 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -607,7 +647,6 @@ exports[`LaoItem renders correctly as organizer 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -638,6 +677,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -651,6 +691,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -665,7 +706,6 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -680,6 +720,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -706,7 +747,16 @@ exports[`LaoItem renders correctly as organizer 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -782,7 +832,6 @@ exports[`LaoItem renders correctly as organizer 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -793,6 +842,8 @@ exports[`LaoItem renders correctly as organizer 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -811,6 +862,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -843,8 +895,11 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                     >
                       <View
                         accessible={true}
+                        collapsable={false}
                         focusable={true}
+                        onBlur={[Function]}
                         onClick={[Function]}
+                        onFocus={[Function]}
                         onResponderGrant={[Function]}
                         onResponderMove={[Function]}
                         onResponderRelease={[Function]}
@@ -870,7 +925,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                               "padding": 14,
                             }
                           }
-                          testID="padView"
+                          testID="RNE__LISTITEM__padView"
                         >
                           <View
                             style={
@@ -886,6 +941,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                             theme={
                               Object {
                                 "colors": Object {
+                                  "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
                                   "divider": "#bcbbc1",
@@ -937,15 +993,23 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#ca71eb",
+                                  "secondary": "#03dac4",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
+                                },
+                                "spacing": Object {
+                                  "lg": 12,
+                                  "md": 8,
+                                  "sm": 4,
+                                  "xl": 24,
+                                  "xs": 2,
                                 },
                               }
                             }
                           >
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -960,6 +1024,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                               MyLao
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -975,6 +1040,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                               Organizer
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -984,9 +1050,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                                 }
                               }
                               testID="listItemTitle"
-                            >
-                              
-                            </Text>
+                            />
                           </View>
                           <View
                             style={
@@ -1002,8 +1066,20 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                                 "overflow": "hidden",
                               }
                             }
+                            testID="RNE__ICON__CONTAINER"
                           >
-                            <View>
+                            <View
+                              accessibilityRole="button"
+                              android_ripple={
+                                Object {
+                                  "borderless": false,
+                                  "color": "rgba(0, 0, 0, 0.3)",
+                                  "radius": -5,
+                                }
+                              }
+                              disabled={false}
+                              testID="RNE__ICON__CONTAINER_ACTION"
+                            >
                               <View
                                 style={
                                   Object {
@@ -1012,6 +1088,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                                     "justifyContent": "center",
                                   }
                                 }
+                                testID="RNE__ICON"
                               >
                                 <Text />
                               </View>
@@ -1063,6 +1140,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -1078,6 +1156,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -1093,7 +1172,6 @@ exports[`LaoItem renders correctly as witness 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -1112,7 +1190,6 @@ exports[`LaoItem renders correctly as witness 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -1143,6 +1220,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1156,6 +1234,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1170,7 +1249,6 @@ exports[`LaoItem renders correctly as witness 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -1185,6 +1263,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -1211,7 +1290,16 @@ exports[`LaoItem renders correctly as witness 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -1287,7 +1375,6 @@ exports[`LaoItem renders correctly as witness 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -1298,6 +1385,8 @@ exports[`LaoItem renders correctly as witness 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={2}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1316,6 +1405,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1348,8 +1438,11 @@ exports[`LaoItem renders correctly as witness 1`] = `
                     >
                       <View
                         accessible={true}
+                        collapsable={false}
                         focusable={true}
+                        onBlur={[Function]}
                         onClick={[Function]}
+                        onFocus={[Function]}
                         onResponderGrant={[Function]}
                         onResponderMove={[Function]}
                         onResponderRelease={[Function]}
@@ -1375,7 +1468,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                               "padding": 14,
                             }
                           }
-                          testID="padView"
+                          testID="RNE__LISTITEM__padView"
                         >
                           <View
                             style={
@@ -1391,6 +1484,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                             theme={
                               Object {
                                 "colors": Object {
+                                  "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
                                   "divider": "#bcbbc1",
@@ -1442,15 +1536,23 @@ exports[`LaoItem renders correctly as witness 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#ca71eb",
+                                  "secondary": "#03dac4",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
+                                },
+                                "spacing": Object {
+                                  "lg": 12,
+                                  "md": 8,
+                                  "sm": 4,
+                                  "xl": 24,
+                                  "xs": 2,
                                 },
                               }
                             }
                           >
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -1465,6 +1567,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                               MyLao
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -1480,6 +1583,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                               Witness
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -1489,9 +1593,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                                 }
                               }
                               testID="listItemTitle"
-                            >
-                              
-                            </Text>
+                            />
                           </View>
                           <View
                             style={
@@ -1507,8 +1609,20 @@ exports[`LaoItem renders correctly as witness 1`] = `
                                 "overflow": "hidden",
                               }
                             }
+                            testID="RNE__ICON__CONTAINER"
                           >
-                            <View>
+                            <View
+                              accessibilityRole="button"
+                              android_ripple={
+                                Object {
+                                  "borderless": false,
+                                  "color": "rgba(0, 0, 0, 0.3)",
+                                  "radius": -5,
+                                }
+                              }
+                              disabled={false}
+                              testID="RNE__ICON__CONTAINER_ACTION"
+                            >
                               <View
                                 style={
                                   Object {
@@ -1517,9 +1631,11 @@ exports[`LaoItem renders correctly as witness 1`] = `
                                     "justifyContent": "center",
                                   }
                                 }
+                                testID="RNE__ICON"
                               >
                                 <Text
                                   allowFontScaling={false}
+                                  selectable={false}
                                   style={
                                     Array [
                                       Object {
@@ -1537,7 +1653,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                                       Object {},
                                     ]
                                   }
-                                  testID="iconIcon"
+                                  testID="RNE__ICON__Component"
                                 >
                                   
                                 </Text>

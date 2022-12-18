@@ -17,7 +17,8 @@ export const configure = (configuration: MeetingConfiguration): MeetingInterface
     eventTypes: [MeetingEventType],
     laoEventScreens: [CreateMeetingScreen, ViewSingleMeetingScreen],
     context: {
-      useAssertCurrentLaoId: configuration.useAssertCurrentLaoId,
+      useCurrentLaoId: configuration.useCurrentLaoId,
+      useConnectedToLao: configuration.useConnectedToLao,
     },
     reducers: {
       ...meetingReducer,

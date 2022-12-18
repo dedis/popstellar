@@ -22,21 +22,19 @@ exports[`PoPButton renders correctly without disabled 1`] = `
 >
   <RNGestureHandlerButton
     collapsable={false}
+    exclusive={true}
+    handlerTag={1}
+    handlerType="NativeViewGestureHandler"
     onGestureEvent={[Function]}
     onGestureHandlerEvent={[Function]}
     onGestureHandlerStateChange={[Function]}
     onHandlerStateChange={[Function]}
     rippleColor={0}
-    style={
-      Object {
-        "marginBottom": 16,
-      }
-    }
+    touchSoundDisabled={false}
   >
     <View
       accessible={true}
       collapsable={false}
-      nativeID="animatedComponent"
       style={
         Object {
           "opacity": 1,
@@ -49,7 +47,7 @@ exports[`PoPButton renders correctly without disabled 1`] = `
             Object {
               "backgroundColor": "#3742fa",
               "borderColor": "#3742fa",
-              "borderRadius": 16,
+              "borderRadius": 8,
               "borderWidth": 1,
               "padding": 8,
             },

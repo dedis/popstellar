@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <data>
@@ -19,37 +18,6 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-      android:id="@+id/lao_detail_qr_layout"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_margin="@dimen/qr_layout_margin"
-      android:elevation="@dimen/qr_layout_elevation"
-      android:visibility="gone"
-      tools:layout_editor_absoluteX="40dp"
-      tools:layout_editor_absoluteY="40dp">
-
-      <ImageView
-        android:id="@+id/channel_qr_code"
-        android:layout_width="@dimen/channel_qr_code_size"
-        android:layout_height="@dimen/channel_qr_code_size"
-        android:contentDescription="@string/qr_code_image_description"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-      <ImageView
-        android:id="@+id/qr_icon_close"
-        android:layout_width="@dimen/qr_close_icon_side"
-        android:layout_height="@dimen/qr_close_icon_side"
-        android:contentDescription="@string/close_qr_description"
-        android:src="@drawable/ic_cancel_cross"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:visibility="@{view_model.getShowProperties() ? View.GONE : View.VISIBLE }">
@@ -59,35 +27,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-          android:id="@+id/lao_detail_title"
-          style="@style/title_style"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@{view_model.getCurrentLaoName}"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-          android:id="@+id/qr_code_icon"
-          android:layout_width="@dimen/qr_icon_side"
-          android:layout_height="@dimen/qr_icon_side"
-          android:layout_marginStart="@dimen/qr_icon_start_margin"
-          app:tint="@color/colorPrimary"
-          android:src="@drawable/ic_qr_code"
-          app:layout_constraintBottom_toBottomOf="@id/lao_detail_title"
-          app:layout_constraintStart_toEndOf="@id/lao_detail_title"
-          app:layout_constraintTop_toTopOf="@id/lao_detail_title"
-          android:contentDescription="@string/qr_code_description" />
-
         <androidx.recyclerview.widget.RecyclerView
           android:id="@+id/event_list"
           android:layout_width="match_parent"
           android:layout_height="0dp"
           android:layout_marginTop="@dimen/container_top_margin"
           app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/lao_detail_title" />
+          app:layout_constraintTop_toTopOf="parent" />
 
       </androidx.constraintlayout.widget.ConstraintLayout>
 

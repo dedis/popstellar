@@ -1,13 +1,14 @@
-import { combineReducers, createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 
 import {
   configureTestFeatures,
   mockAddress,
   mockKeyPair,
+  serializedMockLaoId,
   mockLaoId,
-  mockLaoIdHash,
-  mockLaoState,
   mockPopToken,
+  mockLao,
 } from '__tests__/utils';
 import {
   addMessages,
@@ -23,27 +24,32 @@ import { LaoServer } from 'features/lao/objects/LaoServer';
 import {
   addServer,
   addUnhandledGreetLaoMessage,
-  setCurrentLao,
   greetLaoReducer,
   handleGreetLaoMessage,
   laoReducer,
   serverReducer,
+  setCurrentLao,
 } from 'features/lao/reducer';
 import { WitnessMessage } from 'features/witness/network/messages';
 
-import { storeBackendAndConnectToPeers, makeLaoGreetStoreWatcher } from '../LaoGreetWatcher';
+import { makeLaoGreetStoreWatcher, storeBackendAndConnectToPeers } from '../LaoGreetWatcher';
 import { GreetLao } from '../messages/GreetLao';
 
 const mockHandleLaoGreetSignature = jest.fn();
 const t = new Timestamp(1600000000);
-const mockChannel: Channel = `${ROOT_CHANNEL}/${mockLaoId}`;
+const mockChannel: Channel = `${ROOT_CHANNEL}/${serializedMockLaoId}`;
 
 // setup the test features to enable ExtendedMessage.fromData
 configureTestFeatures();
 
-const mockStore = createStore(
-  combineReducers({ ...messageReducer, ...greetLaoReducer, ...laoReducer, ...serverReducer }),
-);
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...messageReducer,
+    ...greetLaoReducer,
+    ...laoReducer,
+    ...serverReducer,
+  }),
+});
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -60,12 +66,12 @@ jest.mock('core/redux', () => {
 });
 
 describe('handleLaoGreet', () => {
-  it('should add the server and mark the greeting message as handled', () => {
+  it('should add the server and mark the greeting message as handled', async () => {
     const greetLaoMsg = new GreetLao({
       object: ObjectType.LAO,
       action: ActionType.GREET,
       address: mockAddress,
-      lao: mockLaoIdHash,
+      lao: mockLaoId,
       peers: [],
       frontend: mockPopToken.publicKey,
     });
@@ -77,7 +83,7 @@ describe('handleLaoGreet', () => {
       t,
     );
 
-    storeBackendAndConnectToPeers(msg.message_id, greetLaoMsg, msg.sender);
+    await storeBackendAndConnectToPeers(msg.message_id, greetLaoMsg, msg.sender);
     expect(dispatch).toHaveBeenCalledTimes(2);
     // the key of the server should have been stored
     expect(dispatch).toHaveBeenCalledWith(
@@ -87,7 +93,7 @@ describe('handleLaoGreet', () => {
           address: greetLaoMsg.address,
           serverPublicKey: msg.sender,
           frontendPublicKey: greetLaoMsg.frontend,
-        }).toState(),
+        }),
       ),
     );
     // and the greeting message should have been marked as handled
@@ -113,7 +119,7 @@ describe('makeLaoGreetStoreWatcher', () => {
           object: ObjectType.LAO,
           action: ActionType.GREET,
           address: mockAddress,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           peers: [],
           frontend: mockPopToken.publicKey,
         }),
@@ -139,7 +145,7 @@ describe('makeLaoGreetStoreWatcher', () => {
           object: ObjectType.LAO,
           action: ActionType.GREET,
           address: mockAddress,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           peers: [],
           frontend: mockPopToken.publicKey,
         }),
@@ -179,7 +185,7 @@ describe('makeLaoGreetStoreWatcher', () => {
           object: ObjectType.LAO,
           action: ActionType.GREET,
           address: mockAddress,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           peers: [],
           frontend: mockPopToken.publicKey,
         }),
@@ -210,7 +216,7 @@ describe('makeLaoGreetStoreWatcher', () => {
       signature: witnessMessage.signature,
     });
 
-    mockStore.dispatch(setCurrentLao(mockLaoState));
+    mockStore.dispatch(setCurrentLao(mockLao));
     mockStore.dispatch(addMessages([greetLaoMessage.toState(), extendedWitnessMessage.toState()]));
     mockStore.dispatch(
       addUnhandledGreetLaoMessage({

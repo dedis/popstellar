@@ -2,7 +2,7 @@ import { describe } from '@jest/globals';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 
-import { mockKeyPair, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
+import { mockKeyPair, mockLao, serializedMockLaoId, mockLaoId, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash } from 'core/objects';
 import { mockRollCallToken } from 'features/digital-cash/__tests__/utils';
@@ -17,7 +17,7 @@ import { WalletHooks } from '../index';
 
 const getEventById = jest.fn();
 const rollCallByIdMapByLaoId = {
-  [mockLaoId]: {
+  [serializedMockLaoId]: {
     [mockRollCallState.id]: mockRollCall,
   },
 };
@@ -26,15 +26,17 @@ const getLaoOrganizer = jest.fn(() => mockKeyPair.publicKey);
 const useRollCallsByLaoId = jest.fn((laoId) => rollCallByIdMapByLaoId[laoId]);
 const useRollCallTokensByLaoId = jest.fn(() => [mockRollCallToken]);
 
-const allLaoIds: Hash[] = [mockLaoIdHash];
-const laoNameById = { [mockLaoId]: mockLaoName };
+const allLaoIds: Hash[] = [mockLaoId];
+const laoNameById = { [serializedMockLaoId]: mockLaoName };
 
 const walletItemGenerators: WalletFeature.WalletItemGenerator[] = [];
 const walletNavigationScreens: WalletFeature.WalletScreen[] = [];
 
 const contextValue = {
   [WALLET_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
+    useCurrentLao: () => mockLao,
+    useConnectedToLao: () => false,
     getEventById,
     useRollCallsByLaoId,
     getLaoOrganizer,
@@ -46,7 +48,7 @@ const contextValue = {
   } as WalletReactContext,
 };
 
-const wrapper = ({ children }: { children: React.ReactChildren }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) => (
   <FeatureContext.Provider value={contextValue}>{children}</FeatureContext.Provider>
 );
 
@@ -72,28 +74,30 @@ describe('WalletHooks', () => {
   describe('useCurrentLaoId', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => WalletHooks.useCurrentLaoId(), { wrapper });
-      expect(result.current).toEqual(mockLaoIdHash);
+      expect(result.current).toEqual(mockLaoId);
     });
   });
 
-  describe('useLaoIds', () => {
-    it('should return the list of all known laos', () => {
-      const { result } = renderHook(() => WalletHooks.useLaoIds(), { wrapper });
-      expect(result.current).toEqual(allLaoIds);
+  describe('useCurrentLao', () => {
+    it('should return the current lao', () => {
+      const { result } = renderHook(() => WalletHooks.useCurrentLao(), { wrapper });
+      expect(result.current).toEqual(mockLao);
     });
   });
 
-  describe('useNamesByLaoId', () => {
-    it('should return a map from lao id to lao name', () => {
-      const { result } = renderHook(() => WalletHooks.useNamesByLaoId(), { wrapper });
-      expect(result.current).toEqual(laoNameById);
+  describe('useConnectedToLao', () => {
+    it('should return whether currently connected to a lao', () => {
+      const { result } = renderHook(() => WalletHooks.useConnectedToLao(), { wrapper });
+      expect(result.current).toBeFalse();
     });
   });
 
   describe('useRollCallsByLaoId', () => {
     it('should return a map from lao ids to a map from roll call ids to roll call instances', () => {
-      const { result } = renderHook(() => WalletHooks.useRollCallsByLaoId(mockLaoId), { wrapper });
-      expect(result.current).toEqual(rollCallByIdMapByLaoId[mockLaoId]);
+      const { result } = renderHook(() => WalletHooks.useRollCallsByLaoId(mockLaoId), {
+        wrapper,
+      });
+      expect(result.current).toEqual(rollCallByIdMapByLaoId[serializedMockLaoId]);
     });
   });
 

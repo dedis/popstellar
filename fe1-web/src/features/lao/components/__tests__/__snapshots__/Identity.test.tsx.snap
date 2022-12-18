@@ -31,6 +31,7 @@ exports[`Identity renders correctly 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`Identity renders correctly 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`Identity renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`Identity renders correctly 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`Identity renders correctly 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`Identity renders correctly 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`Identity renders correctly 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`Identity renders correctly 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`Identity renders correctly 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`Identity renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`Identity renders correctly 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -284,6 +296,7 @@ exports[`Identity renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -319,13 +332,15 @@ exports[`Identity renders correctly 1`] = `
                         accessibilityState={
                           Object {
                             "checked": true,
+                            "disabled": false,
                           }
                         }
                         accessible={true}
                         collapsable={false}
                         focusable={true}
-                        nativeID="animatedComponent"
+                        onBlur={[Function]}
                         onClick={[Function]}
+                        onFocus={[Function]}
                         onResponderGrant={[Function]}
                         onResponderMove={[Function]}
                         onResponderRelease={[Function]}
@@ -335,17 +350,15 @@ exports[`Identity renders correctly 1`] = `
                         style={
                           Object {
                             "backgroundColor": "transparent",
-                            "borderColor": "#ededed",
-                            "borderRadius": 3,
+                            "borderColor": "#ffffff",
                             "borderWidth": 0,
                             "margin": 5,
                             "marginLeft": 0,
                             "marginRight": 0,
-                            "opacity": 1,
                             "padding": 8,
                           }
                         }
-                        testID="checkbox"
+                        testID="RNE__CheckBox__Wrapper"
                       >
                         <View
                           style={
@@ -357,6 +370,7 @@ exports[`Identity renders correctly 1`] = `
                         >
                           <Text />
                           <Text
+                            accessibilityRole="text"
                             style={
                               Object {
                                 "color": "#43484d",
@@ -365,7 +379,7 @@ exports[`Identity renders correctly 1`] = `
                                 "marginRight": 10,
                               }
                             }
-                            testID="checkboxTitle"
+                            testID="RNE__CheckBox__Title"
                           >
                             Anonymous
                           </Text>
@@ -426,6 +440,7 @@ exports[`Identity renders correctly 1`] = `
                         <TextInput
                           editable={false}
                           placeholder="John Doe"
+                          placeholderTextColor="#8E8E8E"
                           style={
                             Array [
                               Object {
@@ -481,6 +496,7 @@ exports[`Identity renders correctly 1`] = `
                         <TextInput
                           editable={false}
                           placeholder="LAO Organizer"
+                          placeholderTextColor="#8E8E8E"
                           style={
                             Array [
                               Object {
@@ -536,6 +552,7 @@ exports[`Identity renders correctly 1`] = `
                         <TextInput
                           editable={false}
                           placeholder="DEDIS Lab"
+                          placeholderTextColor="#8E8E8E"
                           style={
                             Array [
                               Object {
@@ -591,6 +608,7 @@ exports[`Identity renders correctly 1`] = `
                         <TextInput
                           editable={false}
                           placeholder="john.doe@epfl.ch"
+                          placeholderTextColor="#8E8E8E"
                           style={
                             Array [
                               Object {
@@ -646,6 +664,7 @@ exports[`Identity renders correctly 1`] = `
                         <TextInput
                           editable={false}
                           placeholder="+41 12 345 67 89"
+                          placeholderTextColor="#8E8E8E"
                           style={
                             Array [
                               Object {

@@ -8,7 +8,7 @@ describe('LaoConnection', () => {
       const servers = ['some server'];
       const data = JSON.parse(encodeLaoConnectionForQRCode(servers, mockLaoId));
       expect(data).toHaveProperty('server', servers[0]);
-      expect(data).toHaveProperty('lao', mockLaoId);
+      expect(data).toHaveProperty('lao', mockLaoId.toState());
     });
   });
 });

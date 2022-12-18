@@ -84,12 +84,6 @@ public final class LaoView {
     // returns optional with copy of retrieved Election
   }
 
-  public Optional<Chirp> getChirp(MessageID messageID) {
-    Optional<Chirp> optional = lao.getChirp(messageID);
-    return optional.map(Chirp::new); // If empty returns empty optional, if not
-    // returns optional with copy of retrieved Chirp
-  }
-
   public Set<PublicKey> getWitnesses() {
     return new HashSet<>(lao.getWitnesses());
   }
@@ -108,10 +102,6 @@ public final class LaoView {
 
   public RollCall getMostRecentRollCall() throws NoRollCallException {
     return new RollCall(lao.lastRollCallClosed());
-  }
-
-  public List<Chirp> getChirpsInOrder() {
-    return new ArrayList<>(lao.getChirpsInOrder());
   }
 
   public Map<String, RollCall> getRollCalls() {
@@ -138,12 +128,12 @@ public final class LaoView {
     return lao.getCreation();
   }
 
-  public Map<PublicKey, List<TransactionObject>> getTransactionHistoryByUser() {
-    return Copyable.copyMapOfList(lao.getTransactionHistoryByUser());
+  public Map<PublicKey, Set<TransactionObject>> getTransactionHistoryByUser() {
+    return Copyable.copyMapOfSet(lao.getTransactionHistoryByUser());
   }
 
-  public Map<PublicKey, List<TransactionObject>> getTransactionByUser() {
-    return Copyable.copyMapOfList(lao.getTransactionByUser());
+  public Map<PublicKey, Set<TransactionObject>> getTransactionByUser() {
+    return Copyable.copyMapOfSet(lao.getTransactionByUser());
   }
 
   @NonNull

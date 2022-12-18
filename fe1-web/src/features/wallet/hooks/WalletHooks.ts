@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
+import { Hash } from 'core/objects';
 
 import { WalletReactContext, WALLET_FEATURE_IDENTIFIER } from '../interface';
 
@@ -20,31 +21,31 @@ export namespace WalletHooks {
   export const useWalletItemGenerators = () => useWalletContext().walletItemGenerators;
 
   /**
-   * Gets the current lao id
+   * Gets the current lao id, throws error if there is none
    */
   export const useCurrentLaoId = () => useWalletContext().useCurrentLaoId();
 
   /**
-   * Gets all lao ids
+   * Gets the current lao, throws error if there is none
    */
-  export const useLaoIds = () => useWalletContext().useLaoIds();
+  export const useCurrentLao = () => useWalletContext().useCurrentLao();
+
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  export const useConnectedToLao = () => useWalletContext().useConnectedToLao();
 
   /**
    * Gets a map from rollCall ids to rollCall instances for a given lao id
    */
-  export const useRollCallsByLaoId = (laoId: string) =>
-    useWalletContext().useRollCallsByLaoId(laoId);
+  export const useRollCallsByLaoId = (laoId: Hash) => useWalletContext().useRollCallsByLaoId(laoId);
 
   /**
    * Gets the function for obtain roll call tokens by lao id
    */
-  export const useRollCallTokensByLaoId = (laoId: string) =>
+  export const useRollCallTokensByLaoId = (laoId: Hash) =>
     useWalletContext().useRollCallTokensByLaoId(laoId);
-
-  /**
-   * Gets a map from laoIds to names
-   */
-  export const useNamesByLaoId = () => useWalletContext().useNamesByLaoId();
 
   /**
    * Gets the list of wallet navigation screens

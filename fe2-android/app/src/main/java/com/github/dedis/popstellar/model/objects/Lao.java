@@ -36,16 +36,14 @@ public final class Lao implements Copyable<Lao> {
 
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
-  private Map<MessageID, Chirp> allChirps;
-  private Map<PublicKey, List<MessageID>> chirpsByUser;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
   // Some useful map for the digital cash
   private Map<String, PublicKey> pubKeyByHash;
   // Map for the history
-  private Map<PublicKey, List<TransactionObject>> transactionHistoryByUser;
+  private Map<PublicKey, Set<TransactionObject>> transactionHistoryByUser;
   // Map for the the public_key last transaction
-  private Map<PublicKey, List<TransactionObject>> transactionByUser;
+  private Map<PublicKey, Set<TransactionObject>> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -58,8 +56,6 @@ public final class Lao implements Copyable<Lao> {
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
-    this.allChirps = new HashMap<>();
-    this.chirpsByUser = new HashMap<>();
     this.keyToNode = new HashMap<>();
     this.messageIdToElectInstance = new HashMap<>();
     this.witnessMessages = new HashMap<>();
@@ -98,8 +94,6 @@ public final class Lao implements Copyable<Lao> {
     this.pendingUpdates = new HashSet<>(lao.pendingUpdates);
     this.rollCalls = Copyable.copy(lao.rollCalls);
     this.elections = Copyable.copy(lao.elections);
-    this.allChirps = Copyable.copy(lao.allChirps);
-    this.chirpsByUser = new HashMap<>(lao.chirpsByUser);
     // FIXME We need to keep the ElectInstance because the current consensus relies on references
     // (Gabriel Fleischer 11.08.22)
     this.messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
@@ -113,6 +107,7 @@ public final class Lao implements Copyable<Lao> {
     if (rollCall == null) {
       throw new IllegalArgumentException("The roll call is null");
     }
+
     rollCalls.remove(prevId);
     rollCalls.put(rollCall.getId(), rollCall);
   }
@@ -165,24 +160,6 @@ public final class Lao implements Copyable<Lao> {
   }
 
   /**
-   * Update the list of chirps that have been sent in the lao. If the list of chirps contain one
-   * with Id prevId, it will remove it from the list then add the new chirp into it.
-   *
-   * @param prevId the previous id of a chirp
-   * @param chirp the chirp
-   */
-  public void updateChirpList(MessageID prevId, Chirp chirp) {
-    if (chirp == null) {
-      throw new IllegalArgumentException("The chirp is null");
-    }
-    allChirps.remove(prevId);
-    allChirps.put(chirp.getId(), chirp);
-
-    PublicKey user = chirp.getSender();
-    chirpsByUser.computeIfAbsent(user, key -> new ArrayList<>()).add(prevId);
-  }
-
-  /**
    * Function which update the transaction map public key by transaction hash on the list of the
    * roll call attendees Update pubKeyByHash, Initialize transactionByUser, transactionHistoryByUser
    *
@@ -229,19 +206,18 @@ public final class Lao implements Copyable<Lao> {
       if (transactionByUser.containsKey(current)
           && (transactionObject.isCoinBaseTransaction()
               || (transactionObject.isReceiver(current) && !transactionObject.isSender(current)))) {
-        transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
-        List<TransactionObject> list = new ArrayList<>(transactionByUser.get(current));
-        list.add(transactionObject);
-        transactionByUser.replace(current, list);
+        transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
+        Set<TransactionObject> set = new HashSet<>(transactionByUser.get(current));
+        set.add(transactionObject);
+        transactionByUser.replace(current, set);
       } else {
-        transactionByUser.put(current, Collections.singletonList(transactionObject));
+
+        transactionByUser.put(current, new HashSet<>(Collections.singleton(transactionObject)));
       }
 
       // Add the transaction in the history / for the sender and the receiver
-      transactionHistoryByUser.putIfAbsent(current, new ArrayList<>());
-      if (!transactionHistoryByUser.get(current).add(transactionObject)) {
-        throw new IllegalStateException("Problem occur by updating the transaction history");
-      }
+      transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
+      transactionHistoryByUser.get(current).add(transactionObject);
     }
     Log.d(TAG, "Transaction by history : " + transactionHistoryByUser.toString());
     Log.d(this.getClass().toString(), "Transaction by User : " + transactionByUser.toString());
@@ -273,10 +249,6 @@ public final class Lao implements Copyable<Lao> {
 
   public Optional<WitnessMessage> getWitnessMessage(MessageID id) {
     return Optional.ofNullable(witnessMessages.get(id));
-  }
-
-  public Optional<Chirp> getChirp(MessageID id) {
-    return Optional.ofNullable(allChirps.get(id));
   }
 
   /**
@@ -430,26 +402,16 @@ public final class Lao implements Copyable<Lao> {
     return witnessMessages;
   }
 
-  public List<Chirp> getChirpsInOrder() {
-    return allChirps.values().stream()
-        .sorted(Comparator.comparingLong(Chirp::getTimestamp).reversed())
-        .collect(Collectors.toList());
-  }
-
-  public Map<PublicKey, List<TransactionObject>> getTransactionHistoryByUser() {
+  public Map<PublicKey, Set<TransactionObject>> getTransactionHistoryByUser() {
     return transactionHistoryByUser;
   }
 
-  public Map<PublicKey, List<TransactionObject>> getTransactionByUser() {
+  public Map<PublicKey, Set<TransactionObject>> getTransactionByUser() {
     return transactionByUser;
   }
 
   public Map<String, PublicKey> getPubKeyByHash() {
     return pubKeyByHash;
-  }
-
-  public Map<MessageID, Chirp> getAllChirps() {
-    return allChirps;
   }
 
   public void setRollCalls(Map<String, RollCall> rollCalls) {

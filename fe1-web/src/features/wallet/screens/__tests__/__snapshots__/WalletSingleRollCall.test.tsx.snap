@@ -31,6 +31,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={3}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -284,6 +296,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -314,43 +327,53 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
-                              }
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={4}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
+                          }
+                        >
+                          <View>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
                               }
-                            }
-                          >
-                            myRollCall
-                          </Text>
-                        </View>
-                      </RCTScrollView>
+                            >
+                              You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
+                              }
+                            >
+                              myRollCall
+                            </Text>
+                          </View>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -395,6 +418,7 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -410,6 +434,7 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -425,7 +450,6 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -444,7 +468,6 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -475,6 +498,7 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -488,6 +512,7 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -502,7 +527,6 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -517,6 +541,7 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -543,7 +568,16 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -619,7 +653,6 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -630,6 +663,8 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={5}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -648,6 +683,7 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -678,43 +714,53 @@ exports[`WalletSingleHeaderRight renders correctly 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
-                              }
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={6}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
+                          }
+                        >
+                          <View>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
                               }
-                            }
-                          >
-                            myRollCall
-                          </Text>
-                        </View>
-                      </RCTScrollView>
+                            >
+                              You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
+                              }
+                            >
+                              myRollCall
+                            </Text>
+                          </View>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -759,6 +805,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -774,6 +821,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -789,7 +837,6 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -808,7 +855,6 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -839,6 +885,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -852,6 +899,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -866,7 +914,6 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -881,6 +928,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -907,7 +955,16 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -983,7 +1040,6 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -994,6 +1050,8 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -1012,6 +1070,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1042,43 +1101,53 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
-                              }
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={2}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "color": "#000",
-                                "fontSize": 20,
-                                "lineHeight": 26,
-                                "textAlign": "left",
+                          }
+                        >
+                          <View>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
                               }
-                            }
-                          >
-                            myRollCall
-                          </Text>
-                        </View>
-                      </RCTScrollView>
+                            >
+                              You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
+                            </Text>
+                            <Text
+                              style={
+                                Object {
+                                  "color": "#000",
+                                  "fontSize": 20,
+                                  "lineHeight": 26,
+                                  "textAlign": "left",
+                                }
+                              }
+                            >
+                              myRollCall
+                            </Text>
+                          </View>
+                        </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>

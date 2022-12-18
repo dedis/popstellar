@@ -1,15 +1,17 @@
 import { describe } from '@jest/globals';
+import { configureStore } from '@reduxjs/toolkit';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore, Store } from 'redux';
+import { combineReducers, Store } from 'redux';
 
-import { mockKeyPair, mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
+import { mockKeyPair, mockLao, serializedMockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
 import { encodeLaoConnectionForQRCode } from 'features/home/functions';
-import { LaoFeature, LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';
-import { setCurrentLao, laoReducer } from 'features/lao/reducer';
+import { NoCurrentLaoError } from 'features/lao/errors/NoCurrentLaoError';
+import { LAO_FEATURE_IDENTIFIER, LaoFeature, LaoReactContext } from 'features/lao/interface';
+import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import { LaoHooks } from '../LaoHooks';
 
@@ -30,15 +32,20 @@ const contextValue = {
 };
 
 // setup mock store
-const mockStore = createStore(combineReducers({ ...laoReducer, ...keyPairReducer }));
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+const mockStore = configureStore({
+  reducer: combineReducers({
+    ...laoReducer,
+    ...keyPairReducer,
+  }),
+});
+mockStore.dispatch(setCurrentLao(mockLao));
 
 // setup mock store
-const emptyMockStore = createStore(combineReducers(laoReducer));
+const emptyMockStore = configureStore({ reducer: combineReducers(laoReducer) });
 
 const wrapper =
   (store: Store) =>
-  ({ children }: { children: React.ReactChildren }) =>
+  ({ children }: { children: React.ReactNode }) =>
     (
       <Provider store={store}>
         <FeatureContext.Provider value={contextValue}>{children}</FeatureContext.Provider>
@@ -60,14 +67,41 @@ describe('LaoHooks', () => {
       const { result } = renderHook(() => LaoHooks.useCurrentLaoId(), {
         wrapper: wrapper(mockStore),
       });
-      expect(result.current?.valueOf()).toEqual(mockLaoId);
+      expect(result.current?.valueOf()).toEqual(serializedMockLaoId);
     });
 
-    it('should return the undefined if there is no current lao', () => {
+    it('should throw if there is no current lao', () => {
       const { result } = renderHook(() => LaoHooks.useCurrentLaoId(), {
         wrapper: wrapper(emptyMockStore),
       });
-      expect(result.current).toEqual(undefined);
+      expect(result.error).toBeInstanceOf(NoCurrentLaoError);
+    });
+  });
+
+  describe('useConnectedToLao', () => {
+    it('returns true if currently connected to a lao', () => {
+      const { result } = renderHook(() => LaoHooks.useConnectedToLao(), {
+        wrapper: wrapper(mockStore),
+      });
+      expect(result.current).toBeTrue();
+    });
+
+    it('returns false if in offline mode (there is a current lao but no connection to it)', () => {
+      // setup mock store
+      const offlineMockStore = configureStore({ reducer: combineReducers(laoReducer) });
+      offlineMockStore.dispatch(setCurrentLao(mockLao, false));
+
+      const { result } = renderHook(() => LaoHooks.useConnectedToLao(), {
+        wrapper: wrapper(offlineMockStore),
+      });
+      expect(result.current).toBeFalse();
+    });
+
+    it('returns undefined if there is no current lao', () => {
+      const { result } = renderHook(() => LaoHooks.useConnectedToLao(), {
+        wrapper: wrapper(emptyMockStore),
+      });
+      expect(result.current).toBeUndefined();
     });
   });
 
@@ -134,7 +168,7 @@ describe('LaoHooks', () => {
       const { result } = renderHook(() => LaoHooks.useLaoMap(), {
         wrapper: wrapper(mockStore),
       });
-      expect(result.current).toEqual({ [mockLaoId]: mockLao });
+      expect(result.current).toEqual({ [serializedMockLaoId]: mockLao });
     });
   });
 

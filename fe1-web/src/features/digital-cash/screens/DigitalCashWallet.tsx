@@ -1,12 +1,13 @@
-import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import { Hash } from 'core/objects';
 import { List, Typography } from 'core/styles';
@@ -19,14 +20,15 @@ import { makeBalancesSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_wallet>,
-  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  CompositeScreenProps<
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>,
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_wallet>
+  >
 >;
 
 const DigitalCashWallet = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
-  const route = useRoute<NavigationProps['route']>();
-
-  const { laoId } = route.params;
+  const laoId = DigitalCashHooks.useCurrentLaoId();
 
   const balances = useSelector(useMemo(() => makeBalancesSelector(laoId), [laoId]));
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
@@ -53,7 +55,6 @@ const DigitalCashWallet = () => {
             bottomDivider
             onPress={() => {
               navigation.navigate(STRINGS.navigation_wallet_digital_cash_send_receive, {
-                laoId,
                 isCoinbase: true,
               });
             }}>
@@ -84,7 +85,6 @@ const DigitalCashWallet = () => {
               bottomDivider
               onPress={() => {
                 navigation.navigate(STRINGS.navigation_wallet_digital_cash_send_receive, {
-                  laoId,
                   rollCallId: rollCallToken.rollCallId.valueOf(),
                   isCoinbase: false,
                 });

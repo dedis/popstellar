@@ -18,6 +18,8 @@ import { gray } from 'core/styles/color';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
+import { SocialHooks } from '../hooks';
+
 /**
  * Component that shows a user's profile picture, his public key and two buttons:
  * - Follow, which subscribes to the user's social channel.
@@ -69,6 +71,7 @@ type NavigationProps = CompositeScreenProps<
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const { laoId, publicKey } = props;
+  const isConnected = SocialHooks.useConnectedToLao();
 
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
@@ -104,7 +107,7 @@ const UserListItem = (props: IPropTypes) => {
         <Text style={styles.publicKeyText}>{publicKey.valueOf()}</Text>
         <View style={styles.buttonsView}>
           <View style={styles.buttonView}>
-            <PoPTextButton onPress={followUser} disabled={isFollowing}>
+            <PoPTextButton onPress={followUser} disabled={isFollowing || !isConnected}>
               {STRINGS.follow_button}
             </PoPTextButton>
           </View>

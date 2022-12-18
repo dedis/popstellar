@@ -1,11 +1,15 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.os.*;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -15,6 +19,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrcodeFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.*;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -22,11 +27,14 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 /** Fragment handling the QR code scanning */
@@ -41,8 +49,8 @@ public final class QRCodeScanningFragment extends Fragment {
 
   private CameraSource camera;
 
-  private QrcodeFragmentBinding mQrCodeFragBinding;
-  private QRCodeScanningViewModel mQRCodeScanningViewModel;
+  private QrcodeFragmentBinding binding;
+  private QRCodeScanningViewModel viewModel;
   private CameraPreview mPreview;
   private Integer nbAttendees = 0;
   private AlertDialog closeRollCallAlert;
@@ -57,7 +65,7 @@ public final class QRCodeScanningFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mQrCodeFragBinding = QrcodeFragmentBinding.inflate(inflater, container, false);
+    binding = QrcodeFragmentBinding.inflate(inflater, container, false);
     camera =
         cameraProvider.provide(
             getResources().getInteger(R.integer.camera_preview_width),
@@ -66,10 +74,11 @@ public final class QRCodeScanningFragment extends Fragment {
     FragmentActivity activity = getActivity();
 
     if (activity instanceof HomeActivity) {
-      mQRCodeScanningViewModel = HomeActivity.obtainViewModel(activity);
-
+      viewModel = HomeActivity.obtainViewModel(activity);
+      HomeViewModel homeViewModel = (HomeViewModel) viewModel;
+      homeViewModel.setPageTitle(R.string.join_lao_title);
     } else if (activity instanceof LaoDetailActivity) {
-      mQRCodeScanningViewModel = LaoDetailActivity.obtainViewModel(activity);
+      viewModel = LaoDetailActivity.obtainViewModel(activity);
 
       // Subscribe to "scan warning " event when the same QR code is scanned twice for example
       // It is used in the LaoDetailActivity whatever the scanning action is
@@ -78,21 +87,24 @@ public final class QRCodeScanningFragment extends Fragment {
     } else {
       throw new IllegalArgumentException("cannot obtain view model");
     }
+    binding.setScanningAction(viewModel.getScanningAction());
+    binding.manualAddConfirm.setOnClickListener(
+        view -> {
+          String data = binding.manualAddEditText.getText().toString();
+          boolean success = viewModel.addManually(data);
+          if (success) {
+            binding.manualAddEditText.getText().clear();
+          }
+        });
 
-    if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_ROLL_CALL_ATTENDEE);
-      mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.VISIBLE);
-      mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
-      mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
+    if (viewModel.getScanningAction() == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+      binding.addAttendeeTotalText.setVisibility(View.VISIBLE);
+      binding.addAttendeeNumberText.setVisibility(View.VISIBLE);
+      binding.addAttendeeConfirm.setVisibility(View.VISIBLE);
 
-      mQrCodeFragBinding.manualAddConfirm.setOnClickListener(
-          view -> {
-            String data = mQrCodeFragBinding.manualAddEditText.getText().toString();
-            boolean success = mQRCodeScanningViewModel.addManually(data);
-            if (success) {
-              mQrCodeFragBinding.manualAddEditText.getText().clear();
-            }
-          });
+      LaoDetailViewModel laoDetailViewModel = (LaoDetailViewModel) viewModel;
+      laoDetailViewModel.setPageTitle(getString(R.string.add_attendee_title));
+
       // Subscribe to " Nb of attendees"  event
       observeNbAttendeesEvent();
 
@@ -101,33 +113,54 @@ public final class QRCodeScanningFragment extends Fragment {
 
       // set up the listener for the button that closes the roll call
       setupCloseRollCallButton();
-    } else if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
-      mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_WITNESS);
-      // Subscribe to " Witness scan confirm " event
-      observeWitnessScanConfirmEvent();
-    } else if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_LAO_PARTICIPANT) {
-      mQrCodeFragBinding.manualAddConfirm.setOnClickListener(
-          view -> {
-            String data = mQrCodeFragBinding.manualAddEditText.getText().toString();
-            mQRCodeScanningViewModel.addManually(data);
-          });
-      mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_LAO_PARTICIPANT);
     }
 
-    mPreview = mQrCodeFragBinding.qrCameraPreview;
-    mQrCodeFragBinding.scanDescription.setText(mQRCodeScanningViewModel.getScanDescription());
-    mQrCodeFragBinding.setLifecycleOwner(activity);
+    if (viewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
+      LaoDetailViewModel laoDetailViewModel = (LaoDetailViewModel) viewModel;
+      laoDetailViewModel.setPageTitle(getString(R.string.add_witness_description));
+
+      // Subscribe to " Witness scan confirm " event
+      observeWitnessScanConfirmEvent();
+    }
+
+    mPreview = binding.qrCameraPreview;
+    binding.scanDescription.setText(viewModel.getScanDescription());
+    binding.setLifecycleOwner(activity);
     // TODO: consider removing coupling with QRFocusingProcessor
     barcodeDetector.setProcessor(
-        new QRFocusingProcessor(
-            barcodeDetector, BarcodeTracker.getInstance(mQRCodeScanningViewModel)));
-    return mQrCodeFragBinding.getRoot();
+        new QRFocusingProcessor(barcodeDetector, BarcodeTracker.getInstance(viewModel)));
+    setupAllowCameraButton();
+    return binding.getRoot();
   }
 
   @Override
   public void onResume() {
     super.onResume();
-    startCamera();
+    applyPermissionToView();
+  }
+
+  private void setupAllowCameraButton() {
+    // Create request permission launcher which will ask for permission
+    ActivityResultLauncher<String> requestPermissionLauncher =
+        registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            requireActivity().getActivityResultRegistry(),
+            isGranted -> applyPermissionToView() // This is the callback of the permission granter
+            );
+
+    // The button launch the build launcher when is it clicked
+    binding.allowCameraButton.setOnClickListener(
+        b -> requestPermissionLauncher.launch(Manifest.permission.CAMERA));
+  }
+
+  private void applyPermissionToView() {
+    if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PERMISSION_GRANTED) {
+      binding.cameraPermission.setVisibility(View.GONE);
+      startCamera();
+    } else {
+      // the camera permission is not granted, open the dedicated fragment
+      binding.cameraPermission.setVisibility(View.VISIBLE);
+    }
   }
 
   @Override
@@ -147,15 +180,16 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   private LaoDetailViewModel getLaoViewModel() {
-    return (LaoDetailViewModel) mQRCodeScanningViewModel;
+    return (LaoDetailViewModel) viewModel;
   }
 
   private void startCamera() throws SecurityException {
     // check that the device has play services available.
     int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(requireContext());
     if (code != ConnectionResult.SUCCESS) {
-      GoogleApiAvailability.getInstance()
-          .getErrorDialog(requireActivity(), code, HANDLE_GMS)
+      Objects.requireNonNull(
+              GoogleApiAvailability.getInstance()
+                  .getErrorDialog(requireActivity(), code, HANDLE_GMS))
           .show();
     }
     if (camera != null) {
@@ -169,7 +203,7 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   private void setupCloseRollCallButton() {
-    mQrCodeFragBinding.addAttendeeConfirm.setOnClickListener(clicked -> setupClickCloseListener());
+    binding.addAttendeeConfirm.setOnClickListener(clicked -> setupClickCloseListener());
   }
 
   private void setupClickCloseListener() {
@@ -200,24 +234,6 @@ public final class QRCodeScanningFragment extends Fragment {
     mPreview.stop();
     closeRollCallAlert = builder.create();
     closeRollCallAlert.show();
-  }
-
-  private void setupSuccessPopup(String msg) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-    builder.setTitle("Success");
-    builder.setMessage(msg);
-    builder.setOnDismissListener(dialog -> startCamera());
-    AlertDialog alert = builder.create();
-    mPreview.stop();
-    alert.show();
-    new Handler(Looper.myLooper())
-        .postDelayed(
-            () -> {
-              if (alert.isShowing()) {
-                alert.dismiss();
-              }
-            },
-            2000);
   }
 
   private void setupWarningPopup(String msg) {
@@ -256,7 +272,7 @@ public final class QRCodeScanningFragment extends Fragment {
             getViewLifecycleOwner(),
             attendees -> {
               nbAttendees = attendees;
-              mQrCodeFragBinding.addAttendeeNumberText.setText(nbAttendees.toString());
+              binding.addAttendeeNumberText.setText(nbAttendees.toString());
             });
   }
 
@@ -268,7 +284,9 @@ public final class QRCodeScanningFragment extends Fragment {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSuccessPopup("A new witness was added to the the Lao");
+                Toast.makeText(
+                        requireContext(), R.string.add_witness_successful, Toast.LENGTH_SHORT)
+                    .show();
               }
             });
   }
@@ -281,7 +299,9 @@ public final class QRCodeScanningFragment extends Fragment {
             stringEvent -> {
               String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSuccessPopup(event);
+                Toast.makeText(
+                        requireContext(), R.string.add_attendee_successful, Toast.LENGTH_SHORT)
+                    .show();
               }
             });
   }

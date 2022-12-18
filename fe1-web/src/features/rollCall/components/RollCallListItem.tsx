@@ -1,11 +1,12 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { FunctionComponent, useMemo } from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
 import { PoPIcon } from 'core/components';
+import { Hash, Timestamp } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -15,10 +16,18 @@ import { makeRollCallSelector } from '../reducer';
 
 const Subtitle = ({ rollCall }: { rollCall: RollCall }) => {
   if (rollCall.status === RollCallStatus.CREATED) {
+    if (Timestamp.EpochNow().before(rollCall.start)) {
+      return (
+        <>
+          {STRINGS.general_starting} <ReactTimeago live date={rollCall.start.toDate()} />,{' '}
+          {rollCall.location}
+        </>
+      );
+    }
+
     return (
       <>
-        {STRINGS.general_starting_at} <ReactTimeago date={rollCall.end.toDate()} />,{' '}
-        {rollCall.location}
+        {STRINGS.general_starting_now}, {rollCall.location}
       </>
     );
   }
@@ -31,9 +40,13 @@ const Subtitle = ({ rollCall }: { rollCall: RollCall }) => {
     );
   }
 
+  if (!rollCall.end) {
+    throw new Error('rollCall.end should always be defined for closed roll calls');
+  }
+
   return (
     <>
-      {STRINGS.general_closed} <ReactTimeago date={rollCall.end.toDate()} />
+      {STRINGS.general_closed} <ReactTimeago live date={rollCall.end.toDate()} />
     </>
   );
 };
@@ -41,7 +54,7 @@ const Subtitle = ({ rollCall }: { rollCall: RollCall }) => {
 const RollCallListItem = (props: IPropTypes) => {
   const { eventId: rollCallId } = props;
 
-  const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
+  const selectRollCall = useMemo(() => makeRollCallSelector(new Hash(rollCallId)), [rollCallId]);
   const rollCall = useSelector(selectRollCall);
 
   if (!rollCall) {
@@ -73,12 +86,12 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default RollCallListItem;
 
-export const RollCallEventType: RollCallInterface['eventTypes']['0'] = {
+export const RollCallEventType: RollCallInterface['eventTypes'][0] = {
   eventType: RollCall.EVENT_TYPE,
   eventName: STRINGS.roll_call_event_name,
   navigationNames: {
-    createEvent: STRINGS.navigation_lao_events_create_roll_call,
-    screenSingle: STRINGS.navigation_lao_events_view_single_roll_call,
+    createEvent: STRINGS.events_create_roll_call,
+    screenSingle: STRINGS.events_view_single_roll_call,
   },
   ListItemComponent: RollCallListItem as FunctionComponent<{
     eventId: string;

@@ -46,13 +46,16 @@ exports[`CheckBoxList renders correctly 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": false,
         }
       }
       accessible={true}
+      checkedIcon="dot-circle-o"
       collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
+      onBlur={[Function]}
       onClick={[Function]}
+      onFocus={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
       onResponderRelease={[Function]}
@@ -61,18 +64,16 @@ exports[`CheckBoxList renders correctly 1`] = `
       onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "backgroundColor": "#fafafa",
-          "borderColor": "#ededed",
-          "borderRadius": 3,
-          "borderWidth": 1,
+          "backgroundColor": "#ffffff",
+          "borderColor": "#ffffff",
           "margin": 5,
           "marginLeft": 10,
           "marginRight": 10,
-          "opacity": 1,
           "padding": 10,
         }
       }
       testID="checkBoxYes"
+      uncheckedIcon="circle-o"
     >
       <View
         style={
@@ -84,6 +85,7 @@ exports[`CheckBoxList renders correctly 1`] = `
       >
         <Text />
         <Text
+          accessibilityRole="text"
           style={
             Object {
               "color": "#43484d",
@@ -92,7 +94,7 @@ exports[`CheckBoxList renders correctly 1`] = `
               "marginRight": 10,
             }
           }
-          testID="checkboxTitle"
+          testID="RNE__CheckBox__Title"
         >
           Yes
         </Text>
@@ -103,13 +105,16 @@ exports[`CheckBoxList renders correctly 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": false,
         }
       }
       accessible={true}
+      checkedIcon="dot-circle-o"
       collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
+      onBlur={[Function]}
       onClick={[Function]}
+      onFocus={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
       onResponderRelease={[Function]}
@@ -118,18 +123,16 @@ exports[`CheckBoxList renders correctly 1`] = `
       onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "backgroundColor": "#fafafa",
-          "borderColor": "#ededed",
-          "borderRadius": 3,
-          "borderWidth": 1,
+          "backgroundColor": "#ffffff",
+          "borderColor": "#ffffff",
           "margin": 5,
           "marginLeft": 10,
           "marginRight": 10,
-          "opacity": 1,
           "padding": 10,
         }
       }
       testID="checkBox42"
+      uncheckedIcon="circle-o"
     >
       <View
         style={
@@ -141,6 +144,7 @@ exports[`CheckBoxList renders correctly 1`] = `
       >
         <Text />
         <Text
+          accessibilityRole="text"
           style={
             Object {
               "color": "#43484d",
@@ -149,7 +153,7 @@ exports[`CheckBoxList renders correctly 1`] = `
               "marginRight": 10,
             }
           }
-          testID="checkboxTitle"
+          testID="RNE__CheckBox__Title"
         >
           42
         </Text>
@@ -160,13 +164,16 @@ exports[`CheckBoxList renders correctly 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": false,
         }
       }
       accessible={true}
+      checkedIcon="dot-circle-o"
       collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
+      onBlur={[Function]}
       onClick={[Function]}
+      onFocus={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
       onResponderRelease={[Function]}
@@ -175,18 +182,16 @@ exports[`CheckBoxList renders correctly 1`] = `
       onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "backgroundColor": "#fafafa",
-          "borderColor": "#ededed",
-          "borderRadius": 3,
-          "borderWidth": 1,
+          "backgroundColor": "#ffffff",
+          "borderColor": "#ffffff",
           "margin": 5,
           "marginLeft": 10,
           "marginRight": 10,
-          "opacity": 1,
           "padding": 10,
         }
       }
       testID="checkBoxCats"
+      uncheckedIcon="circle-o"
     >
       <View
         style={
@@ -198,6 +203,7 @@ exports[`CheckBoxList renders correctly 1`] = `
       >
         <Text />
         <Text
+          accessibilityRole="text"
           style={
             Object {
               "color": "#43484d",
@@ -206,7 +212,7 @@ exports[`CheckBoxList renders correctly 1`] = `
               "marginRight": 10,
             }
           }
-          testID="checkboxTitle"
+          testID="RNE__CheckBox__Title"
         >
           Cats
         </Text>
@@ -262,13 +268,16 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": true,
         }
       }
       accessible={true}
+      checkedIcon="dot-circle-o"
       collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
+      onBlur={[Function]}
       onClick={[Function]}
+      onFocus={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
       onResponderRelease={[Function]}
@@ -277,18 +286,16 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "backgroundColor": "#fafafa",
-          "borderColor": "#ededed",
-          "borderRadius": 3,
-          "borderWidth": 1,
+          "backgroundColor": "#ffffff",
+          "borderColor": "#ffffff",
           "margin": 5,
           "marginLeft": 10,
           "marginRight": 10,
-          "opacity": 1,
           "padding": 10,
         }
       }
       testID="checkBoxYes"
+      uncheckedIcon="circle-o"
     >
       <View
         style={
@@ -300,6 +307,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       >
         <Text
           allowFontScaling={false}
+          selectable={false}
           style={
             Array [
               Object {
@@ -317,19 +325,21 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
               Object {},
             ]
           }
+          testID="RNE__Checkbox__Icon"
         >
           
         </Text>
         <Text
+          accessibilityRole="text"
           style={
             Object {
-              "color": "#43484d",
+              "color": "hsl(208, 8%, 63%)",
               "fontWeight": "bold",
               "marginLeft": 10,
               "marginRight": 10,
             }
           }
-          testID="checkboxTitle"
+          testID="RNE__CheckBox__Title"
         >
           Yes
         </Text>
@@ -340,13 +350,16 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": true,
         }
       }
       accessible={true}
+      checkedIcon="dot-circle-o"
       collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
+      onBlur={[Function]}
       onClick={[Function]}
+      onFocus={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
       onResponderRelease={[Function]}
@@ -355,18 +368,16 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "backgroundColor": "#fafafa",
-          "borderColor": "#ededed",
-          "borderRadius": 3,
-          "borderWidth": 1,
+          "backgroundColor": "#ffffff",
+          "borderColor": "#ffffff",
           "margin": 5,
           "marginLeft": 10,
           "marginRight": 10,
-          "opacity": 1,
           "padding": 10,
         }
       }
       testID="checkBox42"
+      uncheckedIcon="circle-o"
     >
       <View
         style={
@@ -378,6 +389,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       >
         <Text
           allowFontScaling={false}
+          selectable={false}
           style={
             Array [
               Object {
@@ -395,19 +407,21 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
               Object {},
             ]
           }
+          testID="RNE__Checkbox__Icon"
         >
           
         </Text>
         <Text
+          accessibilityRole="text"
           style={
             Object {
-              "color": "#43484d",
+              "color": "hsl(208, 8%, 63%)",
               "fontWeight": "bold",
               "marginLeft": 10,
               "marginRight": 10,
             }
           }
-          testID="checkboxTitle"
+          testID="RNE__CheckBox__Title"
         >
           42
         </Text>
@@ -418,13 +432,16 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       accessibilityState={
         Object {
           "checked": false,
+          "disabled": true,
         }
       }
       accessible={true}
+      checkedIcon="dot-circle-o"
       collapsable={false}
       focusable={true}
-      nativeID="animatedComponent"
+      onBlur={[Function]}
       onClick={[Function]}
+      onFocus={[Function]}
       onResponderGrant={[Function]}
       onResponderMove={[Function]}
       onResponderRelease={[Function]}
@@ -433,18 +450,16 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "backgroundColor": "#fafafa",
-          "borderColor": "#ededed",
-          "borderRadius": 3,
-          "borderWidth": 1,
+          "backgroundColor": "#ffffff",
+          "borderColor": "#ffffff",
           "margin": 5,
           "marginLeft": 10,
           "marginRight": 10,
-          "opacity": 1,
           "padding": 10,
         }
       }
       testID="checkBoxCats"
+      uncheckedIcon="circle-o"
     >
       <View
         style={
@@ -456,6 +471,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       >
         <Text
           allowFontScaling={false}
+          selectable={false}
           style={
             Array [
               Object {
@@ -473,19 +489,21 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
               Object {},
             ]
           }
+          testID="RNE__Checkbox__Icon"
         >
           
         </Text>
         <Text
+          accessibilityRole="text"
           style={
             Object {
-              "color": "#43484d",
+              "color": "hsl(208, 8%, 63%)",
               "fontWeight": "bold",
               "marginLeft": 10,
               "marginRight": 10,
             }
           }
-          testID="checkboxTitle"
+          testID="RNE__CheckBox__Title"
         >
           Cats
         </Text>

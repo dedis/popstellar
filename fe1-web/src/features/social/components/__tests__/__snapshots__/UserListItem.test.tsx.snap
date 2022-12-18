@@ -75,21 +75,19 @@ exports[`UserListItem renders correctly 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={5}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "marginBottom": 16,
-              }
-            }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -102,7 +100,7 @@ exports[`UserListItem renders correctly 1`] = `
                     Object {
                       "backgroundColor": "#3742fa",
                       "borderColor": "#3742fa",
-                      "borderRadius": 16,
+                      "borderRadius": 8,
                       "borderWidth": 1,
                       "padding": 8,
                     },
@@ -162,21 +160,19 @@ exports[`UserListItem renders correctly 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={6}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "marginBottom": 16,
-              }
-            }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "opacity": 1,
@@ -189,7 +185,7 @@ exports[`UserListItem renders correctly 1`] = `
                     Object {
                       "backgroundColor": "#3742fa",
                       "borderColor": "#3742fa",
-                      "borderRadius": 16,
+                      "borderRadius": 8,
                       "borderWidth": 1,
                       "padding": 8,
                     },
@@ -305,19 +301,19 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={7}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "marginBottom": 16,
-              }
-            }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
+              collapsable={false}
               style={
                 Object {
                   "opacity": 1,
@@ -330,7 +326,7 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
                     Object {
                       "backgroundColor": "#3742fa",
                       "borderColor": "#3742fa",
-                      "borderRadius": 16,
+                      "borderRadius": 8,
                       "borderWidth": 1,
                       "padding": 8,
                     },
@@ -394,19 +390,19 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
+            exclusive={true}
+            handlerTag={8}
+            handlerType="NativeViewGestureHandler"
             onGestureEvent={[Function]}
             onGestureHandlerEvent={[Function]}
             onGestureHandlerStateChange={[Function]}
             onHandlerStateChange={[Function]}
             rippleColor={0}
-            style={
-              Object {
-                "marginBottom": 16,
-              }
-            }
+            touchSoundDisabled={false}
           >
             <View
               accessible={true}
+              collapsable={false}
               style={
                 Object {
                   "opacity": 1,
@@ -419,7 +415,7 @@ exports[`UserListItem renders correctly after clicking on follow 1`] = `
                     Object {
                       "backgroundColor": "#3742fa",
                       "borderColor": "#3742fa",
-                      "borderRadius": 16,
+                      "borderRadius": 8,
                       "borderWidth": 1,
                       "padding": 8,
                     },

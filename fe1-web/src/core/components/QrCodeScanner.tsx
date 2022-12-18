@@ -1,18 +1,11 @@
+import { BarCodeScanningResult, Camera, CameraType } from 'expo-camera';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
-import QrReader from 'react-qr-reader';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { getNavigator } from 'core/platform/Navigator';
 import { Border, Color, Icon, Spacing } from 'core/styles';
-import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
 
-// FIXME: Remove CSS imports in order to support native apps
-// At the time of writing expo-camera nor expo-barcode-scanner work in web builds
-// because they load an external dependency (jsQR) that somehow does not properly load
-// outside the examples expo provides
-import '../platform/web-styles/qr-code-scanner.css';
 import PoPIcon from './PoPIcon';
 import PoPTouchableOpacity from './PoPTouchableOpacity';
 
@@ -43,7 +36,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'column',
   },
-  flipButtonContainer: { ...QrCodeScannerUIElementContainer, alignSelf: 'flex-end' } as ViewStyle,
+  flipButtonContainer: {
+    ...QrCodeScannerUIElementContainer,
+    alignSelf: 'flex-end',
+  } as ViewStyle,
   flipButton: {
     alignSelf: 'flex-end',
     marginLeft: 'auto',
@@ -54,46 +50,94 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * Attention: react-camera currently has the problem that the onBarCodeScanned property is only set initially, i.e
+ * the function cannot be changed later meaning if we pass a function that references other variables, they will
+ * only have their proper values if they are mutated which in general should be avoided.
+ * (2022-12-05, Tyratox) Issue to track this: https://github.com/dedis/popstellar/issues/1306
+ */
 const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
-  const toast = useToast();
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
-  const [hasMultipleCameras, setHasMultipleCameras] = useState(false);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [cameraType, setCameraType] = useState<CameraType>(CameraType.back);
+  const [hasMultipleCameras, setHasMultipleCameras] = useState(true);
+  const [hasCamera, setHasCamera] = useState(true);
 
   useEffect(() => {
-    try {
-      getNavigator()
-        .mediaDevices.enumerateDevices()
-        .then((devices) => {
-          console.log(devices.filter((device) => device.kind === 'videoinput'));
-          if (devices.filter((device) => device.kind === 'videoinput').length > 1) {
-            setHasMultipleCameras(true);
-          }
-        })
-        .catch(console.error);
-    } catch (e) {
-      // the browser might not support this api
-    }
+    (async () => {
+      if (permission && !permission.granted) {
+        await requestPermission();
+      }
+    })();
+  }, [permission, requestPermission]);
+
+  useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      const isAvailable = await Camera.isAvailableAsync();
+      if (isMounted) {
+        setHasCamera(isAvailable);
+      } else {
+        return;
+      }
+      if (isAvailable) {
+        const types = await Camera.getAvailableCameraTypesAsync();
+        if (isMounted) {
+          setHasMultipleCameras(types.length > 1);
+        }
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const handleError = (err: string | Error) => {
-    console.error(err);
-    toast.show(err.toString(), {
-      type: 'danger',
-      placement: 'top',
-      duration: FOUR_SECONDS,
-    });
+  if (!hasCamera) {
+    return (
+      <View style={styles.container}>
+        <Text>{STRINGS.camera_unavailable}</Text>
+        <View style={styles.children}>{children}</View>
+      </View>
+    );
+  }
+
+  if (!permission) {
+    return (
+      <View style={styles.container}>
+        <Text>{STRINGS.requesting_camera_permissions}</Text>
+        <View style={styles.children}>{children}</View>
+      </View>
+    );
+  }
+
+  if (!permission.granted) {
+    return (
+      <View style={styles.container}>
+        <Text>{STRINGS.camera_permissions_denied}</Text>
+        <View style={styles.children}>{children}</View>
+      </View>
+    );
+  }
+
+  // Scan each code only once
+  let lastValue: string;
+  const onBarCodeScanned = (result: BarCodeScanningResult) => {
+    if (lastValue && lastValue === result.data) {
+      return;
+    }
+    handleScan(result.data);
+    lastValue = result.data;
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.camera}>
         {showCamera && (
-          <QrReader
-            delay={300}
-            onError={handleError}
-            onScan={handleScan}
-            facingMode={facingMode}
-            className="qr-code-scanner"
+          <Camera
+            barCodeScannerSettings={{
+              barCodeTypes: ['qr'],
+            }}
+            onBarCodeScanned={onBarCodeScanned}
+            type={cameraType}
           />
         )}
       </View>
@@ -105,7 +149,9 @@ const QrCodeScanner = ({ showCamera, children, handleScan }: IPropTypes) => {
               <PoPTouchableOpacity
                 style={styles.flipButton}
                 onPress={() => {
-                  setFacingMode(facingMode === 'user' ? 'environment' : 'user');
+                  setCameraType(
+                    cameraType === CameraType.back ? CameraType.front : CameraType.back,
+                  );
                 }}>
                 <PoPIcon name="cameraReverse" color={Color.accent} size={Icon.size} />
               </PoPTouchableOpacity>

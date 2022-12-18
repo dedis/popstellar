@@ -34,14 +34,11 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
   public static final String TAG = ElectionSetupFragment.class.getSimpleName();
 
-  private ElectionSetupFragmentBinding mSetupElectionFragBinding;
-
   // mandatory fields for submitting
   private EditText electionNameText;
-  private Button cancelButton;
   private Button submitButton;
   private ElectionSetupViewPagerAdapter viewPagerAdapter;
-  private LaoDetailViewModel mLaoDetailViewModel;
+  private LaoDetailViewModel viewModel;
 
   // For election version choice
   private ElectionVersion electionVersion;
@@ -79,7 +76,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           // On each change of election level information, we check that at least one question is
           // complete to know if submit is allowed
           submitButton.setEnabled(
-              isElectionLevelInputValid() && viewPagerAdapter.isAnInputValid().getValue());
+              isElectionLevelInputValid()
+                  && Boolean.TRUE.equals(viewPagerAdapter.isAnInputValid().getValue()));
         }
       };
 
@@ -94,39 +92,35 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
 
-    mSetupElectionFragBinding = ElectionSetupFragmentBinding.inflate(inflater, container, false);
+    ElectionSetupFragmentBinding binding =
+        ElectionSetupFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     // Set the view for the date and time
-    setDateAndTimeView(mSetupElectionFragBinding.getRoot());
+    setDateAndTimeView(binding.getRoot());
     // Make the textWatcher listen to changes in the start and end date/time
     addEndDateAndTimeListener(submitTextWatcher);
     addStartDateAndTimeListener(submitTextWatcher);
 
-    cancelButton = mSetupElectionFragBinding.electionCancelButton;
-    submitButton = mSetupElectionFragBinding.electionSubmitButton;
-    electionNameText = mSetupElectionFragBinding.electionSetupName;
+    submitButton = binding.electionSubmitButton;
+    electionNameText = binding.electionSetupName;
 
     // Add text watchers on the fields that need to be filled
     electionNameText.addTextChangedListener(submitTextWatcher);
 
-    // Set the text widget in layout to current LAO name
-    TextView laoNameTextView = mSetupElectionFragBinding.electionSetupLaoName;
-    laoNameTextView.setText(mLaoDetailViewModel.getCurrentLaoName().getValue());
-
     // Set viewPager adapter
-    viewPagerAdapter = new ElectionSetupViewPagerAdapter(mLaoDetailViewModel);
+    viewPagerAdapter = new ElectionSetupViewPagerAdapter(viewModel);
 
     // Set ViewPager
-    ViewPager2 viewPager2 = mSetupElectionFragBinding.electionSetupViewPager2;
+    ViewPager2 viewPager2 = binding.electionSetupViewPager2;
     viewPager2.setAdapter(viewPagerAdapter);
 
     // Sets animation on swipe
     viewPager2.setPageTransformer(new ZoomOutTransformer());
 
     // This sets the indicator of which page we are on
-    CircleIndicator3 circleIndicator = mSetupElectionFragBinding.electionSetupSwipeIndicator;
+    CircleIndicator3 circleIndicator = binding.electionSetupSwipeIndicator;
     circleIndicator.setViewPager(viewPager2);
 
     // This observes if at least one of the question has the minimal information
@@ -136,7 +130,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
             getViewLifecycleOwner(),
             aBoolean -> submitButton.setEnabled(aBoolean && isElectionLevelInputValid()));
 
-    Button addQuestion = mSetupElectionFragBinding.addQuestion;
+    Button addQuestion = binding.addQuestion;
     addQuestion.setOnClickListener(
         v -> {
           addQuestion.setEnabled(false);
@@ -157,7 +151,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
     // Create a listener that updates the user's choice for election (by default it's OPEN_BALLOT)
     // Then it set's up the spinner
-    Spinner versionSpinner = mSetupElectionFragBinding.electionSetupModeSpinner;
+    Spinner versionSpinner = binding.electionSetupModeSpinner;
     OnItemSelectedListener listener =
         new OnItemSelectedListener() {
           @Override
@@ -176,17 +170,21 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
         };
     setUpElectionVersionSpinner(versionSpinner, listener);
 
-    mSetupElectionFragBinding.setLifecycleOwner(getActivity());
+    binding.setLifecycleOwner(getActivity());
 
-    return mSetupElectionFragBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-
-    setupElectionCancelButton();
     setupElectionSubmitButton();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(getString(R.string.election_setup_title));
   }
 
   /** Setups the submit button that creates the new election */
@@ -249,8 +247,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   questionsFiltered,
                   ballotsOptionsFiltered));
 
-          mLaoDetailViewModel.addDisposable(
-              mLaoDetailViewModel
+          viewModel.addDisposable(
+              viewModel
                   .createNewElection(
                       electionVersion,
                       electionName,
@@ -271,12 +269,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                           ErrorUtils.logAndShow(
                               requireContext(), TAG, error, R.string.error_create_election)));
         });
-  }
-
-  /** Setups the cancel button, that brings back to LAO detail page */
-  private void setupElectionCancelButton() {
-    cancelButton = mSetupElectionFragBinding.electionCancelButton;
-    cancelButton.setOnClickListener(v -> mLaoDetailViewModel.setCurrentTab(LaoTab.EVENTS));
   }
 
   /**

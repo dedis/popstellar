@@ -1,12 +1,13 @@
 import { publicComponents } from './components';
 import * as functions from './functions';
 import {
+  EVENT_FEATURE_IDENTIFIER,
   EventCompositionConfiguration,
   EventCompositionInterface,
   EventInterface,
-  EVENT_FEATURE_IDENTIFIER,
 } from './interface';
-import { eventReducer, addEvent, updateEvent, removeEvent, clearAllEvents } from './reducer';
+import { addEvent, clearAllEvents, eventReducer, removeEvent, updateEvent } from './reducer';
+import { UpcomingEventsScreen } from './screens/UpcomingEvents';
 
 /**
  * Configures the events feature
@@ -16,6 +17,7 @@ export function configure(): EventInterface {
     identifier: EVENT_FEATURE_IDENTIFIER,
     functions,
     components: publicComponents,
+    laoEventScreens: [UpcomingEventsScreen],
     actionCreators: {
       addEvent,
       updateEvent,
@@ -32,7 +34,7 @@ export function compose(config: EventCompositionConfiguration): EventComposition
   return {
     identifier: EVENT_FEATURE_IDENTIFIER,
     context: {
-      useAssertCurrentLaoId: config.useAssertCurrentLaoId,
+      useCurrentLaoId: config.useCurrentLaoId,
       useIsLaoOrganizer: config.useIsLaoOrganizer,
       eventTypes: config.eventTypes,
     },

@@ -3,7 +3,7 @@ import { Store } from 'redux';
 import { getNetworkManager } from 'core/network';
 import { getMessagesState } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
-import { Hash, PublicKey, WitnessSignatureState } from 'core/objects';
+import { Hash, PublicKey, WitnessSignature, WitnessSignatureState } from 'core/objects';
 import { dispatch } from 'core/redux';
 
 import { LaoServer } from '../objects/LaoServer';
@@ -22,7 +22,7 @@ import { GreetLao } from './messages/GreetLao';
  * @param greetLaoMsg The GreetLao data of the greeting message
  * @param publicKey The public key of the message's sender, i.e. the public key of the backend
  */
-export const storeBackendAndConnectToPeers = (
+export const storeBackendAndConnectToPeers = async (
   messageId: Hash,
   greetLaoMsg: GreetLao,
   publicKey: PublicKey,
@@ -34,7 +34,7 @@ export const storeBackendAndConnectToPeers = (
         address: greetLaoMsg.address,
         serverPublicKey: publicKey,
         frontendPublicKey: greetLaoMsg.frontend,
-      }).toState(),
+      }),
     ),
   );
 
@@ -48,16 +48,28 @@ export const storeBackendAndConnectToPeers = (
   // address, otherwise a client will connect to the same server twice (e.g. using its IP and then
   // then using the canonical domain address)
   const networkManager = getNetworkManager();
-  for (const peerAddress of greetLaoMsg.peers) {
-    networkManager.connect(peerAddress.address);
-  }
 
-  // mark the lao#greet message as handled
-  dispatch(
-    handleGreetLaoMessage({
-      messageId: messageId.valueOf(),
-    }),
-  );
+  try {
+    await Promise.all(
+      greetLaoMsg.peers.map((peerAddress) => networkManager.connect(peerAddress.address)),
+    );
+
+    // mark the lao#greet message as handled
+    dispatch(
+      handleGreetLaoMessage({
+        messageId: messageId.valueOf(),
+      }),
+    );
+  } catch {
+    // here we can actually ignore errors for now since
+    // this only applies to peers which are not implemented at the moment
+    // anyway. In the future we might need to show the user an indication
+    // of the fact that it was not possible to connect to (all) peers
+    console.warn(
+      `Tried connecting to peers ${greetLaoMsg.peers.join(', ')} but some connection failed.
+      This case is currently ignored and should be handled properly.`,
+    );
+  }
 };
 
 /**
@@ -101,7 +113,7 @@ export const makeLaoGreetStoreWatcher = (
       // check whether the signatures are different from the ones retrieved the last time
       if (signaturesByMessageId[messageId] !== previousSignaturesByMessageId[messageId]) {
         // if it is different, check if the lao organizer's key signed it
-        const signatures = signaturesByMessageId[messageId];
+        const signatures = signaturesByMessageId[messageId].map(WitnessSignature.fromState);
 
         // for this, retrieve the message from the store
         if (!(messageId in messageState.byId)) {
@@ -118,14 +130,10 @@ export const makeLaoGreetStoreWatcher = (
             `The message with id ${messageId} was received from lao with id ${laoId} but this lao is not stored in the lao reducer`,
           );
         }
-        const organizerFrontendPublicKey = laoState.byId[laoId].organizer;
+        const organizerFrontendPublicKey = new PublicKey(laoState.byId[laoId].organizer);
 
         // check if the *new* set of signatures includes that of the organizer
-        if (
-          signatures.find(
-            (signature) => signature.witness.valueOf() === organizerFrontendPublicKey.valueOf(),
-          )
-        ) {
+        if (signatures.find((signature) => signature.witness.equals(organizerFrontendPublicKey))) {
           // if it does, call the callback
           laoGreetSignatureHandler(
             greetLaoMessage.message_id,

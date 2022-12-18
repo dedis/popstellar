@@ -1,21 +1,21 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
-import { LaoHooks } from 'features/lao/hooks';
-import { setCurrentLao, laoReducer } from 'features/lao/reducer';
+import { HOME_FEATURE_IDENTIFIER, HomeReactContext } from 'features/home/interface';
+import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import ConnectNavigation from '../ConnectNavigation';
 
 const contextValue = {
   [HOME_FEATURE_IDENTIFIER]: {
     addLaoServerAddress: () => mockReduxAction,
-    useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    useConnectedToLao: () => true,
     getLaoChannel: () => mockChannel,
     requestCreateLao: () => Promise.resolve(mockChannel),
     connectToTestLao: () => {},
@@ -25,11 +25,12 @@ const contextValue = {
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao: () => Promise.resolve(),
+    forgetSeed: () => {},
   } as HomeReactContext,
 };
 
-const mockStore = createStore(combineReducers(laoReducer));
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
+mockStore.dispatch(setCurrentLao(mockLao));
 
 describe('ConnectNavigation', () => {
   it('renders correctly', () => {

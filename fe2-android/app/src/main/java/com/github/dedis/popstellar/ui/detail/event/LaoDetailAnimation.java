@@ -18,9 +18,8 @@ public class LaoDetailAnimation {
     return rotate;
   }
 
-  public static boolean rotateExpand(final View view, boolean rotate) {
+  public static void rotateExpand(final View view, boolean rotate) {
     view.animate().setDuration(300).rotation(rotate ? 180f : 0f);
-    return rotate;
   }
 
   public static void showIn(final View v) {
@@ -88,6 +87,7 @@ public class LaoDetailAnimation {
       @Override
       public void onAnimationEnd(Animation animation) {
         v.setAlpha(to);
+        v.setVisibility(to == 1.0f ? View.VISIBLE : View.GONE);
       }
 
       @Override

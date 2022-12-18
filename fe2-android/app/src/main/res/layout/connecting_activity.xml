@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.constraintlayout.widget.ConstraintLayout
   android:id="@+id/fragment_container_connecting"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
@@ -37,17 +38,17 @@
     </RelativeLayout>
 
     <TextView
-      android:id="@+id/connecting_lao"
-      style="@style/explication_welcome_style"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content" />
-
-    <TextView
       android:id="@+id/connecting_text"
       style="@style/explication_welcome_style"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:text="@string/connecting" />
 
+    <TextView
+      android:id="@+id/connecting_lao"
+      style="@style/explication_welcome_style"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
   </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
+  </layout>

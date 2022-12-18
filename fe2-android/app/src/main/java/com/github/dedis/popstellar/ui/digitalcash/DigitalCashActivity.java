@@ -4,15 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.databinding.DigitalCashMainActivityBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
@@ -20,6 +19,8 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
+import java.security.GeneralSecurityException;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -28,17 +29,32 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
   private DigitalCashViewModel viewModel;
+  private DigitalCashMainActivityBinding binding;
   public static final String TAG = DigitalCashActivity.class.getSimpleName();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.digital_cash_main_activity);
+    binding = DigitalCashMainActivityBinding.inflate(getLayoutInflater());
+    setContentView(binding.getRoot());
     navigationViewModel = viewModel = obtainViewModel(this);
     setupNavigationBar(findViewById(R.id.digital_cash_nav_bar));
-    setupBackButton();
+    setupTopAppBar();
 
     loadIntentData();
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+
+    try {
+      viewModel.savePersistentData();
+    } catch (GeneralSecurityException e) {
+      // We do not display the security error to the user
+      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
+    }
   }
 
   public void loadIntentData() {
@@ -52,30 +68,8 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
 
   public void openLao() {
     startActivity(
-        LaoDetailActivity.newIntentForLao(this, viewModel.getCurrentLao().getValue().getId()));
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
-    if (menuItem.getItemId() == android.R.id.home) {
-      Fragment fragment =
-          getSupportFragmentManager().findFragmentById(R.id.fragment_container_digital_cash);
-      if (fragment instanceof DigitalCashHomeFragment) {
-        openLao();
-      } else {
-        viewModel.setCurrentTab(DigitalCashTab.HOME);
-      }
-      return true;
-    }
-    return super.onOptionsItemSelected(menuItem);
-  }
-
-  private void setupBackButton() {
-    ActionBar actionBar = getSupportActionBar();
-    if (actionBar != null) {
-      actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow);
-      actionBar.setDisplayHomeAsUpEnabled(true);
-    }
+        LaoDetailActivity.newIntentForLao(
+            this, Objects.requireNonNull(viewModel.getCurrentLao().getValue()).getId()));
   }
 
   public static DigitalCashViewModel obtainViewModel(FragmentActivity activity) {
@@ -144,7 +138,8 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
   }
 
   private boolean openIssueTab() {
-    PublicKey organizerKey = viewModel.getCurrentLao().getValue().getOrganizer();
+    PublicKey organizerKey =
+        Objects.requireNonNull(viewModel.getCurrentLao().getValue()).getOrganizer();
     PublicKey myKey = viewModel.getKeyManager().getMainPublicKey();
 
     if (!myKey.equals(organizerKey)) {
@@ -156,7 +151,24 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
         getSupportFragmentManager(),
         R.id.fragment_digital_cash_issue,
         DigitalCashIssueFragment::newInstance);
+    viewModel.setPageTitle(R.string.digital_cash_issue);
+
     return true;
+  }
+
+  private void setupTopAppBar() {
+    viewModel.getPageTitle().observe(this, binding.digitalCashAppBar::setTitle);
+
+    binding.digitalCashAppBar.setNavigationOnClickListener(
+        v -> {
+          Fragment fragment =
+              getSupportFragmentManager().findFragmentById(R.id.fragment_container_digital_cash);
+          if (fragment instanceof DigitalCashHomeFragment) {
+            openLao();
+          } else {
+            viewModel.setCurrentTab(DigitalCashTab.HOME);
+          }
+        });
   }
 
   public static Intent newIntent(Context ctx, String laoId) {

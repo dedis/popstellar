@@ -1,14 +1,9 @@
-import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { PoPTextButton } from 'core/components';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { getNetworkManager } from 'core/network';
-import { Typography } from 'core/styles';
+import { QRCode } from 'core/components';
+import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
@@ -26,25 +21,32 @@ const getUserRole = (isOrganizer: boolean, isWitness: boolean): string => {
   return STRINGS.user_role_attendee;
 };
 
-type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_home>,
-  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
->;
+const styles = StyleSheet.create({
+  qrcodeContainer: {
+    marginVertical: Spacing.x05,
+  },
+});
 
 const LaoProperties = () => {
   const lao = LaoHooks.useCurrentLao();
-
-  const navigation = useNavigation<NavigationProps['navigation']>();
+  const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
 
   const isOrganizer = useSelector(selectIsLaoOrganizer);
   const isWitness = useSelector(selectIsLaoWitness);
 
   return (
     <View>
+      <View style={styles.qrcodeContainer}>
+        <QRCode
+          value={encodeLaoConnection(lao.server_addresses, lao.id)}
+          overlayText={STRINGS.lao_qr_code_overlay}
+        />
+      </View>
+
       <Text style={Typography.paragraph}>
-        <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_id}</Text>
+        <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_name}</Text>
         {'\n'}
-        <Text>{lao.id}</Text>
+        <Text selectable>{lao.name}</Text>
       </Text>
 
       <Text style={Typography.paragraph}>
@@ -60,23 +62,14 @@ const LaoProperties = () => {
           {STRINGS.lao_properties_current_connections}
         </Text>
         {'\n'}
-        <Text>{lao.server_addresses.join(', ')}</Text>
+        <Text selectable>{lao.server_addresses.join(', ')}</Text>
       </Text>
 
-      <PoPTextButton onPress={() => navigation.navigate(STRINGS.navigation_app_connect)}>
-        {STRINGS.lao_properties_add_additional_connection}
-      </PoPTextButton>
-
-      <PoPTextButton
-        onPress={() => {
-          getNetworkManager().disconnectFromAll();
-
-          navigation.navigate(STRINGS.navigation_app_home, {
-            screen: STRINGS.navigation_home_home,
-          });
-        }}>
-        {STRINGS.lao_properties_disconnect}
-      </PoPTextButton>
+      <Text style={Typography.paragraph}>
+        <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_id}</Text>
+        {'\n'}
+        <Text selectable>{lao.id}</Text>
+      </Text>
     </View>
   );
 };

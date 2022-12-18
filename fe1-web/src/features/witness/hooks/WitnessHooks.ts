@@ -19,7 +19,13 @@ export namespace WitnessHooks {
   /**
    * A hook returning the current lao id or throws an error of there is none
    */
-  export const useAssertCurrentLaoId = () => useWitnessContext().useAssertCurrentLaoId();
+  export const useCurrentLaoId = () => useWitnessContext().useCurrentLaoId();
+
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  export const useConnectedToLao = () => useWitnessContext().useConnectedToLao();
 
   /**
    * Gets discard notifications action creator

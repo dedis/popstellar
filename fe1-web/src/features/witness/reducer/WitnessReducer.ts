@@ -5,6 +5,8 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 
+import { Hash } from 'core/objects';
+
 export const WITNESS_REDUCER_PATH = 'witness';
 
 export interface MessagesToWitnessReducerState {
@@ -20,31 +22,48 @@ const messagesToWitnessSlice = createSlice({
   initialState,
   reducers: {
     // Action called when a message has been witnessed
-    addMessageToWitness: (
-      state: Draft<MessagesToWitnessReducerState>,
-      action: PayloadAction<{ messageId: string }>,
-    ) => {
-      const { messageId } = action.payload;
+    addMessageToWitness: {
+      prepare(messageId: Hash) {
+        return {
+          payload: {
+            messageId: messageId.valueOf(),
+          },
+        };
+      },
+      reducer: (
+        state: Draft<MessagesToWitnessReducerState>,
+        action: PayloadAction<{ messageId: string }>,
+      ) => {
+        const { messageId } = action.payload;
 
-      if (!state.allIds.includes(messageId)) {
-        state.allIds.push(messageId);
-      }
+        if (!state.allIds.includes(messageId)) {
+          state.allIds.push(messageId);
+        }
+      },
     },
+    removeMessageToWitness: {
+      prepare(messageId: Hash) {
+        return {
+          payload: {
+            messageId: messageId.valueOf(),
+          },
+        };
+      },
+      reducer: (
+        state: Draft<MessagesToWitnessReducerState>,
+        action: PayloadAction<{ messageId: string }>,
+      ) => {
+        const { messageId } = action.payload;
 
-    removeMessageToWitness: (
-      state: Draft<MessagesToWitnessReducerState>,
-      action: PayloadAction<string>,
-    ) => {
-      const messageId = action.payload;
+        if (!state.allIds.includes(messageId)) {
+          console.warn(
+            `Tried to remove the message to witness with id ${messageId} but this message id has never been stored`,
+          );
+          return;
+        }
 
-      if (!state.allIds.includes(messageId)) {
-        console.warn(
-          `Tried to remove the message to witness with id ${messageId} but this message id has never been stored`,
-        );
-        return;
-      }
-
-      state.allIds = state.allIds.filter((id) => id !== messageId);
+        state.allIds = state.allIds.filter((id) => id !== messageId);
+      },
     },
   },
 });
@@ -60,10 +79,10 @@ export const getMessagesToWitnessState = (state: any): MessagesToWitnessReducerS
  * @param messageId The id of the message to retrieve
  * @param state The redux state
  */
-export const isMessageToWitness = (messageId: string, state: unknown): boolean => {
+export const isMessageToWitness = (messageId: Hash, state: unknown): boolean => {
   const { allIds } = getMessagesToWitnessState(state);
 
-  return allIds.includes(messageId);
+  return allIds.includes(messageId.valueOf());
 };
 
 export const witnessReduce = messagesToWitnessSlice.reducer;

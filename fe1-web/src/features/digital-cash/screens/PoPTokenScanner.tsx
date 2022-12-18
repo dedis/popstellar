@@ -9,6 +9,7 @@ import { PoPIcon } from 'core/components';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
+import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -29,14 +30,12 @@ type NavigationProps = CompositeScreenProps<
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
 >;
 
-const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
-
 const PoPTokenScanner = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
 
   // these parameters are required to navigate back to the digital cash wallet
-  const { laoId, rollCallId, isCoinbase } = route.params;
+  const { rollCallId, isCoinbase } = route.params;
 
   const toast = useToast();
 
@@ -63,7 +62,6 @@ const PoPTokenScanner = () => {
 
   const goBack = (popToken?: string) => {
     navigation.navigate(STRINGS.navigation_wallet_digital_cash_send_receive, {
-      laoId,
       rollCallId,
       isCoinbase,
       scannedPoPToken: popToken,
@@ -72,9 +70,10 @@ const PoPTokenScanner = () => {
 
   const onScanData = (popToken: string | null) => {
     if (popToken) {
-      if (tokenMatcher.test(popToken)) {
-        goBack(popToken);
-      } else {
+      try {
+        const token = ScannablePopToken.fromJson(JSON.parse(popToken));
+        goBack(token.pop_token);
+      } catch {
         toast.show(STRINGS.roll_call_invalid_token, {
           type: 'danger',
           placement: 'top',

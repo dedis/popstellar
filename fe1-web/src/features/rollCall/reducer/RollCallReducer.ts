@@ -73,7 +73,7 @@ const rollcallSlice = createSlice({
       }
     },
 
-    removeRollCall: (state, action: PayloadAction<Hash | string>) => {
+    removeRollCall: (state, action: PayloadAction<Hash>) => {
       const rollcallId = action.payload.valueOf();
 
       if (!(rollcallId in state.byId)) {
@@ -106,14 +106,14 @@ export default {
  * @param rollCallId The if of the rollcall / event to retrieve
  * @returns The selector
  */
-export const makeRollCallSelector = (rollCallId: Hash | string | undefined) => {
+export const makeRollCallSelector = (rollCallId?: Hash) => {
   const rollCallIdString = rollCallId?.valueOf() || 'undefined';
 
   return createSelector(
     // First input: map from ids to rollcalls
-    (state) => getRollCallState(state).byId,
+    (state: any) => getRollCallState(state).byId,
     // Second input: Alias for the given event id
-    (state) => getRollCallState(state).idAlias[rollCallIdString],
+    (state: any) => getRollCallState(state).idAlias[rollCallIdString],
     // Selector: returns the selected rollcall
     (
       rollcallById: Record<string, RollCallState>,
@@ -146,7 +146,7 @@ export const makeRollCallSelector = (rollCallId: Hash | string | undefined) => {
 export const makeRollCallByIdSelector = (rollCallIds: string[]) =>
   createSelector(
     // First input: map from ids to rollcalls
-    (state) => getRollCallState(state).byId,
+    (state: any) => getRollCallState(state).byId,
     // Selector: returns the selected rollcall
     (rollCallById: Record<string, RollCallState>): Record<string, RollCall> => {
       return (
@@ -171,7 +171,7 @@ export const makeRollCallByIdSelector = (rollCallIds: string[]) =>
  * @param state The redux state
  * @returns The constructed rollcall or undefined if the id is not found
  */
-export const getRollCallById = (rollCallId: Hash | string, state: unknown) => {
+export const getRollCallById = (rollCallId: Hash, state: unknown) => {
   const rollCallIdString = rollCallId.valueOf();
 
   const rollcallById = getRollCallState(state).byId;
@@ -199,12 +199,12 @@ export const getRollCallById = (rollCallId: Hash | string, state: unknown) => {
  *
  * @param rollCallId - The id of the roll call
  */
-export const makeRollCallAttendeesListSelector = (rollCallId: Hash | string | undefined) => {
+export const makeRollCallAttendeesListSelector = (rollCallId: Hash | undefined) => {
   const rollCallIdString = rollCallId?.valueOf();
 
   return createSelector(
     // First input: Get all events across all LAOs
-    (state) => getRollCallState(state),
+    (state: any) => getRollCallState(state),
     // Selector: returns a map of ids -> LaoEvents
     (eventMap: RollCallReducerState): PublicKey[] => {
       if (!rollCallIdString || !(rollCallIdString in eventMap.byId)) {

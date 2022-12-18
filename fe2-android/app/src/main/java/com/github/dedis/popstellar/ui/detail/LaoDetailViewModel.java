@@ -22,17 +22,21 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
+import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,6 +71,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
+  private final MutableLiveData<String> mPageTitle = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
@@ -156,7 +161,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     String firstLaoId = laoView.getId();
     try {
       PublicKey pk = wallet.generatePoPToken(firstLaoId, rollcall.getPersistentId()).getPublicKey();
-      return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
+      return rollcall.getAttendees().contains(pk) || Boolean.TRUE.equals(isOrganizer().getValue());
     } catch (KeyGenerationException | UninitializedWalletException e) {
       Log.e(TAG, "failed to retrieve public key from wallet", e);
       return false;
@@ -339,13 +344,19 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * @param title the title of the roll call
    * @param description the description of the roll call, can be empty
+   * @param location the location of the roll call
    * @param creation the creation time of the roll call
    * @param proposedStart the proposed start time of the roll call
    * @param proposedEnd the proposed end time of the roll call
    * @return A Single emitting the id of the created rollcall
    */
   public Single<String> createNewRollCall(
-      String title, String description, long creation, long proposedStart, long proposedEnd) {
+      String title,
+      String description,
+      String location,
+      long creation,
+      long proposedStart,
+      long proposedEnd) {
     Log.d(TAG, "creating a new roll call with title " + title);
 
     LaoView laoView;
@@ -356,10 +367,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       return Single.error(new UnknownLaoException());
     }
 
-    // FIXME Location : Lausanne ?
     CreateRollCall createRollCall =
         new CreateRollCall(
-            title, creation, proposedStart, proposedEnd, "Lausanne", description, laoView.getId());
+            title, creation, proposedStart, proposedEnd, location, description, laoView.getId());
 
     return networkManager
         .getMessageSender()
@@ -577,6 +587,14 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mCurrentLaoName;
   }
 
+  public MutableLiveData<String> getPageTitle() {
+    return mPageTitle;
+  }
+
+  public void setPageTitle(String title) {
+    mPageTitle.postValue(title);
+  }
+
   public LiveData<Boolean> isOrganizer() {
     return mIsOrganizer;
   }
@@ -662,7 +680,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public void setCurrentElectionQuestionVotes(Integer votes, int position) {
-    if (votes == null || position < 0 || position > mCurrentElectionVotes.getValue().size()) {
+    if (votes == null
+        || position < 0
+        || position > Objects.requireNonNull(mCurrentElectionVotes.getValue()).size()) {
       throw new IllegalArgumentException();
     }
     if (mCurrentElectionVotes.getValue().size() <= position) {
@@ -784,13 +804,18 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    handleAttendeeAddition(barcode.rawValue);
+    handleInputData(barcode.rawValue);
   }
 
   @Override
   public boolean addManually(String data) {
     Log.d(TAG, "Key manually submitted with value: " + data);
-    return handleAttendeeAddition(data);
+    return handleInputData(data);
+  }
+
+  public void savePersistentData() throws GeneralSecurityException {
+    ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
   }
 
   /**
@@ -799,34 +824,70 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param data the textual representation of the key
    * @return true if an attendee was added false otherwise
    */
-  private boolean handleAttendeeAddition(String data) {
-    PublicKey publicKey;
+  private boolean handleInputData(String data) {
+    Log.d(TAG, "data scanned " + data);
+    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
+      return handleRollCallAddition(data);
+    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
+      return handleWitnessAddition(data);
+    } else {
+      throw new IllegalStateException(
+          "The scanning action should either be to add witnesses or rc attendees");
+    }
+  }
+
+  public boolean handleRollCallAddition(String data) {
+    PopTokenData tokenData;
     try {
-      publicKey = new PublicKey(data);
-    } catch (IllegalArgumentException e) {
-      mScanWarningEvent.postValue(new SingleEvent<>("Invalid key format code. Please try again."));
+      tokenData = PopTokenData.extractFrom(gson, data);
+    } catch (Exception e) {
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(), TAG, R.string.qr_code_not_pop_token);
       return false;
     }
-    if (attendees.contains(publicKey) || witnesses.contains(publicKey)) {
+    PublicKey publicKey = tokenData.getPopToken();
+    if (attendees.contains(publicKey)) {
+      Log.d(TAG, "Attendee was already scanned");
       mScanWarningEvent.postValue(
           new SingleEvent<>("This attendee key has already been scanned. Please try again."));
       return false;
     }
-    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      attendees.add(publicKey);
-      mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
-      mNbAttendees.postValue(attendees.size());
-    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-      witnesses.add(publicKey);
-      mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
-      disposables.add(
-          updateLaoWitnesses()
-              .subscribe(
-                  () -> Log.d(TAG, "Witness " + publicKey + " added"),
-                  error ->
-                      ErrorUtils.logAndShow(
-                          getApplication(), TAG, error, R.string.error_update_lao)));
+
+    attendees.add(publicKey);
+    Log.d(TAG, "Attendee " + publicKey + " successfully added");
+    mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
+    mNbAttendees.postValue(attendees.size());
+    return true;
+  }
+
+  public boolean handleWitnessAddition(String data) {
+    MainPublicKeyData pkData;
+    try {
+      pkData = MainPublicKeyData.extractFrom(gson, data);
+    } catch (Exception e) {
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(), TAG, e, R.string.qr_code_not_main_pk);
+      return false;
     }
+    PublicKey publicKey = pkData.getPublicKey();
+    if (witnesses.contains(publicKey)) {
+      Log.d(TAG, "Witness was already scanned");
+      mScanWarningEvent.postValue(
+          new SingleEvent<>("This attendee key has already been scanned. Please try again."));
+      return false;
+    }
+
+    witnesses.add(publicKey);
+    Log.d(TAG, "Added witness " + publicKey + " successfully");
+    mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
+    disposables.add(
+        updateLaoWitnesses()
+            .subscribe(
+                () -> Log.d(TAG, "Witness " + publicKey + " added"),
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_update_lao)));
+
     return true;
   }
 

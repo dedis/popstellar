@@ -4,13 +4,13 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.testutils.*;
 import com.github.dedis.popstellar.ui.detail.event.EventListAdapter;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
+import java.security.GeneralSecurityException;
 import java.util.*;
 
 import dagger.hilt.android.testing.*;
@@ -27,6 +28,7 @@ import io.reactivex.subjects.BehaviorSubject;
 
 import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -39,6 +41,7 @@ public class EventListAdapterTest {
   private static final RollCall ROLL_CALL2 = new RollCall("54321");
 
   @BindValue @Mock LAORepository repository;
+  @BindValue @Mock Wallet wallet;
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -52,10 +55,28 @@ public class EventListAdapterTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws GeneralSecurityException, UnknownLaoException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
+          when(repository.getLaoView(any())).thenReturn(new LaoView(LAO));
+
+          when(wallet.exportSeed())
+              .thenReturn(
+                  new String[] {
+                    "jar",
+                    "together",
+                    "minor",
+                    "alley",
+                    "glow",
+                    "hybrid",
+                    "village",
+                    "creek",
+                    "meadow",
+                    "atom",
+                    "travel",
+                    "bracket"
+                  });
         }
       };
 

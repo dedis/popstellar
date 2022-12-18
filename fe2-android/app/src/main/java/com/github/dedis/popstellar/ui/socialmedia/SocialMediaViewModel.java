@@ -5,33 +5,37 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.*;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Chirp;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.SocialMediaRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import java.util.Collections;
-import java.util.List;
+import java.security.GeneralSecurityException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.BackpressureStrategy;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -48,35 +52,41 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    * LiveData objects for capturing events
    */
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
-  private final LiveData<List<String>> laoIdList;
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
+  private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
   /*
    * Dependencies for this class
    */
   private final LAORepository laoRepository;
+  private final SchedulerProvider schedulerProvider;
+  private final SocialMediaRepository socialMediaRepository;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
   private final CompositeDisposable disposables;
+  private final Wallet wallet;
 
   @Inject
   public SocialMediaViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      SchedulerProvider schedulerProvider,
+      SocialMediaRepository socialMediaRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
-      KeyManager keyManager) {
+      KeyManager keyManager,
+      Wallet wallet) {
     super(application);
     this.laoRepository = laoRepository;
+    this.schedulerProvider = schedulerProvider;
+    this.socialMediaRepository = socialMediaRepository;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
-    disposables = new CompositeDisposable();
+    this.wallet = wallet;
 
-    laoIdList =
-        LiveDataReactiveStreams.fromPublisher(
-            this.laoRepository.getAllLaoIds().toFlowable(BackpressureStrategy.BUFFER));
+    disposables = new CompositeDisposable();
   }
 
   @Override
@@ -92,12 +102,12 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     return mNumberCharsLeft;
   }
 
-  public LiveData<List<String>> getLaoIdList() {
-    return laoIdList;
-  }
-
   public LiveData<String> getLaoName() {
     return mLaoName;
+  }
+
+  public LiveData<Integer> getPageTitle() {
+    return mPageTitle;
   }
 
   /*
@@ -114,6 +124,10 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
 
   public void setLaoName(String laoName) {
     mLaoName.setValue(laoName);
+  }
+
+  public void setPageTitle(int titleId) {
+    mPageTitle.postValue(titleId);
   }
 
   /**
@@ -182,14 +196,33 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
             });
   }
 
-  public List<Chirp> getChirpList(String laoId) {
-    LaoView laoView;
-    try {
-      laoView = getLaoView(laoId);
-    } catch (UnknownLaoException e) {
-      return Collections.emptyList();
-    }
-    return laoView.getChirpsInOrder();
+  public Observable<List<Chirp>> getChirps() {
+    return socialMediaRepository
+        .getChirpsOfLao(laoId)
+        // Retrieve chirp subjects per id
+        .map(
+            ids -> {
+              List<Observable<Chirp>> chirps = new ArrayList<>(ids.size());
+              for (MessageID id : ids) {
+                chirps.add(socialMediaRepository.getChirp(laoId, id));
+              }
+              return chirps;
+            })
+        // Zip the subjects together to a sorted list
+        .flatMap(
+            observables ->
+                Observable.combineLatest(
+                    observables,
+                    chirps ->
+                        Arrays.stream(chirps)
+                            .map(Chirp.class::cast)
+                            .sorted(
+                                Comparator.comparing(
+                                    (Chirp chirp) -> chirp != null ? -chirp.getTimestamp() : 0))
+                            .collect(Collectors.toList())))
+        // We want to observe these changes on the main thread such that any modification done to
+        // the view are done on the thread. Otherwise, the app might crash
+        .observeOn(schedulerProvider.mainThread());
   }
 
   /**
@@ -216,6 +249,11 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
     }
+  }
+
+  public void savePersistentData() throws GeneralSecurityException {
+    ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
   }
 
   /**

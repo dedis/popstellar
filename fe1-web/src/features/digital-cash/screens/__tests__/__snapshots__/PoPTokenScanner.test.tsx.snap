@@ -31,6 +31,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={4}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -284,6 +296,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -367,21 +380,26 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                   style={
                                     Object {
                                       "backgroundColor": "#fff",
-                                      "borderRadius": 16,
+                                      "borderRadius": 8,
                                       "padding": 8,
                                     }
                                   }
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    exclusive={true}
+                                    handlerTag={5}
+                                    handlerType="NativeViewGestureHandler"
                                     onGestureEvent={[Function]}
                                     onGestureHandlerEvent={[Function]}
                                     onGestureHandlerStateChange={[Function]}
                                     onHandlerStateChange={[Function]}
                                     rippleColor={0}
+                                    touchSoundDisabled={false}
                                   >
                                     <View
                                       accessible={true}
+                                      collapsable={false}
                                       style={
                                         Object {
                                           "opacity": 1,
@@ -394,6 +412,68 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     </View>
                                   </RNGestureHandlerButton>
                                 </View>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={
+                              Object {
+                                "flexDirection": "column",
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "alignSelf": "flex-end",
+                                  "backgroundColor": "#fff",
+                                  "borderRadius": 8,
+                                  "padding": 8,
+                                }
+                              }
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
+                                <RNGestureHandlerButton
+                                  collapsable={false}
+                                  exclusive={true}
+                                  handlerTag={6}
+                                  handlerType="NativeViewGestureHandler"
+                                  onGestureEvent={[Function]}
+                                  onGestureHandlerEvent={[Function]}
+                                  onGestureHandlerStateChange={[Function]}
+                                  onHandlerStateChange={[Function]}
+                                  rippleColor={0}
+                                  touchSoundDisabled={false}
+                                >
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    style={
+                                      Object {
+                                        "alignSelf": "flex-end",
+                                        "marginLeft": "auto",
+                                        "opacity": 1,
+                                      }
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+                                    </View>
+                                  </View>
+                                </RNGestureHandlerButton>
                               </View>
                             </View>
                           </View>
@@ -443,6 +523,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -458,6 +539,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -473,7 +555,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -492,7 +573,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -523,6 +603,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -536,6 +617,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -550,7 +632,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -565,6 +646,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -591,7 +673,16 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -667,7 +758,6 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -678,6 +768,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -696,6 +788,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -779,21 +872,26 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   style={
                                     Object {
                                       "backgroundColor": "#fff",
-                                      "borderRadius": 16,
+                                      "borderRadius": 8,
                                       "padding": 8,
                                     }
                                   }
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    exclusive={true}
+                                    handlerTag={2}
+                                    handlerType="NativeViewGestureHandler"
                                     onGestureEvent={[Function]}
                                     onGestureHandlerEvent={[Function]}
                                     onGestureHandlerStateChange={[Function]}
                                     onHandlerStateChange={[Function]}
                                     rippleColor={0}
+                                    touchSoundDisabled={false}
                                   >
                                     <View
                                       accessible={true}
+                                      collapsable={false}
                                       style={
                                         Object {
                                           "opacity": 1,
@@ -806,6 +904,68 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     </View>
                                   </RNGestureHandlerButton>
                                 </View>
+                              </View>
+                            </View>
+                          </View>
+                          <View
+                            style={
+                              Object {
+                                "flexDirection": "column",
+                              }
+                            }
+                          >
+                            <View
+                              style={
+                                Object {
+                                  "alignSelf": "flex-end",
+                                  "backgroundColor": "#fff",
+                                  "borderRadius": 8,
+                                  "padding": 8,
+                                }
+                              }
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                focusable={true}
+                                onBlur={[Function]}
+                                onClick={[Function]}
+                                onFocus={[Function]}
+                                onResponderGrant={[Function]}
+                                onResponderMove={[Function]}
+                                onResponderRelease={[Function]}
+                                onResponderTerminate={[Function]}
+                                onResponderTerminationRequest={[Function]}
+                                onStartShouldSetResponder={[Function]}
+                              >
+                                <RNGestureHandlerButton
+                                  collapsable={false}
+                                  exclusive={true}
+                                  handlerTag={3}
+                                  handlerType="NativeViewGestureHandler"
+                                  onGestureEvent={[Function]}
+                                  onGestureHandlerEvent={[Function]}
+                                  onGestureHandlerStateChange={[Function]}
+                                  onHandlerStateChange={[Function]}
+                                  rippleColor={0}
+                                  touchSoundDisabled={false}
+                                >
+                                  <View
+                                    accessible={true}
+                                    collapsable={false}
+                                    style={
+                                      Object {
+                                        "alignSelf": "flex-end",
+                                        "marginLeft": "auto",
+                                        "opacity": 1,
+                                      }
+                                    }
+                                  >
+                                    <View>
+                                      {"name":"ios-camera-reverse","size":25,"color":"#3742fa"}
+                                    </View>
+                                  </View>
+                                </RNGestureHandlerButton>
                               </View>
                             </View>
                           </View>

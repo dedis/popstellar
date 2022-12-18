@@ -76,9 +76,9 @@ export const getUnhandledGreetLaoMessageIds = (state: any): string[] =>
  */
 export const selectUnhandledGreetLaoWitnessSignaturesByMessageId = createSelector(
   // First input: all unhandled lao greet message ids
-  (state) => getUnhandledGreetLaoMessageIds(state),
+  (state: any) => getUnhandledGreetLaoMessageIds(state),
   // Second input: the map of messageIds to the message state
-  (state) => getMessagesState(state)?.byId || {},
+  (state: any) => getMessagesState(state)?.byId || {},
   // Selector: returns a map from lao#greet message id to witness signature
   (
     messageIds: string[],

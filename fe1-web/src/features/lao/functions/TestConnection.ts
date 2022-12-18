@@ -8,8 +8,8 @@ import { dispatch } from 'core/redux';
 import { Lao } from '../objects';
 import { setCurrentLao } from '../reducer';
 
-export const openLaoTestConnection = () => {
-  const nc = getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
+export const openLaoTestConnection = async () => {
+  const nc = await getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
   nc.setRpcHandler(() => {
     console.info('Using custom test rpc handler: does nothing');
   });
@@ -18,13 +18,13 @@ export const openLaoTestConnection = () => {
   const time = new Timestamp(1609455600);
   const sampleLao: Lao = new Lao({
     name: 'name de la Lao',
-    id: new Hash('myLaoId'), // Hash.fromStringArray(org.toString(), time.toString(), 'name')
+    id: new Hash('myLaoId'), // Hash.fromArray(org, time, 'name')
     creation: time,
     last_modified: time,
     organizer: org,
     witnesses: [],
   });
 
-  dispatch(setCurrentLao(sampleLao.toState()));
+  dispatch(setCurrentLao(sampleLao));
   console.info('Stored test lao in storage : ', sampleLao);
 };

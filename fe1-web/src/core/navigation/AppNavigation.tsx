@@ -1,3 +1,4 @@
+import { createNavigationContainerRef } from '@react-navigation/core';
 import { createStackNavigator } from '@react-navigation/stack';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -6,8 +7,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import STRINGS from 'resources/strings';
 
+import { stackScreenOptionsWithoutHeader } from './ScreenOptions';
 import { AppParamList } from './typing/AppParamList';
 import { NavigationScreen } from './typing/Screen';
+
+// allows react-navigation to be used outside of react components
+export const navigationRef = createNavigationContainerRef<AppParamList>();
 
 /**
  * Define the App stack navigation
@@ -32,9 +37,7 @@ const AppNavigation = ({ screens }: IPropTypes) => {
     <SafeAreaView style={styles.view}>
       <Stack.Navigator
         initialRouteName={STRINGS.navigation_app_wallet_create_seed}
-        screenOptions={{
-          headerShown: false,
-        }}>
+        screenOptions={stackScreenOptionsWithoutHeader}>
         {entries}
       </Stack.Navigator>
     </SafeAreaView>

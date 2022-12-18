@@ -31,6 +31,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -284,6 +296,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -321,8 +334,8 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                               "backgroundColor": "#fff",
                             },
                             Object {
-                              "borderBottomLeftRadius": 16,
-                              "borderBottomRightRadius": 16,
+                              "borderBottomLeftRadius": 8,
+                              "borderBottomRightRadius": 8,
                             },
                           ]
                         }
@@ -332,14 +345,14 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                             Object {
                               "alignItems": "center",
                               "backgroundColor": "#fff",
-                              "borderBottomLeftRadius": 16,
-                              "borderBottomRightRadius": 16,
+                              "borderBottomLeftRadius": 8,
+                              "borderBottomRightRadius": 8,
                               "borderColor": "#bcbbc1",
                               "flexDirection": "row",
                               "padding": 14,
                             }
                           }
-                          testID="padView"
+                          testID="RNE__LISTITEM__padView"
                         >
                           <View
                             style={
@@ -373,6 +386,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                             theme={
                               Object {
                                 "colors": Object {
+                                  "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
                                   "divider": "#bcbbc1",
@@ -424,15 +438,23 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#ca71eb",
+                                  "secondary": "#03dac4",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
+                                },
+                                "spacing": Object {
+                                  "lg": 12,
+                                  "md": 8,
+                                  "sm": 4,
+                                  "xl": 24,
+                                  "xs": 2,
                                 },
                               }
                             }
                           >
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -447,6 +469,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                               No PoP tokens
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -506,6 +529,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -521,6 +545,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -536,7 +561,6 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -555,7 +579,6 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -586,6 +609,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -599,6 +623,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -613,7 +638,6 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -628,6 +652,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -654,7 +679,16 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -730,7 +764,6 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -741,6 +774,8 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={2}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -759,6 +794,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -796,8 +832,8 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                               "backgroundColor": "#fff",
                             },
                             Object {
-                              "borderBottomLeftRadius": 16,
-                              "borderBottomRightRadius": 16,
+                              "borderBottomLeftRadius": 8,
+                              "borderBottomRightRadius": 8,
                             },
                           ]
                         }
@@ -807,14 +843,14 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                             Object {
                               "alignItems": "center",
                               "backgroundColor": "#fff",
-                              "borderBottomLeftRadius": 16,
-                              "borderBottomRightRadius": 16,
+                              "borderBottomLeftRadius": 8,
+                              "borderBottomRightRadius": 8,
                               "borderColor": "#bcbbc1",
                               "flexDirection": "row",
                               "padding": 14,
                             }
                           }
-                          testID="padView"
+                          testID="RNE__LISTITEM__padView"
                         >
                           <View
                             style={
@@ -848,6 +884,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                             theme={
                               Object {
                                 "colors": Object {
+                                  "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
                                   "divider": "#bcbbc1",
@@ -899,15 +936,23 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#ca71eb",
+                                  "secondary": "#03dac4",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
+                                },
+                                "spacing": Object {
+                                  "lg": 12,
+                                  "md": 8,
+                                  "sm": 4,
+                                  "xl": 24,
+                                  "xs": 2,
                                 },
                               }
                             }
                           >
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -922,6 +967,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                               No PoP tokens
                             </Text>
                             <Text
+                              accessibilityRole="text"
                               style={
                                 Object {
                                   "backgroundColor": "transparent",

@@ -31,6 +31,7 @@ exports[`LaoList renders correctly with no item 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -46,6 +47,7 @@ exports[`LaoList renders correctly with no item 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -61,7 +63,6 @@ exports[`LaoList renders correctly with no item 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -80,7 +81,6 @@ exports[`LaoList renders correctly with no item 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -111,6 +111,7 @@ exports[`LaoList renders correctly with no item 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -124,6 +125,7 @@ exports[`LaoList renders correctly with no item 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -138,7 +140,6 @@ exports[`LaoList renders correctly with no item 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -153,6 +154,7 @@ exports[`LaoList renders correctly with no item 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -179,7 +181,16 @@ exports[`LaoList renders correctly with no item 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -255,7 +266,6 @@ exports[`LaoList renders correctly with no item 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -266,6 +276,8 @@ exports[`LaoList renders correctly with no item 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={1}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -284,6 +296,7 @@ exports[`LaoList renders correctly with no item 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -317,7 +330,7 @@ exports[`LaoList renders correctly with no item 1`] = `
                       <View
                         style={
                           Object {
-                            "borderRadius": 16,
+                            "borderRadius": 8,
                             "marginBottom": 16,
                           }
                         }
@@ -366,6 +379,7 @@ exports[`LaoList renders correctly with one item 1`] = `
       }
     >
       <View
+        collapsable={false}
         pointerEvents="box-none"
         style={
           Object {
@@ -381,6 +395,7 @@ exports[`LaoList renders correctly with one item 1`] = `
           style={null}
         >
           <View
+            collapsable={false}
             pointerEvents="box-none"
             style={
               Object {
@@ -396,7 +411,6 @@ exports[`LaoList renders correctly with one item 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               style={
                 Object {
                   "backgroundColor": "rgb(255, 255, 255)",
@@ -415,7 +429,6 @@ exports[`LaoList renders correctly with one item 1`] = `
           </View>
           <View
             collapsable={false}
-            nativeID="animatedComponent"
             pointerEvents="box-none"
             style={
               Object {
@@ -446,6 +459,7 @@ exports[`LaoList renders correctly with one item 1`] = `
               }
             >
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -459,6 +473,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                 }
               />
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -473,7 +488,6 @@ exports[`LaoList renders correctly with one item 1`] = `
                   accessibilityRole="header"
                   aria-level="1"
                   collapsable={false}
-                  nativeID="animatedComponent"
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
@@ -488,6 +502,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                 </Text>
               </View>
               <View
+                collapsable={false}
                 pointerEvents="box-none"
                 style={
                   Object {
@@ -514,7 +529,16 @@ exports[`LaoList renders correctly with one item 1`] = `
       >
         <RNSScreen
           activityState={2}
+          collapsable={false}
           forwardedRef={[Function]}
+          gestureResponseDistance={
+            Object {
+              "bottom": -1,
+              "end": -1,
+              "start": -1,
+              "top": -1,
+            }
+          }
           pointerEvents="box-none"
           style={
             Object {
@@ -590,7 +614,6 @@ exports[`LaoList renders correctly with one item 1`] = `
           >
             <View
               collapsable={false}
-              nativeID="animatedComponent"
               pointerEvents="box-none"
               style={
                 Object {
@@ -601,6 +624,8 @@ exports[`LaoList renders correctly with one item 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
+                handlerTag={2}
+                handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
@@ -619,6 +644,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -652,15 +678,18 @@ exports[`LaoList renders correctly with one item 1`] = `
                       <View
                         style={
                           Object {
-                            "borderRadius": 16,
+                            "borderRadius": 8,
                             "marginBottom": 16,
                           }
                         }
                       >
                         <View
                           accessible={true}
+                          collapsable={false}
                           focusable={true}
+                          onBlur={[Function]}
                           onClick={[Function]}
+                          onFocus={[Function]}
                           onResponderGrant={[Function]}
                           onResponderMove={[Function]}
                           onResponderRelease={[Function]}
@@ -673,12 +702,12 @@ exports[`LaoList renders correctly with one item 1`] = `
                                 "backgroundColor": "#fff",
                               },
                               Object {
-                                "borderTopLeftRadius": 16,
-                                "borderTopRightRadius": 16,
+                                "borderTopLeftRadius": 8,
+                                "borderTopRightRadius": 8,
                               },
                               Object {
-                                "borderBottomLeftRadius": 16,
-                                "borderBottomRightRadius": 16,
+                                "borderBottomLeftRadius": 8,
+                                "borderBottomRightRadius": 8,
                               },
                             ]
                           }
@@ -688,17 +717,17 @@ exports[`LaoList renders correctly with one item 1`] = `
                               Object {
                                 "alignItems": "center",
                                 "backgroundColor": "#fff",
-                                "borderBottomLeftRadius": 16,
-                                "borderBottomRightRadius": 16,
+                                "borderBottomLeftRadius": 8,
+                                "borderBottomRightRadius": 8,
                                 "borderBottomWidth": 0.5,
                                 "borderColor": "#bcbbc1",
-                                "borderTopLeftRadius": 16,
-                                "borderTopRightRadius": 16,
+                                "borderTopLeftRadius": 8,
+                                "borderTopRightRadius": 8,
                                 "flexDirection": "row",
                                 "padding": 14,
                               }
                             }
-                            testID="padView"
+                            testID="RNE__LISTITEM__padView"
                           >
                             <View
                               style={
@@ -714,6 +743,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                               theme={
                                 Object {
                                   "colors": Object {
+                                    "background": "#ffffff",
                                     "black": "#242424",
                                     "disabled": "hsl(208, 8%, 90%)",
                                     "divider": "#bcbbc1",
@@ -765,15 +795,23 @@ exports[`LaoList renders correctly with one item 1`] = `
                                     },
                                     "primary": "#2089dc",
                                     "searchBg": "#303337",
-                                    "secondary": "#ca71eb",
+                                    "secondary": "#03dac4",
                                     "success": "#52c41a",
                                     "warning": "#faad14",
                                     "white": "#ffffff",
+                                  },
+                                  "spacing": Object {
+                                    "lg": 12,
+                                    "md": 8,
+                                    "sm": 4,
+                                    "xl": 24,
+                                    "xs": 2,
                                   },
                                 }
                               }
                             >
                               <Text
+                                accessibilityRole="text"
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
@@ -788,6 +826,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                                 MyLao
                               </Text>
                               <Text
+                                accessibilityRole="text"
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
@@ -803,6 +842,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                                 Attendee
                               </Text>
                               <Text
+                                accessibilityRole="text"
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",
@@ -812,9 +852,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                                   }
                                 }
                                 testID="listItemTitle"
-                              >
-                                
-                              </Text>
+                              />
                             </View>
                             <View
                               style={
@@ -830,8 +868,20 @@ exports[`LaoList renders correctly with one item 1`] = `
                                   "overflow": "hidden",
                                 }
                               }
+                              testID="RNE__ICON__CONTAINER"
                             >
-                              <View>
+                              <View
+                                accessibilityRole="button"
+                                android_ripple={
+                                  Object {
+                                    "borderless": false,
+                                    "color": "rgba(0, 0, 0, 0.3)",
+                                    "radius": -5,
+                                  }
+                                }
+                                disabled={false}
+                                testID="RNE__ICON__CONTAINER_ACTION"
+                              >
                                 <View
                                   style={
                                     Object {
@@ -840,6 +890,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                                       "justifyContent": "center",
                                     }
                                   }
+                                  testID="RNE__ICON"
                                 >
                                   <Text />
                                 </View>

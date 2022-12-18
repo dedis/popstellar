@@ -22,26 +22,13 @@
       android:layout_height="match_parent"
       android:layout_marginBottom="@dimen/bottom_navigation_view_height">
 
-      <LinearLayout
+      <ListView
+        android:id="@+id/chirps_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:id="@+id/swipe_refresh_chirps">
-
-          <ListView
-            android:id="@+id/chirps_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@color/categoryTab"
-            android:dividerHeight="@dimen/social_media_divider_height"
-            tools:listitem="@layout/chirp_card" />
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-      </LinearLayout>
+        android:divider="@color/categoryTab"
+        android:dividerHeight="@dimen/social_media_divider_height"
+        tools:listitem="@layout/chirp_card" />
 
       <ImageButton
         android:id="@+id/social_media_send_fragment_button"

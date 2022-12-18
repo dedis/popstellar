@@ -1,7 +1,6 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { useContext } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 
@@ -15,9 +14,7 @@ import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
 import BackButton from '../components/BackButton';
-import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
-import { SocialFeature } from '../interface';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
@@ -38,7 +35,6 @@ type NavigationProps = CompositeScreenProps<
  * UI for the profile of a user.
  */
 const SocialUserProfile = () => {
-  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
   const route = useRoute<NavigationProps['route']>();
   const { userPkString } = route.params;
   const userPublicKey = new PublicKey(userPkString);
@@ -47,11 +43,11 @@ const SocialUserProfile = () => {
     throw new Error('Impossible to render Social Profile, current lao id is undefined');
   }
 
-  const userChirps = makeChirpsListOfUser(laoId.valueOf())(userPublicKey);
+  const userChirps = makeChirpsListOfUser(laoId)(userPublicKey);
   const userChirpList = useSelector(userChirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPopTokenPublicKey} />
+    <ChirpCard chirp={Chirp.fromState(item)} />
   );
 
   const displayNoUser = () => (
@@ -59,7 +55,7 @@ const SocialUserProfile = () => {
       <View style={socialMediaProfileStyles.topView}>
         <View style={styles.userInnerView}>
           <BackButton
-            navigationTabName={STRINGS.social_media_navigation_tab_search}
+            navigationTabName={STRINGS.social_media_navigation_tab_attendee_list}
             testID="backButtonUserProfile"
           />
         </View>
@@ -101,8 +97,3 @@ const SocialUserProfile = () => {
 };
 
 export default SocialUserProfile;
-
-export const SocialUserProfileScreen: SocialFeature.SocialSearchScreen = {
-  id: STRINGS.social_media_navigation_tab_user_profile,
-  Component: SocialUserProfile,
-};

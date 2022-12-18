@@ -9,13 +9,22 @@ namespace STRINGS {
   export const general_yes = 'Yes';
   export const general_no = 'No';
   export const general_add = 'Add';
-  export const general_done = 'Done';
-  export const general_starting_at = 'Supposed to start';
-  export const general_ending_at = 'Supposed to end';
-  export const general_ended_at = 'Ended at';
+  export const general_starting = 'Starting';
+  export const general_starting_now = 'Starting anytime now';
+  export const general_ending = 'Ending';
+  export const general_ending_now = 'Ending anytime now';
+  export const general_ended = 'Ended';
+  export const general_notice = 'Notice';
+  export const general_enter_manually = 'Enter Manually';
+  export const general_offline = 'Offline';
 
   export const general_closed = 'Closed';
   export const general_ongoing = 'Ongoing';
+
+  /* --- QR code scanner strings --- */
+  export const camera_unavailable = 'Camera unavailable';
+  export const requesting_camera_permissions = 'Requesting camera permissions';
+  export const camera_permissions_denied = 'Permissions for camera denied';
 
   /* --- User Roles --- */
   export const user_role = 'Role';
@@ -30,15 +39,16 @@ namespace STRINGS {
   export const navigation_app_lao = 'AppLao';
   export const navigation_app_wallet_create_seed = 'Wallet Seed Creation';
   export const navigation_app_wallet_insert_seed = 'Wallet Recovery';
-  export const navigation_app_connect = 'Connect';
 
   /* --- HomeNavigation Strings --- */
   export const navigation_home_home = 'Home';
-  export const navigation_home_mock_connect = 'MockConnect';
+  export const navigation_home_connect = 'Connect';
   export const navigation_home_wallet = 'Wallet';
 
   /* --- ConnectionNavigation Strings --- */
   export const navigation_connect_scan = 'Scanning';
+  export const navigation_connect_scan_title = "Scan a LAO's QR code";
+  export const navigation_connect_processing = 'Processing scanned QR code';
   export const navigation_connect_launch = 'Launch';
   export const navigation_connect_launch_title = 'Launch a new LAO';
   export const navigation_connect_confirm = 'Confirm';
@@ -63,6 +73,8 @@ namespace STRINGS {
   export const navigation_lao_events_home = 'Events Home';
   export const navigation_lao_events_home_title = 'Events';
 
+  export const navigation_lao_events_upcoming = 'Upcoming Events';
+  export const navigation_lao_events_upcoming_title = 'Upcoming Events';
   export const navigation_lao_events_create_event = 'Create Event';
   export const navigation_lao_events_create_meeting = 'Create Meeting';
   export const navigation_lao_events_view_single_meeting = 'Single Meeting';
@@ -70,7 +82,6 @@ namespace STRINGS {
   export const navigation_lao_events_view_single_roll_call = 'Single Roll-Call';
   export const navigation_lao_events_create_election = 'Create Election';
   export const navigation_lao_events_view_single_election = 'Single Election';
-  export const navigation_lao_events_open_roll_call = 'Open Roll-Call';
 
   /* --- Wallet Navigation Strings --- */
   export const navigation_wallet_home = 'Wallet Home';
@@ -85,9 +96,6 @@ namespace STRINGS {
 
   export const navigation_wallet_digital_cash_wallet_scanner = 'Digital Cash Wallet Scanner';
 
-  export const navigation_wallet_digital_cash_transaction_history =
-    'Digital Cash Transaction History';
-
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
   export const social_media_navigation_tab_search = 'Search';
@@ -97,13 +105,14 @@ namespace STRINGS {
   export const social_media_navigation_tab_attendee_list = 'List of attendees';
 
   /* --- Lao Strings --- */
-  export const lao_qr_code_title = 'Connection QR Code';
+  export const lao_properties_modal_heading = 'Lao Properties';
+  export const lao_qr_code_overlay = 'Scan to\nConnect';
+  export const lao_properties_name = 'Name';
   export const lao_properties_id = 'Identifier';
   export const lao_properties_your_role = 'Your role';
   export const lao_properties_current_connections = 'You are currently connected to';
-  export const lao_properties_add_additional_connection = 'Add connection';
-  export const lao_properties_disconnect = 'Disconnect';
   export const lao_no_current = 'You are currently not connected to any LAO';
+  export const lao_error_disconnect = 'The connection to the LAO broke unexpectedly';
 
   /* --- Home Strings --- */
 
@@ -113,7 +122,11 @@ namespace STRINGS {
     'The POPStellar application builds on top of so-called local autonomous organizations (LAOs). ' +
     'Known LAOs will be listed here after you connected to it once.';
   export const home_setup_description_2 =
-    'You can connect to a LAO by tapping "Connect" in the bottom navigation bar and then scanning the qr code a LAO organizer provides to you.';
+    'You can connect to a LAO by tapping "Join LAO" in the bottom toolbar and then scanning the qr code a LAO organizer provides to you.';
+
+  export const home_create_lao = 'Create';
+  export const home_join_lao = 'Join';
+  export const home_logout = 'Logout';
 
   /* --- Social Media Strings --- */
   export const button_publish = 'Publish';
@@ -215,7 +228,7 @@ namespace STRINGS {
 
   export const election_open = 'Open Election';
   export const election_add_question = 'Add Question';
-  export const election_end = 'End Election and Tally Votes';
+  export const election_end = 'End Election';
   export const election_questions = 'Questions';
   export const election_results = 'Election Results';
 
@@ -248,15 +261,16 @@ namespace STRINGS {
   export const roll_call_open_attendee =
     'The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.';
 
-  export const roll_call_location_error_open_roll_call = 'Unable to send roll call open request';
-  export const roll_call_location_error_scanning_no_alias =
+  export const roll_call_error_open_roll_call = 'Unable to send roll call open request';
+  export const roll_call_error_scanning_no_alias =
     'Unable to scan attendees, the event does not have an idAlias';
-  export const roll_call_location_error_reopen_roll_call =
-    'Unable to send Roll call re-open request';
-  export const roll_call_location_error_reopen_roll_call_no_alias =
+  export const roll_call_error_reopen_roll_call = 'Unable to send Roll call re-open request';
+  export const roll_call_error_reopen_roll_call_no_alias =
     'Unable to send roll call re-open request, the event does not have an idAlias';
 
-  export const roll_call_location_error_close_roll_call = 'Could not close roll call';
+  export const roll_call_error_close_roll_call_no_alias =
+    'Could not close roll call, the event does not have an idAlias';
+  export const roll_call_error_close_roll_call = 'Could not close roll call';
 
   /* --- Roll-call creation Strings --- */
 
@@ -308,9 +322,19 @@ namespace STRINGS {
 
   /* --- Events Feature Strings --- */
   export const events_create_event = 'Create';
-  export const events_list_past = 'Past';
-  export const events_list_current = 'Current';
-  export const events_list_upcoming = 'Upcoming';
+  export const events_list_past = 'Past Events';
+  export const events_list_current = 'Current Events';
+  export const events_list_upcoming = 'Upcoming Events';
+
+  export const events_upcoming_events = 'Upcoming Events';
+  export const events_create_meeting = 'Create Meeting';
+  export const events_view_single_meeting = 'Single Meeting';
+  export const events_create_roll_call = 'Create Roll-Call';
+  export const events_view_single_roll_call = 'Single Roll-Call';
+  export const events_create_election = 'Create Election';
+  export const events_view_single_election = 'Single Election';
+  export const events_open_roll_call = 'Open Roll-Call';
+  export const events_open_roll_call_title = 'Scan PoP Tokens';
 
   /* --- Notification screen Strings --- */
   export const notification_unread_notifications = 'Notifications';
@@ -360,7 +384,6 @@ namespace STRINGS {
 
   /* --- Wallet Home Screen Strings --- */
   export const wallet_home_roll_calls = 'Roll Calls';
-  export const wallet_home_logout = 'Logout';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
   export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
 

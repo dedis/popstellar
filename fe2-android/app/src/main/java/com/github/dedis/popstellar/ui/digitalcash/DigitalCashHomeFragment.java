@@ -16,7 +16,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
-import java.util.List;
+import java.util.Set;
 
 import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity.TAG;
 
@@ -25,8 +25,8 @@ import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity.TAG
  * method to create an instance of this fragment.
  */
 public class DigitalCashHomeFragment extends Fragment {
-  private DigitalCashHomeFragmentBinding mBinding;
-  private DigitalCashViewModel mViewModel;
+  private DigitalCashHomeFragmentBinding binding;
+  private DigitalCashViewModel viewModel;
 
   public DigitalCashHomeFragment() {
     // Required empty constructor
@@ -43,9 +43,9 @@ public class DigitalCashHomeFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
-    mBinding = DigitalCashHomeFragmentBinding.inflate(inflater, container, false);
-    return mBinding.getRoot();
+    viewModel = DigitalCashActivity.obtainViewModel(getActivity());
+    binding = DigitalCashHomeFragmentBinding.inflate(inflater, container, false);
+    return binding.getRoot();
   }
 
   @Override
@@ -54,11 +54,17 @@ public class DigitalCashHomeFragment extends Fragment {
     setHomeInterface();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.digital_cash_home);
+  }
+
   public void setHomeInterface() {
-    mViewModel
+    viewModel
         .getCurrentLao()
         .observe(
-            getActivity(),
+            requireActivity(),
             lao -> {
               if (lao == null) {
                 Toast.makeText(
@@ -68,16 +74,15 @@ public class DigitalCashHomeFragment extends Fragment {
                     .show();
               } else {
                 try {
-                  PoPToken token = mViewModel.getKeyManager().getValidPoPToken(lao);
+                  PoPToken token = viewModel.getKeyManager().getValidPoPToken(lao);
                   PublicKey publicKey = token.getPublicKey();
-                  mBinding.digitalCashHomeAddress.setText(publicKey.getEncoded());
+                  binding.digitalCashHomeAddress.setText(publicKey.getEncoded());
                   if (lao.getTransactionByUser().containsKey(publicKey)) {
-                    List<TransactionObject> transactions =
-                        lao.getTransactionByUser().get(publicKey);
+                    Set<TransactionObject> transactions = lao.getTransactionByUser().get(publicKey);
                     long totalAmount =
                         TransactionObject.getMiniLaoPerReceiverSetTransaction(
                             transactions, publicKey);
-                    mBinding.digitalCashSendAddress.setText(
+                    binding.digitalCashSendAddress.setText(
                         String.format("LAO coin : %s", totalAmount));
                   }
 

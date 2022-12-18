@@ -24,6 +24,7 @@ exports[`RollCallTokensDropDown renders correctly 1`] = `
         },
       ]
     }
+    numberOfLines={1}
     onChange={[Function]}
     selectedIndex={0}
     style={

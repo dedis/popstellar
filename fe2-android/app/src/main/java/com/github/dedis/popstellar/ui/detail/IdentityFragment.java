@@ -11,8 +11,12 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
+import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -26,6 +30,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class IdentityFragment extends Fragment {
 
   public static final String TAG = IdentityFragment.class.getSimpleName();
+
+  @Inject Gson gson;
 
   public static final String PUBLIC_KEY = "public key";
   private EditText identityNameEditText;
@@ -81,10 +87,18 @@ public class IdentityFragment extends Fragment {
     String pk = this.requireArguments().getString(PUBLIC_KEY);
     identityNameEditText.setText(pk);
 
-    Bitmap myBitmap = QRCode.from(pk).bitmap();
+    MainPublicKeyData data = new MainPublicKeyData(new PublicKey(pk));
+    Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
     qrCode.setImageBitmap(myBitmap);
 
     return view;
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel.setPageTitle(getString(R.string.tab_identity));
   }
 
   /** Hide fields when user wants to be anonymous */

@@ -1,11 +1,12 @@
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { FunctionComponent, useMemo } from 'react';
 import { View } from 'react-native';
-import { ListItem } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
 import { PoPIcon } from 'core/components';
+import { Hash, Timestamp } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -18,18 +19,28 @@ import { makeElectionSelector } from '../reducer';
  */
 const Subtitle = ({ election }: { election: Election }) => {
   if (election.electionStatus === ElectionStatus.NOT_STARTED) {
+    if (Timestamp.EpochNow().before(election.start)) {
+      return (
+        <ListItem.Subtitle style={Typography.small}>
+          {STRINGS.general_starting} <ReactTimeago live date={election.start.toDate()} />
+        </ListItem.Subtitle>
+      );
+    }
+
     return (
-      <ListItem.Subtitle style={Typography.small}>
-        {STRINGS.general_starting_at} <ReactTimeago date={election.start.valueOf() * 1000} />
-      </ListItem.Subtitle>
+      <>
+        <ListItem.Subtitle style={Typography.small}>
+          {STRINGS.general_starting_now}
+        </ListItem.Subtitle>
+      </>
     );
   }
 
   if (election.electionStatus === ElectionStatus.OPENED) {
     return (
       <ListItem.Subtitle style={Typography.small}>
-        {STRINGS.general_ongoing}, {STRINGS.general_ending_at}{' '}
-        <ReactTimeago date={election.end.valueOf() * 1000} />
+        {STRINGS.general_ongoing}, {STRINGS.general_ending}{' '}
+        <ReactTimeago live date={election.end.valueOf() * 1000} />
       </ListItem.Subtitle>
     );
   }
@@ -43,7 +54,7 @@ const Subtitle = ({ election }: { election: Election }) => {
 const ElectionListItem = (props: IPropTypes) => {
   const { eventId: electionId } = props;
 
-  const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
+  const selectElection = useMemo(() => makeElectionSelector(new Hash(electionId)), [electionId]);
   const election = useSelector(selectElection);
 
   if (!election) {
@@ -76,12 +87,12 @@ export default ElectionListItem;
 /**
  * Creates an event type object that can then be passed to the event feature
  */
-export const ElectionEventType: EvotingInterface['eventTypes']['0'] = {
+export const ElectionEventType: EvotingInterface['eventTypes'][0] = {
   eventType: Election.EVENT_TYPE,
   eventName: STRINGS.election_event_name,
   navigationNames: {
-    createEvent: STRINGS.navigation_lao_events_create_election,
-    screenSingle: STRINGS.navigation_lao_events_view_single_election,
+    createEvent: STRINGS.events_create_election,
+    screenSingle: STRINGS.events_view_single_election,
   },
   ListItemComponent: ElectionListItem as FunctionComponent<{
     eventId: string;

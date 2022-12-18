@@ -317,6 +317,14 @@ final case class DbActor(
         sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"channel '$channel' does not exist in db"))
       }
 
+    case AssertChannelMissing(channel) =>
+      log.info(s"Actor $self (db) received an AssertChannelMissing request for channel '$channel'")
+      if (checkChannelExistence(channel)) {
+        sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"channel '$channel' already exists in db"))
+      } else {
+        sender() ! DbActorAck()
+      }
+
     case AddWitnessSignature(channel, messageId, signature) =>
       log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
       Try(addWitnessSignature(channel, messageId, signature)) match {
@@ -450,6 +458,15 @@ object DbActor {
     *   db answers with a simple boolean
     */
   final case class ChannelExists(channel: Channel) extends Event
+
+  /** Request to check if channel <channel> is missing in the db
+    *
+    * @param channel
+    *   targeted channel
+    * @note
+    *   db answers with a simple boolean
+    */
+  final case class AssertChannelMissing(channel: Channel) extends Event
 
   /** Request to append witness <signature> to a stored message with message_id <messageId>
     *
