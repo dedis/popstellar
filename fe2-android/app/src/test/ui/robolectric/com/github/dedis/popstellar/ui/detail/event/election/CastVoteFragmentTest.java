@@ -7,10 +7,12 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
@@ -19,6 +21,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
@@ -29,7 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import java.util.Arrays;
+import java.util.*;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
@@ -71,12 +74,16 @@ public class CastVoteFragmentTest {
   private static final String PLURALITY = "Plurality";
   private static final BehaviorSubject<LaoView> laoSubject =
       BehaviorSubject.createDefault(new LaoView(LAO));
+  private static final RollCall ROLL_CALL =
+      new RollCall(
+          "id", "id", "rc", 0L, 1L, 2L, EventState.CLOSED, new HashSet<>(), "nowhere", "none");
 
   private static Election election;
 
   ElectionQuestion electionQuestion1;
 
   @BindValue @Mock LAORepository repository;
+  @BindValue @Mock RollCallRepository rollCallRepo;
   @BindValue @Mock KeyManager keyManager;
   @BindValue @Mock GlobalNetworkManager networkManager;
 
@@ -94,13 +101,19 @@ public class CastVoteFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException, UnknownLaoException {
+        protected void before() throws KeyException, UnknownLaoException, UnknownRollCallException {
           hiltRule.inject();
+          Set<String> rcList = Collections.singleton(ROLL_CALL.getId());
+          BehaviorSubject<Set<String>> rcObservable = BehaviorSubject.createDefault(rcList);
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
+          when(rollCallRepo.getRollCallsObservableInLao(any())).thenReturn(rcObservable);
+          when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
+          when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
           initializeElection();
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
-          when(keyManager.getValidPoPToken(any())).thenReturn(generatePoPToken());
+          when(keyManager.getValidPoPToken(any(), any())).thenReturn(generatePoPToken());
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
+          when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
           messageSenderHelper.setupMock();
         }
@@ -126,6 +139,7 @@ public class CastVoteFragmentTest {
             fragment -> {
               FragmentActivity fragmentActivity = fragment.requireActivity();
               LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
+              LAO.updateElection(election.getId(), election);
               viewModel.setCurrentLao(new LaoView(LAO));
               viewModel.setCurrentElection(election);
             });

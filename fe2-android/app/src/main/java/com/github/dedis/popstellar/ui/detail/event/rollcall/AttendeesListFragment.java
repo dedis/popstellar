@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ListView;
 
@@ -12,15 +11,13 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.AttendeesListFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -49,25 +46,17 @@ public class AttendeesListFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mAttendeesListBinding = AttendeesListFragmentBinding.inflate(inflater, container, false);
 
-    LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     String id = requireArguments().getString(EXTRA_ID);
 
-    LaoView laoView;
     try {
-      laoView = mLaoDetailViewModel.getLaoView();
-    } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
-      return null;
-    }
-
-    Optional<RollCall> optRollCall = laoView.getRollCall(id);
-    if (!optRollCall.isPresent()) {
-      Log.d(TAG, "failed to retrieve roll call with id " + id);
+      rollCall = viewModel.getRollCall(id);
+    } catch (UnknownRollCallException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.no_rollcall_exception);
       LaoDetailActivity.setCurrentFragment(
           getParentFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
-    } else {
-      rollCall = optRollCall.get();
+      return null;
     }
 
     mAttendeesListBinding.rollcallName.setText("Roll Call: " + rollCall.getName());
