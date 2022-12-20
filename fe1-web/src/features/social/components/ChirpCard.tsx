@@ -28,7 +28,7 @@ import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
 import { Chirp } from '../objects';
-import { makeReactionsList } from '../reducer';
+import { makeHasReactedSelector, makeReactionCountsSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
   CompositeScreenProps<
@@ -100,38 +100,27 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     throw new Error('Impossible to render chirp, current lao id is undefined');
   }
 
-  const selectReactionList = useMemo(() => makeReactionsList(laoId), [laoId]);
-  const reactions = useSelector(selectReactionList)[chirp.id.toState()];
+  const selectReactionList = useMemo(
+    () => makeReactionCountsSelector(laoId, chirp.id),
+    [laoId, chirp.id],
+  );
+  const reactions = useSelector(selectReactionList);
 
-  const thumbsUp = reactions && reactions['👍'] ? reactions['👍'].length : 0;
-  const thumbsDown = reactions && reactions['👎'] ? reactions['👎'].length : 0;
-  const heart = reactions && reactions['❤️'] ? reactions['❤️'].length : 0;
+  const selectHasReacted = useMemo(
+    () => makeHasReactedSelector(laoId, chirp.id, currentUserPopTokenPublicKey),
+    [laoId, chirp.id, currentUserPopTokenPublicKey],
+  );
+  const hasReacted = useSelector(selectHasReacted);
 
-  const reactionsDisabled = useMemo(() => {
-    if (!isConnected || !currentUserPopTokenPublicKey) {
-      return {
-        '👍': false,
-        '👎': false,
-        '❤️': false,
-      };
-    }
-    // no reactions so far
-    if (!reactions) {
-      return {
-        '👍': true,
-        '👎': true,
-        '❤️': true,
-      };
-    }
+  const thumbsUp = reactions['👍'];
+  const thumbsDown = reactions['👎'];
+  const heart = reactions['❤️'];
 
-    return Object.fromEntries(
-      Object.entries(reactions).map(([reaction, keyList]) => [
-        reaction,
-        /* return true if already reacted and should be disabled */
-        keyList.some((pk) => pk.equals(currentUserPopTokenPublicKey)),
-      ]),
-    );
-  }, [isConnected, currentUserPopTokenPublicKey, reactions]);
+  const reactionsDisabled = {
+    '👍': !isConnected || !currentUserPopTokenPublicKey || hasReacted['👍'],
+    '👎': !isConnected || !currentUserPopTokenPublicKey || hasReacted['👎'],
+    '❤️': !isConnected || !currentUserPopTokenPublicKey || hasReacted['❤️'],
+  };
 
   const showActionSheet = useActionSheet();
 
