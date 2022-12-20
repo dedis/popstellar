@@ -21,8 +21,6 @@ npm start
 > If 'npm install' fails because of sharp (verify by running 'npm install -g sharp-cli').
 > [This post](https://stackoverflow.com/questions/68710308/sharp-error-package-openexr-was-not-found-in-the-pkg-config-search-path) may be helpful
 
-
-
 `expo start` automatically starts **Metro packager**.
 
 - Opening the project on a phone requires to scan the QR code on the bottom left corner of the page and having [Expo Client app](https://expo.io/tools) installed to display the project. Without the app, a phone may be simulated using the emulator/simulator buttons on the packager
@@ -32,8 +30,6 @@ npm start
 In order to retrieve the public key that is used by the frontend, open the javascript console of the web browser of your choice. [This stackoverflow answer](https://webmasters.stackexchange.com/a/77337) gives an overview of how to do so in different browsers if you have never done this. Then look for the log entry `Using the public key: XXX`.
 
 ---
-
-
 
 ## Standalone application mode
 
@@ -48,8 +44,6 @@ The mock server can be run from the `fe1-web` folder using:
 
 ---
 
-
-
 ## Unit tests & Linting
 
 Unit tests can be run from the `fe1-web` folder using:
@@ -61,8 +55,6 @@ ESlint feedback can be seen directly from your IDE or using the command `npm run
 
 ---
 
-
-
 ## Modules npm choices
 
 - **app dependencies**:
@@ -73,8 +65,6 @@ ESlint feedback can be seen directly from your IDE or using the command `npm run
   - we use [ESlint](https://eslint.org/) to check that our coding convention is respected.
 
 ---
-
-
 
 ## Coding convention
 
