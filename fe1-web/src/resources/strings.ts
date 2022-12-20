@@ -397,15 +397,23 @@ namespace STRINGS {
     ', you can continue and start using the POPStellar application. ' +
     'The purpose of this application is to demonstrate use cases for proofs of personhood (PoP).';
 
-  export const wallet_welcome_start_exploring = 'Start exploring POPStellar 🤩';
+  export const wallet_welcome_already_know_seed_1 =
+    'If you have already used this application before and remember your previous';
+  export const wallet_welcome_already_know_seed_2 =
+    ', you can restore your wallet by pressing the respective button.';
 
-  export const wallet_welcome_already_know_seed =
-    'I have already used this application and know previous seed 🧐';
+  export const wallet_welcome_start_exploring =
+    'Otherwise you should take note of the above seed and press "New Wallet" to initialize a new';
+
+  export const wallet_welcome_button_start_exploring = 'New Wallet';
+  export const wallet_welcome_button_restore_seed = 'Restore';
 
   /* --- Wallet Restore Seed Screen Strings --- */
   export const wallet_restore_heading = 'My 12 word seed 🔑 is ...';
-  export const wallet_restore_using_known_seed = 'Restore my wallet 🔐';
-  export const wallet_previous_seed_not_known = 'Oof, I might not know my seed 🔑 after all 😬';
+  export const wallet_restore_using_known_seed = 'Restore Wallet';
+  export const wallet_previous_seed_not_known = 'Go back';
+  export const wallet_restore_instructions =
+    'In order to restore your wallet, you need to enter your previous 12-word seed below and press "Restore Wallet"';
   export const wallet_restore_seed_example =
     'grape sock height they tiny voyage kid young domain trumpet three patrol';
 
