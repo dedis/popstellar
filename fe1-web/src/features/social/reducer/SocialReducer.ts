@@ -347,9 +347,8 @@ export const makeTopChirpsSelector = (laoId: Hash, max: number) =>
       // filter deleted chirps
       .filter((tuple) => !byLaoId.byId[tuple[0]].isDeleted);
 
-    // get count many elements with highest scores
+    // sort for highest scores
     scorePerId.sort((a, b) => b[1] - a[1]);
-    scorePerId.slice(0, max);
 
-    return scorePerId.map((tuple) => Chirp.fromState(byLaoId.byId[tuple[0]]));
+    return scorePerId.slice(0, max).map((tuple) => Chirp.fromState(byLaoId.byId[tuple[0]]));
   });

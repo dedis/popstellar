@@ -661,6 +661,12 @@ describe('SocialReducer', () => {
       ]);
     });
 
+    it("should return at most 'max' chirps", () => {
+      expect(makeTopChirpsSelector(mockLaoId, 1).resultFunc(reactionFilledState44)).toEqual([
+        mockChirp2,
+      ]);
+    });
+
     it('should omit deleted chirps', () => {
       expect(makeTopChirpsSelector(mockLaoId, 3).resultFunc(reactionFilledState44)).toEqual([
         mockChirp2,
