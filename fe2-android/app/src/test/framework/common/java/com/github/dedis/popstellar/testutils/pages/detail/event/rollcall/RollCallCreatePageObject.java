@@ -17,6 +17,10 @@ public class RollCallCreatePageObject {
     return onView(withId(R.id.roll_call_title_text));
   }
 
+  public static ViewInteraction rollCallCreateLocation() {
+    return onView(withId(R.id.roll_call_event_location_text));
+  }
+
   public static ViewInteraction rollCallCreateConfirmButton() {
     return onView(withId(R.id.roll_call_confirm));
   }

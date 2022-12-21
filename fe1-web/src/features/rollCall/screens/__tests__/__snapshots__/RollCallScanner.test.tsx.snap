@@ -339,6 +339,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -959,6 +960,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

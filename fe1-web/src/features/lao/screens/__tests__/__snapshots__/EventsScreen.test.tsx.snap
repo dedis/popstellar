@@ -296,6 +296,7 @@ exports[`EventsScreen renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -657,6 +658,7 @@ exports[`EventsScreenHeaderLeft renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1047,6 +1049,7 @@ exports[`EventsScreenHeaderRight renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

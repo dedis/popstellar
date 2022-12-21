@@ -296,6 +296,7 @@ exports[`LaoList renders correctly with no item 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -643,6 +644,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

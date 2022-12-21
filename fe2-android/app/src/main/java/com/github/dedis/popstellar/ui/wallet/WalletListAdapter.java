@@ -88,7 +88,7 @@ public class WalletListAdapter extends BaseAdapter {
             LaoDetailActivity.setCurrentFragment(
                 activity.getSupportFragmentManager(),
                 R.id.fragment_attendees_list,
-                () -> AttendeesListFragment.newInstance(rollCall.getId())));
+                () -> AttendeesListFragment.newInstance(rollCall.getPersistentId())));
 
     Boolean isOrganizer = viewModel.isOrganizer().getValue();
     if (isOrganizer != null && !isOrganizer) {
@@ -98,7 +98,7 @@ public class WalletListAdapter extends BaseAdapter {
               LaoDetailActivity.setCurrentFragment(
                   activity.getSupportFragmentManager(),
                   R.id.fragment_rollcall_token,
-                  () -> RollCallTokenFragment.newInstance(rollCall.getId())));
+                  () -> RollCallTokenFragment.newInstance(rollCall.getPersistentId())));
     }
 
     binding.setLifecycleOwner(activity);

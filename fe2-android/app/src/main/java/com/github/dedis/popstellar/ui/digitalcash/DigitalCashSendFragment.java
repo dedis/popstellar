@@ -16,10 +16,10 @@ import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -74,11 +74,13 @@ public class DigitalCashSendFragment extends Fragment {
               if (event != null) {
                 String currentAmount = binding.digitalCashSendAmount.getText().toString();
                 String currentPublicKeySelected =
-                    String.valueOf(binding.digitalCashSendSpinner.getEditText().getText());
+                    String.valueOf(
+                        Objects.requireNonNull(binding.digitalCashSendSpinner.getEditText())
+                            .getText());
                 if (viewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
                   try {
                     LaoView laoView = viewModel.getCurrentLaoValue();
-                    PoPToken token = viewModel.getKeyManager().getValidPoPToken(laoView);
+                    PoPToken token = viewModel.getValidToken();
                     if (canPostTransaction(
                         laoView, token.getPublicKey(), Integer.parseInt(currentAmount))) {
                       Disposable disposable =
@@ -88,6 +90,7 @@ public class DigitalCashSendFragment extends Fragment {
                                   () -> {
                                     viewModel.updateReceiptAddressEvent(currentPublicKeySelected);
                                     viewModel.updateReceiptAmountEvent(currentAmount);
+
                                     DigitalCashActivity.setCurrentFragment(
                                         requireActivity().getSupportFragmentManager(),
                                         R.id.fragment_digital_cash_receipt,
@@ -115,6 +118,12 @@ public class DigitalCashSendFragment extends Fragment {
     }
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.digital_cash_send);
+  }
+
   public boolean canPostTransaction(LaoView lao, PublicKey publicKey, int currentAmount) {
     Map<PublicKey, Set<TransactionObject>> transactionByUser = lao.getTransactionByUser();
     if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
@@ -124,7 +133,7 @@ public class DigitalCashSendFragment extends Fragment {
     }
     long amount =
         TransactionObject.getMiniLaoPerReceiverSetTransaction(
-            transactionByUser.get(publicKey), publicKey);
+            Objects.requireNonNull(transactionByUser.get(publicKey)), publicKey);
     if (amount < currentAmount) {
       Toast.makeText(
               requireContext(), R.string.digital_cash_warning_not_enough_money, Toast.LENGTH_SHORT)
@@ -150,11 +159,8 @@ public class DigitalCashSendFragment extends Fragment {
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-    KeyManager km = viewModel.getKeyManager();
-    binding
-        .digitalCashSendSpinner
-        .getEditText()
-        .setText(km.getValidPoPToken(viewModel.getCurrentLaoValue()).getPublicKey().getEncoded());
+    Objects.requireNonNull(binding.digitalCashSendSpinner.getEditText())
+        .setText(viewModel.getValidToken().getPublicKey().getEncoded());
     binding.digitalCashSendSpinnerTv.setAdapter(adapter);
   }
 
@@ -171,7 +177,7 @@ public class DigitalCashSendFragment extends Fragment {
    */
   private Completable postTransaction(Map<String, String> publicKeyAmount) {
     // Add some check if have money
-    if (viewModel.getLaoId().getValue() == null) {
+    if (viewModel.getLaoId() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();

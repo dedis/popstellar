@@ -296,6 +296,7 @@ exports[`SendReceive renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -959,6 +960,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

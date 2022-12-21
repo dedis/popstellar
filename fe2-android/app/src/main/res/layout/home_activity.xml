@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:android="http://schemas.android.com/apk/res/android">
 
   <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/fragment_container_home"
     android:layout_width="match_parent"
-    android:layout_height="0dp"
-    app:layout_constraintBottom_toTopOf="@+id/home_nav_bar"
-    app:layout_constraintTop_toTopOf="parent">
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+      android:id="@+id/home_bar_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent">
+
+      <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:menu="@menu/options_menu"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+      android:id="@+id/fragment_container_home"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      app:layout_constraintTop_toBottomOf="@id/home_bar_layout"
+      app:layout_constraintBottom_toBottomOf="parent"/>
 
   </androidx.constraintlayout.widget.ConstraintLayout>
-
-  <com.google.android.material.bottomnavigation.BottomNavigationView
-    android:id="@+id/home_nav_bar"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_constraintBottom_toBottomOf="parent"
-    android:background="?android:attr/windowBackground"
-    app:labelVisibilityMode="labeled"
-    app:menu="@menu/home_menu" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -30,10 +30,10 @@ type MaterialIcon = {
   IconFamily: typeof MaterialIcons;
 };
 
-type AndDesignIconNames = keyof typeof AntDesign['glyphMap'];
+type AntDesignIconNames = keyof typeof AntDesign['glyphMap'];
 
 type AntDesignIcon = {
-  iconName: AndDesignIconNames;
+  iconName: AntDesignIconNames;
   IconFamily: typeof AntDesign;
 };
 
