@@ -24,7 +24,7 @@ public class ElectionEncryptedVote {
 
   /**
    * @param questionId id of the question
-   * @param encryptedVote encrypted uniaue indice of the chosen vote
+   * @param encryptedVote encrypted unique indices of the chosen vote
    * @param writeInEnabled indicates if write in is enabled
    * @param encryptedWriteIn whether the election allows write-in
    * @param electionId the election id

@@ -88,7 +88,7 @@ public final class Lao implements Copyable<Lao> {
     this.witnesses = new HashSet<>(lao.witnesses);
     this.witnessMessages = new HashMap<>(lao.witnessMessages);
     this.pendingUpdates = new HashSet<>(lao.pendingUpdates);
-    this.elections = Copyable.copy(lao.elections);
+    this.elections = new HashMap<>(lao.elections);
     // FIXME We need to keep the ElectInstance because the current consensus relies on references
     // (Gabriel Fleischer 11.08.22)
     this.messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);

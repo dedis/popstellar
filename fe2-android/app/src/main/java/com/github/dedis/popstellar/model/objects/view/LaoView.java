@@ -65,11 +65,8 @@ public final class LaoView {
     return lao.getChannel();
   }
 
-
   public Optional<Election> getElection(String id) {
-    Optional<Election> electionOption = lao.getElection(id);
-    return electionOption.map(Election::new); // If empty returns empty optional, if not
-    // returns optional with copy of retrieved Election
+    return lao.getElection(id);
   }
 
   public Set<PublicKey> getWitnesses() {
@@ -89,7 +86,7 @@ public final class LaoView {
   }
 
   public Map<String, Election> getElections() {
-    return Copyable.copy(lao.getElections());
+    return new HashMap<>(lao.getElections());
   }
 
   public Map<MessageID, WitnessMessage> getWitnessMessages() {
