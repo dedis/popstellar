@@ -92,14 +92,6 @@ export interface WalletCompositionConfiguration {
   getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
 
   useRollCallTokensByLaoId: (laoId: Hash) => RollCallToken[];
-
-  /**
-   * A list of item generators that given a laoId return a list of items
-   * to be displayed in the wallet for a given lao
-   */
-  walletItemGenerators: WalletFeature.WalletItemGenerator[];
-
-  walletNavigationScreens: WalletFeature.WalletScreen[];
 }
 
 /**
@@ -107,9 +99,6 @@ export interface WalletCompositionConfiguration {
  */
 export type WalletReactContext = Pick<
   WalletCompositionConfiguration,
-  /* parameters */
-  | 'walletItemGenerators'
-  | 'walletNavigationScreens'
   /* lao */
   | 'useCurrentLaoId'
   | 'useCurrentLao'

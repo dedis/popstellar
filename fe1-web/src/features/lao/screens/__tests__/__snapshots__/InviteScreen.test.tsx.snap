@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
+exports[`LaoHomeScreen renders correctly 1`] = `
 <View
   style={
     Object {
@@ -328,218 +328,225 @@ exports[`DigitalCashWalletItems renders correctly for organizers 1`] = `
                       }
                     >
                       <View
-                        accessible={true}
-                        collapsable={false}
-                        focusable={true}
-                        onBlur={[Function]}
-                        onClick={[Function]}
-                        onFocus={[Function]}
-                        onResponderGrant={[Function]}
-                        onResponderMove={[Function]}
-                        onResponderRelease={[Function]}
-                        onResponderTerminate={[Function]}
-                        onResponderTerminationRequest={[Function]}
-                        onStartShouldSetResponder={[Function]}
                         style={
-                          Array [
-                            Object {
-                              "backgroundColor": "#fff",
-                            },
-                            Object {
-                              "borderTopLeftRadius": 8,
-                              "borderTopRightRadius": 8,
-                            },
-                          ]
+                          Object {
+                            "flex": 1,
+                          }
                         }
                       >
-                        <View
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={2}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
                           style={
                             Object {
-                              "alignItems": "center",
-                              "backgroundColor": "#fff",
-                              "borderColor": "#bcbbc1",
-                              "borderTopLeftRadius": 8,
-                              "borderTopRightRadius": 8,
-                              "flexDirection": "row",
-                              "padding": 14,
+                              "padding": 16,
                             }
                           }
-                          testID="RNE__LISTITEM__padView"
                         >
-                          <View
-                            style={
-                              Object {
-                                "marginRight": 16,
-                              }
-                            }
-                          >
+                          <View>
                             <View>
-                              {"name":"attach-money","size":25,"color":"#000"}
-                            </View>
-                          </View>
-                          <View
-                            style={
-                              Object {
-                                "paddingLeft": 16,
-                              }
-                            }
-                          />
-                          <View
-                            style={
-                              Array [
-                                Object {
-                                  "alignItems": "flex-start",
-                                  "flex": 1,
-                                  "justifyContent": "center",
-                                },
-                                undefined,
-                              ]
-                            }
-                            theme={
-                              Object {
-                                "colors": Object {
-                                  "background": "#ffffff",
-                                  "black": "#242424",
-                                  "disabled": "hsl(208, 8%, 90%)",
-                                  "divider": "#bcbbc1",
-                                  "error": "#ff190c",
-                                  "grey0": "#393e42",
-                                  "grey1": "#43484d",
-                                  "grey2": "#5e6977",
-                                  "grey3": "#86939e",
-                                  "grey4": "#bdc6cf",
-                                  "grey5": "#e1e8ee",
-                                  "greyOutline": "#bbb",
-                                  "platform": Object {
-                                    "android": Object {
-                                      "error": "#f44336",
-                                      "grey": "rgba(0, 0, 0, 0.54)",
-                                      "primary": "#2196f3",
-                                      "searchBg": "#dcdce1",
-                                      "secondary": "#9C27B0",
-                                      "success": "#4caf50",
-                                      "warning": "#ffeb3b",
-                                    },
-                                    "default": Object {
-                                      "error": "#ff3b30",
-                                      "grey": "#7d7d7d",
-                                      "primary": "#007aff",
-                                      "searchBg": "#dcdce1",
-                                      "secondary": "#5856d6",
-                                      "success": "#4cd964",
-                                      "warning": "#ffcc00",
-                                    },
-                                    "ios": Object {
-                                      "error": "#ff3b30",
-                                      "grey": "#7d7d7d",
-                                      "primary": "#007aff",
-                                      "searchBg": "#dcdce1",
-                                      "secondary": "#5856d6",
-                                      "success": "#4cd964",
-                                      "warning": "#ffcc00",
-                                    },
-                                    "web": Object {
-                                      "error": "#ff190c",
-                                      "grey": "#393e42",
-                                      "primary": "#2089dc",
-                                      "searchBg": "#303337",
-                                      "secondary": "#ca71eb",
-                                      "success": "#52c41a",
-                                      "warning": "#faad14",
-                                    },
-                                  },
-                                  "primary": "#2089dc",
-                                  "searchBg": "#303337",
-                                  "secondary": "#03dac4",
-                                  "success": "#52c41a",
-                                  "warning": "#faad14",
-                                  "white": "#ffffff",
-                                },
-                                "spacing": Object {
-                                  "lg": 12,
-                                  "md": 8,
-                                  "sm": 4,
-                                  "xl": 24,
-                                  "xs": 2,
-                                },
-                              }
-                            }
-                          >
-                            <Text
-                              accessibilityRole="text"
-                              style={
-                                Object {
-                                  "backgroundColor": "transparent",
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                }
-                              }
-                              testID="listItemTitle"
-                            >
-                              Digital Cash Account
-                            </Text>
-                            <Text
-                              accessibilityRole="text"
-                              style={
-                                Object {
-                                  "backgroundColor": "transparent",
-                                  "color": "#242424",
-                                  "fontSize": 16,
-                                  "lineHeight": 20,
-                                }
-                              }
-                              testID="listItemTitle"
-                            >
-                              Your account balance
-                              : $
-                              10
-                            </Text>
-                          </View>
-                          <View
-                            style={
-                              Object {
-                                "paddingLeft": 16,
-                              }
-                            }
-                          />
-                          <View
-                            style={
-                              Object {
-                                "alignSelf": "center",
-                                "overflow": "hidden",
-                              }
-                            }
-                            testID="RNE__ICON__CONTAINER"
-                          >
-                            <View
-                              accessibilityRole="button"
-                              android_ripple={
-                                Object {
-                                  "borderless": false,
-                                  "color": "rgba(0, 0, 0, 0.3)",
-                                  "radius": -5,
-                                }
-                              }
-                              disabled={false}
-                              testID="RNE__ICON__CONTAINER_ACTION"
-                            >
                               <View
                                 style={
                                   Object {
-                                    "alignItems": "center",
-                                    "backgroundColor": "transparent",
-                                    "justifyContent": "center",
+                                    "marginVertical": 8,
                                   }
                                 }
-                                testID="RNE__ICON"
                               >
-                                <Text />
+                                <qrcode
+                                  overlayText="Scan to
+Connect"
+                                  value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                                />
                               </View>
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "fontWeight": "bold",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  Name
+                                </Text>
+                                
+
+                                <Text
+                                  selectable={true}
+                                >
+                                  MyLao
+                                </Text>
+                              </Text>
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "fontWeight": "bold",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  Your role
+                                </Text>
+                                
+
+                                <Text>
+                                  Attendee
+                                </Text>
+                              </Text>
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "fontWeight": "bold",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  You are currently connected to
+                                </Text>
+                                
+
+                                <Text
+                                  selectable={true}
+                                />
+                              </Text>
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                <Text
+                                  style={
+                                    Array [
+                                      Object {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      },
+                                      Object {
+                                        "fontWeight": "bold",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  Identifier
+                                </Text>
+                                
+
+                                <Text
+                                  selectable={true}
+                                >
+                                  -
+                                  M
+                                  2
+                                  5
+                                  9
+                                  c
+                                  5
+                                  J
+                                  l
+                                  a
+                                  k
+                                  L
+                                  V
+                                  l
+                                  X
+                                  B
+                                  R
+                                  a
+                                  8
+                                  9
+                                  3
+                                  p
+                                  c
+                                  E
+                                  -
+                                  4
+                                  s
+                                  7
+                                  s
+                                  s
+                                  O
+                                  8
+                                  J
+                                  v
+                                  5
+                                  g
+                                  X
+                                  O
+                                  v
+                                  t
+                                  r
+                                  e
+                                  E
+                                  =
+                                </Text>
+                              </Text>
                             </View>
                           </View>
-                        </View>
+                        </RCTScrollView>
                       </View>
                     </View>
                   </View>
