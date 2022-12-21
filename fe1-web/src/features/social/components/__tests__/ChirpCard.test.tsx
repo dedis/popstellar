@@ -54,11 +54,9 @@ jest.mock('features/social/network/SocialMessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useSelector: jest.fn(() => ({
-    1234: {
-      '👍': 1,
-      '👎': 0,
-      '❤️': 0,
-    },
+    '👍': 1,
+    '👎': 0,
+    '❤️': 0,
   })),
 }));
 

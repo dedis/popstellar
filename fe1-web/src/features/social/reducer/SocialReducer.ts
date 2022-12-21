@@ -276,33 +276,79 @@ export const makeChirpsListOfUser = (laoId?: Hash) => (user?: PublicKey) => {
   );
 };
 
-const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
-  '👍': reactionByUser['👍'] ? reactionByUser['👍'].length : 0,
-  '👎': reactionByUser['👎'] ? reactionByUser['👎'].length : 0,
-  '❤️': reactionByUser['❤️'] ? reactionByUser['❤️'].length : 0,
-});
+export const makeReactionCountsSelector = (laoId: Hash, chirpId: Hash) =>
+  createSelector(selectSocialState, (state: SocialLaoReducerState): Record<string, number> => {
+    const serializedLaoId = laoId.toState();
+    const serializedChirpId = chirpId.toState();
+    const byLaoId = state.byLaoId[serializedLaoId];
 
-export const makeReactionsList = (laoId?: Hash) =>
-  createSelector(
-    selectSocialState,
-    (list: SocialLaoReducerState): Record<string, Record<string, number>> => {
-      const serializedLaoId = laoId?.valueOf();
+    if (!byLaoId || !byLaoId.reactionsByChirp[serializedChirpId]) {
+      // no reactions so far
+      return {
+        '👍': 0,
+        '👎': 0,
+        '❤️': 0,
+      };
+    }
 
-      if (!serializedLaoId) {
-        return {};
-      }
+    const byChirpId = byLaoId.reactionsByChirp[serializedChirpId];
 
-      if (list.byLaoId[serializedLaoId]) {
-        const store = list.byLaoId[serializedLaoId];
-        const reactions: Record<string, Record<string, number>> = {};
-        store.allIdsInOrder.forEach((id) => {
-          const chirpReactions = store.reactionsByChirp[id];
-          if (chirpReactions) {
-            reactions[id] = createReactionsEntry(chirpReactions);
-          }
-        });
-        return reactions;
-      }
-      return {};
-    },
-  );
+    return {
+      '👍': byChirpId['👍'] ? byChirpId['👍'].length : 0,
+      '👎': byChirpId['👎'] ? byChirpId['👎'].length : 0,
+      '❤️': byChirpId['❤️'] ? byChirpId['❤️'].length : 0,
+    };
+  });
+
+export const makeHasReactedSelector = (laoId: Hash, chirpId: Hash, user?: PublicKey) =>
+  createSelector(selectSocialState, (state: SocialLaoReducerState): Record<string, boolean> => {
+    const serializedLaoId = laoId.toState();
+    const serializedChirpId = chirpId.toState();
+    const serializedPublicKey = user?.toState();
+    const byLaoId = state.byLaoId[serializedLaoId];
+
+    if (!serializedPublicKey || !byLaoId || !byLaoId.reactionsByChirp[serializedChirpId]) {
+      // no reactions so far
+      return {
+        '👍': false,
+        '👎': false,
+        '❤️': false,
+      };
+    }
+
+    const byChirpId = byLaoId.reactionsByChirp[serializedChirpId];
+
+    return {
+      '👍': byChirpId['👍'] ? byChirpId['👍'].includes(serializedPublicKey) : false,
+      '👎': byChirpId['👎'] ? byChirpId['👎'].includes(serializedPublicKey) : false,
+      '❤️': byChirpId['❤️'] ? byChirpId['❤️'].includes(serializedPublicKey) : false,
+    };
+  });
+
+export const makeTopChirpsSelector = (laoId: Hash, max: number) =>
+  createSelector(selectSocialState, (state: SocialLaoReducerState): Chirp[] => {
+    const serializedLaoId = laoId.toState();
+    const byLaoId = state.byLaoId[serializedLaoId];
+
+    if (!byLaoId) {
+      return [];
+    }
+
+    const scorePerId = byLaoId.allIdsInOrder
+      .map<[string, number]>((chirpId) => {
+        const byChirpId = byLaoId.reactionsByChirp[chirpId] || {};
+        const score =
+          (byChirpId['👍']?.length || 0) +
+          (byChirpId['❤️']?.length || 0) -
+          (byChirpId['👎']?.length || 0);
+
+        return [chirpId, score];
+      })
+      // filter deleted chirps
+      .filter((tuple) => !byLaoId.byId[tuple[0]].isDeleted);
+
+    // sort for highest scores
+    scorePerId.sort((a, b) => b[1] - a[1]);
+
+    return scorePerId.slice(0, max).map((tuple) => Chirp.fromState(byLaoId.byId[tuple[0]]));
+  });

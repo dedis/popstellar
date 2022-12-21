@@ -21,229 +21,48 @@ exports[`SocialHome renders correctly 1`] = `
     }
   >
     <View>
-      <View
+      <Text
         style={
-          Object {
-            "flexDirection": "column",
-          }
+          Array [
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+          ]
         }
       >
-        <View
-          style={
+        So far nobody has published a chirp and you could be the first one to do so!
+      </Text>
+      <Text
+        style={
+          Array [
             Object {
-              "backgroundColor": "#fff",
-              "borderColor": "#000",
-              "borderRadius": 8,
-              "flexDirection": "row",
-              "padding": 16,
-            }
-          }
-        >
-          <View
-            style={
-              Object {
-                "marginRight": 16,
-              }
-            }
-          >
-            <blockies
-              bgColor="#ffffff"
-              scale={5}
-              seed="oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms="
-              size={8}
-              spotColor="#008ec2"
-            />
-          </View>
-          <View
-            style={
-              Object {
-                "display": "flex",
-                "flexDirection": "column",
-                "flexGrow": 1,
-              }
-            }
-          >
-            <TextInput
-              multiline={true}
-              numberOfLines={5}
-              onChangeText={[Function]}
-              placeholder="Your chirp"
-              placeholderTextColor="#8E8E8E"
-              selectTextOnFocus={true}
-              style={
-                Array [
-                  Object {
-                    "color": "#000",
-                    "fontSize": 20,
-                    "lineHeight": 26,
-                    "textAlign": "left",
-                  },
-                  Object {
-                    "alignContent": "flex-end",
-                    "borderColor": "#000",
-                    "borderRadius": 8,
-                    "borderWidth": 1,
-                    "padding": 16,
-                  },
-                ]
-              }
-              testID="new_chirp_input"
-              value=""
-            />
-            <View
-              style={
-                Object {
-                  "alignItems": "center",
-                  "alignSelf": "flex-end",
-                  "flexDirection": "row",
-                  "marginTop": 16,
-                }
-              }
-            >
-              <View
-                style={
-                  Object {
-                    "marginRight": 16,
-                  }
-                }
-              >
-                <Text
-                  style={
-                    Array [
-                      Object {
-                        "color": "#000",
-                        "fontSize": 20,
-                        "lineHeight": 26,
-                        "textAlign": "left",
-                      },
-                    ]
-                  }
-                >
-                  300
-                </Text>
-              </View>
-              <View
-                accessible={true}
-                collapsable={false}
-                focusable={true}
-                onBlur={[Function]}
-                onClick={[Function]}
-                onFocus={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                style={Object {}}
-                testID="new_chirp_publish"
-              >
-                <RNGestureHandlerButton
-                  collapsable={false}
-                  exclusive={true}
-                  handlerTag={2}
-                  handlerType="NativeViewGestureHandler"
-                  onGestureEvent={[Function]}
-                  onGestureHandlerEvent={[Function]}
-                  onGestureHandlerStateChange={[Function]}
-                  onHandlerStateChange={[Function]}
-                  rippleColor={0}
-                  touchSoundDisabled={false}
-                >
-                  <View
-                    accessible={true}
-                    collapsable={false}
-                    style={
-                      Object {
-                        "opacity": 1,
-                      }
-                    }
-                  >
-                    <View
-                      style={
-                        Array [
-                          Object {
-                            "backgroundColor": "#3742fa",
-                            "borderColor": "#3742fa",
-                            "borderRadius": 8,
-                            "borderWidth": 1,
-                            "padding": 8,
-                          },
-                          Object {
-                            "backgroundColor": "#8E8E8E",
-                            "borderColor": "#8E8E8E",
-                          },
-                        ]
-                      }
-                    >
-                      <Text
-                        style={
-                          Array [
-                            Object {
-                              "color": "#000",
-                              "fontSize": 20,
-                              "lineHeight": 26,
-                              "textAlign": "left",
-                            },
-                            Object {
-                              "textAlign": "center",
-                            },
-                            Object {
-                              "color": "#fff",
-                            },
-                          ]
-                        }
-                      >
-                        Publish
-                      </Text>
-                    </View>
-                  </View>
-                </RNGestureHandlerButton>
-              </View>
-            </View>
-          </View>
-        </View>
-        <View
-          style={
-            Array [
-              Object {
-                "borderRadius": 8,
-                "marginBottom": 16,
-              },
-              Object {
-                "marginTop": 16,
-              },
-            ]
-          }
-        >
-          <RCTScrollView
-            collapsable={false}
-            data={Array []}
-            getItem={[Function]}
-            getItemCount={[Function]}
-            handlerTag={3}
-            handlerType="NativeViewGestureHandler"
-            keyExtractor={[Function]}
-            onContentSizeChange={[Function]}
-            onGestureHandlerEvent={[Function]}
-            onGestureHandlerStateChange={[Function]}
-            onLayout={[Function]}
-            onMomentumScrollBegin={[Function]}
-            onMomentumScrollEnd={[Function]}
-            onScroll={[Function]}
-            onScrollBeginDrag={[Function]}
-            onScrollEndDrag={[Function]}
-            removeClippedSubviews={false}
-            renderItem={[Function]}
-            renderScrollComponent={[Function]}
-            scrollEventThrottle={50}
-            stickyHeaderIndices={Array []}
-            viewabilityConfigCallbackPairs={Array []}
-          >
-            <View />
-          </RCTScrollView>
-        </View>
-      </View>
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+          ]
+        }
+      >
+        The button for doing so is located in the navigation bar all the way to the right. Be creative ✨
+      </Text>
     </View>
   </RCTScrollView>
 </View>

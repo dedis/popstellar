@@ -1,66 +1,44 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
+import React, { useCallback, useContext, useMemo } from 'react';
+import { ListRenderItemInfo, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
+import { PoPIcon } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { List, Spacing } from 'core/styles';
-import { FOUR_SECONDS } from 'resources/const';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { SocialHomeParamList } from 'core/navigation/typing/SocialHomeParamList';
+import { SocialParamList } from 'core/navigation/typing/SocialParamList';
+import { Color, Icon, List, Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 
-import { ChirpCard, TextInputChirp } from '../components';
+import { ChirpCard } from '../components';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
-import { requestAddChirp } from '../network/SocialMessageApi';
 import { Chirp } from '../objects';
 import { makeChirpsList } from '../reducer';
 
-/**
- * UI for the Social Media home screen component
- */
-
-const styles = StyleSheet.create({
-  userFeed: {
-    flexDirection: 'column',
-  } as ViewStyle,
-  chirpList: {
-    marginTop: Spacing.x1,
-  } as ViewStyle,
-});
+type NavigationProps = CompositeScreenProps<
+  CompositeScreenProps<
+    StackScreenProps<SocialHomeParamList, typeof STRINGS.social_media_home_navigation_home>,
+    StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_home>
+  >,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
 
 const SocialHome = () => {
-  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
-  const [inputChirp, setInputChirp] = useState('');
-  const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
-  const isConnected = SocialHooks.useConnectedToLao();
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
 
   if (laoId === undefined) {
     throw new Error('Impossible to render Social Home, current lao id is undefined');
   }
-
-  // The publish button is disabled in offline mode and when the user public key is not defined
-  const publishDisabled = !isConnected || !currentUserPopTokenPublicKey;
-
-  const publishChirp = () => {
-    // button is disabled if publicKey is not set
-    if (!currentUserPopTokenPublicKey) {
-      return;
-    }
-
-    requestAddChirp(currentUserPopTokenPublicKey, inputChirp, laoId)
-      .then(() => {
-        setInputChirp('');
-      })
-      .catch((err) => {
-        console.error('Failed to post chirp, error:', err);
-        toast.show(`Failed to post chirp, error: ${err}`, {
-          type: 'danger',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
-      });
-  };
 
   const chirps = useMemo(() => makeChirpsList(laoId), [laoId]);
   const chirpList = useSelector(chirps);
@@ -72,26 +50,51 @@ const SocialHome = () => {
     [chirpList],
   );
 
+  if (chirpList.length === 0) {
+    return (
+      <ScreenWrapper>
+        <Text style={[Typography.base, Typography.paragraph]}>
+          {STRINGS.social_media_create_chirps_yet}
+        </Text>
+        {currentUserPopTokenPublicKey ? (
+          <Text style={[Typography.base, Typography.paragraph]}>
+            {STRINGS.social_media_howto_create_chirps}
+          </Text>
+        ) : (
+          <Text style={[Typography.base, Typography.paragraph]}>
+            {STRINGS.social_media_create_chirp_no_pop_token}
+          </Text>
+        )}
+      </ScreenWrapper>
+    );
+  }
+
   return (
     <ScreenWrapper>
-      <View style={styles.userFeed}>
-        <TextInputChirp
-          testID="new_chirp"
-          value={inputChirp}
-          onChangeText={setInputChirp}
-          onPress={publishChirp}
-          disabled={publishDisabled}
-          currentUserPublicKey={currentUserPopTokenPublicKey}
+      <View style={List.container}>
+        <FlatList
+          data={chirpList}
+          renderItem={renderChirp}
+          keyExtractor={(item) => item.id.toString()}
         />
-        <View style={[List.container, styles.chirpList]}>
-          <FlatList
-            data={chirpList}
-            renderItem={renderChirp}
-            keyExtractor={(item) => item.id.toString()}
-          />
-        </View>
       </View>
     </ScreenWrapper>
+  );
+};
+
+export const SocialHomeTopRight = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
+
+  return (
+    <PoPTouchableOpacity
+      onPress={() =>
+        navigation.navigate(STRINGS.social_media_navigation_tab_home, {
+          screen: STRINGS.social_media_home_navigation_new_chirp,
+        })
+      }
+      testID="create_chirp_selector">
+      <PoPIcon name="create" color={Color.inactive} size={Icon.size} />
+    </PoPTouchableOpacity>
   );
 };
 

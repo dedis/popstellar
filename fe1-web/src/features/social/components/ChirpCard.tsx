@@ -16,7 +16,7 @@ import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
 import { Chirp } from '../objects';
-import { makeReactionsList } from '../reducer';
+import { makeHasReactedSelector, makeReactionCountsSelector } from '../reducer';
 
 /**
  * Component to display a chirp
@@ -62,16 +62,29 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     throw new Error('Impossible to render chirp, current lao id is undefined');
   }
 
-  const reactionList = useMemo(() => makeReactionsList(laoId), [laoId]);
-  const reactions = useSelector(reactionList)[chirp.id.toState()];
+  const selectReactionList = useMemo(
+    () => makeReactionCountsSelector(laoId, chirp.id),
+    [laoId, chirp.id],
+  );
+  const reactions = useSelector(selectReactionList);
 
-  const thumbsUp = reactions ? reactions['👍'] : 0;
-  const thumbsDown = reactions ? reactions['👎'] : 0;
-  const heart = reactions ? reactions['❤️'] : 0;
+  const selectHasReacted = useMemo(
+    () => makeHasReactedSelector(laoId, chirp.id, currentUserPopTokenPublicKey),
+    [laoId, chirp.id, currentUserPopTokenPublicKey],
+  );
+  const hasReacted = useSelector(selectHasReacted);
+
+  const thumbsUp = reactions['👍'];
+  const thumbsDown = reactions['👎'];
+  const heart = reactions['❤️'];
+
+  const reactionsDisabled = {
+    '👍': !isConnected || !currentUserPopTokenPublicKey || hasReacted['👍'],
+    '👎': !isConnected || !currentUserPopTokenPublicKey || hasReacted['👎'],
+    '❤️': !isConnected || !currentUserPopTokenPublicKey || hasReacted['❤️'],
+  };
 
   const showActionSheet = useActionSheet();
-
-  const addReactionDisabled = !isConnected || !currentUserPopTokenPublicKey;
 
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
@@ -138,7 +151,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   name="thumbsUp"
                   testID="thumbs-up"
                   onPress={() => addReaction('👍')}
-                  disabled={addReactionDisabled}
+                  disabled={reactionsDisabled['👍']}
                   size="small"
                   toolbar
                 />
@@ -151,7 +164,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   name="thumbsDown"
                   testID="thumbs-down"
                   onPress={() => addReaction('👎')}
-                  disabled={addReactionDisabled}
+                  disabled={reactionsDisabled['👎']}
                   size="small"
                   toolbar
                 />
@@ -164,7 +177,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   name="heart"
                   testID="heart"
                   onPress={() => addReaction('❤️')}
-                  disabled={addReactionDisabled}
+                  disabled={reactionsDisabled['❤️']}
                   size="small"
                   toolbar
                 />

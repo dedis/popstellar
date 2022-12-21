@@ -1,7 +1,7 @@
 import { CompositeScreenProps, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
@@ -39,11 +39,11 @@ const SocialUserProfile = () => {
 
   if (!userPublicKey) {
     return (
-      <View>
+      <ScreenWrapper>
         <Text style={Typography.base}>
           Impossible to load profile of user: public key not provided.
         </Text>
-      </View>
+      </ScreenWrapper>
     );
   }
 

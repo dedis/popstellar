@@ -101,8 +101,12 @@ namespace STRINGS {
   export const navigation_digital_cash_wallet_scanner = 'Digital Cash Scanner';
 
   /* --- Social Media Navigation Strings --- */
-  export const social_media_navigation_tab_home = 'Home';
+  export const social_media_navigation_tab_home = 'Social Media Home Navigtion';
   export const social_media_navigation_tab_home_title = 'Feed';
+
+  export const social_media_home_navigation_home = 'Social Media Home';
+  export const social_media_home_navigation_home_title = 'Feed';
+  export const social_media_home_navigation_new_chirp = 'New Chirp';
 
   export const social_media_navigation_tab_search = 'User List';
   export const social_media_navigation_tab_top_chirps = 'Top Chirps';
@@ -142,6 +146,14 @@ namespace STRINGS {
   export const attendees_of_last_roll_call = 'Attendees of last roll-call';
   export const profile_button = 'Profile';
   export const social_media_delete_chirp = 'Delete Chirp';
+  export const social_media_create_chirps_yet =
+    'So far nobody has published a chirp and you could be the first one to do so!';
+  export const social_media_howto_create_chirps =
+    'The button for doing so is located in the navigation bar all the way to the right. Be creative ✨';
+  export const social_media_create_chirp_no_pop_token =
+    'In order to post chirps, you first need to participate in a roll-call.';
+  export const social_media_user_list_unavailable =
+    'In order to see other roll call participants you yourself first need to participate in one.';
   export const social_media_your_profile_unavailable =
     'You do not have a social media profile yet, be sure to have participated in a roll-call.';
   export const modal_chirp_deletion_title = 'Chirp deletion';
