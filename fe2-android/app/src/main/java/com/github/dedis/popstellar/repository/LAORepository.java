@@ -36,26 +36,6 @@ public class LAORepository {
   }
 
   /**
-   * Retrieves the Election in a given channel
-   *
-   * @param channel the channel on which the election was created
-   * @return the election corresponding to this channel
-   */
-  public Election getElectionByChannel(Channel channel) {
-    Log.d(TAG, "querying election for channel " + channel);
-
-    if (!channel.isElectionChannel())
-      throw new IllegalArgumentException("invalid channel for an election : " + channel);
-
-    Lao lao = getLaoByChannel(channel);
-    Optional<Election> electionOption = lao.getElection(channel.extractElectionId());
-    if (!electionOption.isPresent()) {
-      throw new IllegalArgumentException("the election should be present when receiving a result");
-    }
-    return electionOption.get();
-  }
-
-  /**
    * Retrieves the Lao in a given channel
    *
    * @param channel the channel on which the Lao was created

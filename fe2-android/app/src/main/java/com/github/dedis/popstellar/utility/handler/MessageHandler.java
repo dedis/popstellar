@@ -36,7 +36,8 @@ public final class MessageHandler {
    * @param message the message that was received
    */
   public void handleMessage(MessageSender messageSender, Channel channel, MessageGeneral message)
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException {
     Log.d(TAG, "handle incoming message");
     // Put the message in the state
     messageRepo.addMessage(message);
