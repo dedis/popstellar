@@ -63,7 +63,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
   }
 
   const reactionList = useMemo(() => makeReactionsList(laoId), [laoId]);
-  const reactions = useSelector(reactionList)[chirp.id.toString()];
+  const reactions = useSelector(reactionList)[chirp.id.toState()];
 
   const thumbsUp = reactions ? reactions['👍'] : 0;
   const thumbsDown = reactions ? reactions['👎'] : 0;

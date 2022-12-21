@@ -103,10 +103,13 @@ namespace STRINGS {
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
   export const social_media_navigation_tab_home_title = 'Feed';
+
   export const social_media_navigation_tab_search = 'User List';
+  export const social_media_navigation_tab_top_chirps = 'Top Chirps';
   export const social_media_navigation_tab_profile = 'My Profile';
-  export const social_media_navigation_tab_user_profile = 'User profile';
-  export const social_media_navigation_tab_attendee_list = 'List of attendees';
+
+  export const social_media_search_navigation_user_profile = 'User profile';
+  export const social_media_search_navigation_attendee_list = 'List of attendees';
 
   /* --- Lao Strings --- */
   export const lao_properties_modal_heading = 'Lao Properties';
@@ -137,7 +140,6 @@ namespace STRINGS {
   export const your_chirp = 'Your chirp';
   export const deleted_chirp = 'This chirp was deleted';
   export const attendees_of_last_roll_call = 'Attendees of last roll-call';
-  export const follow_button = 'Follow';
   export const profile_button = 'Profile';
   export const social_media_delete_chirp = 'Delete Chirp';
   export const social_media_your_profile_unavailable =

@@ -12,7 +12,7 @@ import STRINGS from 'resources/strings';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import { SocialHome, SocialProfile } from '../screens';
+import { SocialHome, SocialProfile, SocialTopChirps } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
 const Tab = createBottomTabNavigator<SocialParamList>();
@@ -20,7 +20,7 @@ const Tab = createBottomTabNavigator<SocialParamList>();
 const iconSelector =
   (routeName: string) =>
   ({ color }: { color: string }) => {
-    let iconName: 'home' | 'people' | 'person' | 'stop';
+    let iconName: 'home' | 'people' | 'medal' | 'person' | 'stop';
 
     switch (routeName) {
       case STRINGS.social_media_navigation_tab_home:
@@ -28,6 +28,9 @@ const iconSelector =
         break;
       case STRINGS.social_media_navigation_tab_search:
         iconName = 'people';
+        break;
+      case STRINGS.social_media_navigation_tab_top_chirps:
+        iconName = 'medal';
         break;
       case STRINGS.social_media_navigation_tab_profile:
         iconName = 'person';
@@ -103,6 +106,10 @@ const SocialMediaNavigation = () => {
           name={STRINGS.social_media_navigation_tab_home}
           component={SocialHome}
           options={{ title: STRINGS.social_media_navigation_tab_home_title }}
+        />
+        <Tab.Screen
+          name={STRINGS.social_media_navigation_tab_top_chirps}
+          component={SocialTopChirps}
         />
         <Tab.Screen
           name={STRINGS.social_media_navigation_tab_search}

@@ -15,7 +15,10 @@ import Profile from '../components/Profile';
 import { SocialHooks } from '../hooks';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<SocialSearchParamList, typeof STRINGS.social_media_navigation_tab_user_profile>,
+  StackScreenProps<
+    SocialSearchParamList,
+    typeof STRINGS.social_media_search_navigation_user_profile
+  >,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>

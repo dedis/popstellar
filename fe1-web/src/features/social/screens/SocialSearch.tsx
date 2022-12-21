@@ -35,13 +35,12 @@ const SocialSearch = () => {
   const renderAttendee = React.useCallback(
     ({ item: attendee, index: i }: ListRenderItemInfo<PublicKey>) => (
       <UserListItem
-        laoId={currentLao.id}
         publicKey={attendee}
         isFirstItem={i === 0}
         isLastItem={i === attendees.length - 1}
       />
     ),
-    [currentLao.id, attendees],
+    [attendees],
   );
 
   return (
