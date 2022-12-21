@@ -36,7 +36,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-NACK")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbWithAck: AskableActorRef = {
@@ -56,7 +56,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
           sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ACK")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbWithAckAndNotifyNAck: AskableActorRef = {
@@ -83,7 +83,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
           sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ACK-NAck-on-Notify")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbWithAckButEmptyAckLaoData: AskableActorRef = {
@@ -103,7 +103,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
           sender() ! Status.Failure(DbActorNAckException(1, "No corresponding lao data (mocked)"))
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ACK-EmptyAckLaoData")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbWithAckButNAckLaoData: AskableActorRef = {
@@ -123,7 +123,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ACK-NAckLaoData")
+    system.actorOf(dbActorMock)
   }
 
   test("AddReaction fails if the database fails storing the message") {

@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -61,8 +63,16 @@ public final class Broadcast extends Message {
     return Objects.hash(super.hashCode(), getMessage());
   }
 
+  @NonNull
   @Override
   public String toString() {
-    return "Broadcast{" + "channel='" + getChannel() + "', method='" + getMethod() + "'}";
+    return "Broadcast{"
+        + "channel='"
+        + getChannel()
+        + "', method='"
+        + getMethod()
+        + "', message="
+        + getMessage()
+        + "}";
   }
 }

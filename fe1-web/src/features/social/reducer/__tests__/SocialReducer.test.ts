@@ -17,6 +17,7 @@ import {
   mockChirpId0,
   mockChirpId1,
   mockChirpId2,
+  mockChirpId3,
   mockReaction1,
   mockReaction2,
   mockReaction3,
@@ -31,7 +32,9 @@ import {
   deleteChirp,
   makeChirpsList,
   makeChirpsListOfUser,
-  makeReactionsList,
+  makeHasReactedSelector,
+  makeReactionCountsSelector,
+  makeTopChirpsSelector,
   SocialLaoReducerState,
   socialReduce,
 } from '../SocialReducer';
@@ -404,14 +407,16 @@ const reactionFilledState44: SocialLaoReducerState = {
       byId: {
         [mockChirp1.id.toState()]: mockChirp1.toState(),
         [mockChirp2.id.toState()]: mockChirp2.toState(),
+        [mockChirp3.id.toState()]: { ...mockChirp3.toState(), isDeleted: true },
       },
       byUser: {
-        [mockChirp1.sender.toState()]: [mockChirp1.id.toState()],
+        [mockChirp1.sender.toState()]: [mockChirp1.id.toState(), mockChirp3.id.toState()],
         [mockChirp2.sender.toState()]: [mockChirp2.id.toState()],
       },
       reactionsByChirp: {
-        [mockChirpId1.toState()]: { '👍': [mockSender1.toState()] },
+        [mockChirpId1.toState()]: { '👍': [mockSender1.toState()], '👎': [mockSender2.toState()] },
         [mockChirpId2.toState()]: { '👍': [mockSender2.toState()] },
+        [mockChirpId3.toState()]: { '👍': [mockSender2.toState()] },
       },
     },
   },
@@ -566,62 +571,107 @@ describe('SocialReducer', () => {
     });
   });
 
-  describe('reaction selector', () => {
-    it('should return an empty record of reactionState when no lao is opened', () => {
-      expect(makeReactionsList(mockLaoId).resultFunc(emptyState)).toEqual({});
+  describe('makeReactionCountsSelector', () => {
+    it('should return zeros for an empty state', () => {
+      expect(makeReactionCountsSelector(mockLaoId, mockChirpId1).resultFunc(emptyState)).toEqual({
+        '👍': 0,
+        '👎': 0,
+        '❤️': 0,
+      });
     });
 
-    it('should return an empty record', () => {
-      expect(makeReactionsList(mockLaoId).resultFunc(emptyState)).toEqual({});
+    it('should return zeros for non-stored chirp', () => {
+      expect(
+        makeReactionCountsSelector(mockLaoId, mockChirpId2).resultFunc(reactionFilledState1),
+      ).toEqual({ '👍': 0, '👎': 0, '❤️': 0 });
     });
 
-    it('should return an empty record for non-stored chirp', () => {
-      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState1)).toEqual({});
-    });
-
-    it('should return the first reaction state', () => {
-      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState11)).toEqual({
-        [mockChirpId1.toString()]: {
-          '👍': [mockSender1],
-          '👎': [],
-          '❤️': [],
-        },
+    it('should return the correct counts', () => {
+      expect(
+        makeReactionCountsSelector(mockLaoId, mockChirpId1).resultFunc(reactionFilledState11),
+      ).toEqual({
+        '👍': 1,
+        '👎': 0,
+        '❤️': 0,
       });
     });
 
     it('should add reaction count correctly', () => {
-      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState22)).toEqual({
-        [mockChirpId1.toString()]: {
-          '👍': [mockSender1],
-          '👎': [],
-          '❤️': [mockSender1],
-        },
+      expect(
+        makeReactionCountsSelector(mockLaoId, mockChirpId1).resultFunc(reactionFilledState22),
+      ).toEqual({
+        '👍': 1,
+        '👎': 0,
+        '❤️': 1,
       });
     });
 
     it('should increment counter for new sender', () => {
-      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState33)).toEqual({
-        [mockChirpId1.toString()]: {
-          '👍': [mockSender1, mockSender2],
-          '👎': [],
-          '❤️': [mockSender1],
-        },
+      expect(
+        makeReactionCountsSelector(mockLaoId, mockChirpId1).resultFunc(reactionFilledState33),
+      ).toEqual({
+        '👍': 2,
+        '👎': 0,
+        '❤️': 1,
+      });
+    });
+  });
+
+  describe('makeHasReactedSelector', () => {
+    it('should return false for an empty state', () => {
+      expect(
+        makeHasReactedSelector(mockLaoId, mockChirpId1, mockSender1).resultFunc(emptyState),
+      ).toEqual({
+        '👍': false,
+        '👎': false,
+        '❤️': false,
       });
     });
 
-    it('should return state of two reaction', () => {
-      expect(makeReactionsList(mockLaoId).resultFunc(reactionFilledState44)).toEqual({
-        [mockChirpId1.toString()]: {
-          '👍': [mockSender1],
-          '👎': [],
-          '❤️': [],
-        },
-        [mockChirpId2.toString()]: {
-          '👍': [mockSender2],
-          '👎': [],
-          '❤️': [],
-        },
+    it('should return false for non-stored chirp', () => {
+      expect(
+        makeHasReactedSelector(mockLaoId, mockChirpId2, mockSender1).resultFunc(
+          reactionFilledState1,
+        ),
+      ).toEqual({ '👍': false, '👎': false, '❤️': false });
+    });
+
+    it('should return the reacted state correctly', () => {
+      expect(
+        makeHasReactedSelector(mockLaoId, mockChirpId1, mockSender1).resultFunc(
+          reactionFilledState11,
+        ),
+      ).toEqual({
+        '👍': true,
+        '👎': false,
+        '❤️': false,
       });
+    });
+  });
+
+  describe('makeTopChirpsSelector', () => {
+    it('should return an empty list for an empty state', () => {
+      expect(makeTopChirpsSelector(mockLaoId, 3).resultFunc(emptyState)).toEqual([]);
+    });
+
+    it('should return the chirps in the correct order', () => {
+      expect(makeTopChirpsSelector(mockLaoId, 2).resultFunc(reactionFilledState44)).toEqual([
+        mockChirp2,
+        mockChirp1,
+      ]);
+    });
+
+    it("should return at most 'max' chirps", () => {
+      expect(makeTopChirpsSelector(mockLaoId, 1).resultFunc(reactionFilledState44)).toEqual([
+        mockChirp2,
+      ]);
+    });
+
+    it('should omit deleted chirps', () => {
+      expect(makeTopChirpsSelector(mockLaoId, 3).resultFunc(reactionFilledState44)).toEqual([
+        mockChirp2,
+        mockChirp1,
+      ]);
     });
   });
 });

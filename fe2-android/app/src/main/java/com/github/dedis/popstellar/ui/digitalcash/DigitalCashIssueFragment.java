@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
-import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -147,10 +146,7 @@ public class DigitalCashIssueFragment extends Fragment {
     if (radioGroup == selectOneMember && !currentSelected.equals("")) {
       attendees.add(new PublicKey(currentSelected));
     } else if (radioGroup == selectAllLaoMembers) {
-      for (RollCall current :
-          Objects.requireNonNull(viewModel.getCurrentLaoValue()).getRollCalls().values()) {
-        attendees.addAll(current.getAttendees());
-      }
+      attendees = viewModel.getAllAttendees();
     } else if (radioGroup == selectAllRollCallAttendees) {
       attendees = viewModel.getAttendeesFromLastRollCall();
     } else if (radioGroup == selectAllLaoWitnesses) {
@@ -192,7 +188,7 @@ public class DigitalCashIssueFragment extends Fragment {
    *     issue to
    */
   private void postTransaction(Map<String, String> publicKeyAmount) {
-    if (viewModel.getLaoId().getValue() == null) {
+    if (viewModel.getLaoId() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();

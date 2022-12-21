@@ -9,7 +9,9 @@ import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
 import { SocialHooks } from '../hooks';
-import { makeChirpsList, makeReactionsList } from '../reducer';
+import { makeTopChirpsSelector } from '../reducer';
+
+const NUM_TOP_CHIRPS_TO_DISPLAY = 3;
 
 const SocialTopChirps = () => {
   const laoId = SocialHooks.useCurrentLaoId();
@@ -17,32 +19,15 @@ const SocialTopChirps = () => {
     throw new Error('Impossible to render Social Home, current lao id is undefined');
   }
 
-  const selectChirps = useMemo(() => makeChirpsList(laoId), [laoId]);
-  const chirps = useSelector(selectChirps);
+  const topChirpsSelector = useMemo(
+    () => makeTopChirpsSelector(laoId, NUM_TOP_CHIRPS_TO_DISPLAY),
+    [laoId],
+  );
+  const topChirps = useSelector(topChirpsSelector);
 
-  const selectReactions = useMemo(() => makeReactionsList(laoId), [laoId]);
-  const reactions = useSelector(selectReactions);
+  // sort the chirps in descending orde
 
-  // sort the chirps in descending order
-  const sortedChirpList = useMemo(() => {
-    return chirps.sort((a, b) => {
-      const reactionsA = reactions[a.id.toState()] || {};
-      const reactionsB = reactions[b.id.toState()] || {};
-
-      const scoreA =
-        (reactionsA['👍']?.length || 0) +
-        (reactionsA['❤️']?.length || 0) -
-        (reactionsA['👎']?.length || 0);
-      const scoreB =
-        (reactionsB['👍']?.length || 0) +
-        (reactionsB['❤️']?.length || 0) -
-        (reactionsB['👎']?.length || 0);
-
-      return scoreB - scoreA;
-    });
-  }, [chirps, reactions]);
-
-  if (sortedChirpList.length === 0) {
+  if (topChirps.length === 0) {
     return (
       <ScreenWrapper>
         <Text style={[Typography.base, Typography.paragraph]}>
@@ -55,12 +40,12 @@ const SocialTopChirps = () => {
   return (
     <ScreenWrapper>
       <View style={List.container}>
-        {sortedChirpList.map((chirp, i) => (
+        {topChirps.map((chirp, i) => (
           <ChirpCard
             key={chirp.id.toString()}
             chirp={chirp}
             isFirstItem={i === 0}
-            isLastItem={i === chirps.length - 1}
+            isLastItem={i === topChirps.length - 1}
           />
         ))}
       </View>
