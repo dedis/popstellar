@@ -3,18 +3,23 @@ import React from 'react';
 
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
+import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { SocialMediaContext } from 'features/social/context';
-import STRINGS from 'resources/strings';
 
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
-import {
-  requestAddReaction as mockRequestAddReaction,
-  requestDeleteChirp as mockRequestDeleteChirp,
-} from '../../network/SocialMessageApi';
+import { requestAddReaction as mockRequestAddReaction } from '../../network/SocialMessageApi';
 import { Chirp } from '../../objects';
 import ChirpCard from '../ChirpCard';
+
+jest.mock('core/hooks/ActionSheet.ts', () => {
+  const showActionSheet = jest.fn();
+  return { useActionSheet: () => showActionSheet };
+});
+
+// eslint-disable-next-line react-hooks/rules-of-hooks
+const showActionSheet = useActionSheet();
 
 // region test data
 const TIMESTAMP = 1609455600; // 31 December 2020
@@ -81,7 +86,7 @@ describe('ChirpCard', () => {
     return render(
       <FeatureContext.Provider value={contextValue}>
         <SocialMediaContext.Provider value={isSender ? senderContext : nonSenderContext}>
-          <ChirpCard chirp={c} />
+          <ChirpCard chirp={c} isFirstItem={false} isLastItem={false} />
         </SocialMediaContext.Provider>
       </FeatureContext.Provider>,
     );
@@ -101,11 +106,11 @@ describe('ChirpCard', () => {
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
-    it('calls delete correctly', () => {
-      const { getByTestId, getByText } = renderChirp(chirp, true);
-      fireEvent.press(getByTestId(`delete_chirp_${chirp.id}`));
-      fireEvent.press(getByText(STRINGS.general_yes));
-      expect(mockRequestDeleteChirp).toHaveBeenCalledTimes(1);
+    it('options shown correctly', async () => {
+      const { getByTestId } = renderChirp(chirp, true);
+      fireEvent.press(getByTestId(`chirp_action_options`));
+
+      expect(showActionSheet).toHaveBeenCalledTimes(1);
     });
 
     it('render correct for a deleted chirp', () => {

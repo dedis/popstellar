@@ -1,18 +1,18 @@
-import React, { useContext, useMemo, useState } from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
+import { ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { TextBlock } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { List, Spacing } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
-import STRINGS from 'resources/strings';
 
 import { ChirpCard, TextInputChirp } from '../components';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { requestAddChirp } from '../network/SocialMessageApi';
-import { Chirp, ChirpState } from '../objects';
+import { Chirp } from '../objects';
 import { makeChirpsList } from '../reducer';
 
 /**
@@ -20,17 +20,11 @@ import { makeChirpsList } from '../reducer';
  */
 
 const styles = StyleSheet.create({
-  viewCenter: {
-    alignSelf: 'center',
-    width: 600,
-  } as ViewStyle,
-  homeTextView: {
-    alignSelf: 'flex-start',
-    marginTop: 20,
-  } as ViewStyle,
   userFeed: {
     flexDirection: 'column',
-    marginTop: 20,
+  } as ViewStyle,
+  chirpList: {
+    marginTop: Spacing.x1,
   } as ViewStyle,
 });
 
@@ -71,28 +65,28 @@ const SocialHome = () => {
   const chirps = useMemo(() => makeChirpsList(laoId), [laoId]);
   const chirpList = useSelector(chirps);
 
-  const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} />
+  const renderChirp = useCallback(
+    ({ item: chirp, index: i }: ListRenderItemInfo<Chirp>) => (
+      <ChirpCard chirp={chirp} isFirstItem={i === 0} isLastItem={i === chirpList.length - 1} />
+    ),
+    [chirpList],
   );
 
   return (
     <ScreenWrapper>
-      <View style={styles.viewCenter}>
-        <View style={styles.homeTextView}>
-          <TextBlock text={STRINGS.social_media_navigation_tab_home} />
-        </View>
-        <View style={styles.userFeed}>
-          <TextInputChirp
-            testID="new_chirp"
-            value={inputChirp}
-            onChangeText={setInputChirp}
-            onPress={publishChirp}
-            disabled={publishDisabled}
-            currentUserPublicKey={currentUserPopTokenPublicKey}
-          />
+      <View style={styles.userFeed}>
+        <TextInputChirp
+          testID="new_chirp"
+          value={inputChirp}
+          onChangeText={setInputChirp}
+          onPress={publishChirp}
+          disabled={publishDisabled}
+          currentUserPublicKey={currentUserPopTokenPublicKey}
+        />
+        <View style={[List.container, styles.chirpList]}>
           <FlatList
             data={chirpList}
-            renderItem={renderChirpState}
+            renderItem={renderChirp}
             keyExtractor={(item) => item.id.toString()}
           />
         </View>

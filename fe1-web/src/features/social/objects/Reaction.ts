@@ -6,6 +6,7 @@ import {
   Timestamp,
   TimestampState,
 } from 'core/objects';
+import { OmitMethods } from 'core/types';
 
 /**
  * Object to represent a Reaction.
@@ -34,7 +35,7 @@ export class Reaction {
   // The time when the reaction was added
   public readonly time: Timestamp;
 
-  constructor(obj: Partial<Reaction>) {
+  constructor(obj: OmitMethods<Reaction>) {
     if (obj === undefined || obj === null) {
       throw new Error(
         'Error encountered while creating a reaction object: undefined/null parameters',

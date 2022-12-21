@@ -1,9 +1,10 @@
 import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useDispatch } from 'react-redux';
 
@@ -14,7 +15,7 @@ import { SocialParamList } from 'core/navigation/typing/SocialParamList';
 import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
 import { subscribeToChannel } from 'core/network';
 import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
-import { gray } from 'core/styles/color';
+import { List, Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -30,30 +31,16 @@ import { SocialHooks } from '../hooks';
  * their profile. (2021-12-20, Xelowak)
  */
 const styles = StyleSheet.create({
-  container: {
-    borderColor: gray,
-    borderTopWidth: 0,
-    borderWidth: 1,
-    flexDirection: 'row',
-    padding: 10,
-    width: 600,
-  } as ViewStyle,
   leftView: {
-    width: 60,
-  } as ViewStyle,
-  publicKeyText: {
-    fontSize: 18,
-    fontWeight: '600',
-  } as TextStyle,
-  rightView: {
-    flexDirection: 'column',
-    width: 540,
+    marginRight: Spacing.x1,
+    alignSelf: 'flex-start',
   } as ViewStyle,
   buttonsView: {
+    marginTop: Spacing.x1,
     flexDirection: 'row',
   } as ViewStyle,
   buttonView: {
-    flex: 1,
+    marginRight: Spacing.x1,
   } as ViewStyle,
 });
 
@@ -68,9 +55,8 @@ type NavigationProps = CompositeScreenProps<
   >
 >;
 
-const UserListItem = (props: IPropTypes) => {
+const UserListItem = ({ laoId, publicKey, isFirstItem, isLastItem }: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
-  const { laoId, publicKey } = props;
   const isConnected = SocialHooks.useConnectedToLao();
 
   const navigation = useNavigation<NavigationProps['navigation']>();
@@ -98,41 +84,43 @@ const UserListItem = (props: IPropTypes) => {
     });
   };
 
+  const listStyle = List.getListItemStyles(isFirstItem, isLastItem);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.leftView}>
+    <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
+      <View style={[List.icon, styles.leftView]}>
         <ProfileIcon publicKey={publicKey} />
       </View>
-      <View style={styles.rightView}>
-        <Text style={styles.publicKeyText}>{publicKey.valueOf()}</Text>
+      <ListItem.Content>
+        <ListItem.Title style={Typography.base} numberOfLines={1}>
+          {publicKey.valueOf()}
+        </ListItem.Title>
         <View style={styles.buttonsView}>
           <View style={styles.buttonView}>
-            <PoPTextButton onPress={followUser} disabled={isFollowing || !isConnected}>
+            <PoPTextButton onPress={followUser} disabled={isFollowing || !isConnected} toolbar>
               {STRINGS.follow_button}
             </PoPTextButton>
           </View>
           <View style={styles.buttonView}>
-            <PoPTextButton onPress={goToUserProfile} disabled={!isFollowing}>
+            <PoPTextButton onPress={goToUserProfile} toolbar>
               {STRINGS.profile_button}
             </PoPTextButton>
           </View>
         </View>
-      </View>
-    </View>
+      </ListItem.Content>
+    </ListItem>
   );
 };
 
 const propTypes = {
   laoId: PropTypes.instanceOf(Hash).isRequired,
   publicKey: PropTypes.instanceOf(PublicKey).isRequired,
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  isFirstItem: PropTypes.bool.isRequired,
+  isLastItem: PropTypes.bool.isRequired,
 };
 
 UserListItem.prototype = propTypes;
 
-type IPropTypes = {
-  laoId: Hash;
-  publicKey: PublicKey;
-};
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default UserListItem;

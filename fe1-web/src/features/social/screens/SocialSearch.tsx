@@ -1,15 +1,13 @@
 import * as React from 'react';
-import { useContext } from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
+import { ListRenderItemInfo, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
-import { TextBlock } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { PublicKey } from 'core/objects';
-import { gray } from 'core/styles/color';
+import { List, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { UserListItem } from '../components';
-import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 
 /**
@@ -19,24 +17,12 @@ import { SocialHooks } from '../hooks';
  */
 
 const styles = StyleSheet.create({
-  viewCenter: {
-    alignSelf: 'center',
-    width: 600,
-  } as ViewStyle,
   titleTextView: {
-    alignSelf: 'flex-start',
-    marginTop: 20,
-  } as ViewStyle,
-  attendeesList: {
-    flexDirection: 'column',
-    marginTop: 20,
-    borderTopWidth: 1,
-    borderColor: gray,
+    marginBottom: Spacing.x1,
   } as ViewStyle,
 });
 
 const SocialSearch = () => {
-  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
   const currentLao = SocialHooks.useCurrentLao();
 
   if (!currentLao) {
@@ -46,27 +32,31 @@ const SocialSearch = () => {
   const rollCallId = currentLao.last_tokenized_roll_call_id;
   const attendees = SocialHooks.useRollCallAttendeesById(rollCallId);
 
-  const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
-    // Not show our own profile
-    if (currentUserPopTokenPublicKey && item.valueOf() === currentUserPopTokenPublicKey.valueOf()) {
-      return null;
-    }
-    return <UserListItem laoId={currentLao.id} publicKey={item} />;
-  };
+  const renderAttendee = React.useCallback(
+    ({ item: attendee, index: i }: ListRenderItemInfo<PublicKey>) => (
+      <UserListItem
+        laoId={currentLao.id}
+        publicKey={attendee}
+        isFirstItem={i === 0}
+        isLastItem={i === attendees.length - 1}
+      />
+    ),
+    [currentLao.id, attendees],
+  );
 
   return (
     <ScreenWrapper>
-      <View style={styles.viewCenter}>
-        <View style={styles.titleTextView}>
-          <TextBlock text={STRINGS.attendees_of_last_roll_call} />
-        </View>
-        <View style={styles.attendeesList}>
-          <FlatList
-            data={attendees}
-            renderItem={renderItem}
-            keyExtractor={(publicKey) => publicKey.valueOf()}
-          />
-        </View>
+      <View style={styles.titleTextView}>
+        <Text style={[Typography.base, Typography.important]}>
+          {STRINGS.attendees_of_last_roll_call}
+        </Text>
+      </View>
+      <View style={List.container}>
+        <FlatList
+          data={attendees}
+          renderItem={renderAttendee}
+          keyExtractor={(attendee) => attendee.toString()}
+        />
       </View>
     </ScreenWrapper>
   );

@@ -102,9 +102,8 @@ namespace STRINGS {
 
   /* --- Social Media Navigation Strings --- */
   export const social_media_navigation_tab_home = 'Home';
-  export const social_media_navigation_tab_home_title = 'Social Media';
-  export const social_media_navigation_tab_search = 'Search';
-  export const social_media_navigation_tab_follows = 'My Follows';
+  export const social_media_navigation_tab_home_title = 'Feed';
+  export const social_media_navigation_tab_search = 'User List';
   export const social_media_navigation_tab_profile = 'My Profile';
   export const social_media_navigation_tab_user_profile = 'User profile';
   export const social_media_navigation_tab_attendee_list = 'List of attendees';
@@ -140,6 +139,7 @@ namespace STRINGS {
   export const attendees_of_last_roll_call = 'Attendees of last roll-call';
   export const follow_button = 'Follow';
   export const profile_button = 'Profile';
+  export const social_media_delete_chirp = 'Delete Chirp';
   export const social_media_your_profile_unavailable =
     'You do not have a social media profile yet, be sure to have participated in a roll-call.';
   export const modal_chirp_deletion_title = 'Chirp deletion';
