@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import { mockNavigate } from '__mocks__/useNavigationMock';
+import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Channel, PublicKey } from 'core/objects';
@@ -42,17 +43,21 @@ const mockStore = configureStore({ reducer: combineReducers({}) });
 
 describe('UserListItem', () => {
   it('calls navigate correctly when clicking on profile', () => {
-    const { getByText } = render(
+    const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <UserListItem publicKey={publicKey} isFirstItem={false} isLastItem={false} />
+          <MockNavigator
+            component={() => (
+              <UserListItem publicKey={publicKey} isFirstItem={false} isLastItem={false} />
+            )}
+          />
         </FeatureContext.Provider>
       </Provider>,
     );
-    const profileButton = getByText(STRINGS.profile_button);
+    const profileButton = getByTestId(`user_list_item_${publicKey.toString()}`);
     fireEvent.press(profileButton);
     expect(mockNavigate).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith(STRINGS.social_media_search_navigation_user_profile, {
+    expect(mockNavigate).toHaveBeenCalledWith(STRINGS.social_media_navigation_user_profile, {
       userPkString: publicKey.valueOf(),
     });
   });
@@ -61,7 +66,11 @@ describe('UserListItem', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <UserListItem publicKey={publicKey} isFirstItem={false} isLastItem={false} />
+          <MockNavigator
+            component={() => (
+              <UserListItem publicKey={publicKey} isFirstItem={false} isLastItem={false} />
+            )}
+          />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

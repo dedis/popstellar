@@ -3,37 +3,34 @@ import React from 'react';
 
 import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
-import { SocialHomeParamList } from 'core/navigation/typing/SocialHomeParamList';
+import { SocialSearchParamList } from 'core/navigation/typing/social/SocialSearchParamList';
 import STRINGS from 'resources/strings';
 
-import { SocialHome, SocialNewChirp } from '../screens';
-import { SocialHomeTopRight } from '../screens/SocialHome';
+import { SocialSearch, SocialUserProfile } from '../screens';
 
 /**
  * Defines the social media search navigation. It goes from the list of attendees to the profile
  * of them.
  */
 
-const Stack = createStackNavigator<SocialHomeParamList>();
+const Stack = createStackNavigator<SocialSearchParamList>();
 
-const SocialHomeNavigation = () => {
+const SocialSearchNavigation = () => {
   return (
     <Stack.Navigator screenOptions={stackScreenOptionsWithHeader}>
       <Stack.Screen
-        name={STRINGS.social_media_home_navigation_home}
-        component={SocialHome}
+        name={STRINGS.social_media_search_navigation_attendee_list}
+        component={SocialSearch}
         options={{
-          title: STRINGS.social_media_home_navigation_home_title,
           headerLeft: DrawerMenuButton,
-          headerRight: SocialHomeTopRight,
         }}
       />
       <Stack.Screen
-        name={STRINGS.social_media_home_navigation_new_chirp}
-        component={SocialNewChirp}
+        name={STRINGS.social_media_navigation_user_profile}
+        component={SocialUserProfile}
       />
     </Stack.Navigator>
   );
 };
 
-export default SocialHomeNavigation;
+export default SocialSearchNavigation;

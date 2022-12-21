@@ -6,11 +6,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
-import { PoPTextButton, ProfileIcon } from 'core/components';
+import { ProfileIcon } from 'core/components';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { SocialParamList } from 'core/navigation/typing/SocialParamList';
-import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
+import { SocialParamList } from 'core/navigation/typing/social/SocialParamList';
+import { SocialSearchParamList } from 'core/navigation/typing/social/SocialSearchParamList';
 import { PublicKey } from 'core/objects';
 import { List, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -28,13 +28,6 @@ const styles = StyleSheet.create({
   leftView: {
     marginRight: Spacing.x1,
     alignSelf: 'flex-start',
-  } as ViewStyle,
-  buttonsView: {
-    marginTop: Spacing.x1,
-    flexDirection: 'row',
-  } as ViewStyle,
-  buttonView: {
-    marginRight: Spacing.x1,
   } as ViewStyle,
 });
 
@@ -56,7 +49,7 @@ const UserListItem = ({ publicKey, isFirstItem, isLastItem }: IPropTypes) => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
   const goToUserProfile = () => {
-    navigation.navigate(STRINGS.social_media_search_navigation_user_profile, {
+    navigation.navigate(STRINGS.social_media_navigation_user_profile, {
       userPkString: publicKey.valueOf(),
     });
   };
@@ -64,7 +57,12 @@ const UserListItem = ({ publicKey, isFirstItem, isLastItem }: IPropTypes) => {
   const listStyle = List.getListItemStyles(isFirstItem, isLastItem);
 
   return (
-    <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
+    <ListItem
+      containerStyle={listStyle}
+      style={listStyle}
+      bottomDivider
+      onPress={goToUserProfile}
+      testID={`user_list_item_${publicKey.toString()}`}>
       <View style={[List.icon, styles.leftView]}>
         <ProfileIcon publicKey={publicKey} />
       </View>
@@ -72,14 +70,8 @@ const UserListItem = ({ publicKey, isFirstItem, isLastItem }: IPropTypes) => {
         <ListItem.Title style={Typography.base} numberOfLines={1}>
           {publicKey.valueOf()}
         </ListItem.Title>
-        <View style={styles.buttonsView}>
-          <View style={styles.buttonView}>
-            <PoPTextButton onPress={goToUserProfile} toolbar>
-              {STRINGS.profile_button}
-            </PoPTextButton>
-          </View>
-        </View>
       </ListItem.Content>
+      <ListItem.Chevron />
     </ListItem>
   );
 };

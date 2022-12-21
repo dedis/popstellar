@@ -3,34 +3,34 @@ import React from 'react';
 
 import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
-import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
+import { SocialTopChirpsParamList } from 'core/navigation/typing/social';
 import STRINGS from 'resources/strings';
 
-import { SocialSearch, SocialUserProfile } from '../screens';
+import { SocialTopChirps, SocialUserProfile } from '../screens';
 
 /**
  * Defines the social media search navigation. It goes from the list of attendees to the profile
  * of them.
  */
 
-const Stack = createStackNavigator<SocialSearchParamList>();
+const Stack = createStackNavigator<SocialTopChirpsParamList>();
 
-const SocialSearchNavigation = () => {
+const SocialTopChirpsNavigation = () => {
   return (
     <Stack.Navigator screenOptions={stackScreenOptionsWithHeader}>
       <Stack.Screen
-        name={STRINGS.social_media_search_navigation_attendee_list}
-        component={SocialSearch}
+        name={STRINGS.social_media_top_chirps_navigation_top_chirps}
+        component={SocialTopChirps}
         options={{
           headerLeft: DrawerMenuButton,
         }}
       />
       <Stack.Screen
-        name={STRINGS.social_media_search_navigation_user_profile}
+        name={STRINGS.social_media_navigation_user_profile}
         component={SocialUserProfile}
       />
     </Stack.Navigator>
   );
 };
 
-export default SocialSearchNavigation;
+export default SocialTopChirpsNavigation;

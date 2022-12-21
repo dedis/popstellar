@@ -115,10 +115,6 @@ const iconNameMap = {
     iconName: 'ios-home',
     IconFamily: Ionicons,
   } as IonIcon,
-  identity: {
-    iconName: 'ios-person',
-    IconFamily: Ionicons,
-  } as IonIcon,
   info: {
     iconName: 'ios-information-circle-outline',
     IconFamily: Ionicons,
@@ -147,6 +143,10 @@ const iconNameMap = {
     iconName: 'ios-ellipsis-horizontal',
     IconFamily: Ionicons,
   } as IonIcon,
+  profile: {
+    iconName: 'ios-person',
+    IconFamily: Ionicons,
+  } as IonIcon,
   qrCode: {
     iconName: 'ios-qr-code',
     IconFamily: Ionicons,
@@ -173,6 +173,14 @@ const iconNameMap = {
   } as IonIcon,
   thumbsUp: {
     iconName: 'thumbs-up-sharp',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  topItems: {
+    iconName: 'ios-medal',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  userList: {
+    iconName: 'ios-people',
     IconFamily: Ionicons,
   } as IonIcon,
   wallet: {
