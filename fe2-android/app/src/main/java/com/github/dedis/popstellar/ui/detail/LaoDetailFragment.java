@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.*;
@@ -116,15 +114,6 @@ public class LaoDetailFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     setupEventListAdapter();
     setupEventListUpdates();
-
-    viewModel
-        .getLaoEvents()
-        .observe(
-            requireActivity(),
-            events -> {
-              Log.d(TAG, "Got a list update for LAO events");
-              mEventListViewEventAdapter.replaceList(events);
-            });
   }
 
   @Override
@@ -141,7 +130,7 @@ public class LaoDetailFragment extends Fragment {
     RecyclerView eventList = binding.eventList;
 
     mEventListViewEventAdapter =
-        new EventListAdapter(new ArrayList<>(), viewModel, requireActivity());
+        new EventListAdapter(new ArrayList<>(), new ArrayList<>(), viewModel, requireActivity());
     Log.d(TAG, "created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
@@ -153,17 +142,21 @@ public class LaoDetailFragment extends Fragment {
 
   private void setupEventListUpdates() {
     viewModel
-        .getLaoEvents()
+        .getRollCalls()
         .observe(
             requireActivity(),
-            events -> {
-              Log.d(TAG, "Got an event list update");
-              for (Event event : events) {
-                if (event.getType() == EventType.ROLL_CALL) {
-                  Log.d(TAG, ((RollCall) event).getDescription());
-                }
-              }
-              mEventListViewEventAdapter.replaceList(events);
+            rollCalls -> {
+              Log.d(TAG, "Got a list update for roll call events " + rollCalls.toString());
+              mEventListViewEventAdapter.replaceRollCalls(rollCalls);
+            });
+
+    viewModel
+        .getElections()
+        .observe(
+            requireActivity(),
+            elections -> {
+              Log.d(TAG, "Got a list update for election events " + elections.toString());
+              mEventListViewEventAdapter.replaceElections(elections);
             });
   }
 }

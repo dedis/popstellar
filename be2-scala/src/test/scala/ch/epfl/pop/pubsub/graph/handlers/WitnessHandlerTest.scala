@@ -54,7 +54,7 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
           system.log.info(s"Received - error $x")
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-NACK")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbWithAck: AskableActorRef = {
@@ -72,7 +72,7 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
           system.log.info(s"Received - error $x")
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ACK")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbWithNackAddWitnessSignature: AskableActorRef = {
@@ -90,7 +90,7 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
           system.log.info(s"Received - error $x")
       }
     })
-    system.actorOf(dbActorMock, "MockedDBAddWitnessSignature-ACK")
+    system.actorOf(dbActorMock)
   }
 
   test("WitnessMessage fails if the database fails storing the message") {
