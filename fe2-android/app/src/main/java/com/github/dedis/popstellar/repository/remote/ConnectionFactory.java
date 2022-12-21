@@ -59,6 +59,6 @@ public class ConnectionFactory {
             .build();
 
     // And return a bundled object of the service and the subject
-    return new Connection(scarlet.create(LAOService.class), manualState);
+    return new Connection(url, scarlet.create(LAOService.class), manualState);
   }
 }
