@@ -2,10 +2,8 @@ package com.github.dedis.popstellar.model.objects;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
-import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
@@ -23,9 +21,6 @@ public class LaoTest {
 
   private static final String LAO_NAME_1 = "LAO name 1";
   private static final PublicKey ORGANIZER = generatePublicKey();
-  private static final String rollCallId1 = "rollCallId1";
-  private static final String rollCallId2 = "rollCallId2";
-  private static final String rollCallId3 = "rollCallId3";
   private static final String electionId1 = "electionId1";
   private static final String electionId2 = "electionId2";
   private static final String electionId3 = "electionId3";
@@ -35,14 +30,7 @@ public class LaoTest {
       Sets.newSet(generatePublicKey(), null, generatePublicKey());
 
   private static final Lao LAO_1 = new Lao(LAO_NAME_1, ORGANIZER, Instant.now().getEpochSecond());
-  private static final Map<String, RollCall> rollCalls =
-      new HashMap<String, RollCall>() {
-        {
-          put(rollCallId1, new RollCall(rollCallId1));
-          put(rollCallId2, new RollCall(rollCallId2));
-          put(rollCallId3, new RollCall(rollCallId3));
-        }
-      };
+
   private static final Map<String, Election> elections =
       new HashMap<String, Election>() {
         {
@@ -51,28 +39,6 @@ public class LaoTest {
           put(electionId3, new Election(LAO_1.getId(), 2L, "name 3", ElectionVersion.OPEN_BALLOT));
         }
       };
-
-  @Test
-  public void removeRollCallTest() {
-    LAO_1.setRollCalls(new HashMap<>(rollCalls));
-    assertTrue(
-        LAO_1.removeRollCall(
-            rollCallId3)); // we want to assert that we can remove rollCallId3 successfully
-    assertEquals(2, LAO_1.getRollCalls().size());
-    assertTrue(LAO_1.getRollCalls().containsKey(rollCallId1));
-    assertTrue(LAO_1.getRollCalls().containsKey(rollCallId2));
-    assertFalse(LAO_1.getRollCalls().containsKey(rollCallId3));
-
-    LAO_1.setRollCalls(
-        new HashMap<String, RollCall>() {
-          {
-            put(rollCallId1, new RollCall(rollCallId1));
-            put(null, new RollCall((String) null));
-            put(rollCallId3, new RollCall(rollCallId3));
-          }
-        });
-    assertFalse(LAO_1.removeRollCall(rollCallId2));
-  }
 
   @Test
   public void removeElectionTest() {
@@ -100,31 +66,6 @@ public class LaoTest {
         });
     // now the removal of electionId2 can't be done
     assertFalse(LAO_1.removeElection(electionId2));
-  }
-
-  @Test
-  public void updateRollCalls() {
-
-    LAO_1.setRollCalls(new HashMap<>(rollCalls));
-    RollCall r1 = new RollCall("New r1 id");
-    LAO_1.updateRollCall(rollCallId1, r1);
-    assertFalse(LAO_1.getRollCalls().containsKey(rollCallId1));
-    assertTrue(LAO_1.getRollCalls().containsKey("New r1 id"));
-    assertTrue(LAO_1.getRollCalls().containsKey(rollCallId2));
-    assertTrue(LAO_1.getRollCalls().containsKey(rollCallId3));
-    assertSame(LAO_1.getRollCalls().get("New r1 id"), r1);
-
-    // we create a different roll call that has the same Id as the first one
-    RollCall r2 = new RollCall(r1.getId());
-
-    LAO_1.updateRollCall(r1.getId(), r2);
-    assertNotSame(LAO_1.getRollCalls().get(r1.getId()), r1);
-    assertSame(LAO_1.getRollCalls().get(r1.getId()), r2);
-  }
-
-  @Test
-  public void updateRollCallWithNull() {
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.updateRollCall("random", null));
   }
 
   @Test
@@ -184,43 +125,6 @@ public class LaoTest {
   public void setAndGetOrganizerTest() {
     LAO_1.setOrganizer(ORGANIZER);
     assertThat(LAO_1.getOrganizer(), is(ORGANIZER));
-  }
-
-  @Test
-  public void setAndGetRollCalls() {
-    LAO_1.setRollCalls(rollCalls);
-    assertThat(LAO_1.getRollCalls(), is(rollCalls));
-  }
-
-  @Test
-  public void getRollCall() {
-    RollCall r1 = new RollCall(rollCallId1);
-    RollCall r2 = new RollCall(rollCallId2);
-    LAO_1.setRollCalls(
-        new HashMap<String, RollCall>() {
-          {
-            put(rollCallId1, r1);
-            put(rollCallId2, r2);
-          }
-        });
-    assertTrue(LAO_1.getRollCall(rollCallId1).isPresent());
-    assertThat(LAO_1.getRollCall(rollCallId1).get(), is(r1));
-    r1.setEnd(1);
-    r2.setEnd(2);
-    r1.setState(EventState.CLOSED);
-
-    try {
-      assertEquals(r1, LAO_1.lastRollCallClosed());
-    } catch (NoRollCallException e) {
-      throw new IllegalArgumentException();
-    }
-
-    r2.setState(EventState.CLOSED);
-    try {
-      assertEquals(r2, LAO_1.lastRollCallClosed());
-    } catch (NoRollCallException e) {
-      throw new IllegalArgumentException();
-    }
   }
 
   @Test
@@ -308,17 +212,6 @@ public class LaoTest {
     Lao lao = new Lao("id");
     TransactionObject transactionObject =
         new TransactionObject(Channel.ROOT, 1, inputs, outputs, 1L, "id");
-    assertThrows(IllegalStateException.class, () -> lao.updateTransactionMaps(transactionObject));
-  }
-
-  @Test
-  public void noPubKeyHashWhenTransactionUpdateThrowsException() {
-    List<InputObject> inputs = new ArrayList<>();
-    List<OutputObject> outputs = new ArrayList<>();
-    TransactionObject transactionObject =
-        new TransactionObject(Channel.ROOT, 1, inputs, outputs, 1L, "id");
-    Lao lao = new Lao("id");
-    lao.setRollCalls(rollCalls);
     assertThrows(IllegalStateException.class, () -> lao.updateTransactionMaps(transactionObject));
   }
 

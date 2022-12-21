@@ -14,17 +14,14 @@ import com.github.dedis.popstellar.databinding.RollCallTokenFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import net.glxn.qrgen.android.QRCode;
-
-import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -37,9 +34,7 @@ public class RollCallTokenFragment extends Fragment {
   public static final String EXTRA_ID = "rollcall_id";
 
   @Inject Wallet wallet;
-  private LaoDetailViewModel mLaoDetailViewModel;
   private RollCallTokenFragmentBinding mRollCallTokenFragmentBinding;
-  private RollCall rollCall;
 
   public static RollCallTokenFragment newInstance(String rollCallId) {
     RollCallTokenFragment rollCallTokenFragment = new RollCallTokenFragment();
@@ -58,27 +53,20 @@ public class RollCallTokenFragment extends Fragment {
     mRollCallTokenFragmentBinding =
         RollCallTokenFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    LaoView laoView;
+    String rollCallId = requireArguments().getString(EXTRA_ID);
+    RollCall rollCall = null;
     try {
-      laoView = mLaoDetailViewModel.getLaoView();
-    } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      rollCall = viewModel.getRollCall(rollCallId);
+    } catch (UnknownRollCallException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.no_rollcall_exception);
+      LaoDetailActivity.setCurrentFragment(
+          getParentFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
       return null;
     }
 
-    String rollCallId = requireArguments().getString(EXTRA_ID);
-    Optional<RollCall> optRollCall = laoView.getRollCall(rollCallId);
-    if (!optRollCall.isPresent()) {
-      Log.d(TAG, "failed to retrieve roll call with id " + rollCallId);
-      LaoDetailActivity.setCurrentFragment(
-          getParentFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
-    } else {
-      rollCall = optRollCall.get();
-    }
-
-    String firstLaoId = mLaoDetailViewModel.getLaoId();
+    String firstLaoId = viewModel.getLaoId();
     String pk = "";
     Log.d(TAG, "rollcall: " + rollCallId);
     try {
@@ -88,6 +76,7 @@ public class RollCallTokenFragment extends Fragment {
       Log.d(TAG, "failed to retrieve token from wallet", e);
       LaoDetailActivity.setCurrentFragment(
           getParentFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
+      return null;
     }
 
     mRollCallTokenFragmentBinding.rollcallName.setText("Roll Call: " + rollCall.getName());

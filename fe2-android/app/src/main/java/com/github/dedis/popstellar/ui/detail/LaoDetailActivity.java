@@ -63,8 +63,11 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     setupTopAppBar();
     setupProperties();
 
-    viewModel.subscribeToLao(
-        (String) Objects.requireNonNull(getIntent().getExtras()).get(Constants.LAO_ID_EXTRA));
+    String laoId =
+        Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
+    viewModel.subscribeToLao(laoId);
+    viewModel.subscribeToRollCalls(laoId);
+
     if (!getIntent()
         .getExtras()
         .get(Constants.FRAGMENT_TO_OPEN_EXTRA)

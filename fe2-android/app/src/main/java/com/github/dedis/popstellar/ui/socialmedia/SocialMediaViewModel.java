@@ -16,8 +16,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.SocialMediaRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -59,6 +58,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    * Dependencies for this class
    */
   private final LAORepository laoRepository;
+  private final RollCallRepository rollCallRepo;
   private final SchedulerProvider schedulerProvider;
   private final SocialMediaRepository socialMediaRepository;
   private final GlobalNetworkManager networkManager;
@@ -71,6 +71,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public SocialMediaViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      RollCallRepository rollCallRepo,
       SchedulerProvider schedulerProvider,
       SocialMediaRepository socialMediaRepository,
       GlobalNetworkManager networkManager,
@@ -79,6 +80,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
       Wallet wallet) {
     super(application);
     this.laoRepository = laoRepository;
+    this.rollCallRepo = rollCallRepo;
     this.schedulerProvider = schedulerProvider;
     this.socialMediaRepository = socialMediaRepository;
     this.networkManager = networkManager;
@@ -153,7 +155,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
 
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
-    return Single.fromCallable(() -> keyManager.getValidPoPToken(laoView))
+    return Single.fromCallable(this::getValidPoPToken)
         .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to send Chirp : " + token))
         .flatMap(
             token -> {
@@ -181,7 +183,7 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
 
     DeleteChirp deleteChirp = new DeleteChirp(chirpId, timestamp);
 
-    return Single.fromCallable(() -> keyManager.getValidPoPToken(laoView))
+    return Single.fromCallable(this::getValidPoPToken)
         .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to delete Chirp : " + token))
         .flatMap(
             token -> {
@@ -234,16 +236,8 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
   public boolean isOwner(String sender) {
     Log.d(TAG, "Testing if the sender is also the owner");
 
-    LaoView laoView;
     try {
-      laoView = getCurrentLaoView();
-    } catch (UnknownLaoException e) {
-      Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return false;
-    }
-
-    try {
-      PoPToken token = keyManager.getValidPoPToken(laoView);
+      PoPToken token = getValidPoPToken();
       return sender.equals(token.getPublicKey().getEncoded());
     } catch (KeyException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
@@ -279,5 +273,9 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
 
   public String getLaoId() {
     return laoId;
+  }
+
+  public PoPToken getValidPoPToken() throws KeyException {
+    return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
   }
 }
