@@ -57,7 +57,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
           system.log.info(s"Received - error $x")
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-NACK")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbWithAck: AskableActorRef = {
@@ -78,7 +78,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
           sender() ! DbActor.DbActorReadElectionDataAck(electionData)
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ACK")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbElectionNotSetUp: AskableActorRef = {
@@ -103,7 +103,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
           sender() ! DbActor.DbActorReadElectionDataAck(electionData)
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ElectionNotCreated")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbElectionSecretBallotReadFailed: AskableActorRef = {
@@ -124,7 +124,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
           sender() ! Status.Failure(DbActorNAckException(1, "no"))
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ElectionNotCreated")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbWithAckEndElection: AskableActorRef = {
@@ -164,7 +164,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
           sender() ! DbActor.DbActorCatchupAck(messages)
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-ACK-EndElection")
+    system.actorOf(dbActorMock)
   }
 
   def mockDbWithNAckEndElection: AskableActorRef = {
@@ -197,7 +197,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
           sender() ! Status.Failure(DbActorNAckException(1, "error"))
       }
     })
-    system.actorOf(dbActorMock, "MockedDB-NACK-EndElection")
+    system.actorOf(dbActorMock)
   }
 
   test("SetupElection should fail if the database fails storing the message") {
