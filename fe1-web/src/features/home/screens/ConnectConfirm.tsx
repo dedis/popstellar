@@ -73,7 +73,7 @@ const ConnectConfirm = () => {
       console.error(`Failed to establish lao connection`, err);
       toast.show(`Failed to establish lao connection: ${err}`, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }

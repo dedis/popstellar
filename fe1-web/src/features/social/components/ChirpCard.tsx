@@ -128,7 +128,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
       toast.show(`Could not add reaction, error: ${err}`, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     });
@@ -147,7 +147,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     requestDeleteChirp(currentUserPopTokenPublicKey, chirp.id, laoId).catch((err) => {
       toast.show(`Could not remove chirp, error: ${err}`, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     });

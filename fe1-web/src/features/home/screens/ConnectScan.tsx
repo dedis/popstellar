@@ -94,7 +94,7 @@ const ConnectScan = () => {
         // invalid lao id
         toast.show(STRINGS.connect_scanning_fail, {
           type: 'warning',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
 
@@ -107,7 +107,7 @@ const ConnectScan = () => {
 
       toast.show(`The scanned QR code is invalid`, {
         type: 'warning',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
 
@@ -182,7 +182,7 @@ const ConnectScan = () => {
 
       toast.show(STRINGS.connect_scanning_fail, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }

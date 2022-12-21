@@ -30,7 +30,7 @@ const LaoNavigator = createDrawerNavigator<LaoParamList>();
 const styles = StyleSheet.create({
   offlineHeader: {
     width: '100%',
-    backgroundColor: Color.warning,
+    backgroundColor: Color.offlineMode,
     paddingVertical: Spacing.x05,
     paddingHorizontal: Spacing.contentSpacing,
   } as ViewStyle,
