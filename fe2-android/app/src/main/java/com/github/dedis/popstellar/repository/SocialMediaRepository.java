@@ -18,7 +18,7 @@ import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
 /**
- * The class is the repository of the social media feature
+ * This class is the repository of the social media feature
  *
  * <p>Its main purpose is to store chirps and publish updates
  */

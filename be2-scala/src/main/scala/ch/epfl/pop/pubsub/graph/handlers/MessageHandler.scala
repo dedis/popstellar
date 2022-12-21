@@ -20,17 +20,20 @@ trait MessageHandler extends AskPatternConstants {
     */
   def dbActor: AskableActorRef = DbActor.getInstance
 
-  def checkParameters(rpcRequest: JsonRpcRequest, errorMsg: String): Future[GraphMessage] = {
+  def extractParameters[T](rpcRequest: JsonRpcRequest, errorMsg: String): Future[(GraphMessage, Message, Option[T])] = {
     rpcRequest.getParamsMessage match {
-      case Some(_) => Future(Left(rpcRequest))
-      case _       => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)))
+      case Some(_) =>
+        val message: Message = rpcRequest.getParamsMessage.get
+        val data: T = message.decodedData.get.asInstanceOf[T]
+        Future((Left(rpcRequest), message, Some(data)))
+      case _ => Future((Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), null, None))
     }
   }
 
-  def checkLaoChannel(rpcRequest: JsonRpcRequest, errorMsg: String): Future[GraphMessage] = {
+  def extractLaoChannel(rpcRequest: JsonRpcRequest, errorMsg: String): Future[(GraphMessage, Option[Hash])] = {
     rpcRequest.getParamsChannel.decodeChannelLaoId match {
-      case Some(_) => Future(Left(rpcRequest))
-      case _       => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)))
+      case optId @ Some(_) => Future((Left(rpcRequest), optId))
+      case _               => Future((Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), None))
     }
   }
 
