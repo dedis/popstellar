@@ -6,12 +6,14 @@ import { combineReducers } from 'redux';
 
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
+import { PublicKey } from 'core/objects';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
+import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from 'features/social/interface';
+import { socialReducer } from 'features/social/reducer';
 
-import { SocialMediaContext } from '../../context';
-import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
-import socialReducer from '../../reducer/SocialReducer';
-import SocialHome from '../SocialHome';
+import Profile from '../Profile';
+
+const publicKey = new PublicKey('PublicKey');
 
 const contextValue = {
   [SOCIAL_FEATURE_IDENTIFIER]: {
@@ -26,14 +28,6 @@ const contextValue = {
   } as SocialReactContext,
 };
 
-const socialContextValue = {
-  currentUserPopTokenPublicKey: mockPopToken.publicKey,
-};
-
-beforeEach(() => {
-  jest.clearAllMocks();
-});
-
 const mockStore = configureStore({
   reducer: combineReducers({
     ...laoReducer,
@@ -42,17 +36,15 @@ const mockStore = configureStore({
 });
 mockStore.dispatch(setCurrentLao(mockLao));
 
-describe('SocialHome', () => {
+describe('Profile', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(
+    const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <SocialMediaContext.Provider value={socialContextValue}>
-            <SocialHome />
-          </SocialMediaContext.Provider>
+          <Profile publicKey={publicKey} />
         </FeatureContext.Provider>
       </Provider>,
-    );
-    expect(toJSON()).toMatchSnapshot();
+    ).toJSON();
+    expect(component).toMatchSnapshot();
   });
 });

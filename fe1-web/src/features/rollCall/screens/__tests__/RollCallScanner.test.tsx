@@ -216,12 +216,17 @@ describe('RollCallOpened', () => {
     renderRollCallOpened(mockAttendeePopTokens);
 
     await waitFor(() => {
-      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
       expect(mockGenerateToken).toHaveBeenCalled();
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
     });
 
     expect(setParams).toHaveBeenCalledWith({
-      attendeePopTokens: [...mockAttendeePopTokens, mockPublicKey2.valueOf()],
+      attendeePopTokens: [
+        ...mockAttendeePopTokens,
+        mockPublicKey2.valueOf(),
+        mockPublicKey3.valueOf(),
+      ],
     });
   });
 });
