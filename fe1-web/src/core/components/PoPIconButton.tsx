@@ -13,14 +13,13 @@ const SIZE_MAP = {
 };
 
 const PoPIconButton = (props: IPropTypes) => {
-  const { onPress, buttonStyle, disabled, negative, toolbar, size, testID, name } = props;
+  const { onPress, buttonStyle, disabled, toolbar, size, testID, name } = props;
 
   return (
     <PoPButton
       onPress={onPress}
       buttonStyle={buttonStyle}
       disabled={disabled}
-      negative={negative}
       toolbar={toolbar}
       testID={testID}>
       <PoPIcon
@@ -40,9 +39,6 @@ const propTypes = {
   size: PropTypes.oneOf<'normal' | 'small'>(['normal', 'small']),
   // changes background color / border color to be gray
   disabled: PropTypes.bool,
-  // changes background color / border color to be white
-  // disabled takes precedence though!
-  negative: PropTypes.bool,
   // makes the button placement work in the toolbar
   toolbar: PropTypes.bool,
   name: PropTypes.string.isRequired,
@@ -54,7 +50,6 @@ PoPIconButton.defaultProps = {
   buttonStyle: 'primary',
   size: 'normal',
   disabled: false,
-  negative: false,
   toolbar: false,
   testID: undefined,
 };
