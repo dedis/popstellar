@@ -42,8 +42,11 @@ const ViewSingleRollCall = () => {
   const rollCall = useSelector(selectRollCall);
 
   const attendeePopTokens = useMemo(
-    () => attendeePopTokensStrings?.map((k) => new PublicKey(k)),
-    [attendeePopTokensStrings],
+    () => [
+      ...(attendeePopTokensStrings?.map((k) => new PublicKey(k)) || []),
+      ...(rollCall?.attendees || []),
+    ],
+    [attendeePopTokensStrings, rollCall?.attendees],
   );
 
   if (!rollCall) {
