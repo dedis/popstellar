@@ -53,7 +53,10 @@ public class BroadcastTest {
 
   @Test
   public void testToString() {
-    String expected = String.format("Broadcast{channel='%s', method='%s'}", CHANNEL, "broadcast");
+    String expected =
+        String.format(
+            "Broadcast{channel='%s', method='%s', message=%s}",
+            CHANNEL, "broadcast", MESSAGE_GENERAL);
     assertEquals(expected, BROADCAST.toString());
   }
 

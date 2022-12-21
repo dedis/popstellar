@@ -127,7 +127,6 @@ public class MessageGeneralTest {
     MessageGeneral msg =
         new MessageGeneral(
             KEY_PAIR.getPublicKey(), DATA_ENCODED, DATA, SIGNATURE, MESSAGE_ID, WITNESS_SIGNATURES);
-    System.out.println(msg);
     String expected =
         String.format(
             "MessageGeneral{sender='%s', data='%s', signature='%s', messageId='%s', "

@@ -20,7 +20,6 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -81,7 +80,7 @@ public class DigitalCashSendFragment extends Fragment {
                 if (viewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
                   try {
                     LaoView laoView = viewModel.getCurrentLaoValue();
-                    PoPToken token = viewModel.getKeyManager().getValidPoPToken(laoView);
+                    PoPToken token = viewModel.getValidToken();
                     if (canPostTransaction(
                         laoView, token.getPublicKey(), Integer.parseInt(currentAmount))) {
                       Disposable disposable =
@@ -160,9 +159,8 @@ public class DigitalCashSendFragment extends Fragment {
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-    KeyManager km = viewModel.getKeyManager();
     Objects.requireNonNull(binding.digitalCashSendSpinner.getEditText())
-        .setText(km.getValidPoPToken(viewModel.getCurrentLaoValue()).getPublicKey().getEncoded());
+        .setText(viewModel.getValidToken().getPublicKey().getEncoded());
     binding.digitalCashSendSpinnerTv.setAdapter(adapter);
   }
 
@@ -179,7 +177,7 @@ public class DigitalCashSendFragment extends Fragment {
    */
   private Completable postTransaction(Map<String, String> publicKeyAmount) {
     // Add some check if have money
-    if (viewModel.getLaoId().getValue() == null) {
+    if (viewModel.getLaoId() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
