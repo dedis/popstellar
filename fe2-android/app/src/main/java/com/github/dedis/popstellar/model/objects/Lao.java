@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Copyable;
@@ -160,51 +158,6 @@ public final class Lao implements Copyable<Lao> {
     // both map have to be set to empty again
     transactionByUser = new HashMap<>();
     transactionHistoryByUser = new HashMap<>();
-  }
-
-  /**
-   * Function that update all the transaction Update transactionByUser (current state of money)
-   * Update transactionHistory (current transaction perform per user)
-   *
-   * @param transactionObject object which was posted and now should update the lao map
-   */
-  public void updateTransactionMaps(TransactionObject transactionObject) {
-    if (transactionObject == null) {
-      throw new IllegalArgumentException("The transaction is null");
-    }
-    /* Change the transaction per public key in transacionperUser
-    for the sender and the receiver*/
-
-    if (this.pubKeyByHash.isEmpty()) {
-      throw new IllegalStateException("A transaction need attendees !");
-    }
-
-    /* Contained in the receiver there are also the sender
-    which has to be in the list of attendees of the roll call*/
-    for (PublicKey current : transactionObject.getReceiversTransaction(pubKeyByHash)) {
-      // Add the transaction in the current state  / for the sender and the receiver
-
-      /* The only case where the map has a list of transaction in memory is when we have several
-      coin base transaction (in fact the issuer send several time money to someone)
-      or our receiver is no sender */
-      if (transactionByUser.containsKey(current)
-          && (transactionObject.isCoinBaseTransaction()
-              || (transactionObject.isReceiver(current) && !transactionObject.isSender(current)))) {
-        transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
-        Set<TransactionObject> set = new HashSet<>(transactionByUser.get(current));
-        set.add(transactionObject);
-        transactionByUser.replace(current, set);
-      } else {
-
-        transactionByUser.put(current, new HashSet<>(Collections.singleton(transactionObject)));
-      }
-
-      // Add the transaction in the history / for the sender and the receiver
-      transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
-      transactionHistoryByUser.get(current).add(transactionObject);
-    }
-    Log.d(TAG, "Transaction by history : " + transactionHistoryByUser.toString());
-    Log.d(this.getClass().toString(), "Transaction by User : " + transactionByUser.toString());
   }
 
   public Optional<Election> getElection(String id) {

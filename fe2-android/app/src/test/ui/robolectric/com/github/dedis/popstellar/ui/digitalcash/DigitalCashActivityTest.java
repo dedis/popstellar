@@ -10,8 +10,7 @@ import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
@@ -81,6 +80,7 @@ public class DigitalCashActivityTest {
   @BindValue @Mock GlobalNetworkManager networkManager;
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock RollCallRepository rollCallRepo;
+  @BindValue @Mock DigitalCashRepository digitalCashRepo;
   @BindValue @Mock MessageSender messageSender;
   @BindValue @Mock KeyManager keyManager;
 
@@ -130,7 +130,7 @@ public class DigitalCashActivityTest {
           builder.setInputs(Collections.singletonList(io));
           builder.setTransactionId("some id");
 
-          LAO.updateTransactionMaps(builder.build());
+          digitalCashRepo.updateTransactions(LAO.getId(), builder.build());
 
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
