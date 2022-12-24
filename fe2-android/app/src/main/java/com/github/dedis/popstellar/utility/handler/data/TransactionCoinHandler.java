@@ -5,9 +5,8 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.repository.DigitalCashRepository;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
 import java.util.*;
 
@@ -15,11 +14,11 @@ import javax.inject.Inject;
 
 public class TransactionCoinHandler {
   public static final String TAG = TransactionCoinHandler.class.getSimpleName();
-  private final LAORepository laoRepo;
+  private final DigitalCashRepository digitalCashRepo;
 
   @Inject
-  public TransactionCoinHandler(LAORepository laoRepo) {
-    this.laoRepo = laoRepo;
+  public TransactionCoinHandler(DigitalCashRepository digitalCashRepo) {
+    this.digitalCashRepo = digitalCashRepo;
   }
 
   /**
@@ -29,12 +28,11 @@ public class TransactionCoinHandler {
    * @param postTransactionCoin the data of the message that was received
    */
   public void handlePostTransactionCoin(
-      HandlerContext context, PostTransactionCoin postTransactionCoin) throws UnknownLaoException {
+      HandlerContext context, PostTransactionCoin postTransactionCoin) throws NoRollCallException {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
 
-    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
     TransactionObjectBuilder builder = new TransactionObjectBuilder();
 
     // inputs and outputs for the creation
@@ -86,10 +84,6 @@ public class TransactionCoinHandler {
         .setInputs(inputs)
         .setOutputs(outputs);
 
-    Lao lao = laoView.createLaoCopy();
-
-    // lao update the history / lao update the last transaction per public key
-    lao.updateTransactionMaps(builder.build());
-    laoRepo.updateLao(lao);
+    digitalCashRepo.updateTransactions(channel.extractLaoId(), builder.build());
   }
 }
