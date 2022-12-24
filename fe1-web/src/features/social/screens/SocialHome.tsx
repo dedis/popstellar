@@ -1,103 +1,100 @@
-import React, { useContext, useMemo, useState } from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
+import React, { useCallback, useContext, useMemo } from 'react';
+import { ListRenderItemInfo, Text, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
-import { TextBlock } from 'core/components';
+import { PoPIcon } from 'core/components';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { FOUR_SECONDS } from 'resources/const';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { SocialHomeParamList } from 'core/navigation/typing/social/SocialHomeParamList';
+import { SocialParamList } from 'core/navigation/typing/social/SocialParamList';
+import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import { ChirpCard, TextInputChirp } from '../components';
+import { ChirpCard } from '../components';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
-import { requestAddChirp } from '../network/SocialMessageApi';
-import { Chirp, ChirpState } from '../objects';
+import { Chirp } from '../objects';
 import { makeChirpsList } from '../reducer';
 
-/**
- * UI for the Social Media home screen component
- */
-
-const styles = StyleSheet.create({
-  viewCenter: {
-    alignSelf: 'center',
-    width: 600,
-  } as ViewStyle,
-  homeTextView: {
-    alignSelf: 'flex-start',
-    marginTop: 20,
-  } as ViewStyle,
-  userFeed: {
-    flexDirection: 'column',
-    marginTop: 20,
-  } as ViewStyle,
-});
+type NavigationProps = CompositeScreenProps<
+  CompositeScreenProps<
+    StackScreenProps<SocialHomeParamList, typeof STRINGS.social_media_home_navigation_home>,
+    StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_home>
+  >,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
 
 const SocialHome = () => {
-  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
-  const [inputChirp, setInputChirp] = useState('');
-  const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
-  const isConnected = SocialHooks.useConnectedToLao();
+  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
 
   if (laoId === undefined) {
     throw new Error('Impossible to render Social Home, current lao id is undefined');
   }
 
-  // The publish button is disabled in offline mode and when the user public key is not defined
-  const publishDisabled = !isConnected || !currentUserPopTokenPublicKey;
-
-  const publishChirp = () => {
-    // button is disabled if publicKey is not set
-    if (!currentUserPopTokenPublicKey) {
-      return;
-    }
-
-    requestAddChirp(currentUserPopTokenPublicKey, inputChirp, laoId)
-      .then(() => {
-        setInputChirp('');
-      })
-      .catch((err) => {
-        console.error('Failed to post chirp, error:', err);
-        toast.show(`Failed to post chirp, error: ${err}`, {
-          type: 'danger',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
-      });
-  };
-
   const chirps = useMemo(() => makeChirpsList(laoId), [laoId]);
   const chirpList = useSelector(chirps);
 
-  const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} />
+  const renderChirp = useCallback(
+    ({ item: chirp, index: i }: ListRenderItemInfo<Chirp>) => (
+      <ChirpCard chirp={chirp} isFirstItem={i === 0} isLastItem={i === chirpList.length - 1} />
+    ),
+    [chirpList],
   );
+
+  if (chirpList.length === 0) {
+    return (
+      <ScreenWrapper>
+        <Text style={[Typography.base, Typography.paragraph]}>
+          {STRINGS.social_media_create_chirps_yet}
+        </Text>
+        {currentUserPopTokenPublicKey ? (
+          <Text style={[Typography.base, Typography.paragraph]}>
+            {STRINGS.social_media_howto_create_chirps}
+          </Text>
+        ) : (
+          <Text style={[Typography.base, Typography.paragraph]}>
+            {STRINGS.social_media_create_chirp_no_pop_token}
+          </Text>
+        )}
+      </ScreenWrapper>
+    );
+  }
 
   return (
     <ScreenWrapper>
-      <View style={styles.viewCenter}>
-        <View style={styles.homeTextView}>
-          <TextBlock text={STRINGS.social_media_navigation_tab_home} />
-        </View>
-        <View style={styles.userFeed}>
-          <TextInputChirp
-            testID="new_chirp"
-            value={inputChirp}
-            onChangeText={setInputChirp}
-            onPress={publishChirp}
-            disabled={publishDisabled}
-            currentUserPublicKey={currentUserPopTokenPublicKey}
-          />
-          <FlatList
-            data={chirpList}
-            renderItem={renderChirpState}
-            keyExtractor={(item) => item.id.toString()}
-          />
-        </View>
+      <View style={List.container}>
+        <FlatList
+          data={chirpList}
+          renderItem={renderChirp}
+          keyExtractor={(item) => item.id.toString()}
+        />
       </View>
     </ScreenWrapper>
+  );
+};
+
+export const SocialHomeTopRight = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
+
+  return (
+    <PoPTouchableOpacity
+      onPress={() =>
+        navigation.navigate(STRINGS.social_media_navigation_tab_home, {
+          screen: STRINGS.social_media_home_navigation_new_chirp,
+        })
+      }
+      testID="create_chirp_selector">
+      <PoPIcon name="create" color={Color.inactive} size={Icon.size} />
+    </PoPTouchableOpacity>
   );
 };
 

@@ -1,0 +1,13 @@
+diff --git a/node_modules/@react-navigation/drawer/lib/module/views/modern/Overlay.js b/node_modules/@react-navigation/drawer/lib/module/views/modern/Overlay.js
+index f50aeaa..1ed939d 100644
+--- a/node_modules/@react-navigation/drawer/lib/module/views/modern/Overlay.js
++++ b/node_modules/@react-navigation/drawer/lib/module/views/modern/Overlay.js
+@@ -22,7 +22,7 @@ const Overlay = /*#__PURE__*/React.forwardRef(function Overlay(_ref, ref) {
+   const animatedProps = useAnimatedProps(() => {
+     const active = progress.value > PROGRESS_EPSILON;
+     return {
+-      pointerEvents: active ? 'auto' : 'none',
++      pointerEvents: 'auto',
+       accessibilityElementsHidden: !active,
+       importantForAccessibility: active ? 'auto' : 'no-hide-descendants'
+     };

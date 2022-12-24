@@ -7,7 +7,6 @@ import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import EventsScreen, {
-  EventsScreenHeader,
   EventsScreenHeaderLeft,
   EventsScreenHeaderRight,
 } from '../screens/EventsScreen';
@@ -33,7 +32,6 @@ export default function EventsNavigation() {
         component={EventsScreen}
         options={{
           title: STRINGS.navigation_lao_events_home_title,
-          headerTitle: EventsScreenHeader,
           headerLeft: EventsScreenHeaderLeft,
           headerRight: EventsScreenHeaderRight,
         }}

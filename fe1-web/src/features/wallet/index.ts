@@ -41,8 +41,6 @@ export function compose(configuration: WalletCompositionConfiguration): WalletCo
       useCurrentLaoId: configuration.useCurrentLaoId,
       useCurrentLao: configuration.useCurrentLao,
       useConnectedToLao: configuration.useConnectedToLao,
-      walletItemGenerators: configuration.walletItemGenerators,
-      walletNavigationScreens: configuration.walletNavigationScreens,
     },
   };
 }

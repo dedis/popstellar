@@ -74,7 +74,7 @@ public class DigitalCashHomeFragment extends Fragment {
                     .show();
               } else {
                 try {
-                  PoPToken token = viewModel.getKeyManager().getValidPoPToken(lao);
+                  PoPToken token = viewModel.getValidToken();
                   PublicKey publicKey = token.getPublicKey();
                   binding.digitalCashHomeAddress.setText(publicKey.getEncoded());
                   if (lao.getTransactionByUser().containsKey(publicKey)) {

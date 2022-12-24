@@ -43,7 +43,6 @@ namespace STRINGS {
   /* --- HomeNavigation Strings --- */
   export const navigation_home_home = 'Home';
   export const navigation_home_connect = 'Connect';
-  export const navigation_home_wallet = 'Wallet';
 
   /* --- ConnectionNavigation Strings --- */
   export const navigation_connect_scan = 'Scanning';
@@ -63,8 +62,14 @@ namespace STRINGS {
   export const navigation_lao_home = 'Lao';
   export const navigation_lao_lao_title = 'LAO';
   export const navigation_lao_notifications = 'Notifications';
+  export const navigation_lao_invite = 'Invite';
   export const navigation_lao_events = 'Events';
   export const navigation_lao_wallet = 'Wallet';
+  export const navigation_lao_wallet_title = 'Tokens';
+  export const navigation_lao_digital_cash = 'Digital Cash';
+  export const navigation_lao_digital_cash_title = 'Digital Cash';
+
+  export const navigation_lao_disconnect_title = 'Disconnect';
 
   /* --- Lao Home Navigation Strings --- */
   export const navigation_lao_home_identity = 'My identity';
@@ -85,24 +90,40 @@ namespace STRINGS {
 
   /* --- Wallet Navigation Strings --- */
   export const navigation_wallet_home = 'Wallet Home';
-  export const navigation_wallet_home_title = 'Wallet';
-  export const navigation_wallet_setup = 'Wallet Setup';
-  export const navigation_wallet_show_seed = 'New Wallet';
+  export const navigation_wallet_home_title = 'Tokens';
   export const navigation_wallet_single_roll_call = 'Roll Call';
-  export const navigation_wallet_digital_cash_wallet = 'Digital Cash Wallet';
 
-  export const navigation_wallet_digital_cash_send_receive = 'Send & Receive';
-  export const navigation_wallet_digital_cash_send_receive_title = 'Your Account';
-
-  export const navigation_wallet_digital_cash_wallet_scanner = 'Digital Cash Wallet Scanner';
+  /* --- Digital Cash Navigation Strings --- */
+  export const navigation_digital_cash_wallet = 'Digital Cash Wallet';
+  export const navigation_digital_cash_wallet_title = 'Digital Cash';
+  export const navigation_digital_cash_send_receive = 'Send & Receive';
+  export const navigation_digital_cash_send_receive_title = 'Your Account';
+  export const navigation_digital_cash_wallet_scanner = 'Digital Cash Scanner';
 
   /* --- Social Media Navigation Strings --- */
-  export const social_media_navigation_tab_home = 'Home';
-  export const social_media_navigation_tab_search = 'Search';
-  export const social_media_navigation_tab_follows = 'My Follows';
-  export const social_media_navigation_tab_profile = 'My Profile';
-  export const social_media_navigation_tab_user_profile = 'User profile';
-  export const social_media_navigation_tab_attendee_list = 'List of attendees';
+  export const social_media_navigation_user_profile = 'User profile';
+
+  export const social_media_navigation_tab_home = 'Social Media Home Navigtion';
+  export const social_media_navigation_tab_home_title = 'Feed';
+
+  export const social_media_home_navigation_home = 'Social Media Home';
+  export const social_media_home_navigation_home_title = 'Feed';
+  export const social_media_home_navigation_new_chirp = 'New Chirp';
+
+  export const social_media_navigation_tab_search = 'User List Navigation';
+  export const social_media_navigation_tab_search_title = 'User List';
+
+  export const social_media_search_navigation_attendee_list = 'List of roll call attendees';
+
+  export const social_media_navigation_tab_top_chirps = 'Top Chirps Navigation';
+  export const social_media_navigation_tab_top_chirps_title = 'Top Chirps';
+
+  export const social_media_top_chirps_navigation_top_chirps = 'Top Chirps';
+
+  export const social_media_navigation_tab_profile = 'My Profile Navigation';
+  export const social_media_navigation_tab_profile_title = 'My Profile';
+
+  export const social_media_profile_navigation_profile = 'My Profile';
 
   /* --- Lao Strings --- */
   export const lao_properties_modal_heading = 'Lao Properties';
@@ -132,9 +153,15 @@ namespace STRINGS {
   export const button_publish = 'Publish';
   export const your_chirp = 'Your chirp';
   export const deleted_chirp = 'This chirp was deleted';
-  export const attendees_of_last_roll_call = 'Attendees of last roll-call';
-  export const follow_button = 'Follow';
-  export const profile_button = 'Profile';
+  export const social_media_delete_chirp = 'Delete Chirp';
+  export const social_media_create_chirps_yet =
+    'So far nobody has published a chirp and you could be the first one to do so!';
+  export const social_media_howto_create_chirps =
+    'The button for doing so is located in the navigation bar all the way to the right. Be creative ✨';
+  export const social_media_create_chirp_no_pop_token =
+    'In order to post chirps, you first need to participate in a roll-call.';
+  export const social_media_user_list_unavailable =
+    'In order to see other roll call participants you yourself first need to participate in one.';
   export const social_media_your_profile_unavailable =
     'You do not have a social media profile yet, be sure to have participated in a roll-call.';
   export const modal_chirp_deletion_title = 'Chirp deletion';
@@ -370,15 +397,23 @@ namespace STRINGS {
     ', you can continue and start using the POPStellar application. ' +
     'The purpose of this application is to demonstrate use cases for proofs of personhood (PoP).';
 
-  export const wallet_welcome_start_exploring = 'Start exploring POPStellar 🤩';
+  export const wallet_welcome_already_know_seed_1 =
+    'If you have already used this application before and remember your previous';
+  export const wallet_welcome_already_know_seed_2 =
+    ', you can restore your wallet by pressing the respective button.';
 
-  export const wallet_welcome_already_know_seed =
-    'I have already used this application and know previous seed 🧐';
+  export const wallet_welcome_start_exploring =
+    'Otherwise you should take note of the above seed and press "New Wallet" to initialize a new';
+
+  export const wallet_welcome_button_start_exploring = 'New Wallet';
+  export const wallet_welcome_button_restore_seed = 'Restore';
 
   /* --- Wallet Restore Seed Screen Strings --- */
   export const wallet_restore_heading = 'My 12 word seed 🔑 is ...';
-  export const wallet_restore_using_known_seed = 'Restore my wallet 🔐';
-  export const wallet_previous_seed_not_known = 'Oof, I might not know my seed 🔑 after all 😬';
+  export const wallet_restore_using_known_seed = 'Restore Wallet';
+  export const wallet_previous_seed_not_known = 'Go back';
+  export const wallet_restore_instructions =
+    'In order to restore your wallet, you need to enter your previous 12-word seed below and press "Restore Wallet"';
   export const wallet_restore_seed_example =
     'grape sock height they tiny voyage kid young domain trumpet three patrol';
 

@@ -116,8 +116,7 @@ export type DigitalCashReactContext = Pick<
  * The interface the digital cash feature exposes
  */
 export interface DigitalCashInterface extends FeatureInterface {
-  walletItemGenerators: DigitalCashFeature.WalletItemGenerator[];
-  walletScreens: DigitalCashFeature.WalletScreen[];
+  laoScreens: DigitalCashFeature.LaoScreen[];
 }
 
 export interface DigitalCashCompositionInterface extends FeatureInterface {

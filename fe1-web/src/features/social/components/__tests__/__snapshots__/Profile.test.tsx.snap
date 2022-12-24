@@ -1,0 +1,90 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Profile renders correctly 1`] = `
+<View>
+  <View>
+    <blockies
+      bgColor="#ffffff"
+      scale={10}
+      seed="PublicKey"
+      size={8}
+      spotColor="#008ec2"
+    />
+    <View
+      style={
+        Object {
+          "marginTop": 16,
+        }
+      }
+    >
+      <Text
+        numberOfLines={1}
+        style={
+          Array [
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            Object {
+              "fontWeight": "bold",
+            },
+          ]
+        }
+      >
+        PublicKey
+      </Text>
+      <Text>
+        0 chirps
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      Object {
+        "borderColor": "#8E8E8E",
+        "borderTopWidth": 1,
+        "flexDirection": "column",
+        "marginTop": 16,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "borderRadius": 8,
+          "marginBottom": 16,
+        }
+      }
+    >
+      <RCTScrollView
+        collapsable={false}
+        data={Array []}
+        getItem={[Function]}
+        getItemCount={[Function]}
+        handlerTag={1}
+        handlerType="NativeViewGestureHandler"
+        keyExtractor={[Function]}
+        onContentSizeChange={[Function]}
+        onGestureHandlerEvent={[Function]}
+        onGestureHandlerStateChange={[Function]}
+        onLayout={[Function]}
+        onMomentumScrollBegin={[Function]}
+        onMomentumScrollEnd={[Function]}
+        onScroll={[Function]}
+        onScrollBeginDrag={[Function]}
+        onScrollEndDrag={[Function]}
+        removeClippedSubviews={false}
+        renderItem={[Function]}
+        renderScrollComponent={[Function]}
+        scrollEventThrottle={50}
+        stickyHeaderIndices={Array []}
+        viewabilityConfigCallbackPairs={Array []}
+      >
+        <View />
+      </RCTScrollView>
+    </View>
+  </View>
+</View>
+`;

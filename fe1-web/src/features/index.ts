@@ -82,8 +82,6 @@ export function configureFeatures() {
     getRollCallById: rollCallConfiguration.functions.getRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
     useRollCallTokensByLaoId: rollCallConfiguration.hooks.useRollCallTokensByLaoId,
-    walletItemGenerators: [...digitalCashConfiguration.walletItemGenerators],
-    walletNavigationScreens: [...digitalCashConfiguration.walletScreens],
   });
 
   const digitalCashComposition = digitalCash.compose({
@@ -173,6 +171,7 @@ export function configureFeatures() {
       ...socialConfiguration.laoScreens,
       ...notificationConfiguration.laoScreens,
       ...walletComposition.laoScreens,
+      ...digitalCashConfiguration.laoScreens,
     ],
     eventsNavigationScreens: [
       ...eventConfiguration.laoEventScreens,

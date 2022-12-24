@@ -1,9 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { useMemo, useState } from 'react';
 
+import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { makeIcon } from 'core/components/PoPIcon';
-import { SocialParamList } from 'core/navigation/typing/SocialParamList';
+import { SocialParamList } from 'core/navigation/typing/social/SocialParamList';
 import { PublicKey } from 'core/objects';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -11,37 +11,17 @@ import STRINGS from 'resources/strings';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import { SocialFollows, SocialHome, SocialProfile } from '../screens';
+import SocialHomeNavigation from './SocialHomeNavigation';
+import SocialProfileNavigation from './SocialProfileNavigation';
 import SocialSearchNavigation from './SocialSearchNavigation';
+import SocialTopChirpsNavigation from './SocialTopChirpsNavigation';
 
 const Tab = createBottomTabNavigator<SocialParamList>();
 
-const iconSelector =
-  (routeName: string) =>
-  ({ color }: { color: string }) => {
-    let iconName: 'home' | 'search' | 'people' | 'person' | 'stop';
-
-    switch (routeName) {
-      case STRINGS.social_media_navigation_tab_home:
-        iconName = 'home';
-        break;
-      case STRINGS.social_media_navigation_tab_search:
-        iconName = 'search';
-        break;
-      case STRINGS.social_media_navigation_tab_follows:
-        iconName = 'people';
-        break;
-      case STRINGS.social_media_navigation_tab_profile:
-        iconName = 'person';
-        break;
-      default:
-        iconName = 'stop';
-        console.error('Icon could not be rendered correctly. Wrong route name.');
-        break;
-    }
-
-    return <Ionicons name={iconName} size={23} color={color} />;
-  };
+const homeIcon = makeIcon('home');
+const searchIcon = makeIcon('userList');
+const topChirpsIcon = makeIcon('topItems');
+const profileIcon = makeIcon('profile');
 
 /**
  * This class manages the social media navigation and creates the corresponding navigation bar.
@@ -86,11 +66,10 @@ const SocialMediaNavigation = () => {
   return (
     <SocialMediaContext.Provider value={contextValue}>
       <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: iconSelector(route.name),
-
+        screenOptions={{
           tabBarActiveTintColor: Color.accent,
           tabBarInactiveTintColor: Color.inactive,
+          headerLeft: DrawerMenuButton,
           headerLeftContainerStyle: {
             paddingLeft: Spacing.contentSpacing,
           },
@@ -99,14 +78,43 @@ const SocialMediaNavigation = () => {
           },
           headerTitleStyle: Typography.topNavigationHeading,
           headerTitleAlign: 'center',
-        })}>
-        <Tab.Screen name={STRINGS.social_media_navigation_tab_home} component={SocialHome} />
+        }}>
+        <Tab.Screen
+          name={STRINGS.social_media_navigation_tab_home}
+          component={SocialHomeNavigation}
+          options={{
+            title: STRINGS.social_media_navigation_tab_home_title,
+            headerShown: false,
+            tabBarIcon: homeIcon,
+          }}
+        />
+        <Tab.Screen
+          name={STRINGS.social_media_navigation_tab_top_chirps}
+          component={SocialTopChirpsNavigation}
+          options={{
+            title: STRINGS.social_media_navigation_tab_top_chirps_title,
+            headerShown: false,
+            tabBarIcon: topChirpsIcon,
+          }}
+        />
         <Tab.Screen
           name={STRINGS.social_media_navigation_tab_search}
           component={SocialSearchNavigation}
+          options={{
+            title: STRINGS.social_media_navigation_tab_search_title,
+            headerShown: false,
+            tabBarIcon: searchIcon,
+          }}
         />
-        <Tab.Screen name={STRINGS.social_media_navigation_tab_follows} component={SocialFollows} />
-        <Tab.Screen name={STRINGS.social_media_navigation_tab_profile} component={SocialProfile} />
+        <Tab.Screen
+          name={STRINGS.social_media_navigation_tab_profile}
+          component={SocialProfileNavigation}
+          options={{
+            title: STRINGS.social_media_navigation_tab_profile_title,
+            headerShown: false,
+            tabBarIcon: profileIcon,
+          }}
+        />
       </Tab.Navigator>
     </SocialMediaContext.Provider>
   );
@@ -118,6 +126,7 @@ export const SocialMediaScreen: SocialFeature.LaoScreen = {
   id: STRINGS.navigation_social_media,
   Component: SocialMediaNavigation,
   headerShown: false,
-  tabBarIcon: makeIcon('socialMedia'),
+  Icon: makeIcon('socialMedia'),
+  headerLeft: DrawerMenuButton,
   order: 10000,
 };

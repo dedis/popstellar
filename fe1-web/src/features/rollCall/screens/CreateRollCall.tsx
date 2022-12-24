@@ -108,7 +108,7 @@ const CreateRollCall = () => {
         console.error('Could not create roll call, error:', err);
         toast.show(`Could not create roll call, error: ${err}`, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       });

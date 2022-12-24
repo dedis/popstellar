@@ -3,7 +3,6 @@ import { Platform, TextStyle } from 'react-native';
 import {
   contrast,
   accent as accentColor,
-  secondaryAccent as secondaryColor,
   primary as primaryColor,
   error as errorColor,
   inactive as inactiveColor,
@@ -22,6 +21,11 @@ export const small: TextStyle = {
   lineHeight: 20,
 };
 
+export const tiny: TextStyle = {
+  fontSize: 12,
+  lineHeight: 14,
+};
+
 export const accent: TextStyle = {
   color: accentColor,
 };
@@ -32,10 +36,6 @@ export const error: TextStyle = {
 
 export const negative: TextStyle = {
   color: contrast,
-};
-
-export const secondary: TextStyle = {
-  color: secondaryColor,
 };
 
 export const inactive: TextStyle = {
