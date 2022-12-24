@@ -76,7 +76,7 @@ public class DataRegistryModuleHelper {
       KeyManager keyManager,
       ServerRepository serverRepo) {
     LaoHandler laoHandler = new LaoHandler(keyManager, msgRepo, laoRepo, serverRepo);
-    RollCallHandler rollCallHandler = new RollCallHandler(laoRepo, rollCallRepo);
+    RollCallHandler rollCallHandler = new RollCallHandler(laoRepo, rollCallRepo, digitalCashRepo);
     ElectionHandler electionHandler = new ElectionHandler(msgRepo, laoRepo);
     ConsensusHandler consensusHandler = new ConsensusHandler(laoRepo);
     ChirpHandler chirpHandler = new ChirpHandler(laoRepo, socialMediaRepo);
