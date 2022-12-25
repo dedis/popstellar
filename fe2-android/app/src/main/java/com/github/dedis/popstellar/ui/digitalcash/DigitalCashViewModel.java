@@ -373,9 +373,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     String transactionHash;
     List<TransactionObject> transactions = getTransactionsForUser(keyPair.getPublicKey());
 
-    long amountSender =
-        TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, keyPair.getPublicKey())
-            - amountFromReceiver;
+    long amountSender = getUserBalance(keyPair.getPublicKey()) - amountFromReceiver;
     Output outputSender =
         new Output(amountSender, new ScriptOutput(TYPE, keyPair.getPublicKey().computeHash()));
     outputs.add(outputSender);
@@ -405,6 +403,14 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   public Observable<Set<String>> getRollCallsObservable() {
     return rollCallRepo.getRollCallsObservableInLao(laoId);
+  }
+
+  public long getUserBalance(PublicKey user) {
+    return digitalCashRepo.getUserBalance(laoId, user);
+  }
+
+  public long getOwnBalance() throws KeyException {
+    return getUserBalance(getValidToken().getPublicKey());
   }
 
   /**

@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -121,13 +120,10 @@ public class DigitalCashSendFragment extends Fragment {
     viewModel.setPageTitle(R.string.digital_cash_send);
   }
 
-  public boolean canPostTransaction(PublicKey publicKey, int currentAmount) {
-    List<TransactionObject> transactions = viewModel.getTransactionsForUser(publicKey);
-    if (transactions == null) {
-      ErrorUtils.logAndShow(requireContext(), TAG, R.string.digital_cash_warning_no_money);
-    }
-    long amount = TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, publicKey);
-    if (amount < currentAmount) {
+  public boolean canPostTransaction(PublicKey publicKey, int amount) {
+    long currentBalance = viewModel.getUserBalance(publicKey);
+    if (currentBalance < amount) {
+      Log.d(TAG, "Current Balance: " + currentBalance + " amount: " + amount);
       Toast.makeText(
               requireContext(), R.string.digital_cash_warning_not_enough_money, Toast.LENGTH_SHORT)
           .show();

@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -77,14 +76,10 @@ public class DigitalCashHomeFragment extends Fragment {
             .getTransactionsObservable()
             .subscribe(
                 transactions -> {
-                  if (transactions != null) {
-                    Log.d(TAG, "transactions " + transactions);
-                    long totalAmount =
-                        TransactionObject.getMiniLaoPerReceiverSetTransaction(
-                            transactions, viewModel.getValidToken().getPublicKey());
-                    binding.digitalCashSendAddress.setText(
-                        String.format("LAO coin : %s", totalAmount));
-                  }
+                  Log.d(TAG, "updating transactions " + transactions);
+                  long totalAmount = viewModel.getOwnBalance();
+                  binding.digitalCashSendAddress.setText(
+                      String.format("LAO coin : %s", totalAmount));
                 },
                 error ->
                     ErrorUtils.logAndShow(

@@ -40,6 +40,10 @@ public class DigitalCashRepository {
     return getLaoTransactions(laoId).getTransactionsObservable(user);
   }
 
+  public long getUserBalance(String laoId, PublicKey user) {
+    return getLaoTransactions(laoId).getUserBalance(user);
+  }
+
   public void updateTransactions(String laoId, TransactionObject transaction)
       throws NoRollCallException {
     Log.d(TAG, "updating transactions on Lao " + laoId + " and transaction " + transaction);
@@ -131,6 +135,15 @@ public class DigitalCashRepository {
                 return key;
               })
           .collect(Collectors.toList());
+    }
+
+    public long getUserBalance(PublicKey user) {
+      List<TransactionObject> transactionList = transactions.get(user);
+      return transactionList == null
+          ? 0
+          : transactionList.stream()
+              .mapToLong(transaction -> transaction.getMiniLaoPerReceiver(user))
+              .sum();
     }
   }
 }

@@ -141,23 +141,17 @@ public class TransactionObject {
    * @return int amount of Lao Coin
    */
   public long getMiniLaoPerReceiver(PublicKey receiver) {
-    // Check in the future if useful
-    if (!isReceiver(receiver)) {
-      throw new IllegalArgumentException(
-          "The public Key is not contained in the receiver public key");
-    }
-    // Set the return value to nothing
-    long miniLao = 0;
-    // Compute the hash of the public key
-    String hashKey = receiver.computeHash();
-    // iterate through the output and sum if it's for the argument public key
-    for (OutputObject outObj : getOutputs()) {
-      if (outObj.getScript().getPubKeyHash().equals(hashKey)) {
-        miniLao += outObj.getValue();
-      }
+    if (!isReceiver(receiver) || isSender(receiver)) {
+      return 0;
     }
 
-    return miniLao;
+    String hashKey = receiver.computeHash();
+
+    // iterate through the output and sum if it's for the argument public key
+    return getOutputs().stream()
+        .filter(outputObject -> outputObject.getScript().getPubKeyHash().equals(hashKey))
+        .mapToLong(OutputObject::getValue)
+        .sum();
   }
 
   /**
