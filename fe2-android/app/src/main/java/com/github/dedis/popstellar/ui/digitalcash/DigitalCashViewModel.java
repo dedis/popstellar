@@ -37,10 +37,8 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
 import io.reactivex.*;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
 public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
@@ -74,7 +72,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   private final MutableLiveData<SingleEvent<String>> updateReceiptAmountEvent =
       new MutableLiveData<>();
 
-  private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
   /*
@@ -203,8 +200,10 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
       Map<String, String> receiverValues, long lockTime, boolean coinBase) {
 
     /* Check if a Lao exist */
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+    LaoView laoView;
+    try {
+      laoView = getCurrentLao();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
@@ -290,8 +289,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     return laoRepository;
   }
 
-  public KeyManager getKeyManager() {
-    return keyManager;
+  public PublicKey getOwnKey() {
+    return keyManager.getMainPublicKey();
   }
 
   @Nullable
@@ -300,8 +299,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   }
 
   @Nullable
-  public PublicKey getOrganizer() {
-    return getCurrentLaoValue().getOrganizer();
+  public PublicKey getOrganizer() throws UnknownLaoException {
+    return getCurrentLao().getOrganizer();
   }
 
   @Nullable
@@ -311,12 +310,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
         .collect(Collectors.toList());
   }
 
-  public MutableLiveData<LaoView> getCurrentLao() {
-    return mCurrentLao;
-  }
-
-  public LaoView getCurrentLaoValue() {
-    return mCurrentLao.getValue();
+  public LaoView getCurrentLao() throws UnknownLaoException {
+    return laoRepository.getLaoView(laoId);
   }
 
   public Set<PublicKey> getAllAttendees() {
@@ -325,25 +320,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   public PoPToken getValidToken() throws KeyException {
     return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
-  }
-
-  public void subscribeToLao(String laoId) {
-    disposables.add(
-        laoRepository
-            .getLaoObservable(laoId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                lao -> {
-                  Log.d(
-                      TAG,
-                      "got an update for lao: "
-                          + lao.getName()
-                          + " transaction "
-                          + lao.getTransactionHistoryByUser().toString());
-                  mCurrentLao.postValue(lao);
-                },
-                error -> Log.d(TAG, "Error on lao propagation " + error)));
   }
 
   public boolean canPerformTransaction(

@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
@@ -102,7 +103,9 @@ public class DigitalCashIssueFragment extends Fragment {
                       postTransaction(issueMap);
                     }
                   } catch (NoRollCallException r) {
-                    Log.e(TAG, getString(R.string.no_rollcall_exception), r);
+                    ErrorUtils.logAndShow(requireContext(), TAG, r, R.string.no_rollcall_exception);
+                  } catch (UnknownLaoException e) {
+                    ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
                   }
                 }
               }
@@ -120,7 +123,7 @@ public class DigitalCashIssueFragment extends Fragment {
 
   public Map<String, String> computeMapForPostTransaction(
       String currentAmount, String currentPublicKeySelected, int radioGroup)
-      throws NoRollCallException {
+      throws NoRollCallException, UnknownLaoException {
     if (radioGroup == DigitalCashViewModel.NOTHING_SELECTED) {
       // In unlikely event that no radiobutton are selected, it do as if the first one was selected
       return Collections.singletonMap(currentPublicKeySelected, currentAmount);
@@ -141,7 +144,7 @@ public class DigitalCashIssueFragment extends Fragment {
    * nothing)
    */
   private Set<PublicKey> attendeesPerRadioGroupButton(int radioGroup, String currentSelected)
-      throws NoRollCallException {
+      throws NoRollCallException, UnknownLaoException {
     Set<PublicKey> attendees = new HashSet<>();
     if (radioGroup == selectOneMember && !currentSelected.equals("")) {
       attendees.add(new PublicKey(currentSelected));
@@ -150,7 +153,7 @@ public class DigitalCashIssueFragment extends Fragment {
     } else if (radioGroup == selectAllRollCallAttendees) {
       attendees = viewModel.getAttendeesFromLastRollCall();
     } else if (radioGroup == selectAllLaoWitnesses) {
-      attendees = Objects.requireNonNull(viewModel.getCurrentLaoValue()).getWitnesses();
+      attendees = Objects.requireNonNull(viewModel.getCurrentLao()).getWitnesses();
     }
     return attendees;
   }

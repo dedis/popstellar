@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -78,7 +79,7 @@ public class DigitalCashActivityTest {
   @Inject Gson gson;
 
   @BindValue @Mock GlobalNetworkManager networkManager;
-  @BindValue @Mock LAORepository repository;
+  @BindValue @Mock LAORepository laoRepo;
   @BindValue @Mock RollCallRepository rollCallRepo;
   @BindValue @Mock DigitalCashRepository digitalCashRepo;
   @BindValue @Mock MessageSender messageSender;
@@ -96,9 +97,10 @@ public class DigitalCashActivityTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException, GeneralSecurityException {
+        protected void before() throws KeyException, GeneralSecurityException, UnknownLaoException {
 
           when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
+          when(laoRepo.getLaoView(any())).thenReturn(new LaoView(LAO));
           TransactionObjectBuilder builder = new TransactionObjectBuilder();
           builder.setVersion(1);
           builder.setLockTime(0);
@@ -142,7 +144,7 @@ public class DigitalCashActivityTest {
           digitalCashRepo.updateTransactions(LAO.getId(), transaction);
 
           hiltRule.inject();
-          when(repository.getLaoObservable(anyString()))
+          when(laoRepo.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
           when(keyManager.getMainPublicKey()).thenReturn(POP_TOKEN.getPublicKey());
           when(keyManager.getValidPoPToken(any(), any())).thenReturn(POP_TOKEN);
