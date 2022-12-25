@@ -155,44 +155,6 @@ public class TransactionObject {
   }
 
   /**
-   * Total MiniLao per public key of a List of Transaction
-   *
-   * @param transactions List<TransactionObject>
-   * @param receiver Public Key
-   * @return long amount per user
-   */
-  public static long getMiniLaoPerReceiverSetTransaction(
-      List<TransactionObject> transactions, PublicKey receiver) {
-    return transactions.stream().mapToLong(obj -> obj.getMiniLaoPerReceiver(receiver)).sum();
-  }
-
-  /**
-   * Function which return the first amount which correspond to the Public Key (this function is
-   * useful if someone send money to herself, in fact only the first amount in the transaction
-   * correspond to the money he has send to him)
-   *
-   * @param receiver Public Key of a potential receiver
-   * @return int amount of Lao Coin
-   */
-  public long getMiniLaoPerReceiverFirst(PublicKey receiver) {
-    // Check in the future if useful
-    if (!isReceiver(receiver)) {
-      throw new IllegalArgumentException(
-          "The public Key is not contained in the receiver public key");
-    }
-    // Compute the hash of the public key
-    String computeHash = receiver.computeHash();
-    // iterate through the output and sum if it's for the argument public key
-    for (OutputObject outObj : getOutputs()) {
-      if (outObj.getPubKeyHash().equals(computeHash)) {
-        // return after first occurrence
-        return outObj.getValue();
-      }
-    }
-    return 0;
-  }
-
-  /**
    * Function that return the index of the output for a given key in this Transaction
    *
    * @param publicKey PublicKey of an individual in Transaction output
