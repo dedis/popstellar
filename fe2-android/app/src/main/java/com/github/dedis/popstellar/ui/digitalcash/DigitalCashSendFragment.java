@@ -125,15 +125,11 @@ public class DigitalCashSendFragment extends Fragment {
   }
 
   public boolean canPostTransaction(LaoView lao, PublicKey publicKey, int currentAmount) {
-    Map<PublicKey, Set<TransactionObject>> transactionByUser = lao.getTransactionByUser();
-    if (transactionByUser.isEmpty() || !transactionByUser.containsKey(publicKey)) {
-      Toast.makeText(requireContext(), R.string.digital_cash_warning_no_money, Toast.LENGTH_SHORT)
-          .show();
-      return false;
+    List<TransactionObject> transactions = viewModel.getTransactionsForUser(publicKey);
+    if (transactions == null) {
+      ErrorUtils.logAndShow(requireContext(), TAG, R.string.digital_cash_warning_no_money);
     }
-    long amount =
-        TransactionObject.getMiniLaoPerReceiverSetTransaction(
-            Objects.requireNonNull(transactionByUser.get(publicKey)), publicKey);
+    long amount = TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, publicKey);
     if (amount < currentAmount) {
       Toast.makeText(
               requireContext(), R.string.digital_cash_warning_not_enough_money, Toast.LENGTH_SHORT)

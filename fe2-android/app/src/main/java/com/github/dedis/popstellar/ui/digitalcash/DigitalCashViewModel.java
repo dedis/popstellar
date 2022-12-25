@@ -16,8 +16,7 @@ import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -85,6 +84,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
    */
   private final LAORepository laoRepository;
   private final RollCallRepository rollCallRepo;
+  private final DigitalCashRepository digitalCashRepo;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
@@ -96,6 +96,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
       @NonNull Application application,
       LAORepository laoRepository,
       RollCallRepository rollCallRepo,
+      DigitalCashRepository digitalCashRepo,
       GlobalNetworkManager networkManager,
       Gson gson,
       KeyManager keyManager,
@@ -103,6 +104,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     super(application);
     this.laoRepository = laoRepository;
     this.rollCallRepo = rollCallRepo;
+    this.digitalCashRepo = digitalCashRepo;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
@@ -265,8 +267,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     int index = 0;
 
     List<Input> inputs = new ArrayList<>();
-    if (getCurrentLaoValue().getTransactionByUser().containsKey(keyPair.getPublicKey())
-        && !coinBase) {
+    List<TransactionObject> transactions = getTransactionsForUser(keyPair.getPublicKey());
+    if (transactions == null && !coinBase) {
       processNotCoinbaseTransaction(keyPair, outputs, amountFromReceiver, inputs);
     } else {
       inputs.add(
@@ -398,12 +400,10 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
       throws GeneralSecurityException {
     int index;
     String transactionHash;
-    Set<TransactionObject> transactions =
-        getCurrentLaoValue().getTransactionByUser().get(keyPair.getPublicKey());
+    List<TransactionObject> transactions = getTransactionsForUser(keyPair.getPublicKey());
 
     long amountSender =
-        TransactionObject.getMiniLaoPerReceiverSetTransaction(
-                Objects.requireNonNull(transactions), keyPair.getPublicKey())
+        TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, keyPair.getPublicKey())
             - amountFromReceiver;
     Output outputSender =
         new Output(amountSender, new ScriptOutput(TYPE, keyPair.getPublicKey().computeHash()));
@@ -418,6 +418,10 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     for (String currentHash : transactionInpMap.keySet()) {
       inputs.add(processSignInput(keyPair, outputs, transactionInpMap, currentHash));
     }
+  }
+
+  public List<TransactionObject> getTransactionsForUser(PublicKey user) {
+    return digitalCashRepo.getTransactions(laoId, user);
   }
 
   public LiveData<Set<TransactionObject>> getTransactionHistory() {

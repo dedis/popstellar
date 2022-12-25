@@ -21,7 +21,7 @@ public class DigitalCashRepository {
     // Constructor required by Hilt
   }
 
-  private List<TransactionObject> getTransactions(String laoId, PublicKey user) {
+  public List<TransactionObject> getTransactions(String laoId, PublicKey user) {
     return getLaoTransactions(laoId).getTransactions(user);
   }
 

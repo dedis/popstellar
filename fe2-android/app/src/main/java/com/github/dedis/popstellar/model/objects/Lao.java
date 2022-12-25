@@ -143,23 +143,6 @@ public final class Lao implements Copyable<Lao> {
     witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
   }
 
-  /**
-   * Function which update the transaction map public key by transaction hash on the list of the
-   * roll call attendees Update pubKeyByHash, Initialize transactionByUser, transactionHistoryByUser
-   *
-   * @param attendees List<PublicKey> of the roll call attendees
-   */
-  public void updateTransactionHashMap(List<PublicKey> attendees) {
-    pubKeyByHash = new HashMap<>();
-    pubKeyByHash.put(organizer.computeHash(), organizer);
-    attendees.forEach(publicKey -> pubKeyByHash.put(publicKey.computeHash(), publicKey));
-
-    // also update the history and the current transaction per attendees
-    // both map have to be set to empty again
-    transactionByUser = new HashMap<>();
-    transactionHistoryByUser = new HashMap<>();
-  }
-
   public Optional<Election> getElection(String id) {
     return Optional.ofNullable(elections.get(id));
   }

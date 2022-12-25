@@ -168,7 +168,7 @@ public class TransactionObject {
    * @return long amount per user
    */
   public static long getMiniLaoPerReceiverSetTransaction(
-      Set<TransactionObject> transactions, PublicKey receiver) {
+      List<TransactionObject> transactions, PublicKey receiver) {
     return transactions.stream().mapToLong(obj -> obj.getMiniLaoPerReceiver(receiver)).sum();
   }
 
@@ -223,7 +223,8 @@ public class TransactionObject {
    * @return Rollcall the roll call with the last ending tim e
    * @param transactions the set of transactions
    */
-  public static TransactionObject lastLockedTransactionObject(Set<TransactionObject> transactions) {
+  public static TransactionObject lastLockedTransactionObject(
+      List<TransactionObject> transactions) {
     Optional<TransactionObject> transactionObject =
         transactions.stream().max(Comparator.comparing(TransactionObject::getLockTime));
     if (!transactionObject.isPresent()) {
