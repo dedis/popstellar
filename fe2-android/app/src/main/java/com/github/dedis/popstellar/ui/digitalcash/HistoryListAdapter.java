@@ -31,11 +31,6 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
   public HistoryListAdapter(DigitalCashViewModel viewModel, FragmentActivity activity) {
     this.viewModel = viewModel;
     this.activity = activity;
-    //
-    //    this.transactions = buildTransactionList(transactionObjects);
-    //    expandMap = new HashMap<>();
-    //    transactions.forEach(
-    //        transactionHistoryElement -> expandMap.put(transactionHistoryElement.id, false));
   }
 
   @NonNull
