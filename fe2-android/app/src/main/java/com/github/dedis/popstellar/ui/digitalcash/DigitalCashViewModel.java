@@ -6,7 +6,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.*;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -76,8 +77,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
-  private final LiveData<Set<TransactionObject>> mTransactionHistory;
-
   /*
    * Dependencies for this class
    */
@@ -108,24 +107,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     this.gson = gson;
     this.keyManager = keyManager;
     this.wallet = wallet;
-
-    mTransactionHistory =
-        Transformations.map(
-            mCurrentLao,
-            laoView -> {
-              try {
-                if (laoView == null) return new HashSet<>();
-                Set<TransactionObject> historySet =
-                    laoView.getTransactionHistoryByUser().get(this.getValidToken().getPublicKey());
-                if (historySet == null) {
-                  return new HashSet<>();
-                }
-                return new HashSet<>(historySet);
-              } catch (KeyException e) {
-                Log.d(TAG, "error retrieving token: " + e);
-                return null;
-              }
-            });
   }
 
   @Override
@@ -414,10 +395,17 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     return digitalCashRepo.getTransactions(laoId, user);
   }
 
-  public Observable<List<TransactionObject>> getTransactionsObservable() throws KeyException {
-    return digitalCashRepo.getTransactionsObservable(laoId, getValidToken().getPublicKey());
+  public Observable<List<TransactionObject>> getTransactionsObservable() {
+    try {
+      return digitalCashRepo.getTransactionsObservable(laoId, getValidToken().getPublicKey());
+    } catch (KeyException e) {
+      return Observable.error(e);
+    }
   }
 
+  public Observable<Set<String>> getRollCallsObservable() {
+    return rollCallRepo.getRollCallsObservableInLao(laoId);
+  }
 
   /**
    * This function should be used to add disposable object generated from subscription to sent
