@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.model.objects;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Copyable;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
@@ -33,12 +32,6 @@ public final class Lao implements Copyable<Lao> {
   private Map<String, Election> elections;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
-  // Some useful map for the digital cash
-  private Map<String, PublicKey> pubKeyByHash;
-  // Map for the history
-  private Map<PublicKey, Set<TransactionObject>> transactionHistoryByUser;
-  // Map for the the public_key last transaction
-  private Map<PublicKey, Set<TransactionObject>> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -55,10 +48,6 @@ public final class Lao implements Copyable<Lao> {
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
-    // initialize the maps :
-    this.transactionHistoryByUser = new HashMap<>();
-    this.transactionByUser = new HashMap<>();
-    this.pubKeyByHash = new HashMap<>();
   }
 
   public Lao(String name, PublicKey organizer, long creation) {
@@ -67,7 +56,6 @@ public final class Lao implements Copyable<Lao> {
     this.name = name;
     this.organizer = organizer;
     this.creation = creation;
-    pubKeyByHash.put(organizer.computeHash(), organizer);
   }
 
   /**
@@ -91,9 +79,6 @@ public final class Lao implements Copyable<Lao> {
     // (Gabriel Fleischer 11.08.22)
     this.messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
     this.keyToNode = Copyable.copy(lao.keyToNode);
-    this.pubKeyByHash = new HashMap<>(lao.pubKeyByHash);
-    this.transactionHistoryByUser = new HashMap<>(lao.transactionHistoryByUser);
-    this.transactionByUser = new HashMap<>(lao.transactionByUser);
   }
 
   public void updateElection(String prevId, Election election) {
@@ -288,18 +273,6 @@ public final class Lao implements Copyable<Lao> {
     return witnessMessages;
   }
 
-  public Map<PublicKey, Set<TransactionObject>> getTransactionHistoryByUser() {
-    return transactionHistoryByUser;
-  }
-
-  public Map<PublicKey, Set<TransactionObject>> getTransactionByUser() {
-    return transactionByUser;
-  }
-
-  public Map<String, PublicKey> getPubKeyByHash() {
-    return pubKeyByHash;
-  }
-
   public void setElections(Map<String, Election> elections) {
     this.elections = elections;
   }
@@ -353,11 +326,6 @@ public final class Lao implements Copyable<Lao> {
         + ", electInstances="
         + messageIdToElectInstance.values()
         + ", transactionPerUser="
-        + transactionByUser.toString()
-        + ", transactionHistoryByUser"
-        + transactionHistoryByUser.toString()
-        + ", pubKeyByHash"
-        + pubKeyByHash.toString()
         + '}';
   }
 }
