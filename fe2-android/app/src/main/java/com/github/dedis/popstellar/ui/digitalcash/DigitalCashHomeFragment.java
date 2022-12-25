@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -77,6 +78,7 @@ public class DigitalCashHomeFragment extends Fragment {
             .subscribe(
                 transactions -> {
                   if (transactions != null) {
+                    Log.d(TAG, "transactions " + transactions);
                     long totalAmount =
                         TransactionObject.getMiniLaoPerReceiverSetTransaction(
                             transactions, viewModel.getValidToken().getPublicKey());

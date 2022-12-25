@@ -33,8 +33,6 @@ public class TransactionCoinHandler {
 
     Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
 
-    TransactionObjectBuilder builder = new TransactionObjectBuilder();
-
     // inputs and outputs for the creation
     List<InputObject> inputs = new ArrayList<>();
     List<OutputObject> outputs = new ArrayList<>();
@@ -76,13 +74,14 @@ public class TransactionCoinHandler {
               current.getScript().getType(), current.getScript().getPubKeyHash());
       outputs.add(new OutputObject(current.getValue(), script));
     }
-    builder
-        .setChannel(channel)
-        .setLockTime(postTransactionCoin.getTransaction().getLockTime())
-        .setVersion(postTransactionCoin.getTransaction().getVersion())
-        .setTransactionId(postTransactionCoin.getTransactionId())
-        .setInputs(inputs)
-        .setOutputs(outputs);
+    TransactionObjectBuilder builder =
+        new TransactionObjectBuilder()
+            .setChannel(channel)
+            .setLockTime(postTransactionCoin.getTransaction().getLockTime())
+            .setVersion(postTransactionCoin.getTransaction().getVersion())
+            .setTransactionId(postTransactionCoin.getTransactionId())
+            .setInputs(inputs)
+            .setOutputs(outputs);
 
     digitalCashRepo.updateTransactions(channel.extractLaoId(), builder.build());
   }
