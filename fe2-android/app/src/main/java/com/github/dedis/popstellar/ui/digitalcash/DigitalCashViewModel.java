@@ -244,7 +244,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
     List<Input> inputs = new ArrayList<>();
     List<TransactionObject> transactions = getTransactionsForUser(keyPair.getPublicKey());
-    if (transactions == null && !coinBase) {
+    if (transactions != null && !coinBase) {
       processNotCoinbaseTransaction(keyPair, outputs, amountFromReceiver, inputs);
     } else {
       inputs.add(
