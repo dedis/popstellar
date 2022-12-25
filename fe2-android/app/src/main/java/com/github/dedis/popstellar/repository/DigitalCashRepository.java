@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.repository;
 
+import android.util.Log;
+
 import com.github.dedis.popstellar.model.objects.OutputObject;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -9,11 +11,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
+@Singleton
 public class DigitalCashRepository {
 
   public static final String TAG = DigitalCashRepository.class.getSimpleName();
@@ -31,11 +36,13 @@ public class DigitalCashRepository {
 
   public Observable<List<TransactionObject>> getTransactionsObservable(
       String laoId, PublicKey user) {
+
     return getLaoTransactions(laoId).getTransactionsObservable(user);
   }
 
   public void updateTransactions(String laoId, TransactionObject transaction)
       throws NoRollCallException {
+    Log.d(TAG, "updating transactions on Lao " + laoId + " and transaction " + transaction);
     getLaoTransactions(laoId).updateTransactions(transaction);
   }
 
@@ -63,7 +70,10 @@ public class DigitalCashRepository {
     public synchronized void initializeDigitalCash(List<PublicKey> attendees) {
       transactions.clear();
       hashDictionary.clear();
+      transactionsSubject.values().forEach(Observer::onComplete);
+      transactionsSubject.clear();
       attendees.forEach(publicKey -> hashDictionary.put(publicKey.computeHash(), publicKey));
+      Log.d(TAG, "initializing digital cash with attendees " + attendees);
     }
 
     public synchronized void updateTransactions(TransactionObject transaction)
@@ -78,7 +88,13 @@ public class DigitalCashRepository {
           // Unfortunately without Java 9 one can't use List.of(...) :(
           transactions = new ArrayList<>();
           transactions.add(transaction);
-          transactionsSubject.put(current, BehaviorSubject.createDefault(transactions));
+
+          // An empty subject might have been created already
+          if (transactionsSubject.containsKey(current)) {
+            transactionsSubject.get(current).onNext(transactions);
+          } else {
+            transactionsSubject.put(current, BehaviorSubject.createDefault(transactions));
+          }
         } else if (!transactions.contains(transaction)) {
           transactions.add(transaction);
           transactionsSubject.get(current).onNext(transactions);
@@ -88,11 +104,17 @@ public class DigitalCashRepository {
     }
 
     public Observable<List<TransactionObject>> getTransactionsObservable(PublicKey user) {
-      return transactionsSubject.get(user);
+      Subject<List<TransactionObject>> subject = transactionsSubject.get(user);
+      if (subject == null) {
+        subject = BehaviorSubject.createDefault(new ArrayList<>());
+        transactionsSubject.put(user, subject);
+      }
+      return subject;
     }
 
     public List<TransactionObject> getTransactions(PublicKey user) {
-      return new ArrayList<>(transactions.get(user));
+      List<TransactionObject> transactionList = transactions.get(user);
+      return transactionList == null ? null : new ArrayList<>(transactionList);
     }
 
     private List<PublicKey> getReceiversTransaction(TransactionObject transaction) {
