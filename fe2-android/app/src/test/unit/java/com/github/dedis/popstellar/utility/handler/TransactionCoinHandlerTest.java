@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -123,7 +124,8 @@ public class TransactionCoinHandlerTest {
 
   @Test
   public void testHandlePostTransactionCoin()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          NoRollCallException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, gson);
     messageHandler.handleMessage(messageSender, coinChannel, message);
 
