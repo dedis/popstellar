@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.Completable;
-import io.reactivex.Single;
+import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -76,7 +76,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
-  private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
   private final LiveData<Set<TransactionObject>> mTransactionHistory;
 
   /*
@@ -185,10 +184,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
             "Please select a LAOMember",
             Toast.LENGTH_LONG)
         .show();
-  }
-
-  public MutableLiveData<Set<PoPToken>> getTokens() {
-    return mTokens;
   }
 
   /*
@@ -366,11 +361,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
                           + " transaction "
                           + lao.getTransactionHistoryByUser().toString());
                   mCurrentLao.postValue(lao);
-                  try {
-                    Objects.requireNonNull(mTokens.getValue()).add(getValidToken());
-                  } catch (KeyException e) {
-                    Log.d(TAG, "Could not retrieve token");
-                  }
                 },
                 error -> Log.d(TAG, "Error on lao propagation " + error)));
   }
@@ -424,9 +414,10 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     return digitalCashRepo.getTransactions(laoId, user);
   }
 
-  public LiveData<Set<TransactionObject>> getTransactionHistory() {
-    return mTransactionHistory;
+  public Observable<List<TransactionObject>> getTransactionsObservable() throws KeyException {
+    return digitalCashRepo.getTransactionsObservable(laoId, getValidToken().getPublicKey());
   }
+
 
   /**
    * This function should be used to add disposable object generated from subscription to sent

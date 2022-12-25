@@ -9,12 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,23 +24,18 @@ import java.util.stream.Collectors;
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.HistoryViewHolder> {
   private static final String TAG = HistoryListAdapter.class.getSimpleName();
   private List<TransactionHistoryElement> transactions;
-  private final Map<String, Boolean> expandMap;
-  Set<PublicKey> ownPublicKeys;
-  Set<String> ownPublicKeysHash;
+  private final Map<String, Boolean> expandMap = new HashMap<>();
+  private final DigitalCashViewModel viewModel;
+  private final FragmentActivity activity;
 
-  public HistoryListAdapter(Set<TransactionObject> transactionObjects, Set<PoPToken> ownTokens) {
-    if (transactionObjects == null) {
-      transactionObjects = new HashSet<>();
-    }
-    List<TransactionObject> transactionList = new ArrayList<>(transactionObjects);
-    this.ownPublicKeys = getPksFromTokens(ownTokens);
-    this.ownPublicKeysHash =
-        ownPublicKeys.parallelStream().map(PublicKey::computeHash).collect(Collectors.toSet());
-
-    this.transactions = buildTransactionList(transactionList);
-    expandMap = new HashMap<>();
-    transactions.forEach(
-        transactionHistoryElement -> expandMap.put(transactionHistoryElement.id, false));
+  public HistoryListAdapter(DigitalCashViewModel viewModel, FragmentActivity activity) {
+    this.viewModel = viewModel;
+    this.activity = activity;
+    //
+    //    this.transactions = buildTransactionList(transactionObjects);
+    //    expandMap = new HashMap<>();
+    //    transactions.forEach(
+    //        transactionHistoryElement -> expandMap.put(transactionHistoryElement.id, false));
   }
 
   @NonNull
@@ -90,40 +87,36 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     return transactions.size();
   }
 
-  public void replaceList(Set<TransactionObject> transactions, Set<PoPToken> tokens) {
-    setList(new ArrayList<>(transactions), tokens);
-  }
-
   @SuppressLint("NotifyDataSetChanged") // Because our current implementation warrants it
-  private void setList(List<TransactionObject> transactions, Set<PoPToken> tokens) {
-    if (transactions == null) {
-      transactions = new ArrayList<>();
-    }
-    this.ownPublicKeys = getPksFromTokens(tokens);
-    this.ownPublicKeysHash =
-        ownPublicKeys.parallelStream().map(PublicKey::computeHash).collect(Collectors.toSet());
-    notifyDataSetChanged();
+  public void setList(List<TransactionObject> transactions) {
     this.transactions = buildTransactionList(transactions);
     transactions.forEach(
         transaction -> expandMap.putIfAbsent(transaction.getTransactionId(), false));
+    notifyDataSetChanged();
   }
 
   private List<TransactionHistoryElement> buildTransactionList(
       List<TransactionObject> transactionObjects) {
-
     ArrayList<TransactionHistoryElement> transactionHistoryElements = new ArrayList<>();
+    PublicKey ownKey;
+    try {
+      ownKey = viewModel.getValidToken().getPublicKey();
+    } catch (KeyException e) {
+      ErrorUtils.logAndShow(activity, TAG, e, R.string.error_retrieve_own_token);
+      return new ArrayList<>();
+    }
     for (TransactionObject transactionObject : transactionObjects) {
       // To know if we are in input or not. We assume that no two different person
-      boolean isSender = isSender(transactionObject);
+      boolean isSender = transactionObject.isSender(ownKey);
       boolean isIssuance = transactionObject.isCoinBaseTransaction();
       transactionHistoryElements.addAll(
-          transactionObject.getOutputs().parallelStream()
+          transactionObject.getOutputs().stream()
               // If we are in input, we want all output except us. If we are not in input,
               // we want all output we are in: so we filter isInInput XOR isInOutput
               // if it is an issuance, we want all outputs where we are
               .filter(
                   outputObject -> {
-                    boolean isOwn = ownPublicKeysHash.contains(outputObject.getPubKeyHash());
+                    boolean isOwn = outputObject.getPubKeyHash().equals(ownKey.computeHash());
                     return isIssuance && isOwn || !isIssuance && (isSender ^ isOwn);
                   })
               .map(
@@ -138,19 +131,6 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
               .collect(Collectors.toList()));
     }
     return transactionHistoryElements;
-  }
-
-  private Set<PublicKey> getPksFromTokens(Set<PoPToken> tokens) {
-    return tokens.parallelStream().map(PoPToken::getPublicKey).collect(Collectors.toSet());
-  }
-
-  private boolean isSender(TransactionObject transactionObject) {
-    for (PublicKey pk : ownPublicKeys) {
-      if (transactionObject.isSender(pk)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   public static class HistoryViewHolder extends RecyclerView.ViewHolder {

@@ -15,7 +15,6 @@ import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -79,10 +78,8 @@ public class DigitalCashSendFragment extends Fragment {
                             .getText());
                 if (viewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, -1)) {
                   try {
-                    LaoView laoView = viewModel.getCurrentLaoValue();
                     PoPToken token = viewModel.getValidToken();
-                    if (canPostTransaction(
-                        laoView, token.getPublicKey(), Integer.parseInt(currentAmount))) {
+                    if (canPostTransaction(token.getPublicKey(), Integer.parseInt(currentAmount))) {
                       Disposable disposable =
                           postTransaction(
                                   Collections.singletonMap(currentPublicKeySelected, currentAmount))
@@ -124,7 +121,7 @@ public class DigitalCashSendFragment extends Fragment {
     viewModel.setPageTitle(R.string.digital_cash_send);
   }
 
-  public boolean canPostTransaction(LaoView lao, PublicKey publicKey, int currentAmount) {
+  public boolean canPostTransaction(PublicKey publicKey, int currentAmount) {
     List<TransactionObject> transactions = viewModel.getTransactionsForUser(publicKey);
     if (transactions == null) {
       ErrorUtils.logAndShow(requireContext(), TAG, R.string.digital_cash_warning_no_money);
