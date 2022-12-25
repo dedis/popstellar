@@ -2,14 +2,16 @@ package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.*;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 public class DigitalCashHistoryFragment extends Fragment {
   private static final String TAG = DigitalCashHistoryFragment.class.getSimpleName();
@@ -37,27 +39,11 @@ public class DigitalCashHistoryFragment extends Fragment {
     transactionList.setAdapter(adapter);
 
     // Update dynamically the events in History
-    try {
-      viewModel.addDisposable(
-          viewModel
-              .getTransactionsObservable()
-              .subscribe(
-                  adapter::setList, error -> Log.d(TAG, "error with history update " + error)));
-    } catch (KeyException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.error_retrieve_own_token);
-    }
-    //    viewModel
-    //        .getTransactionHistory()
-    //        .observe(
-    //            requireActivity(),
-    //            transactionObjects -> {
-    //              if (transactionObjects != null) {
-    //                transactionObjects.forEach(object -> Log.d(TAG, "Object is " +
-    // object.toString()));
-    //                Log.d(TAG, "Transaction got updated " + transactionObjects.size());
-    //                adapter.replaceList(transactionObjects, viewModel.getTokens().getValue());
-    //              }
-    //            });
+    viewModel.addDisposable(
+        viewModel
+            .getTransactionsObservable()
+            .subscribe(
+                adapter::setList, error -> Log.d(TAG, "error with history update " + error)));
     return view;
   }
 
