@@ -135,19 +135,19 @@ public class TransactionObject {
   }
 
   /**
-   * Function that given a Public Key gives the miniLaoCoin received
+   * Function that given a Public Key gives the miniLaoCoin received for this transaction object
    *
-   * @param receiver Public Key of a potential receiver
+   * @param user Public Key of a potential receiver
    * @return int amount of Lao Coin
    */
-  public long getMiniLaoPerReceiver(PublicKey receiver) {
-    if (!isReceiver(receiver) || isSender(receiver)) {
+  public long getSumForUser(PublicKey user) {
+    if (!isReceiver(user) || isSender(user)) {
       return 0;
     }
 
-    String hashKey = receiver.computeHash();
+    String hashKey = user.computeHash();
 
-    // iterate through the output and sum if it's for the argument public key
+    // iterate through the output and sum if the recipient is
     return getOutputs().stream()
         .filter(outputObject -> outputObject.getScript().getPubKeyHash().equals(hashKey))
         .mapToLong(OutputObject::getValue)

@@ -142,7 +142,7 @@ public class DigitalCashRepository {
       return transactionList == null
           ? 0
           : transactionList.stream()
-              .mapToLong(transaction -> transaction.getMiniLaoPerReceiver(user))
+              .mapToLong(transaction -> transaction.getSumForUser(user))
               .sum();
     }
   }
