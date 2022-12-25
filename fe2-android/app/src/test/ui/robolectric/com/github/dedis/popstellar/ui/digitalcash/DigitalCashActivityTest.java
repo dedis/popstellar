@@ -28,7 +28,7 @@ import org.mockito.junit.MockitoTestRule;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -129,8 +129,17 @@ public class DigitalCashActivityTest {
           builder.setOutputs(Collections.singletonList(oo));
           builder.setInputs(Collections.singletonList(io));
           builder.setTransactionId("some id");
+          TransactionObject transaction = builder.build();
+          Set<String> rcIdSet = new HashSet<>();
+          rcIdSet.add(ROLL_CALL.getId());
 
-          digitalCashRepo.updateTransactions(LAO.getId(), builder.build());
+          when(digitalCashRepo.getTransactions(any(), any()))
+              .thenReturn(Collections.singletonList(transaction));
+          when(digitalCashRepo.getTransactionsObservable(any(), any()))
+              .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(transaction)));
+          when(rollCallRepo.getRollCallsObservableInLao(any()))
+              .thenReturn(BehaviorSubject.createDefault(rcIdSet));
+          digitalCashRepo.updateTransactions(LAO.getId(), transaction);
 
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
