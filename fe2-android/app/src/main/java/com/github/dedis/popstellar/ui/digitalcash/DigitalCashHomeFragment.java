@@ -70,9 +70,6 @@ public class DigitalCashHomeFragment extends Fragment {
                   PublicKey publicKey = token.getPublicKey();
                   binding.digitalCashHomeAddress.setText(publicKey.getEncoded());
                   subscribeToTransactions();
-                  //                  long totalAmount = viewModel.getOwnBalance();
-                  //                  binding.digitalCashSendAddress.setText(
-                  //                      String.format("LAO coin : %s", totalAmount));
                 },
                 error ->
                     ErrorUtils.logAndShow(
