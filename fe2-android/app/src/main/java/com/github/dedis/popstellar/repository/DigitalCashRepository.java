@@ -86,34 +86,30 @@ public class DigitalCashRepository {
         throw new NoRollCallException("No roll call attendees could be found");
       }
       for (PublicKey current : getReceiversTransaction(transaction)) {
-        List<TransactionObject> transactions = this.transactions.get(current);
+        List<TransactionObject> transactionList = this.transactions.get(current);
 
-        if (transactions == null) {
+        if (transactionList == null) {
           // Unfortunately without Java 9 one can't use List.of(...) :(
-          transactions = new ArrayList<>();
-          transactions.add(transaction);
+          transactionList = new ArrayList<>();
+          transactionList.add(transaction);
 
           // An empty subject might have been created already
           if (transactionsSubject.containsKey(current)) {
-            transactionsSubject.get(current).onNext(transactions);
+            transactionsSubject.get(current).onNext(transactionList);
           } else {
-            transactionsSubject.put(current, BehaviorSubject.createDefault(transactions));
+            transactionsSubject.put(current, BehaviorSubject.createDefault(transactionList));
           }
-        } else if (!transactions.contains(transaction)) {
-          transactions.add(transaction);
-          transactionsSubject.get(current).onNext(transactions);
+        } else if (!transactionList.contains(transaction)) {
+          transactionList.add(transaction);
+          transactionsSubject.get(current).onNext(transactionList);
         }
-        this.transactions.put(current, new ArrayList<>(transactions));
+        this.transactions.put(current, new ArrayList<>(transactionList));
       }
     }
 
     public Observable<List<TransactionObject>> getTransactionsObservable(PublicKey user) {
-      Subject<List<TransactionObject>> subject = transactionsSubject.get(user);
-      if (subject == null) {
-        subject = BehaviorSubject.createDefault(new ArrayList<>());
-        transactionsSubject.put(user, subject);
-      }
-      return subject;
+      return transactionsSubject.computeIfAbsent(
+          user, newUser -> BehaviorSubject.createDefault(new ArrayList<>()));
     }
 
     public List<TransactionObject> getTransactions(PublicKey user) {

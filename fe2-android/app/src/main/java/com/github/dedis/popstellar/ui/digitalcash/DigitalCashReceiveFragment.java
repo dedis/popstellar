@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashReceiveFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -66,7 +65,6 @@ public class DigitalCashReceiveFragment extends Fragment {
 
     try {
       PoPToken token = viewModel.getValidToken();
-      PublicKey user = token.getPublicKey();
       PopTokenData tokenData = new PopTokenData(token.getPublicKey());
       Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
       binding.digitalCashReceiveQr.setImageBitmap(myBitmap);
