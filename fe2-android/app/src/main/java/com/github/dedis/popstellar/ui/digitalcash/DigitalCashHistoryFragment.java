@@ -2,14 +2,10 @@ package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
 
@@ -44,7 +40,7 @@ public class DigitalCashHistoryFragment extends Fragment {
     viewModel.addDisposable(
         viewModel
             .getTransactionsObservable()
-            .subscribeOn(AndroidSchedulers.mainThread())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 adapter::setList, error -> Log.d(TAG, "error with history update " + error)));
     return view;
