@@ -13,7 +13,7 @@ case object CoinHandler extends MessageHandler {
   def handlePostTransaction(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask = {
       for {
-        _ <- checkParameters(rpcMessage, s"Unable to handle coin message $rpcMessage. Not a post message")
+        _ <- extractParameters(rpcMessage, s"Unable to handle coin message $rpcMessage. Not a post message")
         _ <- dbAskWritePropagate(rpcMessage)
       } yield ()
     }

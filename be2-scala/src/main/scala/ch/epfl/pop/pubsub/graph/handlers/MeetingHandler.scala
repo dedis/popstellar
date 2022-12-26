@@ -13,7 +13,7 @@ case object MeetingHandler extends MessageHandler {
   def handleCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask = {
       for {
-        _ <- checkParameters(rpcMessage, s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'")
+        _ <- extractParameters(rpcMessage, s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'")
         _ <- dbAskWritePropagate(rpcMessage)
       } yield ()
     }
