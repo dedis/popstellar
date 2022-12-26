@@ -141,16 +141,18 @@ public class TransactionObject {
    * @return int amount of Lao Coin
    */
   public long getSumForUser(PublicKey user) {
-    if (!isReceiver(user) || isSender(user)) {
-      return 0;
-    }
-
     String hashKey = user.computeHash();
 
     // iterate through the output and sum if the recipient is
+    boolean isSender = isSender(user);
+    boolean isIssuance = isCoinBaseTransaction();
     return getOutputs().stream()
-        .filter(outputObject -> outputObject.getScript().getPubKeyHash().equals(hashKey))
-        .mapToLong(OutputObject::getValue)
+        .filter(
+            outputObject -> {
+              boolean isOwn = outputObject.getPubKeyHash().equals(hashKey);
+              return isIssuance && isOwn || !isIssuance && (isSender ^ isOwn);
+            })
+        .mapToLong(outputObject -> isSender ? -outputObject.getValue() : outputObject.getValue())
         .sum();
   }
 
