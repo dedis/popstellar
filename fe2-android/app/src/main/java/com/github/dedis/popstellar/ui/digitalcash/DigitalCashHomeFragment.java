@@ -69,14 +69,17 @@ public class DigitalCashHomeFragment extends Fragment {
                   PoPToken token = viewModel.getValidToken();
                   PublicKey publicKey = token.getPublicKey();
                   binding.digitalCashHomeAddress.setText(publicKey.getEncoded());
-                  long totalAmount = viewModel.getOwnBalance();
-                  binding.digitalCashSendAddress.setText(
-                      String.format("LAO coin : %s", totalAmount));
+                  subscribeToTransactions();
+                  //                  long totalAmount = viewModel.getOwnBalance();
+                  //                  binding.digitalCashSendAddress.setText(
+                  //                      String.format("LAO coin : %s", totalAmount));
                 },
                 error ->
                     ErrorUtils.logAndShow(
                         requireContext(), TAG, error, R.string.error_retrieve_own_token)));
+  }
 
+  private void subscribeToTransactions() {
     viewModel.addDisposable(
         viewModel
             .getTransactionsObservable()
