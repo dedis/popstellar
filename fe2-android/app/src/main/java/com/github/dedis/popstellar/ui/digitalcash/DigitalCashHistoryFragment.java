@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+
 public class DigitalCashHistoryFragment extends Fragment {
   private static final String TAG = DigitalCashHistoryFragment.class.getSimpleName();
 
@@ -42,6 +44,7 @@ public class DigitalCashHistoryFragment extends Fragment {
     viewModel.addDisposable(
         viewModel
             .getTransactionsObservable()
+            .subscribeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 adapter::setList, error -> Log.d(TAG, "error with history update " + error)));
     return view;

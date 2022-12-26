@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.HistoryViewHolder> {
   private static final String TAG = HistoryListAdapter.class.getSimpleName();
-  private List<TransactionHistoryElement> transactions;
+  private List<TransactionHistoryElement> transactions = new ArrayList<>();
   private final Map<String, Boolean> expandMap = new HashMap<>();
   private final DigitalCashViewModel viewModel;
   private final FragmentActivity activity;

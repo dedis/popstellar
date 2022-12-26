@@ -14,6 +14,8 @@ import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+
 import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity.TAG;
 
 /**
@@ -61,11 +63,15 @@ public class DigitalCashHomeFragment extends Fragment {
     viewModel.addDisposable(
         viewModel
             .getRollCallsObservable()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 ids -> {
                   PoPToken token = viewModel.getValidToken();
                   PublicKey publicKey = token.getPublicKey();
                   binding.digitalCashHomeAddress.setText(publicKey.getEncoded());
+                  long totalAmount = viewModel.getOwnBalance();
+                  binding.digitalCashSendAddress.setText(
+                      String.format("LAO coin : %s", totalAmount));
                 },
                 error ->
                     ErrorUtils.logAndShow(
@@ -74,6 +80,7 @@ public class DigitalCashHomeFragment extends Fragment {
     viewModel.addDisposable(
         viewModel
             .getTransactionsObservable()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 transactions -> {
                   Log.d(TAG, "updating transactions " + transactions);
