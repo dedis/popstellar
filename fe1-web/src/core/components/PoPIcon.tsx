@@ -1,4 +1,4 @@
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -30,6 +30,13 @@ type MaterialIcon = {
   IconFamily: typeof MaterialIcons;
 };
 
+type AntDesignIconNames = keyof typeof AntDesign['glyphMap'];
+
+type AntDesignIcon = {
+  iconName: AntDesignIconNames;
+  IconFamily: typeof AntDesign;
+};
+
 /**
  * To add icons from new icon families, create an Icon type similar to the one above
  * that contains the two fields 'iconName' and 'IconFamily' where the type of
@@ -44,6 +51,10 @@ type MaterialIcon = {
  * used and what name should be passed to it.
  */
 const iconNameMap = {
+  arrowBack: {
+    iconName: 'ios-arrow-back',
+    IconFamily: Ionicons,
+  } as IonIcon,
   addPerson: {
     iconName: 'ios-person-add',
     IconFamily: Ionicons,
@@ -52,10 +63,6 @@ const iconNameMap = {
      * combination of name and family
      */
   } as IonIcon,
-  digitalCash: {
-    iconName: 'attach-money',
-    IconFamily: MaterialIcons,
-  } as MaterialIcon,
   cameraReverse: {
     iconName: 'ios-camera-reverse',
     IconFamily: Ionicons,
@@ -76,8 +83,16 @@ const iconNameMap = {
     iconName: 'ios-create',
     IconFamily: Ionicons,
   } as IonIcon,
+  digitalCash: {
+    iconName: 'attach-money',
+    IconFamily: MaterialIcons,
+  } as MaterialIcon,
   delete: {
     iconName: 'ios-trash',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  drawerMenu: {
+    iconName: 'ios-menu',
     IconFamily: Ionicons,
   } as IonIcon,
   dropdown: {
@@ -92,22 +107,30 @@ const iconNameMap = {
     iconName: 'ios-calendar',
     IconFamily: Ionicons,
   } as IonIcon,
-  home: {
-    iconName: 'ios-home',
+  heart: {
+    iconName: 'heart',
     IconFamily: Ionicons,
   } as IonIcon,
-  identity: {
-    iconName: 'ios-person',
+  home: {
+    iconName: 'ios-home',
     IconFamily: Ionicons,
   } as IonIcon,
   info: {
     iconName: 'ios-information-circle-outline',
     IconFamily: Ionicons,
   } as IonIcon,
+  invite: {
+    iconName: 'adduser',
+    IconFamily: AntDesign,
+  } as AntDesignIcon,
   list: {
     iconName: 'ios-list',
     IconFamily: Ionicons,
   } as IonIcon,
+  logout: {
+    iconName: 'logout',
+    IconFamily: MaterialIcons,
+  } as MaterialIcon,
   meeting: {
     iconName: 'ios-calendar',
     IconFamily: Ionicons,
@@ -118,6 +141,10 @@ const iconNameMap = {
   } as IonIcon,
   options: {
     iconName: 'ios-ellipsis-horizontal',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  profile: {
+    iconName: 'ios-person',
     IconFamily: Ionicons,
   } as IonIcon,
   qrCode: {
@@ -140,6 +167,22 @@ const iconNameMap = {
     iconName: 'ios-people',
     IconFamily: Ionicons,
   } as IonIcon,
+  thumbsDown: {
+    iconName: 'thumbs-down-sharp',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  thumbsUp: {
+    iconName: 'thumbs-up-sharp',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  topItems: {
+    iconName: 'ios-medal',
+    IconFamily: Ionicons,
+  } as IonIcon,
+  userList: {
+    iconName: 'ios-people',
+    IconFamily: Ionicons,
+  } as IonIcon,
   wallet: {
     iconName: 'ios-wallet',
     IconFamily: Ionicons,
@@ -153,6 +196,8 @@ const iconNameMap = {
     IconFamily: Ionicons,
   } as IonIcon,
 };
+
+export type PopIconName = keyof typeof iconNameMap;
 
 const styles = StyleSheet.create({
   focused: {},
@@ -194,7 +239,7 @@ PoPIcon.defaultProps = {
 type IconPropTypes = ExtendType<
   PropTypes.InferProps<typeof iconPropTypes>,
   {
-    name: keyof typeof iconNameMap;
+    name: PopIconName;
     color: string;
     size: number;
   }
@@ -202,7 +247,7 @@ type IconPropTypes = ExtendType<
 
 export default PoPIcon;
 
-export const makeIcon = (name: keyof typeof iconNameMap) => {
+export const makeIcon = (name: PopIconName) => {
   // we need to cast it here to a more generic type due to limitations
   // in the static type checking
   const Entry = iconNameMap[name] as {

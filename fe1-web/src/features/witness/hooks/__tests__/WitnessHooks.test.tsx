@@ -2,7 +2,7 @@ import { describe } from '@jest/globals';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 
-import { mockLaoIdHash } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { WitnessReactContext, WITNESS_FEATURE_IDENTIFIER } from 'features/witness/interface';
 
@@ -15,7 +15,8 @@ const markNotificationAsRead = jest.fn();
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     enabled: true,
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
+    useConnectedToLao: () => true,
     addNotification,
     discardNotifications,
     markNotificationAsRead,
@@ -29,12 +30,21 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('WitnessHooks', () => {
-  describe('useAssertCurrentLaoId', () => {
+  describe('useCurrentLaoId', () => {
     it('should return the correct value', () => {
-      const { result } = renderHook(() => WitnessHooks.useAssertCurrentLaoId(), {
+      const { result } = renderHook(() => WitnessHooks.useCurrentLaoId(), {
         wrapper,
       });
-      expect(result.current).toEqual(mockLaoIdHash);
+      expect(result.current).toEqual(mockLaoId);
+    });
+  });
+
+  describe('useConnectedToLao', () => {
+    it('should return the correct value', () => {
+      const { result } = renderHook(() => WitnessHooks.useConnectedToLao(), {
+        wrapper,
+      });
+      expect(result.current).toBeTrue();
     });
   });
 

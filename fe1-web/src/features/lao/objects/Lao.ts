@@ -81,7 +81,7 @@ export class Lao {
     this.last_tokenized_roll_call_id = obj.last_tokenized_roll_call_id;
     this.server_addresses = obj.server_addresses || [];
 
-    const laoChannel = getLaoChannel(obj.id.valueOf());
+    const laoChannel = getLaoChannel(obj.id);
     if (!laoChannel) {
       throw new Error(`Obtained invalid lao channel from valid lao id '${obj.id.valueOf()}'???`);
     }
@@ -92,14 +92,14 @@ export class Lao {
   public static fromState(lao: LaoState): Lao {
     return new Lao({
       name: lao.name,
-      id: new Hash(lao.id),
-      creation: new Timestamp(lao.creation),
-      last_modified: new Timestamp(lao.last_modified),
-      organizer: new PublicKey(lao.organizer),
-      witnesses: lao.witnesses.map((w) => new PublicKey(w)),
-      last_roll_call_id: lao.last_roll_call_id ? new Hash(lao.last_roll_call_id) : undefined,
+      id: Hash.fromState(lao.id),
+      creation: Timestamp.fromState(lao.creation),
+      last_modified: Timestamp.fromState(lao.last_modified),
+      organizer: PublicKey.fromState(lao.organizer),
+      witnesses: lao.witnesses.map((w) => PublicKey.fromState(w)),
+      last_roll_call_id: lao.last_roll_call_id ? Hash.fromState(lao.last_roll_call_id) : undefined,
       last_tokenized_roll_call_id: lao.last_tokenized_roll_call_id
-        ? new Hash(lao.last_tokenized_roll_call_id)
+        ? Hash.fromState(lao.last_tokenized_roll_call_id)
         : undefined,
       server_addresses: lao.server_addresses,
       subscribed_channels: lao.subscribed_channels,
@@ -107,6 +107,24 @@ export class Lao {
   }
 
   public toState(): LaoState {
-    return JSON.parse(JSON.stringify(this));
+    return {
+      name: this.name,
+      id: this.id.toState(),
+      creation: this.creation.toState(),
+      last_modified: this.last_modified.toState(),
+      organizer: this.organizer.toState(),
+      witnesses: this.witnesses.map((w) => w.toState()),
+
+      // the following properties are not directly related to the PoP protocol:
+      last_roll_call_id: this.last_roll_call_id?.toState(),
+      last_tokenized_roll_call_id: this.last_tokenized_roll_call_id?.toState(),
+
+      // the addresses of all known servers hosting this lao
+      server_addresses: this.server_addresses,
+
+      // the name of all channels we are subscribed to
+      // workaround for https://github.com/dedis/popstellar/issues/1078
+      subscribed_channels: this.subscribed_channels,
+    };
   }
 }

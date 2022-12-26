@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { configureTestFeatures, mockLaoIdHash } from '__tests__/utils';
+import { configureTestFeatures, mockLaoId } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
@@ -28,7 +28,7 @@ const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const sampleCastVote: Partial<CastVote> = {
   object: ObjectType.ELECTION,
   action: ActionType.CAST_VOTE,
-  lao: mockLaoIdHash,
+  lao: mockLaoId,
   election: mockElectionId,
   created_at: TIMESTAMP,
   votes: mockVotes,
@@ -37,7 +37,7 @@ const sampleCastVote: Partial<CastVote> = {
 const CastVoteJson: string = `{
   "object": "${ObjectType.ELECTION}",
   "action": "${ActionType.CAST_VOTE}",
-  "lao": "${mockLaoIdHash}",
+  "lao": "${mockLaoId}",
   "election": "${mockElectionId}",
   "created_at": ${TIMESTAMP},
   "votes": ${JSON.stringify(mockVotes)}
@@ -58,7 +58,7 @@ describe('CastVote', () => {
     const temp = {
       object: ObjectType.ELECTION,
       action: ActionType.CAST_VOTE,
-      lao: mockLaoIdHash,
+      lao: mockLaoId,
       election: mockElectionId,
       created_at: TIMESTAMP,
       votes: [mockVote1, mockVote2],
@@ -75,7 +75,7 @@ describe('CastVote', () => {
     const obj = {
       object: ObjectType.ELECTION,
       action: ActionType.NOTIFY_ADD,
-      lao: mockLaoIdHash.toString(),
+      lao: mockLaoId.toString(),
       election: mockElectionId.toString(),
       created_at: TIMESTAMP.valueOf(),
       votes: [mockVote1, mockVote2],
@@ -88,7 +88,7 @@ describe('CastVote', () => {
     const obj = {
       object: ObjectType.CHIRP,
       action: ActionType.CAST_VOTE,
-      lao: mockLaoIdHash.toString(),
+      lao: mockLaoId.toString(),
       election: mockElectionId.toString(),
       created_at: TIMESTAMP.valueOf(),
       votes: [mockVote1, mockVote2],
@@ -101,7 +101,7 @@ describe('CastVote', () => {
     it('should throw an error if election is undefined', () => {
       const createWrongObj = () =>
         new CastVote({
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           election: undefined as unknown as Hash,
           created_at: TIMESTAMP,
           votes: [mockVote1, mockVote2],
@@ -123,7 +123,7 @@ describe('CastVote', () => {
     it('should throw an error if created_at is undefined', () => {
       const createWrongObj = () =>
         new CastVote({
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           election: mockElectionId,
           votes: [mockVote1, mockVote2],
           created_at: undefined as unknown as Timestamp,
@@ -134,7 +134,7 @@ describe('CastVote', () => {
     it('should throw an error if votes is undefined', () => {
       const createWrongObj = () =>
         new CastVote({
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           election: mockElectionId,
           created_at: TIMESTAMP,
           votes: undefined as unknown as Vote[],
@@ -146,7 +146,7 @@ describe('CastVote', () => {
       const msg = new CastVote({
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
-        lao: mockLaoIdHash,
+        lao: mockLaoId,
         election: mockElectionId,
         created_at: TIMESTAMP,
         votes: [mockVote1, mockVote2],
@@ -160,25 +160,33 @@ describe('CastVote', () => {
     it('returns true if all fields are defined', () => {
       expect(() => CastVote.validateVotes([])).not.toThrow();
       expect(() =>
-        CastVote.validateVotes([{ id: 'someId', question: 'q', vote: 0 }]),
+        CastVote.validateVotes([
+          new Vote({ id: new Hash('someId'), question: new Hash('q'), vote: 0 }),
+        ]),
       ).not.toThrow();
     });
 
     it('returns false if some fields are undefined', () => {
       expect(() =>
         CastVote.validateVotes([
-          { id: 'someId', question: 'q', vote: undefined as unknown as string },
+          new EncryptedVote({
+            id: new Hash('someId'),
+            question: new Hash('q'),
+            vote: undefined as unknown as string,
+          }),
         ]),
       ).toThrow(ProtocolError);
 
       expect(() =>
         CastVote.validateVotes([
-          { id: 'someId', question: undefined as unknown as string, vote: 0 },
+          new Vote({ id: new Hash('someId'), question: undefined as unknown as Hash, vote: 0 }),
         ]),
       ).toThrow(ProtocolError);
 
       expect(() =>
-        CastVote.validateVotes([{ id: undefined as unknown as string, question: 'q', vote: 0 }]),
+        CastVote.validateVotes([
+          new Vote({ id: undefined as unknown as Hash, question: new Hash('q'), vote: 0 }),
+        ]),
       ).toThrow(ProtocolError);
     });
   });
@@ -194,16 +202,16 @@ describe('CastVote', () => {
           1: q2SelectedOption,
         }),
       ).toEqual([
-        {
-          id: CastVote.computeVoteId(mockElectionOpened, 0, q1SelectedOption).valueOf(),
+        new Vote({
+          id: CastVote.computeVoteId(mockElectionOpened, 0, q1SelectedOption),
           question: mockElectionOpened.questions[0].id,
           vote: q1SelectedOption,
-        },
-        {
-          id: CastVote.computeVoteId(mockElectionOpened, 1, q2SelectedOption).valueOf(),
+        }),
+        new Vote({
+          id: CastVote.computeVoteId(mockElectionOpened, 1, q2SelectedOption),
           question: mockElectionOpened.questions[1].id,
           vote: q2SelectedOption,
-        },
+        }),
       ] as Vote[]);
     });
   });
@@ -251,14 +259,15 @@ describe('CastVote', () => {
         CastVote.computeVoteId(mockSecretBallotElectionNotStarted, 0, q1SelectedOption).valueOf(),
       );
       // but rather the encrypted one!
-      expect(encryptedVotes[0]).toHaveProperty(
-        'id',
-        CastVote.computeSecretVoteId(
-          mockSecretBallotElectionNotStarted,
-          0,
-          encryptedVotes[0].vote,
-        ).valueOf(),
-      );
+      expect(
+        encryptedVotes[0].id.equals(
+          CastVote.computeSecretVoteId(
+            mockSecretBallotElectionNotStarted,
+            0,
+            encryptedVotes[0].vote,
+          ),
+        ),
+      ).toBeTrue();
 
       expect(encryptedVotes[0]).toHaveProperty(
         'question',
@@ -275,13 +284,8 @@ describe('CastVote', () => {
         CastVote.computeVoteId(mockSecretBallotElectionNotStarted, 1, q2SelectedOption).valueOf(),
       );
       // but rather the encrypted one!
-      expect(encryptedVotes[1]).toHaveProperty(
-        'id',
-        CastVote.computeSecretVoteId(
-          mockSecretBallotElectionNotStarted,
-          1,
-          encryptedVotes[1].vote,
-        ).valueOf(),
+      expect(encryptedVotes[1].id).toEqual(
+        CastVote.computeSecretVoteId(mockSecretBallotElectionNotStarted, 1, encryptedVotes[1].vote),
       );
 
       expect(encryptedVotes[1]).toHaveProperty(
@@ -310,8 +314,8 @@ describe('CastVote', () => {
   describe('computeSecretVoteId', () => {
     it('should compute the id correctly', () => {
       const mockEncryptedVotes1: EncryptedVote[] = [
-        { id: 'id0', question: 'q0', vote: 'x' },
-        { id: 'id1', question: 'q1', vote: 'a' },
+        new EncryptedVote({ id: new Hash('id0'), question: new Hash('q0'), vote: 'x' }),
+        new EncryptedVote({ id: new Hash('id1'), question: new Hash('q1'), vote: 'a' }),
       ];
 
       expect(

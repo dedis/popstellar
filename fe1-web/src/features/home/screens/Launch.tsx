@@ -63,14 +63,13 @@ const Launch = () => {
 
       // navigate to the newly created LAO
       navigation.navigate(STRINGS.navigation_app_lao, {
-        screen: STRINGS.navigation_lao_home,
+        screen: STRINGS.navigation_lao_events,
+        params: { screen: STRINGS.navigation_lao_events_home },
       });
     } catch (e) {
       console.error(`Failed to establish lao connection`, e);
     }
   };
-
-  const onTestClearStorage = () => dispatch({ type: 'CLEAR_STORAGE', value: {} });
 
   return (
     <ScreenWrapper>
@@ -105,10 +104,6 @@ const Launch = () => {
 
           <PoPTextButton onPress={connectToTestLao}>
             [TEST] Connect to LocalMockServer.ts (use &apos;npm run startServer&apos;)
-          </PoPTextButton>
-
-          <PoPTextButton onPress={onTestClearStorage}>
-            [TEST] Clear (persistent) storage
           </PoPTextButton>
         </View>
       </View>

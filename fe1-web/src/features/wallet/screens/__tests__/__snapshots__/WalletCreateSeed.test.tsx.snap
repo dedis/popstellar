@@ -296,6 +296,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -329,7 +330,6 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                       <View
                         style={
                           Object {
-                            "backgroundColor": "#3742fa",
                             "flex": 1,
                           }
                         }
@@ -357,37 +357,27 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                             >
                               <Text
                                 style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 32,
-                                      "fontWeight": "bold",
-                                      "lineHeight": 41,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "color": "#fff",
-                                    },
-                                  ]
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 32,
+                                    "fontWeight": "bold",
+                                    "lineHeight": 41,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
                                 }
                               >
                                 Hey there 👋
                               </Text>
                               <Text
                                 style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "color": "#fff",
-                                    },
-                                  ]
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
                                 }
                               >
                                 It seems as if you are using POPStellar for the first time?
@@ -403,13 +393,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   }
                                 }
                               >
-                                <Text
-                                  style={
-                                    Object {
-                                      "color": "#fff",
-                                    }
-                                  }
-                                >
+                                <Text>
                                   As a first step, you need to set up your
                                 </Text>
                                 <Text>
@@ -418,7 +402,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 <Text
                                   style={
                                     Object {
-                                      "color": "#ff4757",
+                                      "color": "#3742fa",
                                     }
                                   }
                                 >
@@ -427,13 +411,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 <Text>
                                    
                                 </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "color": "#fff",
-                                    }
-                                  }
-                                >
+                                <Text>
                                   that is secured using a
                                 </Text>
                                 <Text>
@@ -442,28 +420,16 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 <Text
                                   style={
                                     Object {
-                                      "color": "#ff4757",
+                                      "color": "#3742fa",
                                     }
                                   }
                                 >
                                   seed 🔑
                                 </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "color": "#fff",
-                                    }
-                                  }
-                                >
+                                <Text>
                                   . 
                                 </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "color": "#fff",
-                                    }
-                                  }
-                                >
+                                <Text>
                                   It is very important that you keep a backup copy of your
                                 </Text>
                                 <Text>
@@ -472,29 +438,21 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 <Text
                                   style={
                                     Object {
-                                      "color": "#ff4757",
+                                      "color": "#3742fa",
                                     }
                                   }
                                 >
                                   seed 🔑
                                 </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "color": "#fff",
-                                    }
-                                  }
-                                >
+                                <Text>
                                   , as it is the only way to restore your PoP tokens.
                                 </Text>
                               </Text>
                               <View
                                 style={
                                   Object {
-                                    "backgroundColor": "#ff4757",
-                                    "borderColor": "#fff",
-                                    "borderRadius": 16,
-                                    "borderWidth": 1,
+                                    "backgroundColor": "#3742fa",
+                                    "borderRadius": 8,
                                     "marginBottom": 16,
                                     "padding": 16,
                                   }
@@ -525,13 +483,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                   }
                                 }
                               >
-                                <Text
-                                  style={
-                                    Object {
-                                      "color": "#fff",
-                                    }
-                                  }
-                                >
+                                <Text>
                                   If you have backed up the above
                                 </Text>
                                 <Text>
@@ -540,196 +492,238 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 <Text
                                   style={
                                     Object {
-                                      "color": "#ff4757",
+                                      "color": "#3742fa",
                                     }
                                   }
                                 >
                                   seed 🔑
                                 </Text>
-                                <Text
-                                  style={
-                                    Object {
-                                      "color": "#fff",
-                                    }
-                                  }
-                                >
+                                <Text>
                                   , you can continue and start using the POPStellar application. The purpose of this application is to demonstrate use cases for proofs of personhood (PoP).
                                 </Text>
                               </Text>
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
+                              <Text
                                 style={
                                   Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
                                     "marginBottom": 16,
-                                  }
-                                }
-                                testID="exploring_selector"
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  exclusive={true}
-                                  handlerTag={3}
-                                  handlerType="NativeViewGestureHandler"
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  style={
-                                    Object {
-                                      "marginBottom": 16,
-                                    }
-                                  }
-                                  touchSoundDisabled={false}
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    style={
-                                      Object {
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                          Object {
-                                            "borderColor": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      <Text
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        Start exploring POPStellar 🤩
-                                      </Text>
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
-                              </View>
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Object {
-                                    "marginBottom": 16,
+                                    "textAlign": "left",
                                   }
                                 }
                               >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  exclusive={true}
-                                  handlerTag={4}
-                                  handlerType="NativeViewGestureHandler"
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
+                                <Text>
+                                  If you have already used this application before and remember your previous
+                                </Text>
+                                <Text>
+                                   
+                                </Text>
+                                <Text
                                   style={
                                     Object {
-                                      "marginBottom": 16,
+                                      "color": "#3742fa",
                                     }
                                   }
-                                  touchSoundDisabled={false}
                                 >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    style={
-                                      Object {
-                                        "opacity": 1,
-                                      }
+                                  seed 🔑
+                                </Text>
+                                <Text>
+                                  , you can restore your wallet by pressing the respective button.
+                                </Text>
+                                <Text>
+                                   
+                                </Text>
+                                <Text>
+                                  Otherwise you should take note of the above seed and press "New Wallet" to initialize a new
+                                </Text>
+                                <Text>
+                                   
+                                </Text>
+                                <Text
+                                  style={
+                                    Object {
+                                      "color": "#3742fa",
                                     }
-                                  >
-                                    <View
-                                      style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                          Object {
-                                            "borderColor": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      <Text
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        I have already used this application and know previous seed 🧐
-                                      </Text>
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
-                              </View>
+                                  }
+                                >
+                                  wallet 🔒
+                                </Text>
+                                <Text>
+                                  .
+                                </Text>
+                              </Text>
                             </View>
                           </View>
                         </RCTScrollView>
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "backgroundColor": "#fff",
+                              "borderColor": "rgb(216, 216, 216)",
+                              "borderTopWidth": 1,
+                              "flexDirection": "row",
+                              "justifyContent": "space-around",
+                              "paddingHorizontal": 16,
+                              "paddingVertical": 16,
+                            }
+                          }
+                        >
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={Object {}}
+                          >
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              exclusive={true}
+                              handlerTag={3}
+                              handlerType="NativeViewGestureHandler"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              touchSoundDisabled={false}
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                style={
+                                  Object {
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <View
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                      Object {
+                                        "backgroundColor": "transparent",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                        Object {
+                                          "color": "#3742fa",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Restore
+                                  </Text>
+                                </View>
+                              </View>
+                            </RNGestureHandlerButton>
+                          </View>
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={Object {}}
+                            testID="exploring_selector"
+                          >
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              exclusive={true}
+                              handlerTag={4}
+                              handlerType="NativeViewGestureHandler"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              touchSoundDisabled={false}
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                style={
+                                  Object {
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <View
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    New Wallet
+                                  </Text>
+                                </View>
+                              </View>
+                            </RNGestureHandlerButton>
+                          </View>
+                        </View>
                       </View>
                     </View>
                   </View>

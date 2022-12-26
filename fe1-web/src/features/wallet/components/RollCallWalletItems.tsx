@@ -9,11 +9,10 @@ import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { WalletHooks } from '../hooks';
-import { WalletFeature } from '../interface';
 import RollCallWalletItem from './RollCallWalletItem';
 
 const RollCallWalletItems = ({ laoId }: IPropTypes) => {
-  const tokens = WalletHooks.useRollCallTokensByLaoId(laoId.valueOf());
+  const tokens = WalletHooks.useRollCallTokensByLaoId(laoId);
 
   if (tokens.length > 0) {
     return (
@@ -60,8 +59,3 @@ RollCallWalletItems.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default RollCallWalletItems;
-
-export const rollCallWalletItemGenerator: WalletFeature.WalletItemGenerator = {
-  ListItems: RollCallWalletItems as React.ComponentType<{ laoId: Hash }>,
-  order: 1000,
-};

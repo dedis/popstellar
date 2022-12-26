@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
-import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -33,8 +32,8 @@ public class DigitalCashIssueFragment extends Fragment {
 
   public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
 
-  private DigitalCashIssueFragmentBinding mBinding;
-  private DigitalCashViewModel mViewModel;
+  private DigitalCashIssueFragmentBinding binding;
+  private DigitalCashViewModel viewModel;
 
   private int selectOneMember;
   private int selectAllLaoMembers;
@@ -54,13 +53,13 @@ public class DigitalCashIssueFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    this.mViewModel = DigitalCashActivity.obtainViewModel(getActivity());
-    mBinding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
-    selectOneMember = mBinding.radioButton.getId();
-    selectAllLaoMembers = mBinding.radioButton1.getId();
-    selectAllRollCallAttendees = mBinding.radioButton2.getId();
-    selectAllLaoWitnesses = mBinding.radioButton3.getId();
-    return mBinding.getRoot();
+    viewModel = DigitalCashActivity.obtainViewModel(getActivity());
+    binding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
+    selectOneMember = binding.radioButton.getId();
+    selectAllLaoMembers = binding.radioButton1.getId();
+    selectAllRollCallAttendees = binding.radioButton2.getId();
+    selectAllLaoWitnesses = binding.radioButton3.getId();
+    return binding.getRoot();
   }
 
   @Override
@@ -71,9 +70,15 @@ public class DigitalCashIssueFragment extends Fragment {
     setTheAdapterRollCallAttendee();
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+    viewModel.setPageTitle(R.string.digital_cash_issue);
+  }
+
   /** Function which call the view model post transaction when a post transaction event occur */
   public void setUpGetPostTransactionEvent() {
-    mViewModel
+    viewModel
         .getPostTransactionEvent()
         .observe(
             getViewLifecycleOwner(),
@@ -81,11 +86,11 @@ public class DigitalCashIssueFragment extends Fragment {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 /*Take the amount entered by the user*/
-                String currentAmount = mBinding.digitalCashIssueAmount.getText().toString();
+                String currentAmount = binding.digitalCashIssueAmount.getText().toString();
                 String currentPublicKeySelected =
-                    String.valueOf(mBinding.digitalCashIssueSpinner.getEditText().getText());
-                int radioGroup = mBinding.digitalCashIssueSelect.getCheckedRadioButtonId();
-                if (mViewModel.canPerformTransaction(
+                    String.valueOf(binding.digitalCashIssueSpinner.getEditText().getText());
+                int radioGroup = binding.digitalCashIssueSelect.getCheckedRadioButtonId();
+                if (viewModel.canPerformTransaction(
                     currentAmount, currentPublicKeySelected, radioGroup)) {
                   try {
                     Map<String, String> issueMap =
@@ -141,21 +146,18 @@ public class DigitalCashIssueFragment extends Fragment {
     if (radioGroup == selectOneMember && !currentSelected.equals("")) {
       attendees.add(new PublicKey(currentSelected));
     } else if (radioGroup == selectAllLaoMembers) {
-      for (RollCall current :
-          Objects.requireNonNull(mViewModel.getCurrentLaoValue()).getRollCalls().values()) {
-        attendees.addAll(current.getAttendees());
-      }
+      attendees = viewModel.getAllAttendees();
     } else if (radioGroup == selectAllRollCallAttendees) {
-      attendees = mViewModel.getAttendeesFromLastRollCall();
+      attendees = viewModel.getAttendeesFromLastRollCall();
     } else if (radioGroup == selectAllLaoWitnesses) {
-      attendees = Objects.requireNonNull(mViewModel.getCurrentLaoValue()).getWitnesses();
+      attendees = Objects.requireNonNull(viewModel.getCurrentLaoValue()).getWitnesses();
     }
     return attendees;
   }
 
   /** Function that setup the Button */
   private void setupSendCoinButton() {
-    mBinding.digitalCashIssueIssue.setOnClickListener(v -> mViewModel.postTransactionEvent());
+    binding.digitalCashIssueIssue.setOnClickListener(v -> viewModel.postTransactionEvent());
   }
 
   /** Function that set the Adapter */
@@ -163,9 +165,9 @@ public class DigitalCashIssueFragment extends Fragment {
     /* Roll Call attendees to which we can send*/
     List<String> myArray;
     try {
-      myArray = mViewModel.getAttendeesFromTheRollCallList();
+      myArray = viewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      mViewModel.setCurrentTab(DigitalCashTab.HOME);
+      viewModel.setCurrentTab(DigitalCashTab.HOME);
       Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
       Toast.makeText(
               requireContext(),
@@ -176,7 +178,7 @@ public class DigitalCashIssueFragment extends Fragment {
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-    mBinding.digitalCashIssueSpinnerTv.setAdapter(adapter);
+    binding.digitalCashIssueSpinnerTv.setAdapter(adapter);
   }
 
   /**
@@ -186,13 +188,13 @@ public class DigitalCashIssueFragment extends Fragment {
    *     issue to
    */
   private void postTransaction(Map<String, String> publicKeyAmount) {
-    if (mViewModel.getLaoId().getValue() == null) {
+    if (viewModel.getLaoId() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
-      mViewModel.addDisposable(
-          mViewModel
+      viewModel.addDisposable(
+          viewModel
               .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true)
               .subscribe(
                   () ->
@@ -211,7 +213,7 @@ public class DigitalCashIssueFragment extends Fragment {
                           requireContext(), TAG, error, R.string.error_post_transaction);
                     }
                   }));
-      mViewModel.updateLaoCoinEvent();
+      viewModel.updateLaoCoinEvent();
     }
   }
 }

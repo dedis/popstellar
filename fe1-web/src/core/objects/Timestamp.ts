@@ -1,3 +1,5 @@
+export type TimestampState = number;
+
 /**
  * Represents a Timestamp in our system.
  */
@@ -87,5 +89,38 @@ export class Timestamp extends Number implements Number {
    */
   public addSeconds(seconds: number): Timestamp {
     return new Timestamp(this.valueOf() + seconds);
+  }
+
+  /**
+   * Returns the ISO 8601 representation of the timestamp
+   * If you need access to the unterlying data type use .valueOf() and
+   * if you want to serialize an instance use .toState() instead
+   */
+  public toString(): string {
+    return this.toDate().toISOString();
+  }
+
+  /**
+   * Returns the primitive value used for representing the Timestamp,
+   * the number of seconds that passed since 00:00:00 UTC
+   * If you want to serialize an instance use .toState() instead
+   */
+  public valueOf(): number {
+    return super.valueOf();
+  }
+
+  /**
+   * Returns the serialized version of the base64url that can for instance be stored
+   * in redux stores
+   */
+  public toState(): TimestampState {
+    return super.valueOf();
+  }
+
+  /**
+   * Deserializes a previously serializes instance of Base64Url
+   */
+  public static fromState(timestampState: TimestampState): Timestamp {
+    return new Timestamp(timestampState);
   }
 }

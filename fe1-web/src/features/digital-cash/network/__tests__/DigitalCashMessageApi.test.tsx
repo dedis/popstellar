@@ -1,7 +1,7 @@
 import { configureTestFeatures, mockKeyPair, mockLaoId, mockPopToken } from '__tests__/utils';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish } from 'core/network/JsonRpcApi';
-import { Hash, PopToken, ROOT_CHANNEL } from 'core/objects';
+import { PopToken, ROOT_CHANNEL } from 'core/objects';
 import { PostTransaction } from 'features/digital-cash/network/messages';
 import { Transaction } from 'features/digital-cash/objects/transaction';
 import { DigitalCashStore } from 'features/digital-cash/store';
@@ -23,7 +23,7 @@ const publishMock = publish as jest.Mock;
 const mockPopTokenKeyPair = PopToken.fromState(mockKeyPair.toState());
 
 const mockPostCoinbase = new PostTransaction({
-  transaction_id: new Hash(mockCBHash),
+  transaction_id: mockCBHash,
   transaction: mockCoinbaseTransactionJSON,
 });
 const mockCoinbaseState = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash).toState();
@@ -55,7 +55,7 @@ describe('Digital Cash Message Api', () => {
       mockKeyPair,
       [mockKeyPair.publicKey],
       mockTransactionValue,
-      new Hash(mockLaoId),
+      mockLaoId,
     );
 
     expect(publishMock).toBeCalledTimes(1);
@@ -72,7 +72,7 @@ describe('Digital Cash Message Api', () => {
       mockPopTokenKeyPair,
       mockKeyPair.publicKey,
       mockTransactionValue,
-      new Hash(mockLaoId),
+      mockLaoId,
     );
 
     expect(publishMock).toBeCalledTimes(1);
@@ -87,12 +87,7 @@ describe('Digital Cash Message Api', () => {
   it('should throw an error when no transaction out found', async () => {
     getTransactionsByPublicKeyMock.mockReturnValue([]);
     await expect(
-      requestSendTransaction(
-        mockPopToken,
-        mockKeyPair.publicKey,
-        mockTransactionValue,
-        new Hash(mockLaoId),
-      ),
+      requestSendTransaction(mockPopToken, mockKeyPair.publicKey, mockTransactionValue, mockLaoId),
     ).rejects.toBeInstanceOf(Error);
   });
 
@@ -102,19 +97,14 @@ describe('Digital Cash Message Api', () => {
         mockPopToken,
         mockKeyPair.publicKey,
         mockTransactionValue + 10,
-        new Hash(mockLaoId),
+        mockLaoId,
       ),
     ).rejects.toBeInstanceOf(Error);
   });
 
   it('should throw an error with negative amount', async () => {
     await expect(
-      requestSendTransaction(
-        mockPopToken,
-        mockKeyPair.publicKey,
-        -mockTransactionValue,
-        new Hash(mockLaoId),
-      ),
+      requestSendTransaction(mockPopToken, mockKeyPair.publicKey, -mockTransactionValue, mockLaoId),
     ).rejects.toBeInstanceOf(Error);
   });
 });

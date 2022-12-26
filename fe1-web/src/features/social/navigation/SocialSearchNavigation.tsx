@@ -1,7 +1,9 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
-import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
+import DrawerMenuButton from 'core/components/DrawerMenuButton';
+import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
+import { SocialSearchParamList } from 'core/navigation/typing/social/SocialSearchParamList';
 import STRINGS from 'resources/strings';
 
 import { SocialSearch, SocialUserProfile } from '../screens';
@@ -15,16 +17,16 @@ const Stack = createStackNavigator<SocialSearchParamList>();
 
 const SocialSearchNavigation = () => {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}>
+    <Stack.Navigator screenOptions={stackScreenOptionsWithHeader}>
       <Stack.Screen
-        name={STRINGS.social_media_navigation_tab_attendee_list}
+        name={STRINGS.social_media_search_navigation_attendee_list}
         component={SocialSearch}
+        options={{
+          headerLeft: DrawerMenuButton,
+        }}
       />
       <Stack.Screen
-        name={STRINGS.social_media_navigation_tab_user_profile}
+        name={STRINGS.social_media_navigation_user_profile}
         component={SocialUserProfile}
       />
     </Stack.Navigator>

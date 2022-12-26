@@ -332,8 +332,13 @@ and look at existing components.
 The root navigation in the application is handled in `core/navigation`.
 All other navigation is setup as part of the `features`.
 
-It should be noted that as of February 2022, the navigation in the application suffers from a few bad implementation choices.
-It would warrant being significantly cleaned.
+In order to get proper typing on the navigation, the whole layout stack, including the screens of the different features, is defined in `core/navigation/typing` even though this contradicts the general design with the separation into the different features. The reason for this is technical:
+
+Assume a feature `X` provides a screen `SX`. If some other feature `Y` wants to tell the navigator to navigate to `SX`, we have to decide whether we want to statically check the navigation calls. Assuming we do want these checks, the whole navigation stack needs to be defined statically in typescript. We can use imports as long as they are not between features (see the related Section below) but not function calls such as `configure()` that return the API of a feature: Typescript types are a construct that does not have a representation in javascript at runtime. Hence we cannot use dependency injection to inject typing information into features, this has to be fixed statically. Hence the use of a global definition of the navigation stack.
+
+Currently there is an app navigator that differentiates between three general application states: 1) Setup, 2) Not connected to a LAO and 3) Connected to a LAO. In each case a different screen is shown that possibly uses a subnavigator, i.e. in case 2) a stack navigator allowing the user to create LAOs or join existing ones or in case 3) a bottom tab navigation bar to navigate between the different LAO screens.
+
+Inside the LAO subnavigator, each tab contains another stack-based subnavigator that allows navigation between events or different wallet items.
 
 For more information on managing the navigation in the user interface,
 please make sure you have a solid understanding of [React Navigation](https://reactnavigation.org/).
@@ -653,3 +658,11 @@ sometimes of a stylistic nature, sometimes running deeper and affecting software
 Please try to address the underlying issue before disabling an ESLint check,
 and if you still feel that disabling a check is the right approach,
 do discuss your choice with your teammates and/or the TAs before proceeding.
+
+## Hacks
+
+Unfortunately hacks cannot always be completely avoided, for instance if there is an issue in a dependency that has not been fixed yet and cannot be circumvented by using the proper API.
+
+At the moment this is the case for `@react-navigation/drawer` where the drawer cannot be closed by tapping on the black overlay. It might also be more of an issue of `react-native-reanimated` rather than the former given that it works in the officially [linked snacks](https://snack.expo.io/?platform=web&name=Drawer%20navigation%20%7C%20React%20Navigation&dependencies=%40expo%2Fvector-icons%40*%2C%40react-native-community%2Fmasked-view%40*%2Creact-native-gesture-handler%40*%2Creact-native-pager-view%40*%2Creact-native-paper%40%5E4.7.2%2Creact-native-reanimated%40*%2Creact-native-safe-area-context%40*%2Creact-native-screens%40*%2Creact-native-tab-view%40%5E3.0.0%2C%40react-navigation%2Fbottom-tabs%406.3.1%2C%40react-navigation%2Fdrawer%406.4.1%2C%40react-navigation%2Felements%401.3.3%2C%40react-navigation%2Fmaterial-bottom-tabs%406.2.1%2C%40react-navigation%2Fmaterial-top-tabs%406.2.1%2C%40react-navigation%2Fnative-stack%406.6.1%2C%40react-navigation%2Fnative%406.0.10%2C%40react-navigation%2Fstack%406.2.1&hideQueryParams=true&sourceUrl=https%3A%2F%2Freactnavigation.org%2Fexamples%2F6.x%2Fdrawer-based-navigation.js) using `useLegacyImplementation` (e.g. it might be related to https://github.com/software-mansion/react-native-reanimated/issues/1808). So far it was not possible to pinpoint the exact issue and thus [`patch-package`](https://www.npmjs.com/package/patch-package) is employed to change `@react-navigation/drawer`'s code after installing the npm packages. More specifically it changes [Overlay.tsx](https://github.com/react-navigation/react-navigation/blob/388b02f2f7cad3e7d25d439a115ea9f506bb7fc0/packages/drawer/src/views/modern/Overlay.tsx#L32) to always have `pointer-events` set to `auto`.
+
+`pack-package` works by applying diffs to the installed dependencies within `node_modules`. The entry `"postinstall": "patch-package --error-on-fail"` in `package.json` makes sure this actually happens. The diffs are stored in `fe1-web/patches/`.

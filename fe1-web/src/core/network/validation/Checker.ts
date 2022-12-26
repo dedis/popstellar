@@ -1,4 +1,4 @@
-import { Base64UrlData, ProtocolError, PublicKey, Timestamp, WitnessSignature } from 'core/objects';
+import { Hash, ProtocolError, PublicKey, Timestamp, WitnessSignature } from 'core/objects';
 
 export function checkTimestampStaleness(timestamp: Timestamp) {
   const TIMESTAMP_BASE_TIME = new Timestamp(1577833200); // 1st january 2020
@@ -19,7 +19,7 @@ export function checkAttendees(attendees: PublicKey[]) {
   }
 }
 
-export function checkWitnessSignatures(witSig: WitnessSignature[], data: Base64UrlData) {
+export function checkWitnessSignatures(witSig: WitnessSignature[], data: Hash) {
   if (!witSig.every((ws) => ws.verify(data))) {
     throw new ProtocolError('Invalid witness signatures parameter encountered: invalid signature');
   }

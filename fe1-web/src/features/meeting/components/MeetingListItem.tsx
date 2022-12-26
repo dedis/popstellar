@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { PoPIcon } from 'core/components';
-import { Timestamp } from 'core/objects';
+import { Hash, Timestamp } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -18,7 +18,7 @@ const getSubtitle = (meeting: Meeting): string => {
   const location = meeting.location ? `, ${meeting.location}` : '';
 
   if (meeting.start.after(now)) {
-    return `${STRINGS.general_starting_at} ${meeting.start
+    return `${STRINGS.general_starting} ${meeting.start
       .toDate()
       .toLocaleDateString()} ${meeting.start.toDate().toLocaleTimeString()}${
       meeting.location ? `, ${meeting.location}` : ''
@@ -29,7 +29,7 @@ const getSubtitle = (meeting: Meeting): string => {
     return `${STRINGS.general_ongoing}${location}`;
   }
 
-  return `${STRINGS.general_ended_at} ${meeting.end.toDate().toLocaleDateString()} ${meeting.end
+  return `${STRINGS.general_ended} ${meeting.end.toDate().toLocaleDateString()} ${meeting.end
     .toDate()
     .toLocaleTimeString()}${location}`;
 };
@@ -37,7 +37,7 @@ const getSubtitle = (meeting: Meeting): string => {
 const MeetingListItem = (props: IPropTypes) => {
   const { eventId: meetingId } = props;
 
-  const selectMeeting = useMemo(() => makeMeetingSelector(meetingId), [meetingId]);
+  const selectMeeting = useMemo(() => makeMeetingSelector(new Hash(meetingId)), [meetingId]);
   const meeting = useSelector(selectMeeting);
 
   if (!meeting) {
@@ -71,8 +71,8 @@ export const MeetingEventType: MeetingInterface['eventTypes'][0] = {
   eventType: Meeting.EVENT_TYPE,
   eventName: STRINGS.meeting_event_name,
   navigationNames: {
-    createEvent: STRINGS.navigation_lao_events_create_meeting,
-    screenSingle: STRINGS.navigation_lao_events_view_single_meeting,
+    createEvent: STRINGS.events_create_meeting,
+    screenSingle: STRINGS.events_view_single_meeting,
   },
   ListItemComponent: MeetingListItem as React.FunctionComponent<{
     eventId: string;

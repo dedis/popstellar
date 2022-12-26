@@ -4,25 +4,25 @@ import '__tests__/utils/matchers';
 import {
   configureTestFeatures,
   mockLaoCreationTime,
-  mockLaoIdHash,
+  mockLaoId,
   mockLaoName,
   mockPublicKey,
   mockPublicKey2,
   org,
 } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Base64UrlData, Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
+import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
 
 import { StateLao } from '../StateLao';
 
 const TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 const mockWitnesses = [new PublicKey(mockPublicKey), new PublicKey(mockPublicKey2)];
-const mockModificationId = Hash.fromStringArray(Base64UrlData.encode('message_id').toString());
+const mockModificationId = Hash.fromArray('message_id');
 
 const sampleStateLao: Partial<StateLao> = {
   object: ObjectType.LAO,
   action: ActionType.STATE,
-  id: mockLaoIdHash,
+  id: mockLaoId,
   name: mockLaoName,
   creation: mockLaoCreationTime,
   last_modified: TIMESTAMP,
@@ -35,7 +35,7 @@ const sampleStateLao: Partial<StateLao> = {
 const stateLaoJson = `{
   "object": "${ObjectType.LAO}",
   "action": "${ActionType.STATE}",
-  "id": "${mockLaoIdHash}",
+  "id": "${mockLaoId}",
   "name": "${mockLaoName}",
   "creation": ${mockLaoCreationTime},
   "last_modified": ${TIMESTAMP},
@@ -53,7 +53,7 @@ describe('StateLao', () => {
     const temp = {
       object: ObjectType.LAO,
       action: ActionType.STATE,
-      id: mockLaoIdHash,
+      id: mockLaoId,
       name: mockLaoName,
       creation: mockLaoCreationTime,
       last_modified: TIMESTAMP,
@@ -74,7 +74,7 @@ describe('StateLao', () => {
     const obj = {
       object: ObjectType.LAO,
       action: ActionType.STATE,
-      id: mockLaoIdHash,
+      id: mockLaoId,
       name: mockLaoName,
       creation: mockLaoCreationTime,
       last_modified: TIMESTAMP,
@@ -93,7 +93,7 @@ describe('StateLao', () => {
         new StateLao({
           object: ObjectType.LAO,
           action: ActionType.STATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           creation: mockLaoCreationTime,
           last_modified: TIMESTAMP,
           organizer: org,
@@ -109,7 +109,7 @@ describe('StateLao', () => {
         new StateLao({
           object: ObjectType.LAO,
           action: ActionType.STATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           last_modified: TIMESTAMP,
           organizer: org,
@@ -125,7 +125,7 @@ describe('StateLao', () => {
         new StateLao({
           object: ObjectType.LAO,
           action: ActionType.STATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           creation: mockLaoCreationTime,
           organizer: org,
@@ -141,7 +141,7 @@ describe('StateLao', () => {
         new StateLao({
           object: ObjectType.LAO,
           action: ActionType.STATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           creation: mockLaoCreationTime,
           last_modified: TIMESTAMP,
@@ -157,7 +157,7 @@ describe('StateLao', () => {
         new StateLao({
           object: ObjectType.LAO,
           action: ActionType.STATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           creation: mockLaoCreationTime,
           last_modified: TIMESTAMP,
@@ -173,7 +173,7 @@ describe('StateLao', () => {
         new StateLao({
           object: ObjectType.LAO,
           action: ActionType.STATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           creation: mockLaoCreationTime,
           last_modified: TIMESTAMP,
@@ -189,7 +189,7 @@ describe('StateLao', () => {
         new StateLao({
           object: ObjectType.LAO,
           action: ActionType.STATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           creation: mockLaoCreationTime,
           last_modified: TIMESTAMP,
@@ -239,7 +239,7 @@ describe('StateLao', () => {
         new StateLao({
           object: ObjectType.LAO,
           action: ActionType.STATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           creation: mockLaoCreationTime,
           last_modified: TIMESTAMP_BEFORE,

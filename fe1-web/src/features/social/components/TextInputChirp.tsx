@@ -1,11 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { Button, StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 
-import { ProfileIcon, TextBlock } from 'core/components';
+import { PoPTextButton, ProfileIcon } from 'core/components';
 import { PublicKey } from 'core/objects';
-import { gray, red } from 'core/styles/color';
+import { Border, Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 const MAX_CHIRP_CHARS = 300;
@@ -17,31 +17,35 @@ const MAX_CHIRP_CHARS = 300;
 
 const styles = StyleSheet.create({
   container: {
-    borderColor: gray,
-    borderWidth: 1,
+    borderColor: Color.primary,
+    borderRadius: Border.radius,
+    backgroundColor: Color.contrast,
     flexDirection: 'row',
-    padding: 10,
-    width: 600,
+    padding: Spacing.contentSpacing,
   } as ViewStyle,
   leftView: {
-    width: 60,
+    marginRight: Spacing.x1,
   } as ViewStyle,
   rightView: {
     display: 'flex',
     flexDirection: 'column',
+    flexGrow: 1,
   } as ViewStyle,
   textInput: {
-    fontSize: 18,
-    padding: 10,
-    width: 520,
     alignContent: 'flex-end',
-    borderColor: gray,
-    borderWidth: 1,
+    padding: Spacing.x1,
+    borderColor: Color.primary,
+    borderRadius: Border.radius,
+    borderWidth: Border.width,
   } as TextStyle,
   buttonView: {
-    fontSize: 18,
-    alignSelf: 'flex-end',
     flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    marginTop: Spacing.x1,
+  } as ViewStyle,
+  charsLeft: {
+    marginRight: Spacing.x1,
   } as ViewStyle,
 });
 
@@ -52,14 +56,14 @@ const TextInputChirp = (props: IPropTypes) => {
     numberOfLines,
     onPress,
     onChangeText,
-    publishIsDisabledCond,
+    disabled: alwaysDisabled,
     currentUserPublicKey,
     testID,
   } = props;
 
   const [charsLeft, setCharsLeft] = useState(MAX_CHIRP_CHARS);
   const textIsRed = charsLeft < 0;
-  const publishIsDisabled = textIsRed || charsLeft === MAX_CHIRP_CHARS || publishIsDisabledCond;
+  const disabled = textIsRed || charsLeft === MAX_CHIRP_CHARS || alwaysDisabled;
 
   return (
     <View style={styles.container}>
@@ -76,11 +80,12 @@ const TextInputChirp = (props: IPropTypes) => {
       <View style={styles.rightView}>
         <TextInput
           value={value}
-          placeholder={placeholder}
+          placeholder={placeholder || undefined}
           multiline
           selectTextOnFocus
-          numberOfLines={numberOfLines}
-          style={styles.textInput}
+          numberOfLines={numberOfLines || undefined}
+          style={[Typography.base, styles.textInput]}
+          placeholderTextColor={Color.inactive}
           onChangeText={(input: string) => {
             onChangeText(input);
             setCharsLeft(MAX_CHIRP_CHARS - input.length);
@@ -88,13 +93,18 @@ const TextInputChirp = (props: IPropTypes) => {
           testID={testID ? `${testID}_input` : undefined}
         />
         <View style={styles.buttonView}>
-          <TextBlock text={charsLeft.toString()} color={textIsRed ? red : undefined} />
-          <Button
-            title={STRINGS.button_publish}
-            onPress={() => onPress()}
-            disabled={publishIsDisabled}
+          <View style={styles.charsLeft}>
+            <Text style={textIsRed ? [Typography.base, Typography.error] : [Typography.base]}>
+              {charsLeft.toString()}
+            </Text>
+          </View>
+          <PoPTextButton
+            onPress={onPress}
+            disabled={disabled === true}
             testID={testID ? `${testID}_publish` : undefined}
-          />
+            toolbar>
+            {STRINGS.button_publish}
+          </PoPTextButton>
         </View>
       </View>
     </View>
@@ -107,7 +117,7 @@ const propTypes = {
   numberOfLines: PropTypes.number,
   onPress: PropTypes.func.isRequired,
   onChangeText: PropTypes.func.isRequired,
-  publishIsDisabledCond: PropTypes.bool,
+  disabled: PropTypes.bool,
   currentUserPublicKey: PropTypes.instanceOf(PublicKey),
   testID: PropTypes.string,
 };
@@ -117,20 +127,11 @@ TextInputChirp.propTypes = propTypes;
 TextInputChirp.defaultProps = {
   placeholder: STRINGS.your_chirp,
   numberOfLines: 5,
-  publishIsDisabledCond: false,
+  disabled: false,
   currentUserPublicKey: undefined,
   testID: undefined,
 };
 
-type IPropTypes = {
-  value: string;
-  placeholder: string;
-  numberOfLines: number;
-  onPress: Function;
-  onChangeText: Function;
-  publishIsDisabledCond: boolean;
-  currentUserPublicKey: PublicKey;
-  testID?: string;
-};
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default TextInputChirp;

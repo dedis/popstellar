@@ -26,6 +26,8 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
@@ -34,13 +36,18 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   private final LaoDetailViewModel viewModel;
   private final FragmentActivity activity;
   private final EnumMap<EventCategory, List<Event>> eventsMap;
+  private List<RollCall> rollCalls;
+  private List<Election> elections;
   private final boolean[] expanded = new boolean[3];
   public static final int TYPE_HEADER = 0;
   public static final int TYPE_EVENT = 1;
   public static final String TAG = EventListAdapter.class.getSimpleName();
 
   public EventListAdapter(
-      List<Event> events, LaoDetailViewModel viewModel, FragmentActivity activity) {
+      List<RollCall> rollCalls,
+      List<Election> elections,
+      LaoDetailViewModel viewModel,
+      FragmentActivity activity) {
     this.eventsMap = new EnumMap<>(EventCategory.class);
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
@@ -50,16 +57,15 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     expanded[PAST.ordinal()] = true;
     expanded[PRESENT.ordinal()] = true;
     expanded[FUTURE.ordinal()] = true;
-    putEventsInMap(events);
+    this.rollCalls = rollCalls;
+    this.elections = elections;
+    putEventsInMap();
   }
 
-  /**
-   * A helper method that places the events in the correct key-value pair according to state
-   *
-   * @param events the events to sort by state
-   */
-  private void putEventsInMap(List<Event> events) {
-    Collections.sort(events);
+  /** A helper method that places the events in the correct key-value pair according to state */
+  private void putEventsInMap() {
+    List<Event> events =
+        Stream.concat(rollCalls.stream(), elections.stream()).sorted().collect(Collectors.toList());
     this.eventsMap.get(PAST).clear();
     this.eventsMap.get(FUTURE).clear();
     this.eventsMap.get(PRESENT).clear();
@@ -121,7 +127,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       }
       expandIcon.setRotation(expanded[eventCategory.ordinal()] ? 180f : 0f);
 
-      String numberOfEventsInCategory = "(" + eventsMap.get(eventCategory).size() + ")";
+      String numberOfEventsInCategory =
+          "(" + Objects.requireNonNull(eventsMap.get(eventCategory)).size() + ")";
       ((HeaderViewHolder) holder).headerNumber.setText(numberOfEventsInCategory);
 
       // Expansion/Collapse part
@@ -176,7 +183,9 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 setCurrentFragment(
                     activity.getSupportFragmentManager(),
                     R.id.fragment_roll_call,
-                    () -> RollCallFragment.newInstance(token.getPublicKey()));
+                    () ->
+                        RollCallFragment.newInstance(
+                            token.getPublicKey(), rollCall.getPersistentId()));
               } catch (KeyException e) {
                 ErrorUtils.logAndShow(activity, TAG, e, R.string.key_generation_exception);
               } catch (UnknownLaoException e) {
@@ -197,25 +206,26 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
    * sure the position is occupied by an event or this will throw an exception
    */
   private Event getEvent(int position) {
-    int nbrOfFutureEvents = eventsMap.get(FUTURE).size();
-    int nbrOfPresentEvents = eventsMap.get(PRESENT).size();
-    int nbrOfPastEvents = eventsMap.get(PAST).size();
+    int nbrOfFutureEvents = Objects.requireNonNull(eventsMap.get(FUTURE)).size();
+    int nbrOfPresentEvents = Objects.requireNonNull(eventsMap.get(PRESENT)).size();
+    int nbrOfPastEvents = Objects.requireNonNull(eventsMap.get(PAST)).size();
 
     int eventAccumulator = 0;
     if (expanded[PRESENT.ordinal()]) {
       if (position <= nbrOfPresentEvents) {
-        return eventsMap.get(PRESENT).get(position - 1); // position 0 is for the header
+        return Objects.requireNonNull(eventsMap.get(PRESENT))
+            .get(position - 1); // position 0 is for the header
       }
       eventAccumulator += nbrOfPresentEvents;
     }
     if (expanded[FUTURE.ordinal()]) {
       if (position <= nbrOfFutureEvents + eventAccumulator + 1) {
-        return eventsMap.get(FUTURE).get(position - eventAccumulator - 2);
+        return Objects.requireNonNull(eventsMap.get(FUTURE)).get(position - eventAccumulator - 2);
       }
       eventAccumulator += nbrOfFutureEvents;
     }
     if (expanded[PAST.ordinal()] && position <= nbrOfPastEvents + eventAccumulator + 2) {
-      return eventsMap.get(PAST).get(position - eventAccumulator - 3);
+      return Objects.requireNonNull(eventsMap.get(PAST)).get(position - eventAccumulator - 3);
     }
     throw new IllegalStateException("no event matches");
   }
@@ -226,8 +236,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
    * sure the position is occupied by a header or this will throw an exception
    */
   private EventCategory getHeaderCategory(int position) {
-    int nbrOfFutureEvents = eventsMap.get(FUTURE).size();
-    int nbrOfPresentEvents = eventsMap.get(PRESENT).size();
+    int nbrOfFutureEvents = Objects.requireNonNull(eventsMap.get(FUTURE)).size();
+    int nbrOfPresentEvents = Objects.requireNonNull(eventsMap.get(PRESENT)).size();
 
     if (position == 0) {
       return PRESENT;
@@ -292,13 +302,17 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     return TYPE_EVENT;
   }
 
-  public void replaceList(List<Event> events) {
-    setList(events);
+  @SuppressLint("NotifyDataSetChanged") // warranted by our implementation
+  public void replaceRollCalls(List<RollCall> rollCalls) {
+    this.rollCalls = rollCalls;
+    putEventsInMap();
+    notifyDataSetChanged();
   }
 
   @SuppressLint("NotifyDataSetChanged") // warranted by our implementation
-  private void setList(List<Event> events) {
-    putEventsInMap(events);
+  public void replaceElections(List<Election> elections) {
+    this.elections = elections;
+    putEventsInMap();
     notifyDataSetChanged();
   }
 

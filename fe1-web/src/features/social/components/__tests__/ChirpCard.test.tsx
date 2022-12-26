@@ -1,19 +1,26 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 
-import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils/TestUtils';
+import MockNavigator from '__tests__/components/MockNavigator';
+import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
+import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import STRINGS from 'resources/strings';
+import { SocialMediaContext } from 'features/social/context';
 
-import { SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
-import {
-  requestAddReaction as mockRequestAddReaction,
-  requestDeleteChirp as mockRequestDeleteChirp,
-} from '../../network/SocialMessageApi';
+import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
+import { requestAddReaction as mockRequestAddReaction } from '../../network/SocialMessageApi';
 import { Chirp } from '../../objects';
 import ChirpCard from '../ChirpCard';
+
+jest.mock('core/hooks/ActionSheet.ts', () => {
+  const showActionSheet = jest.fn();
+  return { useActionSheet: () => showActionSheet };
+});
+
+// eslint-disable-next-line react-hooks/rules-of-hooks
+const showActionSheet = useActionSheet();
 
 // region test data
 const TIMESTAMP = 1609455600; // 31 December 2020
@@ -48,11 +55,9 @@ jest.mock('features/social/network/SocialMessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useSelector: jest.fn(() => ({
-    1234: {
-      '👍': 1,
-      '👎': 0,
-      '❤️': 0,
-    },
+    '👍': 1,
+    '👎': 0,
+    '❤️': 0,
   })),
 }));
 
@@ -62,20 +67,28 @@ const contextValue = {
   [SOCIAL_FEATURE_IDENTIFIER]: {
     useCurrentLao: () => mockLao,
     getCurrentLao: () => mockLao,
-    useCurrentLaoId: () => mockLaoIdHash,
-    getCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
+    useCurrentLaoId: () => mockLaoId,
+    getCurrentLaoId: () => mockLaoId,
     useRollCallById: () => undefined,
     useRollCallAttendeesById: () => [],
-    generateToken: () => mockPopToken,
-  },
+    generateToken: () => Promise.resolve(mockPopToken),
+  } as SocialReactContext,
 };
+
+const senderContext = { currentUserPopTokenPublicKey: sender };
+const nonSenderContext = { currentUserPopTokenPublicKey: new PublicKey('IAmNotTheSender') };
 
 // FIXME: useSelector mock doesn't seem to work correctly
 describe('ChirpCard', () => {
-  const renderChirp = (c: Chirp, publicKey: PublicKey) => {
+  const renderChirp = (c: Chirp, isSender: boolean) => {
     return render(
       <FeatureContext.Provider value={contextValue}>
-        <ChirpCard chirp={c} currentUserPublicKey={publicKey} />
+        <SocialMediaContext.Provider value={isSender ? senderContext : nonSenderContext}>
+          <MockNavigator
+            component={() => <ChirpCard chirp={c} isFirstItem={false} isLastItem={false} />}
+          />
+        </SocialMediaContext.Provider>
       </FeatureContext.Provider>,
     );
   };
@@ -85,58 +98,58 @@ describe('ChirpCard', () => {
     getMockLao.mockImplementation(() => mockLao);
 
     it('renders correctly for sender', () => {
-      const obj = renderChirp(chirp, sender);
+      const obj = renderChirp(chirp, true);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('renders correctly for non-sender', () => {
-      const obj = renderChirp(chirp, new PublicKey('IAmNotTheSender'));
+      const obj = renderChirp(chirp, false);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
-    it('calls delete correctly', () => {
-      const { getByLabelText, getByText } = renderChirp(chirp, sender);
-      fireEvent.press(getByLabelText('deleteChirpButton'));
-      fireEvent.press(getByText(STRINGS.general_yes));
-      expect(mockRequestDeleteChirp).toHaveBeenCalledTimes(1);
+    it('options shown correctly', async () => {
+      const { getByTestId } = renderChirp(chirp, true);
+      fireEvent.press(getByTestId(`chirp_action_options`));
+
+      expect(showActionSheet).toHaveBeenCalledTimes(1);
     });
 
     it('render correct for a deleted chirp', () => {
-      const obj = renderChirp(deletedChirp, sender);
+      const obj = renderChirp(deletedChirp, true);
       expect(obj.toJSON()).toMatchSnapshot();
     });
   });
 
   describe('for reaction', () => {
     it('renders correctly with reaction', () => {
-      const obj = renderChirp(chirp, sender);
+      const obj = renderChirp(chirp, true);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('renders correctly without reaction', () => {
-      const obj = renderChirp(chirp1, sender);
+      const obj = renderChirp(chirp1, true);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('adds thumbs up correctly', () => {
-      const { getByTestId } = renderChirp(chirp, sender);
+      const { getByTestId } = renderChirp(chirp, true);
       const thumbsUpButton = getByTestId('thumbs-up');
       fireEvent.press(thumbsUpButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID, mockLaoIdHash);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID, mockLaoId);
     });
 
     it('adds thumbs down correctly', () => {
-      const { getByTestId } = renderChirp(chirp, sender);
+      const { getByTestId } = renderChirp(chirp, true);
       const thumbsDownButton = getByTestId('thumbs-down');
       fireEvent.press(thumbsDownButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoIdHash);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoId);
     });
 
     it('adds heart correctly', () => {
-      const { getByTestId } = renderChirp(chirp, sender);
+      const { getByTestId } = renderChirp(chirp, true);
       const heartButton = getByTestId('heart');
       fireEvent.press(heartButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID, mockLaoIdHash);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID, mockLaoId);
     });
   });
 });

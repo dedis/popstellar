@@ -296,6 +296,7 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -329,7 +330,6 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                       <View
                         style={
                           Object {
-                            "backgroundColor": "#3742fa",
                             "flex": 1,
                           }
                         }
@@ -350,220 +350,220 @@ exports[`Wallet set seed screen renders correctly 1`] = `
                             <View>
                               <Text
                                 style={
-                                  Array [
-                                    Object {
-                                      "color": "#000",
-                                      "fontSize": 32,
-                                      "fontWeight": "bold",
-                                      "lineHeight": 41,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "color": "#fff",
-                                    },
-                                  ]
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 32,
+                                    "fontWeight": "bold",
+                                    "lineHeight": 41,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
                                 }
                               >
                                 My 12 word seed 🔑 is ...
+                              </Text>
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                In order to restore your wallet, you need to enter your previous 12-word seed below and press "Restore Wallet"
                               </Text>
                               <TextInput
                                 defaultValue=""
                                 onChangeText={[Function]}
                                 placeholder="grape sock height they tiny voyage kid young domain trumpet three patrol"
+                                placeholderTextColor="#8E8E8E"
                                 selectTextOnFocus={true}
                                 style={
-                                  Array [
-                                    Object {
-                                      "borderBottomWidth": 1,
-                                      "borderColor": "#000",
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginVertical": 32,
-                                      "padding": 8,
-                                      "textAlign": "left",
-                                    },
-                                    Object {
-                                      "borderColor": "#fff",
-                                      "color": "#fff",
-                                    },
-                                  ]
+                                  Object {
+                                    "borderBottomWidth": 1,
+                                    "borderColor": "#000",
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginVertical": 8,
+                                    "padding": 8,
+                                    "textAlign": "left",
+                                  }
                                 }
                               />
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Object {
-                                    "marginBottom": 16,
-                                  }
-                                }
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  exclusive={true}
-                                  handlerTag={3}
-                                  handlerType="NativeViewGestureHandler"
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  style={
-                                    Object {
-                                      "marginBottom": 16,
-                                    }
-                                  }
-                                  touchSoundDisabled={false}
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    style={
-                                      Object {
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                          Object {
-                                            "borderColor": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      <Text
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        Restore my wallet 🔐
-                                      </Text>
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
-                              </View>
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                focusable={true}
-                                onBlur={[Function]}
-                                onClick={[Function]}
-                                onFocus={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Object {
-                                    "marginBottom": 16,
-                                  }
-                                }
-                              >
-                                <RNGestureHandlerButton
-                                  collapsable={false}
-                                  exclusive={true}
-                                  handlerTag={4}
-                                  handlerType="NativeViewGestureHandler"
-                                  onGestureEvent={[Function]}
-                                  onGestureHandlerEvent={[Function]}
-                                  onGestureHandlerStateChange={[Function]}
-                                  onHandlerStateChange={[Function]}
-                                  rippleColor={0}
-                                  style={
-                                    Object {
-                                      "marginBottom": 16,
-                                    }
-                                  }
-                                  touchSoundDisabled={false}
-                                >
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    style={
-                                      Object {
-                                        "opacity": 1,
-                                      }
-                                    }
-                                  >
-                                    <View
-                                      style={
-                                        Array [
-                                          Object {
-                                            "backgroundColor": "#3742fa",
-                                            "borderColor": "#3742fa",
-                                            "borderRadius": 16,
-                                            "borderWidth": 1,
-                                            "padding": 8,
-                                          },
-                                          Object {
-                                            "borderColor": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      <Text
-                                        style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "textAlign": "center",
-                                            },
-                                            Object {
-                                              "color": "#fff",
-                                            },
-                                          ]
-                                        }
-                                      >
-                                        Oof, I might not know my seed 🔑 after all 😬
-                                      </Text>
-                                    </View>
-                                  </View>
-                                </RNGestureHandlerButton>
-                              </View>
                             </View>
                           </View>
                         </RCTScrollView>
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "backgroundColor": "#fff",
+                              "borderColor": "rgb(216, 216, 216)",
+                              "borderTopWidth": 1,
+                              "flexDirection": "row",
+                              "justifyContent": "space-around",
+                              "paddingHorizontal": 16,
+                              "paddingVertical": 16,
+                            }
+                          }
+                        >
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={Object {}}
+                          >
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              exclusive={true}
+                              handlerTag={3}
+                              handlerType="NativeViewGestureHandler"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              touchSoundDisabled={false}
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                style={
+                                  Object {
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <View
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                      Object {
+                                        "backgroundColor": "transparent",
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                        Object {
+                                          "color": "#3742fa",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Go back
+                                  </Text>
+                                </View>
+                              </View>
+                            </RNGestureHandlerButton>
+                          </View>
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={Object {}}
+                          >
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              exclusive={true}
+                              handlerTag={4}
+                              handlerType="NativeViewGestureHandler"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              touchSoundDisabled={false}
+                            >
+                              <View
+                                accessible={true}
+                                collapsable={false}
+                                style={
+                                  Object {
+                                    "opacity": 1,
+                                  }
+                                }
+                              >
+                                <View
+                                  style={
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Restore Wallet
+                                  </Text>
+                                </View>
+                              </View>
+                            </RNGestureHandlerButton>
+                          </View>
+                        </View>
                       </View>
                     </View>
                   </View>

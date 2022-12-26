@@ -16,6 +16,7 @@ import {
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
@@ -28,7 +29,7 @@ import STRINGS from 'resources/strings';
 import { EvotingHooks } from '../hooks';
 import { EvotingFeature } from '../interface';
 import { requestCreateElection } from '../network/ElectionMessageApi';
-import { ElectionVersion, Question } from '../objects';
+import { ElectionVersion, Question, QuestionState } from '../objects';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
@@ -36,7 +37,7 @@ const DEFAULT_ELECTION_DURATION = 3600;
 const VOTING_METHOD = STRINGS.election_method_Plurality;
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<LaoEventsParamList, typeof STRINGS.navigation_lao_events_create_election>,
+  StackScreenProps<LaoEventsParamList, typeof STRINGS.events_create_election>,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_events>,
     StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
@@ -47,7 +48,7 @@ type NavigationProps = CompositeScreenProps<
 // does not yet contain the id of the questions, this is computed
 // only on creation of the election
 // ALSO: for now the write_in feature is disabled (2022-03-16, Tyratox)
-type NewQuestion = Omit<Question, 'id' | 'write_in'>;
+type NewQuestion = Omit<QuestionState, 'id' | 'write_in'>;
 
 const EMPTY_QUESTION: NewQuestion = {
   question: '',
@@ -90,20 +91,19 @@ const createElection = (
   const now = Timestamp.EpochNow();
 
   // compute the id for the new election
-  const electionId = Hash.fromStringArray(
-    EventTags.ELECTION,
-    laoId.toString(),
-    now.toString(),
-    electionName,
-  );
+  const electionId = Hash.fromArray(EventTags.ELECTION, laoId, now, electionName);
 
   // compute the id for all questions and add the write_in property
-  const questionsWithId = questions.map((item) => ({
-    ...item,
-    id: Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), item.question).toString(),
-    // for now the write_in feature is disabled (2022-03-16, Tyratox)
-    write_in: false,
-  }));
+  const questionsWithId = questions.map((item) =>
+    Question.fromState({
+      id: Hash.fromArray(EventTags.QUESTION, electionId, item.question).toString(),
+      question: item.question,
+      ballot_options: item.ballot_options,
+      voting_method: item.voting_method,
+      // for now the write_in feature is disabled (2022-03-16, Tyratox)
+      write_in: false,
+    }),
+  );
 
   return requestCreateElection(
     laoId,
@@ -123,6 +123,7 @@ const CreateElection = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
   const currentLao = EvotingHooks.useCurrentLao();
+  const isConnected = EvotingHooks.useConnectedToLao();
 
   // form data for the new election
   const [startTime, setStartTime] = useState<Timestamp>(Timestamp.EpochNow());
@@ -139,7 +140,8 @@ const CreateElection = () => {
   const [modalStartIsVisible, setModalStartIsVisible] = useState<boolean>(false);
 
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
-  const buttonsVisibility: boolean = electionName !== '' && !questions.some(isQuestionInvalid);
+  const confirmButtonEnabled: boolean =
+    isConnected === true && electionName !== '' && !questions.some(isQuestionInvalid);
 
   const onCreateElection = () => {
     createElection(currentLao.id, version, electionName, questions, startTime, endTime)
@@ -150,7 +152,7 @@ const CreateElection = () => {
         console.error('Could not create Election, error:', err);
         toast.show(`Could not create Election, error: ${err}`, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       });
@@ -183,8 +185,24 @@ const CreateElection = () => {
     );
   };
 
+  const toolbarItems: ToolbarItem[] = [
+    {
+      id: 'election_confirm_selector',
+      title: STRINGS.general_button_confirm,
+      disabled: !confirmButtonEnabled,
+      onPress: () =>
+        onConfirmEventCreation(
+          startTime,
+          endTime,
+          onCreateElection,
+          setModalStartIsVisible,
+          setModalEndIsVisible,
+        ),
+    },
+  ];
+
   return (
-    <ScreenWrapper>
+    <ScreenWrapper toolbarItems={toolbarItems}>
       <Text style={[Typography.paragraph, Typography.important]}>
         {STRINGS.election_create_name}
       </Text>
@@ -267,21 +285,6 @@ const CreateElection = () => {
         {STRINGS.election_create_add_question}
       </PoPTextButton>
 
-      <PoPTextButton
-        onPress={() =>
-          onConfirmEventCreation(
-            startTime,
-            endTime,
-            onCreateElection,
-            setModalStartIsVisible,
-            setModalEndIsVisible,
-          )
-        }
-        testID="election_confirm_selector"
-        disabled={!buttonsVisibility}>
-        {STRINGS.general_button_confirm}
-      </PoPTextButton>
-
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}
@@ -303,6 +306,6 @@ const CreateElection = () => {
 export default CreateElection;
 
 export const CreateElectionScreen: EvotingFeature.LaoEventScreen = {
-  id: STRINGS.navigation_lao_events_create_election,
+  id: STRINGS.events_create_election,
   Component: CreateElection,
 };

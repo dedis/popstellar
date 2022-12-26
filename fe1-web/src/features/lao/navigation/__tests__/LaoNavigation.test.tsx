@@ -53,7 +53,7 @@ const mockStore = configureStore({
   }),
 });
 mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
-mockStore.dispatch(setCurrentLao(mockLao.toState()));
+mockStore.dispatch(setCurrentLao(mockLao));
 
 describe('LaoNavigation', () => {
   it('renders correctly', () => {

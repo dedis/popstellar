@@ -28,6 +28,11 @@ export interface WalletInterface extends FeatureInterface {
      * Returns whether a seed is present in the store
      */
     hasSeed: () => boolean;
+
+    /**
+     * Forgets the current seed
+     */
+    forgetSeed: () => void;
   };
 }
 
@@ -45,15 +50,22 @@ export interface WalletCompositionConfiguration {
   getCurrentLao: () => WalletFeature.Lao;
 
   /**
-   * Returns the currently active lao id. Should be used inside react components
-   * @returns The current lao id
+   * Returns the currently active lao id, throws error if there is none.
+   * Should be used inside react components
    */
-  useCurrentLaoId: () => Hash | undefined;
+  useCurrentLaoId: () => Hash;
 
   /**
-   * Returns the list of all known lao ids.
+   * Returns the currently active lao, throws error if there is none.
+   * Should be used inside react components
    */
-  useLaoIds: () => Hash[];
+  useCurrentLao: () => WalletFeature.Lao;
+
+  /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  useConnectedToLao: () => boolean | undefined;
 
   /* Event related functions */
 
@@ -69,26 +81,17 @@ export interface WalletCompositionConfiguration {
   /**
    * Returns a map from rollCallIds to rollCalls for a given lao id
    */
-  useRollCallsByLaoId: (laoId: string) => {
+  useRollCallsByLaoId: (laoId: Hash) => {
     [rollCallId: string]: WalletFeature.RollCall;
   };
 
   /**
    * Returns a map from laoIds to names
    */
-  useNamesByLaoId: () => { [laoId: string]: string };
 
   getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
 
-  useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
-
-  /**
-   * A list of item generators that given a laoId return a list of items
-   * to be displayed in the wallet for a given lao
-   */
-  walletItemGenerators: WalletFeature.WalletItemGenerator[];
-
-  walletNavigationScreens: WalletFeature.WalletScreen[];
+  useRollCallTokensByLaoId: (laoId: Hash) => RollCallToken[];
 }
 
 /**
@@ -96,13 +99,10 @@ export interface WalletCompositionConfiguration {
  */
 export type WalletReactContext = Pick<
   WalletCompositionConfiguration,
-  /* parameters */
-  | 'walletItemGenerators'
-  | 'walletNavigationScreens'
   /* lao */
   | 'useCurrentLaoId'
-  | 'useLaoIds'
-  | 'useNamesByLaoId'
+  | 'useCurrentLao'
+  | 'useConnectedToLao'
   /* events */
   | 'useRollCallsByLaoId'
   | 'useRollCallTokensByLaoId'
@@ -114,7 +114,6 @@ export type WalletReactContext = Pick<
 export interface WalletCompositionInterface extends FeatureInterface {
   appScreens: AppScreen[];
 
-  homeScreens: WalletFeature.HomeScreen[];
   laoScreens: WalletFeature.LaoScreen[];
 
   context: WalletReactContext;

@@ -1,15 +1,12 @@
-import { digitalCashWalletItemGenerator } from './components/DigitalCashWalletItems';
 import {
   DigitalCashInterface,
   DIGITAL_CASH_FEATURE_IDENTIFIER,
   DigitalCashCompositionConfiguration,
   DigitalCashCompositionInterface,
 } from './interface';
+import { DigitalCashLaoScreen } from './navigation/DigitalCashNavigation';
 import { configureNetwork } from './network';
 import { digitalCashReducer } from './reducer';
-import { DigitalCashWalletScreen } from './screens/DigitalCashWallet';
-import { PoPTokenScannerScreen } from './screens/PoPTokenScanner';
-import { SendReceiveScreen } from './screens/SendReceive';
 
 /**
  * Configures the wallet feature
@@ -17,8 +14,7 @@ import { SendReceiveScreen } from './screens/SendReceive';
 export function configure(): DigitalCashInterface {
   return {
     identifier: DIGITAL_CASH_FEATURE_IDENTIFIER,
-    walletItemGenerators: [digitalCashWalletItemGenerator],
-    walletScreens: [DigitalCashWalletScreen, SendReceiveScreen, PoPTokenScannerScreen],
+    laoScreens: [DigitalCashLaoScreen],
   };
 }
 
@@ -34,6 +30,7 @@ export function compose(
     context: {
       useRollCallById: configuration.useRollCallById,
       useCurrentLaoId: configuration.useCurrentLaoId,
+      useConnectedToLao: configuration.useConnectedToLao,
       useIsLaoOrganizer: configuration.useIsLaoOrganizer,
       useRollCallTokensByLaoId: configuration.useRollCallTokensByLaoId,
       useRollCallTokenByRollCallId: configuration.useRollCallTokenByRollCallId,

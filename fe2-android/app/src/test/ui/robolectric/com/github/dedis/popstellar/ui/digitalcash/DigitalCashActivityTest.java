@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
@@ -62,11 +63,24 @@ public class DigitalCashActivityTest {
   private static final Lao LAO = new Lao(LAO_NAME, POP_TOKEN.getPublicKey(), 10223421);
   private static final String LAO_ID = LAO.getId();
   private static final String RC_TITLE = "Roll-Call Title";
+  private static final RollCall ROLL_CALL =
+      new RollCall(
+          "id",
+          "id",
+          RC_TITLE,
+          0,
+          1,
+          2,
+          EventState.CLOSED,
+          Collections.singleton(POP_TOKEN.getPublicKey()),
+          "location",
+          "desc");
 
   @Inject Gson gson;
 
   @BindValue @Mock GlobalNetworkManager networkManager;
   @BindValue @Mock LAORepository repository;
+  @BindValue @Mock RollCallRepository rollCallRepo;
   @BindValue @Mock MessageSender messageSender;
   @BindValue @Mock KeyManager keyManager;
 
@@ -84,11 +98,7 @@ public class DigitalCashActivityTest {
         @Override
         protected void before() throws KeyException, GeneralSecurityException {
 
-          RollCall rc = new RollCall(RC_TITLE);
-          rc.setAttendees(Collections.singleton(POP_TOKEN.getPublicKey()));
-          rc.setState(EventState.CLOSED);
-          LAO.setRollCalls(Collections.singletonMap(RC_TITLE, rc));
-
+          when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
           TransactionObjectBuilder builder = new TransactionObjectBuilder();
           builder.setVersion(1);
           builder.setLockTime(0);
@@ -125,8 +135,8 @@ public class DigitalCashActivityTest {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
-          when(keyManager.getValidPoPToken(any())).thenReturn(POP_TOKEN);
           when(keyManager.getMainPublicKey()).thenReturn(POP_TOKEN.getPublicKey());
+          when(keyManager.getValidPoPToken(any(), any())).thenReturn(POP_TOKEN);
           when(networkManager.getMessageSender()).thenReturn(messageSender);
           when(messageSender.subscribe(any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());

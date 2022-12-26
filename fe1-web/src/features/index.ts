@@ -1,8 +1,6 @@
-import { makeIcon } from 'core/components/PoPIcon';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
-import STRINGS from 'resources/strings';
 
 import * as digitalCash from './digital-cash';
 import * as events from './events';
@@ -37,7 +35,8 @@ export function configureFeatures() {
     useLaoOrganizerBackendPublicKey: laoConfiguration.hooks.useLaoOrganizerBackendPublicKey,
     /* lao: hooks */
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     /* EVENTS FEATURE */
     /* events: action creators */
     addEvent: eventConfiguration.actionCreators.addEvent,
@@ -54,7 +53,8 @@ export function configureFeatures() {
     updateEvent: eventConfiguration.actionCreators.updateEvent,
     getEventById: eventConfiguration.functions.getEventById,
     getLaoById: laoConfiguration.functions.getLaoById,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
   });
 
   const rollCallConfiguration = rollCall.configure({
@@ -65,7 +65,8 @@ export function configureFeatures() {
     makeEventByTypeSelector: eventConfiguration.functions.makeEventByTypeSelector,
     getLaoById: laoConfiguration.functions.getLaoById,
     setLaoLastRollCall: laoConfiguration.actionCreators.setLaoLastRollCall,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     generateToken: walletConfiguration.functions.generateToken,
     hasSeed: walletConfiguration.functions.hasSeed,
   });
@@ -75,14 +76,12 @@ export function configureFeatures() {
     messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
-    useLaoIds: laoConfiguration.hooks.useLaoIds,
-    useNamesByLaoId: laoConfiguration.hooks.useNamesByLaoId,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     getEventById: eventConfiguration.functions.getEventById,
     getRollCallById: rollCallConfiguration.functions.getRollCallById,
     useRollCallsByLaoId: rollCallConfiguration.hooks.useRollCallsByLaoId,
     useRollCallTokensByLaoId: rollCallConfiguration.hooks.useRollCallTokensByLaoId,
-    walletItemGenerators: [...digitalCashConfiguration.walletItemGenerators],
-    walletNavigationScreens: [...digitalCashConfiguration.walletScreens],
   });
 
   const digitalCashComposition = digitalCash.compose({
@@ -91,6 +90,7 @@ export function configureFeatures() {
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
     getLaoOrganizer: laoConfiguration.functions.getLaoOrganizer,
     useRollCallById: rollCallConfiguration.hooks.useRollCallById,
@@ -105,6 +105,7 @@ export function configureFeatures() {
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useRollCallById: rollCallConfiguration.hooks.useRollCallById,
     useRollCallAttendeesById: rollCallConfiguration.hooks.useRollCallAttendeesById,
     generateToken: walletConfiguration.functions.generateToken,
@@ -113,7 +114,8 @@ export function configureFeatures() {
   const witnessConfiguration = witness.configure({
     enabled: false,
     messageRegistry,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
@@ -140,12 +142,12 @@ export function configureFeatures() {
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
     /* hooks */
     useLaoList: laoConfiguration.hooks.useLaoList,
-    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+    useConnectedToLao: laoConfiguration.hooks.useConnectedToLao,
     useDisconnectFromLao: laoConfiguration.hooks.useDisconnectFromLao,
     /* components */
     LaoList: laoConfiguration.components.LaoList,
     /* screens */
-    homeNavigationScreens: [...walletComposition.homeScreens],
+    homeNavigationScreens: [],
   });
 
   const eventsComposition = events.compose({
@@ -155,7 +157,7 @@ export function configureFeatures() {
       ...evotingConfiguration.eventTypes,
     ],
     useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
-    useAssertCurrentLaoId: laoConfiguration.hooks.useAssertCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
   });
 
   const laoComposition = lao.compose({
@@ -166,17 +168,13 @@ export function configureFeatures() {
     encodeLaoConnectionForQRCode: homeComposition.functions.encodeLaoConnectionForQRCode,
     /* navigation */
     laoNavigationScreens: [
-      {
-        id: STRINGS.navigation_social_media,
-        Component: socialConfiguration.navigation.SocialMediaNavigation,
-        headerShown: false,
-        tabBarIcon: makeIcon('socialMedia'),
-        order: 10000,
-      },
+      ...socialConfiguration.laoScreens,
       ...notificationConfiguration.laoScreens,
       ...walletComposition.laoScreens,
+      ...digitalCashConfiguration.laoScreens,
     ],
     eventsNavigationScreens: [
+      ...eventConfiguration.laoEventScreens,
       ...meetingConfiguration.laoEventScreens,
       ...rollCallConfiguration.laoEventScreens,
       ...evotingConfiguration.laoEventScreens,

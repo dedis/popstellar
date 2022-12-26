@@ -12,7 +12,7 @@ import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './m
  * @param addRollCall - A function to add a new roll call
  */
 export const handleRollCallCreateMessage =
-  (addRollCall: (laoId: Hash | string, rollCall: RollCall) => void) =>
+  (addRollCall: (laoId: Hash, rollCall: RollCall) => void) =>
   (msg: ProcessableMessage): boolean => {
     const makeErr = (err: string) => `roll_call#create was not processed: ${err}`;
 
@@ -57,7 +57,7 @@ export const handleRollCallCreateMessage =
  */
 export const handleRollCallOpenMessage =
   (
-    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
+    getRollCallById: (rollCallId: Hash) => RollCall | undefined,
     updateRollCall: (rollCall: RollCall) => void,
   ) =>
   (msg: ProcessableMessage): boolean => {
@@ -107,7 +107,7 @@ export const handleRollCallOpenMessage =
  */
 export const handleRollCallCloseMessage =
   (
-    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
+    getRollCallById: (rollCallId: Hash) => RollCall | undefined,
     updateRollCall: (rollCall: RollCall) => void,
     generateToken: RollCallConfiguration['generateToken'],
     setLaoLastRollCall: RollCallConfiguration['setLaoLastRollCall'],
@@ -158,28 +158,41 @@ export const handleRollCallCloseMessage =
         const hasToken = rollCall.containsToken(token);
         aDispatch(setLaoLastRollCall(laoId, rollCall.id, hasToken));
 
-        // If we had a token in this roll call, we subscribe to our own social media channel
-        if (token && hasToken) {
-          await subscribeToChannel(
-            laoId,
-            dispatch,
-            getUserSocialChannel(laoId, token.publicKey),
-          ).catch((err) => {
-            console.error(
-              `Could not subscribe to our own social channel ${token.publicKey}, error:`,
-              err,
-            );
-          });
+        const promises: Promise<unknown>[] = [];
+
+        if (rollCall.attendees) {
+          // subscribe to all roll call attendee's social media channels
+          const subscriptionPromises = rollCall.attendees.map((attendee) =>
+            subscribeToChannel(laoId, dispatch, getUserSocialChannel(laoId, attendee)).catch(
+              (err) => {
+                console.error(
+                  `Could not subscribe to social channel of attendee with publuc key '${attendee}', error:`,
+                  err,
+                );
+              },
+            ),
+          );
+
+          // push all promises into the array
+          promises.push(...subscriptionPromises);
         }
+
         // everyone is automatically subscribed to the reaction channel after the roll call
-        await subscribeToChannel(laoId, dispatch, getReactionChannel(laoId)).catch((err) => {
-          console.error('Could not subscribe to reaction channel, error:', err);
-        });
+        promises.push(
+          subscribeToChannel(laoId, dispatch, getReactionChannel(laoId)).catch((err) => {
+            console.error('Could not subscribe to reaction channel, error:', err);
+          }),
+        );
 
         // we also subscribe to the coin channel of this roll call
-        await subscribeToChannel(laoId, dispatch, getCoinChannel(laoId)).catch((err) => {
-          console.error('Could not subscribe to coin channel, error: ', err);
-        });
+        promises.push(
+          subscribeToChannel(laoId, dispatch, getCoinChannel(laoId)).catch((err) => {
+            console.error('Could not subscribe to coin channel, error: ', err);
+          }),
+        );
+
+        // wait until all promises return
+        await Promise.all(promises);
       } catch (err) {
         console.debug(err);
       }
@@ -196,7 +209,7 @@ export const handleRollCallCloseMessage =
  */
 export const handleRollCallReopenMessage =
   (
-    getRollCallById: (rollCallId: Hash | string) => RollCall | undefined,
+    getRollCallById: (rollCallId: Hash) => RollCall | undefined,
     updateRollCall: (rollCall: RollCall) => void,
   ) =>
   (msg: ProcessableMessage) => {

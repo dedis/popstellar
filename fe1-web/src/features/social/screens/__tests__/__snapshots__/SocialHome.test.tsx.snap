@@ -1,209 +1,69 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SocialHome renders correctly 1`] = `
-<RCTScrollView
-  collapsable={false}
-  handlerTag={1}
-  handlerType="NativeViewGestureHandler"
-  onGestureHandlerEvent={[Function]}
-  onGestureHandlerStateChange={[Function]}
+<View
   style={
     Object {
-      "padding": 16,
+      "flex": 1,
     }
   }
 >
-  <View>
-    <View
-      style={
-        Object {
-          "alignSelf": "center",
-          "width": 600,
-        }
+  <RCTScrollView
+    collapsable={false}
+    handlerTag={1}
+    handlerType="NativeViewGestureHandler"
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    style={
+      Object {
+        "padding": 16,
       }
-    >
-      <View
+    }
+  >
+    <View>
+      <Text
         style={
-          Object {
-            "alignSelf": "flex-start",
-            "marginTop": 20,
-          }
-        }
-      >
-        <Text
-          style={
+          Array [
             Object {
-              "color": "black",
-              "fontSize": 25,
+              "color": "#000",
+              "fontSize": 20,
               "lineHeight": 26,
-              "marginHorizontal": 10,
-              "textAlign": "center",
-            }
-          }
-        >
-          Home
-        </Text>
-      </View>
-      <View
-        style={
-          Object {
-            "flexDirection": "column",
-            "marginTop": 20,
-          }
+              "textAlign": "left",
+            },
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+          ]
         }
       >
-        <View
-          style={
+        So far nobody has published a chirp and you could be the first one to do so!
+      </Text>
+      <Text
+        style={
+          Array [
             Object {
-              "borderColor": "gray",
-              "borderWidth": 1,
-              "flexDirection": "row",
-              "padding": 10,
-              "width": 600,
-            }
-          }
-        >
-          <View
-            style={
-              Object {
-                "width": 60,
-              }
-            }
-          >
-            <blockies
-              bgColor="#ffffff"
-              scale={5}
-              seed="oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms="
-              size={8}
-              spotColor="#008ec2"
-            />
-          </View>
-          <View
-            style={
-              Object {
-                "display": "flex",
-                "flexDirection": "column",
-              }
-            }
-          >
-            <TextInput
-              multiline={true}
-              numberOfLines={5}
-              onChangeText={[Function]}
-              placeholder="Your chirp"
-              selectTextOnFocus={true}
-              style={
-                Object {
-                  "alignContent": "flex-end",
-                  "borderColor": "gray",
-                  "borderWidth": 1,
-                  "fontSize": 18,
-                  "padding": 10,
-                  "width": 520,
-                }
-              }
-              testID="new_chirp_input"
-              value=""
-            />
-            <View
-              style={
-                Object {
-                  "alignSelf": "flex-end",
-                  "flexDirection": "row",
-                  "fontSize": 18,
-                }
-              }
-            >
-              <Text
-                style={
-                  Object {
-                    "color": "black",
-                    "fontSize": 25,
-                    "lineHeight": 26,
-                    "marginHorizontal": 10,
-                    "textAlign": "center",
-                  }
-                }
-              >
-                300
-              </Text>
-              <View
-                accessibilityRole="button"
-                accessibilityState={
-                  Object {
-                    "disabled": true,
-                  }
-                }
-                accessible={true}
-                collapsable={false}
-                focusable={true}
-                onClick={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                style={
-                  Object {
-                    "opacity": 1,
-                  }
-                }
-                testID="new_chirp_publish"
-              >
-                <View
-                  style={
-                    Array [
-                      Object {},
-                      Object {},
-                    ]
-                  }
-                >
-                  <Text
-                    disabled={true}
-                    style={
-                      Array [
-                        Object {
-                          "color": "#007AFF",
-                          "fontSize": 18,
-                          "margin": 8,
-                          "textAlign": "center",
-                        },
-                        Object {
-                          "color": "#cdcdcd",
-                        },
-                      ]
-                    }
-                  >
-                    Publish
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        </View>
-        <RCTScrollView
-          data={Array []}
-          getItem={[Function]}
-          getItemCount={[Function]}
-          keyExtractor={[Function]}
-          onContentSizeChange={[Function]}
-          onLayout={[Function]}
-          onMomentumScrollBegin={[Function]}
-          onMomentumScrollEnd={[Function]}
-          onScroll={[Function]}
-          onScrollBeginDrag={[Function]}
-          onScrollEndDrag={[Function]}
-          removeClippedSubviews={false}
-          renderItem={[Function]}
-          scrollEventThrottle={50}
-          stickyHeaderIndices={Array []}
-          viewabilityConfigCallbackPairs={Array []}
-        >
-          <View />
-        </RCTScrollView>
-      </View>
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "textAlign": "left",
+            },
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+          ]
+        }
+      >
+        The button for doing so is located in the navigation bar all the way to the right. Be creative ✨
+      </Text>
     </View>
-  </View>
-</RCTScrollView>
+  </RCTScrollView>
+</View>
 `;

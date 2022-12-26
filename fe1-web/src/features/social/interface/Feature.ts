@@ -1,6 +1,5 @@
-import { NavigationScreen } from 'core/navigation/typing/Screen';
-import { SocialParamList } from 'core/navigation/typing/SocialParamList';
-import { SocialSearchParamList } from 'core/navigation/typing/SocialSearchParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { NavigationDrawerScreen } from 'core/navigation/typing/Screen';
 import { Hash, PopToken } from 'core/objects';
 
 export namespace SocialFeature {
@@ -15,11 +14,7 @@ export namespace SocialFeature {
     containsToken(token: PopToken | undefined): boolean;
   }
 
-  export interface SocialScreen extends NavigationScreen {
-    id: keyof SocialParamList;
-  }
-
-  export interface SocialSearchScreen extends NavigationScreen {
-    id: keyof SocialSearchParamList;
+  export interface LaoScreen extends NavigationDrawerScreen {
+    id: keyof LaoParamList;
   }
 }

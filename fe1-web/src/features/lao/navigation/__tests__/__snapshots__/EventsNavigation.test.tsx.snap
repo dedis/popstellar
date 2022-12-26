@@ -296,6 +296,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -389,8 +390,9 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                     collapsable={false}
                                     style={
                                       Object {
-                                        "backgroundColor": "rgb(255, 255, 255)",
+                                        "backgroundColor": "#fff",
                                         "borderBottomColor": "rgb(216, 216, 216)",
+                                        "borderColor": "rgb(216, 216, 216)",
                                         "flex": 1,
                                         "shadowColor": "rgb(216, 216, 216)",
                                         "shadowOffset": Object {
@@ -440,7 +442,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                       style={
                                         Object {
                                           "alignItems": "flex-start",
-                                          "flexBasis": 0,
+                                          "flexBasis": "auto",
                                           "flexGrow": 1,
                                           "justifyContent": "center",
                                           "marginStart": 0,
@@ -448,15 +450,68 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                           "paddingLeft": 16,
                                         }
                                       }
-                                    />
+                                    >
+                                      <View
+                                        style={
+                                          Object {
+                                            "alignItems": "center",
+                                            "display": "flex",
+                                            "flexDirection": "row",
+                                          }
+                                        }
+                                      >
+                                        <View
+                                          accessible={true}
+                                          collapsable={false}
+                                          focusable={true}
+                                          onBlur={[Function]}
+                                          onClick={[Function]}
+                                          onFocus={[Function]}
+                                          onResponderGrant={[Function]}
+                                          onResponderMove={[Function]}
+                                          onResponderRelease={[Function]}
+                                          onResponderTerminate={[Function]}
+                                          onResponderTerminationRequest={[Function]}
+                                          onStartShouldSetResponder={[Function]}
+                                        >
+                                          <RNGestureHandlerButton
+                                            collapsable={false}
+                                            exclusive={true}
+                                            handlerTag={2}
+                                            handlerType="NativeViewGestureHandler"
+                                            onGestureEvent={[Function]}
+                                            onGestureHandlerEvent={[Function]}
+                                            onGestureHandlerStateChange={[Function]}
+                                            onHandlerStateChange={[Function]}
+                                            rippleColor={0}
+                                            touchSoundDisabled={false}
+                                          >
+                                            <View
+                                              accessible={true}
+                                              collapsable={false}
+                                              style={
+                                                Object {
+                                                  "opacity": 1,
+                                                }
+                                              }
+                                            >
+                                              <View>
+                                                {"name":"ios-menu","size":25,"color":"#8E8E8E"}
+                                              </View>
+                                            </View>
+                                          </RNGestureHandlerButton>
+                                        </View>
+                                      </View>
+                                    </View>
                                     <View
                                       collapsable={false}
                                       pointerEvents="box-none"
                                       style={
                                         Object {
+                                          "flexShrink": 1,
                                           "justifyContent": "center",
                                           "marginHorizontal": 16,
-                                          "maxWidth": 718,
+                                          "maxWidth": 590,
                                           "opacity": 1,
                                         }
                                       }
@@ -486,7 +541,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                       style={
                                         Object {
                                           "alignItems": "flex-end",
-                                          "flexBasis": 0,
+                                          "flexBasis": "auto",
                                           "flexGrow": 1,
                                           "justifyContent": "center",
                                           "marginEnd": 0,
@@ -494,7 +549,25 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                           "paddingRight": 16,
                                         }
                                       }
-                                    />
+                                    >
+                                      <View
+                                        style={
+                                          Object {
+                                            "alignItems": "center",
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
+                                        }
+                                      >
+                                        <View
+                                          style={
+                                            Object {
+                                              "marginLeft": 16,
+                                            }
+                                          }
+                                        />
+                                      </View>
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -604,7 +677,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                     <View
                                       collapsable={false}
                                       forwardedRef={[Function]}
-                                      handlerTag={2}
+                                      handlerTag={3}
                                       handlerType="PanGestureHandler"
                                       needsOffscreenAlphaCompositing={false}
                                       onGestureHandlerEvent={[Function]}
@@ -624,6 +697,7 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                       }
                                     >
                                       <View
+                                        pointerEvents="box-none"
                                         style={
                                           Array [
                                             Object {
@@ -634,7 +708,9 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                               Object {
                                                 "backgroundColor": "rgb(242, 242, 242)",
                                               },
-                                              undefined,
+                                              Object {
+                                                "flex": 1,
+                                              },
                                             ],
                                           ]
                                         }
@@ -654,20 +730,28 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                               }
                                             }
                                           >
-                                            <RCTScrollView
-                                              collapsable={false}
-                                              handlerTag={3}
-                                              handlerType="NativeViewGestureHandler"
-                                              onGestureHandlerEvent={[Function]}
-                                              onGestureHandlerStateChange={[Function]}
+                                            <View
                                               style={
                                                 Object {
-                                                  "padding": 16,
+                                                  "flex": 1,
                                                 }
                                               }
                                             >
-                                              <View />
-                                            </RCTScrollView>
+                                              <RCTScrollView
+                                                collapsable={false}
+                                                handlerTag={4}
+                                                handlerType="NativeViewGestureHandler"
+                                                onGestureHandlerEvent={[Function]}
+                                                onGestureHandlerStateChange={[Function]}
+                                                style={
+                                                  Object {
+                                                    "padding": 16,
+                                                  }
+                                                }
+                                              >
+                                                <View />
+                                              </RCTScrollView>
+                                            </View>
                                           </View>
                                         </View>
                                       </View>

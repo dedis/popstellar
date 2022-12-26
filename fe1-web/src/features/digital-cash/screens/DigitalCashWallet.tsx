@@ -1,4 +1,4 @@
-import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ListItem } from '@rneui/themed';
 import React, { useMemo } from 'react';
@@ -7,26 +7,27 @@ import { useSelector } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { WalletParamList } from 'core/navigation/typing/WalletParamList';
+import { DigitalCashParamList } from 'core/navigation/typing/DigitalCashParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { Hash } from 'core/objects';
 import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import TransactionHistory from '../components/TransactionHistory';
 import { DigitalCashHooks } from '../hooks';
-import { DigitalCashFeature } from '../interface';
 import { makeBalancesSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_wallet>,
-  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  StackScreenProps<DigitalCashParamList, typeof STRINGS.navigation_digital_cash_wallet>,
+  CompositeScreenProps<
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>,
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_lao_digital_cash>
+  >
 >;
 
 const DigitalCashWallet = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
-  const route = useRoute<NavigationProps['route']>();
-
-  const { laoId } = route.params;
+  const laoId = DigitalCashHooks.useCurrentLaoId();
 
   const balances = useSelector(useMemo(() => makeBalancesSelector(laoId), [laoId]));
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
@@ -52,8 +53,7 @@ const DigitalCashWallet = () => {
             style={List.getListItemStyles(true, rollCallTokens.length === 0)}
             bottomDivider
             onPress={() => {
-              navigation.navigate(STRINGS.navigation_wallet_digital_cash_send_receive, {
-                laoId,
+              navigation.navigate(STRINGS.navigation_digital_cash_send_receive, {
                 isCoinbase: true,
               });
             }}>
@@ -83,8 +83,7 @@ const DigitalCashWallet = () => {
               style={listStyle}
               bottomDivider
               onPress={() => {
-                navigation.navigate(STRINGS.navigation_wallet_digital_cash_send_receive, {
-                  laoId,
+                navigation.navigate(STRINGS.navigation_digital_cash_send_receive, {
                   rollCallId: rollCallToken.rollCallId.valueOf(),
                   isCoinbase: false,
                 });
@@ -112,9 +111,3 @@ const DigitalCashWallet = () => {
 };
 
 export default DigitalCashWallet;
-
-export const DigitalCashWalletScreen: DigitalCashFeature.WalletScreen = {
-  id: STRINGS.navigation_wallet_digital_cash_wallet,
-  title: STRINGS.digital_cash_wallet_screen_title,
-  Component: DigitalCashWallet,
-};

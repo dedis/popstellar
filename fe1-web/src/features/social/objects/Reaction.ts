@@ -1,15 +1,23 @@
-import { Hash, PublicKey, Timestamp } from 'core/objects';
+import {
+  Hash,
+  HashState,
+  PublicKey,
+  PublicKeyState,
+  Timestamp,
+  TimestampState,
+} from 'core/objects';
+import { OmitMethods } from 'core/types';
 
 /**
  * Object to represent a Reaction.
  */
 
 export interface ReactionState {
-  id: string;
-  sender: string;
+  id: HashState;
+  sender: PublicKeyState;
   codepoint: string;
-  chirpId: string;
-  time: number;
+  chirpId: HashState;
+  time: TimestampState;
 }
 
 export class Reaction {
@@ -27,7 +35,7 @@ export class Reaction {
   // The time when the reaction was added
   public readonly time: Timestamp;
 
-  constructor(obj: Partial<Reaction>) {
+  constructor(obj: OmitMethods<Reaction>) {
     if (obj === undefined || obj === null) {
       throw new Error(
         'Error encountered while creating a reaction object: undefined/null parameters',
@@ -64,11 +72,11 @@ export class Reaction {
    */
   public static fromState(reactionState: ReactionState): Reaction {
     return new Reaction({
-      id: new Hash(reactionState.id),
-      sender: new PublicKey(reactionState.sender),
+      id: Hash.fromState(reactionState.id),
+      sender: PublicKey.fromState(reactionState.sender),
       codepoint: reactionState.codepoint,
-      chirpId: new Hash(reactionState.chirpId),
-      time: new Timestamp(reactionState.time),
+      chirpId: Hash.fromState(reactionState.chirpId),
+      time: Timestamp.fromState(reactionState.time),
     });
   }
 
@@ -76,6 +84,12 @@ export class Reaction {
    * Creates a ReactionState object from the current Reaction object.
    */
   public toState(): ReactionState {
-    return JSON.parse(JSON.stringify(this));
+    return {
+      id: this.id.toState(),
+      sender: this.sender.toState(),
+      codepoint: this.codepoint,
+      chirpId: this.chirpId.toState(),
+      time: this.time.toState(),
+    };
   }
 }

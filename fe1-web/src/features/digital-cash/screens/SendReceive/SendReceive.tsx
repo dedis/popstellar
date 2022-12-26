@@ -16,19 +16,18 @@ import ScannerInput from 'core/components/ScannerInput';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { WalletParamList } from 'core/navigation/typing/WalletParamList';
+import { DigitalCashParamList } from 'core/navigation/typing/DigitalCashParamList';
 import { Hash, PublicKey } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { DigitalCashHooks } from '../../hooks';
-import { DigitalCashFeature } from '../../interface';
 import { requestCoinbaseTransaction, requestSendTransaction } from '../../network';
 import { makeBalanceSelector } from '../../reducer';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_send_receive>,
+  StackScreenProps<DigitalCashParamList, typeof STRINGS.navigation_digital_cash_send_receive>,
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
 >;
 
@@ -43,11 +42,17 @@ const styles = StyleSheet.create({
 const SendReceive = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
+  const laoId = DigitalCashHooks.useCurrentLaoId();
+  const isConnected = DigitalCashHooks.useConnectedToLao();
 
-  const { laoId, rollCallId, isCoinbase, scannedPoPToken } = route.params;
+  const { rollCallId: serializedRollCallId, isCoinbase, scannedPoPToken } = route.params;
+  const rollCallId = useMemo(
+    () => (serializedRollCallId ? new Hash(serializedRollCallId) : undefined),
+    [serializedRollCallId],
+  );
 
   // will be undefined for the organizer
-  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId || '');
+  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
 
   const allRollCalls = DigitalCashHooks.useRollCallsByLaoId(laoId);
 
@@ -57,8 +62,13 @@ const SendReceive = () => {
   );
 
   // will always be '' in non-coinbase transactions, indicates a single beneficiary
-  const [selectedRollCallId, setSelectedRollCallId] = useState<string>('');
-  const selectedRollCall = DigitalCashHooks.useRollCallById(selectedRollCallId || '');
+  const [serializedSelectedRollCallId, setSerializedSelectedRollCallId] = useState<string>('');
+  const selectedRollCallId = useMemo(
+    () => new Hash(serializedSelectedRollCallId),
+    [serializedSelectedRollCallId],
+  );
+
+  const selectedRollCall = DigitalCashHooks.useRollCallById(selectedRollCallId);
 
   const [beneficiary, setBeneficiary] = useState('');
   const [amount, setAmount] = useState('');
@@ -76,7 +86,7 @@ const SendReceive = () => {
     }
 
     if (rollCallToken) {
-      return makeBalanceSelector(laoId, rollCallToken.token.publicKey.valueOf());
+      return makeBalanceSelector(laoId, rollCallToken.token.publicKey);
     }
 
     return () => 0;
@@ -121,7 +131,7 @@ const SendReceive = () => {
   const sendCoinbaseTransaction = () => {
     let beneficiaries: PublicKey[] = [];
 
-    if (selectedRollCallId !== '') {
+    if (serializedSelectedRollCallId !== '') {
       if (!selectedRollCall) {
         throw new Error(
           'Something went terribly wrong, an invalid roll call id could be selected by the user!',
@@ -136,7 +146,7 @@ const SendReceive = () => {
       KeyPairStore.get(),
       beneficiaries,
       Number.parseInt(amount, 10),
-      new Hash(laoId),
+      laoId,
     );
   };
 
@@ -174,7 +184,10 @@ const SendReceive = () => {
   };
 
   const cannotSendTransaction =
-    Number.isNaN(amount) || (!isCoinbase && balance < Number.parseInt(amount, 10)) || amount === '';
+    !isConnected ||
+    Number.isNaN(amount) ||
+    (!isCoinbase && balance < Number.parseInt(amount, 10)) ||
+    amount === '';
 
   return (
     <ScreenWrapper>
@@ -191,10 +204,10 @@ const SendReceive = () => {
         </Text>
         {isCoinbase && (
           <DropdownSelector
-            selected={selectedRollCallId}
+            selected={serializedSelectedRollCallId}
             onChange={(value) => {
               if (value !== null) {
-                setSelectedRollCallId(value);
+                setSerializedSelectedRollCallId(value);
               }
             }}
             options={[
@@ -209,14 +222,13 @@ const SendReceive = () => {
             ]}
           />
         )}
-        {selectedRollCallId === '' && (
+        {serializedSelectedRollCallId === '' && (
           <ScannerInput
             value={beneficiary}
             onChange={setBeneficiary}
             onPress={() => {
-              navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
-                laoId: laoId.valueOf(),
-                rollCallId: rollCallId,
+              navigation.navigate(STRINGS.navigation_digital_cash_wallet_scanner, {
+                rollCallId: rollCallId?.valueOf(),
                 isCoinbase: isCoinbase,
               });
             }}
@@ -250,10 +262,15 @@ export const SendReceiveHeaderRight = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const route = useRoute<NavigationProps['route']>();
+  const laoId = DigitalCashHooks.useCurrentLaoId();
 
-  const { laoId, rollCallId, isCoinbase } = route.params;
+  const { rollCallId: serializedRollCallId, isCoinbase } = route.params;
+  const rollCallId = useMemo(
+    () => (serializedRollCallId ? new Hash(serializedRollCallId) : undefined),
+    [serializedRollCallId],
+  );
 
-  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId || '');
+  const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
 
   const popToken = useMemo(() => rollCallToken?.token.publicKey.valueOf() || '', [rollCallToken]);
 
@@ -285,7 +302,7 @@ export const SendReceiveHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={ScannablePopToken.encodePopToken({ pop_token: popToken })} visibility />
+            <QRCode value={ScannablePopToken.encodePopToken({ pop_token: popToken })} />
           </View>
 
           <Text style={[Typography.small, styles.publicKey]} selectable>
@@ -298,11 +315,4 @@ export const SendReceiveHeaderRight = () => {
       </Modal>
     </>
   );
-};
-
-export const SendReceiveScreen: DigitalCashFeature.WalletScreen = {
-  id: STRINGS.navigation_wallet_digital_cash_send_receive,
-  title: STRINGS.navigation_wallet_digital_cash_send_receive_title,
-  Component: SendReceive,
-  headerRight: SendReceiveHeaderRight,
 };

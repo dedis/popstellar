@@ -32,10 +32,22 @@ public class Constants {
   /** The extra value given to {@link ConnectingActivity} to open {@link HomeActivity} */
   public static final String HOME_EXTRA = "home";
 
+  /**
+   * The extra key given to indicate whether the {@link ConnectingActivity} is for creating or
+   * joining an LAO
+   */
+  public static final String CONNECTION_PURPOSE_EXTRA = "connection_purpose";
+
+  /** The extra value given to {@link ConnectingActivity} for joining an existing LAO */
+  public static final String JOINING_EXTRA = "joining";
+
+  /** The extra value given to {@link ConnectingActivity} for creating an LAO */
+  public static final String CREATING_EXTRA = "creating";
+
   /** Using the Resources class constant would require a min API of 29 */
   public static final int ID_NULL = 0;
 
-  public static final float DISABLED_ALPHA = 0.4f;
+  public static final float DISABLED_ALPHA = 0.2f;
 
   public static final float ENABLED_ALPHA = 1.0f;
 }
