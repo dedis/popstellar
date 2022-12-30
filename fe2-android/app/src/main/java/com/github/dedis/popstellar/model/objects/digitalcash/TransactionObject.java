@@ -80,13 +80,7 @@ public class TransactionObject {
    * @return List<String> outputs Public Key Hashes
    */
   public List<String> getReceiversHashTransaction() {
-    List<String> receiverHash = new ArrayList<>();
-
-    for (OutputObject outObj : getOutputs()) {
-      receiverHash.add(outObj.getPubKeyHash());
-    }
-
-    return receiverHash;
+    return outputs.stream().map(OutputObject::getPubKeyHash).collect(Collectors.toList());
   }
 
   /**
@@ -172,22 +166,6 @@ public class TransactionObject {
     }
     throw new IllegalArgumentException(
         "this public key is not contained in the output of this transaction");
-  }
-
-  /**
-   * Class which return the last roll call open
-   *
-   * @return Rollcall the roll call with the last ending tim e
-   * @param transactions the set of transactions
-   */
-  public static TransactionObject lastLockedTransactionObject(
-      List<TransactionObject> transactions) {
-    Optional<TransactionObject> transactionObject =
-        transactions.stream().max(Comparator.comparing(TransactionObject::getLockTime));
-    if (!transactionObject.isPresent()) {
-      throw new IllegalStateException();
-    }
-    return transactionObject.get();
   }
 
   /**
