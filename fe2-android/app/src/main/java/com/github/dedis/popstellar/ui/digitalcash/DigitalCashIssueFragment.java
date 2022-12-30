@@ -67,7 +67,6 @@ public class DigitalCashIssueFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupSendCoinButton();
-    setUpGetPostTransactionEvent();
     setTheAdapterRollCallAttendee();
   }
 
@@ -78,38 +77,27 @@ public class DigitalCashIssueFragment extends Fragment {
   }
 
   /** Function which call the view model post transaction when a post transaction event occur */
-  public void setUpGetPostTransactionEvent() {
-    viewModel
-        .getPostTransactionEvent()
-        .observe(
-            getViewLifecycleOwner(),
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                /*Take the amount entered by the user*/
-                String currentAmount = binding.digitalCashIssueAmount.getText().toString();
-                String currentPublicKeySelected =
-                    String.valueOf(binding.digitalCashIssueSpinner.getEditText().getText());
-                int radioGroup = binding.digitalCashIssueSelect.getCheckedRadioButtonId();
-                if (viewModel.canPerformTransaction(
-                    currentAmount, currentPublicKeySelected, radioGroup)) {
-                  try {
-                    Map<String, String> issueMap =
-                        computeMapForPostTransaction(
-                            currentAmount, currentPublicKeySelected, radioGroup);
-                    if (issueMap.isEmpty()) {
-                      displayToast(radioGroup);
-                    } else {
-                      postTransaction(issueMap);
-                    }
-                  } catch (NoRollCallException r) {
-                    ErrorUtils.logAndShow(requireContext(), TAG, r, R.string.no_rollcall_exception);
-                  } catch (UnknownLaoException e) {
-                    ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
-                  }
-                }
-              }
-            });
+  public void issueCoins() {
+    /*Take the amount entered by the user*/
+    String currentAmount = binding.digitalCashIssueAmount.getText().toString();
+    String currentPublicKeySelected =
+        String.valueOf(binding.digitalCashIssueSpinner.getEditText().getText());
+    int radioGroup = binding.digitalCashIssueSelect.getCheckedRadioButtonId();
+    if (viewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, radioGroup)) {
+      try {
+        Map<String, String> issueMap =
+            computeMapForPostTransaction(currentAmount, currentPublicKeySelected, radioGroup);
+        if (issueMap.isEmpty()) {
+          displayToast(radioGroup);
+        } else {
+          postTransaction(issueMap);
+        }
+      } catch (NoRollCallException r) {
+        ErrorUtils.logAndShow(requireContext(), TAG, r, R.string.no_rollcall_exception);
+      } catch (UnknownLaoException e) {
+        ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
+      }
+    }
   }
 
   private void displayToast(int radioGroup) {
@@ -160,7 +148,7 @@ public class DigitalCashIssueFragment extends Fragment {
 
   /** Function that setup the Button */
   private void setupSendCoinButton() {
-    binding.digitalCashIssueIssue.setOnClickListener(v -> viewModel.postTransactionEvent());
+    binding.digitalCashIssueIssue.setOnClickListener(v -> issueCoins());
   }
 
   /** Function that set the Adapter */
