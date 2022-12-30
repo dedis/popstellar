@@ -95,8 +95,10 @@ public class DigitalCashRepository {
 
           // An empty subject might have been created already
           if (transactionsSubject.containsKey(current)) {
+            // Updating subject
             transactionsSubject.get(current).onNext(transactionList);
           } else {
+            // Creating new subject
             transactionsSubject.put(current, BehaviorSubject.createDefault(transactionList));
           }
         } else if (!transactionList.contains(transaction)) {
