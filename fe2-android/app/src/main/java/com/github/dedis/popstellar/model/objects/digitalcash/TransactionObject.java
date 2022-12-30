@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Immutable
 public class TransactionObject {
@@ -70,14 +71,7 @@ public class TransactionObject {
    * @return List<PublicKey> senders public keys
    */
   public List<PublicKey> getSendersTransaction() {
-    List<PublicKey> senders = new ArrayList<>();
-
-    // Through the inputs look at the sender
-    for (InputObject inpObj : getInputs()) {
-      senders.add(inpObj.getScript().getPubKey());
-    }
-
-    return senders;
+    return inputs.stream().map(input -> input.getScript().getPubKey()).collect(Collectors.toList());
   }
 
   /**
@@ -143,14 +137,19 @@ public class TransactionObject {
   public long getSumForUser(PublicKey user) {
     String hashKey = user.computeHash();
 
-    // iterate through the output and sum if the recipient is
+    // This works because in case of issuance the main pk of the organizer is used as input and not
+    // their token
     boolean isSender = isSender(user);
     boolean isIssuance = isCoinBaseTransaction();
+
+    // Iterate over outputs, if issuance -> sum all output where user is
+    // If not, sums all input when user is sender xor recipient (with negative amount in case of
+    // sender)
     return getOutputs().stream()
         .filter(
             outputObject -> {
               boolean isOwn = outputObject.getPubKeyHash().equals(hashKey);
-              return isIssuance && isOwn || !isIssuance && (isSender ^ isOwn);
+              return (isIssuance && isOwn) || !isIssuance && (isSender ^ isOwn);
             })
         .mapToLong(outputObject -> isSender ? -outputObject.getValue() : outputObject.getValue())
         .sum();
