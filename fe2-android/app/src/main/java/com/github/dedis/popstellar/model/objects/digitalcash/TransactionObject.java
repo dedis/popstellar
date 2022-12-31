@@ -129,24 +129,31 @@ public class TransactionObject {
    * @return int amount of Lao Coin
    */
   public long getSumForUser(PublicKey user) {
-    String hashKey = user.computeHash();
+    // We are well aware that the logic could be compressed in a single filtering of outputs, but we
+    // rejected it in favour of (some) clarity
 
-    // This works because in case of issuance the main pk of the organizer is used as input and not
-    // their token
-    boolean isSender = isSender(user);
-    boolean isIssuance = isCoinBaseTransaction();
+    if (isCoinBaseTransaction()) {
+      // If it is an issuance, we return the sum of all output where the user is the recipient
+      return getOutputs().stream()
+          .filter(output -> output.isUserOutputRecipient(user))
+          .mapToLong(OutputObject::getValue)
+          .sum();
+    }
 
-    // Iterate over outputs, if issuance -> sum all output where user is
-    // If not, sums all input when user is sender xor recipient (with negative amount in case of
-    // sender)
-    return getOutputs().stream()
-        .filter(
-            outputObject -> {
-              boolean isOwn = outputObject.getPubKeyHash().equals(hashKey);
-              return (isIssuance && isOwn) || !isIssuance && (isSender ^ isOwn);
-            })
-        .mapToLong(outputObject -> isSender ? -outputObject.getValue() : outputObject.getValue())
-        .sum();
+    int sum = 0;
+    if (isSender(user)) {
+      // if the user is sender, we subtract the value of all output
+      sum -= getOutputs().stream().mapToLong(OutputObject::getValue).sum();
+    }
+
+    // Regardless of if the user is the sender, we sum all output where the user is the recipient.
+    // This is because of how the protocol is designed i.e. the sender will be in receivers as well
+    sum +=
+        getOutputs().stream()
+            .filter(output -> output.isUserOutputRecipient(user))
+            .mapToLong(OutputObject::getValue)
+            .sum();
+    return sum;
   }
 
   /**
