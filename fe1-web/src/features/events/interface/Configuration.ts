@@ -31,7 +31,7 @@ export interface EventInterface extends FeatureInterface {
      * @returns A selector for a map from laoIds to a map of eventIds to events
      */
     makeEventByTypeSelector: (
-      laoId: Hash | string,
+      laoId: Hash,
       eventType: string,
     ) => (state: any) => Record<string, EventState>;
 
@@ -41,10 +41,7 @@ export interface EventInterface extends FeatureInterface {
      * @param eventId The id of the event to return
      * @returns The selector
      */
-    makeEventSelector: (
-      laoId: Hash | string,
-      eventId: Hash | string,
-    ) => (state: any) => EventState | undefined;
+    makeEventSelector: (laoId: Hash, eventId: Hash) => (state: any) => EventState | undefined;
   };
 
   components: {
@@ -61,7 +58,7 @@ export interface EventInterface extends FeatureInterface {
      * @param event - The event
      * @returns A redux action causing the state change
      */
-    addEvent: (laoId: Hash | string, event: EventState) => AnyAction;
+    addEvent: (laoId: Hash, event: EventState) => AnyAction;
 
     /**
      * Creates a redux action for update the stored event state
@@ -70,7 +67,7 @@ export interface EventInterface extends FeatureInterface {
      */
     updateEvent: (event: EventState) => AnyAction;
 
-    removeEvent: (laoId: string | Hash, eventId: string | Hash) => AnyAction;
+    removeEvent: (laoId: Hash, eventId: Hash) => AnyAction;
     clearAllEvents: () => AnyAction;
   };
 
@@ -84,7 +81,7 @@ export interface EventCompositionConfiguration {
    * Returns the currently active lao id or throws an error if there is none.
    * Should be used inside react components
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
 
   /**
    * Gets whether the current user is organizer of the current lao
@@ -121,7 +118,7 @@ interface EventType {
 export type EventReactContext = Pick<
   EventCompositionConfiguration,
   /* lao */
-  | 'useAssertCurrentLaoId'
+  | 'useCurrentLaoId'
   | 'useIsLaoOrganizer'
   /* other */
   | 'eventTypes'

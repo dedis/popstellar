@@ -4,7 +4,7 @@ import '__tests__/utils/matchers';
 import {
   configureTestFeatures,
   mockLaoCreationTime,
-  mockLaoIdHash,
+  mockLaoId,
   mockLaoName,
   mockPublicKey,
   mockPublicKey2,
@@ -20,7 +20,7 @@ const mockWitnesses = [new PublicKey(mockPublicKey), new PublicKey(mockPublicKey
 const sampleCreateLao: Partial<CreateLao> = {
   object: ObjectType.LAO,
   action: ActionType.CREATE,
-  id: mockLaoIdHash,
+  id: mockLaoId,
   name: mockLaoName,
   creation: mockLaoCreationTime,
   organizer: org,
@@ -30,7 +30,7 @@ const sampleCreateLao: Partial<CreateLao> = {
 const createLaoJson = `{
   "object": "${ObjectType.LAO}",
   "action": "${ActionType.CREATE}",
-  "id": "${mockLaoIdHash}",
+  "id": "${mockLaoId}",
   "name": "${mockLaoName}",
   "creation": ${mockLaoCreationTime},
   "organizer": "${org}",
@@ -45,7 +45,7 @@ describe('CreateLao', () => {
     const temp = {
       object: ObjectType.LAO,
       action: ActionType.CREATE,
-      id: mockLaoIdHash,
+      id: mockLaoId,
       name: mockLaoName,
       creation: mockLaoCreationTime,
       organizer: org,
@@ -63,7 +63,7 @@ describe('CreateLao', () => {
     const obj = {
       object: ObjectType.LAO,
       action: ActionType.CREATE,
-      id: mockLaoIdHash,
+      id: mockLaoId,
       name: mockLaoName,
       creation: mockLaoCreationTime,
       organizer: org,
@@ -79,7 +79,7 @@ describe('CreateLao', () => {
         new CreateLao({
           object: ObjectType.LAO,
           action: ActionType.CREATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           creation: mockLaoCreationTime,
           organizer: org,
           witnesses: mockWitnesses,
@@ -92,7 +92,7 @@ describe('CreateLao', () => {
         new CreateLao({
           object: ObjectType.LAO,
           action: ActionType.CREATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           organizer: org,
           witnesses: mockWitnesses,
@@ -105,7 +105,7 @@ describe('CreateLao', () => {
         new CreateLao({
           object: ObjectType.LAO,
           action: ActionType.CREATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           creation: mockLaoCreationTime,
           organizer: org,
@@ -118,7 +118,7 @@ describe('CreateLao', () => {
         new CreateLao({
           object: ObjectType.LAO,
           action: ActionType.CREATE,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           creation: mockLaoCreationTime,
           witnesses: mockWitnesses,

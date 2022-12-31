@@ -13,8 +13,8 @@ import { EventState } from '../objects';
 import { makeEventListSelector } from '../reducer';
 
 const UpcomingEvents = () => {
-  const laoId = EventHooks.useAssertCurrentLaoId();
-  const eventListSelector = useMemo(() => makeEventListSelector(laoId.valueOf()), [laoId]);
+  const laoId = EventHooks.useCurrentLaoId();
+  const eventListSelector = useMemo(() => makeEventListSelector(laoId), [laoId]);
   const events = useSelector(eventListSelector);
 
   const [upcomingEvents, setEvents] = useState<EventState[]>(
@@ -33,7 +33,7 @@ const UpcomingEvents = () => {
 
   return (
     <ScreenWrapper>
-      <EventList title={STRINGS.events_list_upcoming} toggleable={false} events={upcomingEvents} />
+      <EventList toggleable={false} events={upcomingEvents} />
     </ScreenWrapper>
   );
 };

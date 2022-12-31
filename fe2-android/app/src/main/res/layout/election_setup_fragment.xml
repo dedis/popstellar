@@ -9,28 +9,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/fragment_setup_election_event"
       android:layout_width="match_parent"
-      android:layout_height="match_parent">
+      android:layout_height="wrap_content">
 
-      <TextView
-        android:id="@+id/election_setup_lao_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/title_style"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-      <TextView
-        android:id="@+id/election_setup_presentation_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/election_setup"
-        android:textSize="@dimen/size_body"
-        android:textStyle="italic"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/election_setup_lao_name" />
 
       <include
         android:id="@+id/election_setup_date"
@@ -72,7 +53,7 @@
         android:hint="@string/election_setup_name_hint"
         android:inputType="text"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/election_setup_presentation_title" />
+        app:layout_constraintTop_toTopOf="parent" />
 
       <Spinner
         android:id="@+id/election_setup_mode_spinner"
@@ -83,7 +64,7 @@
         android:spinnerMode="dropdown"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="@dimen/election_setup_spinner_margin_right"
-        app:layout_constraintTop_toBottomOf="@+id/election_setup_presentation_title" />
+        app:layout_constraintTop_toTopOf="parent" />
 
       <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/election_setup_view_pager2"

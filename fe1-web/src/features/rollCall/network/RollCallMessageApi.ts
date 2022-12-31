@@ -30,7 +30,7 @@ export function requestCreateRollCall(
 
   const message = new CreateRollCall(
     {
-      id: Hash.fromStringArray(EventTags.ROLL_CALL, laoId.toString(), time.toString(), name),
+      id: Hash.fromArray(EventTags.ROLL_CALL, laoId, time, name),
       name: name,
       creation: time,
       location: location,

@@ -16,20 +16,28 @@ import com.github.dedis.popstellar.model.objects.event.EventCategory;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
 
 public class EventListAdapter extends EventsAdapter {
 
   private final EnumMap<EventCategory, List<Event>> eventsMap;
+  private List<RollCall> rollCalls;
+  private List<Election> elections;
   private final boolean[] expanded = new boolean[3];
   public static final int TYPE_HEADER = 0;
   public static final int TYPE_EVENT = 1;
   public static final String TAG = EventListAdapter.class.getSimpleName();
 
   public EventListAdapter(
-      List<Event> events, LaoDetailViewModel viewModel, FragmentActivity activity) {
+      List<RollCall> rollCalls,
+      List<Election> elections,
+      LaoDetailViewModel viewModel,
+      FragmentActivity activity) {
     super(events, viewModel, activity);
+
     this.eventsMap = new EnumMap<>(EventCategory.class);
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
@@ -37,16 +45,15 @@ public class EventListAdapter extends EventsAdapter {
     expanded[PAST.ordinal()] = true;
     expanded[PRESENT.ordinal()] = true;
     expanded[FUTURE.ordinal()] = true;
-    putEventsInMap(events);
+    this.rollCalls = rollCalls;
+    this.elections = elections;
+    putEventsInMap();
   }
 
-  /**
-   * A helper method that places the events in the correct key-value pair according to state
-   *
-   * @param events the events to sort by state
-   */
-  private void putEventsInMap(List<Event> events) {
-    Collections.sort(events);
+  /** A helper method that places the events in the correct key-value pair according to state */
+  private void putEventsInMap() {
+    List<Event> events =
+        Stream.concat(rollCalls.stream(), elections.stream()).sorted().collect(Collectors.toList());
     this.eventsMap.get(PAST).clear();
     this.eventsMap.get(FUTURE).clear();
     this.eventsMap.get(PRESENT).clear();
@@ -108,7 +115,8 @@ public class EventListAdapter extends EventsAdapter {
       }
       expandIcon.setRotation(expanded[eventCategory.ordinal()] ? 180f : 0f);
 
-      String numberOfEventsInCategory = "(" + eventsMap.get(eventCategory).size() + ")";
+      String numberOfEventsInCategory =
+          "(" + Objects.requireNonNull(eventsMap.get(eventCategory)).size() + ")";
       ((HeaderViewHolder) holder).headerNumber.setText(numberOfEventsInCategory);
 
       // Expansion/Collapse part
@@ -233,13 +241,17 @@ public class EventListAdapter extends EventsAdapter {
     return TYPE_EVENT;
   }
 
-  public void replaceList(List<Event> events) {
-    setList(events);
+  @SuppressLint("NotifyDataSetChanged") // warranted by our implementation
+  public void replaceRollCalls(List<RollCall> rollCalls) {
+    this.rollCalls = rollCalls;
+    putEventsInMap();
+    notifyDataSetChanged();
   }
 
   @SuppressLint("NotifyDataSetChanged") // warranted by our implementation
-  private void setList(List<Event> events) {
-    putEventsInMap(events);
+  public void replaceElections(List<Election> elections) {
+    this.elections = elections;
+    putEventsInMap();
     notifyDataSetChanged();
   }
 

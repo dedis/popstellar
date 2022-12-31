@@ -42,7 +42,7 @@ export class DeleteChirp implements MessageData {
     }
 
     return new DeleteChirp({
-      ...obj,
+      chirp_id: new Hash(obj.chirp_id),
       timestamp: new Timestamp(obj.timestamp),
     });
   }

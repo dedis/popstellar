@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -61,7 +62,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   private final MutableLiveData<SingleEvent<Boolean>> postTransactionEvent =
       new MutableLiveData<>();
 
-  private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
+  private String laoId;
   private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
 
   /* Is used to change the lao Coin amount on the home fragment*/
@@ -74,6 +75,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
       new MutableLiveData<>();
 
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
+  private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
 
   private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
   private final LiveData<Set<TransactionObject>> mTransactionHistory;
@@ -82,6 +84,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
    * Dependencies for this class
    */
   private final LAORepository laoRepository;
+  private final RollCallRepository rollCallRepo;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
@@ -92,12 +95,14 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   public DigitalCashViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      RollCallRepository rollCallRepo,
       GlobalNetworkManager networkManager,
       Gson gson,
       KeyManager keyManager,
       Wallet wallet) {
     super(application);
     this.laoRepository = laoRepository;
+    this.rollCallRepo = rollCallRepo;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
@@ -110,8 +115,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
               try {
                 if (laoView == null) return new HashSet<>();
                 Set<TransactionObject> historySet =
-                    laoView.getTransactionHistoryByUser()
-                        .get(keyManager.getValidPoPToken(laoView).getPublicKey());
+                    laoView.getTransactionHistoryByUser().get(this.getValidToken().getPublicKey());
                 if (historySet == null) {
                   return new HashSet<>();
                 }
@@ -127,6 +131,14 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
   protected void onCleared() {
     super.onCleared();
     disposables.dispose();
+  }
+
+  public LiveData<Integer> getPageTitle() {
+    return mPageTitle;
+  }
+
+  public void setPageTitle(int titleId) {
+    mPageTitle.postValue(titleId);
   }
 
   public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {
@@ -181,7 +193,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
    * Methods that modify the state or post an Event to update the UI.
    */
   public PublicKey getPublicKeyOutString(String encodedPub) throws NoRollCallException {
-    for (PublicKey current : getAttendeesFromLastRollCall()) {
+    for (PublicKey current : Objects.requireNonNull(getAttendeesFromLastRollCall())) {
       if (current.getEncoded().equals(encodedPub)) {
         return current;
       }
@@ -220,8 +232,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     }
 
     // Find correct keypair
-    return Single.fromCallable(
-            () -> coinBase ? keyManager.getMainKeyPair() : keyManager.getValidPoPToken(laoView))
+    return Single.fromCallable(() -> coinBase ? keyManager.getMainKeyPair() : this.getValidToken())
         .flatMapCompletable(
             keyPair -> {
               PostTransactionCoin postTxn =
@@ -285,12 +296,12 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
         new ScriptInput(TYPE, keyPair.getPublicKey(), sig));
   }
 
-  public LiveData<String> getLaoId() {
-    return mLaoId;
+  public String getLaoId() {
+    return laoId;
   }
 
   public void setLaoId(String laoId) {
-    this.mLaoId.setValue(laoId);
+    this.laoId = laoId;
   }
 
   public void setRollCallId(String rollCallId) {
@@ -307,7 +318,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   @Nullable
   public Set<PublicKey> getAttendeesFromLastRollCall() throws NoRollCallException {
-    return getCurrentLaoValue().getMostRecentRollCall().getAttendees();
+    return rollCallRepo.getLastClosedRollCall(laoId).getAttendees();
   }
 
   @Nullable
@@ -317,7 +328,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   @Nullable
   public List<String> getAttendeesFromTheRollCallList() throws NoRollCallException {
-    return getAttendeesFromLastRollCall().stream()
+    return Objects.requireNonNull(getAttendeesFromLastRollCall()).stream()
         .map(Base64URLData::getEncoded)
         .collect(Collectors.toList());
   }
@@ -328,6 +339,14 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   public LaoView getCurrentLaoValue() {
     return mCurrentLao.getValue();
+  }
+
+  public Set<PublicKey> getAllAttendees() {
+    return rollCallRepo.getAllAttendeesInLao(laoId);
+  }
+
+  public PoPToken getValidToken() throws KeyException {
+    return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
   }
 
   public void subscribeToLao(String laoId) {
@@ -346,12 +365,12 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
                           + lao.getTransactionHistoryByUser().toString());
                   mCurrentLao.postValue(lao);
                   try {
-                    PoPToken token = keyManager.getValidPoPToken(lao);
-                    mTokens.getValue().add(token);
+                    Objects.requireNonNull(mTokens.getValue()).add(getValidToken());
                   } catch (KeyException e) {
                     Log.d(TAG, "Could not retrieve token");
                   }
-                }));
+                },
+                error -> Log.d(TAG, "Error on lao propagation " + error)));
   }
 
   public boolean canPerformTransaction(
@@ -383,7 +402,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
         getCurrentLaoValue().getTransactionByUser().get(keyPair.getPublicKey());
 
     long amountSender =
-        TransactionObject.getMiniLaoPerReceiverSetTransaction(transactions, keyPair.getPublicKey())
+        TransactionObject.getMiniLaoPerReceiverSetTransaction(
+                Objects.requireNonNull(transactions), keyPair.getPublicKey())
             - amountFromReceiver;
     Output outputSender =
         new Output(amountSender, new ScriptOutput(TYPE, keyPair.getPublicKey().computeHash()));

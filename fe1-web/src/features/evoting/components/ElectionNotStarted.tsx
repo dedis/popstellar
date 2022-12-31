@@ -26,7 +26,7 @@ const ElectionNotStarted = ({ election, isConnected, isOrganizer }: IPropTypes) 
         console.error('Could not open election, error:', err);
         toast.show(`Could not open election, error: ${err}`, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       });

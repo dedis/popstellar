@@ -59,7 +59,7 @@ export function configureNetwork(registry: MessageRegistry) {
     // after reconnecting, check whether we have already been connected to a LAO
 
     const laoId = selectCurrentLaoId(getStore().getState());
-    const lao = getLaoById(laoId?.valueOf() || '');
+    const lao = getLaoById(laoId);
     if (!laoId || !lao) {
       return;
     }
@@ -68,7 +68,7 @@ export function configureNetwork(registry: MessageRegistry) {
   });
   getNetworkManager().addConnectionDeathHandler((address) => {
     const laoId = selectCurrentLaoId(getStore().getState());
-    const currentLao = getLaoById(laoId?.valueOf() || '');
+    const currentLao = getLaoById(laoId);
     if (!laoId || !currentLao) {
       return;
     }
@@ -80,7 +80,7 @@ export function configureNetwork(registry: MessageRegistry) {
         if (toast) {
           toast.show(STRINGS.lao_error_disconnect, {
             type: 'danger',
-            placement: 'top',
+            placement: 'bottom',
             duration: FOUR_SECONDS,
           });
         }

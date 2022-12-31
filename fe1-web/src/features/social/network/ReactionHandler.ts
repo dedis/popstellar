@@ -43,6 +43,6 @@ export const handleAddReactionMessage =
       time: reactionMessage.timestamp,
     });
 
-    dispatch(addReaction(laoId, reaction.toState()));
+    dispatch(addReaction(laoId, reaction));
     return true;
   };

@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockChannel, mockLao, mockLaoIdHash, mockReduxAction } from '__tests__/utils';
+import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HOME_FEATURE_IDENTIFIER, HomeReactContext } from 'features/home/interface';
 import { LaoList } from 'features/lao/components';
@@ -22,7 +22,7 @@ const contextValueEmpyList = {
     LaoList: () => null,
     homeNavigationScreens: [],
     getLaoChannel: () => mockChannel,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao: () => Promise.resolve(),
@@ -39,7 +39,7 @@ const contextValue = {
     LaoList,
     homeNavigationScreens: [],
     getLaoChannel: () => mockChannel,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     hasSeed: () => true,
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
@@ -61,7 +61,7 @@ describe('Home', () => {
   it('renders correctly with an non-empty list of LAOs', () => {
     // setup mock store
     const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
-    mockStore.dispatch(addLao({ lao: mockLao.toState() }));
+    mockStore.dispatch(addLao(mockLao));
     // ensure the mock store contains the mock lao
     expect(selectLaosList(mockStore.getState())).toEqual([mockLao]);
 

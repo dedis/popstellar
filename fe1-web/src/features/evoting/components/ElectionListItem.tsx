@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import ReactTimeago from 'react-timeago';
 
 import { PoPIcon } from 'core/components';
-import { Timestamp } from 'core/objects';
+import { Hash, Timestamp } from 'core/objects';
 import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -54,7 +54,7 @@ const Subtitle = ({ election }: { election: Election }) => {
 const ElectionListItem = (props: IPropTypes) => {
   const { eventId: electionId } = props;
 
-  const selectElection = useMemo(() => makeElectionSelector(electionId), [electionId]);
+  const selectElection = useMemo(() => makeElectionSelector(new Hash(electionId)), [electionId]);
   const election = useSelector(selectElection);
 
   if (!election) {

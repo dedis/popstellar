@@ -23,10 +23,10 @@ import { OpenElection } from './messages/OpenElection';
  */
 export const configureNetwork = (configuration: EvotingConfiguration) => {
   // getElectionById bound to the global state
-  const boundGetElectionById = (electionId: Hash | string) =>
+  const boundGetElectionById = (electionId: Hash) =>
     getElectionById(electionId, getStore().getState());
 
-  const addElectionEvent = (laoId: Hash | string, election: Election) => {
+  const addElectionEvent = (laoId: Hash, election: Election) => {
     const electionState = election.toState();
 
     dispatch(addElection(electionState));

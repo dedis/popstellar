@@ -11,13 +11,12 @@ import {
   mockKeyPair,
   mockLao,
   mockLaoId,
-  mockLaoIdHash,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { addMessages, messageReducer } from 'core/network/ingestion';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-import { Timestamp } from 'core/objects';
+import { Hash, Timestamp } from 'core/objects';
 import {
   addNotification,
   discardNotifications,
@@ -29,11 +28,12 @@ import {
   WitnessFeature,
   WitnessReactContext,
 } from 'features/witness/interface';
+import { MessageToWitnessNotification } from 'features/witness/objects/MessageToWitnessNotification';
 import { addMessageToWitness, witnessReducer } from 'features/witness/reducer';
 
 import WitnessNotification from '../WitnessNotification';
 
-const mockMessageId = 'some message id';
+const mockMessageId = new Hash('some message id');
 
 // otherwise .fromData won't work
 configureTestFeatures();
@@ -48,15 +48,15 @@ const mockStore = configureStore({
     ...messageReducer,
   }),
 });
-const mockNotification = {
+const mockNotification = new MessageToWitnessNotification({
   id: 0,
   laoId: mockLaoId,
   title: 'a notification',
-  timestamp: 0,
+  timestamp: new Timestamp(0),
   type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
   hasBeenRead: false,
   messageId: mockMessageId,
-} as WitnessFeature.MessageToWitnessNotification;
+});
 
 const msg = ExtendedMessage.fromMessage(
   ExtendedMessage.fromData(
@@ -74,13 +74,13 @@ const msg = ExtendedMessage.fromMessage(
 );
 
 mockStore.dispatch(addMessages(msg.toState()));
-mockStore.dispatch(addMessageToWitness({ messageId: msg.message_id.valueOf() }));
-mockStore.dispatch(addNotification(mockNotification));
+mockStore.dispatch(addMessageToWitness(msg.message_id));
+mockStore.dispatch(addNotification(mockNotification.toState()));
 
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     enabled: true,
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     addNotification: (notification) => mockStore.dispatch(addNotification(notification)),
     discardNotifications: (args) => mockStore.dispatch(discardNotifications(args)),

@@ -17,3 +17,9 @@ jest.mock('core/components/QRCode.tsx', () => 'qrcode');
 // make functions return a value independent of the CI locale
 jest.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('2022-05-28');
 jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('00:00:00');
+
+// Fixes issue with react-native-reanimated
+// https://github.com/software-mansion/react-native-reanimated/issues/3125#issuecomment-1085737354
+global.ReanimatedDataMock = {
+  now: () => 0,
+};

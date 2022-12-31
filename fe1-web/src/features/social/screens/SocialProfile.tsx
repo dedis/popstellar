@@ -1,70 +1,32 @@
 import * as React from 'react';
-import { useContext, useMemo } from 'react';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useContext } from 'react';
+import { Text } from 'react-native';
 
-import { ProfileIcon, TextBlock } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import { ChirpCard } from '../components';
+import Profile from '../components/Profile';
 import { SocialMediaContext } from '../context';
-import { SocialHooks } from '../hooks';
-import { Chirp, ChirpState } from '../objects';
-import { makeChirpsListOfUser } from '../reducer';
-import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 
 /**
  * UI for the profile of the current user.
  */
 
-const styles = socialMediaProfileStyles;
-
 const SocialProfile = () => {
   const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
-  const laoId = SocialHooks.useCurrentLaoId();
-  if (!laoId) {
-    throw new Error('Impossible to render Social Profile, current lao id is undefined');
-  }
-
-  const userChirps = useMemo(
-    () => makeChirpsListOfUser(laoId.valueOf())(currentUserPopTokenPublicKey),
-    [currentUserPopTokenPublicKey, laoId],
-  );
-  const userChirpList = useSelector(userChirps);
 
   if (!currentUserPopTokenPublicKey) {
     return (
-      <View style={styles.textUnavailableView}>
-        <TextBlock text={STRINGS.social_media_your_profile_unavailable} />
-      </View>
+      <ScreenWrapper>
+        <Text style={Typography.base}>{STRINGS.social_media_your_profile_unavailable}</Text>
+      </ScreenWrapper>
     );
   }
 
-  const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard chirp={Chirp.fromState(item)} />
-  );
-
   return (
     <ScreenWrapper>
-      <View style={styles.viewCenter}>
-        <View style={styles.topView}>
-          <ProfileIcon publicKey={currentUserPopTokenPublicKey} size={8} scale={10} />
-          <View style={styles.textView}>
-            <Text style={styles.profileText}>{currentUserPopTokenPublicKey.valueOf()}</Text>
-            <Text>{`${userChirpList.length} ${
-              userChirpList.length === 1 ? 'chirp' : 'chirps'
-            }`}</Text>
-          </View>
-        </View>
-        <View style={styles.userFeed}>
-          <FlatList
-            data={userChirpList}
-            renderItem={renderChirpState}
-            keyExtractor={(item) => item.id.toString()}
-          />
-        </View>
-      </View>
+      <Profile publicKey={currentUserPopTokenPublicKey} />
     </ScreenWrapper>
   );
 };

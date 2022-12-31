@@ -26,7 +26,7 @@ const contextValue = {
 
 // set up mock store
 const mockStore = configureStore({ reducer: combineReducers({ ...laoReducer }) });
-mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+mockStore.dispatch(setCurrentLao(mockLao));
 
 // KeyPairStore always accesses the global store, hence the full store is required
 beforeAll(() => {

@@ -1,4 +1,13 @@
-import { Base64UrlData, Hash, KeyPair, PopToken, PublicKey } from 'core/objects';
+import {
+  Base64UrlData,
+  Hash,
+  HashState,
+  KeyPair,
+  PopToken,
+  PublicKey,
+  Timestamp,
+  TimestampState,
+} from 'core/objects';
 import { SCRIPT_TYPE, COINBASE_HASH } from 'resources/const';
 
 import { isDefined } from '../../../../core/types';
@@ -20,8 +29,8 @@ export interface TransactionState {
   version: number;
   inputs: TransactionInputState[];
   outputs: TransactionOutputState[];
-  lockTime: number;
-  transactionId?: string;
+  lockTime: TimestampState;
+  transactionId?: HashState;
 }
 
 /**
@@ -34,7 +43,7 @@ export class Transaction {
 
   public readonly outputs: TransactionOutput[];
 
-  public readonly lockTime: number;
+  public readonly lockTime: Timestamp;
 
   public readonly transactionId: Hash;
 
@@ -85,25 +94,22 @@ export class Transaction {
    */
   private readonly hashTransaction = (): Hash => {
     // Recursively concatenating fields by lexicographic order of their names
-    const dataInputs = this.inputs.flatMap((input) => {
+    const dataInputs: (string | number | String | Timestamp)[] = this.inputs.flatMap((input) => {
       return [
-        input.script.publicKey.valueOf(),
-        input.script.signature.valueOf(),
+        input.script.publicKey,
+        input.script.signature,
         input.script.type,
-        input.txOutHash.valueOf(),
-        input.txOutIndex.toString(),
+        input.txOutHash,
+        input.txOutIndex,
       ];
     });
     const dataOutputs = this.outputs.flatMap((output) => {
-      return [output.script.publicKeyHash.valueOf(), output.script.type, output.value.toString()];
+      return [output.script.publicKeyHash, output.script.type, output.value];
     });
-    const data = dataInputs
-      .concat([this.lockTime.toString()])
-      .concat(dataOutputs)
-      .concat([this.version.toString()]);
+    const data = dataInputs.concat([this.lockTime]).concat(dataOutputs).concat([this.version]);
 
     // Hash will take care of concatenating each fields length
-    return Hash.fromStringArray(...data);
+    return Hash.fromArray(...data);
   };
 
   /**
@@ -352,8 +358,9 @@ export class Transaction {
       inputs: transactionState.inputs.map((input) => TransactionInput.fromState(input)),
       outputs: transactionState.outputs.map((output) => TransactionOutput.fromState(output)),
       transactionId: transactionState.transactionId
-        ? new Hash(transactionState.transactionId)
+        ? Hash.fromState(transactionState.transactionId)
         : undefined,
+      lockTime: Timestamp.fromState(transactionState.lockTime),
     });
   }
 
@@ -363,17 +370,17 @@ export class Transaction {
       inputs: this.inputs.map((input) => input.toState()),
       outputs: this.outputs.map((output) => output.toState()),
       transactionId: this.transactionId.valueOf(),
-      lockTime: this.lockTime,
+      lockTime: this.lockTime.toState(),
     };
   }
 
-  public static fromJSON(transactionJSON: TransactionJSON, transactionId: string) {
+  public static fromJSON(transactionJSON: TransactionJSON, transactionId: Hash) {
     return new Transaction({
       version: transactionJSON.version,
       inputs: transactionJSON.inputs.map((input) => TransactionInput.fromJSON(input)),
       outputs: transactionJSON.outputs.map((output) => TransactionOutput.fromJSON(output)),
-      lockTime: transactionJSON.lock_time,
-      transactionId: new Hash(transactionId),
+      lockTime: Timestamp.fromState(transactionJSON.lock_time),
+      transactionId,
     });
   }
 
@@ -382,7 +389,7 @@ export class Transaction {
       version: this.version,
       inputs: this.inputs.map((input) => input.toJSON()),
       outputs: this.outputs.map((output) => output.toJSON()),
-      lock_time: this.lockTime,
+      lock_time: this.lockTime.valueOf(),
     };
   }
 }

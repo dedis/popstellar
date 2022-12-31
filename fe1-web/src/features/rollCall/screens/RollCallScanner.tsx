@@ -1,6 +1,6 @@
 import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -12,6 +12,7 @@ import QrCodeScanOverlay from 'core/components/QrCodeScanOverlay';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { Hash } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -50,19 +51,23 @@ type NavigationProps = CompositeScreenProps<
 const RollCallOpened = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const route = useRoute<NavigationProps['route']>();
-  const { rollCallId, attendeePopTokens } = route.params;
+  const { rollCallId, attendeePopTokens: navigationAttendeePopTokens } = route.params;
 
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
 
-  const laoId = RollCallHooks.useAssertCurrentLaoId();
+  const laoId = RollCallHooks.useCurrentLaoId();
   const generateToken = RollCallHooks.useGenerateToken();
 
-  const rollCallSelector = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
+  const rollCallSelector = useMemo(() => makeRollCallSelector(new Hash(rollCallId)), [rollCallId]);
   const rollCall = useSelector(rollCallSelector);
 
   // this is needed as otherwise the camera may stay turned on
   const [showScanner, setShowScanner] = useState(false);
+  // use a mutable ref to avoid the problem that QrCodeScanner's handle scan function
+  // is never changed, i.e. the bound variables stay the same during the scanner's lifetime
+  // this is due to a react-camera bug and is hopefully fixed at some point in the future
+  const attendeePopTokens = useRef(navigationAttendeePopTokens);
 
   // re-enable scanner on focus events
   useEffect(() => {
@@ -94,7 +99,7 @@ const RollCallOpened = () => {
       console.error(err.toString());
       toast.show(err.toString(), {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     },
@@ -105,13 +110,20 @@ const RollCallOpened = () => {
     (popToken: string) => {
       // if the token is already part of attendeePopTokens, do not trigger a state update
       // and return false indicating the pop token was not added since it's a duplicate
-      if (attendeePopTokens.includes(popToken)) {
+
+      if (attendeePopTokens.current.includes(popToken)) {
         return false;
       }
 
+      const newTokens = [...attendeePopTokens.current, popToken];
+
+      // update mutable reference that allows us to check for duplicates the next time this function is called
+      attendeePopTokens.current = newTokens;
+      // also change the navigation parameters so that when pressing the back button, the right parameters are passed
       navigation.setParams({
-        attendeePopTokens: [...attendeePopTokens, popToken],
+        attendeePopTokens: newTokens,
       });
+
       return true;
     },
     [navigation, attendeePopTokens],
@@ -124,20 +136,20 @@ const RollCallOpened = () => {
       if (addAttendeePopToken(token.pop_token)) {
         toast.show(STRINGS.roll_call_scan_participant, {
           type: 'success',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       } else {
         toast.show(STRINGS.roll_call_scan_participant_twice, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       }
     } catch {
       toast.show(STRINGS.roll_call_invalid_token, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }
@@ -145,10 +157,6 @@ const RollCallOpened = () => {
 
   // This will run only when the state changes
   useEffect(() => {
-    if (!laoId) {
-      return;
-    }
-
     // Add the token of the organizer as soon as we open the roll call
     generateToken(laoId, rollCall.id)
       .then((popToken) => addAttendeePopToken(popToken.publicKey.valueOf()))

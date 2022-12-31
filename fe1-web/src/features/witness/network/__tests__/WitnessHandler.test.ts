@@ -1,6 +1,6 @@
 import { describe } from '@jest/globals';
 
-import { mockChannel, mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils';
+import { mockChannel, mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import { addMessageWitnessSignature } from 'core/network/ingestion';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, KeyPair, Signature, Timestamp, WitnessSignature } from 'core/objects';
@@ -37,12 +37,12 @@ const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const mockMessageData = {
   receivedAt: TIMESTAMP,
   receivedFrom: 'some address',
-  laoId: mockLaoIdHash,
+  laoId: mockLaoId,
   data: Base64UrlData.encode('some data'),
   sender: witnessKeyPair.publicKey,
   signature: Base64UrlData.encode('some data') as Signature,
   channel: mockChannel,
-  message_id: Hash.fromString('some string'),
+  message_id: new Hash('some string'),
   witness_signatures: [],
 };
 

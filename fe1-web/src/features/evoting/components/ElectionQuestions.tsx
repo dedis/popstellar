@@ -25,7 +25,7 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
       // this makes the reduce efficient. creating a new object
       // in every iteration is not necessary
       // eslint-disable-next-line no-param-reassign
-      obj[question.id] = true;
+      obj[question.id.valueOf()] = true;
       return obj;
     }, {} as Record<string, boolean | undefined>),
   );
@@ -38,7 +38,7 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
         <View style={List.container}>
           {election.questionResult &&
             election.questionResult.map((questionResult: QuestionResult) => {
-              const question = election.questions.find((q) => q.id === questionResult.id);
+              const question = election.questions.find((q) => q.id.equals(questionResult.id));
 
               if (!question) {
                 throw new Error(
@@ -46,9 +46,11 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
                 );
               }
 
+              const questionId = question.id.valueOf();
+
               return (
                 <ListItem.Accordion
-                  key={question.id}
+                  key={questionId}
                   containerStyle={List.accordionItem}
                   content={
                     <ListItem.Content>
@@ -60,10 +62,10 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
                   onPress={() =>
                     setIsQuestionOpen({
                       ...isQuestionOpen,
-                      [question.id]: !isQuestionOpen[question.id],
+                      [questionId]: !isQuestionOpen[questionId],
                     })
                   }
-                  isExpanded={!!isQuestionOpen[question.id]}>
+                  isExpanded={!!isQuestionOpen[questionId]}>
                   {
                     // create a copy since sort() mutates the original object but the election but be immutable
                     [...questionResult.result]
@@ -104,41 +106,45 @@ const ElectionQuestions = ({ election }: IPropTypes) => {
   return (
     <>
       <View style={List.container}>
-        {election.questions.map((question) => (
-          <ListItem.Accordion
-            key={question.id}
-            containerStyle={List.accordionItem}
-            style={List.accordionItem}
-            content={
-              <ListItem.Content>
-                <ListItem.Title style={[Typography.base, Typography.important]}>
-                  {question.question}
-                </ListItem.Title>
-              </ListItem.Content>
-            }
-            onPress={() =>
-              setIsQuestionOpen({
-                ...isQuestionOpen,
-                [question.id]: !isQuestionOpen[question.id],
-              })
-            }
-            isExpanded={!!isQuestionOpen[question.id]}>
-            {question.ballot_options.map((ballotOption, idx) => {
-              const listStyles = List.getListItemStyles(
-                idx === 0,
-                idx === question.ballot_options.length - 1,
-              );
+        {election.questions.map((question) => {
+          const questionId = question.id.valueOf();
 
-              return (
-                <ListItem key={ballotOption} containerStyle={listStyles} style={listStyles}>
-                  <ListItem.Content>
-                    <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>
-                  </ListItem.Content>
-                </ListItem>
-              );
-            })}
-          </ListItem.Accordion>
-        ))}
+          return (
+            <ListItem.Accordion
+              key={questionId}
+              containerStyle={List.accordionItem}
+              style={List.accordionItem}
+              content={
+                <ListItem.Content>
+                  <ListItem.Title style={[Typography.base, Typography.important]}>
+                    {question.question}
+                  </ListItem.Title>
+                </ListItem.Content>
+              }
+              onPress={() =>
+                setIsQuestionOpen({
+                  ...isQuestionOpen,
+                  [questionId]: !isQuestionOpen[questionId],
+                })
+              }
+              isExpanded={!!isQuestionOpen[questionId]}>
+              {question.ballot_options.map((ballotOption, idx) => {
+                const listStyles = List.getListItemStyles(
+                  idx === 0,
+                  idx === question.ballot_options.length - 1,
+                );
+
+                return (
+                  <ListItem key={ballotOption} containerStyle={listStyles} style={listStyles}>
+                    <ListItem.Content>
+                      <ListItem.Title style={Typography.base}>{ballotOption}</ListItem.Title>
+                    </ListItem.Content>
+                  </ListItem>
+                );
+              })}
+            </ListItem.Accordion>
+          );
+        })}
       </View>
     </>
   );

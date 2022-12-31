@@ -4,7 +4,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockChannel, mockLao, mockLaoIdHash, mockReduxAction } from '__tests__/utils';
+import { mockChannel, mockLao, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { HomeFeature, HomeReactContext, HOME_FEATURE_IDENTIFIER } from 'features/home/interface';
 import { Home } from 'features/home/screens';
@@ -24,7 +24,7 @@ const contextValue = {
       { id: 'home2' as HomeFeature.HomeScreen['id'], Component: Home },
     ],
     getLaoChannel: () => mockChannel,
-    useCurrentLaoId: () => mockLaoIdHash,
+    useConnectedToLao: () => true,
     useDisconnectFromLao: () => () => {},
     getLaoById: () => mockLao,
     resubscribeToLao: () => Promise.resolve(),

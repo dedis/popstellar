@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.home;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,7 +12,7 @@ import org.mockito.junit.MockitoJUnit;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
-import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
@@ -51,8 +50,9 @@ public class HomeActivityTest {
   @Test
   public void logOutMenuTest() {
     initializeWallet(activityScenarioRule);
-    openActionBarOverflowOrOptionsMenu(
-        InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+    // Click on menu icon
+    onView(withContentDescription("More options")).perform(click());
     walletLogOutMenuItem().perform(click());
     assertThat(dialogPositiveButton(), allOf(withText("CONFIRM"), isDisplayed()));
     assertThat(dialogNegativeButton(), allOf(withText("CANCEL"), isDisplayed()));
@@ -63,8 +63,9 @@ public class HomeActivityTest {
   @Test
   public void clearDataTest() {
     initializeWallet(activityScenarioRule);
-    openActionBarOverflowOrOptionsMenu(
-        InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+    // Click on menu icon
+    onView(withContentDescription("More options")).perform(click());
     clearDataMenuItem().perform(click());
     assertThat(dialogPositiveButton(), allOf(withText("YES"), isDisplayed()));
     assertThat(dialogNegativeButton(), allOf(withText("NO"), isDisplayed()));

@@ -2,6 +2,7 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 
 import { Hash, PublicKey, Timestamp } from 'core/objects';
+import { OmitMethods } from 'core/types';
 
 import { Reaction, ReactionState } from '../Reaction';
 
@@ -25,13 +26,13 @@ describe('Reaction object', () => {
 
   describe('constructor', () => {
     it('throws an error when object is undefined', () => {
-      const partial = undefined as unknown as Partial<Reaction>;
+      const partial = undefined as unknown as OmitMethods<Reaction>;
       const wrongReaction = () => new Reaction(partial);
       expect(wrongReaction).toThrow(Error);
     });
 
     it('throws an error when object is null', () => {
-      const partial = null as unknown as Partial<Reaction>;
+      const partial = null as unknown as OmitMethods<Reaction>;
       const wrongReaction = () => new Reaction(partial);
       expect(wrongReaction).toThrow(Error);
     });
@@ -39,6 +40,7 @@ describe('Reaction object', () => {
     it('throws an error when id is undefined', () => {
       const wrongReaction = () =>
         new Reaction({
+          id: undefined as unknown as Hash,
           sender: PK,
           codepoint: '👍',
           chirpId: CHIRP_ID,
@@ -51,6 +53,7 @@ describe('Reaction object', () => {
       const wrongReaction = () =>
         new Reaction({
           id: ID,
+          sender: undefined as unknown as Hash,
           codepoint: '👍',
           chirpId: CHIRP_ID,
           time: TIMESTAMP,
@@ -63,6 +66,7 @@ describe('Reaction object', () => {
         new Reaction({
           id: ID,
           sender: PK,
+          codepoint: undefined as unknown as string,
           chirpId: CHIRP_ID,
           time: TIMESTAMP,
         });
@@ -75,6 +79,7 @@ describe('Reaction object', () => {
           id: ID,
           sender: PK,
           codepoint: '👍',
+          chirpId: undefined as unknown as Hash,
           time: TIMESTAMP,
         });
       expect(wrongReaction).toThrow(Error);
@@ -87,6 +92,7 @@ describe('Reaction object', () => {
           sender: PK,
           codepoint: '👍',
           chirpId: CHIRP_ID,
+          time: undefined as unknown as Timestamp,
         });
       expect(wrongReaction).toThrow(Error);
     });

@@ -1,6 +1,6 @@
 import { AnyAction } from 'redux';
 
-import { mockChannel, mockLaoId } from '__tests__/utils';
+import { mockChannel, serializedMockLaoId } from '__tests__/utils';
 import { messageReducerPath, MessageReducerState } from 'core/network/ingestion';
 
 import {
@@ -78,7 +78,7 @@ describe('GreetLaoReducer', () => {
               [mockMessageId1]: {
                 message_id: mockMessageId1,
                 data: '',
-                laoId: mockLaoId,
+                laoId: serializedMockLaoId,
                 receivedAt: 0,
                 receivedFrom: '',
                 sender: '',
@@ -89,7 +89,7 @@ describe('GreetLaoReducer', () => {
               [mockMessageId2]: {
                 message_id: mockMessageId2,
                 data: '',
-                laoId: mockLaoId,
+                laoId: serializedMockLaoId,
                 receivedAt: 0,
                 receivedFrom: '',
                 sender: '',

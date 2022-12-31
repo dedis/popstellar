@@ -11,6 +11,7 @@ import { Color, Icon, List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { NotificationHooks } from '../hooks';
+import { Notification } from '../objects/Notification';
 
 type NavigationProps = StackScreenProps<
   NotificationParamList,
@@ -62,7 +63,7 @@ const NotificationList = ({ title, notifications }: IPropTypes) => {
             <ListItem.Content>
               <ListItem.Title style={Typography.base}>{notification.title}</ListItem.Title>
               <ListItem.Subtitle style={Typography.small}>
-                <ReactTimeago live date={notification.timestamp * 1000} />
+                <ReactTimeago live date={notification.timestamp.valueOf() * 1000} />
               </ListItem.Subtitle>
             </ListItem.Content>
           </ListItem>
@@ -76,17 +77,7 @@ export default NotificationList;
 
 const propTypes = {
   title: PropTypes.string.isRequired,
-  notifications: PropTypes.arrayOf(
-    PropTypes.shape({
-      // NotificationState
-      id: PropTypes.number.isRequired,
-      laoId: PropTypes.string.isRequired,
-      timestamp: PropTypes.number.isRequired,
-      title: PropTypes.string.isRequired,
-      type: PropTypes.string.isRequired,
-      hasBeenRead: PropTypes.bool.isRequired,
-    }).isRequired,
-  ).isRequired,
+  notifications: PropTypes.arrayOf(PropTypes.instanceOf(Notification).isRequired).isRequired,
 };
 NotificationList.propTypes = propTypes;
 

@@ -47,7 +47,7 @@ public class Constants {
   /** Using the Resources class constant would require a min API of 29 */
   public static final int ID_NULL = 0;
 
-  public static final float DISABLED_ALPHA = 0.4f;
+  public static final float DISABLED_ALPHA = 0.2f;
 
   public static final float ENABLED_ALPHA = 1.0f;
 }

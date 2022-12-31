@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockKeyPair, mockLao, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
+import { mockKeyPair, mockLao, serializedMockLaoId, mockLaoId, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { getEventById } from 'features/events/functions';
 import { EVENT_FEATURE_IDENTIFIER, EventReactContext } from 'features/events/interface';
@@ -50,12 +50,12 @@ const FUTURE = 1800000000;
 
 const getContextValue = (isOrganizer: boolean) => ({
   [EVENT_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     eventTypes: [ElectionEventType, MeetingEventType, RollCallEventType],
     useIsLaoOrganizer: () => isOrganizer,
   } as EventReactContext,
   [EVOTING_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     useCurrentLao: () => mockLao,
     addEvent,
@@ -64,30 +64,28 @@ const getContextValue = (isOrganizer: boolean) => ({
     useLaoOrganizerBackendPublicKey: () => mockKeyPair.publicKey,
   } as EvotingReactContext,
   [MEETING_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
   } as MeetingReactContext,
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     generateToken,
     hasSeed: () => getWalletState(mockStore.getState()).seed !== undefined,
     makeEventByTypeSelector,
   } as RollCallReactContext,
   [WALLET_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useCurrentLao: () => mockLao,
     useConnectedToLao: () => true,
     useRollCallsByLaoId: () => ({}),
-    useLaoIds: () => [mockLaoIdHash],
-    useNamesByLaoId: () => ({ [mockLaoId]: mockLaoName }),
-    walletItemGenerators: [],
-    walletNavigationScreens: [],
+    useLaoIds: () => [mockLaoId],
+    useNamesByLaoId: () => ({ [serializedMockLaoId]: mockLaoName }),
     useRollCallTokensByLaoId: () => [],
   } as WalletReactContext,
 });
 
 mockStore.dispatch(
-  addEvent(mockLaoIdHash, {
+  addEvent(mockLaoId, {
     eventType: Election.EVENT_TYPE,
     id: mockElectionNotStarted.id.valueOf(),
     start: FUTURE,
@@ -96,7 +94,7 @@ mockStore.dispatch(
 mockStore.dispatch(addElection(mockElectionNotStarted.toState()));
 
 mockStore.dispatch(
-  addEvent(mockLaoIdHash, {
+  addEvent(mockLaoId, {
     eventType: Meeting.EVENT_TYPE,
     id: mockMeeting.id.valueOf(),
     start: FUTURE,
@@ -105,7 +103,7 @@ mockStore.dispatch(
 mockStore.dispatch(addMeeting(mockMeeting.toState()));
 
 mockStore.dispatch(
-  addEvent(mockLaoIdHash, {
+  addEvent(mockLaoId, {
     eventType: RollCall.EVENT_TYPE,
     id: mockRollCall.id.valueOf(),
     start: FUTURE,

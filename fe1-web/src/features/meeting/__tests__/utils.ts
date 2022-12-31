@@ -1,4 +1,4 @@
-import { mockLaoIdHash } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import { Timestamp } from 'core/objects';
 
 import { CreateMeeting } from '../network/messages';
@@ -17,7 +17,7 @@ const mockMeetingExtra = {
 };
 
 export const mockMeeting: Meeting = new Meeting({
-  id: CreateMeeting.computeMeetingId(mockLaoIdHash, mockMeetingCreation, mockMeetingName),
+  id: CreateMeeting.computeMeetingId(mockLaoId, mockMeetingCreation, mockMeetingName),
   name: mockMeetingName,
   location: mockMeetingLocation,
   creation: mockMeetingCreation,
@@ -33,7 +33,7 @@ export const mockMeetingState: MeetingState = mockMeeting.toState();
 const mockMeetingLocation2 = 'on pluto';
 
 export const mockMeeting2: Meeting = new Meeting({
-  id: CreateMeeting.computeMeetingId(mockLaoIdHash, mockMeetingCreation, mockMeetingName),
+  id: CreateMeeting.computeMeetingId(mockLaoId, mockMeetingCreation, mockMeetingName),
   name: mockMeetingName,
   location: mockMeetingLocation2,
   creation: mockMeetingCreation,

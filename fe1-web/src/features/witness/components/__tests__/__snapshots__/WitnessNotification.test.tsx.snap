@@ -3,7 +3,7 @@
 exports[`WitnessNotification renders correctly 1`] = `
 <View>
   <Text>
-    {"id":0,"laoId":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=","title":"a notification","timestamp":0,"type":"message-to-witness","hasBeenRead":false,"messageId":"some message id"}
+    {"id":0,"laoId":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=","hasBeenRead":false,"timestamp":0,"title":"a notification","type":"message-to-witness","messageId":"some message id"}
   </Text>
   <Text />
   <View
