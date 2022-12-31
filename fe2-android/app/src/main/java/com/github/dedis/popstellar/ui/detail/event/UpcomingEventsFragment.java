@@ -5,6 +5,7 @@ import android.view.*;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.dedis.popstellar.databinding.UpcomingEventsFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
@@ -27,9 +28,11 @@ public class UpcomingEventsFragment extends Fragment {
     LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     // Todo add the bar title when PR is merged
 
+    binding.upcomingEventsRv.setLayoutManager(new LinearLayoutManager(getContext()));
+
     UpcomingEventsAdapter adapter =
         new UpcomingEventsAdapter(new ArrayList<>(), viewModel, requireActivity());
-
+    binding.upcomingEventsRv.setAdapter(adapter);
     return binding.getRoot();
   }
 }
