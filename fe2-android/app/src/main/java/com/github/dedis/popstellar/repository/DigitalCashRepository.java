@@ -85,6 +85,7 @@ public class DigitalCashRepository {
       if (hashDictionary.isEmpty()) {
         throw new NoRollCallException("No roll call attendees could be found");
       }
+      
       for (PublicKey current : getReceiversTransaction(transaction)) {
         List<TransactionObject> transactionList = this.transactions.get(current);
 
