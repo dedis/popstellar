@@ -137,7 +137,7 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
   private boolean openIssueTab() {
     PublicKey organizerKey;
     try {
-      organizerKey = (viewModel.getCurrentLao().getOrganizer());
+      organizerKey = viewModel.getCurrentLao().getOrganizer();
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
       return false;
