@@ -18,6 +18,9 @@
   <string name="tab_digital_cash">Digital Cash</string>
   <string name="event_list">Event List</string>
   <string name="witnessing">Witnessing</string>
+  <string name="invite">Invite</string>
+  <string name="tokens">Tokens</string>
+  <string name="disconnect">Disconnect</string>
 
   <!-- Home -->
   <string name="home_title">My LAOs</string>
