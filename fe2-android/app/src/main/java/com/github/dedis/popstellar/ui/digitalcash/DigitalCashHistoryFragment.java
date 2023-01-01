@@ -29,8 +29,7 @@ public class DigitalCashHistoryFragment extends Fragment {
     RecyclerView.ItemDecoration decoration =
         new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
 
-    HistoryListAdapter adapter;
-    adapter = new HistoryListAdapter(viewModel, requireActivity());
+    HistoryListAdapter adapter = new HistoryListAdapter(viewModel, requireActivity());
 
     transactionList.setLayoutManager(layoutManager);
     transactionList.addItemDecoration(decoration);
