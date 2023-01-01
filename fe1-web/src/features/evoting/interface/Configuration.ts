@@ -39,7 +39,7 @@ export interface EvotingConfiguration {
    * Should be used inside react components
    * @returns The current lao id
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode
@@ -52,7 +52,7 @@ export interface EvotingConfiguration {
    * @param laoId The id of the lao
    * @returns The public key of the lao organizer's backend or undefined if none is known
    */
-  useLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+  useLaoOrganizerBackendPublicKey: (laoId: Hash) => PublicKey | undefined;
 
   /* Event related functions */
 
@@ -62,7 +62,7 @@ export interface EvotingConfiguration {
    * @param event - The event
    * @returns A redux action causing the state change
    */
-  addEvent: (laoId: Hash | string, event: EvotingFeature.EventState) => AnyAction;
+  addEvent: (laoId: Hash, event: EvotingFeature.EventState) => AnyAction;
 
   /**
    * Creates a redux action for update the stored event state
@@ -85,7 +85,7 @@ export interface EvotingConfiguration {
    * @param laoId The id of the lao
    * @returns The public key or undefined if none is known
    */
-  getLaoOrganizerBackendPublicKey: (laoId: string) => PublicKey | undefined;
+  getLaoOrganizerBackendPublicKey: (laoId: Hash) => PublicKey | undefined;
 }
 
 /**
@@ -95,7 +95,7 @@ export type EvotingReactContext = Pick<
   EvotingConfiguration,
   /* lao */
   | 'useCurrentLao'
-  | 'useAssertCurrentLaoId'
+  | 'useCurrentLaoId'
   | 'useConnectedToLao'
   | 'useLaoOrganizerBackendPublicKey'
   /* events */

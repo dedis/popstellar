@@ -9,7 +9,7 @@ import { act } from 'react-test-renderer';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockLaoIdHash, mockPopToken } from '__tests__/utils/TestUtils';
+import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { PublicKey } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
@@ -77,14 +77,14 @@ const mockStore = configureStore({
     ...walletReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+mockStore.dispatch(setCurrentLao(mockLao));
 mockStore.dispatch(addRollCall(mockRollCall.toState()));
 
 const mockGenerateToken = jest.fn(() => Promise.resolve(mockPopToken));
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     makeEventByTypeSelector: makeEventByTypeSelector,
     generateToken: mockGenerateToken,
@@ -216,12 +216,17 @@ describe('RollCallOpened', () => {
     renderRollCallOpened(mockAttendeePopTokens);
 
     await waitFor(() => {
-      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
       expect(mockGenerateToken).toHaveBeenCalled();
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
     });
 
     expect(setParams).toHaveBeenCalledWith({
-      attendeePopTokens: [...mockAttendeePopTokens, mockPublicKey2.valueOf()],
+      attendeePopTokens: [
+        ...mockAttendeePopTokens,
+        mockPublicKey2.valueOf(),
+        mockPublicKey3.valueOf(),
+      ],
     });
   });
 });

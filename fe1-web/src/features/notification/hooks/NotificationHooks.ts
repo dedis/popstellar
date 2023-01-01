@@ -23,7 +23,7 @@ export namespace NotificationHooks {
    * A hook returning the current lao id
    * @returns The current lao id
    */
-  export const useAssertCurrentLaoId = () => useNotificationContext().useAssertCurrentLaoId();
+  export const useCurrentLaoId = () => useNotificationContext().useCurrentLaoId();
 
   /**
    * Gets the list of notification types with e.g. the component that should be used to

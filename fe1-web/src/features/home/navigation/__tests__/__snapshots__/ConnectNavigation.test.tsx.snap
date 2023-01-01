@@ -296,6 +296,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -676,6 +677,7 @@ exports[`ConnectNavigation renders correctly 1`] = `
                                       }
                                     >
                                       <View
+                                        pointerEvents="box-none"
                                         style={
                                           Array [
                                             Object {

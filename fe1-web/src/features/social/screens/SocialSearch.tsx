@@ -1,42 +1,21 @@
 import * as React from 'react';
-import { useContext } from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
+import { ListRenderItemInfo, Text, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
-import { TextBlock } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { PublicKey } from 'core/objects';
-import { gray } from 'core/styles/color';
+import { List, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { UserListItem } from '../components';
-import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 
 /**
  * Component that will be used to allow users to search for other users or topics.
- * For now, it is used to show all the attendees of the last roll call so that everyone can follow
- * whoever they want.
+ * For now, it is used to show all the attendees of the last roll call
  */
 
-const styles = StyleSheet.create({
-  viewCenter: {
-    alignSelf: 'center',
-    width: 600,
-  } as ViewStyle,
-  titleTextView: {
-    alignSelf: 'flex-start',
-    marginTop: 20,
-  } as ViewStyle,
-  attendeesList: {
-    flexDirection: 'column',
-    marginTop: 20,
-    borderTopWidth: 1,
-    borderColor: gray,
-  } as ViewStyle,
-});
-
 const SocialSearch = () => {
-  const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
   const currentLao = SocialHooks.useCurrentLao();
 
   if (!currentLao) {
@@ -46,27 +25,33 @@ const SocialSearch = () => {
   const rollCallId = currentLao.last_tokenized_roll_call_id;
   const attendees = SocialHooks.useRollCallAttendeesById(rollCallId);
 
-  const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
-    // Not show our own profile
-    if (currentUserPopTokenPublicKey && item.valueOf() === currentUserPopTokenPublicKey.valueOf()) {
-      return null;
-    }
-    return <UserListItem laoId={currentLao.id} publicKey={item} />;
-  };
+  const renderAttendee = React.useCallback(
+    ({ item: attendee, index: i }: ListRenderItemInfo<PublicKey>) => (
+      <UserListItem
+        publicKey={attendee}
+        isFirstItem={i === 0}
+        isLastItem={i === attendees.length - 1}
+      />
+    ),
+    [attendees],
+  );
+
+  if (!rollCallId) {
+    return (
+      <ScreenWrapper>
+        <Text style={Typography.base}>{STRINGS.social_media_user_list_unavailable}</Text>
+      </ScreenWrapper>
+    );
+  }
 
   return (
     <ScreenWrapper>
-      <View style={styles.viewCenter}>
-        <View style={styles.titleTextView}>
-          <TextBlock text={STRINGS.attendees_of_last_roll_call} />
-        </View>
-        <View style={styles.attendeesList}>
-          <FlatList
-            data={attendees}
-            renderItem={renderItem}
-            keyExtractor={(publicKey) => publicKey.valueOf()}
-          />
-        </View>
+      <View style={List.container}>
+        <FlatList
+          data={attendees}
+          renderItem={renderAttendee}
+          keyExtractor={(attendee) => attendee.toString()}
+        />
       </View>
     </ScreenWrapper>
   );

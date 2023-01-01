@@ -8,20 +8,4 @@ export type WalletParamList = {
     rollCallName: string;
     rollCallTokenPublicKey: string;
   };
-
-  [STRINGS.navigation_wallet_digital_cash_wallet]: undefined;
-
-  [STRINGS.navigation_wallet_digital_cash_send_receive]: {
-    /* undefined indicates coinbase transactions (coin issuance from the organizer) */
-    rollCallId?: string;
-    isCoinbase: boolean;
-
-    /* parameters used to return from the scanner */
-    scannedPoPToken?: string;
-  };
-
-  [STRINGS.navigation_wallet_digital_cash_wallet_scanner]: {
-    rollCallId?: string;
-    isCoinbase: boolean;
-  };
 };

@@ -39,7 +39,7 @@ type NavigationProps = CompositeScreenProps<
 const CreateMeeting = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
-  const laoId = MeetingHooks.useAssertCurrentLaoId();
+  const laoId = MeetingHooks.useCurrentLaoId();
   const isConnected = MeetingHooks.useConnectedToLao();
 
   const [meetingName, setMeetingName] = useState('');
@@ -61,7 +61,7 @@ const CreateMeeting = () => {
         console.error('Could not create meeting, error:', err);
         toast.show(`Could not create meeting, error: ${err}`, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       });

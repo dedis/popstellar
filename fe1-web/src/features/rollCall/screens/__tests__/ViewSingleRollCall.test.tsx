@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLao, mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { mockLao, mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { Hash, Timestamp } from 'core/objects';
 import { addEvent, eventReducer, makeEventByTypeSelector } from 'features/events/reducer';
@@ -57,7 +57,7 @@ const mockStore = configureStore({
     ...walletReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+mockStore.dispatch(setCurrentLao(mockLao));
 const mockRollCallState = mockRollCallCreated.toState();
 
 mockStore.dispatch(
@@ -72,7 +72,7 @@ mockStore.dispatch(addRollCall(mockRollCallState));
 
 const contextValue = {
   [ROLLCALL_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     makeEventByTypeSelector,
     generateToken,

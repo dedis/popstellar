@@ -1,4 +1,4 @@
-import { mockKeyPair, mockLaoIdHash } from '__tests__/utils';
+import { mockKeyPair, mockLaoId } from '__tests__/utils';
 import { Hash, PopToken, RollCallToken } from 'core/objects';
 import { COINBASE_HASH, SCRIPT_TYPE } from 'resources/const';
 
@@ -9,7 +9,7 @@ import { TransactionJSON, TransactionState } from '../objects/transaction';
 export const mockRollCall = mockRC;
 
 export const mockRollCallToken = new RollCallToken({
-  laoId: mockLaoIdHash,
+  laoId: mockLaoId,
   rollCallName: mockRollCall.name,
   rollCallId: mockRollCall.id,
   token: PopToken.fromState(mockKeyPair.toState()),
@@ -17,7 +17,7 @@ export const mockRollCallToken = new RollCallToken({
 
 export const mockDigitalCashContextValue = (isOrganizer: boolean) => ({
   [DIGITAL_CASH_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
     useConnectedToLao: () => true,
     useIsLaoOrganizer: () => isOrganizer,
     useRollCallById: () => mockRollCall,
@@ -35,7 +35,7 @@ export const mockTransactionValue = 100;
 export const mockKPHash = Hash.fromPublicKey(mockKeyPair.publicKey);
 export const mockCBSig =
   'ts5vHgbiGPu55Acj1Mo72kypWYfMZCs6eo4kXvCyf2UmVGmKfJXvm1JTS4o6Lk1wIDK-RepcUSHPkZHFT6jCDw==';
-export const mockCBHash = 'ZmVFcfCTuGi5YYpGTB_xzeYC6SfP_ernBOsakP-iq64=';
+export const mockCBHash = new Hash('ZmVFcfCTuGi5YYpGTB_xzeYC6SfP_ernBOsakP-iq64=');
 export const mockCoinbaseTransactionJSON: TransactionJSON = {
   version: 1,
   inputs: [
@@ -65,7 +65,7 @@ export const mockTransactionState: TransactionState = {
   version: 1,
   inputs: [
     {
-      txOutHash: mockCBHash,
+      txOutHash: mockCBHash.valueOf(),
       txOutIndex: 0,
       script: {
         type: SCRIPT_TYPE,

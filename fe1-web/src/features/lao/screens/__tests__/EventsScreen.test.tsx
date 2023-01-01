@@ -12,11 +12,7 @@ import { encodeLaoConnectionForQRCode } from 'features/home/functions';
 import { LAO_FEATURE_IDENTIFIER, LaoReactContext } from 'features/lao/interface';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
-import EventsScreen, {
-  EventsScreenHeader,
-  EventsScreenHeaderLeft,
-  EventsScreenHeaderRight,
-} from '../EventsScreen';
+import EventsScreen, { EventsScreenHeaderLeft, EventsScreenHeaderRight } from '../EventsScreen';
 
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
@@ -35,7 +31,7 @@ const mockStore = configureStore({
     ...keyPairReducer,
   }),
 });
-mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+mockStore.dispatch(setCurrentLao(mockLao));
 mockStore.dispatch(setKeyPair(mockPopToken.toState()));
 
 describe('EventsScreen', () => {
@@ -44,19 +40,6 @@ describe('EventsScreen', () => {
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <MockNavigator component={EventsScreen} />
-        </FeatureContext.Provider>
-      </Provider>,
-    ).toJSON();
-    expect(component).toMatchSnapshot();
-  });
-});
-
-describe('EventsScreenHeader', () => {
-  it('renders correctly', () => {
-    const component = render(
-      <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <MockNavigator component={EventsScreenHeader} />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();

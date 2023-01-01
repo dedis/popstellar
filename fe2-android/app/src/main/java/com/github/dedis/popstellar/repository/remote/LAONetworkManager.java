@@ -180,7 +180,7 @@ public class LAONetworkManager implements MessageSender {
     Log.d(TAG, "handling broadcast msg : " + broadcast);
     try {
       messageHandler.handleMessage(this, broadcast.getChannel(), broadcast.getMessage());
-    } catch (DataHandlingException | UnknownLaoException e) {
+    } catch (DataHandlingException | UnknownLaoException | UnknownRollCallException e) {
       Log.e(TAG, "Error while handling received message", e);
       unprocessed.onNext(broadcast);
     }
@@ -190,7 +190,7 @@ public class LAONetworkManager implements MessageSender {
     for (MessageGeneral msg : messages) {
       try {
         messageHandler.handleMessage(this, channel, msg);
-      } catch (DataHandlingException | UnknownLaoException e) {
+      } catch (DataHandlingException | UnknownLaoException | UnknownRollCallException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
       }
     }

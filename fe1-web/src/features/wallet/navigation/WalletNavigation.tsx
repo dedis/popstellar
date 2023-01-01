@@ -1,12 +1,13 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
+import DrawerMenuButton from 'core/components/DrawerMenuButton';
+import NavigationPadding from 'core/components/NavigationPadding';
 import { makeIcon } from 'core/components/PoPIcon';
 import { stackScreenOptionsWithHeader } from 'core/navigation/ScreenOptions';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
 import STRINGS from 'resources/strings';
 
-import { WalletHooks } from '../hooks';
 import { WalletFeature } from '../interface';
 import { WalletHome } from '../screens';
 import WalletSingleRollCall, {
@@ -21,8 +22,6 @@ const Stack = createStackNavigator<WalletParamList>();
  * Allows to navigate between the wallet screens.
  */
 export default function WalletNavigation() {
-  const screens = WalletHooks.useWalletNavigationScreens();
-
   return (
     <Stack.Navigator screenOptions={stackScreenOptionsWithHeader}>
       <Stack.Screen
@@ -30,7 +29,8 @@ export default function WalletNavigation() {
         component={WalletHome}
         options={{
           headerTitle: STRINGS.navigation_wallet_home_title,
-          headerLeft: () => null,
+          headerLeft: DrawerMenuButton,
+          headerRight: NavigationPadding,
         }}
       />
       <Stack.Screen
@@ -41,30 +41,15 @@ export default function WalletNavigation() {
           headerRight: WalletSingleHeaderRight,
         }}
       />
-      {screens.map(
-        ({ id, title, headerTitle, headerLeft, headerRight, headerShown, Component }) => (
-          <Stack.Screen
-            name={id}
-            key={id}
-            component={Component}
-            options={{
-              title: title || id,
-              headerTitle: headerTitle || title || id,
-              headerLeft: headerLeft || stackScreenOptionsWithHeader.headerLeft,
-              headerRight: headerRight || stackScreenOptionsWithHeader.headerRight,
-              headerShown,
-            }}
-          />
-        ),
-      )}
     </Stack.Navigator>
   );
 }
 
 export const WalletNavigationScreen: WalletFeature.LaoScreen = {
-  id: STRINGS.navigation_home_wallet,
+  id: STRINGS.navigation_lao_wallet,
+  title: STRINGS.navigation_lao_wallet_title,
   Component: WalletNavigation,
-  tabBarIcon: makeIcon('wallet'),
+  Icon: makeIcon('qrCode'),
   order: 99999999,
   headerShown: false,
 };

@@ -10,15 +10,14 @@ import {
   mockAddress,
   mockChannel,
   mockLao,
+  serializedMockLaoId,
   mockLaoId,
-  mockLaoIdHash,
   mockReduxAction,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { subscribeToChannel } from 'core/network';
 import { HOME_FEATURE_IDENTIFIER, HomeReactContext } from 'features/home/interface';
 import { getLaoChannel, resubscribeToLao } from 'features/lao/functions';
-import { LaoHooks } from 'features/lao/hooks';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
 
 import ConnectConfirm from '../ConnectConfirm';
@@ -26,7 +25,7 @@ import ConnectConfirm from '../ConnectConfirm';
 const contextValue = {
   [HOME_FEATURE_IDENTIFIER]: {
     addLaoServerAddress: () => mockReduxAction,
-    useCurrentLaoId: LaoHooks.useCurrentLaoId,
+    useConnectedToLao: () => true,
     getLaoChannel: () => mockChannel,
     requestCreateLao: () => Promise.resolve(mockChannel),
     connectToTestLao: () => {},
@@ -72,7 +71,7 @@ jest.mock('core/network', () => {
 beforeEach(jest.clearAllMocks);
 
 const mockStore = configureStore({ reducer: combineReducers(laoReducer) });
-mockStore.dispatch(setCurrentLao({ lao: mockLao.toState() }));
+mockStore.dispatch(setCurrentLao(mockLao));
 
 describe('ConnectNavigation', () => {
   it('renders correctly', () => {
@@ -93,7 +92,7 @@ describe('ConnectNavigation', () => {
           <MockNavigator
             component={ConnectConfirm}
             params={{
-              laoId: mockLaoId,
+              laoId: serializedMockLaoId,
               serverUrl: mockAddress,
             }}
           />
@@ -105,7 +104,7 @@ describe('ConnectNavigation', () => {
 
     await waitFor(() => {
       expect(subscribeToChannel).toHaveBeenCalledWith(
-        mockLaoIdHash,
+        mockLaoId,
         expect.anything(),
         getLaoChannel(mockLaoId),
         expect.anything(),

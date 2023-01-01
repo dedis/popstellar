@@ -42,7 +42,7 @@ const CreateRollCall = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
   const toast = useToast();
 
-  const laoId = RollCallHooks.useAssertCurrentLaoId();
+  const laoId = RollCallHooks.useCurrentLaoId();
   const isConnected = RollCallHooks.useConnectedToLao();
 
   const [proposedStartTime, setProposedStartTime] = useState(Timestamp.EpochNow());
@@ -108,7 +108,7 @@ const CreateRollCall = () => {
         console.error('Could not create roll call, error:', err);
         toast.show(`Could not create roll call, error: ${err}`, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       });

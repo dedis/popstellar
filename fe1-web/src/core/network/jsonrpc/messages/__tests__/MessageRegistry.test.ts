@@ -4,7 +4,7 @@ import {
   configureTestFeatures,
   mockAddress,
   mockChannel,
-  mockLaoIdHash,
+  mockLaoId,
   mockPopToken,
 } from '__tests__/utils';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
@@ -59,16 +59,16 @@ describe('MessageRegistry', () => {
     const mockBuild = jest.fn();
     registry.add(CHIRP, ADD, mockHandle, mockBuild);
 
-    registry.buildMessageData(messageData, mockLaoIdHash);
+    registry.buildMessageData(messageData, mockLaoId);
 
     expect(mockHandle).not.toHaveBeenCalled();
     expect(mockBuild).toHaveBeenCalledTimes(1);
-    expect(mockBuild).toHaveBeenCalledWith(messageData, mockLaoIdHash);
+    expect(mockBuild).toHaveBeenCalledWith(messageData, mockLaoId);
   });
 
   it('should throw an error when building an unsupported type of message', async () => {
     const buildWrongMessage = () =>
-      registry.buildMessageData({ object: CHIRP, action: INVALID }, mockLaoIdHash);
+      registry.buildMessageData({ object: CHIRP, action: INVALID }, mockLaoId);
     expect(buildWrongMessage).toThrow(Error);
   });
 

@@ -53,7 +53,7 @@ export interface WalletCompositionConfiguration {
    * Returns the currently active lao id, throws error if there is none.
    * Should be used inside react components
    */
-  useAssertCurrentLaoId: () => Hash | undefined;
+  useCurrentLaoId: () => Hash;
 
   /**
    * Returns the currently active lao, throws error if there is none.
@@ -81,7 +81,7 @@ export interface WalletCompositionConfiguration {
   /**
    * Returns a map from rollCallIds to rollCalls for a given lao id
    */
-  useRollCallsByLaoId: (laoId: string) => {
+  useRollCallsByLaoId: (laoId: Hash) => {
     [rollCallId: string]: WalletFeature.RollCall;
   };
 
@@ -91,15 +91,7 @@ export interface WalletCompositionConfiguration {
 
   getRollCallById: (id: Hash) => WalletFeature.RollCall | undefined;
 
-  useRollCallTokensByLaoId: (laoId: string) => RollCallToken[];
-
-  /**
-   * A list of item generators that given a laoId return a list of items
-   * to be displayed in the wallet for a given lao
-   */
-  walletItemGenerators: WalletFeature.WalletItemGenerator[];
-
-  walletNavigationScreens: WalletFeature.WalletScreen[];
+  useRollCallTokensByLaoId: (laoId: Hash) => RollCallToken[];
 }
 
 /**
@@ -107,11 +99,8 @@ export interface WalletCompositionConfiguration {
  */
 export type WalletReactContext = Pick<
   WalletCompositionConfiguration,
-  /* parameters */
-  | 'walletItemGenerators'
-  | 'walletNavigationScreens'
   /* lao */
-  | 'useAssertCurrentLaoId'
+  | 'useCurrentLaoId'
   | 'useCurrentLao'
   | 'useConnectedToLao'
   /* events */

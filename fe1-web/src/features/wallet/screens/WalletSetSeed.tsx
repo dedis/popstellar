@@ -1,25 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { TextInputLine, PoPTextButton } from 'core/components';
+import { TextInputLine } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { Color, Typography } from 'core/styles';
+import { Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
 import * as Wallet from '../objects';
-
-const styles = StyleSheet.create({
-  welcomeView: {
-    flex: 1,
-    backgroundColor: Color.accent,
-  } as ViewStyle,
-});
 
 type NavigationProps = StackScreenProps<
   AppParamList,
@@ -47,35 +41,35 @@ const WalletSetSeed = () => {
       console.error(e);
       toast.show(STRINGS.wallet_set_seed_error, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }
   };
 
+  const toolbarItems: ToolbarItem[] = [
+    {
+      title: STRINGS.wallet_previous_seed_not_known,
+      onPress: () => navigation.navigate(STRINGS.navigation_app_wallet_create_seed),
+      buttonStyle: 'secondary',
+    },
+    {
+      title: STRINGS.wallet_restore_using_known_seed,
+      onPress: initWallet,
+    },
+  ];
+
   return (
-    <View style={styles.welcomeView}>
-      <ScreenWrapper>
-        <View>
-          <Text style={[Typography.heading, Typography.negative]}>
-            {STRINGS.wallet_restore_heading}
-          </Text>
-          <TextInputLine
-            placeholder={STRINGS.wallet_restore_seed_example}
-            onChangeText={(input: string) => setSeed(input)}
-            negative
-          />
-          <PoPTextButton onPress={() => initWallet()} negative>
-            {STRINGS.wallet_restore_using_known_seed}
-          </PoPTextButton>
-          <PoPTextButton
-            onPress={() => navigation.navigate(STRINGS.navigation_app_wallet_create_seed)}
-            negative>
-            {STRINGS.wallet_previous_seed_not_known}
-          </PoPTextButton>
-        </View>
-      </ScreenWrapper>
-    </View>
+    <ScreenWrapper toolbarItems={toolbarItems}>
+      <View>
+        <Text style={Typography.heading}>{STRINGS.wallet_restore_heading}</Text>
+        <Text style={Typography.paragraph}>{STRINGS.wallet_restore_instructions}</Text>
+        <TextInputLine
+          placeholder={STRINGS.wallet_restore_seed_example}
+          onChangeText={(input: string) => setSeed(input)}
+        />
+      </View>
+    </ScreenWrapper>
   );
 };
 

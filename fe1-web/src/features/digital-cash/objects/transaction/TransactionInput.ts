@@ -1,4 +1,12 @@
-import { Hash, PublicKey, Signature } from 'core/objects';
+import {
+  Hash,
+  ProtocolError,
+  PublicKey,
+  PublicKeyState,
+  Signature,
+  SignatureState,
+} from 'core/objects';
+import { OmitMethods } from 'core/types';
 
 export interface TransactionInputJSON {
   tx_out_hash: string;
@@ -13,8 +21,8 @@ export interface TransactionInputScriptJSON {
 
 export interface TransactionInputScriptState {
   type: string;
-  publicKey: string;
-  signature: string;
+  publicKey: PublicKeyState;
+  signature: SignatureState;
 }
 export interface TransactionInputState {
   txOutHash: string;
@@ -38,7 +46,7 @@ export class TransactionInput {
 
   public readonly script: TransactionInputScript;
 
-  constructor(obj: Partial<TransactionInput>) {
+  constructor(obj: OmitMethods<TransactionInput>) {
     if (obj === undefined || obj === null) {
       throw new Error(
         'Error encountered while creating a TransactionInput object: undefined/null parameters',
@@ -63,31 +71,37 @@ export class TransactionInput {
 
   public static fromState(state: TransactionInputState) {
     return new TransactionInput({
-      ...state,
       txOutHash: new Hash(state.txOutHash),
+      txOutIndex: state.txOutIndex,
       script: {
-        ...state.script,
-        publicKey: new PublicKey(state.script.publicKey),
-        signature: new Signature(state.script.signature),
+        type: state.script.type,
+        publicKey: PublicKey.fromState(state.script.publicKey),
+        signature: Signature.fromState(state.script.signature),
       },
     });
   }
 
   public toState(): TransactionInputState {
     return {
-      txOutHash: this.txOutHash.valueOf(),
+      txOutHash: this.txOutHash.toState(),
       txOutIndex: this.txOutIndex,
       script: {
         ...this.script,
-        publicKey: this.script.publicKey.valueOf(),
-        signature: this.script.signature.valueOf(),
+        publicKey: this.script.publicKey.toState(),
+        signature: this.script.signature.toState(),
       },
     };
   }
 
   public static fromJSON(json: TransactionInputJSON) {
+    if (!json.tx_out_hash) {
+      throw new ProtocolError(
+        `TransactionInput.fromJSON() called on a json object without a 'tx_out_hash'`,
+      );
+    }
+
     return new TransactionInput({
-      txOutHash: json.tx_out_hash ? new Hash(json.tx_out_hash) : undefined,
+      txOutHash: new Hash(json.tx_out_hash),
       txOutIndex: json.tx_out_index,
       script: {
         type: json.script.type,

@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { PublicKey } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import RollCallClosed from '../components/RollCallClosed';
@@ -36,14 +36,17 @@ const ViewSingleRollCall = () => {
     attendeePopTokens: attendeePopTokensStrings,
   } = route.params;
 
-  const selectRollCall = useMemo(() => makeRollCallSelector(rollCallId), [rollCallId]);
-  const laoId = RollCallHooks.useAssertCurrentLaoId();
+  const selectRollCall = useMemo(() => makeRollCallSelector(new Hash(rollCallId)), [rollCallId]);
+  const laoId = RollCallHooks.useCurrentLaoId();
   const isConnected = RollCallHooks.useConnectedToLao();
   const rollCall = useSelector(selectRollCall);
 
   const attendeePopTokens = useMemo(
-    () => attendeePopTokensStrings?.map((k) => new PublicKey(k)),
-    [attendeePopTokensStrings],
+    () => [
+      ...(attendeePopTokensStrings?.map((k) => new PublicKey(k)) || []),
+      ...(rollCall?.attendees || []),
+    ],
+    [attendeePopTokensStrings, rollCall?.attendees],
   );
 
   if (!rollCall) {

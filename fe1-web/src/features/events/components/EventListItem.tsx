@@ -41,7 +41,7 @@ const EventListItem = (props: IPropTypes) => {
       bottomDivider
       testID={testID || undefined}
       onPress={() =>
-        navigation.push(STRINGS.navigation_app_lao, {
+        navigation.navigate(STRINGS.navigation_app_lao, {
           screen: STRINGS.navigation_lao_events,
           params: {
             screen: EventType.navigationNames.screenSingle,

@@ -296,6 +296,7 @@ exports[`NotificationScreen renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -1408,6 +1409,7 @@ exports[`NotificationScreenRightHeader renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

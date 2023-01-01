@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
+import { Hash } from 'core/objects';
 
 import { EvotingReactContext, EVOTING_FEATURE_IDENTIFIER } from '../interface';
 
@@ -17,7 +18,7 @@ export namespace EvotingHooks {
    * Gets the current lao id
    * @returns The current lao id
    */
-  export const useAssertCurrentLaoId = () => useEvotingContext().useAssertCurrentLaoId();
+  export const useCurrentLaoId = () => useEvotingContext().useCurrentLaoId();
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode
@@ -37,7 +38,7 @@ export namespace EvotingHooks {
    * Gets the organizer backend's public key for a given lao id
    * @param laoId The lao id for which the key should be retrieved
    */
-  export const useLaoOrganizerBackendPublicKey = (laoId: string) => {
+  export const useLaoOrganizerBackendPublicKey = (laoId: Hash) => {
     const key = useEvotingContext().useLaoOrganizerBackendPublicKey(laoId);
 
     if (!key) {

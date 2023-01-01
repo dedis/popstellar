@@ -1,6 +1,3 @@
-import { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
-import { EventListenerCallback } from '@react-navigation/core';
-
 export interface NavigationScreen {
   /**
    * The unique identifier of the screen. Can be used in .navigate() and .push()
@@ -38,18 +35,16 @@ export interface NavigationScreen {
   headerLeft?: HeaderComponent;
 }
 
-export interface NavigationTabScreen extends NavigationScreen {
+export interface NavigationDrawerScreen extends NavigationScreen {
   /**
    * Set to null if no icon should be shown
    */
-  tabBarIcon?:
-    | null
-    | ((props: { focused: boolean; color: string; size: number }) => React.ReactNode);
+  Icon?: (props: { focused: boolean; color: string; size: number }) => React.ReactNode;
 
   /**
-   * Callback when the tab bar element is pressed
+   * Callback when the navigation element is pressed
    */
-  tabPress?: EventListenerCallback<BottomTabNavigationEventMap, 'tabPress'>;
+  onPress?: () => void;
 
   /**
    * This number is here to order the screens.

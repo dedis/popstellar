@@ -13,8 +13,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -101,13 +100,7 @@ public class TransactionCoinHandlerTest {
     lao.setLastModified(lao.getCreation());
 
     // Create one Roll Call and add it to the LAO
-    rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
-    lao.setRollCalls(
-        new HashMap<String, RollCall>() {
-          {
-            put(rollCall.getId(), rollCall);
-          }
-        });
+    // rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
 
     // Add the LAO to the LAORepository
     laoRepo.updateLao(lao);
@@ -118,14 +111,19 @@ public class TransactionCoinHandlerTest {
 
     CloseRollCall closeRollCall =
         new CloseRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
+            CREATE_LAO.getId(),
+            RollCall.generateCreateRollCallId(
+                lao.getId(), Instant.now().getEpochSecond(), "roll call 1"),
+            Long.MAX_VALUE,
+            new ArrayList<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, gson);
     messageRepo.addMessage(message);
     coinChannel = lao.getChannel().subChannel("coin").subChannel(SENDER.getEncoded());
   }
 
   @Test
-  public void testHandlePostTransactionCoin() throws DataHandlingException, UnknownLaoException {
+  public void testHandlePostTransactionCoin()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, gson);
     messageHandler.handleMessage(messageSender, coinChannel, message);
 

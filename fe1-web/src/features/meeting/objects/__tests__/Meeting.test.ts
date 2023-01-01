@@ -14,6 +14,7 @@ describe('Meeting object', () => {
     const meetingState: any = {
       id: ID.valueOf(),
       start: TIMESTAMP.valueOf(),
+      end: undefined,
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP.valueOf(),
@@ -35,6 +36,7 @@ describe('Meeting object', () => {
     const expected = {
       id: ID.valueOf(),
       start: TIMESTAMP.valueOf(),
+      end: undefined,
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP.valueOf(),

@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import EventReducer, { addEvent } from 'features/events/reducer/EventReducer';
 import { mockMeeting } from 'features/meeting/__tests__/utils';
@@ -33,7 +33,7 @@ mockStore.dispatch(addMeeting(mockMeeting.toState()));
 
 const contextValue = {
   [MEETING_FEATURE_IDENTIFIER]: {
-    useAssertCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
   } as MeetingReactContext,
 };
 

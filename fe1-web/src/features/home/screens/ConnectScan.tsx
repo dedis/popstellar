@@ -46,7 +46,6 @@ const ConnectScan = () => {
 
   const toast = useToast();
 
-  const laoId = HomeHooks.useCurrentLaoId();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
   const getLaoById = HomeHooks.useGetLaoById();
   const resubscribeToLao = HomeHooks.useResubscribeToLao();
@@ -89,28 +88,13 @@ const ConnectScan = () => {
         throw new Error('The scanned QR code did not contain any server address');
       }
 
-      // if we are already connected to a LAO, then only allow new connections
-      // to servers for the same LAO id
-      if (laoId && connectToLao.lao !== laoId.valueOf()) {
-        toast.show(
-          `The scanned QR code is for a different LAO than the one currently connected to`,
-          {
-            type: 'warning',
-            placement: 'top',
-            duration: FOUR_SECONDS,
-          },
-        );
-
-        return false;
-      }
-
       const laoChannel = getLaoChannel(connectToLao.lao);
 
       if (!laoChannel) {
         // invalid lao id
         toast.show(STRINGS.connect_scanning_fail, {
           type: 'warning',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
 
@@ -123,7 +107,7 @@ const ConnectScan = () => {
 
       toast.show(`The scanned QR code is invalid`, {
         type: 'warning',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
 
@@ -198,7 +182,7 @@ const ConnectScan = () => {
 
       toast.show(STRINGS.connect_scanning_fail, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }
@@ -222,7 +206,7 @@ const ConnectScan = () => {
         <View style={styles.enterManually}>
           <View style={QrCodeScannerUIElementContainer}>
             <PoPTouchableOpacity
-              onPress={() => navigation.push(STRINGS.navigation_connect_confirm)}>
+              onPress={() => navigation.navigate(STRINGS.navigation_connect_confirm)}>
               <Text style={[Typography.base, Typography.accent]}>
                 {STRINGS.general_enter_manually}
               </Text>

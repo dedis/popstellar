@@ -296,6 +296,7 @@ exports[`RollCallWalletItems renders correctly with roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -793,6 +794,7 @@ exports[`RollCallWalletItems renders correctly without roll calls 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {

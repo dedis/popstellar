@@ -48,15 +48,6 @@ public class LaoWalletFragment extends Fragment {
     setupWalletListAdapter();
     setupWalletListUpdates();
 
-    mLaoDetailViewModel
-        .getLaoAttendedRollCalls()
-        .observe(
-            requireActivity(),
-            rollCalls -> {
-              Log.d(TAG, "Got a list update for LAO roll calls");
-              mWalletListAdapter.replaceList(rollCalls);
-            });
-
     mLaoWalletFragmentBinding.backButton.setOnClickListener(
         clicked -> {
           Activity activity = requireActivity();
@@ -77,7 +68,7 @@ public class LaoWalletFragment extends Fragment {
 
   private void setupWalletListUpdates() {
     mLaoDetailViewModel
-        .getLaoAttendedRollCalls()
+        .getAttendedRollCalls()
         .observe(
             requireActivity(),
             rollCalls -> {

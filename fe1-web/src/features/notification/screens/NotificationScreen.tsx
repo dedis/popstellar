@@ -12,6 +12,7 @@ import STRINGS from 'resources/strings';
 
 import NotificationList from '../components/NotificationList';
 import { NotificationHooks } from '../hooks';
+import { Notification } from '../objects/Notification';
 import {
   discardNotifications,
   makeReadNotificationsSelector,
@@ -22,18 +23,44 @@ import {
  * The notification screen component displaying the list of read and unread notifications
  */
 const NotificationScreen = () => {
-  const laoId = NotificationHooks.useAssertCurrentLaoId();
+  const laoId = NotificationHooks.useCurrentLaoId();
 
-  const selectUnreadNotifications = useMemo(
-    () => makeUnreadNotificationsSelector(laoId.valueOf()),
+  const notificationTypes = NotificationHooks.useNotificationTypes();
+  const selectUnreadNotificationStates = useMemo(
+    () => makeUnreadNotificationsSelector(laoId),
     [laoId],
   );
-  const selectReadNotifications = useMemo(
-    () => makeReadNotificationsSelector(laoId.valueOf()),
-    [laoId],
+  const selectReadNotificationStates = useMemo(() => makeReadNotificationsSelector(laoId), [laoId]);
+  const unreadNotificationStates = useSelector(selectUnreadNotificationStates);
+  const readNotificationStates = useSelector(selectReadNotificationStates);
+
+  const unreadNotifications: Notification[] = useMemo(
+    () =>
+      unreadNotificationStates.map((notificationState) => {
+        const notificationType = notificationTypes.find((type) => type.isOfType(notificationState));
+
+        if (!notificationType) {
+          throw new Error(`Unkown notification type ${notificationState.type}`);
+        }
+
+        return notificationType.fromState(notificationState);
+      }),
+    [notificationTypes, unreadNotificationStates],
   );
-  const unreadNotifications = useSelector(selectUnreadNotifications);
-  const readNotifications = useSelector(selectReadNotifications);
+
+  const readNotifications: Notification[] = useMemo(
+    () =>
+      readNotificationStates.map((notificationState) => {
+        const notificationType = notificationTypes.find((type) => type.isOfType(notificationState));
+
+        if (!notificationType) {
+          throw new Error(`Unkown notification type ${notificationState.type}`);
+        }
+
+        return notificationType.fromState(notificationState);
+      }),
+    [notificationTypes, readNotificationStates],
+  );
 
   return (
     <ScreenWrapper>
@@ -62,23 +89,20 @@ export const NotificationScreenRightHeader = () => {
   const showActionSheet = useActionSheet();
   const notificationTypes = NotificationHooks.useNotificationTypes();
 
-  const laoId = NotificationHooks.useAssertCurrentLaoId();
+  const laoId = NotificationHooks.useCurrentLaoId();
 
-  const selectUnreadNotifications = useMemo(
-    () => makeUnreadNotificationsSelector(laoId.valueOf()),
+  const selectUnreadNotificationStates = useMemo(
+    () => makeUnreadNotificationsSelector(laoId),
     [laoId],
   );
-  const selectReadNotifications = useMemo(
-    () => makeReadNotificationsSelector(laoId.valueOf()),
-    [laoId],
-  );
-  const unreadNotifications = useSelector(selectUnreadNotifications);
-  const readNotifications = useSelector(selectReadNotifications);
+  const selectReadNotificationStates = useMemo(() => makeReadNotificationsSelector(laoId), [laoId]);
+  const unreadNotificationStates = useSelector(selectUnreadNotificationStates);
+  const readNotificationStates = useSelector(selectReadNotificationStates);
 
   const onClearNotifications = () => {
-    const allNotifications = [...unreadNotifications, ...readNotifications];
+    const allNotificationStates = [...unreadNotificationStates, ...readNotificationStates];
     // call custom delete function on all notifications
-    for (const notification of allNotifications) {
+    for (const notification of allNotificationStates) {
       const deleteFn = notificationTypes.find((t) => t.isOfType(notification))?.delete;
 
       // if a delete function was provided for this type, then call it
@@ -89,8 +113,8 @@ export const NotificationScreenRightHeader = () => {
     // remove notifications from the notification reducer
     dispatch(
       discardNotifications({
-        laoId: laoId.valueOf(),
-        notificationIds: allNotifications.map((n) => n.id),
+        laoId,
+        notificationIds: allNotificationStates.map((n) => n.id),
       }),
     );
   };

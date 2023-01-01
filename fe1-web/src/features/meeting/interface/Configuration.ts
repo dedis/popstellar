@@ -20,13 +20,13 @@ export interface MeetingConfiguration {
   /**
    * Gets the lao associated to the given id. Should be used outside react components
    */
-  getLaoById: (id: string) => MeetingFeature.Lao | undefined;
+  getLaoById: (id: Hash) => MeetingFeature.Lao | undefined;
 
   /**
    * Returns the currently active lao id. Should be used inside react components
    * @returns The current lao id
    */
-  useAssertCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash;
 
   /**
    * Returns true if currently connected to a lao, false if in offline mode
@@ -42,7 +42,7 @@ export interface MeetingConfiguration {
    * @param event - The event
    * @returns A redux action causing the state change
    */
-  addEvent: (laoId: Hash | string, event: MeetingFeature.EventState) => AnyAction;
+  addEvent: (laoId: Hash, event: MeetingFeature.EventState) => AnyAction;
 
   /**
    * Creates a redux action for update the stored event state
@@ -67,7 +67,7 @@ export interface MeetingConfiguration {
  */
 export type MeetingReactContext = Pick<
   MeetingConfiguration,
-  'useAssertCurrentLaoId' | 'useConnectedToLao'
+  'useCurrentLaoId' | 'useConnectedToLao'
 >;
 
 /**

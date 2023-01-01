@@ -21,26 +21,19 @@ const styles = StyleSheet.create({
     borderColor: Color.inactive,
     backgroundColor: Color.inactive,
   } as ViewStyle,
-  negative: {
-    borderColor: Color.contrast,
-    backgroundColor: Color.contrast,
-  } as ViewStyle,
   outline: {
     backgroundColor: Color.transparent,
   } as ViewStyle,
 });
 
 const PoPButton = (props: IPropTypes) => {
-  const { onPress, buttonStyle, disabled, negative, toolbar, testID, children } = props;
+  const { onPress, buttonStyle, disabled, toolbar, testID, children } = props;
 
   const viewStyles = [styles.button];
 
   // background color / border color
-  // disabled takes precedence over negative
   if (disabled) {
     viewStyles.push(styles.disabled);
-  } else if (negative) {
-    viewStyles.push(styles.negative);
   }
 
   // secondary button style removes background color
@@ -65,9 +58,6 @@ const propTypes = {
   buttonStyle: PropTypes.oneOf<'primary' | 'secondary'>(['primary', 'secondary']),
   // changes background color / border color to be gray
   disabled: PropTypes.bool,
-  // changes background color / border color to be white
-  // disabled takes precedence though!
-  negative: PropTypes.bool,
   // makes the button placement work in the toolbar
   toolbar: PropTypes.bool,
   children: PropTypes.node,
@@ -78,7 +68,6 @@ PoPButton.propTypes = propTypes;
 PoPButton.defaultProps = {
   buttonStyle: 'primary',
   disabled: false,
-  negative: false,
   toolbar: false,
   children: null,
   testID: undefined,

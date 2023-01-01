@@ -4,20 +4,36 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content">
 
-  <EditText
-    android:id="@+id/start_time_edit_text"
+  <com.google.android.material.textfield.TextInputLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:focusableInTouchMode="false"
-    android:hint="@string/start_time_required"
-    android:autofillHints="false" />
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-  <EditText
-    android:id="@+id/end_time_edit_text"
+    <com.google.android.material.textfield.TextInputEditText
+      android:id="@+id/start_time_edit_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:focusableInTouchMode="false"
+      android:hint="@string/start_time_required"
+      android:autofillHints="false" />
+
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <com.google.android.material.textfield.TextInputLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:focusableInTouchMode="false"
-    android:hint="@string/end_time_optional"
-    android:autofillHints="false" />
+    android:layout_marginStart="@dimen/pickers_horizontal_margin"
+
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+    <com.google.android.material.textfield.TextInputEditText
+      android:id="@+id/end_time_edit_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:focusableInTouchMode="false"
+      android:hint="@string/end_time_optional"
+      android:autofillHints="false" />
+
+  </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

@@ -62,12 +62,7 @@ public class ElectionSetupPageObject {
   }
 
   public static ViewInteraction submit() {
-    return onView(
-        allOf(
-            withId(R.id.election_submit_button),
-            withText(R.string.submit),
-            isClickable(),
-            isDisplayed()));
+    return onView(withId(R.id.election_submit_button));
   }
 
   public static ViewInteraction versionChoice() {

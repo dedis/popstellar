@@ -296,6 +296,7 @@ exports[`Home renders correctly with an empty list of LAOs 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -865,6 +866,7 @@ exports[`Home renders correctly with an non-empty list of LAOs 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
