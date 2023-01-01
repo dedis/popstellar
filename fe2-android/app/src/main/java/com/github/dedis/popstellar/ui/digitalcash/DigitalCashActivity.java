@@ -135,16 +135,14 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
   }
 
   private boolean openIssueTab() {
-    PublicKey organizerKey;
     try {
-      organizerKey = viewModel.getCurrentLao().getOrganizer();
+      PublicKey organizerKey = viewModel.getCurrentLao().getOrganizer();
+      if (!viewModel.getOwnKey().equals(organizerKey)) {
+        ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
+        return false;
+      }
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
-      return false;
-    }
-
-    if (!viewModel.getOwnKey().equals(organizerKey)) {
-      ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
       return false;
     }
 
