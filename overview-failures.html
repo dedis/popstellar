@@ -74,8 +74,8 @@ $(document).ready(function() {
   </thead>
   <tbody>
     <tr class="info">
-      <td>demo</td>
-      <td>01 Jan 2023, 04:14</td>
+      <td>scala</td>
+      <td>02 Jan 2023, 04:14</td>
     </tr>
   </tbody>
 </table>
@@ -125,14 +125,14 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.010</span>
+  <span class="lead-duration duration">1.206</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending a valid election end should succeed</span>
+  <span class="name">Sending a valid election end too early should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -164,11 +164,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-Given failed">
+<div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">1.145</span>
 
 </div>
 
@@ -177,61 +177,9 @@ $(document).ready(function() {
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-3">
-          <a>js</a>
-      </div>
-      <div id="msg-3" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196
-classpath:be/election/electionEnd.feature:24</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-4">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:09:58.631 classpath:be/election/electionEnd.feature:24
-Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
-js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196
-classpath:be/election/electionEnd.feature:24
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -270,427 +218,7 @@ classpath:be/election/electionEnd.feature:24
       <div class="step">
 
 
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-5">
-          <a>js</a>
-      </div>
-      <div id="msg-5" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validElectionEnd =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-6">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-6" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionEnd), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponseWithElectionResults(JSON.stringify(validElectionEnd))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains ELECTION_RESULTS</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_1_4046913119.html">be/election/electionEnd.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.025</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-7">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Sending an election end with invalid election id should return an error</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-7" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-8">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-8" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given failed">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
-
-  <span class="lead-duration duration">0.025</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-9">
-          <a>js</a>
-      </div>
-      <div id="msg-9" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196
-classpath:be/election/electionEnd.feature:44</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-10" class="collapse collapsable-details">
-        <pre>04:10:01.834 classpath:be/election/electionEnd.feature:44
-Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
-js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196
-classpath:be/election/electionEnd.feature:44
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-11">
-          <a>js</a>
-      </div>
-      <div id="msg-11" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">def invalidElectionEnd =</span>
 
@@ -708,1117 +236,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-3">
           <a>Doc string</a>
       </div>
-      <div id="msg-12" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getInvalidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_1_4046913119.html">be/election/electionEnd.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.018</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-13">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Sending an election end message with invalid registered votes field should return an error</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-13" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-14">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-14" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given failed">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
-
-  <span class="lead-duration duration">0.016</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-15">
-          <a>js</a>
-      </div>
-      <div id="msg-15" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196
-classpath:be/election/electionEnd.feature:63</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-16">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-16" class="collapse collapsable-details">
-        <pre>04:10:04.434 classpath:be/election/electionEnd.feature:63
-Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
-js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196
-classpath:be/election/electionEnd.feature:63
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')</span>
-
-  <span class="lead-duration duration">0.001</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-17">
-          <a>js</a>
-      </div>
-      <div id="msg-17" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-18">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-18" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getInvalidRegisteredVotes)'
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_1_4046913119.html">be/election/electionEnd.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.014</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-19">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Sending an election end message with registered votes field set to valid election setup id should return an error</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-19" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-20">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-20" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given failed">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
-
-  <span class="lead-duration duration">0.014</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-21">
-          <a>js</a>
-      </div>
-      <div id="msg-21" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196
-classpath:be/election/electionEnd.feature:82</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-22">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-22" class="collapse collapsable-details">
-        <pre>04:10:07.611 classpath:be/election/electionEnd.feature:82
-Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
-js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196
-classpath:be/election/electionEnd.feature:82
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-23">
-          <a>js</a>
-      </div>
-      <div id="msg-23" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-24" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getValidElectionSetupId)'
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_1_4046913119.html">be/election/electionEnd.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.009</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Sending a valid election end too early should fail</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-25" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-26">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-26" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given failed">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
-
-  <span class="lead-duration duration">0.009</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
-          <a>js</a>
-      </div>
-      <div id="msg-27" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196
-classpath:be/election/electionEnd.feature:102</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:10:10.755 classpath:be/election/electionEnd.feature:102
-Given call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')
-js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196
-classpath:be/election/electionEnd.feature:102
-</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name- passed">
-  <span class="keyword indention"></span>
-  <span class="name">be/utils/simpleScenarios.feature</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-&amp;gt; * failed">
-  <span class="keyword indention">&gt; *</span>
-  <span class="name">string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
-          <a>js</a>
-      </div>
-      <div id="msg-29" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException: not found: data/election/data/castVote/valid_cast_vote_2_data.json
-- com.intuit.karate.resource.ResourceUtils.getResource(ResourceUtils.java:120)
-- com.intuit.karate.core.ScenarioFileReader.toResource(ScenarioFileReader.java:122)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsStream(ScenarioFileReader.java:99)
-- com.intuit.karate.core.ScenarioFileReader.readFileAsString(ScenarioFileReader.java:95)
-- com.intuit.karate.core.ScenarioFileReader.readFile(ScenarioFileReader.java:53)
-- com.intuit.karate.core.ScenarioEngine.lambda$new$0(ScenarioEngine.java:124)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/utils/simpleScenarios.feature:196</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-30">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-30" class="collapse collapsable-details">
+      <div id="msg-3" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;end&quot;,
@@ -1841,11 +262,11 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
       <div class="step">
 
 
-<div class="brief step-name-When skipped">
+<div class="brief step-name-When passed">
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.015</span>
 
 </div>
 
@@ -1868,11 +289,11 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.045</span>
 
 </div>
 
@@ -1895,7 +316,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then failed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
@@ -1908,9 +329,45 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-4">
+          <a>match</a>
+      </div>
+      <div id="msg-4" class="collapse collapsable-details  in ">
+        <pre>match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1681978956,&quot;result&quot;:0}
+  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+
+
+classpath:be/election/electionEnd.feature:116</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-5">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-5" class="collapse collapsable-details">
+        <pre>04:10:13.294 classpath:be/election/electionEnd.feature:116
+Then match answer contains INVALID_MESSAGE_FIELD
+match failed: CONTAINS
+  $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1681978956,&quot;result&quot;:0}
+  {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
+
+
+classpath:be/election/electionEnd.feature:116
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -1970,10 +427,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 </div>
 
 
-  <span class="lead-duration duration">0.876</span>
+  <span class="lead-duration duration">1.219</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-31">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-6">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -1986,14 +443,14 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-31" class="collapse collapsable-details  in ">
+  <div id="element-6" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-32">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-7">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2005,7 +462,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   </div>
 
-  <div id="steps-32" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-7" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2013,7 +470,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_open')</span>
 
-  <span class="lead-duration duration">0.834</span>
+  <span class="lead-duration duration">1.175</span>
 
 </div>
 
@@ -2081,10 +538,10 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-33">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-8">
           <a>Doc string</a>
       </div>
-      <div id="msg-33" class="collapse collapsable-details">
+      <div id="msg-8" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -2117,7 +574,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(invalidCastVote), electionChannel)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
@@ -2144,7 +601,7 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))</span>
 
-  <span class="lead-duration duration">0.035</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
@@ -2182,13 +639,13 @@ classpath:be/utils/simpleScenarios.feature:196</pre>
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-34">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-9">
           <a>match</a>
       </div>
-      <div id="msg-34" class="collapse collapsable-details  in ">
+      <div id="msg-9" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:894514574,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-276415642,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -2202,15 +659,15 @@ classpath:be/election/castVote.feature:197</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-35">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
           <a>Doc string</a>
       </div>
-      <div id="msg-35" class="collapse collapsable-details">
-        <pre>04:09:54.547 classpath:be/election/castVote.feature:197
+      <div id="msg-10" class="collapse collapsable-details">
+        <pre>04:09:24.336 classpath:be/election/castVote.feature:197
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:894514574,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-276415642,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -2278,10 +735,10 @@ classpath:be/election/castVote.feature:197
 </div>
 
 
-  <span class="lead-duration duration">0.544</span>
+  <span class="lead-duration duration">0.753</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-36">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-11">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -2294,14 +751,14 @@ classpath:be/election/castVote.feature:197
   </span>
   <div class="description indention"></div>
 
-  <div id="element-36" class="collapse collapsable-details  in ">
+  <div id="element-11" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-37">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-12">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2313,7 +770,7 @@ classpath:be/election/castVote.feature:197
 
   </div>
 
-  <div id="steps-37" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-12" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2335,10 +792,10 @@ classpath:be/election/castVote.feature:197
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-38">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-13">
           <a>Doc string</a>
       </div>
-      <div id="msg-38" class="collapse collapsable-details">
+      <div id="msg-13" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;lao&quot;,
   &quot;action&quot;: &quot;create&quot;,
@@ -2393,7 +850,7 @@ classpath:be/election/castVote.feature:197
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -2420,7 +877,7 @@ classpath:be/election/castVote.feature:197
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
 
-  <span class="lead-duration duration">0.528</span>
+  <span class="lead-duration duration">0.747</span>
 
 </div>
 
@@ -2458,13 +915,13 @@ classpath:be/election/castVote.feature:197
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-39">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-14">
           <a>match</a>
       </div>
-      <div id="msg-39" class="collapse collapsable-details  in ">
+      <div id="msg-14" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1858852746,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:597742131,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -2485,15 +942,15 @@ classpath:be/LAO/create.feature:121</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-40">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-15">
           <a>Doc string</a>
       </div>
-      <div id="msg-40" class="collapse collapsable-details">
-        <pre>04:08:19.377 classpath:be/LAO/create.feature:121
+      <div id="msg-15" class="collapse collapsable-details">
+        <pre>04:07:34.926 classpath:be/LAO/create.feature:121
 Then match answer contains ACCESS_DENIED
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1858852746,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:597742131,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -2568,10 +1025,10 @@ classpath:be/LAO/create.feature:121
 </div>
 
 
-  <span class="lead-duration duration">0.833</span>
+  <span class="lead-duration duration">1.112</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-41">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-16">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -2584,14 +1041,14 @@ classpath:be/LAO/create.feature:121
   </span>
   <div class="description indention"></div>
 
-  <div id="element-41" class="collapse collapsable-details  in ">
+  <div id="element-16" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-42">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-17">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2603,7 +1060,7 @@ classpath:be/LAO/create.feature:121
 
   </div>
 
-  <div id="steps-42" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-17" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2611,7 +1068,7 @@ classpath:be/LAO/create.feature:121
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
 
-  <span class="lead-duration duration">0.816</span>
+  <span class="lead-duration duration">1.082</span>
 
 </div>
 
@@ -2679,10 +1136,10 @@ classpath:be/LAO/create.feature:121
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-43">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-18">
           <a>Doc string</a>
       </div>
-      <div id="msg-43" class="collapse collapsable-details">
+      <div id="msg-18" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;election&quot;,
     &quot;action&quot;: &quot;open&quot;,
@@ -2708,7 +1165,7 @@ classpath:be/LAO/create.feature:121
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.016</span>
 
 </div>
 
@@ -2735,7 +1192,7 @@ classpath:be/LAO/create.feature:121
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -2773,13 +1230,13 @@ classpath:be/LAO/create.feature:121
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-44">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-19">
           <a>match</a>
       </div>
-      <div id="msg-44" class="collapse collapsable-details  in ">
+      <div id="msg-19" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1778123450,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1001465506,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -2793,15 +1250,15 @@ classpath:be/election/electionOpen.feature:75</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-45">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-20">
           <a>Doc string</a>
       </div>
-      <div id="msg-45" class="collapse collapsable-details">
-        <pre>04:10:32.493 classpath:be/election/electionOpen.feature:75
+      <div id="msg-20" class="collapse collapsable-details">
+        <pre>04:10:40.050 classpath:be/election/electionOpen.feature:75
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1778123450,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1001465506,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -2869,10 +1326,10 @@ classpath:be/election/electionOpen.feature:75
 </div>
 
 
-  <span class="lead-duration duration">1.093</span>
+  <span class="lead-duration duration">1.314</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-46">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-21">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -2885,14 +1342,14 @@ classpath:be/election/electionOpen.feature:75
   </span>
   <div class="description indention"></div>
 
-  <div id="element-46" class="collapse collapsable-details  in ">
+  <div id="element-21" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-47">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-22">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2904,7 +1361,7 @@ classpath:be/election/electionOpen.feature:75
 
   </div>
 
-  <div id="steps-47" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-22" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2912,7 +1369,7 @@ classpath:be/election/electionOpen.feature:75
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">1.055</span>
+  <span class="lead-duration duration">1.255</span>
 
 </div>
 
@@ -2966,7 +1423,7 @@ classpath:be/election/electionOpen.feature:75
   <span class="keyword indention">And</span>
   <span class="name">def validTransaction =</span>
 
-  <span class="lead-duration duration">0.007</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2980,23 +1437,23 @@ classpath:be/election/electionOpen.feature:75
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-48">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-23">
           <a>Doc string</a>
       </div>
-      <div id="msg-48" class="collapse collapsable-details">
+      <div id="msg-23" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: &quot;_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;,
+    &quot;transaction_id&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
     &quot;transaction&quot;: {
       &quot;version&quot;: 1,
       &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
+        &quot;tx_out_hash&quot;: '#(getTrxHashForCoinIssuance)',
         &quot;tx_out_index&quot;: 0,
         &quot;script&quot;: {
           &quot;type&quot;: &quot;P2PKH&quot;,
           &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
-          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+          &quot;sig&quot;: &quot;Wsu3pJj7CpBzw4v__21k4pVtSKBeouz1vd0sXFiLQX9iaEERDDwwMuBFwRKk6E6nwxejH-lrsiprLJSojOvPCQ==&quot;
         }
       }],
       &quot;outputs&quot;: '#(getValidOutputs)',
@@ -3021,7 +1478,7 @@ classpath:be/election/electionOpen.feature:75
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.012</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -3048,7 +1505,7 @@ classpath:be/election/electionOpen.feature:75
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
 
-  <span class="lead-duration duration">0.017</span>
+  <span class="lead-duration duration">0.053</span>
 
 </div>
 
@@ -3071,7 +1528,7 @@ classpath:be/election/electionOpen.feature:75
       <div class="step">
 
 
-<div class="brief step-name-Then failed">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
@@ -3084,45 +1541,9 @@ classpath:be/election/electionOpen.feature:75
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-49">
-          <a>match</a>
-      </div>
-      <div id="msg-49" class="collapse collapsable-details  in ">
-        <pre>match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1814356180,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: bad signature&quot;}}
-  {&quot;result&quot;:0}
-
-
-classpath:be/digitalCash/transaction.feature:48</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-50">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-50" class="collapse collapsable-details">
-        <pre>04:08:25.272 classpath:be/digitalCash/transaction.feature:48
-Then match answer contains VALID_MESSAGE
-match failed: CONTAINS
-  $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1814356180,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: bad signature&quot;}}
-  {&quot;result&quot;:0}
-
-
-classpath:be/digitalCash/transaction.feature:48
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -3134,7 +1555,7 @@ classpath:be/digitalCash/transaction.feature:48
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
@@ -3147,9 +1568,43 @@ classpath:be/digitalCash/transaction.feature:48
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-24">
+          <a>match</a>
+      </div>
+      <div id="msg-24" class="collapse collapsable-details  in ">
+        <pre>match failed: EQUALS
+  $ | not equal (BOOLEAN:BOOLEAN)
+  false
+  true
+
+classpath:be/digitalCash/transaction.feature:49</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-25">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-25" class="collapse collapsable-details">
+        <pre>04:07:43.151 classpath:be/digitalCash/transaction.feature:49
+And match frontend.receiveNoMoreResponses() == true
+match failed: EQUALS
+  $ | not equal (BOOLEAN:BOOLEAN)
+  false
+  true
+
+classpath:be/digitalCash/transaction.feature:49
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -3182,10 +1637,10 @@ classpath:be/digitalCash/transaction.feature:48
 </div>
 
 
-  <span class="lead-duration duration">5.955</span>
+  <span class="lead-duration duration">1.381</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-51">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-26">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -3198,14 +1653,14 @@ classpath:be/digitalCash/transaction.feature:48
   </span>
   <div class="description indention"></div>
 
-  <div id="element-51" class="collapse collapsable-details  in ">
+  <div id="element-26" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-52">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-27">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -3217,15 +1672,15 @@ classpath:be/digitalCash/transaction.feature:48
 
   </div>
 
-  <div id="steps-52" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-27" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given passed">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance')</span>
 
-  <span class="lead-duration duration">0.933</span>
+  <span class="lead-duration duration">1.347</span>
 
 </div>
 
@@ -3279,7 +1734,7 @@ classpath:be/digitalCash/transaction.feature:48
   <span class="keyword indention">And</span>
   <span class="name">def validTransfer =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -3293,30 +1748,30 @@ classpath:be/digitalCash/transaction.feature:48
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-53">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
           <a>Doc string</a>
       </div>
-      <div id="msg-53" class="collapse collapsable-details">
+      <div id="msg-28" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
-    &quot;transaction_id&quot;: &quot;lCCBbko3JyV5RT6zlIJVv1IpyST3Kc5wByzXvOsyLic=&quot;,
+    &quot;transaction_id&quot;: &quot;X6dMVyy-4YZ3jyePMlqyo53-eYBkO-gVgy7TybVgd78=&quot;,
     &quot;transaction&quot;: {
       &quot;version&quot;: 1,
       &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
-        &quot;tx_out_index&quot;: 0,
+        &quot;tx_out_hash&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
+        &quot;tx_out_index&quot;: 1,
         &quot;script&quot;: {
           &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey&quot;: &quot;2jmj7l5rSw0yVb-vlWAYkK-YBwk=&quot;,
-          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: &quot;uTrQk9yt-pmG7eWA0dQ50Q4_aloIAwkY_smQml1lswjHp8ckUXAF3Th6xxJY_3-7uLNxpRtTzwBcAixPGjThDg==&quot;
         }
       }],
       &quot;outputs&quot;: [{
         &quot;value&quot;: 20,
         &quot;script&quot;: {
           &quot;type&quot;: &quot;P2PKH&quot;,
-          &quot;pubkey_hash&quot;: &quot;2jmj7l5rSw0yVb-vlWAYkK-YBRk=&quot;
+          &quot;pubkey_hash&quot;: &quot;-_qR4IHwsiq50raa8jURNArds54=&quot;
         }
       }],
       &quot;lock_time&quot;: 0
@@ -3340,7 +1795,7 @@ classpath:be/digitalCash/transaction.feature:48
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransfer), cashChannel)</span>
 
-  <span class="lead-duration duration">0.015</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -3363,11 +1818,11 @@ classpath:be/digitalCash/transaction.feature:48
       <div class="step">
 
 
-<div class="brief step-name-And failed">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))</span>
 
-  <span class="lead-duration duration">5.007</span>
+  <span class="lead-duration duration">0.027</span>
 
 </div>
 
@@ -3376,51 +1831,9 @@ classpath:be/digitalCash/transaction.feature:48
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-54">
-          <a>js</a>
-      </div>
-      <div id="msg-54" class="collapse collapsable-details  in ">
-        <pre>js failed:
-&gt;&gt;&gt;&gt;
-01: frontend.getBackendResponse(JSON.stringify(validTransfer))
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:96)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:67)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/digitalCash/transaction.feature:82</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-55">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-55" class="collapse collapsable-details">
-        <pre>04:08:34.374 classpath:be/digitalCash/transaction.feature:82
-And json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))
-js failed:
-&gt;&gt;&gt;&gt;
-01: frontend.getBackendResponse(JSON.stringify(validTransfer))
-&lt;&lt;&lt;&lt;
-org.graalvm.polyglot.PolyglotException
-- common.net.MultiMsgWebSocketClient.getBackendResponseWithOrWithoutBroadcasts(MultiMsgWebSocketClient.java:96)
-- common.net.MultiMsgWebSocketClient.getBackendResponse(MultiMsgWebSocketClient.java:67)
-- &lt;js&gt;.:program(Unnamed:1)
-
-classpath:be/digitalCash/transaction.feature:82
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -3432,7 +1845,7 @@ classpath:be/digitalCash/transaction.feature:82
       <div class="step">
 
 
-<div class="brief step-name-Then skipped">
+<div class="brief step-name-Then passed">
   <span class="keyword indention">Then</span>
   <span class="name">match answer contains VALID_MESSAGE</span>
 
@@ -3459,7 +1872,7 @@ classpath:be/digitalCash/transaction.feature:82
       <div class="step">
 
 
-<div class="brief step-name-And skipped">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
@@ -3472,9 +1885,43 @@ classpath:be/digitalCash/transaction.feature:82
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
+          <a>match</a>
+      </div>
+      <div id="msg-29" class="collapse collapsable-details  in ">
+        <pre>match failed: EQUALS
+  $ | not equal (BOOLEAN:BOOLEAN)
+  false
+  true
+
+classpath:be/digitalCash/transaction.feature:84</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-30">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-30" class="collapse collapsable-details">
+        <pre>04:07:48.922 classpath:be/digitalCash/transaction.feature:84
+And match frontend.receiveNoMoreResponses() == true
+match failed: EQUALS
+  $ | not equal (BOOLEAN:BOOLEAN)
+  false
+  true
+
+classpath:be/digitalCash/transaction.feature:84
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -3507,10 +1954,10 @@ classpath:be/digitalCash/transaction.feature:82
 </div>
 
 
-  <span class="lead-duration duration">0.867</span>
+  <span class="lead-duration duration">1.352</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-56">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-31">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -3523,14 +1970,14 @@ classpath:be/digitalCash/transaction.feature:82
   </span>
   <div class="description indention"></div>
 
-  <div id="element-56" class="collapse collapsable-details  in ">
+  <div id="element-31" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-57">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-32">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -3542,7 +1989,7 @@ classpath:be/digitalCash/transaction.feature:82
 
   </div>
 
-  <div id="steps-57" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-32" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -3550,7 +1997,7 @@ classpath:be/digitalCash/transaction.feature:82
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">0.850</span>
+  <span class="lead-duration duration">1.312</span>
 
 </div>
 
@@ -3604,7 +2051,7 @@ classpath:be/digitalCash/transaction.feature:82
   <span class="keyword indention">And</span>
   <span class="name">def validTransaction =</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -3618,10 +2065,10 @@ classpath:be/digitalCash/transaction.feature:82
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-58">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-33">
           <a>Doc string</a>
       </div>
-      <div id="msg-58" class="collapse collapsable-details">
+      <div id="msg-33" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -3629,8 +2076,8 @@ classpath:be/digitalCash/transaction.feature:82
     &quot;transaction&quot;: {
       &quot;version&quot;: 1,
       &quot;inputs&quot;: [{
-        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
-        &quot;tx_out_index&quot;: 0,
+        &quot;tx_out_hash&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
+        &quot;tx_out_index&quot;: 1,
         &quot;script&quot;: {
           &quot;type&quot;: &quot;P2PKH&quot;,
           &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
@@ -3659,7 +2106,7 @@ classpath:be/digitalCash/transaction.feature:82
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.011</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -3686,7 +2133,7 @@ classpath:be/digitalCash/transaction.feature:82
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
 
-  <span class="lead-duration duration">0.004</span>
+  <span class="lead-duration duration">0.026</span>
 
 </div>
 
@@ -3724,13 +2171,13 @@ classpath:be/digitalCash/transaction.feature:82
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-59">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-34">
           <a>match</a>
       </div>
-      <div id="msg-59" class="collapse collapsable-details  in ">
+      <div id="msg-34" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1276993055,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: incorrect transaction id&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:57996597,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: String #(getCreateSignatureForCoinIssuance) is not Base64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -3744,15 +2191,15 @@ classpath:be/digitalCash/transaction.feature:112</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-60">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-35">
           <a>Doc string</a>
       </div>
-      <div id="msg-60" class="collapse collapsable-details">
-        <pre>04:08:38.090 classpath:be/digitalCash/transaction.feature:112
+      <div id="msg-35" class="collapse collapsable-details">
+        <pre>04:07:54.580 classpath:be/digitalCash/transaction.feature:112
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1276993055,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;PostTransaction content validation failed: incorrect transaction id&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:57996597,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: String #(getCreateSignatureForCoinIssuance) is not Base64&quot;}}
   {&quot;result&quot;:0}
 
 
