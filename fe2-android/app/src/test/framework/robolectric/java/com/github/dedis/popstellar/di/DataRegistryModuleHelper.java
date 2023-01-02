@@ -18,6 +18,7 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
+        new ElectionRepository(),
         new RollCallRepository(),
         new MessageRepository(),
         keyManager,
@@ -29,7 +30,20 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
+        new ElectionRepository(),
         rollCallRepo,
+        new MessageRepository(),
+        keyManager,
+        new ServerRepository());
+  }
+
+  public static DataRegistry buildRegistry(
+      LAORepository laoRepository, ElectionRepository electionRepo, KeyManager keyManager) {
+    return buildRegistry(
+        laoRepository,
+        new SocialMediaRepository(),
+        electionRepo,
+        new RollCallRepository(),
         new MessageRepository(),
         keyManager,
         new ServerRepository());
@@ -43,6 +57,7 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepo,
         socialMediaRepo,
+        new ElectionRepository(),
         rollCallRepo,
         new MessageRepository(),
         keyManager,
@@ -57,6 +72,7 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepo,
         new SocialMediaRepository(),
+        new ElectionRepository(),
         new RollCallRepository(),
         msgRepo,
         keyManager,
@@ -66,13 +82,14 @@ public class DataRegistryModuleHelper {
   public static DataRegistry buildRegistry(
       LAORepository laoRepo,
       SocialMediaRepository socialMediaRepo,
+      ElectionRepository electionRepo,
       RollCallRepository rollCallRepo,
       MessageRepository msgRepo,
       KeyManager keyManager,
       ServerRepository serverRepo) {
     LaoHandler laoHandler = new LaoHandler(keyManager, msgRepo, laoRepo, serverRepo);
     RollCallHandler rollCallHandler = new RollCallHandler(laoRepo, rollCallRepo);
-    ElectionHandler electionHandler = new ElectionHandler(msgRepo, laoRepo);
+    ElectionHandler electionHandler = new ElectionHandler(msgRepo, laoRepo, electionRepo);
     ConsensusHandler consensusHandler = new ConsensusHandler(laoRepo);
     ChirpHandler chirpHandler = new ChirpHandler(laoRepo, socialMediaRepo);
     TransactionCoinHandler transactionCoinHandler = new TransactionCoinHandler(laoRepo);

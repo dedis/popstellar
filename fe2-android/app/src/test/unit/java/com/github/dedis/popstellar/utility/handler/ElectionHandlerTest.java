@@ -7,21 +7,19 @@ import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion.Question;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionKeyPair;
 import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublicKey;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MessageRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
-
-import junit.framework.TestCase;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -30,33 +28,62 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import io.reactivex.Completable;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ElectionHandlerTest extends TestCase {
+public class ElectionHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
-  private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
-  private static final Channel LAO_CHANNEL = Channel.ROOT.subChannel(CREATE_LAO.getId());
+  private static final KeyPair ATTENDEE_KEY = generateKeyPair();
 
-  private static final long openedAt = 1633099883;
-  private Lao lao;
-  private Election election;
-  private Election electionEncrypted;
-  private ElectionQuestion electionQuestion;
+  private static final CreateLao CREATE_LAO = new CreateLao("Lao", SENDER);
+  private static final Lao LAO =
+      new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
+  private static final Channel LAO_CHANNEL = Channel.ROOT.subChannel(LAO.getId());
+
+  private static final long CREATED_AT = CREATE_LAO.getCreation() + 10 * 1000; // 10 seconds later
+  private static final long STARTED_AT = CREATE_LAO.getCreation() + 20 * 1000; // 20 seconds later
+  private static final long OPENED_AT = CREATE_LAO.getCreation() + 30 * 1000; // 30 seconds later
+  private static final long END_AT = CREATE_LAO.getCreation() + 600 * 1000; // 60 seconds later
+
+  private static final String ELECTION_NAME = "Election Name";
+  private static final String ELECTION_ID =
+      Election.generateElectionSetupId(LAO.getId(), CREATED_AT, ELECTION_NAME);
+  private static final String OPTION_1 = "Yes";
+  private static final String OPTION_2 = "No";
+  private static final ElectionQuestion QUESTION =
+      new ElectionQuestion(
+          ELECTION_ID,
+          new Question("Does this work ?", "Plurality", Arrays.asList(OPTION_1, OPTION_2), false));
+  private static final String ELECTION_KEY = "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ";
+  private static final Election OPEN_BALLOT_ELECTION =
+      new Election.ElectionBuilder(LAO.getId(), CREATED_AT, ELECTION_NAME)
+          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+          .setElectionQuestions(Collections.singletonList(QUESTION))
+          .setStart(STARTED_AT)
+          .setEnd(END_AT)
+          .build();
+
+  private static final Election SECRET_BALLOT_ELECTION =
+      new Election.ElectionBuilder(OPEN_BALLOT_ELECTION)
+          .setElectionVersion(ElectionVersion.SECRET_BALLOT)
+          .build();
 
   private LAORepository laoRepo;
+  private ElectionRepository electionRepo;
   private MessageHandler messageHandler;
   private Gson gson;
 
@@ -73,222 +100,255 @@ public class ElectionHandlerTest extends TestCase {
     when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     laoRepo = new LAORepository();
-    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
+    electionRepo = new ElectionRepository();
+
+    DataRegistry dataRegistry =
+        DataRegistryModuleHelper.buildRegistry(laoRepo, electionRepo, keyManager);
     MessageRepository messageRepo = new MessageRepository();
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
-    // Create one LAO
-    lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
-    lao.setLastModified(lao.getCreation());
-
-    // Create one Election and add it to the LAO
-    election =
-        new Election(
-            lao.getId(), Instant.now().getEpochSecond(), "election 1", ElectionVersion.OPEN_BALLOT);
-    electionEncrypted =
-        new Election(
-            lao.getId(),
-            Instant.now().getEpochSecond(),
-            "election 2",
-            ElectionVersion.SECRET_BALLOT);
-
-    election.setStart(Instant.now().getEpochSecond());
-    election.setEnd(Instant.now().getEpochSecond() + 20L);
-    election.setChannel(lao.getChannel().subChannel(election.getId()));
-    electionEncrypted.setStart(Instant.now().getEpochSecond());
-    electionEncrypted.setEnd(Instant.now().getEpochSecond() + 21L);
-    electionEncrypted.setId("election2");
-    electionEncrypted.setChannel(lao.getChannel().subChannel(electionEncrypted.getId()));
-
-    electionQuestion =
-        new ElectionQuestion(
-            "question", "Plurality", false, Arrays.asList("a", "b"), election.getId());
-    election.setElectionQuestions(Collections.singletonList(electionQuestion));
-    lao.setElections(
-        new HashMap<String, Election>() {
-          {
-            put(election.getId(), election);
-            put(electionEncrypted.getId(), electionEncrypted);
-          }
-        });
-
-    // Add the Lao to the repository
-    laoRepo.updateLao(lao);
+    laoRepo.updateLao(LAO);
 
     // Add the CreateLao message to the LAORepository
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
     messageRepo.addMessage(createLaoMessage);
   }
 
-  @Test
-  public void testHandleElectionSetup()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
+  private MessageID handleElectionSetup(Election election)
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException {
+    List<Question> questions =
+        election.getElectionQuestions().stream()
+            .map(
+                elecQuestion ->
+                    new Question(
+                        elecQuestion.getQuestion(),
+                        elecQuestion.getVotingMethod(),
+                        elecQuestion.getBallotOptions(),
+                        elecQuestion.getWriteIn()))
+            .collect(Collectors.toList());
+
     // Create the setup Election message
     ElectionSetup electionSetupOpenBallot =
         new ElectionSetup(
-            Collections.singletonList(electionQuestion.getWriteIn()),
-            "election 2",
+            election.getName(),
             election.getCreation(),
             election.getStartTimestamp(),
             election.getEndTimestamp(),
-            Collections.singletonList(electionQuestion.getVotingMethod()),
-            lao.getId(),
-            Collections.singletonList(electionQuestion.getBallotOptions()),
-            Collections.singletonList(electionQuestion.getQuestion()),
-            ElectionVersion.OPEN_BALLOT);
+            LAO.getId(),
+            election.getElectionVersion(),
+            questions);
+
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionSetupOpenBallot, gson);
-
-    // Call the message handler
     messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
-
-    // Check the Election is present with state OPENED and the correct ID
-    Optional<Election> electionOpt =
-        laoRepo.getLaoByChannel(LAO_CHANNEL).getElection(electionSetupOpenBallot.getId());
-    assertTrue(electionOpt.isPresent());
-
-    assertEquals(EventState.CREATED, electionOpt.get().getState());
-    assertEquals(electionSetupOpenBallot.getId(), electionOpt.get().getId());
-
-    // Check that the election version has been successfully set
-    assertEquals(ElectionVersion.OPEN_BALLOT, electionOpt.get().getElectionVersion());
-
-    // Check the WitnessMessage has been created
-    Optional<WitnessMessage> witnessMessage =
-        laoRepo.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
-    assertTrue(witnessMessage.isPresent());
-
-    // Check the Witness message contains the expected title and description
-    WitnessMessage expectedMessage =
-        electionSetupWitnessMessage(message.getMessageId(), electionOpt.get());
-    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
-    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
+    return message.getMessageId();
   }
 
-  @Test
-  public void testHandleElectionResult()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
-    // Create the result Election message
-    QuestionResult questionResult =
-        new QuestionResult(electionQuestion.getBallotOptions().get(0), 2);
+  private void handleElectionKey(Election election, String key)
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException {
+    // Create the election key message
+    ElectionKey electionKey = new ElectionKey(election.getId(), key);
+
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, electionKey, gson);
+    messageHandler.handleMessage(messageSender, election.getChannel(), message);
+  }
+
+  private void handleElectionOpen(Election election)
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException {
+    OpenElection openElection = new OpenElection(LAO.getId(), election.getId(), OPENED_AT);
+
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, openElection, gson);
+    messageHandler.handleMessage(messageSender, election.getChannel(), message);
+  }
+
+  private MessageID handleCastVote(ElectionVote vote, KeyPair senderKey)
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException {
+    CastVote<ElectionVote> electionVote =
+        new CastVote<>(
+            Collections.singletonList(vote), OPEN_BALLOT_ELECTION.getId(), CREATE_LAO.getId());
+
+    MessageGeneral message = new MessageGeneral(senderKey, electionVote, gson);
+    messageHandler.handleMessage(messageSender, OPEN_BALLOT_ELECTION.getChannel(), message);
+    return message.getMessageId();
+  }
+
+  // Once ElectionVote and EncryptedVote have the same parent, merge the two functions and use the
+  // parent
+  private MessageID handleCastVote(ElectionEncryptedVote vote, KeyPair senderKey)
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException {
+    CastVote<ElectionEncryptedVote> electionVote =
+        new CastVote<>(
+            Collections.singletonList(vote), SECRET_BALLOT_ELECTION.getId(), CREATE_LAO.getId());
+
+    MessageGeneral message = new MessageGeneral(senderKey, electionVote, gson);
+    messageHandler.handleMessage(messageSender, SECRET_BALLOT_ELECTION.getChannel(), message);
+
+    return message.getMessageId();
+  }
+
+  private void handleElectionEnd()
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException {
+    // Retrieve current election to use the correct vote hash
+    Election current = electionRepo.getElection(LAO.getId(), ELECTION_ID);
+    ElectionEnd endElection =
+        new ElectionEnd(LAO.getId(), ELECTION_ID, current.computerRegisteredVotesHash());
+
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, endElection, gson);
+    messageHandler.handleMessage(messageSender, OPEN_BALLOT_ELECTION.getChannel(), message);
+  }
+
+  private void handleElectionResults(Set<QuestionResult> results, Channel electionChannel)
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException {
     ElectionResultQuestion electionResultQuestion =
-        new ElectionResultQuestion("id", Collections.singletonList(questionResult));
+        new ElectionResultQuestion(QUESTION.getId(), results);
     ElectionResult electionResult =
         new ElectionResult(Collections.singletonList(electionResultQuestion));
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionResult, gson);
 
     // Call the message handler
-    messageHandler.handleMessage(messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
-
-    // Check the Election is present with state RESULTS_READY and the results
-    Optional<Election> electionOpt =
-        laoRepo.getLaoByChannel(LAO_CHANNEL).getElection(election.getId());
-    assertTrue(electionOpt.isPresent());
-    assertEquals(EventState.RESULTS_READY, electionOpt.get().getState());
-    assertEquals(
-        Collections.singletonList(questionResult), electionOpt.get().getResultsForQuestionId("id"));
+    messageHandler.handleMessage(messageSender, electionChannel, message);
   }
 
   @Test
-  public void testHandleElectionEnd()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
-    // Create the end Election message
-    ElectionEnd electionEnd = new ElectionEnd(election.getId(), lao.getId(), "");
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, electionEnd, gson);
+  public void testHandleElectionSetup()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException {
+    MessageID messageID = handleElectionSetup(OPEN_BALLOT_ELECTION);
 
-    // Call the message handler
-    messageHandler.handleMessage(messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
+    // Check the Election is present and has correct values
+    Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+    assertEquals(EventState.CREATED, election.getState());
+    assertEquals(OPEN_BALLOT_ELECTION.getId(), election.getId());
+    assertEquals(OPEN_BALLOT_ELECTION.getElectionQuestions(), election.getElectionQuestions());
+    assertEquals(OPEN_BALLOT_ELECTION.getElectionVersion(), election.getElectionVersion());
+    assertEquals(OPEN_BALLOT_ELECTION.getStartTimestamp(), election.getStartTimestamp());
+    assertEquals(OPEN_BALLOT_ELECTION.getCreation(), election.getCreation());
+    assertEquals(OPEN_BALLOT_ELECTION.getEndTimestamp(), election.getEndTimestamp());
 
-    // Check the Election is present with state CLOSED and the results
-    Optional<Election> electionOpt =
-        laoRepo.getLaoByChannel(LAO_CHANNEL).getElection(election.getId());
-    assertTrue(electionOpt.isPresent());
-    assertEquals(EventState.CLOSED, electionOpt.get().getState());
-  }
+    // Check the WitnessMessage has been created
+    Optional<WitnessMessage> witnessMessage =
+        laoRepo.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(messageID);
+    assertTrue(witnessMessage.isPresent());
 
-  @Test
-  public void testHandleElectionOpen()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
-    OpenElection openElection = new OpenElection(lao.getId(), election.getId(), openedAt);
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, openElection, gson);
-
-    for (EventState state : EventState.values()) {
-      election.setEventState(state);
-      messageHandler.handleMessage(messageSender, election.getChannel(), message);
-      if (state == EventState.CREATED) {
-        // Test for current TimeStamp
-        assertEquals(EventState.OPENED, election.getState());
-        assertEquals(Instant.now().getEpochSecond(), election.getStartTimestamp());
-      } else {
-        assertEquals(state, election.getState());
-      }
-    }
+    // Check the Witness message contains the expected title and description
+    WitnessMessage expectedMessage = electionSetupWitnessMessage(messageID, election);
+    assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
+    assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
   }
 
   @Test
   public void testElectionKey()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
-    // Create the election key message
-    String key = "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ";
-    ElectionKey electionKey = new ElectionKey(election.getId(), key);
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, electionKey, gson);
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException {
 
-    // Call the message handler
-    messageHandler.handleMessage(messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
+    handleElectionSetup(OPEN_BALLOT_ELECTION);
+    handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
 
-    assertEquals(key, election.getElectionKey());
+    Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+    assertEquals(ELECTION_KEY, election.getElectionKey());
   }
 
   @Test
-  public void testHandleCastVote()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
-    // Here we test if the handling can both an Open Ballot cast vote and
-    // an Secret Ballot vote
+  public void testHandleElectionResult()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException {
+    Set<QuestionResult> results = Collections.singleton(new QuestionResult(OPTION_1, 1));
 
-    // First test the Open Ballot version
-    // Set up a open ballot election
-    ElectionVote electionVote1 = new ElectionVote("1", 1, false, null, election.getId());
-    List<ElectionVote> electionVotes = Collections.singletonList(electionVote1);
-    CastVote<ElectionVote> electionVote =
-        new CastVote<>(electionVotes, election.getId(), CREATE_LAO.getId());
+    handleElectionSetup(OPEN_BALLOT_ELECTION);
+    handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
+    handleElectionOpen(OPEN_BALLOT_ELECTION);
+    handleCastVote(new ElectionVote(QUESTION.getId(), 0, false, null, ELECTION_ID), SENDER_KEY);
+    handleElectionEnd();
+    handleElectionResults(results, OPEN_BALLOT_ELECTION.getChannel());
 
-    MessageGeneral message1 = new MessageGeneral(SENDER_KEY, electionVote, gson);
-    // Test the whole process
-    messageHandler.handleMessage(messageSender, LAO_CHANNEL.subChannel(election.getId()), message1);
-    List<String> listOfVoteIds = new ArrayList<>();
-    // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
-    // messageIds
-    listOfVoteIds.add(electionVote1.getId());
-    String expectedHash = Hash.hash(listOfVoteIds.toArray(new String[0]));
-    assertEquals(expectedHash, election.computerRegisteredVotes());
+    Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+    assertEquals(EventState.RESULTS_READY, election.getState());
+    assertEquals(results, election.getResultsForQuestionId(QUESTION.getId()));
+  }
 
-    // Now test with a SECRET BALLOT election
+  @Test
+  public void testHandleElectionOpen()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException {
+    handleElectionSetup(OPEN_BALLOT_ELECTION);
+    handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
+    handleElectionOpen(OPEN_BALLOT_ELECTION);
 
-    // Generate some keys for encryption
+    Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+    assertEquals(OPENED_AT, election.getStartTimestamp());
+    assertEquals(EventState.OPENED, election.getState());
+  }
+
+  @Test
+  public void testHandleElectionEnd()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException {
+    handleElectionSetup(OPEN_BALLOT_ELECTION);
+    handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
+    handleElectionOpen(OPEN_BALLOT_ELECTION);
+    handleElectionEnd();
+
+    Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+    assertEquals(EventState.CLOSED, election.getState());
+  }
+
+  @Test
+  public void castVoteWithOpenBallotScenario()
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException {
+    ElectionVote vote1 = new ElectionVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
+    ElectionVote vote2 = new ElectionVote(QUESTION.getId(), 1, false, null, ELECTION_ID);
+
+    handleElectionSetup(OPEN_BALLOT_ELECTION);
+    handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
+    handleElectionOpen(OPEN_BALLOT_ELECTION);
+    MessageID vote1Id = handleCastVote(vote1, SENDER_KEY);
+    MessageID vote2Id = handleCastVote(vote2, ATTENDEE_KEY);
+
+    Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+    // Sort the vote ids based on the message id
+    String[] voteIds =
+        vote1Id.getEncoded().compareTo(vote2Id.getEncoded()) < 0
+            ? new String[] {vote1.getId(), vote2.getId()}
+            : new String[] {vote2.getId(), vote1.getId()};
+
+    assertEquals(Hash.hash(voteIds), election.computerRegisteredVotesHash());
+  }
+
+  @Test
+  public void castVoteWithSecretBallotScenario()
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException {
     ElectionKeyPair keys = ElectionKeyPair.generateKeyPair();
     ElectionPublicKey pubKey = keys.getEncryptionScheme();
     Base64URLData encodedKey = new Base64URLData(pubKey.getPublicKey().toBytes());
-    electionEncrypted.setElectionKey(encodedKey.getEncoded());
 
-    ElectionEncryptedVote electionEncryptedVote1 =
-        new ElectionEncryptedVote("2", "1", false, null, electionEncrypted.getId());
-    ElectionEncryptedVote electionEncryptedVote2 =
-        new ElectionEncryptedVote("3", "1", false, null, electionEncrypted.getId());
-    List<ElectionEncryptedVote> electionEncryptedVote =
-        Arrays.asList(electionEncryptedVote1, electionEncryptedVote2);
-    CastVote<ElectionEncryptedVote> encryptedCastVote =
-        new CastVote<>(electionEncryptedVote, electionEncrypted.getId(), CREATE_LAO.getId());
-    MessageGeneral message2 = new MessageGeneral(SENDER_KEY, encryptedCastVote, gson);
-    // Test the handling, it no error are thrown it means that the validation happened without
-    // problems
-    messageHandler.handleMessage(
-        messageSender, LAO_CHANNEL.subChannel(electionEncrypted.getId()), message2);
-    List<String> listOfVoteIds2 = new ArrayList<>();
-    listOfVoteIds2.add(electionEncryptedVote2.getId());
-    listOfVoteIds2.add(electionEncryptedVote1.getId());
-    String expectedHash2 = Hash.hash(listOfVoteIds2.toArray(new String[0]));
-    assertEquals(
-        expectedHash2,
-        laoRepo.getElectionByChannel(electionEncrypted.getChannel()).computerRegisteredVotes());
+    ElectionEncryptedVote vote1 =
+        new ElectionEncryptedVote(QUESTION.getId(), "0", false, null, ELECTION_ID);
+    ElectionEncryptedVote vote2 =
+        new ElectionEncryptedVote(QUESTION.getId(), "1", false, null, ELECTION_ID);
+
+    handleElectionSetup(SECRET_BALLOT_ELECTION);
+    handleElectionKey(SECRET_BALLOT_ELECTION, encodedKey.getEncoded());
+    handleElectionOpen(SECRET_BALLOT_ELECTION);
+
+    MessageID vote1Id = handleCastVote(vote1, SENDER_KEY);
+    MessageID vote2Id = handleCastVote(vote2, ATTENDEE_KEY);
+
+    Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+    // Sort the vote ids based on the message id
+    String[] voteIds =
+        vote1Id.getEncoded().compareTo(vote2Id.getEncoded()) < 0
+            ? new String[] {vote1.getId(), vote2.getId()}
+            : new String[] {vote2.getId(), vote1.getId()};
+
+    assertEquals(Hash.hash(voteIds), election.computerRegisteredVotesHash());
   }
 }

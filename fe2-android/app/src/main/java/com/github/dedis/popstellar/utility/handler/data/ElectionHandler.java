@@ -13,7 +13,6 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
 
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -139,7 +138,7 @@ public final class ElectionHandler {
 
     // Sets the start time to now
     Election updated =
-        election.builder().setState(OPENED).setStart(Instant.now().getEpochSecond()).build();
+        election.builder().setState(OPENED).setStart(openElection.getOpenedAt()).build();
 
     Log.d(TAG, "election opened " + updated.getStartTimestamp());
     electionRepository.updateElection(channel.extractLaoId(), updated);

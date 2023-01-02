@@ -218,7 +218,7 @@ public class Election extends Event {
    *
    * @return the hash of all registered votes
    */
-  public String computerRegisteredVotes() {
+  public String computerRegisteredVotesHash() {
     List<String> listOfVoteIds =
         getElectionVersion() == ElectionVersion.OPEN_BALLOT
             ? getListOfVoteIds(openVoteByPublicKey, ElectionVote::getId)
