@@ -312,9 +312,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param creation the creation time of the election
    * @param start the start time of the election
    * @param end the end time of the election
-   * @param votingMethod the type of voting method (e.g Plurality)
-   * @param ballotOptions the list of ballot options
-   * @param question the question associated to the election
+   * @param questions questions of the election
    */
   public Completable createNewElection(
       ElectionVersion electionVersion,
@@ -322,10 +320,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       long creation,
       long start,
       long end,
-      List<String> votingMethod,
-      List<Boolean> writeIn,
-      List<List<String>> ballotOptions,
-      List<String> question) {
+      List<ElectionQuestion.Question> questions) {
     Log.d(TAG, "creating a new election with name " + name);
 
     LaoView laoView;
@@ -338,17 +333,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     Channel channel = laoView.getChannel();
     ElectionSetup electionSetup =
-        new ElectionSetup(
-            writeIn,
-            name,
-            creation,
-            start,
-            end,
-            votingMethod,
-            laoView.getId(),
-            ballotOptions,
-            question,
-            electionVersion);
+        new ElectionSetup(name, creation, start, end, laoView.getId(), electionVersion, questions);
 
     return networkManager
         .getMessageSender()
