@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
 import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.*;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
@@ -35,7 +34,6 @@ public class LaoDetailFragment extends Fragment {
   public static final String TAG = LaoDetailFragment.class.getSimpleName();
 
   @Inject Gson gson;
-  @Inject GlobalNetworkManager networkManager;
 
   private LaoDetailFragmentBinding binding;
   private LaoDetailViewModel viewModel;
