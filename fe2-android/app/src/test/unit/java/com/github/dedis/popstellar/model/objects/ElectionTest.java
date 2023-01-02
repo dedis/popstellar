@@ -34,7 +34,6 @@ public class ElectionTest {
   private final Election election =
       new Election.ElectionBuilder("lao id", Instant.now().getEpochSecond(), name)
           .setElectionVersion(OPEN_BALLOT)
-          .setLaoChannel(channel)
           .setElectionKey(
               new Base64URLData(electionPublicKey.getPublicKey().toBytes()).getEncoded())
           .build();

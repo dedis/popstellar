@@ -5,7 +5,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Qu
 
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,8 +15,8 @@ import static org.junit.Assert.assertThrows;
 public class ElectionQuestionResultTest {
 
   private final String questionId = "questionId";
-  private final List<QuestionResult> results =
-      Collections.singletonList(new QuestionResult("Candidate1", 30));
+  private final Set<QuestionResult> results =
+      Collections.singleton(new QuestionResult("Candidate1", 30));
   private final ElectionResultQuestion electionQuestionResult =
       new ElectionResultQuestion(questionId, results);
 
@@ -31,8 +32,8 @@ public class ElectionQuestionResultTest {
 
   @Test
   public void resultsCantBeEmpty() {
-    List<QuestionResult> emptyList = new ArrayList<>();
     assertThrows(
-        IllegalArgumentException.class, () -> new ElectionResultQuestion(questionId, emptyList));
+        IllegalArgumentException.class,
+        () -> new ElectionResultQuestion(questionId, Collections.emptySet()));
   }
 }

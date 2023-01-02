@@ -26,8 +26,8 @@ public class ElectionQuestionTest {
 
   private static final List<ElectionQuestion.Question> QUESTIONS =
       Arrays.asList(
-          new ElectionQuestion.Question(VOTING_METHOD, "Question", BALLOT_OPTIONS, false),
-          new ElectionQuestion.Question(VOTING_METHOD, "Question2", BALLOT_OPTIONS, false));
+          new ElectionQuestion.Question("Question", VOTING_METHOD, BALLOT_OPTIONS, false),
+          new ElectionQuestion.Question("Question2", VOTING_METHOD, BALLOT_OPTIONS, false));
 
   private static final ElectionSetup ELECTION_SETUP =
       new ElectionSetup(NAME, NOW, NOW, END, LAO_ID, VERSION, QUESTIONS);

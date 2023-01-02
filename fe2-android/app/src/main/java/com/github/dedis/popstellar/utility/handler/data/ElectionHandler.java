@@ -59,7 +59,6 @@ public final class ElectionHandler {
     Election election =
         new Election.ElectionBuilder(
                 laoView.getId(), electionSetup.getCreation(), electionSetup.getName())
-            .setLaoChannel(channel)
             .setElectionVersion(electionSetup.getElectionVersion())
             .setElectionQuestions(electionSetup.getQuestions())
             .setStart(electionSetup.getStartTime())
@@ -106,17 +105,13 @@ public final class ElectionHandler {
     electionRepository.updateElection(channel.extractLaoId(), election);
   }
 
-  private Map<String, List<QuestionResult>> computeResults(
+  private Map<String, Set<QuestionResult>> computeResults(
       @NonNull List<ElectionResultQuestion> electionResultsQuestions) {
 
-    Map<String, List<QuestionResult>> results = new HashMap<>();
+    Map<String, Set<QuestionResult>> results = new HashMap<>();
 
     for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
-      results.put(
-          resultQuestion.getId(),
-          resultQuestion.getResult().stream()
-              .sorted(Comparator.comparing(QuestionResult::getCount).reversed())
-              .collect(Collectors.toList()));
+      results.put(resultQuestion.getId(), resultQuestion.getResult());
     }
 
     return results;
