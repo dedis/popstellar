@@ -43,7 +43,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -264,7 +263,7 @@ public class ElectionStartFragmentTest {
   }
 
   @Test
-  public void updateTest() throws InterruptedException {
+  public void updateTest() {
     setupViewModel(FUTURE_TIME);
     // Election start time has not passed yet, should display that it's waiting
     displayAssertions(STATUS_WAITING, START_SCHEDULED, false);
@@ -272,8 +271,6 @@ public class ElectionStartFragmentTest {
     // Update election start time
     electionRepo.updateElection(
         LAO_ID, new Election.ElectionBuilder(election).setStart(PAST_TIME).build());
-    // Wait for the timer update
-    TimeUnit.SECONDS.sleep(2);
 
     // Election start time has passed, should display that it's ready and start button enabled
     displayAssertions(STATUS_READY, START_START, true);
