@@ -9,11 +9,13 @@ import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 import java.util.*;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
+@Singleton
 public class ElectionRepository {
 
   private final Map<String, LaoElections> electionsByLao = new HashMap<>();

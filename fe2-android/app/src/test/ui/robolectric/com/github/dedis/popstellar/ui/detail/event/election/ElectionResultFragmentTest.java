@@ -147,7 +147,7 @@ public class ElectionResultFragmentTest {
               FragmentActivity fragmentActivity = fragment.requireActivity();
               LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
               viewModel.setCurrentLao(new LaoView(LAO));
-              viewModel.setCurrentElection(ELECTION);
+              viewModel.setCurrentElection(ELECTION.getId());
             });
     fragmentRule.getScenario().recreate();
   }

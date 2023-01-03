@@ -383,7 +383,7 @@ public class ElectionStartFragmentTest {
               FragmentActivity fragmentActivity = electionStartFragment.requireActivity();
               LaoDetailViewModel laoDetailViewModel =
                   LaoDetailActivity.obtainViewModel(fragmentActivity);
-              laoDetailViewModel.setCurrentElection(election);
+              laoDetailViewModel.setCurrentElection(election.getId());
               laoDetailViewModel.setCurrentLao(new LaoView(lao));
             });
     // Recreate the fragment because the viewModel needed to be modified before start

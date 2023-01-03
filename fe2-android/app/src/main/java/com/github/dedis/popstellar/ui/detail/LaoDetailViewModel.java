@@ -108,7 +108,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final Gson gson;
   private final Wallet wallet;
 
-  private Election currentElection = null;
+  private String currentElection = null;
   private RollCall currentRollCall = null;
   private String currentRollCallId = "";
   private String laoId;
@@ -251,11 +251,12 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param votes the corresponding votes for that election
    */
   public Completable sendVote(List<ElectionVote> votes) {
-    Election election = currentElection;
-
-    if (election == null) {
+    Election election;
+    try {
+      election = electionRepo.getElection(laoId, currentElection);
+    } catch (UnknownElectionException e) {
       Log.d(TAG, "failed to retrieve current election");
-      return Completable.error(new UnknownElectionException());
+      return Completable.error(e);
     }
 
     Log.d(
@@ -645,11 +646,15 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public Election getCurrentElection() {
-    return currentElection;
+    try {
+      return electionRepo.getElection(laoId, currentElection);
+    } catch (UnknownElectionException e) {
+      return null;
+    }
   }
 
-  public void setCurrentElection(Election e) {
-    currentElection = e;
+  public void setCurrentElection(String electionId) {
+    currentElection = electionId;
   }
 
   public MutableLiveData<List<Integer>> getCurrentElectionVotes() {
@@ -827,14 +832,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                 mElections::setValue, error -> Log.d(TAG, "Error updating Roll Call : " + error)));
   }
 
-  private void updateCurrentObjects() throws UnknownRollCallException, UnknownElectionException {
+  private void updateCurrentObjects() throws UnknownRollCallException {
     if (currentRollCall != null) {
       currentRollCall =
           rollCallRepo.getRollCallWithPersistentId(laoId, currentRollCall.getPersistentId());
-    }
-
-    if (currentElection != null) {
-      currentElection = electionRepo.getElection(laoId, currentElection.getId());
     }
   }
 
