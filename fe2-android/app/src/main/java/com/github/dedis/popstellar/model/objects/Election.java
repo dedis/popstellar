@@ -231,8 +231,8 @@ public class Election extends Event {
     }
   }
 
-  private <Vote> List<String> getListOfVoteIds(
-      @NonNull Map<PublicKey, List<Vote>> map, Function<Vote, String> voteToId) {
+  private <V> List<String> getListOfVoteIds(
+      @NonNull Map<PublicKey, List<V>> map, Function<V, String> voteToId) {
     // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
     // messageIds
     return messageMap.values().stream()
