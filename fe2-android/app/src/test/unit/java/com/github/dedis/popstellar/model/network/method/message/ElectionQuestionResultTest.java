@@ -32,8 +32,8 @@ public class ElectionQuestionResultTest {
 
   @Test
   public void resultsCantBeEmpty() {
+    Set<QuestionResult> emptySet = Collections.emptySet();
     assertThrows(
-        IllegalArgumentException.class,
-        () -> new ElectionResultQuestion(questionId, Collections.emptySet()));
+        IllegalArgumentException.class, () -> new ElectionResultQuestion(questionId, emptySet));
   }
 }

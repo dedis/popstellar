@@ -25,7 +25,7 @@ public class ElectionQuestion {
 
   /** Constructor for a data Question, for the election setup */
   public ElectionQuestion(String electionId, Question question) {
-    this.question = question.question;
+    this.question = question.title;
     this.ballotOptions = Collections.unmodifiableList(question.ballotOptions);
     this.writeIn = question.writeIn;
     this.votingMethod = question.votingMethod;
@@ -103,14 +103,14 @@ public class ElectionQuestion {
   @Immutable
   public static class Question {
 
-    private final String question;
+    private final String title;
     private final String votingMethod;
     private final List<String> ballotOptions;
     private final boolean writeIn;
 
     public Question(
-        String question, String votingMethod, List<String> ballotOptions, boolean writeIn) {
-      this.question = question;
+        String title, String votingMethod, List<String> ballotOptions, boolean writeIn) {
+      this.title = title;
       this.votingMethod = votingMethod;
       this.ballotOptions = ballotOptions;
       this.writeIn = writeIn;
@@ -121,7 +121,7 @@ public class ElectionQuestion {
     public String toString() {
       return "Question{"
           + "question='"
-          + question
+          + title
           + '\''
           + ", votingMethod='"
           + votingMethod
