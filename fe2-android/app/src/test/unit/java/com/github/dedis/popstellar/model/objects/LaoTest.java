@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
@@ -198,21 +197,6 @@ public class LaoTest {
   public void setAndGetId() {
     LAO_1.setId("New_Id");
     assertThat(LAO_1.getId(), is("New_Id"));
-  }
-
-  @Test
-  public void nullTransactionObjectUpdateThrowsException() {
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.updateTransactionMaps(null));
-  }
-
-  @Test
-  public void noRollCallWhenTransactionUpdateThrowsException() {
-    List<InputObject> inputs = new ArrayList<>();
-    List<OutputObject> outputs = new ArrayList<>();
-    Lao lao = new Lao("id");
-    TransactionObject transactionObject =
-        new TransactionObject(Channel.ROOT, 1, inputs, outputs, 1L, "id");
-    assertThrows(IllegalStateException.class, () -> lao.updateTransactionMaps(transactionObject));
   }
 
   @Test

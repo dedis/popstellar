@@ -178,57 +178,6 @@ public class TransactionObjectTest {
     assertTrue(builder.build().isSender(sender));
   }
 
-  // test long getMiniLaoPerReceiverFirst(PublicKey receiver)
-  @Test
-  public void getMiniLaoPerReceiverTest() throws GeneralSecurityException {
-    TransactionObjectBuilder builder = getValidTransactionBuilder();
-
-    String type = "P2PKH";
-    // RECEIVER
-    String pubKeyHash = sender.computeHash();
-    ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubKeyHash);
-    int value = 32;
-    OutputObject output = new OutputObject(value, scriptTxOut);
-    List<OutputObject> listOutput = Collections.singletonList(output);
-    builder.setOutputs(listOutput);
-    TransactionObject transactionObject = builder.build();
-    assertEquals(value, transactionObject.getMiniLaoPerReceiver(sender));
-    KeyPair senderKey1 = generateKeyPair();
-    PublicKey sender1 = senderKey1.getPublicKey();
-    assertThrows(
-        IllegalArgumentException.class, () -> transactionObject.getMiniLaoPerReceiver(sender1));
-    assertEquals(value, transactionObject.getMiniLaoPerReceiverFirst(sender));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> transactionObject.getMiniLaoPerReceiverFirst(sender1));
-  }
-
-  // test getMiniLaoPerReceiverSetTransaction
-  @Test
-  public void getMiniLaoPerReceiverSetTransactionTest() throws GeneralSecurityException {
-    TransactionObjectBuilder builder = getValidTransactionBuilder("a");
-    String type = "P2PKH";
-    String pubKeyHash = sender.computeHash();
-    ScriptOutputObject scriptTxOut = new ScriptOutputObject(type, pubKeyHash);
-    int value = 32;
-    OutputObject output = new OutputObject(value, scriptTxOut);
-    List<OutputObject> listOutput = Collections.singletonList(output);
-    builder.setOutputs(listOutput);
-    TransactionObject transactionObject = builder.build();
-    assertEquals(
-        32,
-        TransactionObject.getMiniLaoPerReceiverSetTransaction(
-            new HashSet<>(Collections.singletonList(transactionObject)), sender));
-    Set<TransactionObject> set = new HashSet<>();
-    assertTrue(set.add(transactionObject));
-    assertFalse(set.add(transactionObject));
-
-    TransactionObjectBuilder builder2 = getValidTransactionBuilder("2");
-    TransactionObject transactionObject2 = builder2.build();
-    assertTrue(set.add(transactionObject2));
-    assertEquals(64, TransactionObject.getMiniLaoPerReceiverSetTransaction(set, sender));
-  }
-
   // test int get_index_transaction(PublicKey publicKey)
   @Test
   public void getIndexTransactionTest() throws GeneralSecurityException {

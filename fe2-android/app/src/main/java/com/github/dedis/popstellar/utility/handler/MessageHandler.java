@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
 import javax.inject.Inject;
@@ -36,7 +37,8 @@ public final class MessageHandler {
    * @param message the message that was received
    */
   public void handleMessage(MessageSender messageSender, Channel channel, MessageGeneral message)
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          NoRollCallException {
     Log.d(TAG, "handle incoming message");
     // Put the message in the state
     messageRepo.addMessage(message);

@@ -10,8 +10,7 @@ import com.github.dedis.popstellar.model.objects.event.RollCallBuilder;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 
@@ -29,11 +28,16 @@ public final class RollCallHandler {
 
   private final LAORepository laoRepo;
   private final RollCallRepository rollCallRepo;
+  private final DigitalCashRepository digitalCashRepo;
 
   @Inject
-  public RollCallHandler(LAORepository laoRepo, RollCallRepository rollCallRepo) {
+  public RollCallHandler(
+      LAORepository laoRepo,
+      RollCallRepository rollCallRepo,
+      DigitalCashRepository digitalCashRepo) {
     this.laoRepo = laoRepo;
     this.rollCallRepo = rollCallRepo;
+    this.digitalCashRepo = digitalCashRepo;
   }
 
   /**
@@ -149,8 +153,9 @@ public final class RollCallHandler {
     rollCallRepo.updateRollCall(laoView.getId(), rollCall);
 
     Lao lao = laoView.createLaoCopy();
-    lao.updateTransactionHashMap(closeRollCall.getAttendees());
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
+
+    digitalCashRepo.initializeDigitalCash(laoView.getId(), closeRollCall.getAttendees());
 
     // Subscribe to the social media channels
     // (this is not the expected behavior as users should be able to choose who to subscribe to. But
