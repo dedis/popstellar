@@ -270,17 +270,14 @@ public class ElectionFragmentTest {
   }
 
   private void openElection() {
-    electionRepository.updateElection(
-        LAO_ID, new Election.ElectionBuilder(ELECTION).setState(OPENED).build());
+    electionRepository.updateElection(LAO_ID, ELECTION.builder().setState(OPENED).build());
   }
 
   private void closeElection() {
-    electionRepository.updateElection(
-        LAO_ID, new Election.ElectionBuilder(ELECTION).setState(CLOSED).build());
+    electionRepository.updateElection(LAO_ID, ELECTION.builder().setState(CLOSED).build());
   }
 
   private void receiveResults() {
-    electionRepository.updateElection(
-        LAO_ID, new Election.ElectionBuilder(ELECTION).setState(RESULTS_READY).build());
+    electionRepository.updateElection(LAO_ID, ELECTION.builder().setState(RESULTS_READY).build());
   }
 }

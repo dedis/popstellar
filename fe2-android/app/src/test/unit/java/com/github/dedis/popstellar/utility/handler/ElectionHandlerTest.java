@@ -78,9 +78,7 @@ public class ElectionHandlerTest {
           .build();
 
   private static final Election SECRET_BALLOT_ELECTION =
-      new Election.ElectionBuilder(OPEN_BALLOT_ELECTION)
-          .setElectionVersion(ElectionVersion.SECRET_BALLOT)
-          .build();
+      OPEN_BALLOT_ELECTION.builder().setElectionVersion(ElectionVersion.SECRET_BALLOT).build();
 
   private LAORepository laoRepo;
   private ElectionRepository electionRepo;
