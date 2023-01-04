@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.data.DataHandler;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
@@ -45,7 +46,7 @@ public final class DataRegistry {
    */
   public void handle(HandlerContext context, Data data, Objects obj, Action action)
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException {
+          UnknownElectionException, NoRollCallException {
     Optional.ofNullable(mapping.get(pair(obj, action)))
         .orElseThrow(() -> new UnhandledDataTypeException(data, obj + "#" + action))
         .handleData(context, data);
@@ -135,7 +136,7 @@ public final class DataRegistry {
     @SuppressWarnings("unchecked")
     public void handleData(HandlerContext context, Data data)
         throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-            UnknownElectionException {
+            UnknownElectionException, NoRollCallException {
       if (dataHandler == null) {
         throw new UnhandledDataTypeException(data, key.object + "#" + key.action);
       }

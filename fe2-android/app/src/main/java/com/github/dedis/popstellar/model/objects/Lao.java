@@ -1,11 +1,8 @@
 package com.github.dedis.popstellar.model.objects;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Copyable;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
@@ -34,12 +31,6 @@ public final class Lao implements Copyable<Lao> {
 
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
-  // Some useful map for the digital cash
-  private Map<String, PublicKey> pubKeyByHash;
-  // Map for the history
-  private Map<PublicKey, Set<TransactionObject>> transactionHistoryByUser;
-  // Map for the the public_key last transaction
-  private Map<PublicKey, Set<TransactionObject>> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -55,10 +46,6 @@ public final class Lao implements Copyable<Lao> {
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
-    // initialize the maps :
-    this.transactionHistoryByUser = new HashMap<>();
-    this.transactionByUser = new HashMap<>();
-    this.pubKeyByHash = new HashMap<>();
   }
 
   public Lao(String name, PublicKey organizer, long creation) {
@@ -67,7 +54,6 @@ public final class Lao implements Copyable<Lao> {
     this.name = name;
     this.organizer = organizer;
     this.creation = creation;
-    pubKeyByHash.put(organizer.computeHash(), organizer);
   }
 
   /**
@@ -90,9 +76,6 @@ public final class Lao implements Copyable<Lao> {
     // (Gabriel Fleischer 11.08.22)
     this.messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
     this.keyToNode = Copyable.copy(lao.keyToNode);
-    this.pubKeyByHash = new HashMap<>(lao.pubKeyByHash);
-    this.transactionHistoryByUser = new HashMap<>(lao.transactionHistoryByUser);
-    this.transactionByUser = new HashMap<>(lao.transactionByUser);
   }
 
   /**
@@ -131,68 +114,6 @@ public final class Lao implements Copyable<Lao> {
   public void updateWitnessMessage(MessageID prevId, WitnessMessage witnessMessage) {
     witnessMessages.remove(prevId);
     witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
-  }
-
-  /**
-   * Function which update the transaction map public key by transaction hash on the list of the
-   * roll call attendees Update pubKeyByHash, Initialize transactionByUser, transactionHistoryByUser
-   *
-   * @param attendees List<PublicKey> of the roll call attendees
-   */
-  public void updateTransactionHashMap(List<PublicKey> attendees) {
-    pubKeyByHash = new HashMap<>();
-    pubKeyByHash.put(organizer.computeHash(), organizer);
-    attendees.forEach(publicKey -> pubKeyByHash.put(publicKey.computeHash(), publicKey));
-
-    // also update the history and the current transaction per attendees
-    // both map have to be set to empty again
-    transactionByUser = new HashMap<>();
-    transactionHistoryByUser = new HashMap<>();
-  }
-
-  /**
-   * Function that update all the transaction Update transactionByUser (current state of money)
-   * Update transactionHistory (current transaction perform per user)
-   *
-   * @param transactionObject object which was posted and now should update the lao map
-   */
-  public void updateTransactionMaps(TransactionObject transactionObject) {
-    if (transactionObject == null) {
-      throw new IllegalArgumentException("The transaction is null");
-    }
-    /* Change the transaction per public key in transacionperUser
-    for the sender and the receiver*/
-
-    if (this.pubKeyByHash.isEmpty()) {
-      throw new IllegalStateException("A transaction need attendees !");
-    }
-
-    /* Contained in the receiver there are also the sender
-    which has to be in the list of attendees of the roll call*/
-    for (PublicKey current : transactionObject.getReceiversTransaction(pubKeyByHash)) {
-      // Add the transaction in the current state  / for the sender and the receiver
-
-      /* The only case where the map has a list of transaction in memory is when we have several
-      coin base transaction (in fact the issuer send several time money to someone)
-      or our receiver is no sender */
-      if (transactionByUser.containsKey(current)
-          && (transactionObject.isCoinBaseTransaction()
-              || (transactionObject.isReceiver(current) && !transactionObject.isSender(current)))) {
-        transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
-        Set<TransactionObject> set = new HashSet<>(transactionByUser.get(current));
-        set.add(transactionObject);
-        transactionByUser.replace(current, set);
-      } else {
-
-        transactionByUser.put(current, new HashSet<>(Collections.singleton(transactionObject)));
-      }
-
-      // Add the transaction in the history / for the sender and the receiver
-      transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
-      transactionHistoryByUser.get(current).add(transactionObject);
-    }
-    Log.d(TAG, "Transaction by history : " + transactionHistoryByUser.toString());
-    Log.d(this.getClass().toString(), "Transaction by User : " + transactionByUser.toString());
   }
 
   public Optional<ElectInstance> getElectInstance(MessageID messageId) {
@@ -322,18 +243,6 @@ public final class Lao implements Copyable<Lao> {
     return witnessMessages;
   }
 
-  public Map<PublicKey, Set<TransactionObject>> getTransactionHistoryByUser() {
-    return transactionHistoryByUser;
-  }
-
-  public Map<PublicKey, Set<TransactionObject>> getTransactionByUser() {
-    return transactionByUser;
-  }
-
-  public Map<String, PublicKey> getPubKeyByHash() {
-    return pubKeyByHash;
-  }
-
   /**
    * Generate the id for dataCreateLao and dataUpdateLao.
    * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCreateLao.json
@@ -381,11 +290,6 @@ public final class Lao implements Copyable<Lao> {
         + ", electInstances="
         + messageIdToElectInstance.values()
         + ", transactionPerUser="
-        + transactionByUser.toString()
-        + ", transactionHistoryByUser"
-        + transactionHistoryByUser.toString()
-        + ", pubKeyByHash"
-        + pubKeyByHash.toString()
         + '}';
   }
 }

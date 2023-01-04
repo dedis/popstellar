@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -110,7 +111,7 @@ public class RollCallHandlerTest {
   @Test
   public void testHandleCreateRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException {
+          UnknownElectionException, NoRollCallException {
     // Create the create Roll Call message
     CreateRollCall createRollCall =
         new CreateRollCall(
@@ -146,7 +147,7 @@ public class RollCallHandlerTest {
   @Test
   public void testHandleOpenRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException {
+          UnknownElectionException, NoRollCallException {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
@@ -177,7 +178,7 @@ public class RollCallHandlerTest {
   @Test
   public void testHandleCloseRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException {
+          UnknownElectionException, NoRollCallException {
     // Create the close Roll Call message
     CloseRollCall closeRollCall =
         new CloseRollCall(

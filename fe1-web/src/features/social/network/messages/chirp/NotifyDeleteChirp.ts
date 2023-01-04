@@ -53,8 +53,8 @@ export class NotifyDeleteChirp implements MessageData {
     }
 
     return new NotifyDeleteChirp({
-      ...obj,
       chirp_id: new Hash(obj.chirp_id),
+      channel: obj.channel,
       timestamp: new Timestamp(obj.timestamp),
     });
   }

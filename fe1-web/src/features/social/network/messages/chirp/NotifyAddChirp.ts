@@ -51,8 +51,8 @@ export class NotifyAddChirp implements MessageData {
     }
 
     return new NotifyAddChirp({
-      ...obj,
       chirp_id: new Hash(obj.chirp_id),
+      channel: obj.channel,
       timestamp: new Timestamp(obj.timestamp),
     });
   }

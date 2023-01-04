@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.crypto.tink.KeyTemplates;
@@ -211,7 +212,7 @@ public class ElectionStartFragmentTest {
   @Test
   public void displayWithUpdatesIsCorrect()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException {
+          UnknownElectionException, NoRollCallException {
     setupViewModel(PAST_TIME);
 
     // Election start time has passed, should display that it's ready and start button enabled
@@ -298,7 +299,7 @@ public class ElectionStartFragmentTest {
   @Test
   public void acceptButtonSendElectAcceptMessageTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException {
+          UnknownElectionException, NoRollCallException {
     setupViewModel(PAST_TIME);
 
     // Nodes 3 try to start
@@ -321,7 +322,7 @@ public class ElectionStartFragmentTest {
   @Test
   public void failureTest()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException {
+          UnknownElectionException, NoRollCallException {
     setupViewModel(PAST_TIME);
 
     // Nodes 3 try to start and failed

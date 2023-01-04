@@ -8,13 +8,11 @@ import { useToast } from 'react-native-toast-notifications';
 import { PoPIcon } from 'core/components';
 import QrCodeScanner, { QrCodeScannerUIElementContainer } from 'core/components/QrCodeScanner';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { WalletParamList } from 'core/navigation/typing/WalletParamList';
+import { DigitalCashParamList } from 'core/navigation/typing/DigitalCashParamList';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
-
-import { DigitalCashFeature } from '../interface';
 
 const styles = StyleSheet.create({
   buttonContainer: {
@@ -26,7 +24,7 @@ const styles = StyleSheet.create({
 });
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_wallet_scanner>,
+  StackScreenProps<DigitalCashParamList, typeof STRINGS.navigation_digital_cash_wallet_scanner>,
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
 >;
 
@@ -61,7 +59,7 @@ const PoPTokenScanner = () => {
   }, [navigation]);
 
   const goBack = (popToken?: string) => {
-    navigation.navigate(STRINGS.navigation_wallet_digital_cash_send_receive, {
+    navigation.navigate(STRINGS.navigation_digital_cash_send_receive, {
       rollCallId,
       isCoinbase,
       scannedPoPToken: popToken,
@@ -76,7 +74,7 @@ const PoPTokenScanner = () => {
       } catch {
         toast.show(STRINGS.roll_call_invalid_token, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       }
@@ -101,10 +99,3 @@ const PoPTokenScanner = () => {
 };
 
 export default PoPTokenScanner;
-
-export const PoPTokenScannerScreen: DigitalCashFeature.WalletScreen = {
-  id: STRINGS.navigation_wallet_digital_cash_wallet_scanner,
-  title: STRINGS.digital_cash_wallet_screen_title,
-  Component: PoPTokenScanner,
-  headerShown: false,
-};

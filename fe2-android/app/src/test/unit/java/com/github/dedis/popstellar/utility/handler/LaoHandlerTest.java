@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -88,7 +89,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleUpdateLao()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException {
+          UnknownElectionException, NoRollCallException {
     // Create the update LAO message
     UpdateLao updateLao =
         new UpdateLao(
@@ -117,7 +118,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleStateLao()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException {
+          UnknownElectionException, NoRollCallException {
     // Create the state LAO message
     StateLao stateLao =
         new StateLao(
@@ -144,7 +145,7 @@ public class LaoHandlerTest {
   @Test()
   public void testGreetLao()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException {
+          UnknownElectionException, NoRollCallException {
     // Create the Greet Lao
     GreetLao greetLao =
         new GreetLao(

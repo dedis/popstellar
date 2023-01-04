@@ -152,7 +152,7 @@ const CreateElection = () => {
         console.error('Could not create Election, error:', err);
         toast.show(`Could not create Election, error: ${err}`, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       });

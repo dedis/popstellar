@@ -193,26 +193,24 @@
       * json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))
     @name=cast_vote
     Scenario: Casts a valid vote
-      * string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_2_data.json')
-      * string castVote = converter.publishМessageFromData(castVoteData, castVoteId, electionChannel)
       * call read('classpath:be/utils/simpleScenarios.feature@name=election_open')
       * def validCastVote =
-      """
-        {
-          "object": "election",
-          "action": "cast_vote",
-          "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
-          "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
-          "created_at": 1633098941,
-          "votes": [
-            {
-              "id": "d60B94lVWm84lBHc9RE5H67oH-Ad3O1WFflK3NSY3Yk=",
-              "question": "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg=",
-              "vote": [0]
-            }
-          ]
-        }
-      """
+            """
+              {
+                "object": "election",
+                "action": "cast_vote",
+                "lao": "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
+                "election": "rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=",
+                "created_at": 1633098941,
+                "votes": [
+                  {
+                    "id": "d60B94lVWm84lBHc9RE5H67oH-Ad3O1WFflK3NSY3Yk=",
+                    "question": "3iPxJkdUiCgBd0c699KA9tU5U0zNIFau6spXs5Kw6Pg=",
+                    "vote": [0]
+                  }
+                ]
+              }
+            """
       * frontend.publish(JSON.stringify(validCastVote), electionChannel)
       * json answer = frontend.getBackendResponse(JSON.stringify(validCastVote))
 
@@ -257,23 +255,23 @@
         {
             "object": "coin",
             "action": "post_transaction",
-            "transaction_id": "_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=",
+            "transaction_id": "yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=",
             "transaction": {
               "version": 1,
               "inputs": [{
-                "tx_out_hash": "47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=",
+                "tx_out_hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
                 "tx_out_index": 0,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-                  "sig": "CAFEBABE"
+                  "pubkey": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+                  "sig": "wVoIYoQFoepkosPxXK8CmnvhRmq0IUczGQR5JOJjX8R7vqrgMOdI311bgzrOIwtACMfGFTJcnryiHiOuB5Z3Dg=="
                 }
               }],
               "outputs": [{
                 "value": 32,
                 "script": {
                   "type": "P2PKH",
-                  "pubkey_hash": "2jmj7l5rSw0yVb-vlWAYkK-YBwk="
+                  "pubkey_hash": "-_qR4IHwsiq50raa8jURNArds54="
                 }
               }],
               "lock_time": 0
