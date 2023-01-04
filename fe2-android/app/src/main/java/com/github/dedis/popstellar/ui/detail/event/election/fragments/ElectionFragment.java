@@ -27,6 +27,7 @@ import java.util.*;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
 import static com.github.dedis.popstellar.utility.Constants.*;
@@ -193,6 +194,7 @@ public class ElectionFragment extends Fragment {
       disposables.add(
           electionRepository
               .getElectionObservable(viewModel.getLaoId(), electionId)
+              .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
                   this::setupElectionContent,
                   err ->
@@ -208,15 +210,13 @@ public class ElectionFragment extends Fragment {
     viewModel.setPageTitle(getString(R.string.election_title));
   }
 
-  private void setupElectionContent(Election election) {
-    if (getContext() == null) {
-      // Because of the current implementation (12.09.2022), an update is triggered whenever any
-      // of the whole Lao object is modified. This can occur when this fragment is not displayed
-      // and this would trigger the listeners. This check ensures that the fragment is displayed
-      // before going ahead.
-      return;
-    }
+  @Override
+  public void onDestroy() {
+    disposables.dispose();
+    super.onDestroy();
+  }
 
+  private void setupElectionContent(Election election) {
     EventState electionState = election.getState();
 
     TextView title = view.findViewById(R.id.election_fragment_title);
