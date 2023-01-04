@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.digitalcash.ScriptOutputObject;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 @Immutable
 public class OutputObject {
@@ -30,6 +31,10 @@ public class OutputObject {
 
   public String getPubKeyHash() {
     return script.getPubKeyHash();
+  }
+
+  public boolean isUserOutputRecipient(PublicKey user) {
+    return script.getPubKeyHash().equals(user.computeHash());
   }
 
   @NonNull

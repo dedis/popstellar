@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { PoPTextButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
+import { ToolbarItem } from 'core/components/Toolbar';
 import { AppScreen } from 'core/navigation/AppNavigation';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { Border, Color, Spacing, Typography } from 'core/styles';
@@ -17,15 +17,9 @@ import * as Wallet from '../objects';
 import { WalletStore } from '../store';
 
 const styles = StyleSheet.create({
-  welcomeView: {
-    flex: 1,
-    backgroundColor: Color.accent,
-  } as ViewStyle,
   words: {
-    borderColor: Color.contrast,
-    borderWidth: Border.width,
     borderRadius: Border.radius,
-    backgroundColor: Color.secondaryAccent,
+    backgroundColor: Color.accent,
     marginBottom: Spacing.x1,
     padding: Spacing.x1,
   } as ViewStyle,
@@ -77,81 +71,78 @@ const WalletCreateSeed = () => {
       console.error(e);
       toast.show(STRINGS.wallet_set_seed_error, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }
   };
 
+  const toolbarItems: ToolbarItem[] = [
+    {
+      title: STRINGS.wallet_welcome_button_restore_seed,
+      onPress: () => navigation.navigate(STRINGS.navigation_app_wallet_insert_seed),
+      buttonStyle: 'secondary',
+    },
+    {
+      id: 'exploring_selector',
+      title: STRINGS.wallet_welcome_button_start_exploring,
+      onPress: connectWithSeed,
+    },
+  ];
+
   return (
-    <View style={styles.welcomeView}>
-      <ScreenWrapper>
-        <View style={containerStyles.centeredY}>
-          <Text style={[Typography.heading, Typography.negative]}>
-            {STRINGS.wallet_welcome_heading}
+    <ScreenWrapper toolbarItems={toolbarItems}>
+      <View style={containerStyles.centeredY}>
+        <Text style={Typography.heading}>{STRINGS.wallet_welcome_heading}</Text>
+        <Text style={Typography.paragraph}>{STRINGS.wallet_welcome_text_first_time}</Text>
+        <Text style={Typography.paragraph}>
+          <Text>{STRINGS.wallet_welcome_text_wallet_explanation_1}</Text>
+          <Text> </Text>
+          <Text style={Typography.accent}>
+            {STRINGS.wallet_welcome_text_wallet_explanation_wallet}
           </Text>
-          <Text style={[Typography.paragraph, Typography.negative]}>
-            {STRINGS.wallet_welcome_text_first_time}
+          <Text> </Text>
+          <Text>{STRINGS.wallet_welcome_text_wallet_explanation_2}</Text>
+          <Text> </Text>
+          <Text style={Typography.accent}>
+            {STRINGS.wallet_welcome_text_wallet_explanation_seed}
           </Text>
-          <Text style={Typography.paragraph}>
-            <Text style={Typography.negative}>
-              {STRINGS.wallet_welcome_text_wallet_explanation_1}
-            </Text>
-            <Text> </Text>
-            <Text style={Typography.secondary}>
-              {STRINGS.wallet_welcome_text_wallet_explanation_wallet}
-            </Text>
-            <Text> </Text>
-            <Text style={Typography.negative}>
-              {STRINGS.wallet_welcome_text_wallet_explanation_2}
-            </Text>
-            <Text> </Text>
-            <Text style={Typography.secondary}>
-              {STRINGS.wallet_welcome_text_wallet_explanation_seed}
-            </Text>
-            <Text style={Typography.negative}>. </Text>
-            <Text style={Typography.negative}>
-              {STRINGS.wallet_welcome_text_wallet_explanation_3}
-            </Text>
-            <Text> </Text>
-            <Text style={Typography.secondary}>
-              {STRINGS.wallet_welcome_text_wallet_explanation_seed}
-            </Text>
-            <Text style={Typography.negative}>
-              {STRINGS.wallet_welcome_text_wallet_explanation_4}
-            </Text>
+          <Text>. </Text>
+          <Text>{STRINGS.wallet_welcome_text_wallet_explanation_3}</Text>
+          <Text> </Text>
+          <Text style={Typography.accent}>
+            {STRINGS.wallet_welcome_text_wallet_explanation_seed}
           </Text>
-          <View style={styles.words}>
-            <Text style={styles.seed}>{seed}</Text>
-          </View>
-          <Text style={Typography.paragraph}>
-            <Text style={Typography.negative}>
-              {STRINGS.wallet_welcome_text_wallet_explanation_5}
-            </Text>
-            <Text> </Text>
-            <Text style={Typography.secondary}>
-              {STRINGS.wallet_welcome_text_wallet_explanation_seed}
-            </Text>
-            <Text style={Typography.negative}>
-              {STRINGS.wallet_welcome_text_wallet_explanation_6}
-            </Text>
-          </Text>
-          <PoPTextButton
-            onPress={() => connectWithSeed()}
-            buttonStyle="secondary"
-            negative
-            testID="exploring_selector">
-            {STRINGS.wallet_welcome_start_exploring}
-          </PoPTextButton>
-          <PoPTextButton
-            onPress={() => navigation.navigate(STRINGS.navigation_app_wallet_insert_seed)}
-            buttonStyle="secondary"
-            negative>
-            {STRINGS.wallet_welcome_already_know_seed}
-          </PoPTextButton>
+          <Text>{STRINGS.wallet_welcome_text_wallet_explanation_4}</Text>
+        </Text>
+        <View style={styles.words}>
+          <Text style={styles.seed}>{seed}</Text>
         </View>
-      </ScreenWrapper>
-    </View>
+        <Text style={Typography.paragraph}>
+          <Text>{STRINGS.wallet_welcome_text_wallet_explanation_5}</Text>
+          <Text> </Text>
+          <Text style={Typography.accent}>
+            {STRINGS.wallet_welcome_text_wallet_explanation_seed}
+          </Text>
+          <Text>{STRINGS.wallet_welcome_text_wallet_explanation_6}</Text>
+        </Text>
+        <Text style={Typography.paragraph}>
+          <Text>{STRINGS.wallet_welcome_already_know_seed_1}</Text>
+          <Text> </Text>
+          <Text style={Typography.accent}>
+            {STRINGS.wallet_welcome_text_wallet_explanation_seed}
+          </Text>
+          <Text>{STRINGS.wallet_welcome_already_know_seed_2}</Text>
+          <Text> </Text>
+          <Text>{STRINGS.wallet_welcome_start_exploring}</Text>
+          <Text> </Text>
+          <Text style={Typography.accent}>
+            {STRINGS.wallet_welcome_text_wallet_explanation_wallet}
+          </Text>
+          <Text>.</Text>
+        </Text>
+      </View>
+    </ScreenWrapper>
   );
 };
 export default WalletCreateSeed;

@@ -61,7 +61,7 @@ const EventLists = () => {
           style={List.getListItemStyles(true, true)}
           bottomDivider
           onPress={() =>
-            navigation.push(STRINGS.navigation_app_lao, {
+            navigation.navigate(STRINGS.navigation_app_lao, {
               screen: STRINGS.navigation_lao_events,
               params: {
                 screen: STRINGS.navigation_lao_events_upcoming,

@@ -1,29 +1,54 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/core';
+import {
+  createDrawerNavigator,
+  DrawerContentComponentProps,
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerItemList,
+} from '@react-navigation/drawer';
+import Constants from 'expo-constants';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
+import NavigationPadding from 'core/components/NavigationPadding';
 import { makeIcon } from 'core/components/PoPIcon';
 import { AppScreen } from 'core/navigation/AppNavigation';
-import { tabNavigationOptions } from 'core/navigation/ScreenOptions';
+import { drawerNavigationOptions } from 'core/navigation/ScreenOptions';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import { getNetworkManager } from 'core/network';
 import { Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import NoCurrentLaoErrorBoundary from '../errors/NoCurrentLaoErrorBoundary';
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
+import InviteScreen from '../screens/InviteScreen';
 import EventsNavigation from './EventsNavigation';
 
-const OrganizationBottomTabNavigator = createBottomTabNavigator<LaoParamList>();
+const LaoNavigator = createDrawerNavigator<LaoParamList>();
 
 const styles = StyleSheet.create({
   offlineHeader: {
     width: '100%',
-    backgroundColor: Color.warning,
+    backgroundColor: Color.offlineMode,
     paddingVertical: Spacing.x05,
     paddingHorizontal: Spacing.contentSpacing,
-  },
+  } as ViewStyle,
+  drawerWapper: {
+    flex: 1,
+    flexDirection: 'column',
+    margin: Spacing.contentSpacing,
+  } as ViewStyle,
+  spacer: {} as ViewStyle,
+  drawerFooter: {
+    paddingBottom: Spacing.contentSpacing,
+  } as ViewStyle,
+  drawerHeader: {
+    marginBottom: Spacing.x05,
+  } as ViewStyle,
+  drawerContentWrapper: {
+    margin: 0,
+  } as ViewStyle,
 });
 
 const OfflineHeader = () => {
@@ -51,6 +76,48 @@ const wrapWithOfflineHeader = (Component: React.ComponentType<unknown>) => () =>
   );
 };
 
+const DisconnectIcon = makeIcon('logout');
+
+const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentComponentProps) => {
+  const lao = LaoHooks.useCurrentLao();
+
+  return (
+    <View style={styles.drawerWapper}>
+      <DrawerContentScrollView style={styles.drawerContentWrapper}>
+        <View style={styles.drawerHeader}>
+          <Text style={[Typography.base, Typography.important]}>{lao.name}</Text>
+        </View>
+        <DrawerItemList navigation={navigation} descriptors={descriptors} state={state} />
+        <DrawerItem
+          label={STRINGS.navigation_lao_disconnect_title}
+          onPress={() => {
+            getNetworkManager().disconnectFromAll();
+
+            navigation.navigate(STRINGS.navigation_app_home, {
+              screen: STRINGS.navigation_home_home,
+            });
+          }}
+          icon={DisconnectIcon}
+          style={drawerNavigationOptions.drawerItemStyle}
+          labelStyle={drawerNavigationOptions.drawerLabelStyle}
+          activeTintColor={drawerNavigationOptions.drawerActiveTintColor}
+          activeBackgroundColor={drawerNavigationOptions.drawerActiveBackgroundColor}
+          inactiveTintColor={drawerNavigationOptions.drawerInactiveTintColor}
+          inactiveBackgroundColor={drawerNavigationOptions.drawerInactiveBackgroundColor}
+        />
+      </DrawerContentScrollView>
+      <View style={styles.spacer} />
+      <View style={styles.drawerFooter}>
+        <Text
+          selectable
+          style={[Typography.base, Typography.centered, Typography.tiny, Typography.inactive]}>
+          {Constants?.expoConfig?.extra?.commitHash}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
 /**
  * Navigation when connected to a lao
  */
@@ -63,8 +130,16 @@ const LaoNavigation: React.FC<unknown> = () => {
       [
         ...passedScreens,
         {
+          id: STRINGS.navigation_lao_invite,
+          Icon: makeIcon('invite'),
+          Component: InviteScreen,
+          headerShown: true,
+          headerRight: NavigationPadding,
+          order: -1,
+        } as LaoFeature.LaoScreen,
+        {
           id: STRINGS.navigation_lao_events,
-          tabBarIcon: makeIcon('event'),
+          Icon: makeIcon('event'),
           Component: EventsNavigation,
           headerShown: false,
           order: 0,
@@ -83,9 +158,10 @@ const LaoNavigation: React.FC<unknown> = () => {
 
   return (
     <NoCurrentLaoErrorBoundary>
-      <OrganizationBottomTabNavigator.Navigator
+      <LaoNavigator.Navigator
         initialRouteName={STRINGS.navigation_lao_events}
-        screenOptions={tabNavigationOptions}>
+        screenOptions={drawerNavigationOptions}
+        drawerContent={LaoDrawerContent}>
         {screens.map(
           ({
             id,
@@ -95,11 +171,11 @@ const LaoNavigation: React.FC<unknown> = () => {
             headerShown,
             headerLeft,
             headerRight,
-            tabBarIcon,
+            Icon,
             tabBarVisible,
             testID,
           }) => (
-            <OrganizationBottomTabNavigator.Screen
+            <LaoNavigator.Screen
               key={id}
               name={id}
               component={Component}
@@ -109,11 +185,9 @@ const LaoNavigation: React.FC<unknown> = () => {
                 return {
                   title: title || id,
                   headerTitle: headerTitle || title || id,
-                  headerLeft: headerLeft || tabNavigationOptions.headerLeft,
-                  headerRight: headerRight || tabNavigationOptions.headerRight,
-                  tabBarIcon: tabBarIcon || undefined,
-                  // hide the item if tabBarIcon is set to null
-                  tabBarItemStyle: tabBarIcon === null ? { display: 'none' } : undefined,
+                  headerLeft: headerLeft || drawerNavigationOptions.headerLeft,
+                  headerRight: headerRight || drawerNavigationOptions.headerRight,
+                  drawerIcon: Icon,
                   headerShown,
                   tabBarTestID: testID,
                   tabBarStyle:
@@ -123,7 +197,7 @@ const LaoNavigation: React.FC<unknown> = () => {
             />
           ),
         )}
-      </OrganizationBottomTabNavigator.Navigator>
+      </LaoNavigator.Navigator>
     </NoCurrentLaoErrorBoundary>
   );
 };

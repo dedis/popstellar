@@ -1,5 +1,5 @@
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { NavigationTabScreen } from 'core/navigation/typing/Screen';
+import { NavigationDrawerScreen } from 'core/navigation/typing/Screen';
 import { Hash, PopToken } from 'core/objects';
 
 export namespace SocialFeature {
@@ -14,7 +14,7 @@ export namespace SocialFeature {
     containsToken(token: PopToken | undefined): boolean;
   }
 
-  export interface LaoScreen extends NavigationTabScreen {
+  export interface LaoScreen extends NavigationDrawerScreen {
     id: keyof LaoParamList;
   }
 }

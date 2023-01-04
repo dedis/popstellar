@@ -22,8 +22,6 @@ const contextValue = (useRollCallsByLaoId: Record<string, WalletFeature.RollCall
     useRollCallTokensByLaoId: () => [],
     useNamesByLaoId: () => ({ [serializedMockLaoId]: mockLaoName }),
     useRollCallsByLaoId: () => useRollCallsByLaoId,
-    walletItemGenerators: [],
-    walletNavigationScreens: [],
   } as WalletReactContext,
 });
 

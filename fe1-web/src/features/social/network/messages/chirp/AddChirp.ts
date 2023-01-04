@@ -52,9 +52,9 @@ export class AddChirp implements MessageData {
     }
 
     return new AddChirp({
-      ...obj,
-      timestamp: new Timestamp(obj.timestamp),
+      text: obj.text,
       parent_id: obj.parent_id !== undefined ? new Hash(obj.parent_id) : undefined,
+      timestamp: new Timestamp(obj.timestamp),
     });
   }
 }

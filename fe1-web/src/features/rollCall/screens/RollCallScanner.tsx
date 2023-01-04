@@ -99,7 +99,7 @@ const RollCallOpened = () => {
       console.error(err.toString());
       toast.show(err.toString(), {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     },
@@ -136,20 +136,20 @@ const RollCallOpened = () => {
       if (addAttendeePopToken(token.pop_token)) {
         toast.show(STRINGS.roll_call_scan_participant, {
           type: 'success',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       } else {
         toast.show(STRINGS.roll_call_scan_participant_twice, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       }
     } catch {
       toast.show(STRINGS.roll_call_invalid_token, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }

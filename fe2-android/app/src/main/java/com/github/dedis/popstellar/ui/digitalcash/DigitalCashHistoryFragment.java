@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+
 public class DigitalCashHistoryFragment extends Fragment {
   private static final String TAG = DigitalCashHistoryFragment.class.getSimpleName();
 
@@ -26,26 +28,20 @@ public class DigitalCashHistoryFragment extends Fragment {
     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
     RecyclerView.ItemDecoration decoration =
         new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
-    HistoryListAdapter adapter =
-        new HistoryListAdapter(
-            viewModel.getTransactionHistory().getValue(), viewModel.getTokens().getValue());
+
+    HistoryListAdapter adapter = new HistoryListAdapter(viewModel, requireActivity());
 
     transactionList.setLayoutManager(layoutManager);
     transactionList.addItemDecoration(decoration);
     transactionList.setAdapter(adapter);
 
     // Update dynamically the events in History
-    viewModel
-        .getTransactionHistory()
-        .observe(
-            requireActivity(),
-            transactionObjects -> {
-              if (transactionObjects != null) {
-                transactionObjects.forEach(object -> Log.d(TAG, "Object is " + object.toString()));
-                Log.d(TAG, "Transaction got updated " + transactionObjects.size());
-                adapter.replaceList(transactionObjects, viewModel.getTokens().getValue());
-              }
-            });
+    viewModel.addDisposable(
+        viewModel
+            .getTransactionsObservable()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                adapter::setList, error -> Log.d(TAG, "error with history update " + error)));
     return view;
   }
 

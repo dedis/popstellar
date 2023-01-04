@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
@@ -180,7 +181,10 @@ public class LAONetworkManager implements MessageSender {
     Log.d(TAG, "handling broadcast msg : " + broadcast);
     try {
       messageHandler.handleMessage(this, broadcast.getChannel(), broadcast.getMessage());
-    } catch (DataHandlingException | UnknownLaoException | UnknownRollCallException e) {
+    } catch (DataHandlingException
+        | UnknownLaoException
+        | UnknownRollCallException
+        | NoRollCallException e) {
       Log.e(TAG, "Error while handling received message", e);
       unprocessed.onNext(broadcast);
     }
@@ -190,7 +194,10 @@ public class LAONetworkManager implements MessageSender {
     for (MessageGeneral msg : messages) {
       try {
         messageHandler.handleMessage(this, channel, msg);
-      } catch (DataHandlingException | UnknownLaoException | UnknownRollCallException e) {
+      } catch (DataHandlingException
+          | UnknownLaoException
+          | UnknownRollCallException
+          | NoRollCallException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
       }
     }

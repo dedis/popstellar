@@ -18,9 +18,9 @@ import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.security.GeneralSecurityException;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -60,16 +60,13 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
   public void loadIntentData() {
     if (getIntent().getExtras() != null) {
       String id = getIntent().getExtras().getString(Constants.LAO_ID_EXTRA, "");
-      viewModel.subscribeToLao(id);
       viewModel.setLaoId(id);
       viewModel.setRollCallId(getIntent().getExtras().getString(Constants.ROLL_CALL_ID, ""));
     }
   }
 
   public void openLao() {
-    startActivity(
-        LaoDetailActivity.newIntentForLao(
-            this, Objects.requireNonNull(viewModel.getCurrentLao().getValue()).getId()));
+    startActivity(LaoDetailActivity.newIntentForLao(this, viewModel.getLaoId()));
   }
 
   public static DigitalCashViewModel obtainViewModel(FragmentActivity activity) {
@@ -138,12 +135,14 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
   }
 
   private boolean openIssueTab() {
-    PublicKey organizerKey =
-        Objects.requireNonNull(viewModel.getCurrentLao().getValue()).getOrganizer();
-    PublicKey myKey = viewModel.getKeyManager().getMainPublicKey();
-
-    if (!myKey.equals(organizerKey)) {
-      ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
+    try {
+      PublicKey organizerKey = viewModel.getCurrentLao().getOrganizer();
+      if (!viewModel.getOwnKey().equals(organizerKey)) {
+        ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
+        return false;
+      }
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
       return false;
     }
 

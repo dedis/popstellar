@@ -1,116 +1,134 @@
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
+import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import { ConfirmModal, ProfileIcon } from 'core/components';
+import { ProfileIcon } from 'core/components';
 import PoPIconButton from 'core/components/PoPIconButton';
-import { Typography } from 'core/styles';
-import { gray } from 'core/styles/color';
+import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
+import { ActionSheetOption, useActionSheet } from 'core/hooks/ActionSheet';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
+import {
+  SocialHomeParamList,
+  SocialParamList,
+  SocialProfileParamList,
+  SocialSearchParamList,
+  SocialTopChirpsParamList,
+} from 'core/navigation/typing/social';
+import { List, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
 import { Chirp } from '../objects';
-import { makeReactionsList } from '../reducer';
+import { makeHasReactedSelector, makeReactionCountsSelector } from '../reducer';
+
+type NavigationProps = CompositeScreenProps<
+  CompositeScreenProps<
+    StackScreenProps<
+      | SocialHomeParamList
+      | SocialTopChirpsParamList
+      | SocialSearchParamList
+      | SocialProfileParamList,
+      /* there is probably a better way to type this, this component can appear in any screen of the above navigators */
+      any
+    >,
+    StackScreenProps<
+      SocialParamList,
+      | typeof STRINGS.social_media_navigation_tab_home
+      | typeof STRINGS.social_media_navigation_tab_top_chirps
+      | typeof STRINGS.social_media_navigation_tab_search
+      | typeof STRINGS.social_media_navigation_tab_profile
+    >
+  >,
+  CompositeScreenProps<
+    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
+    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+  >
+>;
 
 /**
  * Component to display a chirp
  */
 
 const styles = StyleSheet.create({
-  container: {
-    borderColor: gray,
-    borderTopWidth: 0,
-    borderWidth: 1,
-    flexDirection: 'column',
-    padding: 10,
-    width: 600,
+  profileIcon: {
+    alignSelf: 'flex-start',
   } as ViewStyle,
-  innerContainer: {
-    flexDirection: 'row',
-  } as ViewStyle,
-  leftView: {
-    width: 60,
-  } as ViewStyle,
-  rightView: {
-    display: 'flex',
-    flexDirection: 'column',
-  } as ViewStyle,
-  senderText: {
-    fontSize: 18,
-    fontWeight: '600',
-  } as TextStyle,
-  senderView: {
-    fontSize: 18,
-    marginTop: 7,
-  } as ViewStyle,
-  chirpText: {
-    fontSize: 18,
-    paddingBottom: 20,
-    paddingTop: 10,
-    width: 520,
-  } as TextStyle,
-  deletedChirpText: {
-    fontSize: 18,
-    paddingBottom: 20,
-    paddingTop: 10,
-    width: 520,
-    color: gray,
-  } as TextStyle,
   reactionsView: {
+    width: '100%',
     flexDirection: 'row',
-    fontSize: 18,
+    flexWrap: 'wrap',
   } as ViewStyle,
   reactionView: {
     flexDirection: 'row',
-    flex: 1,
-    marginRight: 10,
+    alignItems: 'center',
+    marginTop: Spacing.x1,
+    marginRight: Spacing.x1,
   } as ViewStyle,
-  bottomView: {
-    flexDirection: 'row',
-    display: 'flex',
-    marginTop: 10,
-  } as ViewStyle,
-  deleteChirpContainer: {
-    marginRight: 'auto',
-  } as ViewStyle,
+  reactionCounter: {
+    marginLeft: Spacing.x05,
+  } as TextStyle,
+  chirpButtonSpacer: {
+    flexGrow: 1,
+  },
   chirpTimeContainer: {
+    marginTop: Spacing.x1,
+    alignSelf: 'flex-end',
     marginLeft: 'auto',
   } as ViewStyle,
 });
 
 const FOUR_SECONDS = 4000;
 
-const ChirpCard = ({ chirp }: IPropTypes) => {
+const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
   const isConnected = SocialHooks.useConnectedToLao();
+  const navigation = useNavigation<NavigationProps['navigation']>();
+
   const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
 
   if (laoId === undefined) {
     throw new Error('Impossible to render chirp, current lao id is undefined');
   }
 
-  const reactionList = useMemo(() => makeReactionsList(laoId), [laoId]);
-  const reactions = useSelector(reactionList)[chirp.id.toString()];
+  const selectReactionList = useMemo(
+    () => makeReactionCountsSelector(laoId, chirp.id),
+    [laoId, chirp.id],
+  );
+  const reactions = useSelector(selectReactionList);
 
-  const thumbsUp = reactions ? reactions['👍'] : 0;
-  const thumbsDown = reactions ? reactions['👎'] : 0;
-  const heart = reactions ? reactions['❤️'] : 0;
+  const selectHasReacted = useMemo(
+    () => makeHasReactedSelector(laoId, chirp.id, currentUserPopTokenPublicKey),
+    [laoId, chirp.id, currentUserPopTokenPublicKey],
+  );
+  const hasReacted = useSelector(selectHasReacted);
 
-  const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false);
+  const thumbsUp = reactions['👍'];
+  const thumbsDown = reactions['👎'];
+  const heart = reactions['❤️'];
 
-  const addReactionDisabled = !isConnected || !currentUserPopTokenPublicKey;
+  const reactionsDisabled = {
+    '👍': !isConnected || !currentUserPopTokenPublicKey || hasReacted['👍'],
+    '👎': !isConnected || !currentUserPopTokenPublicKey || hasReacted['👎'],
+    '❤️': !isConnected || !currentUserPopTokenPublicKey || hasReacted['❤️'],
+  };
+
+  const showActionSheet = useActionSheet();
 
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
       toast.show(`Could not add reaction, error: ${err}`, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     });
@@ -121,8 +139,6 @@ const ChirpCard = ({ chirp }: IPropTypes) => {
     currentUserPopTokenPublicKey &&
     currentUserPopTokenPublicKey.valueOf() === chirp.sender.valueOf();
 
-  const deleteDisabled = !isConnected || !currentUserPopTokenPublicKey;
-
   const deleteChirp = () => {
     if (!currentUserPopTokenPublicKey) {
       return;
@@ -131,98 +147,118 @@ const ChirpCard = ({ chirp }: IPropTypes) => {
     requestDeleteChirp(currentUserPopTokenPublicKey, chirp.id, laoId).catch((err) => {
       toast.show(`Could not remove chirp, error: ${err}`, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     });
-    setDeleteModalIsVisible(false);
   };
 
+  const listStyle = List.getListItemStyles(isFirstItem, isLastItem);
+
+  const actionSheetOptions: ActionSheetOption[] = [];
+  if (isSender && !chirp.isDeleted && isConnected) {
+    actionSheetOptions.push({
+      displayName: STRINGS.social_media_delete_chirp,
+      action: deleteChirp,
+    });
+  }
+
   return (
-    <>
-      <View style={styles.container}>
-        <View style={styles.innerContainer}>
-          <View style={styles.leftView}>
-            <ProfileIcon publicKey={chirp.sender} />
-          </View>
-          <View style={styles.rightView}>
-            <View style={styles.senderView}>
-              <Text style={styles.senderText}>{chirp.sender.valueOf()}</Text>
-            </View>
-            {chirp.isDeleted ? (
-              <Text style={styles.deletedChirpText}>{STRINGS.deleted_chirp}</Text>
-            ) : (
-              <Text style={styles.chirpText}>{chirp.text}</Text>
-            )}
-            <View style={styles.reactionsView}>
-              {!chirp.isDeleted && (
-                <>
-                  <View style={styles.reactionView}>
-                    <PoPIconButton
-                      name="thumbsUp"
-                      testID="thumbs-up"
-                      onPress={() => addReaction('👍')}
-                      disabled={addReactionDisabled}
-                    />
-                    <Text>{`  ${thumbsUp}`}</Text>
-                  </View>
-                  <View style={styles.reactionView}>
-                    <PoPIconButton
-                      name="thumbsDown"
-                      testID="thumbs-down"
-                      onPress={() => addReaction('👎')}
-                      disabled={addReactionDisabled}
-                    />
-                    <Text>{`  ${thumbsDown}`}</Text>
-                  </View>
-                  <View style={styles.reactionView}>
-                    <PoPIconButton
-                      name="heart"
-                      testID="heart"
-                      onPress={() => addReaction('❤️')}
-                      disabled={addReactionDisabled}
-                    />
-                    <Text>{`  ${heart}`}</Text>
-                  </View>
-                </>
-              )}
-            </View>
-          </View>
+    <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
+      <PoPTouchableOpacity
+        onPress={() =>
+          navigation.navigate(STRINGS.social_media_navigation_user_profile, {
+            userPkString: chirp.sender.valueOf(),
+          })
+        }>
+        <View style={[List.icon, styles.profileIcon]}>
+          <ProfileIcon publicKey={chirp.sender} />
         </View>
-        <View style={styles.bottomView}>
-          {isSender && !chirp.isDeleted && (
-            <View style={styles.deleteChirpContainer}>
-              <PoPIconButton
-                name="delete"
-                testID={`delete_chirp_${chirp.id}`}
-                onPress={() => {
-                  setDeleteModalIsVisible(true);
-                }}
-                disabled={deleteDisabled}
-              />
-            </View>
+      </PoPTouchableOpacity>
+      <ListItem.Content>
+        <ListItem.Title
+          style={[Typography.base, Typography.small, Typography.inactive]}
+          numberOfLines={1}>
+          {chirp.sender.valueOf()}
+        </ListItem.Title>
+        <ListItem.Subtitle>
+          {chirp.isDeleted ? (
+            <Text style={[Typography.base, Typography.inactive]}>{STRINGS.deleted_chirp}</Text>
+          ) : (
+            <Text style={Typography.base}>{chirp.text}</Text>
           )}
+        </ListItem.Subtitle>
+        <View style={styles.reactionsView}>
+          {!chirp.isDeleted && (
+            <>
+              <View style={styles.reactionView}>
+                <PoPIconButton
+                  name="thumbsUp"
+                  testID="thumbs-up"
+                  onPress={() => addReaction('👍')}
+                  disabled={reactionsDisabled['👍']}
+                  size="small"
+                  toolbar
+                />
+                <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
+                  {thumbsUp}
+                </Text>
+              </View>
+              <View style={styles.reactionView}>
+                <PoPIconButton
+                  name="thumbsDown"
+                  testID="thumbs-down"
+                  onPress={() => addReaction('👎')}
+                  disabled={reactionsDisabled['👎']}
+                  size="small"
+                  toolbar
+                />
+                <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
+                  {thumbsDown}
+                </Text>
+              </View>
+              <View style={styles.reactionView}>
+                <PoPIconButton
+                  name="heart"
+                  testID="heart"
+                  onPress={() => addReaction('❤️')}
+                  disabled={reactionsDisabled['❤️']}
+                  size="small"
+                  toolbar
+                />
+                <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
+                  {heart}
+                </Text>
+              </View>
+              {actionSheetOptions.length > 0 && (
+                <View style={styles.reactionView}>
+                  <PoPIconButton
+                    name="options"
+                    testID="chirp_action_options"
+                    onPress={() => showActionSheet(actionSheetOptions)}
+                    size="small"
+                    toolbar
+                  />
+                </View>
+              )}
+            </>
+          )}
+          <View style={styles.chirpButtonSpacer} />
           <View style={styles.chirpTimeContainer}>
             <Text style={[Typography.base, Typography.small]}>
               <TimeAgo date={chirp.time.valueOf() * 1000} />
             </Text>
           </View>
         </View>
-      </View>
-      <ConfirmModal
-        visibility={deleteModalIsVisible}
-        setVisibility={setDeleteModalIsVisible}
-        title={STRINGS.modal_chirp_deletion_title}
-        description={STRINGS.modal_chirp_deletion_description}
-        onConfirmPress={() => deleteChirp()}
-        buttonConfirmText={STRINGS.general_yes}
-      />
-    </>
+      </ListItem.Content>
+    </ListItem>
   );
 };
 
 const propTypes = {
   chirp: PropTypes.instanceOf(Chirp).isRequired,
+  isFirstItem: PropTypes.bool.isRequired,
+  isLastItem: PropTypes.bool.isRequired,
 };
 
 ChirpCard.prototype = propTypes;

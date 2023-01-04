@@ -16,19 +16,18 @@ import ScannerInput from 'core/components/ScannerInput';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { WalletParamList } from 'core/navigation/typing/WalletParamList';
+import { DigitalCashParamList } from 'core/navigation/typing/DigitalCashParamList';
 import { Hash, PublicKey } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { DigitalCashHooks } from '../../hooks';
-import { DigitalCashFeature } from '../../interface';
 import { requestCoinbaseTransaction, requestSendTransaction } from '../../network';
 import { makeBalanceSelector } from '../../reducer';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_send_receive>,
+  StackScreenProps<DigitalCashParamList, typeof STRINGS.navigation_digital_cash_send_receive>,
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
 >;
 
@@ -228,7 +227,7 @@ const SendReceive = () => {
             value={beneficiary}
             onChange={setBeneficiary}
             onPress={() => {
-              navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
+              navigation.navigate(STRINGS.navigation_digital_cash_wallet_scanner, {
                 rollCallId: rollCallId?.valueOf(),
                 isCoinbase: isCoinbase,
               });
@@ -316,11 +315,4 @@ export const SendReceiveHeaderRight = () => {
       </Modal>
     </>
   );
-};
-
-export const SendReceiveScreen: DigitalCashFeature.WalletScreen = {
-  id: STRINGS.navigation_wallet_digital_cash_send_receive,
-  title: STRINGS.navigation_wallet_digital_cash_send_receive_title,
-  Component: SendReceive,
-  headerRight: SendReceiveHeaderRight,
 };

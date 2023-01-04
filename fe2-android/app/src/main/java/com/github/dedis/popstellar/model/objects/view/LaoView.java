@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.*;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
@@ -103,14 +102,6 @@ public final class LaoView {
 
   public long getCreation() {
     return lao.getCreation();
-  }
-
-  public Map<PublicKey, Set<TransactionObject>> getTransactionHistoryByUser() {
-    return Copyable.copyMapOfSet(lao.getTransactionHistoryByUser());
-  }
-
-  public Map<PublicKey, Set<TransactionObject>> getTransactionByUser() {
-    return Copyable.copyMapOfSet(lao.getTransactionByUser());
   }
 
   @NonNull
