@@ -18,6 +18,7 @@
   <string name="tab_digital_cash">Digital Cash</string>
   <string name="event_list">Event List</string>
   <string name="witnessing">Witnessing</string>
+  <string name="tokens">Tokens</string>
 
   <!-- Home -->
   <string name="home_title">My LAOs</string>
@@ -218,6 +219,17 @@
   <string name="seed_import_success">Seed successfully imported !</string>
   <string name="no_seed_storage_found">No wallet storage was found</string>
 
+  <!--  Tokens -->
+  <string name="valid_token_title">Valid Token</string>
+  <string name="previous_token_title">Previous Tokens</string>
+  <string name="valid">Valid</string>
+  <string name="invalid">Invalid</string>
+  <string name="empty_tokens_text">Hey there ! Seems you have no tokens.\n\nThey are important,
+    they grant you participation to all features in your local autonomous organization (LAO) such as
+    elections, digital cash and social media.\nTo get a token, you must attend a roll call and wait
+    until your LAO\'s organizer closes it.\n\nIf you are an organizer you may schedule a roll call !
+  </string>
+
   <!-- Digital Cash -->
   <string name="digital_cash_send">Send</string>
   <string name="digital_cash_issue">Issue</string>
@@ -294,6 +306,7 @@
   <string name="add_rc_description">Add Roll call</string>
   <string name="rc_qr_description">Roll call qr code</string>
   <string name="add_witness_description">Add Witness</string>
+  <string name="qr_code_icon_description">An icon representing a qr code</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>

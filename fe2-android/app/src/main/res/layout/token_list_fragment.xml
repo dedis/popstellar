@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:background="@color/background_gray"
+    android:id="@+id/fragment_tokens"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+      android:id="@+id/valid_token_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/container_margin"
+      android:orientation="vertical"
+      android:visibility="gone"
+      app:layout_constraintTop_toTopOf="parent">
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:layout_gravity="start"
+        style="@style/element_title"
+        android:text="@string/valid_token_title" />
+
+      <include
+        android:id="@+id/valid_token_card"
+        layout="@layout/token_layout" />
+    </LinearLayout>
+
+    <LinearLayout
+      android:id="@+id/previous_token_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/container_margin"
+      android:orientation="vertical"
+      android:visibility="gone"
+      app:layout_constraintTop_toBottomOf="@id/valid_token_layout">
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:layout_gravity="start"
+        style="@style/element_title"
+        android:text="@string/previous_token_title" />
+
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tokens_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+      android:id="@+id/empty_token_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/margin_text_small"
+      app:layout_constraintTop_toTopOf="parent">
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/text_high_emphasis"
+        android:text="@string/empty_tokens_text" />
+
+    </LinearLayout>
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
