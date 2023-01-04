@@ -118,7 +118,7 @@ public class ElectionFragmentTest {
         protected void before() throws UnknownLaoException {
           hiltRule.inject();
 
-          electionRepository.updateElection(LAO_ID, ELECTION);
+          electionRepository.updateElection(ELECTION);
 
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
@@ -270,14 +270,14 @@ public class ElectionFragmentTest {
   }
 
   private void openElection() {
-    electionRepository.updateElection(LAO_ID, ELECTION.builder().setState(OPENED).build());
+    electionRepository.updateElection(ELECTION.builder().setState(OPENED).build());
   }
 
   private void closeElection() {
-    electionRepository.updateElection(LAO_ID, ELECTION.builder().setState(CLOSED).build());
+    electionRepository.updateElection(ELECTION.builder().setState(CLOSED).build());
   }
 
   private void receiveResults() {
-    electionRepository.updateElection(LAO_ID, ELECTION.builder().setState(RESULTS_READY).build());
+    electionRepository.updateElection(ELECTION.builder().setState(RESULTS_READY).build());
   }
 }

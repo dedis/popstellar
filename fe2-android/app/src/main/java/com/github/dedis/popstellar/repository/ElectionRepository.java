@@ -15,6 +15,11 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
+/**
+ * This class is the repository of the elections events
+ *
+ * <p>Its main purpose is to store elections and publish updates
+ */
 @Singleton
 public class ElectionRepository {
 
@@ -25,21 +30,64 @@ public class ElectionRepository {
     // Constructor required by Hilt
   }
 
-  public void updateElection(@NonNull String laoId, @NonNull Election election) {
-    getLaoElections(laoId).updateElection(election);
+  /**
+   * Update the election state.
+   *
+   * <p>It can be a new election or an update.
+   *
+   * @param election the election to update
+   */
+  public void updateElection(@NonNull Election election) {
+    getLaoElections(election.getChannel().extractLaoId()).updateElection(election);
   }
 
+  /**
+   * Retrieve an election state given its Lao and its ID
+   *
+   * @param laoId of the lao the election is part of
+   * @param electionId id of the election
+   * @return the election state
+   * @throws UnknownElectionException if no election with this id exist in this lao
+   */
   @NonNull
   public Election getElection(@NonNull String laoId, @NonNull String electionId)
       throws UnknownElectionException {
     return getLaoElections(laoId).getElection(electionId);
   }
 
+  /**
+   * Retrieve an election state given its channel
+   *
+   * @param channel of the election
+   * @return the election state
+   * @throws UnknownElectionException if no election with this id exist in the lao
+   */
+  @NonNull
+  public Election getElectionByChannel(@NonNull Channel channel) throws UnknownElectionException {
+    return getElection(channel.extractLaoId(), channel.extractElectionId());
+  }
+
+  /**
+   * Retrieve an election observable given its Lao and its ID
+   *
+   * <p>The observable will carry any update made fow this election
+   *
+   * @param laoId of the lao the election is part of
+   * @param electionId id of the election
+   * @return the election observable
+   * @throws UnknownElectionException if no election with this id exist in this lao
+   */
   public Observable<Election> getElectionObservable(
       @NonNull String laoId, @NonNull String electionId) throws UnknownElectionException {
     return getLaoElections(laoId).getElectionSubject(electionId);
   }
 
+  /**
+   * Compute an Observable containing the set of ids of all election in the given Lao
+   *
+   * @param laoId lao of the elections
+   * @return an observable that will be updated with the set of all election's ids
+   */
   @NonNull
   public Observable<Set<String>> getElectionsObservable(@NonNull String laoId) {
     return getLaoElections(laoId).getElectionsSubject();
@@ -49,11 +97,6 @@ public class ElectionRepository {
   private synchronized LaoElections getLaoElections(String laoId) {
     // Create the lao chirps object if it is not present yet
     return electionsByLao.computeIfAbsent(laoId, lao -> new LaoElections());
-  }
-
-  @NonNull
-  public Election getElectionByChannel(Channel channel) throws UnknownElectionException {
-    return getElection(channel.extractLaoId(), channel.extractElectionId());
   }
 
   private static final class LaoElections {
@@ -74,7 +117,6 @@ public class ElectionRepository {
     }
 
     public Election getElection(@NonNull String electionId) throws UnknownElectionException {
-
       Election election = electionById.get(electionId);
 
       if (election == null) {

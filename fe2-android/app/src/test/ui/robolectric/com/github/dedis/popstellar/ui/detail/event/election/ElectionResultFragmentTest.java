@@ -123,7 +123,7 @@ public class ElectionResultFragmentTest {
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
           when(laoRepository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
-          electionRepository.updateElection(LAO_ID, ELECTION);
+          electionRepository.updateElection(ELECTION);
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
           when(networkManager.getMessageSender()).thenReturn(messageSender);

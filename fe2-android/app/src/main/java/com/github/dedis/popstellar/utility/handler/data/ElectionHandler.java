@@ -65,7 +65,7 @@ public final class ElectionHandler {
             .setState(CREATED)
             .build();
     // Add new election to repository
-    electionRepository.updateElection(laoView.getId(), election);
+    electionRepository.updateElection(election);
 
     // Once the election is created, we subscribe to the election channel
     context.getMessageSender().subscribe(election.getChannel()).subscribe();
@@ -101,7 +101,7 @@ public final class ElectionHandler {
             .setState(RESULTS_READY)
             .build();
 
-    electionRepository.updateElection(channel.extractLaoId(), election);
+    electionRepository.updateElection(election);
   }
 
   private Map<String, Set<QuestionResult>> computeResults(
@@ -141,7 +141,7 @@ public final class ElectionHandler {
         election.builder().setState(OPENED).setStart(openElection.getOpenedAt()).build();
 
     Log.d(TAG, "election opened " + updated.getStartTimestamp());
-    electionRepository.updateElection(channel.extractLaoId(), updated);
+    electionRepository.updateElection(updated);
   }
 
   /**
@@ -159,7 +159,7 @@ public final class ElectionHandler {
     Election election =
         electionRepository.getElectionByChannel(channel).builder().setState(CLOSED).build();
 
-    electionRepository.updateElection(channel.extractLaoId(), election);
+    electionRepository.updateElection(election);
   }
 
   /**
@@ -216,7 +216,7 @@ public final class ElectionHandler {
                   .collect(Collectors.toList()));
         }
 
-        electionRepository.updateElection(channel.extractLaoId(), builder.build());
+        electionRepository.updateElection(builder.build());
       }
     }
   }
@@ -258,7 +258,7 @@ public final class ElectionHandler {
             .setElectionKey(electionKey.getElectionVoteKey())
             .build();
 
-    electionRepository.updateElection(channel.extractLaoId(), election);
+    electionRepository.updateElection(election);
 
     Log.d(TAG, "handleElectionKey: election key has been set ");
   }

@@ -269,7 +269,7 @@ public class ElectionStartFragmentTest {
     displayAssertions(STATUS_WAITING, START_SCHEDULED, false);
 
     // Update election start time
-    electionRepo.updateElection(LAO_ID, election.builder().setStart(PAST_TIME).build());
+    electionRepo.updateElection(election.builder().setStart(PAST_TIME).build());
 
     // Election start time has passed, should display that it's ready and start button enabled
     displayAssertions(STATUS_READY, START_START, true);
@@ -370,7 +370,7 @@ public class ElectionStartFragmentTest {
   }
 
   private void setupViewModel(long electionStart) {
-    electionRepo.updateElection(LAO_ID, election.builder().setStart(electionStart).build());
+    electionRepo.updateElection(election.builder().setStart(electionStart).build());
     fragmentRule
         .getScenario()
         .onFragment(

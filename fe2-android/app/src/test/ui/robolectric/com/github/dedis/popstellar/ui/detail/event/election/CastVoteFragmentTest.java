@@ -136,7 +136,7 @@ public class CastVoteFragmentTest {
           when(rollCallRepo.getRollCallsObservableInLao(any())).thenReturn(rcObservable);
           when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
           when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
-          electionRepo.updateElection(LAO_ID, ELECTION);
+          electionRepo.updateElection(ELECTION);
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
           when(keyManager.getValidPoPToken(any(), any())).thenReturn(generatePoPToken());
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));

@@ -34,7 +34,7 @@ public class ElectionRepositoryTest {
 
     assertCurrentValueIs(ids, emptySet());
 
-    repo.updateElection(LAO_ID, ELECTION);
+    repo.updateElection(ELECTION);
 
     assertCurrentValueIs(ids, singleton(ELECTION.getId()));
   }
@@ -43,7 +43,7 @@ public class ElectionRepositoryTest {
   public void electionUpdateIsCorrectlyDispatched() throws UnknownElectionException {
     // Create repository with an election inside it
     ElectionRepository repo = new ElectionRepository();
-    repo.updateElection(LAO_ID, ELECTION);
+    repo.updateElection(ELECTION);
     TestObserver<Election> electionObserver =
         repo.getElectionObservable(LAO_ID, ELECTION.getId()).test();
 
@@ -52,7 +52,7 @@ public class ElectionRepositoryTest {
 
     // Update Election
     Election updated = ELECTION.builder().setState(EventState.CLOSED).build();
-    repo.updateElection(LAO_ID, updated);
+    repo.updateElection(updated);
 
     // Assert that the update was correctly dispatched
     assertCurrentValueIs(electionObserver, updated);
@@ -62,7 +62,7 @@ public class ElectionRepositoryTest {
   @Test
   public void electionByChannelHasSameEffectAsGetElection() throws UnknownElectionException {
     ElectionRepository repo = new ElectionRepository();
-    repo.updateElection(LAO_ID, ELECTION);
+    repo.updateElection(ELECTION);
 
     assertThat(
         repo.getElection(LAO_ID, ELECTION.getId()),
