@@ -18,12 +18,12 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
+import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -67,13 +67,6 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
         Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
     viewModel.subscribeToLao(laoId);
     viewModel.subscribeToRollCalls(laoId);
-
-    if (!getIntent()
-        .getExtras()
-        .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
-        .equals(Constants.LAO_DETAIL_EXTRA)) {
-      setupLaoWalletFragment();
-    }
   }
 
   @Override
@@ -172,8 +165,8 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
       case EVENTS:
         openEventsTab();
         return true;
-      case IDENTITY:
-        openIdentityTab();
+      case TOKENS:
+        openTokensTab();
         return true;
       case WITNESSING:
         openWitnessTab();
@@ -200,11 +193,9 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
         getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
 
-  private void openIdentityTab() {
+  private void openTokensTab() {
     setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_identity,
-        () -> IdentityFragment.newInstance(viewModel.getPublicKey()));
+        getSupportFragmentManager(), R.id.fragment_tokens, TokenListFragment::newInstance);
   }
 
   private void openWitnessTab() {
@@ -223,11 +214,6 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(this, TAG, R.string.error_no_lao);
     }
-  }
-
-  private void setupLaoWalletFragment() {
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
   }
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {

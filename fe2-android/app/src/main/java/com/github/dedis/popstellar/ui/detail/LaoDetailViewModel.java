@@ -101,7 +101,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
           lao ->
               lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnessMessages().values()));
 
-  private final MutableLiveData<List<RollCall>> mAttendedRollCalls = new MutableLiveData<>();
   /*
    * Dependencies for this class
    */
@@ -188,10 +187,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public MutableLiveData<List<RollCall>> getRollCalls() {
     return mRollCalls;
-  }
-
-  public LiveData<List<RollCall>> getAttendedRollCalls() {
-    return mAttendedRollCalls;
   }
 
   @Override
@@ -675,6 +670,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mCurrentElectionVotes;
   }
 
+  public RollCall getLastClosedRollCall() throws NoRollCallException {
+    return rollCallRepo.getLastClosedRollCall(laoId);
+  }
+
   public RollCall getCurrentRollCall() {
     return currentRollCall;
   }
@@ -741,6 +740,28 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         .andThen(dispatchLaoUpdate(updateLao, laoView, channel, msg));
   }
 
+  public Observable<List<RollCall>> getAttendedRollCalls() {
+    return rollCallRepo
+        .getRollCallsObservableInLao(laoId)
+        .map( // We map the list of id to a list of corresponding roll calls
+            ids ->
+                ids.stream()
+                    .map(
+                        rcId -> {
+                          try {
+                            return rollCallRepo.getRollCallWithPersistentId(laoId, rcId);
+                          } catch (UnknownRollCallException e) {
+                            // Roll calls whose ids are in that list may not be absent
+                            throw new IllegalStateException(
+                                "Could not fetch roll call with id " + rcId);
+                          }
+                        })
+                    .filter(
+                        this::attendedOrOrganized // Keep only attended roll calls
+                        )
+                    .collect(Collectors.toList()));
+  }
+
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */
   private Completable dispatchLaoUpdate(
       UpdateLao updateLao, LaoView laoView, Channel channel, MessageGeneral msg) {
@@ -804,10 +825,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                           .collect(Collectors.toList());
 
                   mRollCalls.setValue(rollCallList);
-                  mAttendedRollCalls.setValue(
-                      rollCallList.stream()
-                          .filter(rollCall -> rollCall.isClosed() && attendedOrOrganized(rollCall))
-                          .collect(Collectors.toList()));
                 },
                 error -> Log.d(TAG, "Error updating Roll Call : " + error)));
   }
