@@ -635,11 +635,14 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                       "borderWidth": 1,
                                                       "padding": 8,
                                                     },
+                                                    Object {
+                                                      "backgroundColor": "transparent",
+                                                    },
                                                   ]
                                                 }
                                               >
                                                 <View>
-                                                  {"name":"thumbs-up-sharp","size":16,"color":"#fff"}
+                                                  {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
                                                 </View>
                                               </View>
                                             </View>
@@ -724,11 +727,14 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                       "borderWidth": 1,
                                                       "padding": 8,
                                                     },
+                                                    Object {
+                                                      "backgroundColor": "transparent",
+                                                    },
                                                   ]
                                                 }
                                               >
                                                 <View>
-                                                  {"name":"thumbs-down-sharp","size":16,"color":"#fff"}
+                                                  {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                                 </View>
                                               </View>
                                             </View>
@@ -813,11 +819,14 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                       "borderWidth": 1,
                                                       "padding": 8,
                                                     },
+                                                    Object {
+                                                      "backgroundColor": "transparent",
+                                                    },
                                                   ]
                                                 }
                                               >
                                                 <View>
-                                                  {"name":"heart","size":16,"color":"#fff"}
+                                                  {"name":"heart","size":16,"color":"#3742fa"}
                                                 </View>
                                               </View>
                                             </View>
@@ -1163,11 +1172,14 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                       "borderWidth": 1,
                                                       "padding": 8,
                                                     },
+                                                    Object {
+                                                      "backgroundColor": "transparent",
+                                                    },
                                                   ]
                                                 }
                                               >
                                                 <View>
-                                                  {"name":"thumbs-up-sharp","size":16,"color":"#fff"}
+                                                  {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
                                                 </View>
                                               </View>
                                             </View>
@@ -1252,11 +1264,14 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                       "borderWidth": 1,
                                                       "padding": 8,
                                                     },
+                                                    Object {
+                                                      "backgroundColor": "transparent",
+                                                    },
                                                   ]
                                                 }
                                               >
                                                 <View>
-                                                  {"name":"thumbs-down-sharp","size":16,"color":"#fff"}
+                                                  {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                                 </View>
                                               </View>
                                             </View>
@@ -1341,11 +1356,14 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                       "borderWidth": 1,
                                                       "padding": 8,
                                                     },
+                                                    Object {
+                                                      "backgroundColor": "transparent",
+                                                    },
                                                   ]
                                                 }
                                               >
                                                 <View>
-                                                  {"name":"heart","size":16,"color":"#fff"}
+                                                  {"name":"heart","size":16,"color":"#3742fa"}
                                                 </View>
                                               </View>
                                             </View>
@@ -1697,11 +1715,14 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                       "borderWidth": 1,
                                                       "padding": 8,
                                                     },
+                                                    Object {
+                                                      "backgroundColor": "transparent",
+                                                    },
                                                   ]
                                                 }
                                               >
                                                 <View>
-                                                  {"name":"thumbs-up-sharp","size":16,"color":"#fff"}
+                                                  {"name":"thumbs-up-sharp","size":16,"color":"#3742fa"}
                                                 </View>
                                               </View>
                                             </View>
@@ -1786,11 +1807,14 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                       "borderWidth": 1,
                                                       "padding": 8,
                                                     },
+                                                    Object {
+                                                      "backgroundColor": "transparent",
+                                                    },
                                                   ]
                                                 }
                                               >
                                                 <View>
-                                                  {"name":"thumbs-down-sharp","size":16,"color":"#fff"}
+                                                  {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                                 </View>
                                               </View>
                                             </View>
@@ -1875,11 +1899,14 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                       "borderWidth": 1,
                                                       "padding": 8,
                                                     },
+                                                    Object {
+                                                      "backgroundColor": "transparent",
+                                                    },
                                                   ]
                                                 }
                                               >
                                                 <View>
-                                                  {"name":"heart","size":16,"color":"#fff"}
+                                                  {"name":"heart","size":16,"color":"#3742fa"}
                                                 </View>
                                               </View>
                                             </View>
