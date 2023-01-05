@@ -229,6 +229,9 @@
     elections, digital cash and social media.\nTo get a token, you must attend a roll call and wait
     until your LAO\'s organizer closes it.\n\nIf you are an organizer you may schedule a roll call !
   </string>
+  <string name="token">Token</string>
+  <string name="copy_to_clipboard">Copy to Clipboard</string>
+  <string name="successful_copy">Copied with success to clipboard !</string>
 
   <!-- Digital Cash -->
   <string name="digital_cash_send">Send</string>
@@ -307,6 +310,7 @@
   <string name="rc_qr_description">Roll call qr code</string>
   <string name="add_witness_description">Add Witness</string>
   <string name="qr_code_icon_description">An icon representing a qr code</string>
+  <string name="qr_code_token_content">The QR code displaying token information</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>

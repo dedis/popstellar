@@ -130,6 +130,8 @@
 
   <!--  Token dimensions-->
   <dimen name="qr_icon_side">28dp</dimen>
+  <dimen name="copy_button_horizontal_margin">28dp</dimen>
+  <dimen name="token_qr_top_margin">24dp</dimen>
 
   <!--  Container dimensions -->
   <dimen name="container_margin">8dp</dimen>
