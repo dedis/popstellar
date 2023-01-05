@@ -101,17 +101,6 @@
   <dimen name="guideline_titles">140dp</dimen>
   <dimen name="swipe_indicator_height">25dp</dimen>
 
-  <!-- Cast vote dimensions -->
-  <dimen name="wallet_divider_height">1dp</dimen>
-  <dimen name="wallet_qr_code_size">100dp</dimen>
-  <dimen name="wallet_attendee_width">300dp</dimen>
-  <dimen name="wallet_buttons_height">38dp</dimen>
-  <dimen name="wallet_buttons_text_size">12dp</dimen>
-
-  <!-- Wallet dimensions -->
-  <dimen name="wallet_sk_width">350dp</dimen>
-  <dimen name="wallet_pk_width">200dp</dimen>
-  <dimen name="wallet_qr_token_size">130dp</dimen>
   <dimen name="min_height_entry_box_chirp">245dp</dimen>
   <dimen name="social_media_divider_height">1dp</dimen>
   <dimen name="bottom_navigation_view_height">56dp</dimen>

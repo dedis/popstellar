@@ -86,7 +86,7 @@ public class TokenListFragment extends Fragment {
                   }
 
                   // This handle the previous tokens list
-                  // First we remove the last roll call from the list of attended roll calls;
+                  // First we remove the last roll call from the list of attended roll calls
                   rollCalls.remove(lastRollCall);
                   if (rollCalls.isEmpty()) {
                     binding.previousTokenLayout.setVisibility(View.GONE);
