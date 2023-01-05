@@ -62,6 +62,7 @@
       app:layout_constraintTop_toTopOf="parent">
 
       <TextView
+        android:id="@+id/empty_token_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/text_high_emphasis"
