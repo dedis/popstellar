@@ -104,8 +104,8 @@ public class LaoDetailActivityTest {
 
   @Test
   public void identityTabOpensIdentityTab() {
-    identityButton().perform(click());
-    fragmentContainer().check(matches(withChild(withId(identityFragmentId()))));
+    tokenButton().perform(click());
+    fragmentContainer().check(matches(withChild(withId(tokenListFragmentId()))));
   }
 
   @Test
@@ -116,7 +116,7 @@ public class LaoDetailActivityTest {
 
   @Test
   public void cancelGoesBackToEventList() {
-    identityButton().perform(click());
+    tokenButton().perform(click());
     toolBarBackButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(laoDetailFragmentId()))));
   }
