@@ -38,8 +38,24 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
   >
     <TextInput
       multiline={true}
-      numberOfLines={5}
-      onChangeText={[Function]}
+      numberOfLines={1}
+      onBlur={[Function]}
+      onChangeText={
+        [MockFunction] {
+          "calls": Array [
+            Array [
+              "Hello World !",
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+          ],
+        }
+      }
+      onFocus={[Function]}
       placeholder="Your chirp"
       placeholderTextColor="#8E8E8E"
       selectTextOnFocus={true}
@@ -91,7 +107,7 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
             ]
           }
         >
-          287
+          300
         </Text>
       </View>
       <View
@@ -139,6 +155,10 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
                     "borderRadius": 8,
                     "borderWidth": 1,
                     "padding": 8,
+                  },
+                  Object {
+                    "backgroundColor": "#8E8E8E",
+                    "borderColor": "#8E8E8E",
                   },
                 ]
               }
@@ -210,8 +230,24 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
   >
     <TextInput
       multiline={true}
-      numberOfLines={5}
-      onChangeText={[Function]}
+      numberOfLines={1}
+      onBlur={[Function]}
+      onChangeText={
+        [MockFunction] {
+          "calls": Array [
+            Array [
+              "It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit.",
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": undefined,
+            },
+          ],
+        }
+      }
+      onFocus={[Function]}
       placeholder="Your chirp"
       placeholderTextColor="#8E8E8E"
       selectTextOnFocus={true}
@@ -260,13 +296,10 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
                 "lineHeight": 26,
                 "textAlign": "left",
               },
-              Object {
-                "color": "#e74c3c",
-              },
             ]
           }
         >
-          -3
+          300
         </Text>
       </View>
       <View
@@ -389,8 +422,10 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
   >
     <TextInput
       multiline={true}
-      numberOfLines={5}
-      onChangeText={[Function]}
+      numberOfLines={1}
+      onBlur={[Function]}
+      onChangeText={[MockFunction]}
+      onFocus={[Function]}
       placeholder="Placeholder"
       placeholderTextColor="#8E8E8E"
       selectTextOnFocus={true}
@@ -559,8 +594,10 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
   >
     <TextInput
       multiline={true}
-      numberOfLines={5}
-      onChangeText={[Function]}
+      numberOfLines={1}
+      onBlur={[Function]}
+      onChangeText={[MockFunction]}
+      onFocus={[Function]}
       placeholder="Your chirp"
       placeholderTextColor="#8E8E8E"
       selectTextOnFocus={true}
@@ -735,8 +772,10 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
   >
     <TextInput
       multiline={true}
-      numberOfLines={5}
-      onChangeText={[Function]}
+      numberOfLines={1}
+      onBlur={[Function]}
+      onChangeText={[MockFunction]}
+      onFocus={[Function]}
       placeholder="Your chirp"
       placeholderTextColor="#8E8E8E"
       selectTextOnFocus={true}

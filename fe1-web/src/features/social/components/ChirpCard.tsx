@@ -14,13 +14,7 @@ import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
 import { ActionSheetOption, useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import {
-  SocialHomeParamList,
-  SocialParamList,
-  SocialProfileParamList,
-  SocialSearchParamList,
-  SocialTopChirpsParamList,
-} from 'core/navigation/typing/social';
+import { SocialParamList } from 'core/navigation/typing/social';
 import { List, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
@@ -31,22 +25,12 @@ import { Chirp } from '../objects';
 import { makeHasReactedSelector, makeReactionCountsSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
-  CompositeScreenProps<
-    StackScreenProps<
-      | SocialHomeParamList
-      | SocialTopChirpsParamList
-      | SocialSearchParamList
-      | SocialProfileParamList,
-      /* there is probably a better way to type this, this component can appear in any screen of the above navigators */
-      any
-    >,
-    StackScreenProps<
-      SocialParamList,
-      | typeof STRINGS.social_media_navigation_tab_home
-      | typeof STRINGS.social_media_navigation_tab_top_chirps
-      | typeof STRINGS.social_media_navigation_tab_search
-      | typeof STRINGS.social_media_navigation_tab_profile
-    >
+  StackScreenProps<
+    SocialParamList,
+    | typeof STRINGS.social_media_navigation_tab_home
+    | typeof STRINGS.social_media_navigation_tab_top_chirps
+    | typeof STRINGS.social_media_navigation_tab_search
+    | typeof STRINGS.social_media_navigation_tab_profile
   >,
   CompositeScreenProps<
     StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
@@ -167,8 +151,15 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
       <PoPTouchableOpacity
         onPress={() =>
-          navigation.navigate(STRINGS.social_media_navigation_user_profile, {
-            userPkString: chirp.sender.valueOf(),
+          navigation.navigate(STRINGS.navigation_app_lao, {
+            screen: STRINGS.navigation_social_media,
+            params: {
+              screen: STRINGS.social_media_navigation_tab_search,
+              params: {
+                screen: STRINGS.social_media_search_navigation_user_profile,
+                params: { userPkString: chirp.sender.valueOf() },
+              },
+            },
           })
         }>
         <View style={[List.icon, styles.profileIcon]}>

@@ -26,7 +26,7 @@ const SocialSearchNavigation = () => {
         }}
       />
       <Stack.Screen
-        name={STRINGS.social_media_navigation_user_profile}
+        name={STRINGS.social_media_search_navigation_user_profile}
         component={SocialUserProfile}
       />
     </Stack.Navigator>
