@@ -250,7 +250,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * @param votes the corresponding votes for that election
    */
-  public Completable sendVote(List<ElectionVote> votes) {
+  public Completable sendVote(List<PlainVote> votes) {
     Election election;
     try {
       election = electionRepo.getElection(laoId, currentElection);
@@ -279,7 +279,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         .doOnSuccess(token -> Log.d(TAG, "Retrieved PoP Token to send votes : " + token))
         .flatMapCompletable(
             token -> {
-              CastVote<?> vote = createCastVote(votes, election, laoView);
+              CastVote vote = createCastVote(votes, election, laoView);
 
               Channel electionChannel = election.getChannel();
               return networkManager.getMessageSender().publish(token, electionChannel, vote);
@@ -287,16 +287,15 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   @NonNull
-  private CastVote<?> createCastVote(List<ElectionVote> votes, Election election, LaoView laoView) {
-    CastVote<?> vote;
+  private CastVote createCastVote(List<PlainVote> votes, Election election, LaoView laoView) {
     if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-      vote = new CastVote<>(votes, election.getId(), laoView.getId());
+      return new CastVote(votes, election.getId(), laoView.getId());
     } else {
-      List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
-      vote = new CastVote<>(encryptedVotes, election.getId(), laoView.getId());
+      List<EncryptedVote> encryptedVotes = election.encrypt(votes);
+
       Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG).show();
+      return new CastVote(encryptedVotes, election.getId(), laoView.getId());
     }
-    return vote;
   }
 
   /**

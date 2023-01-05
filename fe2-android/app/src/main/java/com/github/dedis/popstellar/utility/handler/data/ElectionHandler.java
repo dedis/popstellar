@@ -14,7 +14,6 @@ import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -168,8 +167,7 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param castVote the message that was received
    */
-  @SuppressWarnings("unchecked") // Because of the way CastVote is designed, this must be done
-  public void handleCastVote(HandlerContext context, CastVote<?> castVote)
+  public void handleCastVote(HandlerContext context, CastVote castVote)
       throws UnknownElectionException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
@@ -197,26 +195,17 @@ public final class ElectionHandler {
 
       // Verify the current cast vote message is the last one received
       if (previousMessageCreation <= castVote.getCreation()) {
-        Election.ElectionBuilder builder = election.builder().updateMessageMap(senderPk, messageId);
+        List<Vote> votes = castVote.getVotes();
+        votes.sort(Comparator.comparing(Vote::getId));
 
-        // Filter given the content of the vote
-        if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-          List<ElectionVote> votes = (List<ElectionVote>) castVote.getVotes();
-          builder.updateOpenBallotVotesBySender(
-              senderPk,
-              votes.stream()
-                  .sorted(Comparator.comparing(ElectionVote::getId))
-                  .collect(Collectors.toList()));
-        } else {
-          List<ElectionEncryptedVote> votes = (List<ElectionEncryptedVote>) castVote.getVotes();
-          builder.updateEncryptedVotesBySender(
-              senderPk,
-              votes.stream()
-                  .sorted(Comparator.comparing(ElectionEncryptedVote::getId))
-                  .collect(Collectors.toList()));
-        }
+        Election updated =
+            election
+                .builder()
+                .updateMessageMap(senderPk, messageId)
+                .updateVotes(senderPk, votes)
+                .build();
 
-        electionRepository.updateElection(builder.build());
+        electionRepository.updateElection(updated);
       }
     }
   }

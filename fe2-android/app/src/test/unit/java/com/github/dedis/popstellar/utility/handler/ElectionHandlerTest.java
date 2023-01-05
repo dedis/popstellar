@@ -36,6 +36,7 @@ import io.reactivex.Completable;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,7 +74,7 @@ public class ElectionHandlerTest {
   private static final Election OPEN_BALLOT_ELECTION =
       new Election.ElectionBuilder(LAO.getId(), CREATED_AT, ELECTION_NAME)
           .setElectionVersion(ElectionVersion.OPEN_BALLOT)
-          .setElectionQuestions(Collections.singletonList(QUESTION))
+          .setElectionQuestions(singletonList(QUESTION))
           .setStart(STARTED_AT)
           .setEnd(END_AT)
           .build();
@@ -163,30 +164,15 @@ public class ElectionHandlerTest {
     messageHandler.handleMessage(messageSender, election.getChannel(), message);
   }
 
-  private MessageID handleCastVote(ElectionVote vote, KeyPair senderKey)
+  private MessageID handleCastVote(Vote vote, KeyPair senderKey)
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
           DataHandlingException, NoRollCallException {
-    CastVote<ElectionVote> electionVote =
-        new CastVote<>(
-            Collections.singletonList(vote), OPEN_BALLOT_ELECTION.getId(), CREATE_LAO.getId());
 
-    MessageGeneral message = new MessageGeneral(senderKey, electionVote, gson);
+    CastVote castVote =
+        new CastVote(singletonList(vote), OPEN_BALLOT_ELECTION.getId(), CREATE_LAO.getId());
+
+    MessageGeneral message = new MessageGeneral(senderKey, castVote, gson);
     messageHandler.handleMessage(messageSender, OPEN_BALLOT_ELECTION.getChannel(), message);
-    return message.getMessageId();
-  }
-
-  // Once ElectionVote and EncryptedVote have the same parent, merge the two functions and use the
-  // parent
-  private MessageID handleCastVote(ElectionEncryptedVote vote, KeyPair senderKey)
-      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
-          DataHandlingException, NoRollCallException {
-    CastVote<ElectionEncryptedVote> electionVote =
-        new CastVote<>(
-            Collections.singletonList(vote), SECRET_BALLOT_ELECTION.getId(), CREATE_LAO.getId());
-
-    MessageGeneral message = new MessageGeneral(senderKey, electionVote, gson);
-    messageHandler.handleMessage(messageSender, SECRET_BALLOT_ELECTION.getChannel(), message);
-
     return message.getMessageId();
   }
 
@@ -207,8 +193,7 @@ public class ElectionHandlerTest {
           DataHandlingException, NoRollCallException {
     ElectionResultQuestion electionResultQuestion =
         new ElectionResultQuestion(QUESTION.getId(), results);
-    ElectionResult electionResult =
-        new ElectionResult(Collections.singletonList(electionResultQuestion));
+    ElectionResult electionResult = new ElectionResult(singletonList(electionResultQuestion));
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionResult, gson);
 
     // Call the message handler
@@ -263,7 +248,7 @@ public class ElectionHandlerTest {
     handleElectionSetup(OPEN_BALLOT_ELECTION);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
-    handleCastVote(new ElectionVote(QUESTION.getId(), 0, false, null, ELECTION_ID), SENDER_KEY);
+    handleCastVote(new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID), SENDER_KEY);
     handleElectionEnd();
     handleElectionResults(results, OPEN_BALLOT_ELECTION.getChannel());
 
@@ -302,8 +287,8 @@ public class ElectionHandlerTest {
   public void castVoteWithOpenBallotScenario()
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
           DataHandlingException, NoRollCallException {
-    ElectionVote vote1 = new ElectionVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
-    ElectionVote vote2 = new ElectionVote(QUESTION.getId(), 1, false, null, ELECTION_ID);
+    PlainVote vote1 = new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
+    PlainVote vote2 = new PlainVote(QUESTION.getId(), 1, false, null, ELECTION_ID);
 
     handleElectionSetup(OPEN_BALLOT_ELECTION);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
@@ -329,10 +314,8 @@ public class ElectionHandlerTest {
     ElectionPublicKey pubKey = keys.getEncryptionScheme();
     Base64URLData encodedKey = new Base64URLData(pubKey.getPublicKey().toBytes());
 
-    ElectionEncryptedVote vote1 =
-        new ElectionEncryptedVote(QUESTION.getId(), "0", false, null, ELECTION_ID);
-    ElectionEncryptedVote vote2 =
-        new ElectionEncryptedVote(QUESTION.getId(), "1", false, null, ELECTION_ID);
+    EncryptedVote vote1 = new EncryptedVote(QUESTION.getId(), "0", false, null, ELECTION_ID);
+    EncryptedVote vote2 = new EncryptedVote(QUESTION.getId(), "1", false, null, ELECTION_ID);
 
     handleElectionSetup(SECRET_BALLOT_ELECTION);
     handleElectionKey(SECRET_BALLOT_ELECTION, encodedKey.getEncoded());
