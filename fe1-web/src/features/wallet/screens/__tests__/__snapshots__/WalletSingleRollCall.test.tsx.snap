@@ -276,7 +276,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={3}
+                handlerTag={4}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -336,7 +336,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={4}
+                          handlerTag={5}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -347,30 +347,106 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                           }
                         >
                           <View>
+                            <View>
+                              <qrcode
+                                value="{\\"pop_token\\":\\"oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=\\"}"
+                              />
+                            </View>
                             <Text
+                              selectable={true}
+                              style={
+                                Array [
+                                  Object {
+                                    "fontSize": 16,
+                                    "lineHeight": 20,
+                                  },
+                                  Object {
+                                    "color": "#8E8E8E",
+                                    "marginVertical": 32,
+                                    "textAlign": "center",
+                                  },
+                                ]
+                              }
+                            >
+                              oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=
+                            </Text>
+                            <View
+                              accessible={true}
+                              collapsable={false}
+                              focusable={true}
+                              onBlur={[Function]}
+                              onClick={[Function]}
+                              onFocus={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
+                                  "marginBottom": 16,
                                 }
                               }
                             >
-                              You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
-                            </Text>
-                            <Text
-                              style={
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                }
-                              }
-                            >
-                              myRollCall
-                            </Text>
+                              <RNGestureHandlerButton
+                                collapsable={false}
+                                exclusive={true}
+                                handlerTag={6}
+                                handlerType="NativeViewGestureHandler"
+                                onGestureEvent={[Function]}
+                                onGestureHandlerEvent={[Function]}
+                                onGestureHandlerStateChange={[Function]}
+                                onHandlerStateChange={[Function]}
+                                rippleColor={0}
+                                touchSoundDisabled={false}
+                              >
+                                <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  style={
+                                    Object {
+                                      "opacity": 1,
+                                    }
+                                  }
+                                >
+                                  <View
+                                    style={
+                                      Array [
+                                        Object {
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <Text
+                                      style={
+                                        Array [
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "textAlign": "left",
+                                          },
+                                          Object {
+                                            "textAlign": "center",
+                                          },
+                                          Object {
+                                            "color": "#fff",
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      Copy to Clipboard
+                                    </Text>
+                                  </View>
+                                </View>
+                              </RNGestureHandlerButton>
+                            </View>
                           </View>
                         </RCTScrollView>
                       </View>
@@ -734,30 +810,106 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                           }
                         >
                           <View>
+                            <View>
+                              <qrcode
+                                value="{\\"pop_token\\":\\"oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=\\"}"
+                              />
+                            </View>
                             <Text
+                              selectable={true}
+                              style={
+                                Array [
+                                  Object {
+                                    "fontSize": 16,
+                                    "lineHeight": 20,
+                                  },
+                                  Object {
+                                    "color": "#8E8E8E",
+                                    "marginVertical": 32,
+                                    "textAlign": "center",
+                                  },
+                                ]
+                              }
+                            >
+                              oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=
+                            </Text>
+                            <View
+                              accessible={true}
+                              collapsable={false}
+                              focusable={true}
+                              onBlur={[Function]}
+                              onClick={[Function]}
+                              onFocus={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
+                                  "marginBottom": 16,
                                 }
                               }
                             >
-                              You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.
-                            </Text>
-                            <Text
-                              style={
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "textAlign": "left",
-                                }
-                              }
-                            >
-                              myRollCall
-                            </Text>
+                              <RNGestureHandlerButton
+                                collapsable={false}
+                                exclusive={true}
+                                handlerTag={3}
+                                handlerType="NativeViewGestureHandler"
+                                onGestureEvent={[Function]}
+                                onGestureHandlerEvent={[Function]}
+                                onGestureHandlerStateChange={[Function]}
+                                onHandlerStateChange={[Function]}
+                                rippleColor={0}
+                                touchSoundDisabled={false}
+                              >
+                                <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  style={
+                                    Object {
+                                      "opacity": 1,
+                                    }
+                                  }
+                                >
+                                  <View
+                                    style={
+                                      Array [
+                                        Object {
+                                          "backgroundColor": "#3742fa",
+                                          "borderColor": "#3742fa",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "padding": 8,
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    <Text
+                                      style={
+                                        Array [
+                                          Object {
+                                            "color": "#000",
+                                            "fontSize": 20,
+                                            "lineHeight": 26,
+                                            "textAlign": "left",
+                                          },
+                                          Object {
+                                            "textAlign": "center",
+                                          },
+                                          Object {
+                                            "color": "#fff",
+                                          },
+                                        ]
+                                      }
+                                    >
+                                      Copy to Clipboard
+                                    </Text>
+                                  </View>
+                                </View>
+                              </RNGestureHandlerButton>
+                            </View>
                           </View>
                         </RCTScrollView>
                       </View>
