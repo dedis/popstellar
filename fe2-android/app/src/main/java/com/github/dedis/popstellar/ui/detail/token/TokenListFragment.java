@@ -31,6 +31,10 @@ public class TokenListFragment extends Fragment {
     return new TokenListFragment();
   }
 
+  public TokenListFragment() {
+    // Required empty public constructor
+  }
+
   @Override
   public void onResume() {
     super.onResume();
@@ -47,7 +51,7 @@ public class TokenListFragment extends Fragment {
     binding = TokenListFragmentBinding.inflate(inflater, container, false);
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    tokensAdapter = new TokenListAdapter();
+    tokensAdapter = new TokenListAdapter(requireActivity());
     binding.tokensRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     binding.tokensRecyclerView.setAdapter(tokensAdapter);
 
@@ -71,6 +75,12 @@ public class TokenListFragment extends Fragment {
                         binding.validTokenLayout.findViewById(R.id.token_layout_rc_title);
                     validRcTitle.setText(lastRollCall.getName());
                     binding.validTokenLayout.setVisibility(View.VISIBLE);
+                    binding.validTokenCard.setOnClickListener(
+                        v ->
+                            LaoDetailActivity.setCurrentFragment(
+                                requireActivity().getSupportFragmentManager(),
+                                R.id.fragment_token,
+                                () -> TokenFragment.newInstance(lastRollCall.getPersistentId())));
                   } else {
                     binding.validTokenLayout.setVisibility(View.GONE);
                   }
