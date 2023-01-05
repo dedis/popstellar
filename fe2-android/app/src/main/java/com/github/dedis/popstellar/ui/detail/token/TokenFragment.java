@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.detail.token;
 import android.content.*;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
@@ -42,8 +43,6 @@ public class TokenFragment extends Fragment {
 
   private LaoDetailViewModel viewModel;
 
-  private ClipboardManager clipboard;
-
   public TokenFragment() {
     // Required empty public constructor
   }
@@ -70,8 +69,10 @@ public class TokenFragment extends Fragment {
 
     try {
       RollCall rollCall =
-          rollCallRepo.getRollCallWithId(
+          rollCallRepo.getRollCallWithPersistentId(
               viewModel.getLaoId(), requireArguments().getString(Constants.ROLL_CALL_ID));
+      Log.d(TAG, "token displayed from roll call: " + rollCall);
+
       PoPToken poPToken = keyManager.getValidPoPToken(viewModel.getLaoId(), rollCall);
       PopTokenData data = new PopTokenData(poPToken.getPublicKey());
       Bitmap bitmap =
