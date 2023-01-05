@@ -13,6 +13,7 @@ import java.util.Set;
 import io.reactivex.observers.TestObserver;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static com.github.dedis.popstellar.testutils.ObservableUtils.assertCurrentValueIs;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -76,9 +77,5 @@ public class ElectionRepositoryTest {
     assertThrows(UnknownElectionException.class, () -> repo.getElection(LAO_ID, ELECTION.getId()));
     assertThrows(
         UnknownElectionException.class, () -> repo.getElectionObservable(LAO_ID, ELECTION.getId()));
-  }
-
-  private <T> void assertCurrentValueIs(TestObserver<T> observer, T expected) {
-    observer.assertValueAt(observer.valueCount() - 1, expected);
   }
 }
