@@ -62,6 +62,9 @@ const styles = StyleSheet.create({
   profileIcon: {
     alignSelf: 'flex-start',
   } as ViewStyle,
+  senderPrefix: {
+    marginTop: Spacing.x05,
+  },
   reactionsView: {
     width: '100%',
     flexDirection: 'row',
@@ -173,14 +176,21 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
         }>
         <View style={[List.icon, styles.profileIcon]}>
           <ProfileIcon publicKey={chirp.sender} />
+          <Text
+            style={[
+              Typography.base,
+              Typography.small,
+              Typography.inactive,
+              Typography.centered,
+              styles.senderPrefix,
+            ]}
+            numberOfLines={1}
+            selectable>
+            {chirp.sender.valueOf().slice(0, 4)}
+          </Text>
         </View>
       </PoPTouchableOpacity>
       <ListItem.Content>
-        <ListItem.Title
-          style={[Typography.base, Typography.small, Typography.inactive]}
-          numberOfLines={1}>
-          {chirp.sender.valueOf()}
-        </ListItem.Title>
         <ListItem.Subtitle>
           {chirp.isDeleted ? (
             <Text style={[Typography.base, Typography.inactive]}>{STRINGS.deleted_chirp}</Text>
