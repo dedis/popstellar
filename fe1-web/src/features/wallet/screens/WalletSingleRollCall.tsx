@@ -43,7 +43,7 @@ const WalletSingleRollCall = () => {
       </Text>
 
       <PoPTextButton onPress={() => Clipboard.setStringAsync(rollCallTokenPublicKey)}>
-        {STRINGS.wallet_single_roll_call_copy_pop_token}
+        {STRINGS.general_copy}
       </PoPTextButton>
     </ScreenWrapper>
   );

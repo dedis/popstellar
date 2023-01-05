@@ -298,7 +298,7 @@ export const SendReceiveHeaderRight = () => {
         />
         <ScrollView style={ModalStyles.modalContainer}>
           <ModalHeader onClose={() => setModalVisible(!modalVisible)}>
-            {STRINGS.wallet_single_roll_call_pop_token}
+            {STRINGS.general_your_pop_token}
           </ModalHeader>
 
           <View>
@@ -309,7 +309,7 @@ export const SendReceiveHeaderRight = () => {
             {popToken}
           </Text>
           <PoPTextButton onPress={() => Clipboard.setStringAsync(popToken)}>
-            {STRINGS.wallet_single_roll_call_copy_pop_token}
+            {STRINGS.general_copy}
           </PoPTextButton>
         </ScrollView>
       </Modal>
