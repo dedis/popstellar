@@ -169,8 +169,7 @@ public class TokenListFragmentTest {
             .setAttendees(Collections.singleton(USER_TOKEN.getPublicKey()))
             .build();
     setRollCall(closedRollCallWithUser);
-    when(rollCallRepo.getLastClosedRollCall(ROLL_CALL.getPersistentId()))
-        .thenReturn(closedRollCallWithUser);
+    when(rollCallRepo.getLastClosedRollCall(LAO_ID)).thenReturn(closedRollCallWithUser);
     emptyTokenText().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     invalidTokensRv().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     validTokenCard().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -195,7 +194,6 @@ public class TokenListFragmentTest {
             .build();
 
     setRollCalls(closedRollCallWithUser1, closedRollCallWithUser2);
-    System.out.println("went here");
     when(rollCallRepo.getLastClosedRollCall(LAO_ID)).thenReturn(closedRollCallWithUser2);
     emptyTokenText().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     invalidTokensRv().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -211,7 +209,6 @@ public class TokenListFragmentTest {
   private void setRollCalls(RollCall... rollCalls) throws UnknownRollCallException {
     Set<String> ids = new HashSet<>();
     for (RollCall rc : rollCalls) {
-      System.out.println(rc.getPersistentId());
       ids.add(rc.getPersistentId());
       when(rollCallRepo.getRollCallWithPersistentId(LAO_ID, rc.getPersistentId())).thenReturn(rc);
     }
