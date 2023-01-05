@@ -55,6 +55,7 @@ public class Election extends Event {
       EventState state,
       Map<String, Set<QuestionResult>> results) {
 
+    // Make sure the vote are encrypted in a secret election and plain in an open election
     validateVotesTypes(votesBySender, electionVersion);
 
     this.id = id;
