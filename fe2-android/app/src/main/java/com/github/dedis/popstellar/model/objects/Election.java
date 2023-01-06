@@ -237,7 +237,7 @@ public class Election extends Event {
    *
    * @return the hash of all registered votes
    */
-  public String computerRegisteredVotesHash() {
+  public String computeRegisteredVotesHash() {
     String[] ids =
         messageMap.values().stream()
             .map(votesBySender::get)

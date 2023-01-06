@@ -236,7 +236,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Channel channel = election.getChannel();
     String laoViewId = laoView.getId();
     ElectionEnd electionEnd =
-        new ElectionEnd(election.getId(), laoViewId, election.computerRegisteredVotesHash());
+        new ElectionEnd(election.getId(), laoViewId, election.computeRegisteredVotesHash());
 
     return networkManager
         .getMessageSender()

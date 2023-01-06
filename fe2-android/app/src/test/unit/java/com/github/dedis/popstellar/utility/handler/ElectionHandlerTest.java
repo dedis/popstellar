@@ -182,7 +182,7 @@ public class ElectionHandlerTest {
     // Retrieve current election to use the correct vote hash
     Election current = electionRepo.getElection(LAO.getId(), ELECTION_ID);
     ElectionEnd endElection =
-        new ElectionEnd(LAO.getId(), ELECTION_ID, current.computerRegisteredVotesHash());
+        new ElectionEnd(LAO.getId(), ELECTION_ID, current.computeRegisteredVotesHash());
 
     MessageGeneral message = new MessageGeneral(SENDER_KEY, endElection, gson);
     messageHandler.handleMessage(messageSender, OPEN_BALLOT_ELECTION.getChannel(), message);
@@ -303,7 +303,7 @@ public class ElectionHandlerTest {
             ? new String[] {vote1.getId(), vote2.getId()}
             : new String[] {vote2.getId(), vote1.getId()};
 
-    assertEquals(Hash.hash(voteIds), election.computerRegisteredVotesHash());
+    assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
   }
 
   @Test
@@ -331,6 +331,6 @@ public class ElectionHandlerTest {
             ? new String[] {vote1.getId(), vote2.getId()}
             : new String[] {vote2.getId(), vote1.getId()};
 
-    assertEquals(Hash.hash(voteIds), election.computerRegisteredVotesHash());
+    assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
   }
 }
