@@ -1,10 +1,9 @@
 package com.github.dedis.popstellar.model.objects;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Copyable;
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.model.objects.security.*;
@@ -12,18 +11,23 @@ import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublic
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class Election extends Event implements Copyable<Election> {
-  private Channel channel;
-  private String id;
-  private String name;
-  private long creation;
-  private long start;
-  private long end;
-  private List<ElectionQuestion> electionQuestions;
+@Immutable
+public class Election extends Event {
+
+  private final Channel channel;
+  private final String id;
+  private final String name;
+  private final long creation;
+  private final long start;
+  private final long end;
+  private final List<ElectionQuestion> electionQuestions;
   // Election public key is generated via Kyber and is encoded in Base64
   // decoding it is required before actually starting using it
-  private String electionKey;
+  private final String electionKey;
   // Either OPEN_BALLOT or SECRET_BALLOT
   private final ElectionVersion electionVersion;
 
@@ -35,40 +39,43 @@ public class Election extends Event implements Copyable<Election> {
   // Map that associates each messageId to its sender
   private final Map<MessageID, PublicKey> messageMap;
 
-  private EventState state;
+  private final EventState state;
 
   // Results of an election (associated to a question id)
   private final Map<String, List<QuestionResult>> results;
 
-  public Election(String laoId, long creation, String name, ElectionVersion electionVersion) {
-    this.id = generateElectionSetupId(laoId, creation, name);
+  public Election(
+      String id,
+      String name,
+      long creation,
+      Channel channel,
+      long start,
+      long end,
+      List<ElectionQuestion> electionQuestions,
+      String electionKey,
+      ElectionVersion electionVersion,
+      Map<PublicKey, List<ElectionVote>> openVoteByPublicKey,
+      Map<PublicKey, List<ElectionEncryptedVote>> encryptedVoteByPublicKey,
+      Map<MessageID, PublicKey> messageMap,
+      EventState state,
+      Map<String, List<QuestionResult>> results) {
+    this.id = id;
     this.name = name;
     this.creation = creation;
-    this.results = new HashMap<>();
-    this.electionQuestions = new ArrayList<>();
-    this.openVoteByPublicKey = new HashMap<>();
-    this.encryptedVoteByPublicKey = new HashMap<>();
-    this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
-    // At the start, the election key is null and is updated later with the handler
+    this.channel = channel;
+    this.start = start;
+    this.end = end;
+    this.state = state;
+    this.electionKey = electionKey;
     this.electionVersion = electionVersion;
-  }
-
-  public Election(Election election) {
-    this.channel = election.channel;
-    this.id = election.id;
-    this.name = election.name;
-    this.creation = election.creation;
-    this.start = election.start;
-    this.end = election.end;
-    this.electionKey = election.electionKey;
-    this.electionQuestions = new ArrayList<>(election.electionQuestions);
-    this.electionVersion = election.electionVersion;
-    this.openVoteByPublicKey = new HashMap<>(election.openVoteByPublicKey);
-    this.encryptedVoteByPublicKey = Copyable.copyMapOfList(election.encryptedVoteByPublicKey);
+    // Defensive copies
+    this.electionQuestions = new ArrayList<>(electionQuestions);
+    this.openVoteByPublicKey = Copyable.copyMapOfList(openVoteByPublicKey);
+    this.encryptedVoteByPublicKey = Copyable.copyMapOfList(encryptedVoteByPublicKey);
+    this.results = Copyable.copyMapOfList(results);
+    // Create message map as a tree map to sort messages correctly
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
-    messageMap.putAll(election.messageMap);
-    this.state = election.state;
-    this.results = Copyable.copyMapOfList(election.results);
+    this.messageMap.putAll(messageMap);
   }
 
   public String getElectionKey() {
@@ -79,19 +86,8 @@ public class Election extends Event implements Copyable<Election> {
     return name;
   }
 
-  public void setName(String name) {
-    if (name == null) {
-      throw new IllegalArgumentException("election name shouldn't be null");
-    }
-    this.name = name;
-  }
-
   public ElectionVersion getElectionVersion() {
     return electionVersion;
-  }
-
-  public void setElectionKey(String electionKey) {
-    this.electionKey = electionKey;
   }
 
   public long getCreation() {
@@ -110,79 +106,16 @@ public class Election extends Event implements Copyable<Election> {
     return electionQuestions;
   }
 
-  public void setCreation(long creation) {
-    if (creation < 0) {
-      throw new IllegalArgumentException();
-    }
-    this.creation = creation;
-  }
-
-  public void setEventState(EventState state) {
-    this.state = state;
-  }
-
   public EventState getState() {
     return state;
-  }
-
-  public void setStart(long start) {
-    if (start < 0) {
-      throw new IllegalArgumentException();
-    }
-    this.start = start;
-  }
-
-  public void setEnd(long end) {
-    if (end < 0) {
-      throw new IllegalArgumentException();
-    }
-    this.end = end;
   }
 
   public Map<MessageID, PublicKey> getMessageMap() {
     return messageMap;
   }
 
-  public void setId(String id) {
-    if (id == null) {
-      throw new IllegalArgumentException("election id shouldn't be null");
-    }
-    this.id = id;
-  }
-
-  public void putOpenBallotVotesBySender(PublicKey senderPk, List<ElectionVote> votes) {
-    if (senderPk == null) {
-      throw new IllegalArgumentException("Sender public key cannot be null.");
-    }
-    if (votes == null || votes.isEmpty()) {
-      throw new IllegalArgumentException("Open ballot votes cannot be null or empty");
-    }
-    // The list must be sorted by order of vote ids
-    List<ElectionVote> votesCopy = new ArrayList<>(votes);
-    votesCopy.sort(Comparator.comparing(ElectionVote::getId));
-    openVoteByPublicKey.put(senderPk, votesCopy);
-  }
-
-  public void putSenderByMessageId(PublicKey senderPk, MessageID messageId) {
-    if (senderPk == null || messageId == null) {
-      throw new IllegalArgumentException("Sender public key or message id cannot be null.");
-    }
-    messageMap.put(messageId, senderPk);
-  }
-
-  public void setChannel(Channel channel) {
-    this.channel = channel;
-  }
-
   public String getId() {
     return id;
-  }
-
-  public void setElectionQuestions(List<ElectionQuestion> electionQuestions) {
-    if (electionQuestions == null) {
-      throw new IllegalArgumentException();
-    }
-    this.electionQuestions = electionQuestions;
   }
 
   @Override
@@ -193,39 +126,6 @@ public class Election extends Event implements Copyable<Election> {
   @Override
   public long getEndTimestamp() {
     return end;
-  }
-
-  public void putEncryptedVotesBySender(PublicKey senderPk, List<ElectionEncryptedVote> votes) {
-    if (senderPk == null) {
-      throw new IllegalArgumentException("Sender public key cannot be null.");
-    }
-    if (votes == null || votes.isEmpty()) {
-      throw new IllegalArgumentException("Encrypted votes cannot be null or empty");
-    }
-    // The list must be sorted by order of vote ids
-    List<ElectionEncryptedVote> votesCopy = new ArrayList<>(votes);
-    votesCopy.sort(Comparator.comparing(ElectionEncryptedVote::getId));
-    encryptedVoteByPublicKey.put(senderPk, votesCopy);
-  }
-
-  public void setResults(List<ElectionResultQuestion> electionResultsQuestions) {
-    if (electionResultsQuestions == null) {
-      throw new IllegalArgumentException("the list of winners should not be null");
-    }
-    for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
-      List<QuestionResult> questionResults = new ArrayList<>();
-      if (resultQuestion.getResult() != null) {
-        questionResults.addAll(resultQuestion.getResult());
-      }
-
-      String questionId = resultQuestion.getId();
-      if (resultQuestion.getResult() == null) {
-        results.put(questionId, new ArrayList<>());
-      } else {
-        questionResults.sort((r1, r2) -> r2.getCount().compareTo(r1.getCount()));
-        this.results.put(questionId, questionResults);
-      }
-    }
   }
 
   public List<QuestionResult> getResultsForQuestionId(String id) {
@@ -319,26 +219,28 @@ public class Election extends Event implements Copyable<Election> {
    * @return the hash of all registered votes
    */
   public String computerRegisteredVotes() {
-    List<String> listOfVoteIds = new ArrayList<>();
-    // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
-    // messageIds
-    for (PublicKey senderPk : messageMap.values()) {
-      if (getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-        for (ElectionVote vote : openVoteByPublicKey.get(senderPk)) {
-          listOfVoteIds.add(vote.getId());
-        }
-      } else {
-        for (ElectionEncryptedVote vote : encryptedVoteByPublicKey.get(senderPk)) {
-          listOfVoteIds.add(vote.getId());
-          Log.d("tak: ", vote.getId());
-        }
-      }
-    }
+    List<String> listOfVoteIds =
+        getElectionVersion() == ElectionVersion.OPEN_BALLOT
+            ? getListOfVoteIds(openVoteByPublicKey, ElectionVote::getId)
+            : getListOfVoteIds(encryptedVoteByPublicKey, ElectionEncryptedVote::getId);
+
     if (listOfVoteIds.isEmpty()) {
       return "";
     } else {
       return Hash.hash(listOfVoteIds.toArray(new String[0]));
     }
+  }
+
+  private <VOTE> List<String> getListOfVoteIds(
+      @NonNull Map<PublicKey, List<VOTE>> map, Function<VOTE, String> voteToId) {
+    // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
+    // messageIds
+    return messageMap.values().stream()
+        .map(map::get)
+        // Merge lists and drop nulls
+        .flatMap(electionVotes -> electionVotes != null ? electionVotes.stream() : Stream.empty())
+        .map(voteToId)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -367,11 +269,6 @@ public class Election extends Event implements Copyable<Election> {
       encryptedVotes.add(encryptedVote);
     }
     return encryptedVotes;
-  }
-
-  @Override
-  public Election copy() {
-    return new Election(this);
   }
 
   @NonNull
@@ -404,5 +301,151 @@ public class Election extends Event implements Copyable<Election> {
         + ", results="
         + results
         + '}';
+  }
+
+  public ElectionBuilder builder() {
+    return new ElectionBuilder(this);
+  }
+
+  public static class ElectionBuilder {
+
+    private final String id;
+    private String name;
+    private long creation;
+    private Channel channel;
+    private long start;
+    private long end;
+    private List<ElectionQuestion> electionQuestions;
+    private String electionKey;
+    private ElectionVersion electionVersion;
+    private final Map<PublicKey, List<ElectionVote>> openVoteByPublicKey;
+    private final Map<PublicKey, List<ElectionEncryptedVote>> encryptedVoteByPublicKey;
+    private final Map<MessageID, PublicKey> messageMap;
+    private EventState state;
+    private Map<String, List<QuestionResult>> results;
+
+    /**
+     * This is a special builder that can be used to generate the default values of an election
+     * being created for the first time
+     *
+     * @param laoId id of the LAO
+     * @param creation time
+     * @param name of the election
+     */
+    public ElectionBuilder(String laoId, long creation, String name) {
+      this.id = generateElectionSetupId(laoId, creation, name);
+      this.name = name;
+      this.creation = creation;
+
+      this.results = new HashMap<>();
+      this.electionQuestions = new ArrayList<>();
+      this.openVoteByPublicKey = new HashMap<>();
+      this.encryptedVoteByPublicKey = new HashMap<>();
+      this.messageMap = new HashMap<>();
+    }
+
+    public ElectionBuilder(Election election) {
+      this.channel = election.channel;
+      this.id = election.id;
+      this.name = election.name;
+      this.creation = election.creation;
+      this.start = election.start;
+      this.end = election.end;
+      this.electionKey = election.electionKey;
+      this.electionQuestions = election.electionQuestions;
+      this.electionVersion = election.electionVersion;
+      // We might modify the maps, for safety reason, we need to create a copy
+      this.openVoteByPublicKey = new HashMap<>(election.openVoteByPublicKey);
+      this.encryptedVoteByPublicKey = new HashMap<>(election.encryptedVoteByPublicKey);
+      this.messageMap = new HashMap<>(election.messageMap);
+      this.state = election.state;
+      this.results = election.results;
+    }
+
+    public ElectionBuilder setLaoChannel(@NonNull Channel channel) {
+      this.channel = channel.subChannel(this.id);
+      return this;
+    }
+
+    public ElectionBuilder setName(@NonNull String name) {
+      this.name = name;
+      return this;
+    }
+
+    public ElectionBuilder setCreation(long creation) {
+      this.creation = creation;
+      return this;
+    }
+
+    public ElectionBuilder setStart(long start) {
+      this.start = start;
+      return this;
+    }
+
+    public ElectionBuilder setEnd(long end) {
+      this.end = end;
+      return this;
+    }
+
+    public ElectionBuilder setElectionQuestions(@NonNull List<ElectionQuestion> electionQuestions) {
+      this.electionQuestions = electionQuestions;
+      return this;
+    }
+
+    public ElectionBuilder setElectionKey(@NonNull String electionKey) {
+      this.electionKey = electionKey;
+      return this;
+    }
+
+    public ElectionBuilder setElectionVersion(@NonNull ElectionVersion electionVersion) {
+      this.electionVersion = electionVersion;
+      return this;
+    }
+
+    public ElectionBuilder updateOpenBallotVotesBySender(
+        @NonNull PublicKey senderPk, @NonNull List<ElectionVote> votes) {
+      this.openVoteByPublicKey.put(senderPk, votes);
+      return this;
+    }
+
+    public ElectionBuilder updateEncryptedVotesBySender(
+        @NonNull PublicKey senderPk, @NonNull List<ElectionEncryptedVote> votes) {
+      this.encryptedVoteByPublicKey.put(senderPk, votes);
+      return this;
+    }
+
+    public ElectionBuilder updateMessageMap(
+        @NonNull PublicKey senderPk, @NonNull MessageID messageID) {
+      this.messageMap.put(messageID, senderPk);
+      return this;
+    }
+
+    public ElectionBuilder setState(@NonNull EventState state) {
+      this.state = state;
+      return this;
+    }
+
+    public ElectionBuilder setResults(@NonNull Map<String, List<QuestionResult>> results) {
+      this.results = results;
+      return this;
+    }
+
+    public Election build() {
+      return new Election(
+          this.id,
+          this.name,
+          this.creation,
+          this.channel,
+          this.start,
+          this.end,
+          this.electionQuestions,
+          this.electionKey,
+          this.electionVersion,
+          this.openVoteByPublicKey,
+          this.encryptedVoteByPublicKey,
+          this.messageMap,
+          this.state,
+          this.results);
+    }
   }
 }

@@ -20,9 +20,6 @@ public class LaoTest {
 
   private static final String LAO_NAME_1 = "LAO name 1";
   private static final PublicKey ORGANIZER = generatePublicKey();
-  private static final String electionId1 = "electionId1";
-  private static final String electionId2 = "electionId2";
-  private static final String electionId3 = "electionId3";
   private static final Set<PublicKey> WITNESSES =
       Sets.newSet(generatePublicKey(), generatePublicKey());
   private static final Set<PublicKey> WITNESSES_WITH_NULL =
@@ -30,12 +27,29 @@ public class LaoTest {
 
   private static final Lao LAO_1 = new Lao(LAO_NAME_1, ORGANIZER, Instant.now().getEpochSecond());
 
+  private static final Election election1 =
+      new Election.ElectionBuilder(LAO_1.getId(), 2L, "name 1")
+          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+          .build();
+  private static final Election election2 =
+      new Election.ElectionBuilder(LAO_1.getId(), 2L, "name 2")
+          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+          .build();
+  private static final Election election3 =
+      new Election.ElectionBuilder(LAO_1.getId(), 2L, "name 3")
+          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+          .build();
+
+  private static final String electionId1 = election1.getId();
+  private static final String electionId2 = election2.getId();
+  private static final String electionId3 = election3.getId();
+
   private static final Map<String, Election> elections =
       new HashMap<String, Election>() {
         {
-          put(electionId1, new Election(LAO_1.getId(), 2L, "name 1", ElectionVersion.OPEN_BALLOT));
-          put(electionId2, new Election(LAO_1.getId(), 2L, "name 2", ElectionVersion.OPEN_BALLOT));
-          put(electionId3, new Election(LAO_1.getId(), 2L, "name 3", ElectionVersion.OPEN_BALLOT));
+          put(electionId1, election1);
+          put(electionId2, election2);
+          put(electionId3, election3);
         }
       };
 
@@ -54,13 +68,9 @@ public class LaoTest {
     LAO_1.setElections(
         new HashMap<String, Election>() {
           {
-            put(
-                electionId1,
-                new Election(LAO_1.getId(), 2L, "name 1", ElectionVersion.OPEN_BALLOT));
-            put(null, new Election(LAO_1.getId(), 2L, "name 1", ElectionVersion.OPEN_BALLOT));
-            put(
-                electionId3,
-                new Election(LAO_1.getId(), 2L, "name 3", ElectionVersion.OPEN_BALLOT));
+            put(electionId1, election1);
+            put(null, election1);
+            put(electionId3, election3);
           }
         });
     // now the removal of electionId2 can't be done
@@ -71,21 +81,22 @@ public class LaoTest {
   public void updateElections() {
     LAO_1.setElections(new HashMap<>(elections));
     Election e1 =
-        new Election(
-            LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
-    e1.setId("New e1 id");
+        new Election.ElectionBuilder(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1")
+            .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+            .build();
+
     LAO_1.updateElection(electionId1, e1);
     assertFalse(LAO_1.getElections().containsKey(electionId1));
-    assertTrue(LAO_1.getElections().containsKey("New e1 id"));
+    assertTrue(LAO_1.getElections().containsKey(e1.getId()));
     assertTrue(LAO_1.getElections().containsKey(electionId2));
     assertTrue(LAO_1.getElections().containsKey(electionId3));
-    assertSame(LAO_1.getElections().get("New e1 id"), e1);
+    assertSame(LAO_1.getElections().get(e1.getId()), e1);
 
     // we create a different election that has the same Id as the first one
     Election e2 =
-        new Election(
-            LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
-    e2.setId(e1.getId());
+        new Election.ElectionBuilder(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1")
+            .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+            .build();
 
     LAO_1.updateElection(e1.getId(), e2);
     assertNotSame(LAO_1.getElections().get(e1.getId()), e1);
@@ -134,21 +145,15 @@ public class LaoTest {
 
   @Test
   public void getElection() {
-    Election e1 =
-        new Election(
-            LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
-    Election e2 =
-        new Election(
-            LAO_1.getId(), Instant.now().getEpochSecond(), "name 1", ElectionVersion.OPEN_BALLOT);
     LAO_1.setElections(
         new HashMap<String, Election>() {
           {
-            put(electionId1, e1);
-            put(electionId2, e2);
+            put(electionId1, election1);
+            put(electionId2, election2);
           }
         });
     assertTrue(LAO_1.getElection(electionId1).isPresent());
-    assertThat(LAO_1.getElection(electionId1).get(), is(e1));
+    assertThat(LAO_1.getElection(electionId1).get(), is(election1));
   }
 
   @Test

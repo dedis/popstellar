@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.utility.handler.data;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -10,11 +12,11 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.*;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -41,37 +43,37 @@ public final class ElectionHandler {
    * @param electionSetup the message that was received
    */
   public void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup)
-      throws UnknownLaoException {
+      throws UnknownLaoException, InvalidChannelException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    if (channel.isLaoChannel()) {
-      LaoView laoView = laoRepo.getLaoViewByChannel(channel);
-      Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
-
-      Election election =
-          new Election(
-              laoView.getId(),
-              electionSetup.getCreation(),
-              electionSetup.getName(),
-              electionSetup.getElectionVersion());
-      election.setChannel(channel.subChannel(election.getId()));
-      election.setElectionQuestions(electionSetup.getQuestions());
-
-      election.setStart(electionSetup.getStartTime());
-      election.setEnd(electionSetup.getEndTime());
-      election.setEventState(CREATED);
-
-      // Once the election is created, we subscribe to the election channel
-      context.getMessageSender().subscribe(election.getChannel()).subscribe();
-      Log.d(TAG, "election id " + election.getId());
-
-      Lao lao = laoView.createLaoCopy();
-      lao.updateElection(election.getId(), election);
-      lao.updateWitnessMessage(messageId, electionSetupWitnessMessage(messageId, election));
-
-      laoRepo.updateLao(lao);
+    if (!channel.isLaoChannel()) {
+      throw new InvalidChannelException(electionSetup, "an lao channel", channel);
     }
+
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
+    Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
+
+    Election election =
+        new Election.ElectionBuilder(
+                laoView.getId(), electionSetup.getCreation(), electionSetup.getName())
+            .setLaoChannel(channel)
+            .setElectionVersion(electionSetup.getElectionVersion())
+            .setElectionQuestions(electionSetup.getQuestions())
+            .setStart(electionSetup.getStartTime())
+            .setEnd(electionSetup.getEndTime())
+            .setState(CREATED)
+            .build();
+
+    // Once the election is created, we subscribe to the election channel
+    context.getMessageSender().subscribe(election.getChannel()).subscribe();
+    Log.d(TAG, "election id " + election.getId());
+
+    Lao lao = laoView.createLaoCopy();
+    lao.updateElection(election.getId(), election);
+    lao.updateWitnessMessage(messageId, electionSetupWitnessMessage(messageId, election));
+
+    laoRepo.updateLao(lao);
   }
 
   /**
@@ -94,13 +96,33 @@ public final class ElectionHandler {
     if (resultsQuestions.isEmpty())
       throw new DataHandlingException(electionResult, "the questions results is empty");
 
-    election.setResults(resultsQuestions);
-    election.setEventState(RESULTS_READY);
+    Election updated =
+        election
+            .builder()
+            .setResults(computeResults(resultsQuestions))
+            .setState(RESULTS_READY)
+            .build();
 
     Lao lao = laoView.createLaoCopy();
-    lao.updateElection(election.getId(), election);
+    lao.updateElection(updated.getId(), updated);
 
     laoRepo.updateLao(lao);
+  }
+
+  private Map<String, List<QuestionResult>> computeResults(
+      @NonNull List<ElectionResultQuestion> electionResultsQuestions) {
+
+    Map<String, List<QuestionResult>> results = new HashMap<>();
+
+    for (ElectionResultQuestion resultQuestion : electionResultsQuestions) {
+      results.put(
+          resultQuestion.getId(),
+          resultQuestion.getResult().stream()
+              .sorted(Comparator.comparing(QuestionResult::getCount).reversed())
+              .collect(Collectors.toList()));
+    }
+
+    return results;
   }
 
   /**
@@ -111,7 +133,7 @@ public final class ElectionHandler {
    */
   @SuppressWarnings("unused")
   public void handleElectionOpen(HandlerContext context, OpenElection openElection)
-      throws UnknownLaoException {
+      throws UnknownLaoException, InvalidStateException {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleOpenElection: channel " + channel);
@@ -119,16 +141,18 @@ public final class ElectionHandler {
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
     Election election = laoRepo.getElectionByChannel(channel);
 
-    // If created --> open it
-    if (election.getState() == CREATED) {
-      election.setEventState(OPENED);
+    // If the state is not created, then this message is invalid
+    if (election.getState() != CREATED) {
+      throw new InvalidStateException(
+          openElection, "election", election.getState().name(), CREATED.name());
     }
 
     // Sets the start time to now
-    election.setStart(Instant.now().getEpochSecond());
-    Log.d(TAG, "election opened " + election.getStartTimestamp());
+    Election updated =
+        election.builder().setState(OPENED).setStart(Instant.now().getEpochSecond()).build();
+    Log.d(TAG, "election opened " + updated.getStartTimestamp());
     Lao lao = laoView.createLaoCopy();
-    lao.updateElection(election.getId(), election);
+    lao.updateElection(updated.getId(), updated);
 
     laoRepo.updateLao(lao);
   }
@@ -147,8 +171,7 @@ public final class ElectionHandler {
     Log.d(TAG, "handleElectionEnd: channel " + channel);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
-    Election election = laoRepo.getElectionByChannel(channel);
-    election.setEventState(CLOSED);
+    Election election = laoRepo.getElectionByChannel(channel).builder().setState(CLOSED).build();
     Lao lao = laoView.createLaoCopy();
     lao.updateElection(election.getId(), election);
 
@@ -193,15 +216,27 @@ public final class ElectionHandler {
 
       // Verify the current cast vote message is the last one received
       if (previousMessageCreation <= castVote.getCreation()) {
+        Election.ElectionBuilder builder = election.builder().updateMessageMap(senderPk, messageId);
+
         // Filter given the content of the vote
         if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-          election.putOpenBallotVotesBySender(senderPk, (List<ElectionVote>) castVote.getVotes());
+          List<ElectionVote> votes = (List<ElectionVote>) castVote.getVotes();
+          builder.updateOpenBallotVotesBySender(
+              senderPk,
+              votes.stream()
+                  .sorted(Comparator.comparing(ElectionVote::getId))
+                  .collect(Collectors.toList()));
         } else {
-          election.putEncryptedVotesBySender(
-              senderPk, (List<ElectionEncryptedVote>) castVote.getVotes());
+          List<ElectionEncryptedVote> votes = (List<ElectionEncryptedVote>) castVote.getVotes();
+          builder.updateEncryptedVotesBySender(
+              senderPk,
+              votes.stream()
+                  .sorted(Comparator.comparing(ElectionEncryptedVote::getId))
+                  .collect(Collectors.toList()));
         }
-        election.putSenderByMessageId(senderPk, messageId);
-        lao.updateElection(election.getId(), election);
+
+        Election updated = builder.build();
+        lao.updateElection(updated.getId(), updated);
       }
     }
     laoRepo.updateLao(lao);
@@ -231,13 +266,25 @@ public final class ElectionHandler {
    * @param context context
    * @param electionKey key to add
    */
-  public void handleElectionKey(HandlerContext context, ElectionKey electionKey) {
+  public void handleElectionKey(HandlerContext context, ElectionKey electionKey)
+      throws UnknownLaoException {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleElectionKey: channel " + channel);
-    Election election = laoRepo.getElectionByChannel(channel);
 
-    election.setElectionKey(electionKey.getElectionVoteKey());
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
+
+    Election election =
+        laoRepo
+            .getElectionByChannel(channel)
+            .builder()
+            .setElectionKey(electionKey.getElectionVoteKey())
+            .build();
+
+    Lao lao = laoView.createLaoCopy();
+    lao.updateElection(election.getId(), election);
+    laoRepo.updateLao(lao);
+
     Log.d(TAG, "handleElectionKey: election key has been set ");
   }
 }
