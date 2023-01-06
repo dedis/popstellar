@@ -67,7 +67,7 @@ public class ElectionTest {
         int openVoteIndice = o.getVote();
         assertEquals(openVoteIndice, decryptedINt);
       } catch (CothorityCryptoException exception) {
-        // Shouldn't do anything
+        exception.printStackTrace();
       }
     }
   }
