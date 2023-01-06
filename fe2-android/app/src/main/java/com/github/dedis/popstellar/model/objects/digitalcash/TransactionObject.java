@@ -92,7 +92,7 @@ public class TransactionObject {
   public List<PublicKey> getReceiversTransaction(Map<String, PublicKey> mapHashKey) {
     List<PublicKey> receivers = new ArrayList<>();
     for (String transactionHash : getReceiversHashTransaction()) {
-      PublicKey pub = mapHashKey.getOrDefault(transactionHash, null);
+      PublicKey pub = mapHashKey.get(transactionHash);
       if (pub == null) {
         throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
       }

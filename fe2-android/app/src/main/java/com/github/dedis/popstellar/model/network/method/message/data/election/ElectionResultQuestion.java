@@ -10,21 +10,21 @@ import java.util.*;
 public class ElectionResultQuestion {
 
   private final String id;
-  private final List<QuestionResult> result;
+  private final Set<QuestionResult> result;
 
-  public ElectionResultQuestion(@NonNull String id, @NonNull List<QuestionResult> result) {
+  public ElectionResultQuestion(@NonNull String id, @NonNull Set<QuestionResult> result) {
     if (result.isEmpty()) {
       throw new IllegalArgumentException();
     }
     this.id = id;
-    this.result = new ArrayList<>(result);
+    this.result = new HashSet<>(result);
   }
 
   public @NonNull String getId() {
     return id;
   }
 
-  public @NonNull List<QuestionResult> getResult() {
+  public @NonNull Set<QuestionResult> getResult() {
     return result;
   }
 
@@ -46,6 +46,7 @@ public class ElectionResultQuestion {
     return Objects.hash(id, result);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "ElectionResultQuestion{"

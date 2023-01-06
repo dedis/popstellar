@@ -111,7 +111,7 @@ public class RollCallHandlerTest {
   @Test
   public void testHandleCreateRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create the create Roll Call message
     CreateRollCall createRollCall =
         new CreateRollCall(
@@ -147,7 +147,7 @@ public class RollCallHandlerTest {
   @Test
   public void testHandleOpenRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
@@ -178,7 +178,7 @@ public class RollCallHandlerTest {
   @Test
   public void testHandleCloseRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create the close Roll Call message
     CloseRollCall closeRollCall =
         new CloseRollCall(

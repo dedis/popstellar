@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
@@ -8,7 +7,8 @@ import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
@@ -26,87 +26,6 @@ public class LaoTest {
       Sets.newSet(generatePublicKey(), null, generatePublicKey());
 
   private static final Lao LAO_1 = new Lao(LAO_NAME_1, ORGANIZER, Instant.now().getEpochSecond());
-
-  private static final Election election1 =
-      new Election.ElectionBuilder(LAO_1.getId(), 2L, "name 1")
-          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
-          .build();
-  private static final Election election2 =
-      new Election.ElectionBuilder(LAO_1.getId(), 2L, "name 2")
-          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
-          .build();
-  private static final Election election3 =
-      new Election.ElectionBuilder(LAO_1.getId(), 2L, "name 3")
-          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
-          .build();
-
-  private static final String electionId1 = election1.getId();
-  private static final String electionId2 = election2.getId();
-  private static final String electionId3 = election3.getId();
-
-  private static final Map<String, Election> elections =
-      new HashMap<String, Election>() {
-        {
-          put(electionId1, election1);
-          put(electionId2, election2);
-          put(electionId3, election3);
-        }
-      };
-
-  @Test
-  public void removeElectionTest() {
-    LAO_1.setElections(new HashMap<>(elections));
-    assertTrue(
-        LAO_1.removeElection(
-            electionId3)); // we want to assert that we can remove electionId3 successfully
-    assertEquals(2, LAO_1.getElections().size());
-    assertTrue(LAO_1.getElections().containsKey(electionId1));
-    assertTrue(LAO_1.getElections().containsKey(electionId2));
-    assertFalse(LAO_1.getElections().containsKey(electionId3));
-
-    // we remove electionId2
-    LAO_1.setElections(
-        new HashMap<String, Election>() {
-          {
-            put(electionId1, election1);
-            put(null, election1);
-            put(electionId3, election3);
-          }
-        });
-    // now the removal of electionId2 can't be done
-    assertFalse(LAO_1.removeElection(electionId2));
-  }
-
-  @Test
-  public void updateElections() {
-    LAO_1.setElections(new HashMap<>(elections));
-    Election e1 =
-        new Election.ElectionBuilder(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1")
-            .setElectionVersion(ElectionVersion.OPEN_BALLOT)
-            .build();
-
-    LAO_1.updateElection(electionId1, e1);
-    assertFalse(LAO_1.getElections().containsKey(electionId1));
-    assertTrue(LAO_1.getElections().containsKey(e1.getId()));
-    assertTrue(LAO_1.getElections().containsKey(electionId2));
-    assertTrue(LAO_1.getElections().containsKey(electionId3));
-    assertSame(LAO_1.getElections().get(e1.getId()), e1);
-
-    // we create a different election that has the same Id as the first one
-    Election e2 =
-        new Election.ElectionBuilder(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1")
-            .setElectionVersion(ElectionVersion.OPEN_BALLOT)
-            .build();
-
-    LAO_1.updateElection(e1.getId(), e2);
-    assertNotSame(LAO_1.getElections().get(e1.getId()), e1);
-    assertSame(LAO_1.getElections().get(e1.getId()), e2);
-  }
-
-  @Test
-  public void updateElectionCallWithNull() {
-    assertThrows(IllegalArgumentException.class, () -> LAO_1.updateElection("random", null));
-  }
 
   @Test
   public void createLaoNullParametersTest() {
@@ -135,25 +54,6 @@ public class LaoTest {
   public void setAndGetOrganizerTest() {
     LAO_1.setOrganizer(ORGANIZER);
     assertThat(LAO_1.getOrganizer(), is(ORGANIZER));
-  }
-
-  @Test
-  public void setAndGetElections() {
-    LAO_1.setElections(elections);
-    assertThat(LAO_1.getElections(), is(elections));
-  }
-
-  @Test
-  public void getElection() {
-    LAO_1.setElections(
-        new HashMap<String, Election>() {
-          {
-            put(electionId1, election1);
-            put(electionId2, election2);
-          }
-        });
-    assertTrue(LAO_1.getElection(electionId1).isPresent());
-    assertThat(LAO_1.getElection(electionId1).get(), is(election1));
   }
 
   @Test

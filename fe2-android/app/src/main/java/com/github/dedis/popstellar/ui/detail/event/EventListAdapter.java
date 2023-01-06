@@ -163,11 +163,10 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       eventViewHolder.eventTitle.setText(election.getName());
       View.OnClickListener listener =
           view -> {
-            viewModel.setCurrentElection(election);
             LaoDetailActivity.setCurrentFragment(
                 activity.getSupportFragmentManager(),
                 R.id.fragment_election,
-                ElectionFragment::newInstance);
+                () -> ElectionFragment.newInstance(election.getId()));
           };
       eventViewHolder.eventCard.setOnClickListener(listener);
 

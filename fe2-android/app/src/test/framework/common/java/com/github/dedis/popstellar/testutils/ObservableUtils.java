@@ -4,7 +4,14 @@ import io.reactivex.observers.TestObserver;
 
 public class ObservableUtils {
 
-  public static <T> void assertCurrentValueIs(TestObserver<T> ids, T value) {
-    ids.assertValueAt(ids.valueCount() - 1, value);
+  /**
+   * Assert that the current value of the observer is the expected one
+   *
+   * @param observer to assert on
+   * @param expected value
+   * @param <T> type of the value
+   */
+  public static <T> void assertCurrentValueIs(TestObserver<T> observer, T expected) {
+    observer.assertValueAt(observer.valueCount() - 1, expected);
   }
 }

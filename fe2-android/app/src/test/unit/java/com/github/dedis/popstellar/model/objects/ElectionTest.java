@@ -29,12 +29,9 @@ public class ElectionTest {
   ElectionPrivateKey electionPrivateKey = encryptionKeys.getDecryptionScheme();
 
   private final String name = "my election name";
-  private final String id = "my election id";
-  private final Channel channel = Channel.ROOT.subChannel("election_channel");
   private final Election election =
-      new Election.ElectionBuilder("lao id", Instant.now().getEpochSecond(), name)
+      new Election.ElectionBuilder("lao_id", Instant.now().getEpochSecond(), name)
           .setElectionVersion(OPEN_BALLOT)
-          .setLaoChannel(channel)
           .setElectionKey(
               new Base64URLData(electionPublicKey.getPublicKey().toBytes()).getEncoded())
           .build();
@@ -43,7 +40,8 @@ public class ElectionTest {
   private final String questionId1 = " myQuestion1";
 
   // Set up a open ballot election
-  private final ElectionVote electionVote1 = new ElectionVote(questionId1, 1, false, null, id);
+  private final ElectionVote electionVote1 =
+      new ElectionVote(questionId1, 1, false, null, election.getId());
   private final List<ElectionVote> electionVotes = Collections.singletonList(electionVote1);
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();

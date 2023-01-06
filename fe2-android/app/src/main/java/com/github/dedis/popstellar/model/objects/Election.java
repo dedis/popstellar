@@ -42,7 +42,7 @@ public class Election extends Event {
   private final EventState state;
 
   // Results of an election (associated to a question id)
-  private final Map<String, List<QuestionResult>> results;
+  private final Map<String, Set<QuestionResult>> results;
 
   public Election(
       String id,
@@ -58,7 +58,7 @@ public class Election extends Event {
       Map<PublicKey, List<ElectionEncryptedVote>> encryptedVoteByPublicKey,
       Map<MessageID, PublicKey> messageMap,
       EventState state,
-      Map<String, List<QuestionResult>> results) {
+      Map<String, Set<QuestionResult>> results) {
     this.id = id;
     this.name = name;
     this.creation = creation;
@@ -72,7 +72,7 @@ public class Election extends Event {
     this.electionQuestions = new ArrayList<>(electionQuestions);
     this.openVoteByPublicKey = Copyable.copyMapOfList(openVoteByPublicKey);
     this.encryptedVoteByPublicKey = Copyable.copyMapOfList(encryptedVoteByPublicKey);
-    this.results = Copyable.copyMapOfList(results);
+    this.results = Copyable.copyMapOfSet(results);
     // Create message map as a tree map to sort messages correctly
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     this.messageMap.putAll(messageMap);
@@ -128,7 +128,7 @@ public class Election extends Event {
     return end;
   }
 
-  public List<QuestionResult> getResultsForQuestionId(String id) {
+  public Set<QuestionResult> getResultsForQuestionId(String id) {
     return results.get(id);
   }
 
@@ -218,7 +218,7 @@ public class Election extends Event {
    *
    * @return the hash of all registered votes
    */
-  public String computerRegisteredVotes() {
+  public String computerRegisteredVotesHash() {
     List<String> listOfVoteIds =
         getElectionVersion() == ElectionVersion.OPEN_BALLOT
             ? getListOfVoteIds(openVoteByPublicKey, ElectionVote::getId)
@@ -231,8 +231,8 @@ public class Election extends Event {
     }
   }
 
-  private <VOTE> List<String> getListOfVoteIds(
-      @NonNull Map<PublicKey, List<VOTE>> map, Function<VOTE, String> voteToId) {
+  private <V> List<String> getListOfVoteIds(
+      @NonNull Map<PublicKey, List<V>> map, Function<V, String> voteToId) {
     // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
     // messageIds
     return messageMap.values().stream()
@@ -322,7 +322,7 @@ public class Election extends Event {
     private final Map<PublicKey, List<ElectionEncryptedVote>> encryptedVoteByPublicKey;
     private final Map<MessageID, PublicKey> messageMap;
     private EventState state;
-    private Map<String, List<QuestionResult>> results;
+    private Map<String, Set<QuestionResult>> results;
 
     /**
      * This is a special builder that can be used to generate the default values of an election
@@ -336,6 +336,7 @@ public class Election extends Event {
       this.id = generateElectionSetupId(laoId, creation, name);
       this.name = name;
       this.creation = creation;
+      this.channel = Channel.getLaoChannel(laoId).subChannel(id);
 
       this.results = new HashMap<>();
       this.electionQuestions = new ArrayList<>();
@@ -362,18 +363,8 @@ public class Election extends Event {
       this.results = election.results;
     }
 
-    public ElectionBuilder setLaoChannel(@NonNull Channel channel) {
-      this.channel = channel.subChannel(this.id);
-      return this;
-    }
-
     public ElectionBuilder setName(@NonNull String name) {
       this.name = name;
-      return this;
-    }
-
-    public ElectionBuilder setCreation(long creation) {
-      this.creation = creation;
       return this;
     }
 
@@ -425,7 +416,7 @@ public class Election extends Event {
       return this;
     }
 
-    public ElectionBuilder setResults(@NonNull Map<String, List<QuestionResult>> results) {
+    public ElectionBuilder setResults(@NonNull Map<String, Set<QuestionResult>> results) {
       this.results = results;
       return this;
     }

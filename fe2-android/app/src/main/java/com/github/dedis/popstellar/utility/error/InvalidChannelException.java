@@ -10,10 +10,10 @@ public class InvalidChannelException extends DataHandlingException {
    * Create a new invalid channel exception
    *
    * @param data that generated the exception
-   * @param expected_kind of channel. Describes the type of expected channel ex: 'an lao channel'
+   * @param expectedKind of channel. Describes the type of expected channel ex: 'an lao channel'
    * @param got channel on which the message was received
    */
-  public InvalidChannelException(Data data, String expected_kind, Channel got) {
-    super(data, "The message was received on channel " + got + " but expected " + expected_kind);
+  public InvalidChannelException(Data data, String expectedKind, Channel got) {
+    super(data, "The message was received on channel " + got + " but expected " + expectedKind);
   }
 }
