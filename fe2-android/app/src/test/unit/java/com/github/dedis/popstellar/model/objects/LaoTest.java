@@ -49,7 +49,7 @@ public class LaoTest {
         {
           put(electionId1, election1);
           put(electionId2, election2);
-          put(electionId3, election2);
+          put(electionId3, election3);
         }
       };
 
