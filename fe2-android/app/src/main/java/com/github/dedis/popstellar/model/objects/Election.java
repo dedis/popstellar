@@ -11,8 +11,6 @@ import com.github.dedis.popstellar.model.objects.security.elGamal.ElectionPublic
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Immutable
@@ -31,10 +29,8 @@ public class Election extends Event {
   // Either OPEN_BALLOT or SECRET_BALLOT
   private final ElectionVersion electionVersion;
 
-  // Map that associates each sender pk to their open ballot votes
-  private final Map<PublicKey, List<ElectionVote>> openVoteByPublicKey;
-  // Map that associates each sender pk to their encrypted votes
-  private final Map<PublicKey, List<ElectionEncryptedVote>> encryptedVoteByPublicKey;
+  // Map that associates each sender pk to their votes
+  private final Map<PublicKey, List<Vote>> votesBySender;
 
   // Map that associates each messageId to its sender
   private final Map<MessageID, PublicKey> messageMap;
@@ -54,11 +50,14 @@ public class Election extends Event {
       List<ElectionQuestion> electionQuestions,
       String electionKey,
       ElectionVersion electionVersion,
-      Map<PublicKey, List<ElectionVote>> openVoteByPublicKey,
-      Map<PublicKey, List<ElectionEncryptedVote>> encryptedVoteByPublicKey,
+      Map<PublicKey, List<Vote>> votesBySender,
       Map<MessageID, PublicKey> messageMap,
       EventState state,
       Map<String, Set<QuestionResult>> results) {
+
+    // Make sure the vote are encrypted in a secret election and plain in an open election
+    validateVotesTypes(votesBySender, electionVersion);
+
     this.id = id;
     this.name = name;
     this.creation = creation;
@@ -70,12 +69,32 @@ public class Election extends Event {
     this.electionVersion = electionVersion;
     // Defensive copies
     this.electionQuestions = new ArrayList<>(electionQuestions);
-    this.openVoteByPublicKey = Copyable.copyMapOfList(openVoteByPublicKey);
-    this.encryptedVoteByPublicKey = Copyable.copyMapOfList(encryptedVoteByPublicKey);
+    this.votesBySender = Copyable.copyMapOfList(votesBySender);
     this.results = Copyable.copyMapOfSet(results);
     // Create message map as a tree map to sort messages correctly
     this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
     this.messageMap.putAll(messageMap);
+  }
+
+  private static void validateVotesTypes(
+      Map<PublicKey, List<Vote>> votesBySender, ElectionVersion version) {
+    for (List<Vote> votes : votesBySender.values()) {
+      for (Vote vote : votes) {
+        validateVoteType(vote, version);
+      }
+    }
+  }
+
+  private static void validateVoteType(Vote vote, ElectionVersion version) {
+    boolean isElectionEncrypted = version == ElectionVersion.SECRET_BALLOT;
+
+    if (vote.isEncrypted() != isElectionEncrypted) {
+      if (vote.isEncrypted()) {
+        throw new IllegalArgumentException("Provided an encrypted vote in an open ballot election");
+      } else {
+        throw new IllegalArgumentException("Provided an plain vote in a secret ballot election");
+      }
+    }
   }
 
   public String getElectionKey() {
@@ -218,29 +237,21 @@ public class Election extends Event {
    *
    * @return the hash of all registered votes
    */
-  public String computerRegisteredVotesHash() {
-    List<String> listOfVoteIds =
-        getElectionVersion() == ElectionVersion.OPEN_BALLOT
-            ? getListOfVoteIds(openVoteByPublicKey, ElectionVote::getId)
-            : getListOfVoteIds(encryptedVoteByPublicKey, ElectionEncryptedVote::getId);
+  public String computeRegisteredVotesHash() {
+    String[] ids =
+        messageMap.values().stream()
+            .map(votesBySender::get)
+            // Merge lists and drop nulls
+            .flatMap(
+                electionVotes -> electionVotes != null ? electionVotes.stream() : Stream.empty())
+            .map(Vote::getId)
+            .toArray(String[]::new);
 
-    if (listOfVoteIds.isEmpty()) {
+    if (ids.length == 0) {
       return "";
     } else {
-      return Hash.hash(listOfVoteIds.toArray(new String[0]));
+      return Hash.hash(ids);
     }
-  }
-
-  private <V> List<String> getListOfVoteIds(
-      @NonNull Map<PublicKey, List<V>> map, Function<V, String> voteToId) {
-    // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
-    // messageIds
-    return messageMap.values().stream()
-        .map(map::get)
-        // Merge lists and drop nulls
-        .flatMap(electionVotes -> electionVotes != null ? electionVotes.stream() : Stream.empty())
-        .map(voteToId)
-        .collect(Collectors.toList());
   }
 
   /**
@@ -249,10 +260,10 @@ public class Election extends Event {
    * @param votes list of votes to encrypt
    * @return encrypted votes
    */
-  public List<ElectionEncryptedVote> encrypt(List<ElectionVote> votes) {
+  public List<EncryptedVote> encrypt(List<PlainVote> votes) {
     // We need to iterate over all election votes to encrypt them
-    List<ElectionEncryptedVote> encryptedVotes = new ArrayList<>();
-    for (ElectionVote vote : votes) {
+    List<EncryptedVote> encryptedVotes = new ArrayList<>();
+    for (PlainVote vote : votes) {
       // We are sure that each vote is unique per question following new specification
       int voteIndice = vote.getVote();
 
@@ -264,8 +275,8 @@ public class Election extends Event {
       ElectionPublicKey key = new ElectionPublicKey(electionKeyToBase64);
       // Encrypt the indice
       String encryptedVotesIndice = key.encrypt(voteIndiceInBytes);
-      ElectionEncryptedVote encryptedVote =
-          new ElectionEncryptedVote(vote.getQuestionId(), encryptedVotesIndice, false, null, id);
+      EncryptedVote encryptedVote =
+          new EncryptedVote(vote.getQuestionId(), encryptedVotesIndice, false, null, id);
       encryptedVotes.add(encryptedVote);
     }
     return encryptedVotes;
@@ -293,7 +304,7 @@ public class Election extends Event {
         + ", electionQuestions="
         + Arrays.toString(electionQuestions.toArray())
         + ", voteMap="
-        + openVoteByPublicKey
+        + votesBySender
         + ", messageMap="
         + messageMap
         + ", state="
@@ -311,15 +322,14 @@ public class Election extends Event {
 
     private final String id;
     private String name;
-    private long creation;
-    private Channel channel;
+    private final long creation;
+    private final Channel channel;
     private long start;
     private long end;
     private List<ElectionQuestion> electionQuestions;
     private String electionKey;
     private ElectionVersion electionVersion;
-    private final Map<PublicKey, List<ElectionVote>> openVoteByPublicKey;
-    private final Map<PublicKey, List<ElectionEncryptedVote>> encryptedVoteByPublicKey;
+    private final Map<PublicKey, List<Vote>> votesBySender;
     private final Map<MessageID, PublicKey> messageMap;
     private EventState state;
     private Map<String, Set<QuestionResult>> results;
@@ -340,8 +350,7 @@ public class Election extends Event {
 
       this.results = new HashMap<>();
       this.electionQuestions = new ArrayList<>();
-      this.openVoteByPublicKey = new HashMap<>();
-      this.encryptedVoteByPublicKey = new HashMap<>();
+      this.votesBySender = new HashMap<>();
       this.messageMap = new HashMap<>();
     }
 
@@ -356,8 +365,7 @@ public class Election extends Event {
       this.electionQuestions = election.electionQuestions;
       this.electionVersion = election.electionVersion;
       // We might modify the maps, for safety reason, we need to create a copy
-      this.openVoteByPublicKey = new HashMap<>(election.openVoteByPublicKey);
-      this.encryptedVoteByPublicKey = new HashMap<>(election.encryptedVoteByPublicKey);
+      this.votesBySender = new HashMap<>(election.votesBySender);
       this.messageMap = new HashMap<>(election.messageMap);
       this.state = election.state;
       this.results = election.results;
@@ -393,15 +401,8 @@ public class Election extends Event {
       return this;
     }
 
-    public ElectionBuilder updateOpenBallotVotesBySender(
-        @NonNull PublicKey senderPk, @NonNull List<ElectionVote> votes) {
-      this.openVoteByPublicKey.put(senderPk, votes);
-      return this;
-    }
-
-    public ElectionBuilder updateEncryptedVotesBySender(
-        @NonNull PublicKey senderPk, @NonNull List<ElectionEncryptedVote> votes) {
-      this.encryptedVoteByPublicKey.put(senderPk, votes);
+    public ElectionBuilder updateVotes(@NonNull PublicKey senderPk, @NonNull List<Vote> votes) {
+      this.votesBySender.put(senderPk, new ArrayList<>(votes));
       return this;
     }
 
@@ -432,8 +433,7 @@ public class Election extends Event {
           this.electionQuestions,
           this.electionKey,
           this.electionVersion,
-          this.openVoteByPublicKey,
-          this.encryptedVoteByPublicKey,
+          this.votesBySender,
           this.messageMap,
           this.state,
           this.results);

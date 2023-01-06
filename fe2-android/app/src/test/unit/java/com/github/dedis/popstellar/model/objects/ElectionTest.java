@@ -40,9 +40,8 @@ public class ElectionTest {
   private final String questionId1 = " myQuestion1";
 
   // Set up a open ballot election
-  private final ElectionVote electionVote1 =
-      new ElectionVote(questionId1, 1, false, null, election.getId());
-  private final List<ElectionVote> electionVotes = Collections.singletonList(electionVote1);
+  private final PlainVote plainVote1 = new PlainVote(questionId1, 1, false, null, election.getId());
+  private final List<PlainVote> plainVotes = Collections.singletonList(plainVote1);
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -54,12 +53,12 @@ public class ElectionTest {
   @Test
   public void electionEncryptionProcess() {
     // First encrypt
-    List<ElectionEncryptedVote> encryptedVotes = election.encrypt(electionVotes);
+    List<EncryptedVote> encryptedVotes = election.encrypt(plainVotes);
 
     // Compare results
     for (int i = 0; i < encryptedVotes.size(); i++) {
-      ElectionEncryptedVote e = encryptedVotes.get(i);
-      ElectionVote o = electionVotes.get(i);
+      EncryptedVote e = encryptedVotes.get(i);
+      PlainVote o = plainVotes.get(i);
       try {
         byte[] decryptedData = electionPrivateKey.decrypt(e.getVote());
         // Pad the result
