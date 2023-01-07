@@ -115,7 +115,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final Wallet wallet;
 
   private Election currentElection = null;
-  private RollCall currentRollCall = null;
   private String currentRollCallId = "";
   private String laoId;
   // used to know which roll call to close
@@ -675,14 +674,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mCurrentElectionVotes;
   }
 
-  public RollCall getCurrentRollCall() {
-    return currentRollCall;
-  }
-
-  public void setCurrentRollCall(RollCall rc) {
-    currentRollCall = rc;
-  }
-
   public void setCurrentRollCallId(String rollCallId) {
     currentRollCallId = rollCallId;
   }
@@ -705,10 +696,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     } else {
       mCurrentElectionVotes.getValue().set(position, votes);
     }
-  }
-
-  public void setShowProperties(boolean show) {
-    showProperties.postValue(show);
   }
 
   /**
@@ -812,11 +799,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                 error -> Log.d(TAG, "Error updating Roll Call : " + error)));
   }
 
-  private void updateCurrentObjects(LaoView laoView) throws UnknownRollCallException {
-    if (currentRollCall != null) {
-      currentRollCall =
-          rollCallRepo.getRollCallWithPersistentId(laoId, currentRollCall.getPersistentId());
-    }
+  private void updateCurrentObjects(LaoView laoView) {
     if (currentElection != null) {
       Optional<Election> electionOption = laoView.getElection(currentElection.getId());
       if (!electionOption.isPresent()) {
@@ -826,8 +809,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     }
   }
 
-  public PoPToken getCurrentPopToken() throws KeyException, UnknownLaoException {
-    return keyManager.getPoPToken(getLaoView(), currentRollCall);
+  public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
+    return keyManager.getPoPToken(getLaoView(), rollCall);
   }
 
   public boolean isWalletSetup() {
