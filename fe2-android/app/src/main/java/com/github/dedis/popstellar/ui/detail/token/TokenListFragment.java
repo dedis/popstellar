@@ -15,6 +15,9 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -66,10 +69,10 @@ public class TokenListFragment extends Fragment {
             .getAttendedRollCalls()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                rollCalls -> {
+                attendedRollCalls -> {
                   RollCall lastRollCall = viewModel.getLastClosedRollCall();
 
-                  if (rollCalls.contains(lastRollCall)) {
+                  if (attendedRollCalls.contains(lastRollCall)) {
                     // We attended the last roll call
                     TextView validRcTitle =
                         binding.validTokenLayout.findViewById(R.id.token_layout_rc_title);
@@ -87,12 +90,13 @@ public class TokenListFragment extends Fragment {
 
                   // This handle the previous tokens list
                   // First we remove the last roll call from the list of attended roll calls
-                  rollCalls.remove(lastRollCall);
-                  if (rollCalls.isEmpty()) {
+                  List<RollCall> previousRollCalls = new ArrayList<>(attendedRollCalls);
+                  previousRollCalls.remove(lastRollCall);
+                  if (previousRollCalls.isEmpty()) {
                     binding.previousTokenLayout.setVisibility(View.GONE);
                   } else {
                     binding.previousTokenLayout.setVisibility(View.VISIBLE);
-                    tokensAdapter.replaceList(rollCalls);
+                    tokensAdapter.replaceList(previousRollCalls);
                   }
                   binding.emptyTokenLayout.setVisibility(View.GONE);
                 },
