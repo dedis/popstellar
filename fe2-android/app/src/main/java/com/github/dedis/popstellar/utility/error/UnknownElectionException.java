@@ -8,6 +8,10 @@ public class UnknownElectionException extends GenericException {
     super("Could not find a valid election");
   }
 
+  public UnknownElectionException(String electionId) {
+    super("Could not find election with id " + electionId);
+  }
+
   @Override
   public int getUserMessage() {
     return R.string.unknown_election_exception;

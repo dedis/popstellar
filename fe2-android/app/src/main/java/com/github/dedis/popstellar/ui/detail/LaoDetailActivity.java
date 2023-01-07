@@ -67,6 +67,7 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
         Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
     viewModel.subscribeToLao(laoId);
     viewModel.subscribeToRollCalls(laoId);
+    viewModel.subscribeToElections(laoId);
 
     if (!getIntent()
         .getExtras()

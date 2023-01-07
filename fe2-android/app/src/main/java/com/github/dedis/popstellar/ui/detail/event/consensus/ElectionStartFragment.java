@@ -13,22 +13,19 @@ import com.github.dedis.popstellar.databinding.ElectionStartFragmentBinding;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.*;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableObserver;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link ElectionStartFragment#newInstance} factory
@@ -46,6 +43,8 @@ public class ElectionStartFragment extends Fragment {
   private ConsensusNode ownNode;
   private Button electionStart;
   private TextView electionStatus;
+
+  @Inject ElectionRepository electionRepository;
 
   public ElectionStartFragment() {
     // Required empty public constructor
@@ -78,16 +77,22 @@ public class ElectionStartFragment extends Fragment {
       return null;
     }
 
-    String scheduledDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
     String electionId = election.getId();
     String instanceId = ElectInstance.generateConsensusId("election", electionId, "state");
 
     binding.electionTitle.setText(getString(R.string.election_start_title, election.getName()));
-    electionStatus.setText(R.string.waiting_scheduled_time);
-    electionStart.setText(getString(R.string.election_scheduled, scheduledDate));
-    electionStart.setEnabled(false);
 
-    setupTimerUpdate(election);
+    try {
+      disposables.add(
+          electionRepository
+              .getElectionObservable(mLaoDetailViewModel.getLaoId(), electionId)
+              .subscribe(
+                  this::updateStartTime,
+                  err ->
+                      ErrorUtils.logAndShow(requireContext(), TAG, err, R.string.generic_error)));
+    } catch (UnknownElectionException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+    }
 
     setupButtonListeners(mLaoDetailViewModel, electionId);
 
@@ -149,34 +154,17 @@ public class ElectionStartFragment extends Fragment {
     return Instant.now().getEpochSecond() >= election.getStartTimestamp();
   }
 
-  private void setupTimerUpdate(Election election) {
-    // Check every seconds until the scheduled time, then show the "election start" button
-    Disposable disposable =
-        Observable.interval(0, 1, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(
-                new DisposableObserver<Long>() {
-                  @Override
-                  public void onNext(@NonNull Long aLong) {
-                    if (isElectionStartTimePassed(election)) {
-                      electionStatus.setText(R.string.ready_to_start);
-                      electionStart.setText(R.string.start_election);
-                      electionStart.setEnabled(true);
-                      dispose();
-                    }
-                  }
-
-                  @Override
-                  public void onError(@NonNull Throwable e) {
-                    Log.w(TAG, e);
-                  }
-
-                  @Override
-                  public void onComplete() {
-                    // Do nothing
-                  }
-                });
-    disposables.add(disposable);
+  private void updateStartTime(Election election) {
+    if (isElectionStartTimePassed(election)) {
+      electionStatus.setText(R.string.ready_to_start);
+      electionStart.setText(R.string.start_election);
+      electionStart.setEnabled(true);
+    } else {
+      String scheduledDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
+      electionStatus.setText(R.string.waiting_scheduled_time);
+      electionStart.setText(getString(R.string.election_scheduled, scheduledDate));
+      electionStart.setEnabled(false);
+    }
   }
 
   private void setupButtonListeners(LaoDetailViewModel mLaoDetailViewModel, String electionId) {

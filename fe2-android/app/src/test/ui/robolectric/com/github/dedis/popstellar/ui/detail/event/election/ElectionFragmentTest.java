@@ -10,13 +10,13 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -33,12 +33,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.model.objects.Election.generateElectionSetupId;
 import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
@@ -64,20 +67,35 @@ public class ElectionFragmentTest {
   private static final long CREATION = 10323411;
   private static final long START = 10323421;
   private static final long END = 10323431;
-  private static final Election election =
-      new Election(LAO_ID, CREATION, TITLE, ElectionVersion.OPEN_BALLOT);
+
+  private static final String ELECTION_ID = generateElectionSetupId(LAO_ID, CREATION, TITLE);
+  private static final ElectionQuestion ELECTION_QUESTION_1 =
+      new ElectionQuestion(
+          ELECTION_ID,
+          new ElectionQuestion.Question(
+              "ElectionQuestion", "Plurality", Arrays.asList("1", "2"), false));
+  private static final ElectionQuestion ELECTION_QUESTION_2 =
+      new ElectionQuestion(
+          ELECTION_ID,
+          new ElectionQuestion.Question(
+              "ElectionQuestion2", "Plurality", Arrays.asList("a", "b"), false));
+
+  private static final Election ELECTION =
+      new Election.ElectionBuilder(LAO_ID, CREATION, TITLE)
+          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+          .setElectionQuestions(Arrays.asList(ELECTION_QUESTION_1, ELECTION_QUESTION_2))
+          .setStart(START)
+          .setEnd(END)
+          .setState(CREATED)
+          .build();
+
   private static final BehaviorSubject<LaoView> laoSubject =
       BehaviorSubject.createDefault(new LaoView(LAO));
 
-  ElectionQuestion electionQuestion1 =
-      new ElectionQuestion(
-          "ElectionQuestion", "Plurality", false, Arrays.asList("1", "2"), election.getId());
-  ElectionQuestion electionQuestion2 =
-      new ElectionQuestion(
-          "ElectionQuestion2", "Plurality", false, Arrays.asList("a", "b"), election.getId());
-
   private static final DateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
+
+  @Inject ElectionRepository electionRepository;
 
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock GlobalNetworkManager networkManager;
@@ -98,14 +116,10 @@ public class ElectionFragmentTest {
       new ExternalResource() {
         @Override
         protected void before() throws UnknownLaoException {
-          election.setElectionQuestions(Arrays.asList(electionQuestion1, electionQuestion2));
-
-          election.setStart(START);
-          election.setEnd(END);
-          election.setEventState(CREATED);
-          LAO.getElections().put(election.getId(), election);
-
           hiltRule.inject();
+
+          electionRepository.updateElection(ELECTION);
+
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
@@ -125,11 +139,10 @@ public class ElectionFragmentTest {
               .build(),
           containerId(),
           ElectionFragment.class,
-          () -> ElectionFragment.newInstance(election));
+          () -> ElectionFragment.newInstance(ELECTION.getId()));
 
   @Test
   public void electionTitleMatches() {
-    setupViewModel();
     electionFragmentTitle().check(matches(withText(TITLE)));
   }
 
@@ -140,11 +153,11 @@ public class ElectionFragmentTest {
 
   @Test
   public void datesDisplayedMatches() {
-    Date startTime = new Date(election.getStartTimestampInMillis());
-    Date endTime = new Date(election.getEndTimestampInMillis());
+    Date startTime = new Date(ELECTION.getStartTimestampInMillis());
+    Date endTime = new Date(ELECTION.getEndTimestampInMillis());
     String startTimeText = DATE_FORMAT.format(startTime);
     String endTimeText = DATE_FORMAT.format(endTime);
-    setupViewModel();
+
     electionFragmentStartTime().check(matches(withText(startTimeText)));
     electionFragmentEndTime().check(matches(withText(endTimeText)));
   }
@@ -156,7 +169,6 @@ public class ElectionFragmentTest {
 
   @Test
   public void managementButtonOpensElectionWhenCreated() {
-    setupViewModel();
     electionManagementButton().check(matches(withText("OPEN")));
     electionManagementButton().perform(click());
     dialogPositiveButton().performClick();
@@ -165,7 +177,7 @@ public class ElectionFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(election.getChannel()), any(OpenElection.class));
+        .publish(any(), eq(ELECTION.getChannel()), any(OpenElection.class));
     messageSenderHelper.assertSubscriptions();
   }
 
@@ -178,14 +190,12 @@ public class ElectionFragmentTest {
   @Test
   public void statusOpenTest() {
     openElection();
-    setupViewModel();
     electionFragmentStatus().check(matches(withText("Open")));
   }
 
   @Test
   public void managementButtonEndElectionWhenOpened() {
     openElection();
-    setupViewModel();
     electionManagementButton().check(matches(withText("CLOSE")));
     electionManagementButton().perform(click());
     dialogPositiveButton().performClick();
@@ -194,14 +204,13 @@ public class ElectionFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(election.getChannel()), any(ElectionEnd.class));
+        .publish(any(), eq(ELECTION.getChannel()), any(ElectionEnd.class));
     messageSenderHelper.assertSubscriptions();
   }
 
   @Test
   public void actionButtonOpenTest() {
     openElection();
-    setupViewModel();
 
     electionActionButton().check(matches(withText("VOTE")));
     electionActionButton().check(matches(isEnabled()));
@@ -210,21 +219,18 @@ public class ElectionFragmentTest {
   @Test
   public void statusClosedTest() {
     closeElection();
-    setupViewModel();
     electionFragmentStatus().check(matches(withText("Waiting for results")));
   }
 
   @Test
   public void managementButtonClosedTest() {
     closeElection();
-    setupViewModel();
     electionManagementButton().check(matches(not(isDisplayed())));
   }
 
   @Test
   public void actionButtonClosedTest() {
     closeElection();
-    setupViewModel();
     electionActionButton().check(matches(withText("Results")));
     electionActionButton().check(matches(not(isEnabled())));
   }
@@ -232,28 +238,24 @@ public class ElectionFragmentTest {
   @Test
   public void statusResultsTest() {
     receiveResults();
-    setupViewModel();
     electionFragmentStatus().check(matches(withText("Finished")));
   }
 
   @Test
   public void managementButtonResultsTest() {
     receiveResults();
-    setupViewModel();
     electionManagementButton().check(matches(not(isDisplayed())));
   }
 
   @Test
   public void actionButtonResultsTest() {
     receiveResults();
-    setupViewModel();
     electionActionButton().check(matches(withText("Results")));
     electionActionButton().check(matches(isEnabled()));
   }
 
   @Test
   public void openButtonDisplaysDialogOnclick() {
-    setupViewModel();
     electionManagementButton().perform(click());
     assertThat(dialogPositiveButton(), allOf(withText("Yes"), isDisplayed()));
     assertThat(dialogNegativeButton(), allOf(withText("No"), isDisplayed()));
@@ -262,36 +264,20 @@ public class ElectionFragmentTest {
   @Test
   public void closeButtonDisplaysDialogOnclick() {
     openElection();
-    setupViewModel();
     electionManagementButton().perform(click());
     assertThat(dialogPositiveButton(), allOf(withText("Yes"), isDisplayed()));
     assertThat(dialogNegativeButton(), allOf(withText("No"), isDisplayed()));
   }
 
   private void openElection() {
-    election.setEventState(OPENED);
-    LAO.getElections().put(election.getId(), election);
+    electionRepository.updateElection(ELECTION.builder().setState(OPENED).build());
   }
 
   private void closeElection() {
-    election.setEventState(CLOSED);
-    LAO.getElections().put(election.getId(), election);
+    electionRepository.updateElection(ELECTION.builder().setState(CLOSED).build());
   }
 
   private void receiveResults() {
-    election.setEventState(RESULTS_READY);
-  }
-
-  private void setupViewModel() {
-    activityScenarioRule
-        .getScenario()
-        .onActivity(
-            activity -> {
-              LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
-              //    laoDetailViewModel.setCurrentLao(new LaoView(LAO));
-              laoDetailViewModel.setCurrentElection(election);
-            });
-    // Recreate the fragment because the viewModel needed to be modified before start
-    activityScenarioRule.getScenario().recreate();
+    electionRepository.updateElection(ELECTION.builder().setState(RESULTS_READY).build());
   }
 }
