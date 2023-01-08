@@ -156,7 +156,7 @@ public class CastVoteFragmentTest {
               .build(),
           containerId(),
           CastVoteFragment.class,
-          CastVoteFragment::newInstance);
+          CastVoteFragment.newInstance(ELECTION_ID));
 
   @Before
   public void setUpViewModel() {
@@ -167,7 +167,6 @@ public class CastVoteFragmentTest {
               FragmentActivity fragmentActivity = fragment.requireActivity();
               LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
               viewModel.setCurrentLao(new LaoView(LAO));
-              viewModel.setCurrentElection(ELECTION.getId());
             });
     fragmentRule.getScenario().recreate();
   }

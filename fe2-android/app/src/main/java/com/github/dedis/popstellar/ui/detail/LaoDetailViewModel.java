@@ -108,7 +108,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final Gson gson;
   private final Wallet wallet;
 
-  private String currentElection = null;
   private String currentRollCallId = "";
   private String laoId;
   // used to know which roll call to close
@@ -249,12 +248,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * @param votes the corresponding votes for that election
    */
-  public Completable sendVote(List<PlainVote> votes) {
+  public Completable sendVote(String electionId, List<PlainVote> votes) {
     Election election;
     try {
-      election = electionRepo.getElection(laoId, currentElection);
+      election = electionRepo.getElection(laoId, electionId);
     } catch (UnknownElectionException e) {
-      Log.d(TAG, "failed to retrieve current election");
       return Completable.error(e);
     }
 
@@ -624,11 +622,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mNbAttendees;
   }
 
-  public LiveData<List<ConsensusNode>> getNodes() throws UnknownLaoException {
-    return LiveDataReactiveStreams.fromPublisher(
-        laoRepository
-            .getNodesByChannel(getLaoView().getChannel())
-            .toFlowable(BackpressureStrategy.LATEST));
+  public Observable<List<ConsensusNode>> getNodes() throws UnknownLaoException {
+    return laoRepository.getNodesByChannel(getLaoView().getChannel());
   }
 
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
@@ -641,18 +636,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public LiveData<SingleEvent<String>> getScanWarningEvent() {
     return mScanWarningEvent;
-  }
-
-  public Election getCurrentElection() {
-    try {
-      return electionRepo.getElection(laoId, currentElection);
-    } catch (UnknownElectionException e) {
-      return null;
-    }
-  }
-
-  public void setCurrentElection(String electionId) {
-    currentElection = electionId;
   }
 
   public MutableLiveData<List<Integer>> getCurrentElectionVotes() {
