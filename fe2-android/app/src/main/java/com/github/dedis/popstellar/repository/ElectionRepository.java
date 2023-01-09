@@ -95,7 +95,7 @@ public class ElectionRepository {
 
   @NonNull
   private synchronized LaoElections getLaoElections(String laoId) {
-    // Create the lao chirps object if it is not present yet
+    // Create the lao elections object if it is not present yet
     return electionsByLao.computeIfAbsent(laoId, lao -> new LaoElections());
   }
 

@@ -51,6 +51,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.github.dedis.popstellar.utility.PoPRXOperators.suppressErrors;
+
 @HiltViewModel
 public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     implements QRCodeScanningViewModel {
@@ -767,11 +769,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public void subscribeToElections(String laoId) {
+
     disposables.add(
         electionRepo
             .getElectionsObservable(laoId)
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .map(
                 ids ->
                     ids.stream()
@@ -793,11 +795,13 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                         elections ->
                             // Sort the election list. That way it stays somewhat consistent over
                             // the updates
-                            Arrays.stream((Election[]) elections)
+                            Arrays.stream(elections)
+                                .map(Election.class::cast)
                                 .sorted(Comparator.comparing(Election::getCreation).reversed())
                                 .collect(Collectors.toList())))
-            .subscribe(
-                mElections::setValue, error -> Log.d(TAG, "Error updating Roll Call : " + error)));
+            .lift(suppressErrors(err -> Log.e(TAG, "Error creating election list : ", err)))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(mElections::setValue));
   }
 
   public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
