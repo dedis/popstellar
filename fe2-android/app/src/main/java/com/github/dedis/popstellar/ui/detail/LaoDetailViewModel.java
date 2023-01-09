@@ -53,8 +53,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
-public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
-    implements QRCodeScanningViewModel {
+public class LaoDetailViewModel extends NavigationViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
@@ -73,7 +72,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    */
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<String> mPageTitle = new MutableLiveData<>();
-  private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
@@ -610,17 +608,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     mPageTitle.postValue(title);
   }
 
-  public LiveData<Boolean> isOrganizer() {
-    return mIsOrganizer;
-  }
-
-  public LiveData<Boolean> isWitness() throws UnknownLaoException {
-    boolean isWitness = getLaoView().getWitnesses().contains(keyManager.getMainPublicKey());
-    Log.d(TAG, "isWitness: " + isWitness);
-    mIsWitness.setValue(isWitness);
-    return mIsWitness;
-  }
-
   public LiveData<Boolean> isSignedByCurrentWitness(Set<PublicKey> witnesses) {
     boolean isSignedByCurrentWitness = witnesses.contains(keyManager.getMainPublicKey());
     Log.d(TAG, "isSignedByCurrentWitness: " + isSignedByCurrentWitness);
@@ -773,9 +760,13 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                   Log.d(TAG, "got an update for lao: " + laoView.getName());
 
                   mCurrentLao.postValue(laoView);
+                  setLaoName(laoView.getName());
+
                   boolean isOrganizer =
                       laoView.getOrganizer().equals(keyManager.getMainPublicKey());
-                  mIsOrganizer.setValue(isOrganizer);
+                  setIsOrganizer(isOrganizer);
+                  setIsWitness(laoView.getWitnesses().contains(keyManager.getMainPublicKey()));
+
                   updateCurrentObjects(laoView);
                 },
                 error -> Log.d(TAG, "error updating LAO :" + error)));
@@ -804,10 +795,16 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                           .collect(Collectors.toList());
 
                   mRollCalls.setValue(rollCallList);
-                  mAttendedRollCalls.setValue(
+
+                  List<RollCall> attendedRollCall =
                       rollCallList.stream()
                           .filter(rollCall -> rollCall.isClosed() && attendedOrOrganized(rollCall))
-                          .collect(Collectors.toList()));
+                          .collect(Collectors.toList());
+                  Log.d(TAG, "attended roll calls: " + attendedRollCall);
+                  mAttendedRollCalls.setValue(attendedRollCall);
+
+                  setIsAttendee(
+                      attendedRollCall.contains(rollCallRepo.getLastClosedRollCall(laoId)));
                 },
                 error -> Log.d(TAG, "Error updating Roll Call : " + error)));
   }
