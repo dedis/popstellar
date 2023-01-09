@@ -40,6 +40,8 @@ public class ElectionStartFragment extends Fragment {
 
   private static final String TAG = ElectionStartFragment.class.getSimpleName();
   private static final String ELECTION_ID = "election_id";
+  public static final String CONSENSUS_TYPE = "election";
+  public static final String CONSENSUS_PROPERTY = "state";
 
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z", Locale.getDefault());
@@ -177,7 +179,11 @@ public class ElectionStartFragment extends Fragment {
             mLaoDetailViewModel.addDisposable(
                 mLaoDetailViewModel
                     .sendConsensusElect(
-                        Instant.now().getEpochSecond(), electionId, "election", "state", "started")
+                        Instant.now().getEpochSecond(),
+                        electionId,
+                        CONSENSUS_TYPE,
+                        CONSENSUS_PROPERTY,
+                        "started")
                     .subscribe(
                         msg -> {},
                         error ->
