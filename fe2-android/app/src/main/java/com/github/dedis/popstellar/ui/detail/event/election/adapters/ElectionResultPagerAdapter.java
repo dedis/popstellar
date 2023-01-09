@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event.election.adapters;
 
+import android.annotation.SuppressLint;
 import android.view.*;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,17 +29,11 @@ public class ElectionResultPagerAdapter
   private static final String TAG = ElectionResultFragment.class.getSimpleName();
 
   private List<QuestionResults> currentResults;
-  private final LaoDetailViewModel viewModel;
-  private final ElectionRepository electionRepository;
-  private final String electionId;
   private ElectionResultListAdapter adapter;
 
+  @SuppressLint("NotifyDataSetChanged")
   public ElectionResultPagerAdapter(
       LaoDetailViewModel viewModel, ElectionRepository electionRepository, String electionId) {
-    this.viewModel = viewModel;
-    this.electionRepository = electionRepository;
-    this.electionId = electionId;
-
     try {
       viewModel.addDisposable(
           electionRepository
