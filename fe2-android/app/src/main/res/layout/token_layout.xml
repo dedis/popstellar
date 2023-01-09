@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/token_card_layout"
+  android:layout_marginTop="@dimen/margin_top"
+  android:layout_marginHorizontal="@dimen/cv_horizontal_margin"
+  android:elevation="0dp"
+  android:clickable="true"
+  app:cardCornerRadius="@dimen/corner_radius_small">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding_standard">
+
+    <ImageView
+      android:id="@+id/token_element_icon"
+      android:layout_width="@dimen/qr_icon_side"
+      android:layout_height="@dimen/qr_icon_side"
+      android:src="@drawable/qr_code_button_icon"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:tint="@color/black"
+      android:contentDescription="@string/qr_code_icon_description" />
+
+    <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:orientation="vertical"
+      app:layout_constraintStart_toEndOf="@id/token_element_icon"
+      android:layout_marginStart="@dimen/margin_text_small"
+      app:layout_constraintEnd_toEndOf="parent">
+
+      <TextView
+        android:id="@+id/token_layout_rc_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        style="@style/text_high_emphasis"
+        android:textSize="@dimen/card_element_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+      <TextView
+        android:id="@+id/token_layout_status"
+        android:textSize="16sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/text_high_emphasis"
+        android:textStyle="normal"
+        android:text="@string/valid" />
+    </LinearLayout>
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

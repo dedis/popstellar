@@ -13,7 +13,7 @@
   <dimen name="size_section_title">22sp</dimen>
   <dimen name="size_body">18sp</dimen>
   <dimen name="history_card_title">14sp</dimen>
-  <dimen name="history_card_element">16sp</dimen>
+  <dimen name="card_element_text_size">16sp</dimen>
   <dimen name="size_small">12sp</dimen>
   <dimen name="tab_lao_detail">13sp</dimen>
   <dimen name="size_for_longer_text">10sp</dimen>
@@ -101,17 +101,6 @@
   <dimen name="guideline_titles">140dp</dimen>
   <dimen name="swipe_indicator_height">25dp</dimen>
 
-  <!-- Cast vote dimensions -->
-  <dimen name="wallet_divider_height">1dp</dimen>
-  <dimen name="wallet_qr_code_size">100dp</dimen>
-  <dimen name="wallet_attendee_width">300dp</dimen>
-  <dimen name="wallet_buttons_height">38dp</dimen>
-  <dimen name="wallet_buttons_text_size">12dp</dimen>
-
-  <!-- Wallet dimensions -->
-  <dimen name="wallet_sk_width">350dp</dimen>
-  <dimen name="wallet_pk_width">200dp</dimen>
-  <dimen name="wallet_qr_token_size">130dp</dimen>
   <dimen name="min_height_entry_box_chirp">245dp</dimen>
   <dimen name="social_media_divider_height">1dp</dimen>
   <dimen name="bottom_navigation_view_height">56dp</dimen>
@@ -127,6 +116,11 @@
   <dimen name="qr_icon_start_margin">30dp</dimen>
   <dimen name="qr_close_icon_side">30dp</dimen>
   <dimen name="qr_layout_margin">20dp</dimen>
+
+  <!--  Token dimensions-->
+  <dimen name="qr_icon_side">28dp</dimen>
+  <dimen name="copy_button_horizontal_margin">28dp</dimen>
+  <dimen name="token_qr_top_margin">24dp</dimen>
 
   <!--  Container dimensions -->
   <dimen name="container_margin">8dp</dimen>
@@ -166,7 +160,9 @@
   <dimen name="transaction_title_top_margin">10dp</dimen>
 
   <!--  CardView dimensions -->
+  <dimen name="cv_horizontal_margin">16dp</dimen>
   <dimen name="padding_standard">8dp</dimen>
   <dimen name="corner_radius_standard">12dp</dimen>
+  <dimen name="corner_radius_small">5dp</dimen>
   <dimen name="stroke_width">1dp</dimen>
 </resources>

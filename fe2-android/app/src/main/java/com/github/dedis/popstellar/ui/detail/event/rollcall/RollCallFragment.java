@@ -102,7 +102,7 @@ public class RollCallFragment extends Fragment {
                           () ->
                               setCurrentFragment(
                                   getParentFragmentManager(),
-                                  R.id.add_attendee_layout,
+                                  R.id.fragment_qrcode,
                                   QRCodeScanningFragment::new),
                           error ->
                               ErrorUtils.logAndShow(
@@ -131,7 +131,7 @@ public class RollCallFragment extends Fragment {
     binding.rollCallScanningButton.setOnClickListener(
         b ->
             setCurrentFragment(
-                getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new));
+                getParentFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new));
 
     viewModel.addDisposable(
         viewModel
