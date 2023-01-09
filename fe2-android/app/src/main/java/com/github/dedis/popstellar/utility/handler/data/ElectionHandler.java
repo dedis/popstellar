@@ -63,11 +63,18 @@ public final class ElectionHandler {
             .setEnd(electionSetup.getEndTime())
             .setState(CREATED)
             .build();
+
     // Add new election to repository
     electionRepository.updateElection(election);
 
     // Once the election is created, we subscribe to the election channel
-    context.getMessageSender().subscribe(election.getChannel()).subscribe();
+    context
+        .getMessageSender()
+        .subscribe(election.getChannel())
+        .doOnError(err -> Log.e(TAG, "On error occured while subscribing to election channel", err))
+        .onErrorComplete()
+        .subscribe();
+
     Log.d(TAG, "election id " + election.getId());
 
     Lao lao = laoView.createLaoCopy();
