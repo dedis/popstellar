@@ -89,20 +89,7 @@ public class LaoDetailActivity extends NavigationActivity {
   private void setupTopAppBar() {
     viewModel.getPageTitle().observe(this, binding.laoTopAppBar::setTitle);
 
-    //    binding.laoTopAppBar.setOnMenuItemClickListener(
-    //        item -> {
-    //          if (item.getItemId() == R.id.lao_toolbar_qr_code) {
-    //            binding.laoDetailQrLayout.setVisibility(View.VISIBLE);
-    //            binding.laoDetailQrLayout.setAlpha(Constants.ENABLED_ALPHA);
-    //            binding.fragmentContainerLaoDetail.setAlpha(Constants.DISABLED_ALPHA);
-    //            binding.fragmentContainerLaoDetail.setEnabled(false);
-    //            return true;
-    //          }
-    //          return false;
-    //        });
   }
-
-  //  private void setupProperties() {
 
   @Override
   protected boolean openTab(MainMenuTab tab) {
