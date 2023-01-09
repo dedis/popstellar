@@ -169,4 +169,7 @@
   <dimen name="padding_standard">8dp</dimen>
   <dimen name="corner_radius_standard">12dp</dimen>
   <dimen name="stroke_width">1dp</dimen>
+
+  <!--  Drawer header dimensions -->
+  <dimen name="header_layout_padding">16dp</dimen>
 </resources>

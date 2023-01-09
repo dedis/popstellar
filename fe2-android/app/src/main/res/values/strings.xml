@@ -11,6 +11,7 @@
   <string name="organizer">Organizer</string>
   <string name="attendee">Attendee</string>
   <string name="witness">Witness</string>
+  <string name="member">Member</string>
 
   <!-- bottom nav -->
   <string name="tab_identity">Identity</string>
