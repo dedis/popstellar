@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event.election;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.fragment.app.FragmentActivity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -17,14 +16,14 @@ import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
-import org.junit.*;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -67,7 +66,7 @@ public class CastVoteFragmentTest {
   private static final long START = 10323421;
   private static final long END = 10323431;
   private static final String ELECTION_QUESTION_TEXT1 = "question 1";
-  private static final String ELECTION_QUESTION_TEXT2 = "question 1";
+  private static final String ELECTION_QUESTION_TEXT2 = "question 2";
   private static final String ELECTION_BALLOT_TEXT11 = "ballot option 1";
   private static final String ELECTION_BALLOT_TEXT12 = "ballot option 2";
   private static final String ELECTION_BALLOT_TEXT13 = "ballot option 3";
@@ -156,20 +155,7 @@ public class CastVoteFragmentTest {
               .build(),
           containerId(),
           CastVoteFragment.class,
-          CastVoteFragment.newInstance(ELECTION_ID));
-
-  @Before
-  public void setUpViewModel() {
-    fragmentRule
-        .getScenario()
-        .onFragment(
-            fragment -> {
-              FragmentActivity fragmentActivity = fragment.requireActivity();
-              LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
-              viewModel.setCurrentLao(new LaoView(LAO));
-            });
-    fragmentRule.getScenario().recreate();
-  }
+          () -> CastVoteFragment.newInstance(ELECTION_ID));
 
   @Test
   public void laoTitleMatches() {

@@ -87,10 +87,7 @@ public class ElectionStartFragment extends Fragment {
               .observeOn(mainThread());
 
       Observable<ElectionNodesState> merged =
-          Observable.combineLatest(
-              viewModel.getNodes(),
-              electionRepo.getElectionObservable(viewModel.getLaoId(), electionId),
-              ElectionNodesState::new);
+          Observable.combineLatest(nodes, election, ElectionNodesState::new);
 
       subscribeTo(nodes, this::updateNodes);
       subscribeTo(election, this::updateElection);
@@ -102,26 +99,25 @@ public class ElectionStartFragment extends Fragment {
 
     setupButtonListeners(viewModel, electionId);
 
-    LaoView laoView;
     try {
-      laoView = viewModel.getLaoView();
+      LaoView laoView = viewModel.getLaoView();
+      ownNode = laoView.getNode(viewModel.getPublicKey());
+
+      if (ownNode == null) {
+        // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
+        Log.e(TAG, "Couldn't find the Node with public key : " + viewModel.getPublicKey());
+        throw new IllegalStateException(
+            "Only acceptors are allowed to access ElectionStartFragment");
+      }
+
+      String instanceId = ElectInstance.generateConsensusId("election", electionId, "state");
+      adapter = new NodesAcceptorAdapter(ownNode, instanceId, getViewLifecycleOwner(), viewModel);
+      GridView gridView = binding.nodesGrid;
+      gridView.setAdapter(adapter);
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return null;
     }
-
-    ownNode = laoView.getNode(viewModel.getPublicKey());
-
-    if (ownNode == null) {
-      // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
-      Log.e(TAG, "Couldn't find the Node with public key : " + viewModel.getPublicKey());
-      throw new IllegalStateException("Only acceptors are allowed to access ElectionStartFragment");
-    }
-
-    String instanceId = ElectInstance.generateConsensusId("election", electionId, "state");
-    adapter = new NodesAcceptorAdapter(ownNode, instanceId, getViewLifecycleOwner(), viewModel);
-    GridView gridView = binding.nodesGrid;
-    gridView.setAdapter(adapter);
 
     binding.setLifecycleOwner(getViewLifecycleOwner());
 

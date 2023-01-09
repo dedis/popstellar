@@ -50,7 +50,6 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.Completable;
-import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
@@ -61,7 +60,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
@@ -72,14 +70,10 @@ public class ElectionStartFragmentTest {
   @Inject MessageHandler messageHandler;
   @Inject Gson gson;
   @Inject ElectionRepository electionRepo;
+  @Inject LAORepository laoRepo;
 
   @BindValue @Mock GlobalNetworkManager globalNetworkManager;
   @Mock MessageSender messageSender;
-  @BindValue @Mock LAORepository laoRepo;
-
-  private LaoView laoView;
-  // A custom rule to call setup and teardown before the fragment rule and after the mockito rule
-  private static BehaviorSubject<List<ConsensusNode>> nodesSubject;
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss z").withZone(ZoneId.systemDefault());
@@ -99,7 +93,7 @@ public class ElectionStartFragmentTest {
   private final TestRule setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws UnknownLaoException {
+        protected void before() {
           // Injection with hilt
           hiltRule.inject();
           // Preload the data schema before the test run
@@ -128,7 +122,9 @@ public class ElectionStartFragmentTest {
           lao.setOrganizer(mainKeyPair.getPublicKey());
           lao.setWitnesses(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
 
+          laoRepo.updateLao(lao);
           consensusChannel = lao.getChannel().subChannel("consensus");
+          laoRepo.updateNodes(lao.getChannel());
 
           List<ConsensusNode> nodes = lao.getNodes();
           for (int i = 0; i < nodes.size(); ++i) {
@@ -141,30 +137,9 @@ public class ElectionStartFragmentTest {
               node3Pos = i;
             }
           }
-          nodesSubject = BehaviorSubject.createDefault(nodes);
-          laoRepo.updateNodes(lao.getChannel());
-          laoRepo.updateLao(lao);
-          laoView = new LaoView(lao);
 
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
-          when(laoRepo.getLaoView(any())).thenAnswer(invocation -> laoView);
-          when(laoRepo.getNodesByChannel(any())).thenReturn(nodesSubject);
-          when(laoRepo.getLaoViewByChannel(any())).thenAnswer(invocation -> laoView);
-          doAnswer(
-                  invocation -> {
-                    Lao update = invocation.getArgument(0);
-                    laoView = new LaoView(update);
-                    return null;
-                  })
-              .when(laoRepo)
-              .updateLao(any(Lao.class));
-          doAnswer(
-                  invocation -> {
-                    nodesSubject.onNext(lao.getNodes());
-                    return null;
-                  })
-              .when(laoRepo)
-              .updateNodes(any());
+
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());
           when(messageSender.subscribe(any())).then(args -> Completable.complete());

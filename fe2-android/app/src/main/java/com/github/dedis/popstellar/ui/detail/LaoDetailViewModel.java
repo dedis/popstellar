@@ -79,7 +79,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
-  private final MutableLiveData<List<Integer>> mCurrentElectionVotes = new MutableLiveData<>();
   private final MutableLiveData<List<RollCall>> mRollCalls = new MutableLiveData<>();
   private final MutableLiveData<List<Election>> mElections = new MutableLiveData<>();
   private final LiveData<List<PublicKey>> mWitnesses =
@@ -640,32 +639,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mScanWarningEvent;
   }
 
-  public MutableLiveData<List<Integer>> getCurrentElectionVotes() {
-    return mCurrentElectionVotes;
-  }
-
   public void setCurrentRollCallId(String rollCallId) {
     currentRollCallId = rollCallId;
-  }
-
-  public void setCurrentElectionVotes(List<Integer> currentElectionVotes) {
-    if (currentElectionVotes == null) {
-      throw new IllegalArgumentException();
-    }
-    mCurrentElectionVotes.setValue(currentElectionVotes);
-  }
-
-  public void setCurrentElectionQuestionVotes(Integer votes, int position) {
-    if (votes == null
-        || position < 0
-        || position > Objects.requireNonNull(mCurrentElectionVotes.getValue()).size()) {
-      throw new IllegalArgumentException();
-    }
-    if (mCurrentElectionVotes.getValue().size() <= position) {
-      mCurrentElectionVotes.getValue().add(votes);
-    } else {
-      mCurrentElectionVotes.getValue().set(position, votes);
-    }
   }
 
   /**
@@ -765,7 +740,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                             // the updates
                             Arrays.stream(rollCalls)
                                 .map(RollCall.class::cast)
-                                .sorted(Comparator.comparing(RollCall::getCreation).reversed())
+                                .filter(Objects::nonNull)
+                                .sorted(
+                                    Comparator.comparing(
+                                            (RollCall rc) -> rc != null ? rc.getCreation() : 0)
+                                        .reversed())
                                 .collect(Collectors.toList())))
             .lift(suppressErrors(err -> Log.e(TAG, "Error creating rollcall list : ", err)))
             .observeOn(AndroidSchedulers.mainThread())
@@ -808,7 +787,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                             // the updates
                             Arrays.stream(elections)
                                 .map(Election.class::cast)
-                                .sorted(Comparator.comparing(Election::getCreation).reversed())
+                                .sorted(
+                                    Comparator.comparing(
+                                            (Election el) -> el != null ? el.getCreation() : 0)
+                                        .reversed())
                                 .collect(Collectors.toList())))
             .lift(suppressErrors(err -> Log.e(TAG, "Error creating election list : ", err)))
             .observeOn(AndroidSchedulers.mainThread())

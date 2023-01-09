@@ -47,8 +47,8 @@ public final class ElectionHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    if (!channel.isLaoChannel()) {
-      throw new InvalidChannelException(electionSetup, "an lao channel", channel);
+    if (!channel.isLaoChannel() && !channel.isElectionChannel()) {
+      throw new InvalidChannelException(electionSetup, "an lao or election channel", channel);
     }
 
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);

@@ -297,6 +297,7 @@
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
+  <string name="error_no_election">There is no election</string>
 
   <string name="generic_error">An error occurred\n%1$s</string>
   <string name="error_sending_chirp">Could not send the chirp\n%1$s</string>

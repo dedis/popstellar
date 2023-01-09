@@ -213,7 +213,7 @@ public final class QRCodeScanningFragment extends Fragment {
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setTitle("Close Roll Call");
     builder.setMessage("You have scanned " + nbAttendees + " attendees.");
-    builder.setOnDismissListener(dialog -> startCamera());
+    builder.setOnDismissListener(dialog -> applyPermissionToView());
     builder.setPositiveButton(
         R.string.confirm,
         (dialog, which) ->
@@ -240,7 +240,7 @@ public final class QRCodeScanningFragment extends Fragment {
     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
     builder.setTitle("Warning");
     builder.setMessage(msg);
-    builder.setOnDismissListener(dialog -> startCamera());
+    builder.setOnDismissListener(dialog -> applyPermissionToView());
     builder.setPositiveButton(
         "Ok",
         (dialog, which) -> {
