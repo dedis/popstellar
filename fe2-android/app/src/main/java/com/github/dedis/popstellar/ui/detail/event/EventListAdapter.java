@@ -28,6 +28,8 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import io.reactivex.Observable;
+
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
@@ -42,7 +44,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   public static final int TYPE_EVENT = 1;
   public static final String TAG = EventListAdapter.class.getSimpleName();
 
-  public EventListAdapter(LaoDetailViewModel viewModel, FragmentActivity activity) {
+  public EventListAdapter(
+      LaoDetailViewModel viewModel, Observable<Set<Event>> events, FragmentActivity activity) {
     this.eventsMap = new EnumMap<>(EventCategory.class);
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
@@ -54,13 +57,12 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     expanded[PRESENT.ordinal()] = true;
     expanded[FUTURE.ordinal()] = true;
 
-    subscribeToEventSet();
+    subscribeToEventSet(events);
   }
 
-  private void subscribeToEventSet() {
+  private void subscribeToEventSet(Observable<Set<Event>> observable) {
     this.viewModel.addDisposable(
-        this.viewModel
-            .getEvents()
+        observable
             .map(events -> events.stream().sorted().collect(Collectors.toList()))
             .subscribe(
                 // No need to check for error as the events errors already handles them
@@ -178,7 +180,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     } else if (event.getType().equals(EventType.ROLL_CALL)) {
       eventViewHolder.eventIcon.setImageResource(R.drawable.ic_roll_call);
       RollCall rollCall = (RollCall) event;
-      View.OnClickListener listener =
+      eventViewHolder.eventTitle.setText(rollCall.getName());
+      eventViewHolder.eventCard.setOnClickListener(
           view -> {
             if (viewModel.isWalletSetup()) {
               try {
@@ -197,9 +200,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             } else {
               showWalletNotSetupWarning();
             }
-          };
-      eventViewHolder.eventCard.setOnClickListener(listener);
-      eventViewHolder.eventTitle.setText(rollCall.getName());
+          });
     }
   }
 

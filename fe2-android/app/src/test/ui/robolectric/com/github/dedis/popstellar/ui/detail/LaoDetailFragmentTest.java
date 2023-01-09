@@ -18,13 +18,12 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.utility.error.UnknownEventException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -58,9 +57,11 @@ import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivi
 import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailFragmentPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.election.ElectionSetupPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.rollcall.RollCallCreatePageObject.*;
+import static java.util.Collections.emptySet;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
 
 @LargeTest
@@ -77,6 +78,7 @@ public class LaoDetailFragmentTest {
   private static final String RC_NAME = "Roll-Call Title";
   private static final String RC_LOCATION = "Not Lausanne";
   private static final String ELECTION_NAME = "an election name";
+
   private static final String QUESTION = "question";
   private static final String BALLOT_1 = "ballot 1";
   private static final String BALLOT_2 = "ballot 2";
@@ -91,6 +93,7 @@ public class LaoDetailFragmentTest {
   @BindValue @Mock GlobalNetworkManager networkManager;
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock RollCallRepository rollCallRepo;
+  @BindValue @Mock ElectionRepository electionRepo;
   @BindValue @Mock MessageSender messageSender;
   @BindValue @Mock KeyManager keyManager;
 
@@ -106,15 +109,22 @@ public class LaoDetailFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException, UnknownLaoException, UnknownRollCallException {
+        protected void before() throws KeyException, UnknownLaoException, UnknownEventException {
           hiltRule.inject();
           Set<String> rcList = Collections.singleton(ROLL_CALL.getId());
           BehaviorSubject<Set<String>> rcObservable = BehaviorSubject.createDefault(rcList);
           when(repository.getLaoObservable(anyString())).thenReturn(laoViewSubject);
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
+
           when(rollCallRepo.getRollCallWithId(any(), any())).thenReturn(ROLL_CALL);
           when(rollCallRepo.getRollCallsObservableInLao(any())).thenReturn(rcObservable);
           when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
+          doCallRealMethod().when(rollCallRepo).getEventIdsObservable(any());
+          doCallRealMethod().when(rollCallRepo).getEventObservable(any(), any());
+
+          when(electionRepo.getEventIdsObservable(any()))
+              .thenReturn(BehaviorSubject.createDefault(emptySet()));
+
           when(keyManager.getMainPublicKey()).thenReturn(PK);
           when(keyManager.getPoPToken(any(), any())).thenReturn(POP_TOKEN);
           when(networkManager.getMessageSender()).thenReturn(messageSender);
