@@ -40,6 +40,7 @@ public class ElectionStartFragment extends Fragment {
 
   private static final String TAG = ElectionStartFragment.class.getSimpleName();
   private static final String ELECTION_ID = "election_id";
+
   public static final String CONSENSUS_TYPE = "election";
   public static final String CONSENSUS_PROPERTY = "state";
 
@@ -112,7 +113,8 @@ public class ElectionStartFragment extends Fragment {
             "Only acceptors are allowed to access ElectionStartFragment");
       }
 
-      String instanceId = ElectInstance.generateConsensusId("election", electionId, "state");
+      String instanceId =
+          ElectInstance.generateConsensusId(CONSENSUS_TYPE, electionId, CONSENSUS_PROPERTY);
       adapter = new NodesAcceptorAdapter(ownNode, instanceId, getViewLifecycleOwner(), viewModel);
       GridView gridView = binding.nodesGrid;
       gridView.setAdapter(adapter);
@@ -156,7 +158,8 @@ public class ElectionStartFragment extends Fragment {
     Election election = electionNodesState.election;
     List<ConsensusNode> nodes = electionNodesState.nodes;
 
-    String instanceId = ElectInstance.generateConsensusId("election", election.getId(), "state");
+    String instanceId =
+        ElectInstance.generateConsensusId(CONSENSUS_TYPE, election.getId(), CONSENSUS_PROPERTY);
 
     if (isElectionStartTimePassed(election)) {
       updateStartAndStatus(nodes, election, instanceId);
