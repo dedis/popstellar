@@ -742,30 +742,41 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         rollCallRepo
             .getRollCallsObservableInLao(laoId)
             .subscribeOn(Schedulers.io())
+            .map(
+                idSet ->
+                    idSet.stream()
+                        .map(
+                            id -> {
+                              try {
+                                return rollCallRepo.getRollCallObservable(laoId, id);
+                              } catch (UnknownRollCallException e) {
+                                // Roll calls whose ids are in that list may not be absent
+                                throw new IllegalStateException(
+                                    "Could not fetch roll call with id " + id);
+                              }
+                            })
+                        .collect(Collectors.toList()))
+            .flatMap(
+                subjects ->
+                    Observable.combineLatest(
+                        subjects,
+                        rollCalls ->
+                            // Sort the election list. That way it stays somewhat consistent over
+                            // the updates
+                            Arrays.stream(rollCalls)
+                                .map(RollCall.class::cast)
+                                .sorted(Comparator.comparing(RollCall::getCreation).reversed())
+                                .collect(Collectors.toList())))
+            .lift(suppressErrors(err -> Log.e(TAG, "Error creating rollcall list : ", err)))
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                idSet -> {
-                  List<RollCall> rollCallList =
-                      idSet.stream()
-                          .map(
-                              id -> {
-                                try {
-                                  return rollCallRepo.getRollCallWithPersistentId(laoId, id);
-                                } catch (UnknownRollCallException e) {
-                                  // Roll calls whose ids are in that list may not be absent
-                                  throw new IllegalStateException(
-                                      "Could not fetch roll call with id " + id);
-                                }
-                              })
-                          .collect(Collectors.toList());
-
-                  mRollCalls.setValue(rollCallList);
+                rollCalls -> {
+                  mRollCalls.setValue(rollCalls);
                   mAttendedRollCalls.setValue(
-                      rollCallList.stream()
+                      rollCalls.stream()
                           .filter(rollCall -> rollCall.isClosed() && attendedOrOrganized(rollCall))
                           .collect(Collectors.toList()));
-                },
-                error -> Log.d(TAG, "Error updating Roll Call : " + error)));
+                }));
   }
 
   public void subscribeToElections(String laoId) {
