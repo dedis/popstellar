@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
+import com.github.dedis.popstellar.utility.error.UnknownEventException;
 
 import java.util.*;
 
@@ -21,7 +22,7 @@ import io.reactivex.subjects.Subject;
  * <p>Its main purpose is to store elections and publish updates
  */
 @Singleton
-public class ElectionRepository {
+public class ElectionRepository implements EventRepository<Election> {
 
   private final Map<String, LaoElections> electionsByLao = new HashMap<>();
 
@@ -91,6 +92,22 @@ public class ElectionRepository {
   @NonNull
   public Observable<Set<String>> getElectionsObservable(@NonNull String laoId) {
     return getLaoElections(laoId).getElectionsSubject();
+  }
+
+  @Override
+  public Observable<Election> getEventObservable(String laoId, String eventId)
+      throws UnknownEventException {
+    return getElectionObservable(laoId, eventId);
+  }
+
+  @Override
+  public Observable<Set<String>> getEventIdsObservable(String laoId) {
+    return getElectionsObservable(laoId);
+  }
+
+  @Override
+  public Class<Election> getType() {
+    return Election.class;
   }
 
   @NonNull

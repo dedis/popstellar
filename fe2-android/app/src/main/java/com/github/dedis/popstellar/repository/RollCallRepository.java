@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.error.UnknownEventException;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
@@ -25,7 +26,7 @@ import io.reactivex.subjects.Subject;
  * <p>Its main purpose is to store roll calls and publish updates
  */
 @Singleton
-public class RollCallRepository {
+public class RollCallRepository implements EventRepository<RollCall> {
   public static final String TAG = RollCallRepository.class.getSimpleName();
   private final Map<String, LaoRollCalls> rollCallsByLao = new HashMap<>();
 
@@ -63,6 +64,22 @@ public class RollCallRepository {
   public Observable<RollCall> getRollCallObservable(String laoId, String persistentId)
       throws UnknownRollCallException {
     return getLaoRollCalls(laoId).getRollCallObservable(persistentId);
+  }
+
+  @Override
+  public Observable<RollCall> getEventObservable(String laoId, String eventId)
+      throws UnknownEventException {
+    return getRollCallObservable(laoId, eventId);
+  }
+
+  @Override
+  public Observable<Set<String>> getEventIdsObservable(String laoId) {
+    return getRollCallsObservableInLao(laoId);
+  }
+
+  @Override
+  public Class<RollCall> getType() {
+    return RollCall.class;
   }
 
   public RollCall getRollCallWithPersistentId(String laoId, String persistentId)

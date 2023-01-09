@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateL
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
@@ -80,8 +81,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
-  private final MutableLiveData<List<RollCall>> mRollCalls = new MutableLiveData<>();
-  private final MutableLiveData<List<Election>> mElections = new MutableLiveData<>();
   private final LiveData<List<PublicKey>> mWitnesses =
       Transformations.map(
           mCurrentLao,
@@ -97,6 +96,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
               lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnessMessages().values()));
 
   private final MutableLiveData<List<RollCall>> mAttendedRollCalls = new MutableLiveData<>();
+
+  private Observable<Set<Event>> events;
+
   /*
    * Dependencies for this class
    */
@@ -180,10 +182,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public RollCall getRollCall(String persistentId) throws UnknownRollCallException {
     return rollCallRepo.getRollCallWithPersistentId(laoId, persistentId);
-  }
-
-  public MutableLiveData<List<RollCall>> getRollCalls() {
-    return mRollCalls;
   }
 
   public LiveData<List<RollCall>> getAttendedRollCalls() {
@@ -556,8 +554,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     this.scanningAction = scanningAction;
   }
 
-  public LiveData<List<Election>> getElections() {
-    return mElections;
+  public Observable<Set<Event>> getEvents() {
+    return events;
   }
 
   public LiveData<LaoView> getCurrentLao() {
@@ -696,6 +694,29 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public void subscribeToLao(String laoId) {
     this.laoId = laoId;
+
+    Observable<Set<RollCall>> rollCalls = createEventListObservable(rollCallRepo, laoId);
+    Observable<Set<Election>> elections = createEventListObservable(electionRepo, laoId);
+
+    // Create the events set observable
+    this.events =
+        Observable.combineLatest(
+            rollCalls,
+            elections,
+            (rcs, elecs) -> {
+              Set<Event> union = new HashSet<>(rcs);
+              union.addAll(elecs);
+              return union;
+            });
+
+    disposables.add(
+        rollCalls.subscribe(
+            rcs ->
+                mAttendedRollCalls.setValue(
+                    rcs.stream()
+                        .filter(rollCall -> rollCall.isClosed() && attendedOrOrganized(rollCall))
+                        .collect(Collectors.toList()))));
+
     disposables.add(
         laoRepository
             .getLaoObservable(laoId)
@@ -713,94 +734,43 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                 error -> Log.d(TAG, "error updating LAO :" + error)));
   }
 
-  public void subscribeToRollCalls(String laoId) {
-    disposables.add(
-        rollCallRepo
-            .getRollCallsObservableInLao(laoId)
-            .subscribeOn(Schedulers.io())
-            .map(
-                idSet ->
-                    idSet.stream()
-                        .map(
-                            id -> {
-                              try {
-                                return rollCallRepo.getRollCallObservable(laoId, id);
-                              } catch (UnknownRollCallException e) {
-                                // Roll calls whose ids are in that list may not be absent
-                                throw new IllegalStateException(
-                                    "Could not fetch roll call with id " + id);
-                              }
-                            })
-                        .collect(Collectors.toList()))
-            .flatMap(
-                subjects ->
-                    Observable.combineLatest(
-                        subjects,
-                        rollCalls ->
-                            // Sort the election list. That way it stays somewhat consistent over
-                            // the updates
-                            Arrays.stream(rollCalls)
-                                .map(RollCall.class::cast)
-                                .filter(Objects::nonNull)
-                                .sorted(
-                                    Comparator.comparing(
-                                            (RollCall rc) -> rc != null ? rc.getCreation() : 0)
-                                        .reversed())
-                                .collect(Collectors.toList())))
-            // Only dispatch the latest element once every 50 milliseconds
-            // This avoids multiple updates in a short period of time
-            .throttleLatest(50, TimeUnit.MILLISECONDS)
-            .lift(suppressErrors(err -> Log.e(TAG, "Error creating rollcall list : ", err)))
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                rollCalls -> {
-                  mRollCalls.setValue(rollCalls);
-                  mAttendedRollCalls.setValue(
-                      rollCalls.stream()
-                          .filter(rollCall -> rollCall.isClosed() && attendedOrOrganized(rollCall))
-                          .collect(Collectors.toList()));
-                }));
-  }
-
-  public void subscribeToElections(String laoId) {
-    disposables.add(
-        electionRepo
-            .getElectionsObservable(laoId)
-            .subscribeOn(Schedulers.io())
-            .map(
-                ids ->
-                    ids.stream()
-                        .map(
-                            id -> {
-                              try {
-                                return electionRepo.getElectionObservable(laoId, id);
-                              } catch (UnknownElectionException e) {
-                                // Election whose ids are in that list may not be absent
-                                throw new IllegalStateException(
-                                    "Could not fetch election with id " + id);
-                              }
-                            })
-                        .collect(Collectors.toList()))
-            .flatMap(
-                subjects ->
-                    Observable.combineLatest(
-                        subjects,
-                        elections ->
-                            // Sort the election list. That way it stays somewhat consistent over
-                            // the updates
-                            Arrays.stream(elections)
-                                .map(Election.class::cast)
-                                .sorted(
-                                    Comparator.comparing(
-                                            (Election el) -> el != null ? el.getCreation() : 0)
-                                        .reversed())
-                                .collect(Collectors.toList())))
-            // Only dispatch the latest element once every 50 milliseconds
-            // This avoids multiple updates in a short period of time
-            .throttleLatest(50, TimeUnit.MILLISECONDS)
-            .lift(suppressErrors(err -> Log.e(TAG, "Error creating election list : ", err)))
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(mElections::setValue));
+  public static <T extends Event> Observable<Set<T>> createEventListObservable(
+      EventRepository<T> eventRepo, String laoId) {
+    return eventRepo
+        .getEventIdsObservable(laoId)
+        .subscribeOn(Schedulers.io())
+        .map(
+            idSet ->
+                idSet.stream()
+                    .map(
+                        id -> {
+                          try {
+                            return eventRepo.getEventObservable(laoId, id);
+                          } catch (UnknownEventException e) {
+                            // Roll calls whose ids are in that list may not be absent
+                            throw new IllegalStateException(
+                                "Could not fetch "
+                                    + eventRepo.getType().getSimpleName()
+                                    + " with id "
+                                    + id);
+                          }
+                        })
+                    .collect(Collectors.toList()))
+        .flatMap(
+            subjects ->
+                Observable.combineLatest(
+                    subjects,
+                    events ->
+                        // Sort the election list. That way it stays somewhat consistent over
+                        // the updates
+                        Arrays.stream(events)
+                            .map(eventRepo.getType()::cast)
+                            .collect(Collectors.toSet())))
+        // Only dispatch the latest element once every 50 milliseconds
+        // This avoids multiple updates in a short period of time
+        .throttleLatest(50, TimeUnit.MILLISECONDS)
+        .lift(suppressErrors(err -> Log.e(TAG, "Error creating rollcall list : ", err)))
+        .observeOn(AndroidSchedulers.mainThread());
   }
 
   public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
