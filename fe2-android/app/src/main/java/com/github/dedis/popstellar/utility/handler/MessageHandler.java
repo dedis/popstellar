@@ -40,8 +40,11 @@ public final class MessageHandler {
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
     Log.d(TAG, "handle incoming message");
-    // Put the message in the state
-    messageRepo.addMessage(message);
+
+    if (messageRepo.isMessagePresent(message.getMessageId())) {
+      Log.d(TAG, "the message has already been handled in the past");
+      return;
+    }
 
     Data data = message.getData();
     Log.d(TAG, "data with class: " + data.getClass());
@@ -53,5 +56,8 @@ public final class MessageHandler {
         data,
         dataObj,
         dataAction);
+
+    // Put the message in the state
+    messageRepo.addMessage(message);
   }
 }

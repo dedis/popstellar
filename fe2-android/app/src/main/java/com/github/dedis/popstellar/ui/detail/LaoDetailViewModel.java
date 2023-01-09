@@ -39,6 +39,7 @@ import com.google.gson.Gson;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -746,6 +747,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                                             (RollCall rc) -> rc != null ? rc.getCreation() : 0)
                                         .reversed())
                                 .collect(Collectors.toList())))
+            // Only dispatch the latest element once every 50 milliseconds
+            // This avoids multiple updates in a short period of time
+            .throttleLatest(50, TimeUnit.MILLISECONDS)
             .lift(suppressErrors(err -> Log.e(TAG, "Error creating rollcall list : ", err)))
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -759,7 +763,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public void subscribeToElections(String laoId) {
-
     disposables.add(
         electionRepo
             .getElectionsObservable(laoId)
@@ -792,6 +795,9 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                                             (Election el) -> el != null ? el.getCreation() : 0)
                                         .reversed())
                                 .collect(Collectors.toList())))
+            // Only dispatch the latest element once every 50 milliseconds
+            // This avoids multiple updates in a short period of time
+            .throttleLatest(50, TimeUnit.MILLISECONDS)
             .lift(suppressErrors(err -> Log.e(TAG, "Error creating election list : ", err)))
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(mElections::setValue));

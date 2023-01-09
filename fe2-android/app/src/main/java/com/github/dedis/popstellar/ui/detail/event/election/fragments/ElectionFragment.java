@@ -168,7 +168,7 @@ public class ElectionFragment extends Fragment {
               LaoDetailActivity.setCurrentFragment(
                   getParentFragmentManager(),
                   R.id.fragment_cast_vote,
-                  () -> CastVoteFragment.newInstance(ELECTION_ID));
+                  () -> CastVoteFragment.newInstance(electionId));
               break;
             case RESULTS_READY:
               LaoDetailActivity.setCurrentFragment(
