@@ -11,8 +11,7 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
@@ -34,6 +33,8 @@ import org.mockito.junit.MockitoTestRule;
 
 import java.util.*;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 
@@ -42,6 +43,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.model.objects.Election.generateElectionSetupId;
 import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
@@ -78,9 +80,34 @@ public class CastVoteFragmentTest {
       new RollCall(
           "id", "id", "rc", 0L, 1L, 2L, EventState.CLOSED, new HashSet<>(), "nowhere", "none");
 
-  private static Election election;
+  private static final String ELECTION_ID = generateElectionSetupId(LAO_ID, CREATION, TITLE);
+  private static final ElectionQuestion ELECTION_QUESTION_1 =
+      new ElectionQuestion(
+          ELECTION_ID,
+          new ElectionQuestion.Question(
+              ELECTION_QUESTION_TEXT1,
+              PLURALITY,
+              Arrays.asList(ELECTION_BALLOT_TEXT11, ELECTION_BALLOT_TEXT12, ELECTION_BALLOT_TEXT13),
+              false));
+  private static final ElectionQuestion ELECTION_QUESTION_2 =
+      new ElectionQuestion(
+          ELECTION_ID,
+          new ElectionQuestion.Question(
+              ELECTION_QUESTION_TEXT2,
+              PLURALITY,
+              Arrays.asList(ELECTION_BALLOT_TEXT21, ELECTION_BALLOT_TEXT22),
+              false));
 
-  ElectionQuestion electionQuestion1;
+  private static final Election ELECTION =
+      new Election.ElectionBuilder(LAO_ID, CREATION, TITLE)
+          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+          .setElectionQuestions(Arrays.asList(ELECTION_QUESTION_1, ELECTION_QUESTION_2))
+          .setStart(START)
+          .setEnd(END)
+          .setState(CREATED)
+          .build();
+
+  @Inject ElectionRepository electionRepo;
 
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock RollCallRepository rollCallRepo;
@@ -109,7 +136,7 @@ public class CastVoteFragmentTest {
           when(rollCallRepo.getRollCallsObservableInLao(any())).thenReturn(rcObservable);
           when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
           when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
-          initializeElection();
+          electionRepo.updateElection(ELECTION);
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
           when(keyManager.getValidPoPToken(any(), any())).thenReturn(generatePoPToken());
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
@@ -139,9 +166,8 @@ public class CastVoteFragmentTest {
             fragment -> {
               FragmentActivity fragmentActivity = fragment.requireActivity();
               LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
-              LAO.updateElection(election.getId(), election);
               viewModel.setCurrentLao(new LaoView(LAO));
-              viewModel.setCurrentElection(election);
+              viewModel.setCurrentElection(ELECTION.getId());
             });
     fragmentRule.getScenario().recreate();
   }
@@ -190,29 +216,6 @@ public class CastVoteFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(election.getChannel()), any(CastVote.class));
-  }
-
-  private void initializeElection() {
-    election = new Election(LAO_ID, CREATION, TITLE, ElectionVersion.OPEN_BALLOT);
-    electionQuestion1 =
-        new ElectionQuestion(
-            ELECTION_QUESTION_TEXT1,
-            PLURALITY,
-            false,
-            Arrays.asList(ELECTION_BALLOT_TEXT11, ELECTION_BALLOT_TEXT12, ELECTION_BALLOT_TEXT13),
-            election.getId());
-    ElectionQuestion electionQuestion2 =
-        new ElectionQuestion(
-            ELECTION_QUESTION_TEXT2,
-            PLURALITY,
-            false,
-            Arrays.asList(ELECTION_BALLOT_TEXT21, ELECTION_BALLOT_TEXT22),
-            election.getId());
-    election.setChannel(Channel.getLaoChannel(LAO_ID).subChannel(election.getId()));
-    election.setElectionQuestions(Arrays.asList(electionQuestion1, electionQuestion2));
-    election.setStart(START);
-    election.setEnd(END);
-    election.setEventState(CREATED);
+        .publish(any(), eq(ELECTION.getChannel()), any(CastVote.class));
   }
 }

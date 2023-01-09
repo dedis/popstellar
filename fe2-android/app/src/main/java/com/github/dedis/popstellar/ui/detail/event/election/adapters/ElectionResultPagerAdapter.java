@@ -13,8 +13,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Qu
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ElectionResultPagerAdapter
     extends RecyclerView.Adapter<ElectionResultPagerAdapter.Pager2ViewHolder> {
@@ -47,15 +47,18 @@ public class ElectionResultPagerAdapter
 
     holder.questionView.setText(question);
 
-    List<QuestionResult> questionResults =
+    Set<QuestionResult> questionResults =
         election.getResultsForQuestionId(electionQuestion.getId());
 
-    List<ElectionResultListAdapter.ElectionResult> electionResults = new ArrayList<>();
-    for (int i = 0; i < questionResults.size(); i++) {
-      electionResults.add(
-          new ElectionResultListAdapter.ElectionResult(
-              questionResults.get(i).getBallot(), questionResults.get(i).getCount()));
-    }
+    List<ElectionResultListAdapter.ElectionResult> electionResults =
+        questionResults.stream()
+            .sorted(Comparator.comparing(QuestionResult::getCount).reversed())
+            .map(
+                result ->
+                    new ElectionResultListAdapter.ElectionResult(
+                        result.getBallot(), result.getCount()))
+            .collect(Collectors.toList());
+
     adapter.clear();
     adapter.addAll(electionResults);
 
@@ -74,8 +77,8 @@ public class ElectionResultPagerAdapter
 
     public Pager2ViewHolder(View itemView) {
       super(itemView);
-      resultListView = (ListView) itemView.findViewById(R.id.election_result_listView);
-      questionView = (TextView) itemView.findViewById(R.id.election_result_question);
+      resultListView = itemView.findViewById(R.id.election_result_listView);
+      questionView = itemView.findViewById(R.id.election_result_question);
     }
   }
 }

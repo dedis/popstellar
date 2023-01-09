@@ -6,7 +6,7 @@ import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
-import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.Vote;
 import com.github.dedis.popstellar.model.network.serializer.*;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.*;
@@ -33,7 +33,7 @@ public class JsonModule {
         .registerTypeAdapter(GenericMessage.class, new JsonGenericMessageDeserializer())
         .registerTypeAdapter(Message.class, new JsonMessageSerializer())
         .registerTypeAdapter(Data.class, new JsonDataSerializer(dataRegistry))
-        .registerTypeAdapter(CastVote.class, new JsonCastVoteDeserializer())
+        .registerTypeAdapter(Vote.class, new JsonVoteSerializer())
         .registerTypeAdapter(Result.class, new JsonResultSerializer())
         .registerTypeAdapter(ResultMessages.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())

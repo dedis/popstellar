@@ -12,7 +12,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.CastVoteFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.PlainVote;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.*;
@@ -42,7 +42,7 @@ public class CastVoteFragment extends Fragment {
   private final View.OnClickListener buttonListener =
       v -> {
         voteButton.setEnabled(false);
-        List<ElectionVote> electionVotes = new ArrayList<>();
+        List<PlainVote> plainVotes = new ArrayList<>();
         List<ElectionQuestion> electionQuestions =
             viewModel.getCurrentElection().getElectionQuestions();
         for (int i = 0; i < electionQuestions.size(); i++) {
@@ -56,19 +56,19 @@ public class CastVoteFragment extends Fragment {
 
           Integer vote = viewModel.getCurrentElectionVotes().getValue().get(i);
           // Only one vote should be selected.
-          ElectionVote electionVote =
-              new ElectionVote(
+          PlainVote plainVote =
+              new PlainVote(
                   electionQuestion.getId(),
                   vote,
                   electionQuestion.getWriteIn(),
                   null,
                   viewModel.getCurrentElection().getId());
-          electionVotes.add(electionVote);
+          plainVotes.add(plainVote);
         }
 
         viewModel.addDisposable(
             viewModel
-                .sendVote(electionVotes)
+                .sendVote(plainVotes)
                 .subscribe(
                     () -> {
                       setCurrentFragment(

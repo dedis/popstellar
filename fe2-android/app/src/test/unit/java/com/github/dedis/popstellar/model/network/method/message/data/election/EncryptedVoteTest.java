@@ -9,7 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
-public class ElectionEncryptedVoteTest {
+public class EncryptedVoteTest {
 
   private final String electionId = "my election id";
   private final String questionId = " my question id";
@@ -18,14 +18,14 @@ public class ElectionEncryptedVoteTest {
   private final String votes = "2";
 
   private final String encryptedWriteIn = "My write in ballot option";
-  private final ElectionEncryptedVote electionEncryptedVote1 =
-      new ElectionEncryptedVote(questionId, votes, false, encryptedWriteIn, electionId);
+  private final EncryptedVote encryptedVote1 =
+      new EncryptedVote(questionId, votes, false, encryptedWriteIn, electionId);
   // Hash values util for testing
   private final String expectedIdNoWriteIn =
       Election.generateEncryptedElectionVoteId(
-          electionId, questionId, electionEncryptedVote1.getVote(), encryptedWriteIn, false);
-  private final ElectionEncryptedVote electionEncryptedVotes2 =
-      new ElectionEncryptedVote(questionId, votes, true, encryptedWriteIn, electionId);
+          electionId, questionId, encryptedVote1.getVote(), encryptedWriteIn, false);
+  private final EncryptedVote electionEncryptedVotes2 =
+      new EncryptedVote(questionId, votes, true, encryptedWriteIn, electionId);
   private final String wrongFormatId =
       Hash.hash("Vote", electionId, electionEncryptedVotes2.getQuestionId());
   private final String expectedIdWithWriteIn =
@@ -35,7 +35,7 @@ public class ElectionEncryptedVoteTest {
   @Test
   public void electionVoteWriteInDisabledReturnsCorrectId() {
     // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
-    assertThat(electionEncryptedVote1.getId(), is(expectedIdNoWriteIn));
+    assertThat(encryptedVote1.getId(), is(expectedIdNoWriteIn));
   }
 
   @Test
@@ -48,46 +48,40 @@ public class ElectionEncryptedVoteTest {
 
   @Test
   public void getIdTest() {
-    assertThat(electionEncryptedVote1.getQuestionId(), is(questionId));
+    assertThat(encryptedVote1.getQuestionId(), is(questionId));
   }
 
   @Test
   public void attributesIsNullTest() {
     assertNull(electionEncryptedVotes2.getVote());
-    assertNotNull(electionEncryptedVote1.getVote());
+    assertNotNull(encryptedVote1.getVote());
   }
 
   @Test
   public void getVoteTest() {
-    assertThat(electionEncryptedVote1.getVote(), is(votes));
+    assertThat(encryptedVote1.getVote(), is(votes));
   }
 
   @Test
   public void isEqualTest() {
-    assertNotEquals(electionEncryptedVote1, electionEncryptedVotes2);
+    assertNotEquals(encryptedVote1, electionEncryptedVotes2);
     assertEquals(
-        electionEncryptedVote1,
-        new ElectionEncryptedVote(questionId, votes, false, encryptedWriteIn, electionId));
+        encryptedVote1, new EncryptedVote(questionId, votes, false, encryptedWriteIn, electionId));
     assertNotEquals(
-        electionEncryptedVote1,
-        new ElectionEncryptedVote(questionId, votes, false, encryptedWriteIn, "random"));
+        encryptedVote1, new EncryptedVote(questionId, votes, false, encryptedWriteIn, "random"));
     assertNotEquals(
-        electionEncryptedVote1,
-        new ElectionEncryptedVote(
-            questionId, "shouldNotBeEqual", false, encryptedWriteIn, electionId));
+        encryptedVote1,
+        new EncryptedVote(questionId, "shouldNotBeEqual", false, encryptedWriteIn, electionId));
     assertNotEquals(
-        electionEncryptedVote1,
-        new ElectionEncryptedVote("random", votes, false, encryptedWriteIn, electionId));
+        encryptedVote1, new EncryptedVote("random", votes, false, encryptedWriteIn, electionId));
 
     // Same equals, no write_in
-    assertEquals(
-        electionEncryptedVote1,
-        new ElectionEncryptedVote(questionId, votes, false, "random", electionId));
+    assertEquals(encryptedVote1, new EncryptedVote(questionId, votes, false, "random", electionId));
 
     // Same elections, write_in is the same
     assertEquals(
         electionEncryptedVotes2,
-        new ElectionEncryptedVote(questionId, votes, true, encryptedWriteIn, electionId));
+        new EncryptedVote(questionId, votes, true, encryptedWriteIn, electionId));
   }
 
   @Test
@@ -96,6 +90,6 @@ public class ElectionEncryptedVoteTest {
         String.format(
             "{" + "id='%s', " + "questionId='%s', " + "vote=%s}",
             expectedIdNoWriteIn, questionId, votes);
-    assertEquals(format, electionEncryptedVote1.toString());
+    assertEquals(format, encryptedVote1.toString());
   }
 }
