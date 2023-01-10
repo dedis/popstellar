@@ -75,8 +75,6 @@ public class DigitalCashViewModel extends NavigationViewModel {
       new MutableLiveData<>();
 
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
-  private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
-
   private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
   private final LiveData<Set<TransactionObject>> mTransactionHistory;
   private final MutableLiveData<DigitalCashTab> bottomNavigationTab =

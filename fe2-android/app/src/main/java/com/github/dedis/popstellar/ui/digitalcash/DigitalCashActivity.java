@@ -100,16 +100,16 @@ public class DigitalCashActivity extends NavigationActivity {
     switch (tab) {
       case HOME:
         openHomeTab();
-        return;
+        break;
       case HISTORY:
         openHistoryTab();
-        return;
+        break;
       case SEND:
         openSendTab();
-        return;
+        break;
       case RECEIVE:
         openReceiveTab();
-        return;
+        break;
       case ISSUE:
         openIssueTab();
     }
