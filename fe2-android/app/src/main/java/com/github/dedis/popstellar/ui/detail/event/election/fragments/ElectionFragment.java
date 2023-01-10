@@ -3,11 +3,11 @@ package com.github.dedis.popstellar.ui.detail.event.election.fragments;
 import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
@@ -15,23 +15,33 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+
 import static com.github.dedis.popstellar.utility.Constants.*;
 
+@AndroidEntryPoint
 public class ElectionFragment extends Fragment {
 
   private static final String TAG = ElectionFragment.class.getSimpleName();
 
+  private static final String ELECTION_ID = "election_id";
+
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoDetailViewModel viewModel;
-  private Election election;
   private View view;
 
   private Button managementButton;
@@ -49,11 +59,19 @@ public class ElectionFragment extends Fragment {
   private final EnumMap<EventState, Integer> actionTextMap = buildActionTextMap();
   private final EnumMap<EventState, Boolean> actionEnablingMap = buildActionEnablingMap();
 
-  public static ElectionFragment newInstance() {
-    return new ElectionFragment();
-  }
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
-  public ElectionFragment() { // required empty constructor
+  @Inject ElectionRepository electionRepository;
+  private String electionId;
+
+  public static ElectionFragment newInstance(String electionId) {
+    ElectionFragment fragment = new ElectionFragment();
+
+    Bundle args = new Bundle();
+    args.putString(ELECTION_ID, electionId);
+    fragment.setArguments(args);
+
+    return fragment;
   }
 
   @Override
@@ -65,17 +83,23 @@ public class ElectionFragment extends Fragment {
     managementButton = view.findViewById(R.id.election_management_button);
     actionButton = view.findViewById(R.id.election_action_button);
 
+    this.electionId = requireArguments().getString(ELECTION_ID);
+
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel.setCurrentElection(electionId);
+
     managementVisibilityMap = buildManagementVisibilityMap();
 
-    if (election == null) {
-      election = viewModel.getCurrentElection();
-    }
-
-    setupElectionContent();
-    setupTime(view);
     managementButton.setOnClickListener(
         v -> {
+          Election election;
+          try {
+            election = electionRepository.getElection(viewModel.getLaoId(), electionId);
+          } catch (UnknownElectionException e) {
+            ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+            return;
+          }
+
           EventState state = election.getState();
           switch (state) {
             case CREATED:
@@ -131,6 +155,14 @@ public class ElectionFragment extends Fragment {
 
     actionButton.setOnClickListener(
         v -> {
+          Election election;
+          try {
+            election = electionRepository.getElection(viewModel.getLaoId(), electionId);
+          } catch (UnknownElectionException e) {
+            ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+            return;
+          }
+
           EventState state = election.getState();
           switch (state) {
             case OPENED:
@@ -150,16 +182,26 @@ public class ElectionFragment extends Fragment {
                   "User should not be able to use the action button in this state :" + state);
           }
         });
-    viewModel
-        .getCurrentLao()
-        .observe(
-            getViewLifecycleOwner(),
-            laoView -> {
-              Log.d(TAG, "lao updated");
-              setupElectionContent();
-            });
 
     return view;
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+
+    try {
+      disposables.add(
+          electionRepository
+              .getElectionObservable(viewModel.getLaoId(), electionId)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  this::setupElectionContent,
+                  err ->
+                      ErrorUtils.logAndShow(requireContext(), TAG, err, R.string.generic_error)));
+    } catch (UnknownElectionException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+    }
   }
 
   @Override
@@ -168,18 +210,13 @@ public class ElectionFragment extends Fragment {
     viewModel.setPageTitle(R.string.election_title);
   }
 
-  private void setupElectionContent() {
-    if (getContext() == null) {
-      // Because of the current implementation (12.09.2022), an update is triggered whenever any
-      // of the whole Lao object is modified. This can occur when this fragment is not displayed
-      // and this would trigger the listeners. This check ensures that the fragment is displayed
-      // before going ahead.
-      return;
-    }
-    election = viewModel.getCurrentElection();
-    if (election == null) {
-      return;
-    }
+  @Override
+  public void onDestroy() {
+    disposables.dispose();
+    super.onDestroy();
+  }
+
+  private void setupElectionContent(Election election) {
     EventState electionState = election.getState();
 
     TextView title = view.findViewById(R.id.election_fragment_title);
@@ -208,12 +245,7 @@ public class ElectionFragment extends Fragment {
     managementButton.setText(managementTextMap.getOrDefault(electionState, ID_NULL));
     managementButton.setCompoundDrawablesWithIntrinsicBounds(imgManagement, null, null, null);
     managementButton.setVisibility(managementVisibilityMap.getOrDefault(electionState, View.GONE));
-  }
 
-  private void setupTime(View view) {
-    if (election == null) {
-      return;
-    }
     TextView startTimeDisplay = view.findViewById(R.id.election_fragment_start_time);
     TextView endTimeDisplay = view.findViewById(R.id.election_fragment_end_time);
 
@@ -342,19 +374,5 @@ public class ElectionFragment extends Fragment {
   private void setButtonEnabling(Button button, boolean enabled) {
     button.setAlpha(enabled ? ENABLED_ALPHA : DISABLED_ALPHA);
     button.setEnabled(enabled);
-  }
-
-  /**
-   * The following is only for testing purposes. Production code should never pass arguments to a
-   * fragment instantiation but should rather use arguments
-   */
-  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-  public ElectionFragment(Election election) {
-    this.election = election;
-  }
-
-  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-  public static ElectionFragment newInstance(Election election) {
-    return new ElectionFragment(election);
   }
 }

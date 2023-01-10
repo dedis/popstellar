@@ -9,9 +9,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 @Immutable
-public class ElectionEncryptedVote {
+public class EncryptedVote implements Vote {
 
-  // Id of the object ElectionVote :
+  // Id of the vote
   // Hash(“Vote”||election_id||question_id||(encrypted_vote_index(es)|encrypted_write_in))
   private final String id;
 
@@ -19,17 +19,17 @@ public class ElectionEncryptedVote {
   @SerializedName(value = "question")
   private final String questionId;
 
-  // Vote array containing index corresponding to ballot options
+  // Encrypted vote index
   private final String vote;
 
   /**
    * @param questionId id of the question
-   * @param encryptedVote encrypted uniaue indice of the chosen vote
+   * @param encryptedVote encrypted unique indices of the chosen vote
    * @param writeInEnabled indicates if write in is enabled
    * @param encryptedWriteIn whether the election allows write-in
    * @param electionId the election id
    */
-  public ElectionEncryptedVote(
+  public EncryptedVote(
       @NonNull String questionId,
       @NonNull String encryptedVote,
       @NonNull Boolean writeInEnabled,
@@ -47,19 +47,32 @@ public class ElectionEncryptedVote {
     }
   }
 
+  public EncryptedVote(String id, String question, String vote) {
+    this.id = id;
+    this.questionId = question;
+    this.vote = vote;
+  }
+
   @NonNull
   public String getVote() {
     return vote;
   }
 
   @NonNull
+  @Override
+  public String getQuestionId() {
+    return questionId;
+  }
+
+  @NonNull
+  @Override
   public String getId() {
     return id;
   }
 
-  @NonNull
-  public String getQuestionId() {
-    return questionId;
+  @Override
+  public boolean isEncrypted() {
+    return true;
   }
 
   @Override
@@ -75,7 +88,7 @@ public class ElectionEncryptedVote {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ElectionEncryptedVote that = (ElectionEncryptedVote) o;
+    EncryptedVote that = (EncryptedVote) o;
     return Objects.equals(getQuestionId(), that.getQuestionId())
         && Objects.equals(getId(), that.getId())
         && Objects.equals(getVote(), that.getVote());

@@ -5,9 +5,9 @@
     android:icon="@drawable/ic_lao_detail_event_list_foreground"
     android:title="@string/event_list" />
   <item
-    android:id="@+id/lao_detail_identity_menu"
-    android:icon="@drawable/ic_common_profile_foreground"
-    android:title="@string/tab_identity" />
+    android:id="@+id/lao_detail_tokens_menu"
+    android:icon="@drawable/qr_code_button_icon"
+    android:title="@string/tokens" />
   <item
     android:id="@+id/lao_detail_witnessing_menu"
     android:icon="@drawable/ic_lao_detail_witness_foreground"

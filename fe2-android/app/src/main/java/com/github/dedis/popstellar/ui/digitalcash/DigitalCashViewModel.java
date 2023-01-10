@@ -6,7 +6,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.*;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -16,8 +17,7 @@ import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -35,12 +35,10 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.Completable;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
 public class DigitalCashViewModel extends NavigationViewModel {
@@ -74,9 +72,7 @@ public class DigitalCashViewModel extends NavigationViewModel {
   private final MutableLiveData<SingleEvent<String>> updateReceiptAmountEvent =
       new MutableLiveData<>();
 
-  private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
-  private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
-  private final LiveData<Set<TransactionObject>> mTransactionHistory;
+
   private final MutableLiveData<DigitalCashTab> bottomNavigationTab =
       new MutableLiveData<>(DigitalCashTab.HOME);
 
@@ -85,6 +81,7 @@ public class DigitalCashViewModel extends NavigationViewModel {
    */
   private final LAORepository laoRepository;
   private final RollCallRepository rollCallRepo;
+  private final DigitalCashRepository digitalCashRepo;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
@@ -96,6 +93,7 @@ public class DigitalCashViewModel extends NavigationViewModel {
       @NonNull Application application,
       LAORepository laoRepository,
       RollCallRepository rollCallRepo,
+      DigitalCashRepository digitalCashRepo,
       GlobalNetworkManager networkManager,
       Gson gson,
       KeyManager keyManager,
@@ -103,28 +101,11 @@ public class DigitalCashViewModel extends NavigationViewModel {
     super(application);
     this.laoRepository = laoRepository;
     this.rollCallRepo = rollCallRepo;
+    this.digitalCashRepo = digitalCashRepo;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
     this.wallet = wallet;
-
-    mTransactionHistory =
-        Transformations.map(
-            mCurrentLao,
-            laoView -> {
-              try {
-                if (laoView == null) return new HashSet<>();
-                Set<TransactionObject> historySet =
-                    laoView.getTransactionHistoryByUser().get(this.getValidToken().getPublicKey());
-                if (historySet == null) {
-                  return new HashSet<>();
-                }
-                return new HashSet<>(historySet);
-              } catch (KeyException e) {
-                Log.d(TAG, "error retrieving token: " + e);
-                return null;
-              }
-            });
   }
 
   @Override
@@ -187,10 +168,6 @@ public class DigitalCashViewModel extends NavigationViewModel {
         .show();
   }
 
-  public MutableLiveData<Set<PoPToken>> getTokens() {
-    return mTokens;
-  }
-
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -227,8 +204,10 @@ public class DigitalCashViewModel extends NavigationViewModel {
       Map<String, String> receiverValues, long lockTime, boolean coinBase) {
 
     /* Check if a Lao exist */
-    LaoView laoView = getCurrentLaoValue();
-    if (laoView == null) {
+    LaoView laoView;
+    try {
+      laoView = getCurrentLao();
+    } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
@@ -267,8 +246,8 @@ public class DigitalCashViewModel extends NavigationViewModel {
     int index = 0;
 
     List<Input> inputs = new ArrayList<>();
-    if (getCurrentLaoValue().getTransactionByUser().containsKey(keyPair.getPublicKey())
-        && !coinBase) {
+    List<TransactionObject> transactions = getTransactionsForUser(keyPair.getPublicKey());
+    if (transactions != null && !coinBase) {
       processNotCoinbaseTransaction(keyPair, outputs, amountFromReceiver, inputs);
     } else {
       inputs.add(
@@ -314,8 +293,8 @@ public class DigitalCashViewModel extends NavigationViewModel {
     return laoRepository;
   }
 
-  public KeyManager getKeyManager() {
-    return keyManager;
+  public PublicKey getOwnKey() {
+    return keyManager.getMainPublicKey();
   }
 
   @Nullable
@@ -324,8 +303,8 @@ public class DigitalCashViewModel extends NavigationViewModel {
   }
 
   @Nullable
-  public PublicKey getOrganizer() {
-    return getCurrentLaoValue().getOrganizer();
+  public PublicKey getOrganizer() throws UnknownLaoException {
+    return getCurrentLao().getOrganizer();
   }
 
   @Nullable
@@ -335,12 +314,8 @@ public class DigitalCashViewModel extends NavigationViewModel {
         .collect(Collectors.toList());
   }
 
-  public MutableLiveData<LaoView> getCurrentLao() {
-    return mCurrentLao;
-  }
-
-  public LaoView getCurrentLaoValue() {
-    return mCurrentLao.getValue();
+  public LaoView getCurrentLao() throws UnknownLaoException {
+    return laoRepository.getLaoView(laoId);
   }
 
   public Set<PublicKey> getAllAttendees() {
@@ -349,30 +324,6 @@ public class DigitalCashViewModel extends NavigationViewModel {
 
   public PoPToken getValidToken() throws KeyException {
     return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
-  }
-
-  public void subscribeToLao(String laoId) {
-    disposables.add(
-        laoRepository
-            .getLaoObservable(laoId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                lao -> {
-                  Log.d(
-                      TAG,
-                      "got an update for lao: "
-                          + lao.getName()
-                          + " transaction "
-                          + lao.getTransactionHistoryByUser().toString());
-                  mCurrentLao.postValue(lao);
-                  try {
-                    Objects.requireNonNull(mTokens.getValue()).add(getValidToken());
-                  } catch (KeyException e) {
-                    Log.d(TAG, "Could not retrieve token");
-                  }
-                },
-                error -> Log.d(TAG, "Error on lao propagation " + error)));
   }
 
   public boolean canPerformTransaction(
@@ -400,13 +351,9 @@ public class DigitalCashViewModel extends NavigationViewModel {
       throws GeneralSecurityException {
     int index;
     String transactionHash;
-    Set<TransactionObject> transactions =
-        getCurrentLaoValue().getTransactionByUser().get(keyPair.getPublicKey());
+    List<TransactionObject> transactions = getTransactionsForUser(keyPair.getPublicKey());
 
-    long amountSender =
-        TransactionObject.getMiniLaoPerReceiverSetTransaction(
-                Objects.requireNonNull(transactions), keyPair.getPublicKey())
-            - amountFromReceiver;
+    long amountSender = getUserBalance(keyPair.getPublicKey()) - amountFromReceiver;
     Output outputSender =
         new Output(amountSender, new ScriptOutput(TYPE, keyPair.getPublicKey().computeHash()));
     outputs.add(outputSender);
@@ -422,8 +369,28 @@ public class DigitalCashViewModel extends NavigationViewModel {
     }
   }
 
-  public LiveData<Set<TransactionObject>> getTransactionHistory() {
-    return mTransactionHistory;
+  public List<TransactionObject> getTransactionsForUser(PublicKey user) {
+    return digitalCashRepo.getTransactions(laoId, user);
+  }
+
+  public Observable<List<TransactionObject>> getTransactionsObservable() {
+    try {
+      return digitalCashRepo.getTransactionsObservable(laoId, getValidToken().getPublicKey());
+    } catch (KeyException e) {
+      return Observable.error(e);
+    }
+  }
+
+  public Observable<Set<String>> getRollCallsObservable() {
+    return rollCallRepo.getRollCallsObservableInLao(laoId);
+  }
+
+  public long getUserBalance(PublicKey user) {
+    return digitalCashRepo.getUserBalance(laoId, user);
+  }
+
+  public long getOwnBalance() throws KeyException {
+    return getUserBalance(getValidToken().getPublicKey());
   }
 
   /**

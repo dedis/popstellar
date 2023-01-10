@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Copyable;
 import com.github.dedis.popstellar.model.objects.*;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
@@ -65,13 +64,6 @@ public final class LaoView {
     return lao.getChannel();
   }
 
-
-  public Optional<Election> getElection(String id) {
-    Optional<Election> electionOption = lao.getElection(id);
-    return electionOption.map(Election::new); // If empty returns empty optional, if not
-    // returns optional with copy of retrieved Election
-  }
-
   public Set<PublicKey> getWitnesses() {
     return new HashSet<>(lao.getWitnesses());
   }
@@ -88,10 +80,6 @@ public final class LaoView {
     return lao.getElectInstance(messageId);
   }
 
-  public Map<String, Election> getElections() {
-    return Copyable.copy(lao.getElections());
-  }
-
   public Map<MessageID, WitnessMessage> getWitnessMessages() {
     return Copyable.copy(lao.getWitnessMessages());
   }
@@ -106,14 +94,6 @@ public final class LaoView {
 
   public long getCreation() {
     return lao.getCreation();
-  }
-
-  public Map<PublicKey, Set<TransactionObject>> getTransactionHistoryByUser() {
-    return Copyable.copyMapOfSet(lao.getTransactionHistoryByUser());
-  }
-
-  public Map<PublicKey, Set<TransactionObject>> getTransactionByUser() {
-    return Copyable.copyMapOfSet(lao.getTransactionByUser());
   }
 
   @NonNull

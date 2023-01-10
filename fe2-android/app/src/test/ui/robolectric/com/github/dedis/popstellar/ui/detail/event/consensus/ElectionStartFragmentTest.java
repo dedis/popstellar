@@ -14,16 +14,18 @@ import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
+import com.google.crypto.tink.KeyTemplates;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import com.google.crypto.tink.signature.PublicKeySignWrapper;
@@ -42,7 +44,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -65,10 +66,10 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class ElectionStartFragmentTest {
 
-  @Inject MessageRepository messageRepo;
   @Inject KeyManager keyManager;
   @Inject MessageHandler messageHandler;
   @Inject Gson gson;
+  @Inject ElectionRepository electionRepo;
 
   @BindValue @Mock GlobalNetworkManager globalNetworkManager;
   @Mock MessageSender messageSender;
@@ -89,10 +90,8 @@ public class ElectionStartFragmentTest {
           try {
             Ed25519PrivateKeyManager.registerPair(true);
             PublicKeySignWrapper.register();
-            KeysetHandle keysetHandle2 =
-                KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
-            KeysetHandle keysetHandle3 =
-                KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
+            KeysetHandle keysetHandle2 = KeysetHandle.generateNew(KeyTemplates.get("ED25519_RAW"));
+            KeysetHandle keysetHandle3 = KeysetHandle.generateNew(KeyTemplates.get("ED25519_RAW"));
 
             mainKeyPair = keyManager.getMainKeyPair();
             node2KeyPair = keyManager.getKeyPair(keysetHandle2);
@@ -175,7 +174,9 @@ public class ElectionStartFragmentTest {
   private static final long FUTURE_TIME = 2145916800;
 
   private static final Election election =
-      new Election(LAO_ID, PAST_TIME, ELECTION_NAME, ElectionVersion.OPEN_BALLOT);
+      new Election.ElectionBuilder(LAO_ID, PAST_TIME, ELECTION_NAME)
+          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+          .build();
   private static final ConsensusKey KEY = new ConsensusKey("election", election.getId(), "state");
   private static final String INSTANCE_ID =
       ElectInstance.generateConsensusId(KEY.getType(), KEY.getId(), KEY.getProperty());
@@ -210,7 +211,8 @@ public class ElectionStartFragmentTest {
 
   @Test
   public void displayWithUpdatesIsCorrect()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException, NoRollCallException {
     setupViewModel(PAST_TIME);
 
     // Election start time has passed, should display that it's ready and start button enabled
@@ -262,14 +264,13 @@ public class ElectionStartFragmentTest {
   }
 
   @Test
-  public void updateTest() throws InterruptedException {
+  public void updateTest() {
     setupViewModel(FUTURE_TIME);
     // Election start time has not passed yet, should display that it's waiting
     displayAssertions(STATUS_WAITING, START_SCHEDULED, false);
 
-    // Wait for the timer update
-    election.setStart(PAST_TIME);
-    TimeUnit.SECONDS.sleep(2);
+    // Update election start time
+    electionRepo.updateElection(election.builder().setStart(PAST_TIME).build());
 
     // Election start time has passed, should display that it's ready and start button enabled
     displayAssertions(STATUS_READY, START_START, true);
@@ -297,7 +298,8 @@ public class ElectionStartFragmentTest {
 
   @Test
   public void acceptButtonSendElectAcceptMessageTest()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException, NoRollCallException {
     setupViewModel(PAST_TIME);
 
     // Nodes 3 try to start
@@ -319,7 +321,8 @@ public class ElectionStartFragmentTest {
 
   @Test
   public void failureTest()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException {
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException, NoRollCallException {
     setupViewModel(PAST_TIME);
 
     // Nodes 3 try to start and failed
@@ -368,7 +371,7 @@ public class ElectionStartFragmentTest {
   }
 
   private void setupViewModel(long electionStart) {
-    election.setStart(electionStart);
+    electionRepo.updateElection(election.builder().setStart(electionStart).build());
     fragmentRule
         .getScenario()
         .onFragment(
@@ -376,7 +379,7 @@ public class ElectionStartFragmentTest {
               FragmentActivity fragmentActivity = electionStartFragment.requireActivity();
               LaoDetailViewModel laoDetailViewModel =
                   LaoDetailActivity.obtainViewModel(fragmentActivity);
-              laoDetailViewModel.setCurrentElection(election);
+              laoDetailViewModel.setCurrentElection(election.getId());
               laoDetailViewModel.setCurrentLao(new LaoView(lao));
             });
     // Recreate the fragment because the viewModel needed to be modified before start

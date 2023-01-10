@@ -44,7 +44,7 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
         android.R.id.content,
         fragmentClass,
         (FragmentFactory) null,
-        Bundle.EMPTY);
+        null);
   }
 
   /**
@@ -63,7 +63,7 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
         android.R.id.content,
         fragmentClass,
         factory(fragmentSupplier),
-        Bundle.EMPTY);
+        null);
   }
 
   /**
@@ -79,12 +79,7 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
   public static <A extends AppCompatActivity, F extends Fragment> FragmentScenario<A, F> launchIn(
       Class<A> activityClass, @IdRes int contentId, Class<F> fragmentClass) {
     return launchIn(
-        activityClass,
-        Bundle.EMPTY,
-        contentId,
-        fragmentClass,
-        (FragmentFactory) null,
-        Bundle.EMPTY);
+        activityClass, Bundle.EMPTY, contentId, fragmentClass, (FragmentFactory) null, null);
   }
 
   /**
@@ -104,12 +99,7 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
       Class<F> fragmentClass,
       Supplier<F> fragmentSupplier) {
     return launchIn(
-        activityClass,
-        Bundle.EMPTY,
-        contentId,
-        fragmentClass,
-        factory(fragmentSupplier),
-        Bundle.EMPTY);
+        activityClass, Bundle.EMPTY, contentId, fragmentClass, factory(fragmentSupplier), null);
   }
 
   /**
@@ -131,12 +121,7 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
       Class<F> fragmentClass,
       Supplier<F> fragmentSupplier) {
     return launchIn(
-        activityClass,
-        activityArgs,
-        contentId,
-        fragmentClass,
-        factory(fragmentSupplier),
-        Bundle.EMPTY);
+        activityClass, activityArgs, contentId, fragmentClass, factory(fragmentSupplier), null);
   }
 
   /**
@@ -214,7 +199,8 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
                   .instantiate(
                       Objects.requireNonNull(fragmentClass.getClassLoader()),
                       fragmentClass.getName());
-          fragment.setArguments(fragmentArgs);
+
+          if (fragmentArgs != null) fragment.setArguments(fragmentArgs);
 
           activity
               .getSupportFragmentManager()

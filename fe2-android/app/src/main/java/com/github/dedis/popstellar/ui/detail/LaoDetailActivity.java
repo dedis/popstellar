@@ -15,13 +15,14 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailActivityBinding;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
+import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -60,13 +61,7 @@ public class LaoDetailActivity extends NavigationActivity {
         Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
     viewModel.subscribeToLao(laoId);
     viewModel.subscribeToRollCalls(laoId);
-
-    if (!getIntent()
-        .getExtras()
-        .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
-        .equals(Constants.LAO_DETAIL_EXTRA)) {
-      setupLaoWalletFragment();
-    }
+    viewModel.subscribeToElections(laoId);
 
     MainMenuTab tab = (MainMenuTab) getIntent().getExtras().get(Constants.TAB_EXTRA);
     if (tab == null) {
@@ -98,6 +93,9 @@ public class LaoDetailActivity extends NavigationActivity {
       case EVENTS:
         openEventsTab();
         return true;
+      case TOKENS:
+        openTokensTab();
+        return true;
       case WITNESSING:
         openWitnessTab();
         return true;
@@ -107,8 +105,7 @@ public class LaoDetailActivity extends NavigationActivity {
       case SOCIAL_MEDIA:
         openSocialMediaTab();
         return false;
-      case TOKENS:
-        return false;
+
       case DISCONNECT:
         startActivity(HomeActivity.newIntent(this));
         return false;
@@ -128,6 +125,11 @@ public class LaoDetailActivity extends NavigationActivity {
         getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
 
+  private void openTokensTab() {
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_tokens, TokenListFragment::newInstance);
+  }
+
   private void openWitnessTab() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_witnessing, WitnessingFragment::newInstance);
@@ -144,11 +146,6 @@ public class LaoDetailActivity extends NavigationActivity {
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(this, TAG, R.string.error_no_lao);
     }
-  }
-
-  private void setupLaoWalletFragment() {
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
   }
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {

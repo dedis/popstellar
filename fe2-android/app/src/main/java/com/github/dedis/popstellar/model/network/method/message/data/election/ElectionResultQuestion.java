@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.Immutable;
 
 import java.util.*;
@@ -8,21 +10,21 @@ import java.util.*;
 public class ElectionResultQuestion {
 
   private final String id;
-  private final List<QuestionResult> result;
+  private final Set<QuestionResult> result;
 
-  public ElectionResultQuestion(String id, List<QuestionResult> result) {
-    if (id == null || result == null || result.isEmpty()) {
+  public ElectionResultQuestion(@NonNull String id, @NonNull Set<QuestionResult> result) {
+    if (result.isEmpty()) {
       throw new IllegalArgumentException();
     }
     this.id = id;
-    this.result = Collections.unmodifiableList(result);
+    this.result = new HashSet<>(result);
   }
 
-  public String getId() {
+  public @NonNull String getId() {
     return id;
   }
 
-  public List<QuestionResult> getResult() {
+  public @NonNull Set<QuestionResult> getResult() {
     return result;
   }
 
@@ -44,6 +46,7 @@ public class ElectionResultQuestion {
     return Objects.hash(id, result);
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "ElectionResultQuestion{"

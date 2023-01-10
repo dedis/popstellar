@@ -1,13 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import androidx.annotation.NonNull;
+
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-public class CastVote<E> extends Data {
+public class CastVote extends Data {
 
   @SerializedName(value = "created_at")
   private final long createdAt; // time the votes were submitted
@@ -21,15 +23,14 @@ public class CastVote<E> extends Data {
   // Votes, either votes is null or encrypted votes is null depending on the value of the election
   // Type must be specified upon creation of the cast vote (either ElectionVote or
   // ElectionEncryptedVote)
-  @SerializedName(value = "votes")
-  private final List<E> votes;
+  private final List<? extends Vote> votes;
 
   /**
    * @param votes list of the votes to cast (null if this is an OPEN_BALLOT election)
    * @param electionId election id
    * @param laoId lao id
    */
-  public CastVote(List<E> votes, String electionId, String laoId) {
+  public CastVote(List<? extends Vote> votes, String electionId, String laoId) {
     this.createdAt = Instant.now().getEpochSecond();
     this.electionId = electionId;
     this.laoId = laoId;
@@ -44,7 +45,7 @@ public class CastVote<E> extends Data {
    * @param laoId lao id
    * @param createdAt timestamp for creation
    */
-  public CastVote(List<E> votes, String electionId, String laoId, Long createdAt) {
+  public CastVote(List<? extends Vote> votes, String electionId, String laoId, Long createdAt) {
     this.createdAt = createdAt;
     this.electionId = electionId;
     this.laoId = laoId;
@@ -63,11 +64,8 @@ public class CastVote<E> extends Data {
     return createdAt;
   }
 
-  /**
-   * @return null if the election is encrypted else the votes
-   */
-  public List<E> getVotes() {
-    return votes;
+  public List<Vote> getVotes() {
+    return new ArrayList<>(votes);
   }
 
   @Override
@@ -102,6 +100,7 @@ public class CastVote<E> extends Data {
     return java.util.Objects.hash(getLaoId(), getElectionId(), getCreation(), getVotes());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "CastVote{"

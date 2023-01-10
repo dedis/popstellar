@@ -3,25 +3,24 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Immutable;
-import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
-@Immutable
-public class ElectionVote {
+import static com.github.dedis.popstellar.model.objects.Election.generateElectionVoteId;
 
-  @SerializedName(value = "id")
+@Immutable
+public class PlainVote implements Vote {
+
+  // Id of the vote
+  // Hash('Vote'||election_id||question_id||(vote_index(es)|write_in))
   private final String id;
 
-  // Id of the object ElectionVote : Hash(“Vote”||election_id|| ||
-  // JsonTestUtils.testData(castOpenVote);
+  // Id of the object ElectionVote
   @SerializedName(value = "question")
-  private final String questionId; // id of the question
+  private final String questionId;
 
-  // represents a boolean to know whether write_in is allowed or not
-  // list of indexes for the votes
-  @SerializedName(value = "vote")
+  // index of the chosen vote
   private final Integer vote;
 
   /**
@@ -33,21 +32,32 @@ public class ElectionVote {
    * @param writeIn string corresponding to the write_in
    * @param electionId Id of the election
    */
-  public ElectionVote(
+  public PlainVote(
       String questionId, Integer vote, boolean writeInEnabled, String writeIn, String electionId) {
-
     this.questionId = questionId;
     this.vote = writeInEnabled ? null : vote;
-    this.id =
-        Election.generateElectionVoteId(electionId, questionId, vote, writeIn, writeInEnabled);
+    this.id = generateElectionVoteId(electionId, questionId, vote, writeIn, writeInEnabled);
   }
 
+  public PlainVote(String id, String question, int vote) {
+    this.id = id;
+    this.questionId = question;
+    this.vote = vote;
+  }
+
+  @NonNull
+  public String getQuestionId() {
+    return questionId;
+  }
+
+  @NonNull
   public String getId() {
     return id;
   }
 
-  public String getQuestionId() {
-    return questionId;
+  @Override
+  public boolean isEncrypted() {
+    return false;
   }
 
   public Integer getVote() {
@@ -62,7 +72,7 @@ public class ElectionVote {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ElectionVote that = (ElectionVote) o;
+    PlainVote that = (PlainVote) o;
     return Objects.equals(getQuestionId(), that.getQuestionId())
         && Objects.equals(getId(), that.getId())
         && Objects.equals(getVote(), that.getVote());

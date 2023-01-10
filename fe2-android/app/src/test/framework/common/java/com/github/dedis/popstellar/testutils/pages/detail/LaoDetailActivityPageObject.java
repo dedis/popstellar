@@ -25,6 +25,10 @@ public class LaoDetailActivityPageObject {
     return onView(withId(R.id.fragment_container_lao_detail));
   }
 
+  public static ViewInteraction tokenButton() {
+    return onView(withId(R.id.lao_detail_tokens_menu));
+  }
+
   public static ViewInteraction socialMediaButton() {
     return onView(withId(R.id.main_menu_digital_cash));
   }
@@ -53,6 +57,11 @@ public class LaoDetailActivityPageObject {
   @IdRes
   public static int laoDetailFragmentId() {
     return R.id.fragment_lao_detail;
+  }
+
+  @IdRes
+  public static int tokenListFragmentId() {
+    return R.id.fragment_tokens;
   }
 
   @IdRes

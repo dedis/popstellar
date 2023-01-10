@@ -108,16 +108,7 @@
   <string name="add_attendee_already_exists">Attendee already recorded</string>
   <string name="add_attendee_unsuccessful">Error when adding attendee</string>
   <string name="add_attendees_number">Number of attendees : %1$d</string>
-
-  <!-- Event Buttons -->
-  <string name="open_rollcall">OPEN</string>
   <string name="reopen_rollcall">REOPEN</string>
-  <string name="scheduled_rollcall">SCHEDULED</string>
-  <string name="enter_rollcall">ENTER</string>
-  <string name="closed_rollcall">CLOSED</string>
-  <string name="attendees_list_rollcall">Attendees</string>
-
-  <string name="back">BACK</string>
 
   <!-- Identity -->
   <string name="identity_name">Name</string>
@@ -211,7 +202,6 @@
   <string name="wallet_seed_title">Mnemonic wallet seed:</string>
   <string name="confirm_button">Confirm</string>
 
-  <string name="token_button">TOKEN</string>
   <string name="logout_title">Wallet log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
   <string name="copy_button_descriptor">Button to copy seed</string>
@@ -221,6 +211,19 @@
   <string name="initialize">Initialize</string>
   <string name="seed_import_success">Seed successfully imported !</string>
   <string name="no_seed_storage_found">No wallet storage was found</string>
+
+  <!--  Tokens -->
+  <string name="valid_token_title">Valid Token</string>
+  <string name="previous_token_title">Previous Tokens</string>
+  <string name="valid">Valid</string>
+  <string name="empty_tokens_text">Hey there ! Seems you have no tokens.\n\nThey are important,
+    they grant you participation to all features in your local autonomous organization (LAO) such as
+    elections, digital cash and social media.\nTo get a token, you must attend a roll call and wait
+    until your LAO\'s organizer closes it.\n\nIf you are an organizer you may schedule a roll call !
+  </string>
+  <string name="token">Token</string>
+  <string name="copy_to_clipboard">Copy to Clipboard</string>
+  <string name="successful_copy">Copied with success to clipboard !</string>
 
   <!-- Digital Cash -->
   <string name="digital_cash_send">Send</string>
@@ -298,6 +301,8 @@
   <string name="add_rc_description">Add Roll call</string>
   <string name="rc_qr_description">Roll call qr code</string>
   <string name="add_witness_description">Add Witness</string>
+  <string name="qr_code_icon_description">An icon representing a qr code</string>
+  <string name="qr_code_token_content">The QR code displaying token information</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
