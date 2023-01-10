@@ -554,7 +554,7 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	var laoGreet messagedata.LaoGreet
 
 	err = greetMsg.UnmarshalData(&laoGreet)
-	require.NoError(t, err, laoGreet, catchupAnswer)
+	require.NoError(t, err)
 
 	require.Equal(t, messagedata.LAOObject, laoGreet.Object)
 	require.Equal(t, messagedata.LAOActionGreet, laoGreet.Action)
