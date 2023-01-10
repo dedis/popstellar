@@ -13,6 +13,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaActivityBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
@@ -23,7 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 /** Activity for the social media */
 @AndroidEntryPoint
-public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
+public class SocialMediaActivity extends NavigationActivity {
 
   private SocialMediaViewModel viewModel;
   private SocialMediaActivityBinding binding;
@@ -52,9 +55,13 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         viewModel.setLaoName(laoName);
       }
     }
-
-    setupNavigationBar(binding.socialMediaNavBar);
-    setupTopAppBar();
+    navigationViewModel.setCurrentTab(MainMenuTab.SOCIAL_MEDIA);
+    setupDrawer(
+        binding.socialMediaNavigationDrawer,
+        binding.socialMediaAppBar,
+        binding.socialMediaDrawerLayout);
+    setupBottomNavBar();
+    openHomeTab();
   }
 
   @Override
@@ -74,13 +81,24 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
     return new ViewModelProvider(activity).get(SocialMediaViewModel.class);
   }
 
-  @Override
-  protected SocialMediaTab findTabByMenu(int menuId) {
-    return SocialMediaTab.findByMenu(menuId);
+  private void setupBottomNavBar() {
+    viewModel
+        .getBottomNavigationTab()
+        .observe(this, tab -> binding.socialMediaNavBar.setSelectedItemId(tab.getMenuId()));
+
+    binding.socialMediaNavBar.setOnItemSelectedListener(
+        item -> {
+          SocialMediaTab tab = SocialMediaTab.findByMenu(item.getItemId());
+          Log.i(TAG, "Opening tab : " + tab.getName());
+          openBottomTab(tab);
+          return true;
+        });
+
+    binding.socialMediaNavBar.setOnItemReselectedListener(item -> {});
+    viewModel.setBottomNavigationTab(SocialMediaTab.HOME);
   }
 
-  @Override
-  protected boolean openTab(SocialMediaTab tab) {
+  private void openBottomTab(SocialMediaTab tab) {
     switch (tab) {
       case HOME:
         openHomeTab();
@@ -94,15 +112,36 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
       case PROFILE:
         openProfileTab();
         break;
-      default:
-        Log.w(TAG, "Unhandled tab type : " + tab);
     }
-    return true;
   }
 
   @Override
-  protected SocialMediaTab getDefaultTab() {
-    return SocialMediaTab.HOME;
+  protected boolean openTab(MainMenuTab tab) {
+    switch (tab) {
+      case INVITE:
+        openInviteTab();
+        return false;
+      case EVENTS:
+        openEventsTab();
+        return false;
+      case SOCIAL_MEDIA:
+        return false;
+      case DIGITAL_CASH:
+        openDigitalCash();
+        return false;
+      case WITNESSING:
+        openWitnessingTab();
+        return false;
+      case TOKENS:
+        openTokensTab();
+        return false;
+      case DISCONNECT:
+        startActivity(HomeActivity.newIntent(this));
+        return false;
+      default:
+        Log.w(TAG, "Unhandled tab type : " + tab);
+        return false;
+    }
   }
 
   private void openHomeTab() {
@@ -126,10 +165,6 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         SocialMediaFollowingFragment::newInstance);
   }
 
-  public void openLao() {
-    startActivity(LaoDetailActivity.newIntentForLao(this, viewModel.getLaoId()));
-  }
-
   private void openProfileTab() {
     setCurrentFragment(
         getSupportFragmentManager(),
@@ -137,25 +172,28 @@ public class SocialMediaActivity extends NavigationActivity<SocialMediaTab> {
         SocialMediaProfileFragment::newInstance);
   }
 
-  private void setupTopAppBar() {
-    viewModel.getPageTitle().observe(this, binding.socialMediaAppBar::setTitle);
+  private void openInviteTab() {
+    startActivity(
+        LaoDetailActivity.newIntentWithTab(this, viewModel.getLaoId(), MainMenuTab.INVITE));
+  }
 
-    binding.socialMediaAppBar.setNavigationOnClickListener(
-        v -> {
-          Fragment fragment =
-              getSupportFragmentManager().findFragmentById(R.id.fragment_container_social_media);
-          if (fragment instanceof SocialMediaHomeFragment) {
-            openLao();
-          } else {
-            if (viewModel.getCurrentTab().getValue() == SocialMediaTab.HOME) {
-              // On reselection the navigation is supposed to do nothing to prevent loops, so we
-              // manually change the fragment
-              openHomeTab();
-            } else {
-              viewModel.setCurrentTab(SocialMediaTab.HOME);
-            }
-          }
-        });
+  private void openWitnessingTab() {
+    startActivity(
+        LaoDetailActivity.newIntentWithTab(this, viewModel.getLaoId(), MainMenuTab.WITNESSING));
+  }
+
+  private void openTokensTab() {
+    startActivity(
+        LaoDetailActivity.newIntentWithTab(this, viewModel.getLaoId(), MainMenuTab.TOKENS));
+  }
+
+  private void openEventsTab() {
+    startActivity(
+        LaoDetailActivity.newIntentWithTab(this, viewModel.getLaoId(), MainMenuTab.EVENTS));
+  }
+
+  private void openDigitalCash() {
+    startActivity(DigitalCashActivity.newIntent(this, viewModel.getLaoId()));
   }
 
   public static Intent newIntent(Context ctx, String laoId, String laoName) {

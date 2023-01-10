@@ -40,7 +40,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 @HiltViewModel
-public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
+public class SocialMediaViewModel extends NavigationViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String SOCIAL = "social";
@@ -52,7 +52,8 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
    */
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
-  private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
+  private final MutableLiveData<SocialMediaTab> bottomNavigationTab =
+      new MutableLiveData<>(SocialMediaTab.HOME);
 
   /*
    * Dependencies for this class
@@ -104,14 +105,6 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     return mNumberCharsLeft;
   }
 
-  public LiveData<String> getLaoName() {
-    return mLaoName;
-  }
-
-  public LiveData<Integer> getPageTitle() {
-    return mPageTitle;
-  }
-
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -124,14 +117,15 @@ public class SocialMediaViewModel extends NavigationViewModel<SocialMediaTab> {
     this.laoId = laoId;
   }
 
-  public void setLaoName(String laoName) {
-    mLaoName.setValue(laoName);
+  public LiveData<SocialMediaTab> getBottomNavigationTab() {
+    return bottomNavigationTab;
   }
 
-  public void setPageTitle(int titleId) {
-    mPageTitle.postValue(titleId);
+  public void setBottomNavigationTab(SocialMediaTab tab) {
+    if (tab != bottomNavigationTab.getValue()) {
+      bottomNavigationTab.setValue(tab);
+    }
   }
-
   /**
    * Send a chirp to your own channel.
    *

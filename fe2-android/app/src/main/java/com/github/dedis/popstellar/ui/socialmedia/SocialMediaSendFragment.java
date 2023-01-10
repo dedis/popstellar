@@ -93,7 +93,7 @@ public class SocialMediaSendFragment extends Fragment {
                           requireContext(), TAG, error, R.string.error_sending_chirp);
                     }
                   }));
-      viewModel.setCurrentTab(SocialMediaTab.HOME);
+      //      viewModel.setCurrentTab(SocialMediaTab.HOME);
     }
   }
 }
