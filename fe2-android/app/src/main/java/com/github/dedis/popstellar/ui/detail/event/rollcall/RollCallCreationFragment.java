@@ -143,7 +143,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
                   () -> {
                     setCurrentFragment(
                         getParentFragmentManager(),
-                        R.id.add_attendee_layout,
+                        R.id.fragment_qrcode,
                         QRCodeScanningFragment::new);
                     viewModel.setPageTitle(getString(R.string.add_attendee_title));
                   },

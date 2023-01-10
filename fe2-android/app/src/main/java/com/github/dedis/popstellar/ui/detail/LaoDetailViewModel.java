@@ -96,7 +96,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
           lao ->
               lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnessMessages().values()));
 
-  private final MutableLiveData<List<RollCall>> mAttendedRollCalls = new MutableLiveData<>();
   /*
    * Dependencies for this class
    */
@@ -184,10 +183,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public MutableLiveData<List<RollCall>> getRollCalls() {
     return mRollCalls;
-  }
-
-  public LiveData<List<RollCall>> getAttendedRollCalls() {
-    return mAttendedRollCalls;
   }
 
   @Override
@@ -640,6 +635,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mScanWarningEvent;
   }
 
+  public RollCall getLastClosedRollCall() throws NoRollCallException {
+    return rollCallRepo.getLastClosedRollCall(laoId);
+  }
+
   public void setCurrentRollCallId(String rollCallId) {
     currentRollCallId = rollCallId;
   }
@@ -672,6 +671,28 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         .publish(channel, msg)
         .doOnComplete(() -> Log.d(TAG, "updated lao witnesses"))
         .andThen(dispatchLaoUpdate(updateLao, laoView, channel, msg));
+  }
+
+  public Observable<List<RollCall>> getAttendedRollCalls() {
+    return rollCallRepo
+        .getRollCallsObservableInLao(laoId)
+        .map( // We map the list of id to a list of corresponding roll calls
+            ids ->
+                ids.stream()
+                    .map(
+                        rcId -> {
+                          try {
+                            return rollCallRepo.getRollCallWithPersistentId(laoId, rcId);
+                          } catch (UnknownRollCallException e) {
+                            // Roll calls whose ids are in that list may not be absent
+                            throw new IllegalStateException(
+                                "Could not fetch roll call with id " + rcId);
+                          }
+                        })
+                    .filter(
+                        this::attendedOrOrganized // Keep only attended roll calls
+                        )
+                    .collect(Collectors.toList()));
   }
 
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */
@@ -752,14 +773,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
             .throttleLatest(50, TimeUnit.MILLISECONDS)
             .lift(suppressErrors(err -> Log.e(TAG, "Error creating rollcall list : ", err)))
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                rollCalls -> {
-                  mRollCalls.setValue(rollCalls);
-                  mAttendedRollCalls.setValue(
-                      rollCalls.stream()
-                          .filter(rollCall -> rollCall.isClosed() && attendedOrOrganized(rollCall))
-                          .collect(Collectors.toList()));
-                }));
+            .subscribe(mRollCalls::setValue));
   }
 
   public void subscribeToElections(String laoId) {
