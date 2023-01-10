@@ -12,19 +12,19 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
-import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
-import com.github.dedis.popstellar.utility.error.UnknownEventException;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 import com.google.zxing.*;
@@ -41,13 +41,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import java.util.*;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.Completable;
-import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -57,11 +54,8 @@ import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivi
 import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailFragmentPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.election.ElectionSetupPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.rollcall.RollCallCreatePageObject.*;
-import static java.util.Collections.emptySet;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
 
 @LargeTest
@@ -82,20 +76,15 @@ public class LaoDetailFragmentTest {
   private static final String QUESTION = "question";
   private static final String BALLOT_1 = "ballot 1";
   private static final String BALLOT_2 = "ballot 2";
-  private static final BehaviorSubject<LaoView> laoViewSubject =
-      BehaviorSubject.createDefault(new LaoView(LAO));
-  private static final RollCall ROLL_CALL =
-      new RollCall(
-          "id", "id", "rc", 0L, 1L, 2L, EventState.CREATED, new HashSet<>(), "nowhere", "none");
 
   @Inject Gson gson;
+  @Inject MessageHandler handler;
+  @Inject LAORepository laoRepository;
 
   @BindValue @Mock GlobalNetworkManager networkManager;
-  @BindValue @Mock LAORepository repository;
-  @BindValue @Mock RollCallRepository rollCallRepo;
-  @BindValue @Mock ElectionRepository electionRepo;
-  @BindValue @Mock MessageSender messageSender;
   @BindValue @Mock KeyManager keyManager;
+
+  @Mock MessageSender messageSender;
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
@@ -109,27 +98,30 @@ public class LaoDetailFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException, UnknownLaoException, UnknownEventException {
+        protected void before() throws KeyException {
           hiltRule.inject();
-          Set<String> rcList = Collections.singleton(ROLL_CALL.getId());
-          BehaviorSubject<Set<String>> rcObservable = BehaviorSubject.createDefault(rcList);
-          when(repository.getLaoObservable(anyString())).thenReturn(laoViewSubject);
-          when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
-          when(rollCallRepo.getRollCallWithId(any(), any())).thenReturn(ROLL_CALL);
-          when(rollCallRepo.getRollCallsObservableInLao(any())).thenReturn(rcObservable);
-          when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
-          doCallRealMethod().when(rollCallRepo).getEventIdsObservable(any());
-          doCallRealMethod().when(rollCallRepo).getEventObservable(any(), any());
+          laoRepository.updateLao(LAO);
 
-          when(electionRepo.getEventIdsObservable(any()))
-              .thenReturn(BehaviorSubject.createDefault(emptySet()));
-
+          when(keyManager.getMainKeyPair()).thenReturn(KEY_PAIR);
           when(keyManager.getMainPublicKey()).thenReturn(PK);
           when(keyManager.getPoPToken(any(), any())).thenReturn(POP_TOKEN);
+
           when(networkManager.getMessageSender()).thenReturn(messageSender);
 
           when(messageSender.publish(any(), any(), any())).thenReturn(Completable.complete());
+          when(messageSender.publish(any(), any(), any(CreateRollCall.class)))
+              .thenAnswer(
+                  answer -> {
+                    KeyPair sender = answer.getArgument(0);
+                    Channel channel = answer.getArgument(1);
+                    Data data = answer.getArgument(2);
+
+                    // Do handle create roll call message
+                    handler.handleMessage(
+                        messageSender, channel, new MessageGeneral(sender, data, gson));
+                    return Completable.complete();
+                  });
         }
       };
 
@@ -155,7 +147,6 @@ public class LaoDetailFragmentTest {
 
   @Test
   public void addEventButtonIsDisplayedForOrganizer() {
-    when(keyManager.getMainPublicKey()).thenReturn(PK);
     addEventButton().check(matches(isDisplayed()));
   }
 
@@ -189,7 +180,6 @@ public class LaoDetailFragmentTest {
 
   @Test
   public void openRollCallOpensPermission() {
-    setupViewModel();
     goToRollCallCreationAndEnterTitleAndLocation();
     rollCreateOpenButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(qrCodeFragmentId()))));
@@ -268,17 +258,5 @@ public class LaoDetailFragmentTest {
         return new BinaryBitmap(new HybridBinarizer(source));
       }
     };
-  }
-
-  private void setupViewModel() {
-    activityScenarioRule
-        .getScenario()
-        .onActivity(
-            activity -> {
-              LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
-              laoDetailViewModel.setCurrentLao(new LaoView(LAO));
-            });
-    // Recreate the fragment because the viewModel needed to be modified before start
-    activityScenarioRule.getScenario().recreate();
   }
 }

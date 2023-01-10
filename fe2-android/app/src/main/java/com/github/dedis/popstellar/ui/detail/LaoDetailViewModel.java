@@ -5,7 +5,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
@@ -40,6 +39,7 @@ import com.google.gson.Gson;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -560,12 +560,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return laoRepository.getLaoView(laoId);
   }
 
-  @VisibleForTesting
-  public void setCurrentLao(LaoView laoView) {
-    laoId = laoView.getId();
-    mCurrentLao.setValue(laoView);
-  }
-
   public MutableLiveData<String> getPageTitle() {
     return mPageTitle;
   }
@@ -701,13 +695,18 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     // Create the events set observable
     this.events =
         Observable.combineLatest(
-            createEventListObservable(rollCallRepo, laoId),
-            createEventListObservable(electionRepo, laoId),
-            (rcs, elecs) -> {
-              Set<Event> union = new HashSet<>(rcs);
-              union.addAll(elecs);
-              return union;
-            });
+                createEventListObservable(rollCallRepo, laoId),
+                createEventListObservable(electionRepo, laoId),
+                (rcs, elecs) -> {
+                  Set<Event> union = new HashSet<>(rcs);
+                  union.addAll(elecs);
+                  return union;
+                })
+            // Only dispatch the latest element once every 50 milliseconds
+            // This avoids multiple updates in a short period of time
+            .throttleLatest(50, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
 
     disposables.add(
         laoRepository
