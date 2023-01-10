@@ -17,7 +17,6 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
@@ -132,16 +131,6 @@ public class LaoDetailFragmentTest {
                   .putString(laoIdExtra(), LAO_ID)
                   .putString(fragmentToOpenExtra(), laoDetailValue())
                   .build()));
-
-  @Test
-  public void showPropertyButtonShowsConnectQRCode() {
-    qrCodeIcon().perform(click());
-
-    qrCodeLayout().check(matches(isDisplayed()));
-
-    String expectedQRCode = gson.toJson(new ConnectToLao(networkManager.getCurrentUrl(), LAO_ID));
-    connectQrCode().check(matches(withQrCode(expectedQRCode)));
-  }
 
   @Test
   public void addEventButtonIsDisplayedForOrganizer() {

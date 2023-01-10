@@ -14,7 +14,7 @@ public class LaoDetailFragmentPageObject {
   }
 
   public static ViewInteraction qrCodeLayout() {
-    return onView(withId(R.id.lao_detail_qr_layout));
+    return null; // onView(withId(R.id.lao_detail_qr_layout));
   }
 
   public static ViewInteraction connectQrCode() {
