@@ -79,7 +79,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
-  private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final MutableLiveData<List<RollCall>> mRollCalls = new MutableLiveData<>();
   private final MutableLiveData<List<Election>> mElections = new MutableLiveData<>();
   private final LiveData<List<PublicKey>> mWitnesses =
@@ -601,10 +600,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Log.d(TAG, "isSignedByCurrentWitness: " + isSignedByCurrentWitness);
     mIsSignedByCurrentWitness.setValue(isSignedByCurrentWitness);
     return mIsSignedByCurrentWitness;
-  }
-
-  public LiveData<Boolean> getShowProperties() {
-    return showProperties;
   }
 
   public LiveData<List<PublicKey>> getWitnesses() {
