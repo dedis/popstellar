@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.detail.event.election.fragments;
 
 import android.os.Bundle;
 import android.view.*;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,59 +43,12 @@ public class CastVoteFragment extends Fragment {
 
   @Inject ElectionRepository electionRepository;
 
-  private Button voteButton;
   private LaoDetailViewModel viewModel;
+  private CastVoteFragmentBinding binding;
+
   private String electionId;
 
   private final Map<String, Integer> votes = new HashMap<>();
-
-  private final View.OnClickListener buttonListener =
-      v -> {
-        voteButton.setEnabled(false);
-        List<PlainVote> plainVotes = new ArrayList<>();
-
-        try {
-          Election election = electionRepository.getElection(viewModel.getLaoId(), electionId);
-          List<ElectionQuestion> electionQuestions = election.getElectionQuestions();
-
-          // Attendee should not be able to send cast vote if he didn't vote for all questions
-          if (votes.size() < electionQuestions.size()) {
-            return;
-          }
-
-          for (ElectionQuestion electionQuestion : electionQuestions) {
-            PlainVote plainVote =
-                new PlainVote(
-                    electionQuestion.getId(),
-                    votes.get(electionQuestion.getId()),
-                    electionQuestion.getWriteIn(),
-                    null,
-                    electionId);
-
-            plainVotes.add(plainVote);
-          }
-
-          viewModel.addDisposable(
-              viewModel
-                  .sendVote(electionId, plainVotes)
-                  .subscribe(
-                      () -> {
-                        setCurrentFragment(
-                            getParentFragmentManager(),
-                            R.id.fragment_lao_detail,
-                            LaoDetailFragment::newInstance);
-                        // Toast ? + send back to election screen or details screen ?
-                        Toast.makeText(
-                                requireContext(), "vote successfully sent !", Toast.LENGTH_LONG)
-                            .show();
-                      },
-                      err -> logAndShow(requireContext(), TAG, err, R.string.error_send_vote)));
-        } catch (UnknownElectionException err) {
-          logAndShow(requireContext(), TAG, err, R.string.generic_error);
-        } finally {
-          voteButton.setEnabled(true);
-        }
-      };
 
   public CastVoteFragment() {
     // Required empty public constructor
@@ -119,15 +71,15 @@ public class CastVoteFragment extends Fragment {
     electionId = requireArguments().getString(ELECTION_ID);
 
     // Inflate the layout for this fragment
-    CastVoteFragmentBinding binding = CastVoteFragmentBinding.inflate(inflater, container, false);
+    binding = CastVoteFragmentBinding.inflate(inflater, container, false);
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     // Setting the lao ad election name
-    if (setLaoName(binding)) {
+    if (setLaoName()) {
       return null;
     }
 
-    if (setElectionName(binding)) {
+    if (setElectionName()) {
       return null;
     }
 
@@ -149,12 +101,11 @@ public class CastVoteFragment extends Fragment {
     }
 
     // setUp the cast Vote button
-    voteButton = binding.castVoteButton;
-    voteButton.setOnClickListener(buttonListener);
+    binding.castVoteButton.setOnClickListener(this::castVote);
     return binding.getRoot();
   }
 
-  private boolean setLaoName(CastVoteFragmentBinding binding) {
+  private boolean setLaoName() {
     try {
       LaoView laoView = viewModel.getLaoView();
       binding.castVoteLaoName.setText(laoView.getName());
@@ -165,7 +116,7 @@ public class CastVoteFragment extends Fragment {
     }
   }
 
-  private boolean setElectionName(CastVoteFragmentBinding binding) {
+  private boolean setElectionName() {
     try {
       Election election = electionRepository.getElection(viewModel.getLaoId(), electionId);
       binding.castVoteElectionName.setText(election.getName());
@@ -173,6 +124,52 @@ public class CastVoteFragment extends Fragment {
     } catch (UnknownElectionException e) {
       logAndShow(requireContext(), TAG, R.string.error_no_election);
       return true;
+    }
+  }
+
+  private void castVote(View voteButton) {
+    voteButton.setEnabled(false);
+    List<PlainVote> plainVotes = new ArrayList<>();
+
+    try {
+      Election election = electionRepository.getElection(viewModel.getLaoId(), electionId);
+      List<ElectionQuestion> electionQuestions = election.getElectionQuestions();
+
+      // Attendee should not be able to send cast vote if he didn't vote for all questions
+      if (votes.size() < electionQuestions.size()) {
+        return;
+      }
+
+      for (ElectionQuestion electionQuestion : electionQuestions) {
+        PlainVote plainVote =
+            new PlainVote(
+                electionQuestion.getId(),
+                votes.get(electionQuestion.getId()),
+                electionQuestion.getWriteIn(),
+                null,
+                electionId);
+
+        plainVotes.add(plainVote);
+      }
+
+      viewModel.addDisposable(
+          viewModel
+              .sendVote(electionId, plainVotes)
+              .subscribe(
+                  () -> {
+                    setCurrentFragment(
+                        getParentFragmentManager(),
+                        R.id.fragment_lao_detail,
+                        LaoDetailFragment::newInstance);
+                    // Toast ? + send back to election screen or details screen ?
+                    Toast.makeText(requireContext(), "vote successfully sent !", Toast.LENGTH_LONG)
+                        .show();
+                  },
+                  err -> logAndShow(requireContext(), TAG, err, R.string.error_send_vote)));
+    } catch (UnknownElectionException err) {
+      logAndShow(requireContext(), TAG, err, R.string.generic_error);
+    } finally {
+      voteButton.setEnabled(true);
     }
   }
 

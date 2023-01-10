@@ -753,7 +753,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                     Observable.combineLatest(
                         subjects,
                         rollCalls ->
-                            // Sort the election list. That way it stays somewhat consistent over
+                            // Sort the roll call list. That way it stays somewhat consistent over
                             // the updates
                             Arrays.stream(rollCalls)
                                 .map(RollCall.class::cast)
