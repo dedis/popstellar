@@ -92,7 +92,15 @@ public abstract class NavigationActivity extends AppCompatActivity {
     navigationViewModel.getRole().observe(this, role -> setupHeaderRole(navigationView, role));
 
     // Observe the toolbar title to display
-    navigationViewModel.getPageTitle().observe(this, toolbar::setTitle);
+    navigationViewModel
+        .getPageTitle()
+        .observe(
+            this,
+            resId -> {
+              if (resId != 0) {
+                toolbar.setTitle(resId);
+              }
+            });
   }
 
   private void observeRoles() {

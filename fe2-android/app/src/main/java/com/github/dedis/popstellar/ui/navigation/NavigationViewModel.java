@@ -41,7 +41,7 @@ public abstract class NavigationViewModel extends AndroidViewModel {
   }
 
   public void setCurrentTab(MainMenuTab tab) {
-    currentTab.postValue(tab);
+    currentTab.setValue(tab);
   }
 
   public MutableLiveData<String> getLaoName() {
