@@ -53,7 +53,6 @@ public class LaoDetailActivity extends NavigationActivity {
     binding = LaoDetailActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     navigationViewModel = viewModel = obtainViewModel(this);
-    navigationViewModel.setCurrentTab(MainMenuTab.EVENTS);
     setupDrawer(
         binding.laoDetailNavigationDrawer, binding.laoTopAppBar, binding.laoDetailDrawerLayout);
 
@@ -69,7 +68,12 @@ public class LaoDetailActivity extends NavigationActivity {
       setupLaoWalletFragment();
     }
 
-    openEventsTab();
+    MainMenuTab tab = (MainMenuTab) getIntent().getExtras().get(Constants.TAB_EXTRA);
+    if (tab == null) {
+      tab = MainMenuTab.EVENTS;
+    }
+    navigationViewModel.setCurrentTab(tab);
+    openTab(tab);
   }
 
   @Override
@@ -167,6 +171,12 @@ public class LaoDetailActivity extends NavigationActivity {
     Intent intent = new Intent(ctx, LaoDetailActivity.class);
     intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
     intent.putExtra(Constants.FRAGMENT_TO_OPEN_EXTRA, Constants.LAO_DETAIL_EXTRA);
+    return intent;
+  }
+
+  public static Intent newIntentWithTab(Context ctx, String laoId, MainMenuTab tab) {
+    Intent intent = LaoDetailActivity.newIntentForLao(ctx, laoId);
+    intent.putExtra(Constants.TAB_EXTRA, tab);
     return intent;
   }
 
