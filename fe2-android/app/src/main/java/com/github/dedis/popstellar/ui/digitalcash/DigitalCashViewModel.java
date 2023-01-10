@@ -43,7 +43,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
-public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
+public class DigitalCashViewModel extends NavigationViewModel {
 
   public static final String TAG = DigitalCashViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
@@ -79,6 +79,8 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   private final MutableLiveData<Set<PoPToken>> mTokens = new MutableLiveData<>(new HashSet<>());
   private final LiveData<Set<TransactionObject>> mTransactionHistory;
+  private final MutableLiveData<DigitalCashTab> bottomNavigationTab =
+      new MutableLiveData<>(DigitalCashTab.HOME);
 
   /*
    * Dependencies for this class
@@ -133,14 +135,6 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     disposables.dispose();
   }
 
-  public LiveData<Integer> getPageTitle() {
-    return mPageTitle;
-  }
-
-  public void setPageTitle(int titleId) {
-    mPageTitle.postValue(titleId);
-  }
-
   public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {
     return postTransactionEvent;
   }
@@ -155,6 +149,16 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
 
   public LiveData<SingleEvent<String>> getUpdateReceiptAddressEvent() {
     return updateReceiptAddressEvent;
+  }
+
+  public LiveData<DigitalCashTab> getBottomNavigationTab() {
+    return bottomNavigationTab;
+  }
+
+  public void setBottomNavigationTab(DigitalCashTab tab) {
+    if (tab != bottomNavigationTab.getValue()) {
+      bottomNavigationTab.setValue(tab);
+    }
   }
 
   public void updateReceiptAddressEvent(String address) {

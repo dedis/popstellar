@@ -151,7 +151,7 @@ public class DigitalCashSendFragment extends Fragment {
     try {
       myArray = viewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      viewModel.setCurrentTab(DigitalCashTab.HOME);
+      //      viewModel.setCurrentTab(DigitalCashTab.HOME);
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
           .show();

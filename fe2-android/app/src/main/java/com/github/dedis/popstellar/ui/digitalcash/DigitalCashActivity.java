@@ -13,8 +13,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashMainActivityBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -27,7 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 /** Activity for the digital cash */
 @AndroidEntryPoint
-public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
+public class DigitalCashActivity extends NavigationActivity {
   private DigitalCashViewModel viewModel;
   private DigitalCashMainActivityBinding binding;
   public static final String TAG = DigitalCashActivity.class.getSimpleName();
@@ -38,8 +42,14 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
     binding = DigitalCashMainActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     navigationViewModel = viewModel = obtainViewModel(this);
-    setupNavigationBar(findViewById(R.id.digital_cash_nav_bar));
-    setupTopAppBar();
+
+    navigationViewModel.setCurrentTab(MainMenuTab.DIGITAL_CASH);
+    setupDrawer(
+        binding.digitalCashNavigationDrawer,
+        binding.digitalCashAppBar,
+        binding.digitalCashDrawerLayout);
+    setupBottomNavBar();
+    openHomeTab();
 
     loadIntentData();
   }
@@ -66,47 +76,73 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
     }
   }
 
-  public void openLao() {
-    startActivity(
-        LaoDetailActivity.newIntentForLao(
-            this, Objects.requireNonNull(viewModel.getCurrentLao().getValue()).getId()));
-  }
-
   public static DigitalCashViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(DigitalCashViewModel.class);
   }
 
-  @Override
-  protected DigitalCashTab findTabByMenu(int menuId) {
-    return DigitalCashTab.findByMenu(menuId);
+  private void setupBottomNavBar() {
+    viewModel
+        .getBottomNavigationTab()
+        .observe(this, tab -> binding.digitalCashNavBar.setSelectedItemId(tab.getMenuId()));
+
+    binding.digitalCashNavBar.setOnItemSelectedListener(
+        item -> {
+          DigitalCashTab tab = DigitalCashTab.findByMenu(item.getItemId());
+          Log.i(TAG, "Opening tab : " + tab.getName());
+          openBottomTab(tab);
+          return true;
+        });
+    binding.digitalCashNavBar.setOnItemReselectedListener(item -> {});
+    viewModel.setBottomNavigationTab(DigitalCashTab.HOME);
   }
 
-  @Override
-  protected boolean openTab(DigitalCashTab tab) {
+  private void openBottomTab(DigitalCashTab tab) {
     switch (tab) {
       case HOME:
         openHomeTab();
-        break;
+        return;
       case HISTORY:
         openHistoryTab();
-        break;
+        return;
       case SEND:
         openSendTab();
-        break;
+        return;
       case RECEIVE:
         openReceiveTab();
-        break;
+        return;
       case ISSUE:
-        return openIssueTab();
-      default:
-        Log.w(TAG, "Unhandled tab type : " + tab);
+        openIssueTab();
     }
-    return true;
   }
 
   @Override
-  protected DigitalCashTab getDefaultTab() {
-    return DigitalCashTab.HOME;
+  protected boolean openTab(MainMenuTab tab) {
+    Log.d(TAG, "opening drawer tab: " + tab);
+    switch (tab) {
+      case INVITE:
+        openInviteTab();
+        return false;
+      case EVENTS:
+        openEventsTab();
+        return false;
+      case SOCIAL_MEDIA:
+        openSocialMediaTab();
+        return false;
+      case DIGITAL_CASH:
+        return false;
+      case WITNESSING:
+        openWitnessingTab();
+        return false;
+      case TOKENS:
+        openTokensTab();
+        return false;
+      case DISCONNECT:
+        startActivity(HomeActivity.newIntent(this));
+        return false;
+      default:
+        Log.w(TAG, "Unhandled tab type : " + tab);
+        return false;
+    }
   }
 
   private void openHomeTab() {
@@ -156,19 +192,29 @@ public class DigitalCashActivity extends NavigationActivity<DigitalCashTab> {
     return true;
   }
 
-  private void setupTopAppBar() {
-    viewModel.getPageTitle().observe(this, binding.digitalCashAppBar::setTitle);
+  private void openSocialMediaTab() {
+    LaoView laoView = viewModel.getCurrentLaoValue();
+    startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId(), laoView.getName()));
+  }
 
-    binding.digitalCashAppBar.setNavigationOnClickListener(
-        v -> {
-          Fragment fragment =
-              getSupportFragmentManager().findFragmentById(R.id.fragment_container_digital_cash);
-          if (fragment instanceof DigitalCashHomeFragment) {
-            openLao();
-          } else {
-            viewModel.setCurrentTab(DigitalCashTab.HOME);
-          }
-        });
+  private void openInviteTab() {
+    startActivity(
+        LaoDetailActivity.newIntentWithTab(this, viewModel.getLaoId(), MainMenuTab.INVITE));
+  }
+
+  private void openWitnessingTab() {
+    startActivity(
+        LaoDetailActivity.newIntentWithTab(this, viewModel.getLaoId(), MainMenuTab.WITNESSING));
+  }
+
+  private void openTokensTab() {
+    startActivity(
+        LaoDetailActivity.newIntentWithTab(this, viewModel.getLaoId(), MainMenuTab.TOKENS));
+  }
+
+  private void openEventsTab() {
+    startActivity(
+        LaoDetailActivity.newIntentWithTab(this, viewModel.getLaoId(), MainMenuTab.EVENTS));
   }
 
   public static Intent newIntent(Context ctx, String laoId) {
