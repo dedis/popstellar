@@ -348,6 +348,8 @@ func Test_Delete_Chirp(t *testing.T) {
 	// publish add chirp message
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
 
+	time.Sleep(time.Millisecond)
+
 	// create delete chirp message
 	file = filepath.Join(relativeMsgDataExamplePath, "chirp_delete_publish",
 		"chirp_delete_publish.json")
@@ -403,15 +405,6 @@ func Test_Delete_Chirp(t *testing.T) {
 	checkDataBufDelete, err := json.Marshal(checkDataDelete)
 	require.Nil(t, err)
 	checkData64Delete := base64.URLEncoding.EncodeToString(checkDataBufDelete)
-
-	var notifyAddMessage messagedata.ChirpNotifyAdd
-	err = msg[0].UnmarshalData(&notifyAddMessage)
-	require.NoError(t, err)
-	require.Equal(t, checkDataAdd.Object, notifyAddMessage.Object)
-	require.Equal(t, checkDataAdd.Action, notifyAddMessage.Action)
-	require.Equal(t, checkDataAdd.ChirpID, notifyAddMessage.ChirpID)
-	require.Equal(t, checkDataAdd.Channel, notifyAddMessage.Channel)
-	require.Equal(t, checkDataAdd.Timestamp, notifyAddMessage.Timestamp)
 
 	// check if the data on the general is the same as the one we sent
 	require.Equal(t, checkData64Add, msg[0].Data)
