@@ -52,7 +52,7 @@ public class ElectionStartFragment extends Fragment {
   private ConsensusNode ownNode;
 
   @Inject ElectionRepository electionRepo;
-  private com.github.dedis.popstellar.databinding.ElectionStartFragmentBinding binding;
+  private ElectionStartFragmentBinding binding;
   private NodesAcceptorAdapter adapter;
 
   public ElectionStartFragment() {

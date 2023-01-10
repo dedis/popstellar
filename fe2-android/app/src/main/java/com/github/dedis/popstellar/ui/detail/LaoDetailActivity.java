@@ -18,12 +18,12 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
+import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
-import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -47,7 +47,6 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
 
   private LaoDetailViewModel viewModel;
   private LaoDetailActivityBinding binding;
-  private static final int QR_SIDE = 800;
 
   @Inject Gson gson;
   @Inject GlobalNetworkManager networkManager;
@@ -66,13 +65,6 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     String laoId =
         Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
     viewModel.subscribeToLao(laoId);
-
-    if (!getIntent()
-        .getExtras()
-        .get(Constants.FRAGMENT_TO_OPEN_EXTRA)
-        .equals(Constants.LAO_DETAIL_EXTRA)) {
-      setupLaoWalletFragment();
-    }
   }
 
   @Override
@@ -131,7 +123,10 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
             laoView -> {
               // Set the QR code
               ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), laoView.getId());
-              Bitmap myBitmap = QRCode.from(gson.toJson(data)).withSize(QR_SIDE, QR_SIDE).bitmap();
+              Bitmap myBitmap =
+                  QRCode.from(gson.toJson(data))
+                      .withSize(Constants.QR_SIDE, Constants.QR_SIDE)
+                      .bitmap();
               binding.channelQrCode.setImageBitmap(myBitmap);
 
               binding.laoPropertiesNameText.setText(laoView.getName());
@@ -171,8 +166,8 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
       case EVENTS:
         openEventsTab();
         return true;
-      case IDENTITY:
-        openIdentityTab();
+      case TOKENS:
+        openTokensTab();
         return true;
       case WITNESSING:
         openWitnessTab();
@@ -199,11 +194,9 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
         getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
 
-  private void openIdentityTab() {
+  private void openTokensTab() {
     setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_identity,
-        () -> IdentityFragment.newInstance(viewModel.getPublicKey()));
+        getSupportFragmentManager(), R.id.fragment_tokens, TokenListFragment::newInstance);
   }
 
   private void openWitnessTab() {
@@ -222,11 +215,6 @@ public class LaoDetailActivity extends NavigationActivity<LaoTab> {
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(this, TAG, R.string.error_no_lao);
     }
-  }
-
-  private void setupLaoWalletFragment() {
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
   }
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {

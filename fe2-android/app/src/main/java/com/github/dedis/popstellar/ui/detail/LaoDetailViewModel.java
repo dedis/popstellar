@@ -80,7 +80,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
-  private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
   private final LiveData<List<PublicKey>> mWitnesses =
       Transformations.map(
           mCurrentLao,
@@ -94,8 +93,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
           mCurrentLao,
           lao ->
               lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnessMessages().values()));
-
-  private final MutableLiveData<List<RollCall>> mAttendedRollCalls = new MutableLiveData<>();
 
   private Observable<Set<Event>> events;
 
@@ -182,10 +179,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public RollCall getRollCall(String persistentId) throws UnknownRollCallException {
     return rollCallRepo.getRollCallWithPersistentId(laoId, persistentId);
-  }
-
-  public LiveData<List<RollCall>> getAttendedRollCalls() {
-    return mAttendedRollCalls;
   }
 
   @Override
@@ -606,10 +599,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mIsSignedByCurrentWitness;
   }
 
-  public LiveData<Boolean> getShowProperties() {
-    return showProperties;
-  }
-
   public LiveData<List<PublicKey>> getWitnesses() {
     return mWitnesses;
   }
@@ -636,6 +625,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public LiveData<SingleEvent<String>> getScanWarningEvent() {
     return mScanWarningEvent;
+  }
+
+  public RollCall getLastClosedRollCall() throws NoRollCallException {
+    return rollCallRepo.getLastClosedRollCall(laoId);
   }
 
   public void setCurrentRollCallId(String rollCallId) {
@@ -670,6 +663,28 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         .publish(channel, msg)
         .doOnComplete(() -> Log.d(TAG, "updated lao witnesses"))
         .andThen(dispatchLaoUpdate(updateLao, laoView, channel, msg));
+  }
+
+  public Observable<List<RollCall>> getAttendedRollCalls() {
+    return rollCallRepo
+        .getRollCallsObservableInLao(laoId)
+        .map( // We map the list of id to a list of corresponding roll calls
+            ids ->
+                ids.stream()
+                    .map(
+                        rcId -> {
+                          try {
+                            return rollCallRepo.getRollCallWithPersistentId(laoId, rcId);
+                          } catch (UnknownRollCallException e) {
+                            // Roll calls whose ids are in that list may not be absent
+                            throw new IllegalStateException(
+                                "Could not fetch roll call with id " + rcId);
+                          }
+                        })
+                    .filter(
+                        this::attendedOrOrganized // Keep only attended roll calls
+                        )
+                    .collect(Collectors.toList()));
   }
 
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */

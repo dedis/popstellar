@@ -11,7 +11,7 @@ import java.util.List;
 /** Enum where each element represent a tab in LaoActivity */
 public enum LaoTab implements Tab {
   EVENTS(R.id.lao_detail_event_list_menu),
-  IDENTITY(R.id.lao_detail_identity_menu),
+  TOKENS(R.id.lao_detail_tokens_menu),
   WITNESSING(R.id.lao_detail_witnessing_menu),
   DIGITAL_CASH(R.id.lao_detail_digital_cash_menu),
   SOCIAL(R.id.lao_detail_social_media_menu);
