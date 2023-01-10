@@ -91,6 +91,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
               lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnessMessages().values()));
 
   private Observable<Set<Event>> events;
+  private Observable<List<RollCall>> attendedRollCalls;
 
   /*
    * Dependencies for this class
@@ -658,13 +659,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public Observable<List<RollCall>> getAttendedRollCalls() {
-    return createEventListObservable(rollCallRepo, laoId)
-        .map(
-            rollCalls ->
-                rollCalls.stream()
-                    // Keep only attended roll calls
-                    .filter(this::attendedOrOrganized)
-                    .collect(Collectors.toList()));
+    return attendedRollCalls;
   }
 
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */
@@ -690,14 +685,24 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   public void subscribeToLao(String laoId) {
     this.laoId = laoId;
 
-    Observable<Set<RollCall>> rollCalls = createEventListObservable(rollCallRepo, laoId);
-    Observable<Set<Election>> elections = createEventListObservable(electionRepo, laoId);
+    // For some reason, trying to use the same observable twice breaks the event list,
+    // even while sharing it.
+    //
+    // Thus, we need to create the rollcall event list twice ¯\_(ツ)_/¯
+    this.attendedRollCalls =
+        createEventListObservable(rollCallRepo, laoId)
+            .map(
+                rcs ->
+                    rcs.stream()
+                        // Keep only attended roll calls
+                        .filter(this::attendedOrOrganized)
+                        .collect(Collectors.toList()));
 
     // Create the events set observable
     this.events =
         Observable.combineLatest(
-            rollCalls,
-            elections,
+            createEventListObservable(rollCallRepo, laoId),
+            createEventListObservable(electionRepo, laoId),
             (rcs, elecs) -> {
               Set<Event> union = new HashSet<>(rcs);
               union.addAll(elecs);
@@ -725,7 +730,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       EventRepository<T> eventRepo, String laoId) {
     return eventRepo
         .getEventIdsObservable(laoId)
-        .subscribeOn(Schedulers.io())
         .map(
             idSet ->
                 idSet.stream()
