@@ -90,6 +90,9 @@ public abstract class NavigationActivity extends AppCompatActivity {
 
     // Update the user's role in the drawer header when it changes
     navigationViewModel.getRole().observe(this, role -> setupHeaderRole(navigationView, role));
+
+    // Observe the toolbar title to display
+    navigationViewModel.getPageTitle().observe(this, toolbar::setTitle);
   }
 
   private void observeRoles() {

@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.navigation;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.model.Role;
@@ -28,6 +29,8 @@ public abstract class NavigationViewModel extends AndroidViewModel {
   private final MutableLiveData<Role> role = new MutableLiveData<>(Role.MEMBER);
 
   private final MutableLiveData<Boolean> isTab = new MutableLiveData<>(Boolean.TRUE);
+
+  private final MutableLiveData<Integer> pageTitle = new MutableLiveData<>(0);
 
   protected NavigationViewModel(@NonNull Application application) {
     super(application);
@@ -69,6 +72,10 @@ public abstract class NavigationViewModel extends AndroidViewModel {
     return isTab;
   }
 
+  public MutableLiveData<Integer> getPageTitle() {
+    return pageTitle;
+  }
+
   public void updateRole() {
     Role role = determineRole();
     if (this.role.getValue() != role) {
@@ -97,6 +104,12 @@ public abstract class NavigationViewModel extends AndroidViewModel {
   public void setIsTab(boolean isTab) {
     if (this.isTab.getValue() != isTab) {
       this.isTab.setValue(isTab);
+    }
+  }
+
+  public void setPageTitle(@StringRes Integer pageTitle) {
+    if (!this.pageTitle.getValue().equals(pageTitle)) {
+      this.pageTitle.setValue(pageTitle);
     }
   }
 

@@ -70,6 +70,6 @@ public class InviteFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(getString(R.string.invite));
+    viewModel.setPageTitle(R.string.invite);
   }
 }

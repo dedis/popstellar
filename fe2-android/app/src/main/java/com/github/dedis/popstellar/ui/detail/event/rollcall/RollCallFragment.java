@@ -155,7 +155,7 @@ public class RollCallFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(getString(R.string.roll_call_title));
+    viewModel.setPageTitle(R.string.roll_call_title);
     try {
       rollCall = viewModel.getRollCall(requireArguments().getString(ROLL_CALL_ID));
     } catch (UnknownRollCallException e) {

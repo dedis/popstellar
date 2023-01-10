@@ -150,7 +150,7 @@ public class CastVoteFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(getString(R.string.vote));
+    viewModel.setPageTitle(R.string.vote);
   }
 
   private List<Integer> setEmptyVoteList() {

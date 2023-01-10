@@ -56,7 +56,6 @@ public class LaoDetailActivity extends NavigationActivity {
     navigationViewModel.setCurrentTab(MainMenuTab.EVENTS);
     setupDrawer(
         binding.laoDetailNavigationDrawer, binding.laoTopAppBar, binding.laoDetailDrawerLayout);
-    setupTopAppBar();
 
     String laoId =
         Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
@@ -84,11 +83,6 @@ public class LaoDetailActivity extends NavigationActivity {
       Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
     }
-  }
-
-  private void setupTopAppBar() {
-    viewModel.getPageTitle().observe(this, binding.laoTopAppBar::setTitle);
-
   }
 
   @Override

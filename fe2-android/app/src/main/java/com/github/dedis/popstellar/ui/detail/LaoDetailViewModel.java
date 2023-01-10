@@ -71,8 +71,6 @@ public class LaoDetailViewModel extends NavigationViewModel implements QRCodeSca
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
-  private final MutableLiveData<String> mPageTitle = new MutableLiveData<>();
-  private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
   private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
@@ -598,14 +596,6 @@ public class LaoDetailViewModel extends NavigationViewModel implements QRCodeSca
 
   public LiveData<String> getCurrentLaoName() {
     return mCurrentLaoName;
-  }
-
-  public MutableLiveData<String> getPageTitle() {
-    return mPageTitle;
-  }
-
-  public void setPageTitle(String title) {
-    mPageTitle.postValue(title);
   }
 
   public LiveData<Boolean> isSignedByCurrentWitness(Set<PublicKey> witnesses) {

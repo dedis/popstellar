@@ -83,6 +83,6 @@ public class ElectionResultFragment extends Fragment {
   public void onResume() {
     super.onResume();
     LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    viewModel.setPageTitle(getString(R.string.election_result_title));
+    viewModel.setPageTitle(R.string.election_result_title);
   }
 }

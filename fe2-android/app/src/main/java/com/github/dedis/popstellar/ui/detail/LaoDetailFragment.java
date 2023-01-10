@@ -17,7 +17,6 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.event.*;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
@@ -117,11 +116,7 @@ public class LaoDetailFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    try {
-      viewModel.setPageTitle(viewModel.getLaoView().getName());
-    } catch (UnknownLaoException e) {
-      Log.d(TAG, "Lao name could not be retrieved");
-    }
+    viewModel.setPageTitle(R.string.event_list);
   }
 
   private void setupEventListAdapter() {
