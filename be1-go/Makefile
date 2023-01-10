@@ -9,7 +9,7 @@ lint:
 	staticcheck ./...
 
 test: protocol
-	go test -v -race ./...
+	go test -v -race ./... -count=1
 
 test-cov: protocol
 	go test -v -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
