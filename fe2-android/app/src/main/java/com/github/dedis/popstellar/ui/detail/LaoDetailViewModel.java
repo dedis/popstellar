@@ -40,7 +40,6 @@ import com.google.gson.Gson;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -84,9 +83,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       Transformations.map(
           mCurrentLao,
           lao -> lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnesses()));
-  private final LiveData<String> mCurrentLaoName =
-      Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
-  //  Multiple events from Lao may be concatenated using Stream.concat()
 
   private final LiveData<List<WitnessMessage>> mWitnessMessages =
       Transformations.map(
@@ -569,10 +565,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     mCurrentLao.setValue(laoView);
   }
 
-  public LiveData<String> getCurrentLaoName() {
-    return mCurrentLaoName;
-  }
-
   public MutableLiveData<String> getPageTitle() {
     return mPageTitle;
   }
@@ -666,24 +658,12 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   public Observable<List<RollCall>> getAttendedRollCalls() {
-    return rollCallRepo
-        .getRollCallsObservableInLao(laoId)
-        .map( // We map the list of id to a list of corresponding roll calls
-            ids ->
-                ids.stream()
-                    .map(
-                        rcId -> {
-                          try {
-                            return rollCallRepo.getRollCallWithPersistentId(laoId, rcId);
-                          } catch (UnknownRollCallException e) {
-                            // Roll calls whose ids are in that list may not be absent
-                            throw new IllegalStateException(
-                                "Could not fetch roll call with id " + rcId);
-                          }
-                        })
-                    .filter(
-                        this::attendedOrOrganized // Keep only attended roll calls
-                        )
+    return createEventListObservable(rollCallRepo, laoId)
+        .map(
+            rollCalls ->
+                rollCalls.stream()
+                    // Keep only attended roll calls
+                    .filter(this::attendedOrOrganized)
                     .collect(Collectors.toList()));
   }
 
@@ -723,14 +703,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
               union.addAll(elecs);
               return union;
             });
-
-    disposables.add(
-        rollCalls.subscribe(
-            rcs ->
-                mAttendedRollCalls.setValue(
-                    rcs.stream()
-                        .filter(rollCall -> rollCall.isClosed() && attendedOrOrganized(rollCall))
-                        .collect(Collectors.toList()))));
 
     disposables.add(
         laoRepository
@@ -773,19 +745,16 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                     .collect(Collectors.toList()))
         .flatMap(
             subjects ->
-                Observable.combineLatest(
-                    subjects,
-                    events ->
-                        // Sort the election list. That way it stays somewhat consistent over
-                        // the updates
-                        Arrays.stream(events)
-                            .map(eventRepo.getType()::cast)
-                            .collect(Collectors.toSet())))
-        // Only dispatch the latest element once every 50 milliseconds
-        // This avoids multiple updates in a short period of time
-        .throttleLatest(50, TimeUnit.MILLISECONDS)
-        .lift(suppressErrors(err -> Log.e(TAG, "Error creating rollcall list : ", err)))
-        .observeOn(AndroidSchedulers.mainThread());
+                // If there are no subjects, returns an empty set rather than no value
+                subjects.isEmpty()
+                    ? Observable.just(new HashSet<T>())
+                    : Observable.combineLatest(
+                        subjects,
+                        events ->
+                            Arrays.stream(events)
+                                .map(eventRepo.getType()::cast)
+                                .collect(Collectors.toSet())))
+        .lift(suppressErrors(err -> Log.e(TAG, "Error creating rollcall list : ", err)));
   }
 
   public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {

@@ -26,9 +26,11 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
@@ -64,9 +66,12 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     this.viewModel.addDisposable(
         observable
             .map(events -> events.stream().sorted().collect(Collectors.toList()))
-            .subscribe(
-                // No need to check for error as the events errors already handles them
-                this::putEventsInMap));
+            // Only dispatch the latest element once every 50 milliseconds
+            // This avoids multiple updates in a short period of time
+            .throttleLatest(50, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            // No need to check for error as the events errors already handles them
+            .subscribe(this::putEventsInMap));
   }
 
   /** A helper method that places the events in the correct key-value pair according to state */
