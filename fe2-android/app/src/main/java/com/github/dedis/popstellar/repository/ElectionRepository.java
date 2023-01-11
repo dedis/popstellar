@@ -113,7 +113,7 @@ public class ElectionRepository {
       //noinspection ConstantConditions
       electionSubjects.get(id).onNext(election);
 
-      electionsSubject.onNext(new HashSet<>(electionById.values()));
+      electionsSubject.onNext(Collections.unmodifiableSet(new HashSet<>(electionById.values())));
     }
 
     public Election getElection(@NonNull String electionId) throws UnknownElectionException {
@@ -127,7 +127,7 @@ public class ElectionRepository {
     }
 
     public Observable<Set<Election>> getElectionsSubject() {
-      return electionsSubject.map(HashSet::new);
+      return electionsSubject;
     }
 
     public Observable<Election> getElectionSubject(@NonNull String electionId)
