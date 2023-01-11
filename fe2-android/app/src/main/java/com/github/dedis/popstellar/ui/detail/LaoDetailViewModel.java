@@ -52,8 +52,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.github.dedis.popstellar.utility.PoPRXOperators.suppressErrors;
-
 @HiltViewModel
 public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     implements QRCodeScanningViewModel {
@@ -684,7 +682,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     //
     // Thus, we need to create the rollcall event list twice ¯\_(ツ)_/¯
     this.attendedRollCalls =
-        createEventListObservable(rollCallRepo, laoId)
+        rollCallRepo
+            .getRollCallsObservableInLao(laoId)
             .map(
                 rcs ->
                     rcs.stream()
@@ -695,8 +694,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     // Create the events set observable
     this.events =
         Observable.combineLatest(
-                createEventListObservable(rollCallRepo, laoId),
-                createEventListObservable(electionRepo, laoId),
+                rollCallRepo.getRollCallsObservableInLao(laoId),
+                electionRepo.getElectionsObservable(laoId),
                 (rcs, elecs) -> {
                   Set<Event> union = new HashSet<>(rcs);
                   union.addAll(elecs);
@@ -723,41 +722,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                   mIsOrganizer.setValue(isOrganizer);
                 },
                 error -> Log.d(TAG, "error updating LAO :" + error)));
-  }
-
-  public static <T extends Event> Observable<Set<T>> createEventListObservable(
-      EventRepository<T> eventRepo, String laoId) {
-    return eventRepo
-        .getEventIdsObservable(laoId)
-        .map(
-            idSet ->
-                idSet.stream()
-                    .map(
-                        id -> {
-                          try {
-                            return eventRepo.getEventObservable(laoId, id);
-                          } catch (UnknownEventException e) {
-                            // Roll calls whose ids are in that list may not be absent
-                            throw new IllegalStateException(
-                                "Could not fetch "
-                                    + eventRepo.getType().getSimpleName()
-                                    + " with id "
-                                    + id);
-                          }
-                        })
-                    .collect(Collectors.toList()))
-        .flatMap(
-            subjects ->
-                // If there are no subjects, returns an empty set rather than no value
-                subjects.isEmpty()
-                    ? Observable.just(new HashSet<T>())
-                    : Observable.combineLatest(
-                        subjects,
-                        events ->
-                            Arrays.stream(events)
-                                .map(eventRepo.getType()::cast)
-                                .collect(Collectors.toSet())))
-        .lift(suppressErrors(err -> Log.e(TAG, "Error creating rollcall list : ", err)));
   }
 
   public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {

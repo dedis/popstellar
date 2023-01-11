@@ -12,8 +12,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
@@ -377,7 +376,7 @@ public class DigitalCashViewModel extends NavigationViewModel<DigitalCashTab> {
     }
   }
 
-  public Observable<Set<String>> getRollCallsObservable() {
+  public Observable<Set<RollCall>> getRollCallsObservable() {
     return rollCallRepo.getRollCallsObservableInLao(laoId);
   }
 
