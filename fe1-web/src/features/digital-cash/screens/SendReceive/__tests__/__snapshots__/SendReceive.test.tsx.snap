@@ -380,7 +380,13 @@ exports[`SendReceive renders correctly 1`] = `
                             >
                               You can send cash by entering the public key of the beneficiary below and choosing the amount of cash you would like to transfer. To receive money you canshow your PoP token to the sender. To access the QR code of your PoP token, tab the QRcode icon in the top right of this screen.
                             </Text>
-                            <View>
+                            <View
+                              style={
+                                Object {
+                                  "zIndex": 99,
+                                }
+                              }
+                            >
                               <Text
                                 style={
                                   Array [
@@ -404,6 +410,7 @@ exports[`SendReceive renders correctly 1`] = `
                                   Object {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "zIndex": 99,
                                   }
                                 }
                               >
@@ -411,37 +418,108 @@ exports[`SendReceive renders correctly 1`] = `
                                   style={
                                     Object {
                                       "flex": 1,
-                                      "flexDirection": "row",
                                     }
                                   }
                                 >
-                                  <TextInput
-                                    editable={true}
-                                    onChangeText={[Function]}
-                                    placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
-                                    placeholderTextColor="#8E8E8E"
+                                  <View
                                     style={
                                       Array [
                                         Object {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "marginBottom": 16,
-                                          "textAlign": "left",
+                                          "zIndex": 1,
                                         },
-                                        Object {
-                                          "backgroundColor": "#fff",
-                                          "borderColor": "#fff",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "flex": 1,
-                                          "padding": 8,
-                                          "width": 50,
-                                        },
+                                        undefined,
                                       ]
                                     }
-                                    value=""
-                                  />
+                                  >
+                                    <View
+                                      style={
+                                        Array [
+                                          Object {
+                                            "borderColor": "#b9b9b9",
+                                            "borderRadius": 1,
+                                            "borderWidth": 1,
+                                          },
+                                          Array [
+                                            Object {
+                                              "flex": 1,
+                                              "flexDirection": "row",
+                                            },
+                                            Object {
+                                              "borderWidth": 0,
+                                            },
+                                          ],
+                                        ]
+                                      }
+                                    >
+                                      <TextInput
+                                        data={Array []}
+                                        flatListProps={
+                                          Object {
+                                            "keyExtractor": [Function],
+                                            "renderItem": [Function],
+                                          }
+                                        }
+                                        hideResults={true}
+                                        inputContainerStyle={
+                                          Array [
+                                            Object {
+                                              "flex": 1,
+                                              "flexDirection": "row",
+                                            },
+                                            Object {
+                                              "borderWidth": 0,
+                                            },
+                                          ]
+                                        }
+                                        listContainerStyle={
+                                          Object {
+                                            "backgroundColor": "#fff",
+                                            "borderRadius": 8,
+                                            "left": 0,
+                                            "position": "absolute",
+                                            "right": 0,
+                                            "shadowColor": "#000",
+                                            "shadowOffset": Object {
+                                              "height": 5,
+                                              "width": 5,
+                                            },
+                                            "shadowOpacity": 0.1,
+                                            "shadowRadius": 3,
+                                            "top": "100%",
+                                            "zIndex": 100,
+                                          }
+                                        }
+                                        onChangeText={[Function]}
+                                        onFocus={[Function]}
+                                        onStartShouldSetResponderCapture={[Function]}
+                                        placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                        placeholderTextColor="#8E8E8E"
+                                        renderResultList={[Function]}
+                                        renderTextInput={[Function]}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            Object {
+                                              "backgroundColor": "#fff",
+                                              "borderColor": "#fff",
+                                              "borderRadius": 8,
+                                              "borderWidth": 1,
+                                              "flex": 1,
+                                              "padding": 8,
+                                              "width": 50,
+                                            },
+                                          ]
+                                        }
+                                        value=""
+                                      />
+                                    </View>
+                                  </View>
                                 </View>
                                 <View
                                   style={
@@ -1044,7 +1122,13 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                             >
                               You can send cash by entering the public key of the beneficiary below and choosing the amount of cash you would like to transfer. To receive money you canshow your PoP token to the sender. To access the QR code of your PoP token, tab the QRcode icon in the top right of this screen.
                             </Text>
-                            <View>
+                            <View
+                              style={
+                                Object {
+                                  "zIndex": 99,
+                                }
+                              }
+                            >
                               <Text
                                 style={
                                   Array [
@@ -1068,6 +1152,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                   Object {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "zIndex": 99,
                                   }
                                 }
                               >
@@ -1075,37 +1160,108 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                   style={
                                     Object {
                                       "flex": 1,
-                                      "flexDirection": "row",
                                     }
                                   }
                                 >
-                                  <TextInput
-                                    editable={true}
-                                    onChangeText={[Function]}
-                                    placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
-                                    placeholderTextColor="#8E8E8E"
+                                  <View
                                     style={
                                       Array [
                                         Object {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "marginBottom": 16,
-                                          "textAlign": "left",
+                                          "zIndex": 1,
                                         },
-                                        Object {
-                                          "backgroundColor": "#fff",
-                                          "borderColor": "#fff",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "flex": 1,
-                                          "padding": 8,
-                                          "width": 50,
-                                        },
+                                        undefined,
                                       ]
                                     }
-                                    value="some pop token"
-                                  />
+                                  >
+                                    <View
+                                      style={
+                                        Array [
+                                          Object {
+                                            "borderColor": "#b9b9b9",
+                                            "borderRadius": 1,
+                                            "borderWidth": 1,
+                                          },
+                                          Array [
+                                            Object {
+                                              "flex": 1,
+                                              "flexDirection": "row",
+                                            },
+                                            Object {
+                                              "borderWidth": 0,
+                                            },
+                                          ],
+                                        ]
+                                      }
+                                    >
+                                      <TextInput
+                                        data={Array []}
+                                        flatListProps={
+                                          Object {
+                                            "keyExtractor": [Function],
+                                            "renderItem": [Function],
+                                          }
+                                        }
+                                        hideResults={true}
+                                        inputContainerStyle={
+                                          Array [
+                                            Object {
+                                              "flex": 1,
+                                              "flexDirection": "row",
+                                            },
+                                            Object {
+                                              "borderWidth": 0,
+                                            },
+                                          ]
+                                        }
+                                        listContainerStyle={
+                                          Object {
+                                            "backgroundColor": "#fff",
+                                            "borderRadius": 8,
+                                            "left": 0,
+                                            "position": "absolute",
+                                            "right": 0,
+                                            "shadowColor": "#000",
+                                            "shadowOffset": Object {
+                                              "height": 5,
+                                              "width": 5,
+                                            },
+                                            "shadowOpacity": 0.1,
+                                            "shadowRadius": 3,
+                                            "top": "100%",
+                                            "zIndex": 100,
+                                          }
+                                        }
+                                        onChangeText={[Function]}
+                                        onFocus={[Function]}
+                                        onStartShouldSetResponderCapture={[Function]}
+                                        placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                        placeholderTextColor="#8E8E8E"
+                                        renderResultList={[Function]}
+                                        renderTextInput={[Function]}
+                                        style={
+                                          Array [
+                                            Object {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            Object {
+                                              "backgroundColor": "#fff",
+                                              "borderColor": "#fff",
+                                              "borderRadius": 8,
+                                              "borderWidth": 1,
+                                              "flex": 1,
+                                              "padding": 8,
+                                              "width": 50,
+                                            },
+                                          ]
+                                        }
+                                        value="some pop token"
+                                      />
+                                    </View>
+                                  </View>
                                 </View>
                                 <View
                                   style={

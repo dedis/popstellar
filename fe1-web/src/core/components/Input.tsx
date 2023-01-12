@@ -4,7 +4,7 @@ import { StyleSheet, TextInput, View } from 'react-native';
 
 import { Border, Color, Spacing, Typography } from 'core/styles';
 
-const styles = StyleSheet.create({
+export const inputStyleSheet = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
@@ -32,18 +32,18 @@ const styles = StyleSheet.create({
 const Input = (props: IPropTypes) => {
   const { value, placeholder, onChange, enabled, negative, testID } = props;
 
-  const inputStyles = [Typography.paragraph, styles.input];
+  const inputStyles = [Typography.paragraph, inputStyleSheet.input];
 
   if (!enabled) {
-    inputStyles.push(styles.disabled);
+    inputStyles.push(inputStyleSheet.disabled);
   }
 
   if (negative) {
-    inputStyles.push(styles.negative);
+    inputStyles.push(inputStyleSheet.negative);
   }
 
   return (
-    <View style={styles.container}>
+    <View style={inputStyleSheet.container}>
       <TextInput
         style={inputStyles}
         placeholderTextColor={Color.inactive}
