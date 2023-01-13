@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.ui.detail.event.consensus;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
-import android.widget.*;
+import android.widget.GridView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -25,7 +25,11 @@ import java.util.*;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link ElectionStartFragment#newInstance} factory
@@ -35,16 +39,21 @@ import io.reactivex.disposables.CompositeDisposable;
 public class ElectionStartFragment extends Fragment {
 
   private static final String TAG = ElectionStartFragment.class.getSimpleName();
+  private static final String ELECTION_ID = "election_id";
+
+  public static final String CONSENSUS_TYPE = "election";
+  public static final String CONSENSUS_PROPERTY = "state";
 
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z", Locale.getDefault());
 
   private final CompositeDisposable disposables = new CompositeDisposable();
-  private ConsensusNode ownNode;
-  private Button electionStart;
-  private TextView electionStatus;
 
-  @Inject ElectionRepository electionRepository;
+  private ConsensusNode ownNode;
+
+  @Inject ElectionRepository electionRepo;
+  private ElectionStartFragmentBinding binding;
+  private NodesAcceptorAdapter adapter;
 
   public ElectionStartFragment() {
     // Required empty public constructor
@@ -56,84 +65,59 @@ public class ElectionStartFragment extends Fragment {
    *
    * @return A new instance of fragment ElectionStartFragment.
    */
-  public static ElectionStartFragment newInstance() {
-    return new ElectionStartFragment();
+  public static ElectionStartFragment newInstance(String electionId) {
+    ElectionStartFragment fragment = new ElectionStartFragment();
+    Bundle bundle = new Bundle();
+    bundle.putString(ELECTION_ID, electionId);
+    fragment.setArguments(bundle);
+    return fragment;
   }
 
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    ElectionStartFragmentBinding binding =
-        ElectionStartFragmentBinding.inflate(inflater, container, false);
+    binding = ElectionStartFragmentBinding.inflate(inflater, container, false);
 
-    electionStart = binding.electionStart;
-    electionStatus = binding.electionStatus;
+    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-
-    Election election = mLaoDetailViewModel.getCurrentElection();
-    if (election == null) {
-      Log.e(TAG, "The current election of the LaoDetailViewModel is null");
-      return null;
-    }
-
-    String electionId = election.getId();
-    String instanceId = ElectInstance.generateConsensusId("election", electionId, "state");
-
-    binding.electionTitle.setText(getString(R.string.election_start_title, election.getName()));
+    String electionId = requireArguments().getString(ELECTION_ID);
 
     try {
-      disposables.add(
-          electionRepository
-              .getElectionObservable(mLaoDetailViewModel.getLaoId(), electionId)
-              .subscribe(
-                  this::updateStartTime,
-                  err ->
-                      ErrorUtils.logAndShow(requireContext(), TAG, err, R.string.generic_error)));
-    } catch (UnknownElectionException e) {
+      Observable<List<ConsensusNode>> nodes = viewModel.getNodes().observeOn(mainThread());
+      Observable<Election> election =
+          electionRepo
+              .getElectionObservable(viewModel.getLaoId(), electionId)
+              .observeOn(mainThread());
+
+      Observable<ElectionNodesState> merged =
+          Observable.combineLatest(nodes, election, ElectionNodesState::new);
+
+      subscribeTo(nodes, this::updateNodes);
+      subscribeTo(election, this::updateElection);
+      subscribeTo(merged, this::updateNodesAndElection);
+    } catch (UnknownElectionException | UnknownLaoException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
-    }
-
-    setupButtonListeners(mLaoDetailViewModel, electionId);
-
-    LaoView laoView;
-    try {
-      laoView = mLaoDetailViewModel.getLaoView();
-    } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return null;
     }
-    List<ConsensusNode> nodes = laoView.getNodes();
-    ownNode = laoView.getNode(mLaoDetailViewModel.getPublicKey());
 
-    if (ownNode == null) {
-      // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
-      Log.e(TAG, "Couldn't find the Node with public key : " + mLaoDetailViewModel.getPublicKey());
-      throw new IllegalStateException("Only acceptors are allowed to access ElectionStartFragment");
-    }
-
-    NodesAcceptorAdapter adapter =
-        new NodesAcceptorAdapter(
-            nodes, ownNode, instanceId, getViewLifecycleOwner(), mLaoDetailViewModel);
-    GridView gridView = binding.nodesGrid;
-    gridView.setAdapter(adapter);
-
-    if (isElectionStartTimePassed(election)) {
-      updateStartAndStatus(nodes, election, instanceId);
-    }
+    setupButtonListeners(viewModel, electionId);
 
     try {
-      mLaoDetailViewModel
-          .getNodes()
-          .observe(
-              getViewLifecycleOwner(),
-              consensusNodes -> {
-                Log.d(TAG, "got an update for nodes : " + consensusNodes);
-                adapter.setList(consensusNodes);
-                if (isElectionStartTimePassed(election)) {
-                  updateStartAndStatus(consensusNodes, election, instanceId);
-                }
-              });
+      LaoView laoView = viewModel.getLaoView();
+      ownNode = laoView.getNode(viewModel.getPublicKey());
+
+      if (ownNode == null) {
+        // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
+        Log.e(TAG, "Couldn't find the Node with public key : " + viewModel.getPublicKey());
+        throw new IllegalStateException(
+            "Only acceptors are allowed to access ElectionStartFragment");
+      }
+
+      String instanceId =
+          ElectInstance.generateConsensusId(CONSENSUS_TYPE, electionId, CONSENSUS_PROPERTY);
+      adapter = new NodesAcceptorAdapter(ownNode, instanceId, getViewLifecycleOwner(), viewModel);
+      GridView gridView = binding.nodesGrid;
+      gridView.setAdapter(adapter);
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
       return null;
@@ -144,9 +128,47 @@ public class ElectionStartFragment extends Fragment {
     return binding.getRoot();
   }
 
+  private <T> void subscribeTo(Observable<T> observable, Consumer<T> onNext) {
+    disposables.add(
+        observable.subscribe(
+            onNext,
+            err -> ErrorUtils.logAndShow(requireContext(), TAG, err, R.string.generic_error)));
+  }
+
+  private void updateNodes(List<ConsensusNode> nodes) {
+    adapter.setList(nodes);
+  }
+
+  private void updateElection(Election election) {
+    if (isElectionStartTimePassed(election)) {
+      binding.electionStatus.setText(R.string.ready_to_start);
+      binding.electionStart.setText(R.string.start_election);
+      binding.electionStart.setEnabled(true);
+    } else {
+      String scheduledDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
+      binding.electionStatus.setText(R.string.waiting_scheduled_time);
+      binding.electionStart.setText(getString(R.string.election_scheduled, scheduledDate));
+      binding.electionStart.setEnabled(false);
+    }
+
+    binding.electionTitle.setText(getString(R.string.election_start_title, election.getName()));
+  }
+
+  private void updateNodesAndElection(ElectionNodesState electionNodesState) {
+    Election election = electionNodesState.election;
+    List<ConsensusNode> nodes = electionNodesState.nodes;
+
+    String instanceId =
+        ElectInstance.generateConsensusId(CONSENSUS_TYPE, election.getId(), CONSENSUS_PROPERTY);
+
+    if (isElectionStartTimePassed(election)) {
+      updateStartAndStatus(nodes, election, instanceId);
+    }
+  }
+
   @Override
-  public void onDestroyView() {
-    super.onDestroyView();
+  public void onDestroy() {
+    super.onDestroy();
     disposables.dispose();
   }
 
@@ -154,26 +176,17 @@ public class ElectionStartFragment extends Fragment {
     return Instant.now().getEpochSecond() >= election.getStartTimestamp();
   }
 
-  private void updateStartTime(Election election) {
-    if (isElectionStartTimePassed(election)) {
-      electionStatus.setText(R.string.ready_to_start);
-      electionStart.setText(R.string.start_election);
-      electionStart.setEnabled(true);
-    } else {
-      String scheduledDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
-      electionStatus.setText(R.string.waiting_scheduled_time);
-      electionStart.setText(getString(R.string.election_scheduled, scheduledDate));
-      electionStart.setEnabled(false);
-    }
-  }
-
   private void setupButtonListeners(LaoDetailViewModel mLaoDetailViewModel, String electionId) {
-    electionStart.setOnClickListener(
+    binding.electionStart.setOnClickListener(
         clicked ->
             mLaoDetailViewModel.addDisposable(
                 mLaoDetailViewModel
                     .sendConsensusElect(
-                        Instant.now().getEpochSecond(), electionId, "election", "state", "started")
+                        Instant.now().getEpochSecond(),
+                        electionId,
+                        CONSENSUS_TYPE,
+                        CONSENSUS_PROPERTY,
+                        "started")
                     .subscribe(
                         msg -> {},
                         error ->
@@ -190,16 +203,28 @@ public class ElectionStartFragment extends Fragment {
             .map(Optional::get)
             .map(ElectInstance::getState)
             .anyMatch(State.ACCEPTED::equals);
+
     if (isAnyElectInstanceAccepted) {
       // assuming the election start time was updated from scheduled to real start time
       String startedDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
-      electionStatus.setText(R.string.started);
-      electionStart.setText(getString(R.string.election_started_at, startedDate));
-      electionStart.setEnabled(false);
+      binding.electionStatus.setText(R.string.started);
+      binding.electionStart.setText(getString(R.string.election_started_at, startedDate));
+      binding.electionStart.setEnabled(false);
     } else {
       State ownState = ownNode.getState(instanceId);
       boolean canClick = ownState == State.WAITING || ownState == State.FAILED;
-      electionStart.setEnabled(canClick);
+      binding.electionStart.setEnabled(canClick);
+    }
+  }
+
+  /** Just pack the latest election and the nodes into one object */
+  private static class ElectionNodesState {
+    private final List<ConsensusNode> nodes;
+    private final Election election;
+
+    private ElectionNodesState(List<ConsensusNode> nodes, Election election) {
+      this.nodes = nodes;
+      this.election = election;
     }
   }
 }

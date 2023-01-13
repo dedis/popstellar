@@ -39,6 +39,7 @@ import com.google.gson.Gson;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -78,8 +79,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
-  private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
-  private final MutableLiveData<List<Integer>> mCurrentElectionVotes = new MutableLiveData<>();
   private final MutableLiveData<List<RollCall>> mRollCalls = new MutableLiveData<>();
   private final MutableLiveData<List<Election>> mElections = new MutableLiveData<>();
   private final LiveData<List<PublicKey>> mWitnesses =
@@ -109,8 +108,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   private final Gson gson;
   private final Wallet wallet;
 
-  private String currentElection = null;
-  private RollCall currentRollCall = null;
   private String currentRollCallId = "";
   private String laoId;
   // used to know which roll call to close
@@ -247,12 +244,11 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * @param votes the corresponding votes for that election
    */
-  public Completable sendVote(List<PlainVote> votes) {
+  public Completable sendVote(String electionId, List<PlainVote> votes) {
     Election election;
     try {
-      election = electionRepo.getElection(laoId, currentElection);
+      election = electionRepo.getElection(laoId, electionId);
     } catch (UnknownElectionException e) {
-      Log.d(TAG, "failed to retrieve current election");
       return Completable.error(e);
     }
 
@@ -606,10 +602,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mIsSignedByCurrentWitness;
   }
 
-  public LiveData<Boolean> getShowProperties() {
-    return showProperties;
-  }
-
   public LiveData<List<PublicKey>> getWitnesses() {
     return mWitnesses;
   }
@@ -622,11 +614,8 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mNbAttendees;
   }
 
-  public LiveData<List<ConsensusNode>> getNodes() throws UnknownLaoException {
-    return LiveDataReactiveStreams.fromPublisher(
-        laoRepository
-            .getNodesByChannel(getLaoView().getChannel())
-            .toFlowable(BackpressureStrategy.LATEST));
+  public Observable<List<ConsensusNode>> getNodes() throws UnknownLaoException {
+    return laoRepository.getNodesByChannel(getLaoView().getChannel());
   }
 
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
@@ -641,60 +630,12 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mScanWarningEvent;
   }
 
-  public Election getCurrentElection() {
-    try {
-      return electionRepo.getElection(laoId, currentElection);
-    } catch (UnknownElectionException e) {
-      return null;
-    }
-  }
-
-  public void setCurrentElection(String electionId) {
-    currentElection = electionId;
-  }
-
-  public MutableLiveData<List<Integer>> getCurrentElectionVotes() {
-    return mCurrentElectionVotes;
-  }
-
   public RollCall getLastClosedRollCall() throws NoRollCallException {
     return rollCallRepo.getLastClosedRollCall(laoId);
   }
 
-  public RollCall getCurrentRollCall() {
-    return currentRollCall;
-  }
-
-  public void setCurrentRollCall(RollCall rc) {
-    currentRollCall = rc;
-  }
-
   public void setCurrentRollCallId(String rollCallId) {
     currentRollCallId = rollCallId;
-  }
-
-  public void setCurrentElectionVotes(List<Integer> currentElectionVotes) {
-    if (currentElectionVotes == null) {
-      throw new IllegalArgumentException();
-    }
-    mCurrentElectionVotes.setValue(currentElectionVotes);
-  }
-
-  public void setCurrentElectionQuestionVotes(Integer votes, int position) {
-    if (votes == null
-        || position < 0
-        || position > Objects.requireNonNull(mCurrentElectionVotes.getValue()).size()) {
-      throw new IllegalArgumentException();
-    }
-    if (mCurrentElectionVotes.getValue().size() <= position) {
-      mCurrentElectionVotes.getValue().add(votes);
-    } else {
-      mCurrentElectionVotes.getValue().set(position, votes);
-    }
-  }
-
-  public void setShowProperties(boolean show) {
-    showProperties.postValue(show);
   }
 
   /**
@@ -784,7 +725,6 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                   boolean isOrganizer =
                       laoView.getOrganizer().equals(keyManager.getMainPublicKey());
                   mIsOrganizer.setValue(isOrganizer);
-                  updateCurrentObjects();
                 },
                 error -> Log.d(TAG, "error updating LAO :" + error)));
   }
@@ -794,30 +734,44 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         rollCallRepo
             .getRollCallsObservableInLao(laoId)
             .subscribeOn(Schedulers.io())
+            .map(
+                idSet ->
+                    idSet.stream()
+                        .map(
+                            id -> {
+                              try {
+                                return rollCallRepo.getRollCallObservable(laoId, id);
+                              } catch (UnknownRollCallException e) {
+                                // Roll calls whose ids are in that list may not be absent
+                                throw new IllegalStateException(
+                                    "Could not fetch roll call with id " + id);
+                              }
+                            })
+                        .collect(Collectors.toList()))
+            .flatMap(
+                subjects ->
+                    Observable.combineLatest(
+                        subjects,
+                        rollCalls ->
+                            // Sort the roll call list. That way it stays somewhat consistent over
+                            // the updates
+                            Arrays.stream(rollCalls)
+                                .map(RollCall.class::cast)
+                                .filter(Objects::nonNull)
+                                .sorted(
+                                    Comparator.comparing(
+                                            (RollCall rc) -> rc != null ? rc.getCreation() : 0)
+                                        .reversed())
+                                .collect(Collectors.toList())))
+            // Only dispatch the latest element once every 50 milliseconds
+            // This avoids multiple updates in a short period of time
+            .throttleLatest(50, TimeUnit.MILLISECONDS)
+            .lift(suppressErrors(err -> Log.e(TAG, "Error creating rollcall list : ", err)))
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                idSet -> {
-                  List<RollCall> rollCallList =
-                      idSet.stream()
-                          .map(
-                              id -> {
-                                try {
-                                  return rollCallRepo.getRollCallWithPersistentId(laoId, id);
-                                } catch (UnknownRollCallException e) {
-                                  // Roll calls whose ids are in that list may not be absent
-                                  throw new IllegalStateException(
-                                      "Could not fetch roll call with id " + id);
-                                }
-                              })
-                          .collect(Collectors.toList());
-
-                  mRollCalls.setValue(rollCallList);
-                },
-                error -> Log.d(TAG, "Error updating Roll Call : " + error)));
+            .subscribe(mRollCalls::setValue));
   }
 
   public void subscribeToElections(String laoId) {
-
     disposables.add(
         electionRepo
             .getElectionsObservable(laoId)
@@ -845,22 +799,21 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                             // the updates
                             Arrays.stream(elections)
                                 .map(Election.class::cast)
-                                .sorted(Comparator.comparing(Election::getCreation).reversed())
+                                .sorted(
+                                    Comparator.comparing(
+                                            (Election el) -> el != null ? el.getCreation() : 0)
+                                        .reversed())
                                 .collect(Collectors.toList())))
+            // Only dispatch the latest element once every 50 milliseconds
+            // This avoids multiple updates in a short period of time
+            .throttleLatest(50, TimeUnit.MILLISECONDS)
             .lift(suppressErrors(err -> Log.e(TAG, "Error creating election list : ", err)))
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(mElections::setValue));
   }
 
-  private void updateCurrentObjects() throws UnknownRollCallException {
-    if (currentRollCall != null) {
-      currentRollCall =
-          rollCallRepo.getRollCallWithPersistentId(laoId, currentRollCall.getPersistentId());
-    }
-  }
-
-  public PoPToken getCurrentPopToken() throws KeyException, UnknownLaoException {
-    return keyManager.getPoPToken(getLaoView(), currentRollCall);
+  public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
+    return keyManager.getPoPToken(getLaoView(), rollCall);
   }
 
   public boolean isWalletSetup() {

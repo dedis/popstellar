@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail.event.election;
+package com.github.dedis.popstellar.ui;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;

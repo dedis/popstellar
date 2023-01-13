@@ -175,9 +175,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       View.OnClickListener listener =
           view -> {
             if (viewModel.isWalletSetup()) {
-              viewModel.setCurrentRollCall(rollCall);
               try {
-                PoPToken token = viewModel.getCurrentPopToken();
+                PoPToken token = viewModel.getCurrentPopToken(rollCall);
                 setCurrentFragment(
                     activity.getSupportFragmentManager(),
                     R.id.fragment_roll_call,

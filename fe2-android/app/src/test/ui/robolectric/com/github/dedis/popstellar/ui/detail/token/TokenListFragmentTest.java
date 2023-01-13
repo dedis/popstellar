@@ -203,6 +203,8 @@ public class TokenListFragmentTest {
   private void setRollCall(RollCall rollCall) throws UnknownRollCallException {
     when(rollCallRepo.getRollCallWithPersistentId(LAO_ID, rollCall.getPersistentId()))
         .thenReturn(rollCall);
+    when(rollCallRepo.getRollCallObservable(LAO_ID, rollCall.getPersistentId()))
+        .thenReturn(BehaviorSubject.createDefault(rollCall));
     rollCallsSubject.onNext(Collections.singleton(rollCall.getPersistentId()));
   }
 
@@ -211,6 +213,8 @@ public class TokenListFragmentTest {
     for (RollCall rc : rollCalls) {
       ids.add(rc.getPersistentId());
       when(rollCallRepo.getRollCallWithPersistentId(LAO_ID, rc.getPersistentId())).thenReturn(rc);
+      when(rollCallRepo.getRollCallObservable(LAO_ID, rc.getPersistentId()))
+          .thenReturn(BehaviorSubject.createDefault(rc));
     }
     rollCallsSubject.onNext(ids);
   }

@@ -18,7 +18,8 @@ import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
+import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.error.*;
@@ -49,17 +50,16 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.Completable;
-import io.reactivex.subjects.BehaviorSubject;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.consensus.ElectionStartPageObject.*;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
@@ -70,17 +70,30 @@ public class ElectionStartFragmentTest {
   @Inject MessageHandler messageHandler;
   @Inject Gson gson;
   @Inject ElectionRepository electionRepo;
+  @Inject LAORepository laoRepo;
 
   @BindValue @Mock GlobalNetworkManager globalNetworkManager;
   @Mock MessageSender messageSender;
-  @BindValue @Mock LAORepository laoRepo;
 
-  private LaoView laoView;
-  // A custom rule to call setup and teardown before the fragment rule and after the mockito rule
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss z").withZone(ZoneId.systemDefault());
+  private static final String LAO_ID = "laoId";
+  private static final String ELECTION_NAME = "My Election !";
+  private static final long PAST_TIME = 946684800;
+  private static final long FUTURE_TIME = 2145916800;
+
+  private static final Election ELECTION =
+      new Election.ElectionBuilder(LAO_ID, PAST_TIME, ELECTION_NAME)
+          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
+          .build();
+  private static final ConsensusKey KEY = new ConsensusKey("election", ELECTION.getId(), "state");
+  private static final String INSTANCE_ID =
+      ElectInstance.generateConsensusId(KEY.getType(), KEY.getId(), KEY.getProperty());
+
   private final TestRule setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws UnknownLaoException {
+        protected void before() {
           // Injection with hilt
           hiltRule.inject();
           // Preload the data schema before the test run
@@ -109,7 +122,9 @@ public class ElectionStartFragmentTest {
           lao.setOrganizer(mainKeyPair.getPublicKey());
           lao.setWitnesses(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
 
+          laoRepo.updateLao(lao);
           consensusChannel = lao.getChannel().subChannel("consensus");
+          laoRepo.updateNodes(lao.getChannel());
 
           List<ConsensusNode> nodes = lao.getNodes();
           for (int i = 0; i < nodes.size(); ++i) {
@@ -122,38 +137,26 @@ public class ElectionStartFragmentTest {
               node3Pos = i;
             }
           }
-          nodesSubject = BehaviorSubject.createDefault(nodes);
-          laoRepo.updateNodes(lao.getChannel());
-          laoRepo.updateLao(lao);
-          laoView = new LaoView(lao);
 
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
-          when(laoRepo.getLaoView(any())).thenAnswer(invocation -> laoView);
-          when(laoRepo.getNodesByChannel(any())).thenReturn(nodesSubject);
-          when(laoRepo.getLaoViewByChannel(any())).thenAnswer(invocation -> laoView);
-          doAnswer(
-                  invocation -> {
-                    Lao update = invocation.getArgument(0);
-                    laoView = new LaoView(update);
-                    return null;
-                  })
-              .when(laoRepo)
-              .updateLao(any(Lao.class));
-          doAnswer(
-                  invocation -> {
-                    nodesSubject.onNext(lao.getNodes());
-                    return null;
-                  })
-              .when(laoRepo)
-              .updateNodes(any());
+
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());
           when(messageSender.subscribe(any())).then(args -> Completable.complete());
         }
       };
 
-  private final FragmentScenarioRule<ElectionStartFragment> fragmentRule =
-      FragmentScenarioRule.launch(ElectionStartFragment.class, ElectionStartFragment::newInstance);
+  private final ActivityFragmentScenarioRule<LaoDetailActivity, ElectionStartFragment>
+      fragmentRule =
+          ActivityFragmentScenarioRule.launchIn(
+              LaoDetailActivity.class,
+              new BundleBuilder()
+                  .putString(laoIdExtra(), LAO_ID)
+                  .putString(fragmentToOpenExtra(), laoDetailValue())
+                  .build(),
+              containerId(),
+              ElectionStartFragment.class,
+              () -> ElectionStartFragment.newInstance(ELECTION.getId()));
 
   private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
@@ -163,23 +166,6 @@ public class ElectionStartFragmentTest {
           .around(hiltRule)
           .around(setupRule)
           .around(fragmentRule);
-
-  private static BehaviorSubject<List<ConsensusNode>> nodesSubject;
-
-  private static final DateTimeFormatter DATE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss z").withZone(ZoneId.systemDefault());
-  private static final String LAO_ID = "laoId";
-  private static final String ELECTION_NAME = "My Election !";
-  private static final long PAST_TIME = 946684800;
-  private static final long FUTURE_TIME = 2145916800;
-
-  private static final Election election =
-      new Election.ElectionBuilder(LAO_ID, PAST_TIME, ELECTION_NAME)
-          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
-          .build();
-  private static final ConsensusKey KEY = new ConsensusKey("election", election.getId(), "state");
-  private static final String INSTANCE_ID =
-      ElectInstance.generateConsensusId(KEY.getType(), KEY.getId(), KEY.getProperty());
 
   private static final ConsensusElect elect =
       new ConsensusElect(PAST_TIME, KEY.getId(), KEY.getType(), KEY.getProperty(), "started");
@@ -270,7 +256,7 @@ public class ElectionStartFragmentTest {
     displayAssertions(STATUS_WAITING, START_SCHEDULED, false);
 
     // Update election start time
-    electionRepo.updateElection(election.builder().setStart(PAST_TIME).build());
+    electionRepo.updateElection(ELECTION.builder().setStart(PAST_TIME).build());
 
     // Election start time has passed, should display that it's ready and start button enabled
     displayAssertions(STATUS_READY, START_START, true);
@@ -371,7 +357,7 @@ public class ElectionStartFragmentTest {
   }
 
   private void setupViewModel(long electionStart) {
-    electionRepo.updateElection(election.builder().setStart(electionStart).build());
+    electionRepo.updateElection(ELECTION.builder().setStart(electionStart).build());
     fragmentRule
         .getScenario()
         .onFragment(
@@ -379,7 +365,6 @@ public class ElectionStartFragmentTest {
               FragmentActivity fragmentActivity = electionStartFragment.requireActivity();
               LaoDetailViewModel laoDetailViewModel =
                   LaoDetailActivity.obtainViewModel(fragmentActivity);
-              laoDetailViewModel.setCurrentElection(election.getId());
               laoDetailViewModel.setCurrentLao(new LaoView(lao));
             });
     // Recreate the fragment because the viewModel needed to be modified before start
