@@ -56,7 +56,6 @@
   <string name="start_date_required">Start Date*</string>
   <string name="start_time_required">Start Time*</string>
   <string name="end_date_optional">End Date</string>
-  <string name="location_optional">Location</string>
   <string name="confirm">Confirm</string>
   <string name="cancel">Cancel</string>
   <string name="past_date_not_allowed">Event has to start/end today or in the future</string>
@@ -66,35 +65,11 @@
   <string name="start_time_after_end_time_not_allowed">Start time must be before end time</string>
   <string name="end_time_before_start_time_not_allowed">End time must be after start time</string>
   <string name="end_time_optional">End Time</string>
-  <string name="picker_selection">selection</string>
-  <string name="past_events">Past Events</string>
-  <string name="present_events">Present Events</string>
-  <string name="future_events">Future Events</string>
-  <string name="handle_events">Handle Events</string>
 
-  <!-- Poll Event -->
-  <string name="poll_event">Poll Event</string>
   <string name="button_cancel">Cancel</string>
-  <string name="button_confirm">Confirm</string>
-  <string name="select_event_type_dialog_title">Select Event Type</string>
-  <string name="create_poll_title">Create a Poll</string>
-  <string name="question_title">Question :</string>
-  <string name="poll_type_1">Choose 1 of N</string>
-  <string name="poll_type_2">Approve Any of N</string>
-  <string name="choices_title">Choices :</string>
-  <string name="button_schedule">Schedule</string>
-  <string name="delete_choice_button">-</string>
-  <string name="choice_edit_text_hint">Choice…</string>
-
-  <!-- Meeting Event -->
-  <string name="meeting_event">Meeting Event</string>
-  <string name="create_meeting_event">Create Meeting event</string>
-  <string name="meeting_title_required">Meeting Title*</string>
 
   <!-- Roll-Call Event -->
   <string name="roll_call_title_required">Roll Call Title*</string>
-  <string name="roll_call_event">Roll-Call Event</string>
-  <string name="exception_message_empty_lao_name">Trying to set an empty name for the LAO</string>
   <string name="anonymous_explanation">You can participate in organizations and meetings anonymously by leaving this
         box checked.\nIf you wish to reveal your identity to other participants in this organization,\nyou may un-check
         this box and enter the information you wish to reveal below.\nYou must enter identity information in order to
@@ -102,9 +77,6 @@
     </string>
   <string name="roll_call_open_attendees">Open</string>
   <string name="add_attendee_successful">Attendee scanned successfully</string>
-  <string name="add_attendee_already_exists">Attendee already recorded</string>
-  <string name="add_attendee_unsuccessful">Error when adding attendee</string>
-  <string name="add_attendees_number">Number of attendees : %1$d</string>
   <string name="reopen_rollcall">REOPEN</string>
 
   <!-- Identity -->
@@ -122,9 +94,7 @@
   <string name="rc_location_title">Location*</string>
   <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code exactly once.</string>
   <string name="roll_call_add_manually_hint">Add key manually</string>
-  <string name="scan_all_attendees_question">Are you sure you have scanned all attendees ?</string>
   <string name="scan">Scan</string>
-  <string name="close_roll_call">Close Roll-Call</string>
 
   <!--  Witnessing-->
   <string name="messages">Messages</string>
@@ -132,19 +102,11 @@
 
   <!-- Witness -->
   <string name="add_witness_successful">Witness has been added</string>
-  <string name="add_witness_unsuccessful">Witness could not be added</string>
-  <string name="add_witness_already_exists">Witness you are trying to add is already a witness of this LAO</string>
-
-  <!-- Properties -->
-  <string name="test_organization_name">Test Organization Name</string>
 
   <string name="button_text">Cast Vote</string>
 
   <string name="total">Total:</string>
-  <string name="select_a_voting_method">Select a voting method</string>
   <string name="submit">Submit</string>
-  <string name="todo">TODO</string>
-  <string name="ballot_option_2">Ballot option 2</string>
 
   <!--  Roll Call -->
   <string name="roll_call_setup_title">Roll Call Setup</string>
@@ -157,7 +119,6 @@
   <string name="election_setup_title">Election Setup</string>
   <string name="closed">Closed</string>
   <string name="finished">Finished</string>
-  <string name="election_setup_presentation_title_text">Election Setup</string>
   <string name="add_ballot_options_button_text">Add ballot options</string>
   <string name="add_question_button_text">Add question</string>
   <string name="election_setup_name_hint">Election name</string>
@@ -166,15 +127,11 @@
   <string name="write_in_switch_text">Allow write in</string>
   <string name="new_ballot_option_hint">ballot option</string>
 
-  <string name="elections">Elections</string>
-  <string name="displayed_end_time">displayed end time</string>
-  <string name="displayed_current_time">displayed current time</string>
   <string name="results">Results</string>
   <string name="waiting_for_results">Waiting for results</string>
   <string name="vote">Vote</string>
   <string name="start">Start</string>
   <string name="end">End</string>
-  <string name="refresh_start">Refresh to start</string>
   <string name="election_confirm_open">Are your sure you want to open this election ?</string>
   <string name="election_confirm_close">
     Are your sure you want to close this election, this action is irreversible ?
@@ -183,7 +140,6 @@
 
   <!-- Consensus -->
   <string name="start_election">Start Election</string>
-  <string name="election_start">Election Start</string>
 
   <string name="election_started_at">Election started successfully at\n%s</string>
   <string name="waiting_scheduled_time">Waiting scheduled time</string>
@@ -201,7 +157,6 @@
 
   <string name="logout_title">Wallet log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
-  <string name="copy_button_descriptor">Button to copy seed</string>
   <string name="ok">OK</string>
   <string name="import_seed">Import</string>
   <string name="stored_seed">Stored seed…</string>
@@ -231,7 +186,6 @@
   <string name="digital_cash_receipt">Receipt</string>
   <string name="digital_cash_send_button">Send</string>
   <string name="digital_cash_amount">Amount</string>
-  <string name="digital_cash_address">Address</string>
   <string name="digital_cash_laocoindefault">LAOcoin: 0.00</string>
   <string name="digital_cash_amount_empty">Amount: 0.00</string>
   <string name="digital_cash_beneficiary_address">Beneficiary: address</string>
@@ -255,14 +209,9 @@
   <string name="digital_cash_post_transaction">Post transaction !</string>
   <string name="digital_cash_no_attendees">"There are no attendee(s) !"</string>
   <string name="digital_cash_no_witness">"There are no witnesses !"</string>
-  <string name="digital_cash_warning_no_money">"Can't send because you have no money"</string>
   <string name="digital_cash_warning_not_enough_money">"Can't send more money than you have !"</string>
   <string name="digital_cash_send_initial_amount">0</string>
   <string name="digital_cash_non_organizer_error_issue">Only the organizer may issue coins</string>
-
-  <!-- Witness -->
-  <string name="sign_message">SIGN MESSAGE</string>
-  <string name="message_signed">MESSAGE SIGNED</string>
 
   <!-- Social Media -->
   <string name="home">Home</string>
@@ -323,7 +272,6 @@
   <string name="error_open_election">Could not open the election\n%1$s</string>
   <string name="error_post_transaction">Could not post a transaction\n%1$s</string>
   <string name="error_no_rollcall_closed_in_LAO">Error no RollCall closed in the LAO\n%1$s</string>
-  <string name="error_public_key_receiver">Error on the receiver s public key\n%1$s</string>
   <string name="error_storing_data">An error occurred while storing data</string>
   <string name="error_loading_data">An error occurred while loading data</string>
   <string name="error_storage_wallet">An error occurred during the storage of the wallet seed</string>
