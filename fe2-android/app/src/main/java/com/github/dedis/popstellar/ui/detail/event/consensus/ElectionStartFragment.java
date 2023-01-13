@@ -85,9 +85,7 @@ public class ElectionStartFragment extends Fragment {
     try {
       Observable<List<ConsensusNode>> nodes = viewModel.getNodes().observeOn(mainThread());
       Observable<Election> election =
-          electionRepo
-              .getElectionObservable(viewModel.getLaoId(), electionId)
-              .observeOn(mainThread());
+          electionRepo.getElectionObservable(viewModel.getLaoId(), electionId);
 
       Observable<ElectionNodesState> merged =
           Observable.combineLatest(nodes, election, ElectionNodesState::new);

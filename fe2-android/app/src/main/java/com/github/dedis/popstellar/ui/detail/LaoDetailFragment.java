@@ -22,8 +22,6 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -39,7 +37,6 @@ public class LaoDetailFragment extends Fragment {
 
   private LaoDetailFragmentBinding binding;
   private LaoDetailViewModel viewModel;
-  private EventListAdapter mEventListViewEventAdapter;
   private boolean isRotated = false;
 
   public static LaoDetailFragment newInstance() {
@@ -113,7 +110,6 @@ public class LaoDetailFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupEventListAdapter();
-    setupEventListUpdates();
   }
 
   @Override
@@ -129,34 +125,14 @@ public class LaoDetailFragment extends Fragment {
   private void setupEventListAdapter() {
     RecyclerView eventList = binding.eventList;
 
-    mEventListViewEventAdapter =
-        new EventListAdapter(new ArrayList<>(), new ArrayList<>(), viewModel, requireActivity());
+    EventListAdapter eventListAdapter =
+        new EventListAdapter(viewModel, viewModel.getEvents(), requireActivity());
     Log.d(TAG, "created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
 
     EventListDivider divider = new EventListDivider(getContext());
     eventList.addItemDecoration(divider);
-    eventList.setAdapter(mEventListViewEventAdapter);
-  }
-
-  private void setupEventListUpdates() {
-    viewModel
-        .getRollCalls()
-        .observe(
-            requireActivity(),
-            rollCalls -> {
-              Log.d(TAG, "Got a list update for roll call events " + rollCalls.toString());
-              mEventListViewEventAdapter.replaceRollCalls(rollCalls);
-            });
-
-    viewModel
-        .getElections()
-        .observe(
-            requireActivity(),
-            elections -> {
-              Log.d(TAG, "Got a list update for election events " + elections.toString());
-              mEventListViewEventAdapter.replaceElections(elections);
-            });
+    eventList.setAdapter(eventListAdapter);
   }
 }

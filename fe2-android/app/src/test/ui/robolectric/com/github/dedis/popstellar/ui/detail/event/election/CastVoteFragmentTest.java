@@ -18,7 +18,6 @@ import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRu
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
@@ -30,7 +29,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -107,9 +107,9 @@ public class CastVoteFragmentTest {
           .build();
 
   @Inject ElectionRepository electionRepo;
+  @Inject RollCallRepository rollCallRepo;
 
-  @BindValue @Mock LAORepository repository;
-  @BindValue @Mock RollCallRepository rollCallRepo;
+  @BindValue @Mock LAORepository laoRepo;
   @BindValue @Mock KeyManager keyManager;
   @BindValue @Mock GlobalNetworkManager networkManager;
 
@@ -127,19 +127,18 @@ public class CastVoteFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException, UnknownLaoException, UnknownRollCallException {
+        protected void before() throws KeyException, UnknownLaoException {
           hiltRule.inject();
-          Set<String> rcList = Collections.singleton(ROLL_CALL.getId());
-          BehaviorSubject<Set<String>> rcObservable = BehaviorSubject.createDefault(rcList);
-          when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
-          when(rollCallRepo.getRollCallsObservableInLao(any())).thenReturn(rcObservable);
-          when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
-          when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
+
+          when(laoRepo.getLaoObservable(anyString())).thenReturn(laoSubject);
+          when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
+
+          rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL);
           electionRepo.updateElection(ELECTION);
+
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
           when(keyManager.getValidPoPToken(any(), any())).thenReturn(generatePoPToken());
-          when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
-          when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
+
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
           messageSenderHelper.setupMock();
         }
