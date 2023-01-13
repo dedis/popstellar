@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
-import com.github.dedis.popstellar.utility.error.UnknownEventException;
 
 import java.util.*;
 
@@ -22,7 +21,7 @@ import io.reactivex.subjects.Subject;
  * <p>Its main purpose is to store elections and publish updates
  */
 @Singleton
-public class ElectionRepository implements EventRepository<Election> {
+public class ElectionRepository {
 
   private final Map<String, LaoElections> electionsByLao = new HashMap<>();
 
@@ -90,24 +89,8 @@ public class ElectionRepository implements EventRepository<Election> {
    * @return an observable that will be updated with the set of all election's ids
    */
   @NonNull
-  public Observable<Set<String>> getElectionsObservable(@NonNull String laoId) {
+  public Observable<Set<Election>> getElectionsObservable(@NonNull String laoId) {
     return getLaoElections(laoId).getElectionsSubject();
-  }
-
-  @Override
-  public Observable<Election> getEventObservable(String laoId, String eventId)
-      throws UnknownEventException {
-    return getElectionObservable(laoId, eventId);
-  }
-
-  @Override
-  public Observable<Set<String>> getEventIdsObservable(String laoId) {
-    return getElectionsObservable(laoId);
-  }
-
-  @Override
-  public Class<Election> getType() {
-    return Election.class;
   }
 
   @NonNull
@@ -119,7 +102,7 @@ public class ElectionRepository implements EventRepository<Election> {
   private static final class LaoElections {
     private final Map<String, Election> electionById = new HashMap<>();
     private final Map<String, Subject<Election>> electionSubjects = new HashMap<>();
-    private final BehaviorSubject<Set<String>> electionsSubject =
+    private final BehaviorSubject<Set<Election>> electionsSubject =
         BehaviorSubject.createDefault(Collections.emptySet());
 
     public synchronized void updateElection(@NonNull Election election) {
@@ -130,7 +113,7 @@ public class ElectionRepository implements EventRepository<Election> {
       //noinspection ConstantConditions
       electionSubjects.get(id).onNext(election);
 
-      electionsSubject.onNext(electionById.keySet());
+      electionsSubject.onNext(Collections.unmodifiableSet(new HashSet<>(electionById.values())));
     }
 
     public Election getElection(@NonNull String electionId) throws UnknownElectionException {
@@ -143,7 +126,7 @@ public class ElectionRepository implements EventRepository<Election> {
       }
     }
 
-    public Observable<Set<String>> getElectionsSubject() {
+    public Observable<Set<Election>> getElectionsSubject() {
       return electionsSubject;
     }
 

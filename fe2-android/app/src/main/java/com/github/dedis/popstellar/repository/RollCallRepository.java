@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.error.UnknownEventException;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
@@ -20,13 +19,16 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
+import static java.util.Collections.emptySet;
+import static java.util.Collections.unmodifiableSet;
+
 /**
  * This class is the repository of the roll call events
  *
  * <p>Its main purpose is to store roll calls and publish updates
  */
 @Singleton
-public class RollCallRepository implements EventRepository<RollCall> {
+public class RollCallRepository {
   public static final String TAG = RollCallRepository.class.getSimpleName();
   private final Map<String, LaoRollCalls> rollCallsByLao = new HashMap<>();
 
@@ -66,22 +68,6 @@ public class RollCallRepository implements EventRepository<RollCall> {
     return getLaoRollCalls(laoId).getRollCallObservable(persistentId);
   }
 
-  @Override
-  public Observable<RollCall> getEventObservable(String laoId, String eventId)
-      throws UnknownEventException {
-    return getRollCallObservable(laoId, eventId);
-  }
-
-  @Override
-  public Observable<Set<String>> getEventIdsObservable(String laoId) {
-    return getRollCallsObservableInLao(laoId);
-  }
-
-  @Override
-  public Class<RollCall> getType() {
-    return RollCall.class;
-  }
-
   public RollCall getRollCallWithPersistentId(String laoId, String persistentId)
       throws UnknownRollCallException {
     return getLaoRollCalls(laoId).getRollCallWithPersistentId(persistentId);
@@ -97,7 +83,7 @@ public class RollCallRepository implements EventRepository<RollCall> {
    * @return an observable set of ids who correspond to the set of roll calls published on the given
    *     lao
    */
-  public Observable<Set<String>> getRollCallsObservableInLao(String laoId) {
+  public Observable<Set<RollCall>> getRollCallsObservableInLao(String laoId) {
     return getLaoRollCalls(laoId).getRollCallsSubject();
   }
 
@@ -134,8 +120,8 @@ public class RollCallRepository implements EventRepository<RollCall> {
     private final Map<String, Subject<RollCall>> rollCallSubjects = new HashMap<>();
 
     // This allows to observe the collection of roll calls as a whole
-    private final Subject<Set<String>> rollCallsSubject =
-        BehaviorSubject.createDefault(Collections.emptySet());
+    private final Subject<Set<RollCall>> rollCallsSubject =
+        BehaviorSubject.createDefault(unmodifiableSet(emptySet()));
 
     /**
      * This either updates the roll call in the repository or adds it if absent
@@ -161,7 +147,7 @@ public class RollCallRepository implements EventRepository<RollCall> {
         rollCallSubjects.put(persistentId, BehaviorSubject.createDefault(rollCall));
       }
 
-      rollCallsSubject.onNext(this.rollCallByPersistentId.keySet());
+      rollCallsSubject.onNext(unmodifiableSet(new HashSet<>(this.rollCallByPersistentId.values())));
     }
 
     public RollCall getRollCallWithPersistentId(String persistentId)
@@ -189,8 +175,8 @@ public class RollCallRepository implements EventRepository<RollCall> {
       }
     }
 
-    public Observable<Set<String>> getRollCallsSubject() {
-      return rollCallsSubject.map(HashSet::new);
+    public Observable<Set<RollCall>> getRollCallsSubject() {
+      return rollCallsSubject;
     }
 
     public Set<PublicKey> getAllAttendees() {

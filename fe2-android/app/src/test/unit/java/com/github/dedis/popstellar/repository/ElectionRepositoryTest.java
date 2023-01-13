@@ -31,13 +31,13 @@ public class ElectionRepositoryTest {
   @Test
   public void addingElectionUpdatesIds() {
     ElectionRepository repo = new ElectionRepository();
-    TestObserver<Set<String>> ids = repo.getElectionsObservable(LAO_ID).test();
+    TestObserver<Set<Election>> elections = repo.getElectionsObservable(LAO_ID).test();
 
-    assertCurrentValueIs(ids, emptySet());
+    assertCurrentValueIs(elections, emptySet());
 
     repo.updateElection(ELECTION);
 
-    assertCurrentValueIs(ids, singleton(ELECTION.getId()));
+    assertCurrentValueIs(elections, singleton(ELECTION));
   }
 
   @Test
