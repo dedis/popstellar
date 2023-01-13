@@ -139,7 +139,6 @@ public class RollCallFragment extends Fragment {
             .subscribe(
                 rc -> {
                   Log.d(TAG, "Received rc update: " + rc);
-                  viewModel.setCurrentRollCall(rc);
                   rollCall = rc;
                   setUpStateDependantContent();
                 },
@@ -160,7 +159,7 @@ public class RollCallFragment extends Fragment {
       rollCall = viewModel.getRollCall(requireArguments().getString(ROLL_CALL_ID));
     } catch (UnknownRollCallException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
-  }
+    }
   }
 
   private void setUpStateDependantContent() {

@@ -19,8 +19,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="@{view_model.getShowProperties() ? View.GONE : View.VISIBLE }">
+      android:layout_height="match_parent">
 
       <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/lao_container"

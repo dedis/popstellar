@@ -16,7 +16,6 @@ import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
@@ -29,7 +28,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
 import java.security.GeneralSecurityException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
@@ -77,11 +79,9 @@ public class TokenListFragmentTest {
           LOCATION,
           ROLL_CALL_DESC);
 
-  private final BehaviorSubject<Set<String>> rollCallsSubject =
-      BehaviorSubject.createDefault(new HashSet<>());
+  @Inject RollCallRepository rollCallRepo;
 
   @BindValue @Mock LAORepository repository;
-  @BindValue @Mock RollCallRepository rollCallRepo;
   @BindValue @Mock KeyManager keyManager;
 
   @BindValue @Mock Wallet wallet;
@@ -106,8 +106,6 @@ public class TokenListFragmentTest {
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
           when(keyManager.getMainPublicKey()).thenReturn(USER);
-
-          when(rollCallRepo.getRollCallsObservableInLao(LAO_ID)).thenReturn(rollCallsSubject);
 
           when(wallet.exportSeed())
               .thenReturn(
@@ -148,36 +146,34 @@ public class TokenListFragmentTest {
   }
 
   @Test
-  public void noClosedRollCallDisplaysExplanationMessage() throws UnknownRollCallException {
-    setRollCall(ROLL_CALL);
+  public void noClosedRollCallDisplaysExplanationMessage() {
+    setRollCalls(ROLL_CALL);
     checkExplanationMessageIsDisplayed();
   }
 
   @Test
-  public void noRollCallAttendedDisplaysExplanationMessage() throws UnknownRollCallException {
+  public void noRollCallAttendedDisplaysExplanationMessage() {
     RollCall closedRollCallWithoutUser = RollCall.closeRollCall(ROLL_CALL);
-    setRollCall(closedRollCallWithoutUser);
+    setRollCalls(closedRollCallWithoutUser);
     checkExplanationMessageIsDisplayed();
   }
 
   @Test
-  public void havingAttendedClosedRollCallDisplayValidToken()
-      throws UnknownRollCallException, NoRollCallException {
+  public void havingAttendedClosedRollCallDisplayValidToken() throws NoRollCallException {
     RollCall closedRollCallWithUser =
         new RollCallBuilder(ROLL_CALL)
             .setState(EventState.CLOSED)
             .setAttendees(Collections.singleton(USER_TOKEN.getPublicKey()))
             .build();
-    setRollCall(closedRollCallWithUser);
-    when(rollCallRepo.getLastClosedRollCall(LAO_ID)).thenReturn(closedRollCallWithUser);
+    setRollCalls(closedRollCallWithUser);
+
     emptyTokenText().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     invalidTokensRv().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     validTokenCard().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
   }
 
   @Test
-  public void havingAttendedTwoClosedRollCallDisplayValidToken()
-      throws UnknownRollCallException, NoRollCallException {
+  public void havingAttendedTwoClosedRollCallDisplayValidToken() throws NoRollCallException {
     RollCall closedRollCallWithUser1 =
         new RollCallBuilder(ROLL_CALL)
             .setState(EventState.CLOSED)
@@ -194,25 +190,16 @@ public class TokenListFragmentTest {
             .build();
 
     setRollCalls(closedRollCallWithUser1, closedRollCallWithUser2);
-    when(rollCallRepo.getLastClosedRollCall(LAO_ID)).thenReturn(closedRollCallWithUser2);
+
     emptyTokenText().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     invalidTokensRv().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     validTokenCard().check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
   }
 
-  private void setRollCall(RollCall rollCall) throws UnknownRollCallException {
-    when(rollCallRepo.getRollCallWithPersistentId(LAO_ID, rollCall.getPersistentId()))
-        .thenReturn(rollCall);
-    rollCallsSubject.onNext(Collections.singleton(rollCall.getPersistentId()));
-  }
-
-  private void setRollCalls(RollCall... rollCalls) throws UnknownRollCallException {
-    Set<String> ids = new HashSet<>();
-    for (RollCall rc : rollCalls) {
-      ids.add(rc.getPersistentId());
-      when(rollCallRepo.getRollCallWithPersistentId(LAO_ID, rc.getPersistentId())).thenReturn(rc);
+  private void setRollCalls(RollCall... rollCalls) {
+    for (RollCall rollCall : rollCalls) {
+      rollCallRepo.updateRollCall(LAO_ID, rollCall);
     }
-    rollCallsSubject.onNext(ids);
   }
 
   private void checkExplanationMessageIsDisplayed() {

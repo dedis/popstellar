@@ -86,7 +86,6 @@ public class ElectionFragment extends Fragment {
     this.electionId = requireArguments().getString(ELECTION_ID);
 
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    viewModel.setCurrentElection(electionId);
 
     managementVisibilityMap = buildManagementVisibilityMap();
 
@@ -169,13 +168,13 @@ public class ElectionFragment extends Fragment {
               LaoDetailActivity.setCurrentFragment(
                   getParentFragmentManager(),
                   R.id.fragment_cast_vote,
-                  CastVoteFragment::newInstance);
+                  () -> CastVoteFragment.newInstance(electionId));
               break;
             case RESULTS_READY:
               LaoDetailActivity.setCurrentFragment(
                   getParentFragmentManager(),
                   R.id.fragment_election_result,
-                  ElectionResultFragment::newInstance);
+                  () -> ElectionResultFragment.newInstance(electionId));
               break;
             default:
               throw new IllegalStateException(

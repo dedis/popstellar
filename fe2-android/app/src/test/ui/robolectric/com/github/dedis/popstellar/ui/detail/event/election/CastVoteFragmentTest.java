@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event.election;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.fragment.app.FragmentActivity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -17,21 +16,21 @@ import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
-import org.junit.*;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -67,7 +66,7 @@ public class CastVoteFragmentTest {
   private static final long START = 10323421;
   private static final long END = 10323431;
   private static final String ELECTION_QUESTION_TEXT1 = "question 1";
-  private static final String ELECTION_QUESTION_TEXT2 = "question 1";
+  private static final String ELECTION_QUESTION_TEXT2 = "question 2";
   private static final String ELECTION_BALLOT_TEXT11 = "ballot option 1";
   private static final String ELECTION_BALLOT_TEXT12 = "ballot option 2";
   private static final String ELECTION_BALLOT_TEXT13 = "ballot option 3";
@@ -108,9 +107,9 @@ public class CastVoteFragmentTest {
           .build();
 
   @Inject ElectionRepository electionRepo;
+  @Inject RollCallRepository rollCallRepo;
 
-  @BindValue @Mock LAORepository repository;
-  @BindValue @Mock RollCallRepository rollCallRepo;
+  @BindValue @Mock LAORepository laoRepo;
   @BindValue @Mock KeyManager keyManager;
   @BindValue @Mock GlobalNetworkManager networkManager;
 
@@ -128,19 +127,18 @@ public class CastVoteFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException, UnknownLaoException, UnknownRollCallException {
+        protected void before() throws KeyException, UnknownLaoException {
           hiltRule.inject();
-          Set<String> rcList = Collections.singleton(ROLL_CALL.getId());
-          BehaviorSubject<Set<String>> rcObservable = BehaviorSubject.createDefault(rcList);
-          when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
-          when(rollCallRepo.getRollCallsObservableInLao(any())).thenReturn(rcObservable);
-          when(rollCallRepo.getRollCallWithPersistentId(any(), any())).thenReturn(ROLL_CALL);
-          when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
+
+          when(laoRepo.getLaoObservable(anyString())).thenReturn(laoSubject);
+          when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
+
+          rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL);
           electionRepo.updateElection(ELECTION);
+
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
           when(keyManager.getValidPoPToken(any(), any())).thenReturn(generatePoPToken());
-          when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
-          when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
+
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
           messageSenderHelper.setupMock();
         }
@@ -156,21 +154,7 @@ public class CastVoteFragmentTest {
               .build(),
           containerId(),
           CastVoteFragment.class,
-          CastVoteFragment::newInstance);
-
-  @Before
-  public void setUpViewModel() {
-    fragmentRule
-        .getScenario()
-        .onFragment(
-            fragment -> {
-              FragmentActivity fragmentActivity = fragment.requireActivity();
-              LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
-              viewModel.setCurrentLao(new LaoView(LAO));
-              viewModel.setCurrentElection(ELECTION.getId());
-            });
-    fragmentRule.getScenario().recreate();
-  }
+          () -> CastVoteFragment.newInstance(ELECTION_ID));
 
   @Test
   public void laoTitleMatches() {

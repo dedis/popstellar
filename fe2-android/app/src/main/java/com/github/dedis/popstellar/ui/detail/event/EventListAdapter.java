@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,45 +28,50 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import io.reactivex.Observable;
 
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
   private final LaoDetailViewModel viewModel;
   private final FragmentActivity activity;
   private final EnumMap<EventCategory, List<Event>> eventsMap;
-  private List<RollCall> rollCalls;
-  private List<Election> elections;
+
   private final boolean[] expanded = new boolean[3];
   public static final int TYPE_HEADER = 0;
   public static final int TYPE_EVENT = 1;
   public static final String TAG = EventListAdapter.class.getSimpleName();
 
   public EventListAdapter(
-      List<RollCall> rollCalls,
-      List<Election> elections,
-      LaoDetailViewModel viewModel,
-      FragmentActivity activity) {
+      LaoDetailViewModel viewModel, Observable<Set<Event>> events, FragmentActivity activity) {
     this.eventsMap = new EnumMap<>(EventCategory.class);
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
     this.eventsMap.put(FUTURE, new ArrayList<>());
     this.activity = activity;
     this.viewModel = viewModel;
+
     expanded[PAST.ordinal()] = true;
     expanded[PRESENT.ordinal()] = true;
     expanded[FUTURE.ordinal()] = true;
-    this.rollCalls = rollCalls;
-    this.elections = elections;
-    putEventsInMap();
+
+    subscribeToEventSet(events);
+  }
+
+  private void subscribeToEventSet(Observable<Set<Event>> observable) {
+    this.viewModel.addDisposable(
+        observable
+            .map(events -> events.stream().sorted().collect(Collectors.toList()))
+            // No need to check for error as the events errors already handles them
+            .subscribe(this::putEventsInMap, err -> Log.d(TAG, "ERROR", err)));
   }
 
   /** A helper method that places the events in the correct key-value pair according to state */
-  private void putEventsInMap() {
-    List<Event> events =
-        Stream.concat(rollCalls.stream(), elections.stream()).sorted().collect(Collectors.toList());
+  @SuppressLint("NotifyDataSetChanged")
+  private void putEventsInMap(List<Event> events) {
     this.eventsMap.get(PAST).clear();
     this.eventsMap.get(FUTURE).clear();
     this.eventsMap.get(PRESENT).clear();
@@ -84,6 +90,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
           break;
       }
     }
+
+    notifyDataSetChanged();
   }
 
   @NonNull
@@ -172,12 +180,12 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     } else if (event.getType().equals(EventType.ROLL_CALL)) {
       eventViewHolder.eventIcon.setImageResource(R.drawable.ic_roll_call);
       RollCall rollCall = (RollCall) event;
-      View.OnClickListener listener =
+      eventViewHolder.eventTitle.setText(rollCall.getName());
+      eventViewHolder.eventCard.setOnClickListener(
           view -> {
             if (viewModel.isWalletSetup()) {
-              viewModel.setCurrentRollCall(rollCall);
               try {
-                PoPToken token = viewModel.getCurrentPopToken();
+                PoPToken token = viewModel.getCurrentPopToken(rollCall);
                 setCurrentFragment(
                     activity.getSupportFragmentManager(),
                     R.id.fragment_roll_call,
@@ -192,9 +200,7 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             } else {
               showWalletNotSetupWarning();
             }
-          };
-      eventViewHolder.eventCard.setOnClickListener(listener);
-      eventViewHolder.eventTitle.setText(rollCall.getName());
+          });
     }
   }
 
@@ -298,20 +304,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       return TYPE_HEADER;
     }
     return TYPE_EVENT;
-  }
-
-  @SuppressLint("NotifyDataSetChanged") // warranted by our implementation
-  public void replaceRollCalls(List<RollCall> rollCalls) {
-    this.rollCalls = rollCalls;
-    putEventsInMap();
-    notifyDataSetChanged();
-  }
-
-  @SuppressLint("NotifyDataSetChanged") // warranted by our implementation
-  public void replaceElections(List<Election> elections) {
-    this.elections = elections;
-    putEventsInMap();
-    notifyDataSetChanged();
   }
 
   public void showWalletNotSetupWarning() {

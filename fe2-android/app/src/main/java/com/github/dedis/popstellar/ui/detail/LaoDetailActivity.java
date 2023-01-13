@@ -105,7 +105,6 @@ public class LaoDetailActivity extends NavigationActivity {
       case SOCIAL_MEDIA:
         openSocialMediaTab();
         return false;
-
       case DISCONNECT:
         startActivity(HomeActivity.newIntent(this));
         return false;
