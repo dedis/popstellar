@@ -15,7 +15,6 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailActivityBinding;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
 import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
@@ -60,8 +59,6 @@ public class LaoDetailActivity extends NavigationActivity {
     String laoId =
         Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
     viewModel.subscribeToLao(laoId);
-    viewModel.subscribeToRollCalls(laoId);
-    viewModel.subscribeToElections(laoId);
 
     MainMenuTab tab = (MainMenuTab) getIntent().getExtras().get(Constants.TAB_EXTRA);
     if (tab == null) {
