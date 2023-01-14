@@ -59,9 +59,6 @@ public class DigitalCashViewModel extends NavigationViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> postTransactionEvent =
       new MutableLiveData<>();
 
-  private String laoId;
-  private final MutableLiveData<String> mRollCallId = new MutableLiveData<>();
-
   /* Is used to change the lao Coin amount on the home fragment*/
   private final MutableLiveData<SingleEvent<Boolean>> updateLaoCoinEvent = new MutableLiveData<>();
 
@@ -205,7 +202,7 @@ public class DigitalCashViewModel extends NavigationViewModel {
     /* Check if a Lao exist */
     LaoView laoView;
     try {
-      laoView = getCurrentLao();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -276,18 +273,6 @@ public class DigitalCashViewModel extends NavigationViewModel {
         new ScriptInput(TYPE, keyPair.getPublicKey(), sig));
   }
 
-  public String getLaoId() {
-    return laoId;
-  }
-
-  public void setLaoId(String laoId) {
-    this.laoId = laoId;
-  }
-
-  public void setRollCallId(String rollCallId) {
-    this.mRollCallId.setValue(rollCallId);
-  }
-
   public LAORepository getLaoRepository() {
     return laoRepository;
   }
@@ -298,12 +283,12 @@ public class DigitalCashViewModel extends NavigationViewModel {
 
   @Nullable
   public Set<PublicKey> getAttendeesFromLastRollCall() throws NoRollCallException {
-    return rollCallRepo.getLastClosedRollCall(laoId).getAttendees();
+    return rollCallRepo.getLastClosedRollCall(getLaoId()).getAttendees();
   }
 
   @Nullable
   public PublicKey getOrganizer() throws UnknownLaoException {
-    return getCurrentLao().getOrganizer();
+    return getLao().getOrganizer();
   }
 
   @Nullable
@@ -313,16 +298,17 @@ public class DigitalCashViewModel extends NavigationViewModel {
         .collect(Collectors.toList());
   }
 
-  public LaoView getCurrentLao() throws UnknownLaoException {
-    return laoRepository.getLaoView(laoId);
+  @Override
+  public LaoView getLao() throws UnknownLaoException {
+    return laoRepository.getLaoView(getLaoId());
   }
 
   public Set<PublicKey> getAllAttendees() {
-    return rollCallRepo.getAllAttendeesInLao(laoId);
+    return rollCallRepo.getAllAttendeesInLao(getLaoId());
   }
 
   public PoPToken getValidToken() throws KeyException {
-    return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
+    return keyManager.getValidPoPToken(getLaoId(), rollCallRepo.getLastClosedRollCall(getLaoId()));
   }
 
   public boolean canPerformTransaction(
@@ -369,23 +355,23 @@ public class DigitalCashViewModel extends NavigationViewModel {
   }
 
   public List<TransactionObject> getTransactionsForUser(PublicKey user) {
-    return digitalCashRepo.getTransactions(laoId, user);
+    return digitalCashRepo.getTransactions(getLaoId(), user);
   }
 
   public Observable<List<TransactionObject>> getTransactionsObservable() {
     try {
-      return digitalCashRepo.getTransactionsObservable(laoId, getValidToken().getPublicKey());
+      return digitalCashRepo.getTransactionsObservable(getLaoId(), getValidToken().getPublicKey());
     } catch (KeyException e) {
       return Observable.error(e);
     }
   }
 
   public Observable<Set<RollCall>> getRollCallsObservable() {
-    return rollCallRepo.getRollCallsObservableInLao(laoId);
+    return rollCallRepo.getRollCallsObservableInLao(getLaoId());
   }
 
   public long getUserBalance(PublicKey user) {
-    return digitalCashRepo.getUserBalance(laoId, user);
+    return digitalCashRepo.getUserBalance(getLaoId(), user);
   }
 
   public long getOwnBalance() throws KeyException {

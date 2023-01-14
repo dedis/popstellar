@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashMainActivityBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
@@ -25,6 +24,7 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.security.GeneralSecurityException;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -42,16 +42,17 @@ public class DigitalCashActivity extends NavigationActivity {
     binding = DigitalCashMainActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     navigationViewModel = viewModel = obtainViewModel(this);
-
-    navigationViewModel.setCurrentTab(MainMenuTab.DIGITAL_CASH);
+    String laoId = Objects.requireNonNull(getIntent().getStringExtra(Constants.LAO_ID_EXTRA));
+    Log.d(TAG, "Opening digitalCash with id " + laoId);
     setupDrawer(
+        laoId,
         binding.digitalCashNavigationDrawer,
         binding.digitalCashAppBar,
         binding.digitalCashDrawerLayout);
+
+    navigationViewModel.setCurrentTab(MainMenuTab.DIGITAL_CASH);
     setupBottomNavBar();
     openHomeTab();
-
-    loadIntentData();
   }
 
   @Override
@@ -64,14 +65,6 @@ public class DigitalCashActivity extends NavigationActivity {
       // We do not display the security error to the user
       Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
-    }
-  }
-
-  public void loadIntentData() {
-    if (getIntent().getExtras() != null) {
-      String id = getIntent().getExtras().getString(Constants.LAO_ID_EXTRA, "");
-      viewModel.setLaoId(id);
-      viewModel.setRollCallId(getIntent().getExtras().getString(Constants.ROLL_CALL_ID, ""));
     }
   }
 
@@ -174,7 +167,7 @@ public class DigitalCashActivity extends NavigationActivity {
 
   private boolean openIssueTab() {
     try {
-      PublicKey organizerKey = viewModel.getCurrentLao().getOrganizer();
+      PublicKey organizerKey = viewModel.getLao().getOrganizer();
       if (!viewModel.getOwnKey().equals(organizerKey)) {
         ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
         return false;
@@ -194,12 +187,7 @@ public class DigitalCashActivity extends NavigationActivity {
   }
 
   private void openSocialMediaTab() {
-    try {
-      LaoView laoView = viewModel.getCurrentLao();
-      startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId(), laoView.getName()));
-    } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
-    }
+    startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId()));
   }
 
   private void openInviteTab() {
