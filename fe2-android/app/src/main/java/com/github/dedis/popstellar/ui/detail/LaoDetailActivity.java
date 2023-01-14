@@ -83,6 +83,11 @@ public class LaoDetailActivity extends NavigationActivity {
   }
 
   @Override
+  public void onBackPressed() {
+    openEventsTab();
+  }
+
+  @Override
   protected boolean openTab(MainMenuTab tab) {
     switch (tab) {
       case INVITE:

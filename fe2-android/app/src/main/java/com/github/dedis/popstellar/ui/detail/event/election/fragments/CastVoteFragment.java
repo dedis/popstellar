@@ -177,5 +177,6 @@ public class CastVoteFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.vote);
+    viewModel.setIsTab(false);
   }
 }

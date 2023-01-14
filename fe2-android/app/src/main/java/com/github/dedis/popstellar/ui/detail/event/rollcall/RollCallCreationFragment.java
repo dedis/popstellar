@@ -105,6 +105,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.roll_call_setup_title);
+    viewModel.setIsTab(false);
   }
 
   private void setupConfirmButton() {

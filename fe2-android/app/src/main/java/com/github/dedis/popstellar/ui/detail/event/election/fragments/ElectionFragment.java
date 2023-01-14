@@ -207,6 +207,7 @@ public class ElectionFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.election_title);
+    viewModel.setIsTab(false);
   }
 
   @Override

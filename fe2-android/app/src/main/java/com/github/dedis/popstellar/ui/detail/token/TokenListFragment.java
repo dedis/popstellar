@@ -42,6 +42,7 @@ public class TokenListFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.tokens);
+    viewModel.setIsTab(true);
   }
 
   @Nullable

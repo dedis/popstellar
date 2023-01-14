@@ -75,5 +75,6 @@ public class InviteFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.invite);
+    viewModel.setIsTab(true);
   }
 }
