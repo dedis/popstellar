@@ -41,7 +41,7 @@ public class TokenListFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(getString(R.string.tokens));
+    viewModel.setPageTitle(R.string.tokens);
   }
 
   @Nullable

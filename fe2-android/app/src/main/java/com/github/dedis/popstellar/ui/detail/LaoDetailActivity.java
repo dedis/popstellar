@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailActivityBinding;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
@@ -46,6 +47,8 @@ public class LaoDetailActivity extends NavigationActivity {
 
   @Inject Gson gson;
   @Inject GlobalNetworkManager networkManager;
+  @Inject
+  RollCallRepository rollCallRepository;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,6 +69,8 @@ public class LaoDetailActivity extends NavigationActivity {
     }
     navigationViewModel.setCurrentTab(tab);
     openTab(tab);
+
+    viewModel.addDisposable();
   }
 
   @Override

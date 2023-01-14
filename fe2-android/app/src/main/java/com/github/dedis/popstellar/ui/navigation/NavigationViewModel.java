@@ -8,6 +8,9 @@ import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.model.Role;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+
 /**
  * Abstract view model that provides the components of the navigation bar
  *
@@ -31,6 +34,8 @@ public abstract class NavigationViewModel extends AndroidViewModel {
   private final MutableLiveData<Boolean> isTab = new MutableLiveData<>(Boolean.TRUE);
 
   private final MutableLiveData<Integer> pageTitle = new MutableLiveData<>(0);
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   protected NavigationViewModel(@NonNull Application application) {
     super(application);
@@ -111,6 +116,16 @@ public abstract class NavigationViewModel extends AndroidViewModel {
     if (!this.pageTitle.getValue().equals(pageTitle)) {
       this.pageTitle.setValue(pageTitle);
     }
+  }
+
+  protected void addDisposable (Disposable disposable){
+    this.disposables.add(disposable);
+  }
+
+  @Override
+  protected void onCleared() {
+    super.onCleared();
+    disposables.dispose();
   }
 
   private Role determineRole() {

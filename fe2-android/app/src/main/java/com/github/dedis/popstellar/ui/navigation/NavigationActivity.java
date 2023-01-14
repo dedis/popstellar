@@ -9,8 +9,24 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.Role;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
+import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
+import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * This abstract activity encapsulate the redundant behavior of an activity with a navigation bar
@@ -18,11 +34,16 @@ import com.google.android.material.navigation.NavigationView;
  * <p>An activity extending this must instantiate the navigationViewModel in its onCreate and it
  * should call setupDrawer with the navigationView as parameter.
  */
+@AndroidEntryPoint
 public abstract class NavigationActivity extends AppCompatActivity {
 
   private static final String TAG = NavigationActivity.class.getSimpleName();
 
   protected NavigationViewModel navigationViewModel;
+
+  @Inject RollCallRepository rollCallRepo;
+
+  @Inject Wallet wallet;
 
   /**
    * Setup the navigation bar listeners given the navigation bar view
@@ -110,6 +131,34 @@ public abstract class NavigationActivity extends AppCompatActivity {
     navigationViewModel.isAttendee().observe(this, any -> navigationViewModel.updateRole());
   }
 
+  public void observeRollCalls(String laoId) {
+    navigationViewModel.addDisposable(
+        rollCallRepo
+            .getRollCallsObservableInLao(laoId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                idSet -> {
+                  List<RollCall> attendedRollCalls =
+                      idSet.stream()
+                          .map(
+                              id -> {
+                                try {
+                                  return rollCallRepo.getRollCallWithPersistentId(laoId, id);
+                                } catch (UnknownRollCallException e) {
+                                  // Roll calls whose ids are in that list may not be absent
+                                  throw new IllegalStateException(
+                                      "Could not fetch roll call with id " + id);
+                                }
+                              })
+                          .filter(rollCall -> isRollCallAttended(rollCall, laoId))
+                          .collect(Collectors.toList());
+                  boolean hasUserAttendedLastRoll =
+                      attendedRollCalls.contains(rollCallRepo.getLastClosedRollCall(laoId));
+                  navigationViewModel.isAttendee().setValue(hasUserAttendedLastRoll);
+                }));
+  }
+
   private void setupHeaderLaoName(NavigationView navigationView, String laoName) {
     TextView laoNameView =
         navigationView
@@ -124,6 +173,26 @@ public abstract class NavigationActivity extends AppCompatActivity {
             .getHeaderView(0) // We have only one header
             .findViewById(R.id.drawer_header_role);
     roleView.setText(role.getStringId());
+  }
+
+  /**
+   * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall
+   * or was the organizer
+   *
+   * @param rollcall the roll-call considered
+   * @return boolean saying whether user attended or organized the given roll call
+   */
+  private boolean isRollCallAttended(RollCall rollcall, String laoId) {
+    // find out if user has attended the rollcall
+    try {
+      PublicKey pk = wallet.generatePoPToken(laoId, rollcall.getPersistentId()).getPublicKey();
+      return rollcall.isClosed()
+          && (rollcall.getAttendees().contains(pk)
+              || Boolean.TRUE.equals(isOrganizer().getValue()));
+    } catch (KeyGenerationException | UninitializedWalletException e) {
+      Log.e(TAG, "failed to retrieve public key from wallet", e);
+      return false;
+    }
   }
 
   /**

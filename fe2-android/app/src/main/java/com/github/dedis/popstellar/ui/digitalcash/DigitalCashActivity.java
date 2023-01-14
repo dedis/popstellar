@@ -25,7 +25,6 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.security.GeneralSecurityException;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -195,8 +194,12 @@ public class DigitalCashActivity extends NavigationActivity {
   }
 
   private void openSocialMediaTab() {
-    LaoView laoView = viewModel.getCurrentLaoValue();
-    startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId(), laoView.getName()));
+    try {
+      LaoView laoView = viewModel.getCurrentLao();
+      startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId(), laoView.getName()));
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
+    }
   }
 
   private void openInviteTab() {

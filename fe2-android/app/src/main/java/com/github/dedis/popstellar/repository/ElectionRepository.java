@@ -50,7 +50,7 @@ public class ElectionRepository {
    * @throws UnknownElectionException if no election with this id exist in this lao
    */
   @NonNull
-  public Election getElection(@NonNull String laoId, @NonNull String electionId)
+  public com.github.dedis.popstellar.model.objects.Election getElection(@NonNull String laoId, @NonNull String electionId)
       throws UnknownElectionException {
     return getLaoElections(laoId).getElection(electionId);
   }

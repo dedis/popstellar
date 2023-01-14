@@ -232,11 +232,12 @@ public class LaoDetailViewModel extends NavigationViewModel implements QRCodeSca
    *
    * @param votes the corresponding votes for that election
    */
-  public Completable sendVote(String electionId, List<PlainVote> votes) {
+  public Completable sendVote(List<PlainVote> votes) {
     Election election;
     try {
-      election = electionRepo.getElection(laoId, electionId);
+      election = electionRepo.getElection(laoId, currentElection);
     } catch (UnknownElectionException e) {
+      Log.d(TAG, "failed to retrieve current election");
       return Completable.error(e);
     }
 
@@ -573,8 +574,11 @@ public class LaoDetailViewModel extends NavigationViewModel implements QRCodeSca
     return mNbAttendees;
   }
 
-  public Observable<List<ConsensusNode>> getNodes() throws UnknownLaoException {
-    return laoRepository.getNodesByChannel(getLaoView().getChannel());
+  public LiveData<List<ConsensusNode>> getNodes() throws UnknownLaoException {
+    return LiveDataReactiveStreams.fromPublisher(
+        laoRepository
+            .getNodesByChannel(getLaoView().getChannel())
+            .toFlowable(BackpressureStrategy.LATEST));
   }
 
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
@@ -683,29 +687,89 @@ public class LaoDetailViewModel extends NavigationViewModel implements QRCodeSca
             .throttleLatest(50, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
+  }
 
+  public void subscribeToRollCalls(String laoId) {
     disposables.add(
-        laoRepository
-            .getLaoObservable(laoId)
+        rollCallRepo
+            .getRollCallsObservableInLao(laoId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                laoView -> {
-                  Log.d(TAG, "got an update for lao: " + laoView.getName());
+                idSet -> {
+                  List<RollCall> rollCallList =
+                      idSet.stream()
+                          .map(
+                              id -> {
+                                try {
+                                  return rollCallRepo.getRollCallWithPersistentId(laoId, id);
+                                } catch (UnknownRollCallException e) {
+                                  // Roll calls whose ids are in that list may not be absent
+                                  throw new IllegalStateException(
+                                      "Could not fetch roll call with id " + id);
+                                }
+                              })
+                          .collect(Collectors.toList());
 
-                  mCurrentLao.postValue(laoView);
-                  setLaoName(laoView.getName());
+                  mRollCalls.setValue(rollCallList);
 
-                  boolean isOrganizer =
-                      laoView.getOrganizer().equals(keyManager.getMainPublicKey());
-                  setIsOrganizer(isOrganizer);
-                  setIsWitness(laoView.getWitnesses().contains(keyManager.getMainPublicKey()));
-                  },
-                error -> Log.d(TAG, "error updating LAO :" + error)));
+                  List<RollCall> attendedRollCall =
+                      rollCallList.stream()
+                          .filter(this::attendedOrOrganized)
+                          .collect(Collectors.toList());
+                  Log.d(TAG, "attended roll calls: " + attendedRollCall);
+
+                  setIsAttendee(
+                      attendedRollCall.contains(rollCallRepo.getLastClosedRollCall(laoId)));
+                },
+                error -> Log.d(TAG, "Error updating Roll Call : " + error)));
   }
 
-  public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
-    return keyManager.getPoPToken(getLaoView(), rollCall);
+  public void subscribeToElections(String laoId) {
+
+    disposables.add(
+        electionRepo
+            .getElectionsObservable(laoId)
+            .subscribeOn(Schedulers.io())
+            .map(
+                ids ->
+                    ids.stream()
+                        .map(
+                            id -> {
+                              try {
+                                return electionRepo.getElectionObservable(laoId, id);
+                              } catch (UnknownElectionException e) {
+                                // Election whose ids are in that list may not be absent
+                                throw new IllegalStateException(
+                                    "Could not fetch election with id " + id);
+                              }
+                            })
+                        .collect(Collectors.toList()))
+            .flatMap(
+                subjects ->
+                    Observable.combineLatest(
+                        subjects,
+                        elections ->
+                            // Sort the election list. That way it stays somewhat consistent over
+                            // the updates
+                            Arrays.stream(elections)
+                                .map(Election.class::cast)
+                                .sorted(Comparator.comparing(Election::getCreation).reversed())
+                                .collect(Collectors.toList())))
+            .lift(suppressErrors(err -> Log.e(TAG, "Error creating election list : ", err)))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(mElections::setValue));
+  }
+
+  private void updateCurrentObjects() throws UnknownRollCallException {
+    if (currentRollCall != null) {
+      currentRollCall =
+          rollCallRepo.getRollCallWithPersistentId(laoId, currentRollCall.getPersistentId());
+    }
+  }
+
+  public PoPToken getCurrentPopToken() throws KeyException, UnknownLaoException {
+    return keyManager.getPoPToken(getLaoView(), currentRollCall);
   }
 
   public boolean isWalletSetup() {
