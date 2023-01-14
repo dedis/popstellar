@@ -45,7 +45,6 @@ public class SocialMediaViewModel extends NavigationViewModel {
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String SOCIAL = "social";
   public static final Integer MAX_CHAR_NUMBERS = 300;
-  private String laoId;
 
   /*
    * LiveData objects for capturing events
@@ -113,10 +112,6 @@ public class SocialMediaViewModel extends NavigationViewModel {
     mNumberCharsLeft.setValue(numberChars);
   }
 
-  public void setLaoId(String laoId) {
-    this.laoId = laoId;
-  }
-
   public LiveData<SocialMediaTab> getBottomNavigationTab() {
     return bottomNavigationTab;
   }
@@ -141,7 +136,7 @@ public class SocialMediaViewModel extends NavigationViewModel {
 
     LaoView laoView;
     try {
-      laoView = getCurrentLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
@@ -169,7 +164,7 @@ public class SocialMediaViewModel extends NavigationViewModel {
 
     final LaoView laoView;
     try {
-      laoView = getCurrentLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
@@ -194,13 +189,13 @@ public class SocialMediaViewModel extends NavigationViewModel {
 
   public Observable<List<Chirp>> getChirps() {
     return socialMediaRepository
-        .getChirpsOfLao(laoId)
+        .getChirpsOfLao(getLaoId())
         // Retrieve chirp subjects per id
         .map(
             ids -> {
               List<Observable<Chirp>> chirps = new ArrayList<>(ids.size());
               for (MessageID id : ids) {
-                chirps.add(socialMediaRepository.getChirp(laoId, id));
+                chirps.add(socialMediaRepository.getChirp(getLaoId(), id));
               }
               return chirps;
             })
@@ -257,19 +252,12 @@ public class SocialMediaViewModel extends NavigationViewModel {
     this.disposables.add(disposable);
   }
 
-  public LaoView getLaoView(String laoId) throws UnknownLaoException {
-    return laoRepository.getLaoView(laoId);
-  }
-
-  public LaoView getCurrentLaoView() throws UnknownLaoException {
-    return getLaoView(laoId);
-  }
-
-  public String getLaoId() {
-    return laoId;
+  @Override
+  public LaoView getLao() throws UnknownLaoException {
+    return laoRepository.getLaoView(getLaoId());
   }
 
   public PoPToken getValidPoPToken() throws KeyException {
-    return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
+    return keyManager.getValidPoPToken(getLaoId(), rollCallRepo.getLastClosedRollCall(getLaoId()));
   }
 }

@@ -18,8 +18,10 @@ import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
 import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.Constants;
 
 import java.security.GeneralSecurityException;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -43,20 +45,11 @@ public class SocialMediaActivity extends NavigationActivity {
     setContentView(binding.getRoot());
     navigationViewModel = viewModel = obtainViewModel(this);
 
-    // When we launch the social media from a lao, it directly sets its id and name
-    if (getIntent().getExtras() != null) {
-      String laoId = getIntent().getExtras().getString(LAO_ID);
-      String laoName = getIntent().getExtras().getString(LAO_NAME);
+    String laoId = Objects.requireNonNull(getIntent().getStringExtra(Constants.LAO_ID_EXTRA));
 
-      if (laoId != null) {
-        viewModel.setLaoId(laoId);
-      }
-      if (laoName != null) {
-        viewModel.setLaoName(laoName);
-      }
-    }
     navigationViewModel.setCurrentTab(MainMenuTab.SOCIAL_MEDIA);
     setupDrawer(
+        laoId,
         binding.socialMediaNavigationDrawer,
         binding.socialMediaAppBar,
         binding.socialMediaDrawerLayout);
@@ -196,10 +189,9 @@ public class SocialMediaActivity extends NavigationActivity {
     startActivity(DigitalCashActivity.newIntent(this, viewModel.getLaoId()));
   }
 
-  public static Intent newIntent(Context ctx, String laoId, String laoName) {
+  public static Intent newIntent(Context ctx, String laoId) {
     Intent intent = new Intent(ctx, SocialMediaActivity.class);
-    intent.putExtra(LAO_ID, laoId);
-    intent.putExtra(LAO_NAME, laoName);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
     return intent;
   }
 
