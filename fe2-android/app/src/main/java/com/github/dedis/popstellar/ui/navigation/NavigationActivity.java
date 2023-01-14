@@ -12,21 +12,22 @@ import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.RollCallRepository;
-import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
-import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
-import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.keys.*;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * This abstract activity encapsulate the redundant behavior of an activity with a navigation bar
@@ -42,7 +43,8 @@ public abstract class NavigationActivity extends AppCompatActivity {
   protected NavigationViewModel navigationViewModel;
 
   @Inject RollCallRepository rollCallRepo;
-
+  @Inject LAORepository laoRepo;
+  @Inject KeyManager keyManager;
   @Inject Wallet wallet;
 
   /**
@@ -54,8 +56,12 @@ public abstract class NavigationActivity extends AppCompatActivity {
    * @param navigationView the view
    */
   protected void setupDrawer(
-      NavigationView navigationView, MaterialToolbar toolbar, DrawerLayout drawerLayout) {
+      String laoId,
+      NavigationView navigationView,
+      MaterialToolbar toolbar,
+      DrawerLayout drawerLayout) {
 
+    navigationViewModel.setLaoId(laoId);
     observeRoles();
 
     // Listen to click on left icon of toolbar
@@ -104,10 +110,13 @@ public abstract class NavigationActivity extends AppCompatActivity {
           return selected;
         });
 
-    // Update the name of the Lao in the drawer header when it changes
-    navigationViewModel
-        .getLaoName()
-        .observe(this, laoName -> setupHeaderLaoName(navigationView, laoName));
+    observeLao(laoId);
+    try {
+      setupHeaderLaoName(navigationView, navigationViewModel.getLao().getName());
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
+      startActivity(HomeActivity.newIntent(this));
+    }
 
     // Update the user's role in the drawer header when it changes
     navigationViewModel.getRole().observe(this, role -> setupHeaderRole(navigationView, role));
@@ -122,41 +131,62 @@ public abstract class NavigationActivity extends AppCompatActivity {
                 toolbar.setTitle(resId);
               }
             });
+
+    observeRollCalls(laoId);
   }
 
   private void observeRoles() {
     // Observe any change in the following variable to update the role
-    navigationViewModel.isOrganizer().observe(this, any -> navigationViewModel.updateRole());
     navigationViewModel.isWitness().observe(this, any -> navigationViewModel.updateRole());
     navigationViewModel.isAttendee().observe(this, any -> navigationViewModel.updateRole());
   }
 
-  public void observeRollCalls(String laoId) {
+  private void observeRollCalls(String laoId) {
     navigationViewModel.addDisposable(
         rollCallRepo
             .getRollCallsObservableInLao(laoId)
-            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                idSet -> {
-                  List<RollCall> attendedRollCalls =
-                      idSet.stream()
-                          .map(
-                              id -> {
+                rollCalls -> {
+                  boolean isLastRollCallAttended =
+                      rollCalls.stream()
+                          .filter(rc -> isRollCallAttended(rc, laoId))
+                          .anyMatch(
+                              rc -> {
                                 try {
-                                  return rollCallRepo.getRollCallWithPersistentId(laoId, id);
-                                } catch (UnknownRollCallException e) {
-                                  // Roll calls whose ids are in that list may not be absent
-                                  throw new IllegalStateException(
-                                      "Could not fetch roll call with id " + id);
+                                  return rc.equals(rollCallRepo.getLastClosedRollCall(laoId));
+                                } catch (NoRollCallException e) {
+                                  return false;
                                 }
-                              })
-                          .filter(rollCall -> isRollCallAttended(rollCall, laoId))
-                          .collect(Collectors.toList());
-                  boolean hasUserAttendedLastRoll =
-                      attendedRollCalls.contains(rollCallRepo.getLastClosedRollCall(laoId));
-                  navigationViewModel.isAttendee().setValue(hasUserAttendedLastRoll);
-                }));
+                              });
+                  navigationViewModel.setIsAttendee(isLastRollCallAttended);
+                },
+                error ->
+                    ErrorUtils.logAndShow(this, TAG, error, R.string.unknown_roll_call_exception)));
+  }
+
+  private void observeLao(String laoId) {
+    navigationViewModel.addDisposable(
+        laoRepo
+            .getLaoObservable(laoId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                laoView -> {
+                  Log.d(TAG, "got an update for lao: " + laoView);
+
+                  navigationViewModel.setWitnessMessages(
+                      new ArrayList<>(laoView.getWitnessMessages().values()));
+                  navigationViewModel.setWitnesses(new ArrayList<>(laoView.getWitnesses()));
+
+                  boolean isOrganizer =
+                      laoView.getOrganizer().equals(keyManager.getMainPublicKey());
+                  navigationViewModel.setIsOrganizer(isOrganizer);
+                  navigationViewModel.setIsWitness(
+                      laoView.getWitnesses().contains(keyManager.getMainPublicKey()));
+
+                  navigationViewModel.updateRole();
+                },
+                error -> Log.d(TAG, "error updating LAO :" + error)));
   }
 
   private void setupHeaderLaoName(NavigationView navigationView, String laoName) {
@@ -175,20 +205,10 @@ public abstract class NavigationActivity extends AppCompatActivity {
     roleView.setText(role.getStringId());
   }
 
-  /**
-   * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall
-   * or was the organizer
-   *
-   * @param rollcall the roll-call considered
-   * @return boolean saying whether user attended or organized the given roll call
-   */
   private boolean isRollCallAttended(RollCall rollcall, String laoId) {
-    // find out if user has attended the rollcall
     try {
       PublicKey pk = wallet.generatePoPToken(laoId, rollcall.getPersistentId()).getPublicKey();
-      return rollcall.isClosed()
-          && (rollcall.getAttendees().contains(pk)
-              || Boolean.TRUE.equals(isOrganizer().getValue()));
+      return rollcall.isClosed() && rollcall.getAttendees().contains(pk);
     } catch (KeyGenerationException | UninitializedWalletException e) {
       Log.e(TAG, "failed to retrieve public key from wallet", e);
       return false;

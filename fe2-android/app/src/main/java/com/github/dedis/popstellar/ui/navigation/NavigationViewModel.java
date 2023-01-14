@@ -7,6 +7,13 @@ import androidx.annotation.StringRes;
 import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.model.Role;
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -21,24 +28,27 @@ public abstract class NavigationViewModel extends AndroidViewModel {
 
   private final MutableLiveData<MainMenuTab> currentTab = new MutableLiveData<>();
 
-  private final MutableLiveData<String> laoName = new MutableLiveData<>();
-
-  private final MutableLiveData<Boolean> isOrganizer = new MutableLiveData<>(Boolean.FALSE);
+  private boolean isOrganizer = false;
+  private String laoId;
 
   private final MutableLiveData<Boolean> isWitness = new MutableLiveData<>(Boolean.FALSE);
-
   private final MutableLiveData<Boolean> isAttendee = new MutableLiveData<>(Boolean.FALSE);
-
   private final MutableLiveData<Role> role = new MutableLiveData<>(Role.MEMBER);
-
   private final MutableLiveData<Boolean> isTab = new MutableLiveData<>(Boolean.TRUE);
-
   private final MutableLiveData<Integer> pageTitle = new MutableLiveData<>(0);
+  private final MutableLiveData<List<PublicKey>> witnesses =
+      new MutableLiveData<>(new ArrayList<>());
+  private final MutableLiveData<List<WitnessMessage>> witnessMessages =
+      new MutableLiveData<>(new ArrayList<>());
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   protected NavigationViewModel(@NonNull Application application) {
     super(application);
+  }
+
+  public String getLaoId() {
+    return laoId;
   }
 
   public LiveData<MainMenuTab> getCurrentTab() {
@@ -49,15 +59,7 @@ public abstract class NavigationViewModel extends AndroidViewModel {
     currentTab.setValue(tab);
   }
 
-  public MutableLiveData<String> getLaoName() {
-    return laoName;
-  }
-
-  public void setLaoName(String laoName) {
-    this.laoName.setValue(laoName);
-  }
-
-  public MutableLiveData<Boolean> isOrganizer() {
+  public boolean isOrganizer() {
     return isOrganizer;
   }
 
@@ -81,6 +83,16 @@ public abstract class NavigationViewModel extends AndroidViewModel {
     return pageTitle;
   }
 
+  public abstract LaoView getLao() throws UnknownLaoException;
+
+  public LiveData<List<PublicKey>> getWitnesses() {
+    return witnesses;
+  }
+
+  public LiveData<List<WitnessMessage>> getWitnessMessages() {
+    return witnessMessages;
+  }
+
   public void updateRole() {
     Role role = determineRole();
     if (this.role.getValue() != role) {
@@ -88,10 +100,12 @@ public abstract class NavigationViewModel extends AndroidViewModel {
     }
   }
 
+  public void setLaoId(String laoId) {
+    this.laoId = laoId;
+  }
+
   public void setIsOrganizer(boolean isOrganizer) {
-    if (this.isOrganizer.getValue() != isOrganizer) {
-      this.isOrganizer.setValue(isOrganizer);
-    }
+    this.isOrganizer = isOrganizer;
   }
 
   public void setIsWitness(boolean isWitness) {
@@ -118,7 +132,15 @@ public abstract class NavigationViewModel extends AndroidViewModel {
     }
   }
 
-  protected void addDisposable (Disposable disposable){
+  public void setWitnesses(List<PublicKey> witnesses) {
+    this.witnesses.setValue(witnesses);
+  }
+
+  public void setWitnessMessages(List<WitnessMessage> messages) {
+    this.witnessMessages.setValue(messages);
+  }
+
+  public void addDisposable(Disposable disposable) {
     this.disposables.add(disposable);
   }
 
@@ -129,7 +151,7 @@ public abstract class NavigationViewModel extends AndroidViewModel {
   }
 
   private Role determineRole() {
-    if (isOrganizer.getValue()) {
+    if (isOrganizer) {
       return Role.ORGANIZER;
     }
     if (isWitness.getValue()) {

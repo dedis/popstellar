@@ -68,7 +68,7 @@
 //        @Override
 //        protected void before() throws UnknownLaoException, GeneralSecurityException {
 //          hiltAndroidRule.inject();
-//          when(laoRepository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
+//          when(laoRepository.getLao(any())).thenAnswer(invocation -> new LaoView(LAO));
 //
 //          when(laoRepository.getLaoObservable(anyString()))
 //              .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
