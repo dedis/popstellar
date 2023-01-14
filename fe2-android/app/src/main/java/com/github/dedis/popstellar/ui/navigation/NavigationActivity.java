@@ -83,7 +83,7 @@ public abstract class NavigationActivity extends AppCompatActivity {
             this,
             isTab ->
                 toolbar.setNavigationIcon(
-                    isTab ? R.drawable.menu_drawer_icon : R.drawable.ic_back_arrow));
+                    isTab ? R.drawable.menu_icon : R.drawable.back_arrow_icon));
 
     // Observe changes to the tab selected
     navigationViewModel

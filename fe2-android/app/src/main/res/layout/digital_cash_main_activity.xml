@@ -47,7 +47,7 @@
           android:layout_width="match_parent"
           android:layout_height="?attr/actionBarSize"
           app:navigationContentDescription="Open Menu"
-          app:navigationIcon="@drawable/menu_drawer_icon" />
+          app:navigationIcon="@drawable/menu_icon" />
       </com.google.android.material.appbar.AppBarLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
