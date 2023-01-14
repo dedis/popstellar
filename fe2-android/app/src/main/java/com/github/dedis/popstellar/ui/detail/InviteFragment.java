@@ -10,8 +10,11 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.InviteFragmentBinding;
+import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
@@ -22,6 +25,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class InviteFragment extends Fragment {
+
+  private static final String TAG = InviteFragment.class.getSimpleName();
 
   @Inject Gson gson;
   @Inject GlobalNetworkManager networkManager;
@@ -46,24 +51,23 @@ public class InviteFragment extends Fragment {
     binding.laoPropertiesIdentifierText.setText(viewModel.getPublicKey().getEncoded());
     binding.laoPropertiesServerText.setText(networkManager.getCurrentUrl());
 
-    viewModel
-        .getCurrentLao()
-        .observe(
-            requireActivity(),
-            laoView -> {
-              // Set the QR code
-              ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), laoView.getId());
-              Bitmap myBitmap = QRCode.from(gson.toJson(data)).withSize(QR_SIDE, QR_SIDE).bitmap();
-              binding.channelQrCode.setImageBitmap(myBitmap);
+    try {
+      LaoView laoView = viewModel.getLao();
 
-              binding.laoPropertiesNameText.setText(laoView.getName());
-            });
+      ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), laoView.getId());
+      Bitmap myBitmap = QRCode.from(gson.toJson(data)).withSize(QR_SIDE, QR_SIDE).bitmap();
+      binding.channelQrCode.setImageBitmap(myBitmap);
+      binding.laoPropertiesNameText.setText(laoView.getName());
 
-    viewModel
-        .getRole()
-        .observe(
-            requireActivity(), role -> binding.laoPropertiesRoleText.setText(role.getStringId()));
+      viewModel
+          .getRole()
+          .observe(
+              requireActivity(), role -> binding.laoPropertiesRoleText.setText(role.getStringId()));
 
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
+      return null;
+    }
     return binding.getRoot();
   }
 

@@ -350,8 +350,7 @@ public class ElectionFragment extends Fragment {
 
   private EnumMap<EventState, Integer> buildManagementVisibilityMap() {
     // Only the organizer may start or end an election
-    int organizerVisibility =
-        Boolean.TRUE.equals(viewModel.isOrganizer().getValue()) ? View.VISIBLE : View.GONE;
+    int organizerVisibility = viewModel.isOrganizer() ? View.VISIBLE : View.GONE;
 
     EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
     map.put(EventState.CREATED, organizerVisibility);

@@ -1,8 +1,12 @@
 package com.github.dedis.popstellar.ui.detail.event.consensus;
 
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
+
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.GridView;
 
 import androidx.annotation.NonNull;
@@ -10,26 +14,31 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionStartFragmentBinding;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.ConsensusNode;
+import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
+import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.utility.error.*;
-
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.*;
-
-import javax.inject.Inject;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownElectionException;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 
-import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+
+import javax.inject.Inject;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link ElectionStartFragment#newInstance} factory
@@ -101,7 +110,7 @@ public class ElectionStartFragment extends Fragment {
     setupButtonListeners(viewModel, electionId);
 
     try {
-      LaoView laoView = viewModel.getLaoView();
+      LaoView laoView = viewModel.getLao();
       ownNode = laoView.getNode(viewModel.getPublicKey());
 
       if (ownNode == null) {

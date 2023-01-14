@@ -13,8 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailActivityBinding;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
@@ -25,8 +23,6 @@ import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.gson.Gson;
 
 import java.security.GeneralSecurityException;
@@ -47,8 +43,6 @@ public class LaoDetailActivity extends NavigationActivity {
 
   @Inject Gson gson;
   @Inject GlobalNetworkManager networkManager;
-  @Inject
-  RollCallRepository rollCallRepository;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,12 +50,16 @@ public class LaoDetailActivity extends NavigationActivity {
     binding = LaoDetailActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     navigationViewModel = viewModel = obtainViewModel(this);
-    setupDrawer(
-        binding.laoDetailNavigationDrawer, binding.laoTopAppBar, binding.laoDetailDrawerLayout);
 
     String laoId =
         Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
     viewModel.subscribeToLao(laoId);
+
+    setupDrawer(
+        laoId,
+        binding.laoDetailNavigationDrawer,
+        binding.laoTopAppBar,
+        binding.laoDetailDrawerLayout);
 
     MainMenuTab tab = (MainMenuTab) getIntent().getExtras().get(Constants.TAB_EXTRA);
     if (tab == null) {
@@ -69,8 +67,6 @@ public class LaoDetailActivity extends NavigationActivity {
     }
     navigationViewModel.setCurrentTab(tab);
     openTab(tab);
-
-    viewModel.addDisposable();
   }
 
   @Override
@@ -141,12 +137,7 @@ public class LaoDetailActivity extends NavigationActivity {
   }
 
   private void openSocialMediaTab() {
-    try {
-      LaoView laoView = viewModel.getLaoView();
-      startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId(), laoView.getName()));
-    } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(this, TAG, R.string.error_no_lao);
-    }
+    startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId()));
   }
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {

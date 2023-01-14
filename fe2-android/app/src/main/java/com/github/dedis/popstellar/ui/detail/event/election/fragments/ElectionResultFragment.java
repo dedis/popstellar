@@ -56,7 +56,7 @@ public class ElectionResultFragment extends Fragment {
 
     String electionId = requireArguments().getString(ELECTION_ID);
     try {
-      LaoView laoView = viewModel.getLaoView();
+      LaoView laoView = viewModel.getLao();
       Election election = electionRepository.getElection(viewModel.getLaoId(), electionId);
 
       // Setting the Lao Name

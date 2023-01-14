@@ -107,7 +107,7 @@ public class CastVoteFragment extends Fragment {
 
   private boolean setLaoName() {
     try {
-      LaoView laoView = viewModel.getLaoView();
+      LaoView laoView = viewModel.getLao();
       binding.castVoteLaoName.setText(laoView.getName());
       return false;
     } catch (UnknownLaoException e) {
