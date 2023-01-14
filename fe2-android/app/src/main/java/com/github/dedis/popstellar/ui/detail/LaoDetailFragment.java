@@ -2,7 +2,9 @@ package com.github.dedis.popstellar.ui.detail;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,16 +15,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
+import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.ui.detail.event.*;
+import com.github.dedis.popstellar.ui.detail.event.EventListAdapter;
+import com.github.dedis.popstellar.ui.detail.event.EventListDivider;
+import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+
+import javax.inject.Inject;
 
 /** Fragment used to display the LAO Detail UI */
 @AndroidEntryPoint
@@ -49,11 +54,16 @@ public class LaoDetailFragment extends Fragment {
     binding = LaoDetailFragmentBinding.inflate(inflater, container, false);
 
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    binding.setViewModel(viewModel);
     binding.setLifecycleOwner(requireActivity());
 
     FloatingActionButton addButton = binding.addEvent;
     addButton.setOnClickListener(fabListener);
+    viewModel
+        .getRole()
+        .observe(
+            requireActivity(),
+            role ->
+                addButton.setVisibility(role.equals(Role.ORGANIZER) ? View.VISIBLE : View.GONE));
 
     binding.addElection.setOnClickListener(openCreateEvent(EventType.ELECTION));
     binding.addElectionText.setOnClickListener(openCreateEvent(EventType.ELECTION));

@@ -34,8 +34,6 @@ public class SocialMediaActivity extends NavigationActivity {
   private SocialMediaActivityBinding binding;
 
   public static final String TAG = SocialMediaActivity.class.getSimpleName();
-  public static final String LAO_ID = "LAO_ID";
-  public static final String LAO_NAME = "LAO_NAME";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

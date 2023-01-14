@@ -2,15 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <data>
-
-    <import type="android.view.View" />
-
-    <variable
-      name="view_model"
-      type="com.github.dedis.popstellar.ui.detail.LaoDetailViewModel" />
-  </data>
-
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_lao_detail"
 
@@ -42,11 +33,11 @@
         android:layout_height="wrap_content"
         app:fabSize="normal"
         android:elevation="@dimen/floating_action_button_elevation"
-        android:visibility="@{view_model.isOrganizer()? View.VISIBLE : View.GONE}"
         android:layout_marginBottom="@dimen/fab_margin_bottom"
         android:layout_marginEnd="@dimen/fab_margin_end"
         android:src="@drawable/ic_plus"
         android:backgroundTint="@color/colorPrimary"
+        app:backgroundTint="@color/colorPrimary"
         android:tintMode="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
