@@ -48,8 +48,6 @@
   <string name="present_header_title">Current</string>
   <string name="future_header_title">Upcoming</string>
   <string name="past_header_title">Previous</string>
-  <string name="qr_icon_title">Lao\'s QR code</string>
-  <string name="lao_properties_title">Lao Properties</string>
   <string name="lao_properties_server_title">Connected to server</string>
   <string name="lao_properties_identifier_title">Identifier</string>
 
@@ -288,9 +286,7 @@
   <string name="clear_failure">Clearing was unsuccessful</string>
 
   <!--  Content description -->
-  <string name="qr_code_description">Open Qr code image</string>
   <string name="qr_code_image_description">Qr code image to display LAO connecting information</string>
-  <string name="close_qr_description">Close Qr code</string>
   <string name="status_icon_description">Status of the event</string>
   <string name="time_icon_description">Time icon</string>
   <string name="expand_icon_description">Expand</string>

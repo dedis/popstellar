@@ -49,7 +49,6 @@ import io.reactivex.Observable;
 import io.reactivex.*;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
@@ -555,14 +554,6 @@ public class LaoDetailViewModel extends NavigationViewModel implements QRCodeSca
     return mIsSignedByCurrentWitness;
   }
 
-  public LiveData<List<PublicKey>> getWitnesses() {
-    return mWitnesses;
-  }
-
-  public LiveData<List<WitnessMessage>> getWitnessMessages() {
-    return mWitnessMessages;
-  }
-
   public LiveData<Integer> getNbAttendees() {
     return mNbAttendees;
   }
@@ -785,18 +776,5 @@ public class LaoDetailViewModel extends NavigationViewModel implements QRCodeSca
                         getApplication(), TAG, error, R.string.error_update_lao)));
 
     return true;
-  }
-
-  /**
-   * This function should be used to add disposable object generated from subscription to sent
-   * messages flows
-   *
-   * <p>They will be disposed of when the view model is cleaned which ensures that the subscription
-   * stays relevant throughout the whole lifecycle of the activity and it is not bound to a fragment
-   *
-   * @param disposable to add
-   */
-  public void addDisposable(Disposable disposable) {
-    this.disposables.add(disposable);
   }
 }

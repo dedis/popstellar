@@ -37,7 +37,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 
 @HiltViewModel
 public class SocialMediaViewModel extends NavigationViewModel {
@@ -50,7 +49,6 @@ public class SocialMediaViewModel extends NavigationViewModel {
    * LiveData objects for capturing events
    */
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
-  private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final MutableLiveData<SocialMediaTab> bottomNavigationTab =
       new MutableLiveData<>(SocialMediaTab.HOME);
 
@@ -237,19 +235,6 @@ public class SocialMediaViewModel extends NavigationViewModel {
   public void savePersistentData() throws GeneralSecurityException {
     ActivityUtils.activitySavingRoutine(
         networkManager, wallet, getApplication().getApplicationContext());
-  }
-
-  /**
-   * This function should be used to add disposable object generated from subscription to sent
-   * messages flows
-   *
-   * <p>They will be disposed of when the view model is cleaned which ensures that the subscription
-   * stays relevant throughout the whole lifecycle of the activity and it is not bound to a fragment
-   *
-   * @param disposable to add
-   */
-  public void addDisposable(Disposable disposable) {
-    this.disposables.add(disposable);
   }
 
   @Override

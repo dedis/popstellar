@@ -94,9 +94,9 @@ public abstract class NavigationViewModel extends AndroidViewModel {
   }
 
   public void updateRole() {
-    Role role = determineRole();
-    if (this.role.getValue() != role) {
-      this.role.setValue(role);
+    Role currentRole = determineRole();
+    if (role.getValue() != currentRole) {
+      this.role.setValue(currentRole);
     }
   }
 
@@ -109,19 +109,19 @@ public abstract class NavigationViewModel extends AndroidViewModel {
   }
 
   public void setIsWitness(boolean isWitness) {
-    if (this.isWitness.getValue() != isWitness) {
+    if (isWitness != this.isWitness.getValue()) {
       this.isWitness.setValue(isWitness);
     }
   }
 
   public void setIsAttendee(boolean isAttendee) {
-    if (this.isAttendee.getValue() != isAttendee) {
+    if (isAttendee != this.isAttendee.getValue()) {
       this.isAttendee.setValue(isAttendee);
     }
   }
 
   public void setIsTab(boolean isTab) {
-    if (this.isTab.getValue() != isTab) {
+    if (isTab != this.isTab.getValue()) {
       this.isTab.setValue(isTab);
     }
   }
@@ -140,6 +140,15 @@ public abstract class NavigationViewModel extends AndroidViewModel {
     this.witnessMessages.setValue(messages);
   }
 
+  /**
+   * This function should be used to add disposable object generated from subscription to sent
+   * messages flows
+   *
+   * <p>They will be disposed of when the view model is cleaned which ensures that the subscription
+   * stays relevant throughout the whole lifecycle of the activity and it is not bound to a fragment
+   *
+   * @param disposable to add
+   */
   public void addDisposable(Disposable disposable) {
     this.disposables.add(disposable);
   }
@@ -154,10 +163,10 @@ public abstract class NavigationViewModel extends AndroidViewModel {
     if (isOrganizer) {
       return Role.ORGANIZER;
     }
-    if (isWitness.getValue()) {
+    if (Boolean.TRUE.equals(isWitness.getValue())) {
       return Role.WITNESS;
     }
-    if (isAttendee.getValue()) {
+    if (Boolean.TRUE.equals(isAttendee.getValue())) {
       return Role.ATTENDEE;
     }
     return Role.MEMBER;

@@ -37,7 +37,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
 import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 
 @HiltViewModel
 public class DigitalCashViewModel extends NavigationViewModel {
@@ -376,18 +375,5 @@ public class DigitalCashViewModel extends NavigationViewModel {
 
   public long getOwnBalance() throws KeyException {
     return getUserBalance(getValidToken().getPublicKey());
-  }
-
-  /**
-   * This function should be used to add disposable object generated from subscription to sent
-   * messages flows
-   *
-   * <p>They will be disposed of when the view model is cleaned which ensures that the subscription
-   * stays relevant throughout the whole lifecycle of the activity and it is not bound to a fragment
-   *
-   * @param disposable to add
-   */
-  public void addDisposable(Disposable disposable) {
-    this.disposables.add(disposable);
   }
 }

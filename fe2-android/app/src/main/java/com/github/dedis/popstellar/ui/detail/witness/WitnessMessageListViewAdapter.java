@@ -81,7 +81,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
         v -> {
           AlertDialog.Builder adb = new AlertDialog.Builder(context);
 
-          if (viewModel.isWitness().getValue()) {
+          if (Boolean.TRUE.equals(viewModel.isWitness().getValue())) {
             adb.setTitle("Sign Message");
             adb.setMessage(
                 " Are you sure you want to sign message with ID : "

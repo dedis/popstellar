@@ -113,28 +113,28 @@ public class DigitalCashActivity extends NavigationActivity {
     switch (tab) {
       case INVITE:
         openInviteTab();
-        return false;
+        break;
       case EVENTS:
         openEventsTab();
-        return false;
+        break;
       case SOCIAL_MEDIA:
         openSocialMediaTab();
-        return false;
+        break;
       case DIGITAL_CASH:
-        return false;
+        break;
       case WITNESSING:
         openWitnessingTab();
-        return false;
+        break;
       case TOKENS:
         openTokensTab();
-        return false;
+        break;
       case DISCONNECT:
         startActivity(HomeActivity.newIntent(this));
-        return false;
+        break;
       default:
         Log.w(TAG, "Unhandled tab type : " + tab);
-        return false;
     }
+    return false;
   }
 
   private void openHomeTab() {

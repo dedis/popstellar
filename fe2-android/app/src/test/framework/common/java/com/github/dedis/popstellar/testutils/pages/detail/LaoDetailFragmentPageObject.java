@@ -13,14 +13,6 @@ public class LaoDetailFragmentPageObject {
     throw new IllegalStateException("Page object");
   }
 
-  public static ViewInteraction qrCodeLayout() {
-    return null; // onView(withId(R.id.lao_detail_qr_layout));
-  }
-
-  public static ViewInteraction connectQrCode() {
-    return onView(withId(R.id.channel_qr_code));
-  }
-
   public static ViewInteraction addEventButton() {
     return onView(withId(R.id.add_event));
   }
@@ -39,10 +31,6 @@ public class LaoDetailFragmentPageObject {
 
   public static ViewInteraction addRollCallText() {
     return onView(withId(R.id.add_roll_call_text));
-  }
-
-  public static ViewInteraction qrCodeIcon() {
-    return onView(withId(R.id.lao_toolbar_qr_code));
   }
 
   public static ViewInteraction eventList() {

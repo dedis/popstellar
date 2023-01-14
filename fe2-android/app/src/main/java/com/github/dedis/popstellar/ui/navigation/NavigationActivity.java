@@ -67,7 +67,7 @@ public abstract class NavigationActivity extends AppCompatActivity {
     // Listen to click on left icon of toolbar
     toolbar.setNavigationOnClickListener(
         view -> {
-          if (navigationViewModel.isTab().getValue()) {
+          if (Boolean.TRUE.equals(navigationViewModel.isTab().getValue())) {
             // If it is a tab open menu
             drawerLayout.openDrawer(GravityCompat.START);
           } else {
@@ -83,7 +83,9 @@ public abstract class NavigationActivity extends AppCompatActivity {
             this,
             isTab ->
                 toolbar.setNavigationIcon(
-                    isTab ? R.drawable.menu_icon : R.drawable.back_arrow_icon));
+                    Boolean.TRUE.equals(isTab)
+                        ? R.drawable.menu_icon
+                        : R.drawable.back_arrow_icon));
 
     // Observe changes to the tab selected
     navigationViewModel

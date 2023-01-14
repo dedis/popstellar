@@ -39,7 +39,6 @@ public class LaoDetailActivity extends NavigationActivity {
   private static final String TAG = LaoDetailActivity.class.getSimpleName();
 
   private LaoDetailViewModel viewModel;
-  private LaoDetailActivityBinding binding;
 
   @Inject Gson gson;
   @Inject GlobalNetworkManager networkManager;
@@ -47,7 +46,7 @@ public class LaoDetailActivity extends NavigationActivity {
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    binding = LaoDetailActivityBinding.inflate(getLayoutInflater());
+    LaoDetailActivityBinding binding = LaoDetailActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     navigationViewModel = viewModel = obtainViewModel(this);
 
