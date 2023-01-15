@@ -18,7 +18,7 @@ import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
+import com.github.dedis.popstellar.ui.navigation.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -39,7 +39,7 @@ import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 
 @HiltViewModel
-public class SocialMediaViewModel extends NavigationViewModel {
+public class SocialMediaViewModel extends LaoViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String SOCIAL = "social";

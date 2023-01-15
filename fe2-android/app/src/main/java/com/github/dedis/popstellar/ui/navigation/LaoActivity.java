@@ -33,14 +33,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * This abstract activity encapsulate the redundant behavior of an activity with a navigation bar
  *
  * <p>An activity extending this must instantiate the navigationViewModel in its onCreate and it
- * should call setupDrawer with the navigationView as parameter.
+ * should call initializeLaoActivity with the navigationView as parameter.
  */
 @AndroidEntryPoint
-public abstract class NavigationActivity extends AppCompatActivity {
+public abstract class LaoActivity extends AppCompatActivity {
 
-  private static final String TAG = NavigationActivity.class.getSimpleName();
+  private static final String TAG = LaoActivity.class.getSimpleName();
 
-  protected NavigationViewModel navigationViewModel;
+  protected LaoViewModel laoViewModel;
 
   @Inject RollCallRepository rollCallRepo;
   @Inject LAORepository laoRepo;
@@ -55,19 +55,19 @@ public abstract class NavigationActivity extends AppCompatActivity {
    *
    * @param navigationView the view
    */
-  protected void setupDrawer(
+  protected void initializeLaoActivity(
       String laoId,
       NavigationView navigationView,
       MaterialToolbar toolbar,
       DrawerLayout drawerLayout) {
 
-    navigationViewModel.setLaoId(laoId);
+    laoViewModel.setLaoId(laoId);
     observeRoles();
 
     // Listen to click on left icon of toolbar
     toolbar.setNavigationOnClickListener(
         view -> {
-          if (Boolean.TRUE.equals(navigationViewModel.isTab().getValue())) {
+          if (Boolean.TRUE.equals(laoViewModel.isTab().getValue())) {
             // If it is a tab open menu
             drawerLayout.openDrawer(GravityCompat.START);
           } else {
@@ -77,7 +77,7 @@ public abstract class NavigationActivity extends AppCompatActivity {
         });
 
     // Observe whether the menu icon or back arrow should be displayed
-    navigationViewModel
+    laoViewModel
         .isTab()
         .observe(
             this,
@@ -88,12 +88,12 @@ public abstract class NavigationActivity extends AppCompatActivity {
                         : R.drawable.back_arrow_icon));
 
     // Observe changes to the tab selected
-    navigationViewModel
+    laoViewModel
         .getCurrentTab()
         .observe(
             this,
             tab -> {
-              navigationViewModel.setIsTab(true);
+              laoViewModel.setIsTab(true);
               navigationView.setCheckedItem(tab.getMenuId());
             });
 
@@ -104,7 +104,7 @@ public abstract class NavigationActivity extends AppCompatActivity {
           boolean selected = openTab(tab);
           if (selected) {
             Log.d(TAG, "The tab was successfully opened");
-            navigationViewModel.setCurrentTab(tab);
+            laoViewModel.setCurrentTab(tab);
           } else {
             Log.d(TAG, "The tab wasn't opened");
           }
@@ -114,17 +114,17 @@ public abstract class NavigationActivity extends AppCompatActivity {
 
     observeLao(laoId);
     try {
-      setupHeaderLaoName(navigationView, navigationViewModel.getLao().getName());
+      setupHeaderLaoName(navigationView, laoViewModel.getLao().getName());
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
       startActivity(HomeActivity.newIntent(this));
     }
 
     // Update the user's role in the drawer header when it changes
-    navigationViewModel.getRole().observe(this, role -> setupHeaderRole(navigationView, role));
+    laoViewModel.getRole().observe(this, role -> setupHeaderRole(navigationView, role));
 
     // Observe the toolbar title to display
-    navigationViewModel
+    laoViewModel
         .getPageTitle()
         .observe(
             this,
@@ -139,12 +139,12 @@ public abstract class NavigationActivity extends AppCompatActivity {
 
   private void observeRoles() {
     // Observe any change in the following variable to update the role
-    navigationViewModel.isWitness().observe(this, any -> navigationViewModel.updateRole());
-    navigationViewModel.isAttendee().observe(this, any -> navigationViewModel.updateRole());
+    laoViewModel.isWitness().observe(this, any -> laoViewModel.updateRole());
+    laoViewModel.isAttendee().observe(this, any -> laoViewModel.updateRole());
   }
 
   private void observeRollCalls(String laoId) {
-    navigationViewModel.addDisposable(
+    laoViewModel.addDisposable(
         rollCallRepo
             .getRollCallsObservableInLao(laoId)
             .observeOn(AndroidSchedulers.mainThread())
@@ -161,14 +161,14 @@ public abstract class NavigationActivity extends AppCompatActivity {
                                   return false;
                                 }
                               });
-                  navigationViewModel.setIsAttendee(isLastRollCallAttended);
+                  laoViewModel.setIsAttendee(isLastRollCallAttended);
                 },
                 error ->
                     ErrorUtils.logAndShow(this, TAG, error, R.string.unknown_roll_call_exception)));
   }
 
   private void observeLao(String laoId) {
-    navigationViewModel.addDisposable(
+    laoViewModel.addDisposable(
         laoRepo
             .getLaoObservable(laoId)
             .observeOn(AndroidSchedulers.mainThread())
@@ -176,17 +176,17 @@ public abstract class NavigationActivity extends AppCompatActivity {
                 laoView -> {
                   Log.d(TAG, "got an update for lao: " + laoView);
 
-                  navigationViewModel.setWitnessMessages(
+                  laoViewModel.setWitnessMessages(
                       new ArrayList<>(laoView.getWitnessMessages().values()));
-                  navigationViewModel.setWitnesses(new ArrayList<>(laoView.getWitnesses()));
+                  laoViewModel.setWitnesses(new ArrayList<>(laoView.getWitnesses()));
 
                   boolean isOrganizer =
                       laoView.getOrganizer().equals(keyManager.getMainPublicKey());
-                  navigationViewModel.setIsOrganizer(isOrganizer);
-                  navigationViewModel.setIsWitness(
+                  laoViewModel.setIsOrganizer(isOrganizer);
+                  laoViewModel.setIsWitness(
                       laoView.getWitnesses().contains(keyManager.getMainPublicKey()));
 
-                  navigationViewModel.updateRole();
+                  laoViewModel.updateRole();
                 },
                 error -> Log.d(TAG, "error updating LAO :" + error)));
   }

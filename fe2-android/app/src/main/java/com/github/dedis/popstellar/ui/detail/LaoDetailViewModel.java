@@ -26,7 +26,7 @@ import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
+import com.github.dedis.popstellar.ui.navigation.LaoViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
@@ -53,7 +53,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
-public class LaoDetailViewModel extends NavigationViewModel implements QRCodeScanningViewModel {
+public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";

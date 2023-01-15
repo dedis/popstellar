@@ -15,8 +15,8 @@ import com.github.dedis.popstellar.databinding.SocialMediaActivityBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.navigation.LaoActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
-import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 
@@ -28,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 /** Activity for the social media */
 @AndroidEntryPoint
-public class SocialMediaActivity extends NavigationActivity {
+public class SocialMediaActivity extends LaoActivity {
 
   private SocialMediaViewModel viewModel;
   private SocialMediaActivityBinding binding;
@@ -41,12 +41,12 @@ public class SocialMediaActivity extends NavigationActivity {
 
     binding = SocialMediaActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
-    navigationViewModel = viewModel = obtainViewModel(this);
+    laoViewModel = viewModel = obtainViewModel(this);
 
     String laoId = Objects.requireNonNull(getIntent().getStringExtra(Constants.LAO_ID_EXTRA));
 
-    navigationViewModel.setCurrentTab(MainMenuTab.SOCIAL_MEDIA);
-    setupDrawer(
+    laoViewModel.setCurrentTab(MainMenuTab.SOCIAL_MEDIA);
+    initializeLaoActivity(
         laoId,
         binding.socialMediaNavigationDrawer,
         binding.socialMediaAppBar,

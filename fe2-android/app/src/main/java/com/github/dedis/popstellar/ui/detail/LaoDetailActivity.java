@@ -18,8 +18,8 @@ import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.navigation.LaoActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
-import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
@@ -34,7 +34,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class LaoDetailActivity extends NavigationActivity {
+public class LaoDetailActivity extends LaoActivity {
 
   private static final String TAG = LaoDetailActivity.class.getSimpleName();
 
@@ -48,13 +48,13 @@ public class LaoDetailActivity extends NavigationActivity {
     super.onCreate(savedInstanceState);
     LaoDetailActivityBinding binding = LaoDetailActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
-    navigationViewModel = viewModel = obtainViewModel(this);
+    laoViewModel = viewModel = obtainViewModel(this);
 
     String laoId =
         Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
     viewModel.subscribeToLao(laoId);
 
-    setupDrawer(
+    initializeLaoActivity(
         laoId,
         binding.laoDetailNavigationDrawer,
         binding.laoTopAppBar,
@@ -64,7 +64,7 @@ public class LaoDetailActivity extends NavigationActivity {
     if (tab == null) {
       tab = MainMenuTab.EVENTS;
     }
-    navigationViewModel.setCurrentTab(tab);
+    laoViewModel.setCurrentTab(tab);
     openTab(tab);
   }
 

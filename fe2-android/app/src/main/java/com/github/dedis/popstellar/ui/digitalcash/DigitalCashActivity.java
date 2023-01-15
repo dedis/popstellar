@@ -15,8 +15,8 @@ import com.github.dedis.popstellar.databinding.DigitalCashMainActivityBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.navigation.LaoActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
-import com.github.dedis.popstellar.ui.navigation.NavigationActivity;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
@@ -31,7 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 /** Activity for the digital cash */
 @AndroidEntryPoint
-public class DigitalCashActivity extends NavigationActivity {
+public class DigitalCashActivity extends LaoActivity {
   private DigitalCashViewModel viewModel;
   private DigitalCashMainActivityBinding binding;
   public static final String TAG = DigitalCashActivity.class.getSimpleName();
@@ -41,16 +41,16 @@ public class DigitalCashActivity extends NavigationActivity {
     super.onCreate(savedInstanceState);
     binding = DigitalCashMainActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
-    navigationViewModel = viewModel = obtainViewModel(this);
+    laoViewModel = viewModel = obtainViewModel(this);
     String laoId = Objects.requireNonNull(getIntent().getStringExtra(Constants.LAO_ID_EXTRA));
     Log.d(TAG, "Opening digitalCash with id " + laoId);
-    setupDrawer(
+    initializeLaoActivity(
         laoId,
         binding.digitalCashNavigationDrawer,
         binding.digitalCashAppBar,
         binding.digitalCashDrawerLayout);
 
-    navigationViewModel.setCurrentTab(MainMenuTab.DIGITAL_CASH);
+    laoViewModel.setCurrentTab(MainMenuTab.DIGITAL_CASH);
     setupBottomNavBar();
     openHomeTab();
   }

@@ -24,7 +24,7 @@ import io.reactivex.disposables.Disposable;
  * <p>Any activity that uses a navigation bar should have its view model extends from the this *
  * class
  */
-public abstract class NavigationViewModel extends AndroidViewModel {
+public abstract class LaoViewModel extends AndroidViewModel {
 
   private final MutableLiveData<MainMenuTab> currentTab = new MutableLiveData<>();
 
@@ -43,7 +43,7 @@ public abstract class NavigationViewModel extends AndroidViewModel {
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
-  protected NavigationViewModel(@NonNull Application application) {
+  protected LaoViewModel(@NonNull Application application) {
     super(application);
   }
 

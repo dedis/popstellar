@@ -18,7 +18,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
+import com.github.dedis.popstellar.ui.navigation.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -39,7 +39,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.CompositeDisposable;
 
 @HiltViewModel
-public class DigitalCashViewModel extends NavigationViewModel {
+public class DigitalCashViewModel extends LaoViewModel {
 
   public static final String TAG = DigitalCashViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
