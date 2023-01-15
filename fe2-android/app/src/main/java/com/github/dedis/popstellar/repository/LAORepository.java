@@ -56,8 +56,6 @@ public class LAORepository {
   }
 
   public LaoView getLaoView(String id) throws UnknownLaoException {
-    Log.d(TAG, "id:" + id);
-    Log.d(TAG, "laos:" + laoById.values());
     Lao lao = laoById.get(id);
     if (lao == null) {
       throw new UnknownLaoException(id);
