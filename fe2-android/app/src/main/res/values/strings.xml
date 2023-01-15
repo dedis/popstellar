@@ -14,7 +14,6 @@
   <string name="member">Member</string>
 
   <!-- bottom nav -->
-  <string name="tab_identity">Identity</string>
   <string name="tab_social_media">Social Media</string>
   <string name="tab_digital_cash">Digital Cash</string>
   <string name="event_list">Events</string>
@@ -50,6 +49,7 @@
   <string name="past_header_title">Previous</string>
   <string name="lao_properties_server_title">Connected to server</string>
   <string name="lao_properties_identifier_title">Identifier</string>
+  <string name="identity_name">Name</string>
 
   <!-- Abstract Event-->
   <string name="open">Open</string>
@@ -71,22 +71,9 @@
 
   <!-- Roll-Call Event -->
   <string name="roll_call_title_required">Roll Call Title*</string>
-  <string name="anonymous_explanation">You can participate in organizations and meetings anonymously by leaving this
-        box checked.\nIf you wish to reveal your identity to other participants in this organization,\nyou may un-check
-        this box and enter the information you wish to reveal below.\nYou must enter identity information in order to
-        play an Organizer or Witness role in an organization.
-    </string>
   <string name="roll_call_open_attendees">Open</string>
   <string name="add_attendee_successful">Attendee scanned successfully</string>
   <string name="reopen_rollcall">REOPEN</string>
-
-  <!-- Identity -->
-  <string name="identity_name">Name</string>
-  <string name="identity_title">Title</string>
-  <string name="identity_email">Email</string>
-  <string name="identity_organization">Organization</string>
-  <string name="identity_phone">Phone</string>
-  <string name="identity_anonymous">Anonymous</string>
 
   <!-- QR code -->
   <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>

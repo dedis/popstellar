@@ -5,7 +5,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.*;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
@@ -72,16 +73,6 @@ public class LaoDetailViewModel extends NavigationViewModel implements QRCodeSca
   private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
-  private final LiveData<List<PublicKey>> mWitnesses =
-      Transformations.map(
-          mCurrentLao,
-          lao -> lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnesses()));
-
-  private final LiveData<List<WitnessMessage>> mWitnessMessages =
-      Transformations.map(
-          mCurrentLao,
-          lao ->
-              lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnessMessages().values()));
 
   private Observable<Set<Event>> events;
   private Observable<List<RollCall>> attendedRollCalls;

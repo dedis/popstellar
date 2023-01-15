@@ -109,19 +109,19 @@ public abstract class NavigationViewModel extends AndroidViewModel {
   }
 
   public void setIsWitness(boolean isWitness) {
-    if (isWitness != this.isWitness.getValue()) {
+    if (!Boolean.valueOf(isWitness).equals(this.isWitness.getValue())) {
       this.isWitness.setValue(isWitness);
     }
   }
 
   public void setIsAttendee(boolean isAttendee) {
-    if (isAttendee != this.isAttendee.getValue()) {
+    if (!Boolean.valueOf(isAttendee).equals(this.isAttendee.getValue())) {
       this.isAttendee.setValue(isAttendee);
     }
   }
 
   public void setIsTab(boolean isTab) {
-    if (isTab != this.isTab.getValue()) {
+    if (!Boolean.valueOf(isTab).equals(this.isTab.getValue())) {
       this.isTab.setValue(isTab);
     }
   }

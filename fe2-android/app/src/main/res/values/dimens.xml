@@ -14,7 +14,6 @@
   <dimen name="size_body">18sp</dimen>
   <dimen name="history_card_title">14sp</dimen>
   <dimen name="card_element_text_size">16sp</dimen>
-  <dimen name="tab_lao_detail">13sp</dimen>
 
   <dimen name="size_for_longer_text">10sp</dimen>
   <dimen name="rounded_edit_text">10dp</dimen>
@@ -47,7 +46,6 @@
   <dimen name="properties_title_margin">8dp</dimen>
 
   <!-- Event -->
-  <dimen name="election_setup_scrollview_layout_margin_top">40dp</dimen>
   <dimen name="election_setup_question_margin">20dp</dimen>
   <dimen name="election_setup_text_field_margin_lateral">10dp</dimen>
   <dimen name="event_button_text_size">14sp</dimen>
@@ -99,7 +97,6 @@
   <!--  LaoDetail Fragment dimensions -->
   <dimen name="add_event_texts_size">18sp</dimen>
   <dimen name="add_button_margin_end">8dp</dimen>
-  <dimen name="qr_icon_start_margin">30dp</dimen>
 
   <!--  Token dimensions-->
   <dimen name="qr_icon_side">28dp</dimen>
