@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashMainActivityBinding;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.LaoActivity;
@@ -21,7 +20,6 @@ import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.security.GeneralSecurityException;
 import java.util.Objects;
@@ -165,25 +163,15 @@ public class DigitalCashActivity extends LaoActivity {
         DigitalCashReceiveFragment::newInstance);
   }
 
-  private boolean openIssueTab() {
-    try {
-      PublicKey organizerKey = viewModel.getLao().getOrganizer();
-      if (!viewModel.getOwnKey().equals(organizerKey)) {
-        ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
-        return false;
-      }
-    } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
-      return false;
+  private void openIssueTab() {
+    if (!viewModel.isOrganizer()) {
+      ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
     }
-
     setCurrentFragment(
         getSupportFragmentManager(),
         R.id.fragment_digital_cash_issue,
         DigitalCashIssueFragment::newInstance);
     viewModel.setPageTitle(R.string.digital_cash_issue);
-
-    return true;
   }
 
   private void openSocialMediaTab() {

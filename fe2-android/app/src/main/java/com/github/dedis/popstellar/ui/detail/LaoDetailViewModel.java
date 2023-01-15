@@ -131,7 +131,7 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
     // find out if user has attended the rollcall
     try {
       PublicKey pk = wallet.generatePoPToken(laoId, rollcall.getPersistentId()).getPublicKey();
-      return rollcall.getAttendees().contains(pk) || Boolean.TRUE.equals(isOrganizer());
+      return rollcall.getAttendees().contains(pk) || isOrganizer();
     } catch (KeyGenerationException | UninitializedWalletException e) {
       Log.e(TAG, "failed to retrieve public key from wallet", e);
       return false;
