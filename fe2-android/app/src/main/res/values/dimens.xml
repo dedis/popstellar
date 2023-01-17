@@ -144,5 +144,6 @@
   <dimen name="stroke_width">1dp</dimen>
 
   <!--  Drawer header dimensions -->
-  <dimen name="header_layout_padding">16dp</dimen>
+  <dimen name="drawer_header_vertical_margin">20dp</dimen>
+  <dimen name="drawer_header_horizontal_margin">16dp</dimen>
 </resources>
