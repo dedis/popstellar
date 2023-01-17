@@ -41,7 +41,7 @@ public class ChirpListAdapterTest {
 
   private final Intent intent =
       new Intent(ApplicationProvider.getApplicationContext(), SocialMediaActivity.class)
-          .putExtra(Constants.LAO_ID_EXTRA, "");
+          .putExtra(Constants.LAO_ID_EXTRA, LAO_ID);
 
   private final ActivityScenarioRule<SocialMediaActivity> activityScenarioRule =
       new ActivityScenarioRule<>(intent);
