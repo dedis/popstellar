@@ -62,7 +62,8 @@ public class InviteFragment extends Fragment {
       viewModel
           .getRole()
           .observe(
-              requireActivity(), role -> binding.laoPropertiesRoleText.setText(role.getStringId()));
+              getViewLifecycleOwner(),
+              role -> binding.laoPropertiesRoleText.setText(role.getStringId()));
 
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
