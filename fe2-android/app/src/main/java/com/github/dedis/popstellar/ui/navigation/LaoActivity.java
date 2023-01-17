@@ -30,10 +30,10 @@ import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
- * This abstract activity encapsulate the redundant behavior of an activity with a navigation bar
+ * This abstract activity encapsulate the redundant behavior of an activity in a LAO
  *
- * <p>An activity extending this must instantiate the navigationViewModel in its onCreate and it
- * should call initializeLaoActivity with the navigationView as parameter.
+ * <p>An activity extending this must instantiate the laoViewModel in its onCreate and it should
+ * call initializeLaoActivity
  */
 @AndroidEntryPoint
 public abstract class LaoActivity extends AppCompatActivity {
@@ -48,12 +48,12 @@ public abstract class LaoActivity extends AppCompatActivity {
   @Inject Wallet wallet;
 
   /**
-   * Setup the navigation bar listeners given the navigation bar view
+   * Initialize the parent activity. It sets up views common to the 3 activities
    *
-   * <p>This function should be called in the activity's onCreate after the navigation view model
-   * has been set
-   *
-   * @param navigationView the view
+   * @param laoId the id of the LAO
+   * @param navigationView the drawer navigation view
+   * @param toolbar the activity toolbar
+   * @param drawerLayout the drawer layout
    */
   protected void initializeLaoActivity(
       String laoId,

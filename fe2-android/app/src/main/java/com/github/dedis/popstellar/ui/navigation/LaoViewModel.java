@@ -18,12 +18,7 @@ import java.util.List;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-/**
- * Abstract view model that provides the components of the navigation bar
- *
- * <p>Any activity that uses a navigation bar should have its view model extends from the this *
- * class
- */
+/** Abstract view model that provides the common interface for lao activities */
 public abstract class LaoViewModel extends AndroidViewModel {
 
   private final MutableLiveData<MainMenuTab> currentTab = new MutableLiveData<>();
