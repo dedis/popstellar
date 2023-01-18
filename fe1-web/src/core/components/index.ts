@@ -5,6 +5,7 @@
  * this is the module in which the user interface component should be defined.
  */
 
+export { default as BuildInfo } from './BuildInfo';
 export { default as CameraButton } from './CameraButton';
 export { default as CheckboxList } from './CheckboxList';
 export { default as ConfirmModal } from './ConfirmModal';

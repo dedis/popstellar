@@ -26,6 +26,11 @@ export const tiny: TextStyle = {
   lineHeight: 14,
 };
 
+export const minuscule: TextStyle = {
+  fontSize: 8,
+  lineHeight: 1,
+};
+
 export const accent: TextStyle = {
   color: accentColor,
 };

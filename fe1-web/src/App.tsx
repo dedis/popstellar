@@ -4,12 +4,11 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { NavigationContainer } from '@react-navigation/native';
 import { registerRootComponent } from 'expo';
 import React from 'react';
-import { StyleSheet, Platform, StatusBar } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast, { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import Constants from 'expo-constants';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 import { configureKeyPair } from 'core/keypair';
@@ -20,6 +19,7 @@ import { Color } from 'core/styles';
 import { configureFeatures } from 'features';
 
 import cameraPolyfill from './core/platform/camera/web-polyfill';
+import { BuildInfo } from 'core/components';
 
 // load polyfill when the app loads
 cameraPolyfill();
@@ -29,42 +29,6 @@ configureKeyPair();
 configureNetwork(messageRegistry, keyPairRegistry);
 // start persisting the redux state after all reducers have been registered
 persist.persist();
-
-const BuildInfo = () => {
-  const styles = StyleSheet.create({
-    container: {
-      position: 'absolute',
-      bottom: '4px',
-      left: '3px',
-      zIndex: 100,
-      color: '#757575',
-      fontSize: '8px',
-      fontFamily: 'monospace',
-      textTransform: 'uppercase',
-    },
-    link: {
-      textDecorationLine: 'none',
-      color: '#757575',
-    },
-  });
-
-  return (
-    <div style={styles.container}>
-      <a
-        style={styles.link}
-        href={`https://github.com/dedis/popstellar/releases/tag/${Constants?.expoConfig?.extra?.appVersion}`}
-        target="_blank">
-        {Constants?.expoConfig?.extra?.appVersion}
-      </a>
-      {' | '}
-      <a style={styles.link} href={Constants?.expoConfig?.extra?.buildURL} target="_blank">
-        {Constants?.expoConfig?.extra?.shortSHA}
-      </a>
-      {' | '}
-      {Constants?.expoConfig?.extra?.buildDate}
-    </div>
-  );
-};
 
 /*
  * The starting point of the app.
