@@ -4,28 +4,28 @@ import { StyleSheet, View, Linking, Text } from 'react-native';
 
 import { Color, Spacing, Typography } from 'core/styles';
 
-const BuildInfo = () => {
-  const styles = StyleSheet.create({
-    container: {
-      position: 'absolute',
-      bottom: Spacing.x05,
-      left: Spacing.x05,
-      zIndex: 100,
-      color: Color.inactive,
-      fontFamily: 'monospace',
-      textTransform: 'uppercase',
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      ...Typography.minuscule,
-    },
-    link: {
-      textDecorationLine: 'none',
-      color: Color.inactive,
-      ...Typography.minuscule,
-    },
-  });
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: Spacing.x05,
+    left: Spacing.x05,
+    zIndex: 100,
+    color: Color.inactive,
+    fontFamily: 'monospace',
+    textTransform: 'uppercase',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    ...Typography.minuscule,
+  },
+  link: {
+    textDecorationLine: 'none',
+    color: Color.inactive,
+    ...Typography.minuscule,
+  },
+});
 
+const BuildInfo = () => {
   return (
     <View style={styles.container}>
       <Text
