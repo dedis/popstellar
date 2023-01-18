@@ -101,3 +101,7 @@ export const importantCentered: TextStyle = {
   ...baseCentered,
   fontWeight: 'bold',
 };
+
+export const uppercase: TextStyle = {
+  textTransform: 'uppercase',
+};
