@@ -10,6 +10,7 @@ import Toast, { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
+import { BuildInfo } from 'core/components';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { configureKeyPair } from 'core/keypair';
 import AppNavigation, { navigationRef } from 'core/navigation/AppNavigation';
@@ -19,7 +20,6 @@ import { Color } from 'core/styles';
 import { configureFeatures } from 'features';
 
 import cameraPolyfill from './core/platform/camera/web-polyfill';
-import { BuildInfo } from 'core/components';
 
 // load polyfill when the app loads
 cameraPolyfill();
