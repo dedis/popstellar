@@ -9,6 +9,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast, { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import Constants from 'expo-constants';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 import { configureKeyPair } from 'core/keypair';
@@ -28,6 +29,41 @@ configureKeyPair();
 configureNetwork(messageRegistry, keyPairRegistry);
 // start persisting the redux state after all reducers have been registered
 persist.persist();
+
+const BuildInfo = () => {
+  const containerStyle = {
+    position: 'fixed',
+    bottom: '4px',
+    left: '3px',
+    zIndex: 100,
+    color: '#757575',
+    fontSize: '8px',
+    fontFamily: 'monospace',
+    textTransform: 'uppercase',
+  };
+
+  const linkStyle = {
+    textDecoration: 'none',
+    color: '#757575',
+  };
+
+  return (
+    <div style={containerStyle}>
+      <a
+        style={linkStyle}
+        href={`https://github.com/dedis/popstellar/releases/tag/${Constants?.expoConfig?.extra?.appVersion}`}
+        target="_blank">
+        {Constants?.expoConfig?.extra?.appVersion}
+      </a>
+      {' | '}
+      <a style={linkStyle} href={Constants?.expoConfig?.extra?.buildURL} target="_blank">
+        {Constants?.expoConfig?.extra?.shortSHA}
+      </a>
+      {' | '}
+      {Constants?.expoConfig?.extra?.buildDate}
+    </div>
+  );
+};
 
 /*
  * The starting point of the app.
@@ -49,6 +85,7 @@ function App() {
                 {Platform.OS === 'ios' && (
                   <StatusBar barStyle="dark-content" backgroundColor="white" />
                 )}
+                <BuildInfo />
                 <ToastProvider
                   normalColor={Color.primary}
                   successColor={Color.success}
