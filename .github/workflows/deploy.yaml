@@ -1,0 +1,71 @@
+# Triggers a new deployment when a release starting with "fe1-" is created.
+
+name: Release and deployment of fe1-web
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    if:  ${{ startsWith(github.event.release.tag_name, 'fe1-') }}
+    runs-on: ubuntu-latest
+
+    env:
+      base_folder: fe1-web
+
+    defaults:
+      run:
+        working-directory: ./${{ env.base_folder }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      # Save some build information to inject into the APP
+      - name: Get the version
+        id: get_version
+        run: |
+          echo ::set-output name=version::$(echo ${GITHUB_REF/refs\/tags\//})
+          echo ::set-output name=version_file::$(echo ${GITHUB_REF/refs\/tags\//} | tr . _)
+          echo "::set-output name=shortsha::$(git rev-parse --short ${GITHUB_SHA})"
+          echo "::set-output name=buildurl::${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+          echo "::set-output name=date::$(date +'%d/%m/%y %H:%M')"
+
+      - name: install
+        run: |
+          npm install
+
+      # Will create a 'web-build/' folder containing the App
+      - name: transpile
+        env:
+          APP_VERSION: ${{ steps.get_version.outputs.version }}
+          APP_SHORT_SHA: ${{ steps.get_version.outputs.shortsha }}
+          APP_BUILD_URL: ${{ steps.get_version.outputs.buildurl }}
+          APP_BUILD_DATE: ${{ steps.get_version.outputs.date }}
+        run: |
+          npm run build-web
+
+      - name: Create tar.gz
+        run: |
+          tar -czvf fe1_web_${{ steps.get_version.outputs.version_file }}.tar.gz ./web-build
+
+      - name: Upload release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ env.base_folder }}/fe1_web_${{ steps.get_version.outputs.version_file }}.tar.gz
+
+      # Use rsync to deploy the new website
+      - name: Sync
+        env:
+            dest: "fe1pop@${{secrets.FE1_DEPLOY_ADDR}}:www"
+        run: |
+            echo "${{secrets.FE1_DEPLOY_KEY}}" > deploy_key
+            chmod 600 ./deploy_key
+            rsync -chav --delete \
+              -e 'ssh -p ${{secrets.FE1_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
+              ./web-build/ ${{env.dest}}

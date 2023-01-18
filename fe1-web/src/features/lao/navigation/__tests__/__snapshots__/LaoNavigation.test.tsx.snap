@@ -1492,40 +1492,6 @@ exports[`LaoNavigation renders correctly 1`] = `
                                     </View>
                                   </View>
                                 </RCTScrollView>
-                                <View
-                                  style={Object {}}
-                                />
-                                <View
-                                  style={
-                                    Object {
-                                      "paddingBottom": 16,
-                                    }
-                                  }
-                                >
-                                  <Text
-                                    selectable={true}
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        Object {
-                                          "textAlign": "center",
-                                        },
-                                        Object {
-                                          "fontSize": 12,
-                                          "lineHeight": 14,
-                                        },
-                                        Object {
-                                          "color": "#8E8E8E",
-                                        },
-                                      ]
-                                    }
-                                  />
-                                </View>
                               </View>
                             </View>
                           </View>
