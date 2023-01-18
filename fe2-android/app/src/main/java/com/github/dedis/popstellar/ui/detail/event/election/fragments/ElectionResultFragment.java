@@ -56,7 +56,7 @@ public class ElectionResultFragment extends Fragment {
 
     String electionId = requireArguments().getString(ELECTION_ID);
     try {
-      LaoView laoView = viewModel.getLaoView();
+      LaoView laoView = viewModel.getLao();
       Election election = electionRepository.getElection(viewModel.getLaoId(), electionId);
 
       // Setting the Lao Name
@@ -88,6 +88,7 @@ public class ElectionResultFragment extends Fragment {
   public void onResume() {
     super.onResume();
     LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    viewModel.setPageTitle(getString(R.string.election_result_title));
+    viewModel.setPageTitle(R.string.election_result_title);
+    viewModel.setIsTab(false);
   }
 }

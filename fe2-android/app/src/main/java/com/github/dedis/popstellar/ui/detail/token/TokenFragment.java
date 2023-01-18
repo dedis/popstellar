@@ -58,7 +58,8 @@ public class TokenFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(getString(R.string.token));
+    viewModel.setPageTitle(R.string.token);
+    viewModel.setIsTab(false);
   }
 
   @Override

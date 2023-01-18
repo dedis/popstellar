@@ -8,7 +8,6 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.Constants;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 /**
@@ -26,39 +25,9 @@ public class LaoDetailActivityPageObject {
     return onView(withId(R.id.fragment_container_lao_detail));
   }
 
-  public static ViewInteraction tokenButton() {
-    return onView(withId(R.id.lao_detail_tokens_menu));
-  }
-
-  public static ViewInteraction socialMediaButton() {
-    return onView(withId(R.id.lao_detail_social_media_menu));
-  }
-
-  public static ViewInteraction digitalCashButton() {
-    return onView(withId(R.id.lao_detail_digital_cash_menu));
-  }
-
-  public static ViewInteraction witnessButton() {
-    return onView(withId(R.id.lao_detail_witnessing_menu));
-  }
-
-  public static ViewInteraction toolBarBackButton() {
-    return onView(withContentDescription("Navigate up"));
-  }
-
   @IdRes
   public static int laoDetailFragmentId() {
     return R.id.fragment_lao_detail;
-  }
-
-  @IdRes
-  public static int tokenListFragmentId() {
-    return R.id.fragment_tokens;
-  }
-
-  @IdRes
-  public static int witnessingFragmentId() {
-    return R.id.fragment_witnessing;
   }
 
   @IdRes

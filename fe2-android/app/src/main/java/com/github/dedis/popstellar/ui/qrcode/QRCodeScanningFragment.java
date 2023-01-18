@@ -103,7 +103,7 @@ public final class QRCodeScanningFragment extends Fragment {
       binding.addAttendeeConfirm.setVisibility(View.VISIBLE);
 
       LaoDetailViewModel laoDetailViewModel = (LaoDetailViewModel) viewModel;
-      laoDetailViewModel.setPageTitle(getString(R.string.add_attendee_title));
+      laoDetailViewModel.setPageTitle(R.string.add_attendee_title);
 
       // Subscribe to " Nb of attendees"  event
       observeNbAttendeesEvent();
@@ -117,7 +117,7 @@ public final class QRCodeScanningFragment extends Fragment {
 
     if (viewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
       LaoDetailViewModel laoDetailViewModel = (LaoDetailViewModel) viewModel;
-      laoDetailViewModel.setPageTitle(getString(R.string.add_witness_description));
+      laoDetailViewModel.setPageTitle(R.string.add_witness_description);
 
       // Subscribe to " Witness scan confirm " event
       observeWitnessScanConfirmEvent();

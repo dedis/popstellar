@@ -154,7 +154,8 @@ public class RollCallFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(getString(R.string.roll_call_title));
+    viewModel.setPageTitle(R.string.roll_call_title);
+    viewModel.setIsTab(false);
     try {
       rollCall = viewModel.getRollCall(requireArguments().getString(ROLL_CALL_ID));
     } catch (UnknownRollCallException e) {
@@ -166,7 +167,7 @@ public class RollCallFragment extends Fragment {
     setupTime(); // Suggested time is updated in case of early/late close/open/reopen
 
     EventState rcState = rollCall.getState();
-    boolean isOrganizer = Boolean.TRUE.equals(viewModel.isOrganizer().getValue());
+    boolean isOrganizer = viewModel.isOrganizer();
 
     binding.rollCallFragmentTitle.setText(rollCall.getName());
     binding.rollCallManagementButton.setVisibility(isOrganizer ? View.VISIBLE : View.GONE);
@@ -221,8 +222,7 @@ public class RollCallFragment extends Fragment {
     PopTokenData data = new PopTokenData(new PublicKey(pk));
     Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
-    binding.rollCallPkQrCode.setVisibility(
-        Boolean.TRUE.equals(viewModel.isOrganizer().getValue()) ? View.INVISIBLE : View.VISIBLE);
+    binding.rollCallPkQrCode.setVisibility(viewModel.isOrganizer() ? View.INVISIBLE : View.VISIBLE);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {

@@ -186,7 +186,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(getString(R.string.election_setup_title));
+    viewModel.setPageTitle(R.string.election_setup_title);
+    viewModel.setIsTab(false);
   }
 
   /** Setups the submit button that creates the new election */
