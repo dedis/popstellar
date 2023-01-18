@@ -4,7 +4,7 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { NavigationContainer } from '@react-navigation/native';
 import { registerRootComponent } from 'expo';
 import React from 'react';
-import { Platform, StatusBar } from 'react-native';
+import { StyleSheet, Platform, StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast, { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
@@ -31,32 +31,33 @@ configureNetwork(messageRegistry, keyPairRegistry);
 persist.persist();
 
 const BuildInfo = () => {
-  const containerStyle = {
-    position: 'fixed',
-    bottom: '4px',
-    left: '3px',
-    zIndex: 100,
-    color: '#757575',
-    fontSize: '8px',
-    fontFamily: 'monospace',
-    textTransform: 'uppercase',
-  };
-
-  const linkStyle = {
-    textDecoration: 'none',
-    color: '#757575',
-  };
+  const styles = StyleSheet.create({
+    container: {
+      position: 'absolute',
+      bottom: '4px',
+      left: '3px',
+      zIndex: 100,
+      color: '#757575',
+      fontSize: '8px',
+      fontFamily: 'monospace',
+      textTransform: 'uppercase',
+    },
+    link: {
+      textDecorationLine: 'none',
+      color: '#757575',
+    },
+  });
 
   return (
-    <div style={containerStyle}>
+    <div style={styles.container}>
       <a
-        style={linkStyle}
+        style={styles.link}
         href={`https://github.com/dedis/popstellar/releases/tag/${Constants?.expoConfig?.extra?.appVersion}`}
         target="_blank">
         {Constants?.expoConfig?.extra?.appVersion}
       </a>
       {' | '}
-      <a style={linkStyle} href={Constants?.expoConfig?.extra?.buildURL} target="_blank">
+      <a style={styles.link} href={Constants?.expoConfig?.extra?.buildURL} target="_blank">
         {Constants?.expoConfig?.extra?.shortSHA}
       </a>
       {' | '}
