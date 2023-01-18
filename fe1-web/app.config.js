@@ -31,7 +31,7 @@ module.exports = {
       appVersion: process.env.APP_VERSION || 'v0.0.0',
       buildURL: process.env.APP_BUILD_URL || '#',
       shortSHA: process.env.APP_SHORT_SHA || `${gitHash}${isDirty}`,
-      buildDate: process.env.APP_BUILD_DATE || '1.1.1970'
+      buildDate: process.env.APP_BUILD_DATE || '1.1.1970',
     },
   },
 };
