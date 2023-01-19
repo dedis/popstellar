@@ -18,7 +18,7 @@ type NavigationProps = CompositeScreenProps<
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
 >;
 
-const RollCallWalletItem = ({ rollCallToken, isFirstItem, isLastItem }: IPropTypes) => {
+const RollCallWalletItem = ({ rollCallToken, subtitle, isFirstItem, isLastItem }: IPropTypes) => {
   const navigation = useNavigation<NavigationProps['navigation']>();
 
   const listStyles = List.getListItemStyles(isFirstItem, isLastItem);
@@ -40,9 +40,7 @@ const RollCallWalletItem = ({ rollCallToken, isFirstItem, isLastItem }: IPropTyp
       </View>
       <ListItem.Content>
         <ListItem.Title style={Typography.base}>{rollCallToken.rollCallName}</ListItem.Title>
-        <ListItem.Subtitle style={Typography.small}>
-          {STRINGS.wallet_home_rollcall_pop_token}
-        </ListItem.Subtitle>
+        <ListItem.Subtitle style={Typography.small}>{subtitle}</ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.Chevron />
     </ListItem>
@@ -50,12 +48,17 @@ const RollCallWalletItem = ({ rollCallToken, isFirstItem, isLastItem }: IPropTyp
 };
 
 const propTypes = {
+  subtitle: PropTypes.string,
   rollCallToken: PropTypes.instanceOf(RollCallToken).isRequired,
   isFirstItem: PropTypes.bool.isRequired,
   isLastItem: PropTypes.bool.isRequired,
 };
 
 RollCallWalletItem.propTypes = propTypes;
+
+RollCallWalletItem.defaultProps = {
+  subtitle: '',
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
