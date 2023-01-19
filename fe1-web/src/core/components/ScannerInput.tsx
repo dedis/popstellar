@@ -2,10 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Color, Spacing, Typography } from 'core/styles';
+import { Color, Spacing } from 'core/styles';
 
 import AutocompleteInput from './AutocompleteInput';
-import { inputStyleSheet } from './Input';
 import PoPButton from './PoPButton';
 import PoPIcon from './PoPIcon';
 
@@ -34,17 +33,12 @@ const ScannerInput = ({
   enabled,
   testID,
 }: IPropTypes) => {
-  const inputStyles = [Typography.paragraph, inputStyleSheet.input];
-
-  if (!enabled) {
-    inputStyles.push(inputStyleSheet.disabled);
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.autocompleteContainer}>
         <AutocompleteInput
           suggestions={suggestions || []}
+          enabled={enabled}
           showResults={
             suggestions &&
             suggestions.length !== 0 &&
