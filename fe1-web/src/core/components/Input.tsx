@@ -30,7 +30,7 @@ export const inputStyleSheet = StyleSheet.create({
 });
 
 const Input = (props: IPropTypes) => {
-  const { value, placeholder, onChange, enabled, negative, testID } = props;
+  const { value, placeholder, onChange, onFocus, onBlur, enabled, negative, testID } = props;
 
   const inputStyles = [Typography.paragraph, inputStyleSheet.input];
 
@@ -51,6 +51,8 @@ const Input = (props: IPropTypes) => {
         value={value}
         placeholder={placeholder || ''}
         onChangeText={enabled ? onChange : undefined}
+        onFocus={onFocus || undefined}
+        onBlur={onBlur || undefined}
         testID={testID || undefined}
       />
     </View>
@@ -61,6 +63,8 @@ const propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func,
+  onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
   enabled: PropTypes.bool,
   negative: PropTypes.bool,
   testID: PropTypes.string,
@@ -69,6 +73,8 @@ Input.propTypes = propTypes;
 Input.defaultProps = {
   placeholder: '',
   onChange: undefined,
+  onFocus: undefined,
+  onBlur: undefined,
   enabled: true,
   negative: false,
   testID: undefined,

@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AutocompleteInput renders correctly 1`] = `
+<View>
+  <View
+    style={
+      Object {
+        "borderWidth": 0,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "flex": 1,
+          "flexDirection": "row",
+        }
+      }
+    >
+      <TextInput
+        editable={true}
+        onChangeText={[Function]}
+        placeholder=""
+        placeholderTextColor="#8E8E8E"
+        style={
+          Array [
+            Object {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+            Object {
+              "backgroundColor": "#fff",
+              "borderColor": "#fff",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "flex": 1,
+              "padding": 8,
+              "width": 50,
+            },
+          ]
+        }
+        value=""
+      />
+    </View>
+  </View>
+</View>
+`;

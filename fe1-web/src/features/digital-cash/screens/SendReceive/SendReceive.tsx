@@ -10,9 +10,15 @@ import {
 } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
-import { DropdownSelector, Input, PoPIcon, PoPTextButton, QRCode } from 'core/components';
+import {
+  ScannerInput,
+  DropdownSelector,
+  Input,
+  PoPIcon,
+  PoPTextButton,
+  QRCode,
+} from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
-import ScannerInput from 'core/components/ScannerInput';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';

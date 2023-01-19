@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import AutocompleteInput from 'react-native-autocomplete-input';
+import { StyleSheet, View } from 'react-native';
 
-import { Border, Color, Spacing, Typography } from 'core/styles';
+import { Color, Spacing, Typography } from 'core/styles';
 
+import AutocompleteInput from './AutocompleteInput';
 import { inputStyleSheet } from './Input';
 import PoPButton from './PoPButton';
 import PoPIcon from './PoPIcon';
-import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,34 +20,6 @@ const styles = StyleSheet.create({
   },
   autocompleteContainer: {
     flex: 1,
-  },
-  inputContainer: {
-    borderWidth: 0,
-  },
-  suggestionsContainer: {
-    position: 'absolute',
-    zIndex: 100,
-    top: '100%',
-    left: 0,
-    right: 0,
-    backgroundColor: Color.contrast,
-    borderRadius: Border.inputRadius,
-    shadowColor: Color.primary,
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    shadowOffset: {
-      height: 5,
-      width: 5,
-    },
-  },
-  suggestionContainer: {
-    paddingVertical: Spacing.x05,
-    paddingHorizontal: Spacing.x1,
-    borderBottomColor: Color.separator,
-    borderBottomWidth: 1,
-  },
-  suggestionContainerLast: {
-    borderRadius: Border.inputRadius,
   },
 });
 
@@ -73,38 +44,18 @@ const ScannerInput = ({
     <View style={styles.container}>
       <View style={styles.autocompleteContainer}>
         <AutocompleteInput
-          data={suggestions || []}
-          hideResults={
-            !suggestions ||
-            suggestions.length === 0 ||
-            (suggestions.length === 1 && suggestions[0] === value)
+          suggestions={suggestions || []}
+          showResults={
+            suggestions &&
+            suggestions.length !== 0 &&
+            !(suggestions.length === 1 && suggestions[0] === value)
           }
           onFocus={onFocus || undefined}
           onBlur={onBlur || undefined}
           value={value}
           placeholder={placeholder || undefined}
-          placeholderTextColor={Color.inactive}
-          onChangeText={onChange}
-          flatListProps={{
-            keyExtractor: (i: string) => i,
-            renderItem: ({ item, index }) => (
-              <PoPTouchableOpacity
-                onPress={() => onChange(item)}
-                containerStyle={
-                  index === (suggestions || []).length - 1
-                    ? [styles.suggestionContainer, styles.suggestionContainerLast]
-                    : styles.suggestionContainer
-                }>
-                <Text style={Typography.base} numberOfLines={1}>
-                  {item}
-                </Text>
-              </PoPTouchableOpacity>
-            ),
-          }}
+          onChange={onChange}
           testID={testID || undefined}
-          style={inputStyles}
-          inputContainerStyle={[inputStyleSheet.container, styles.inputContainer]}
-          listContainerStyle={styles.suggestionsContainer}
         />
       </View>
       {/* <Input

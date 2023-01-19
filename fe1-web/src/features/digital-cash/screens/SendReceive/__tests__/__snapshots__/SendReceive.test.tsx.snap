@@ -421,103 +421,51 @@ exports[`SendReceive renders correctly 1`] = `
                                     }
                                   }
                                 >
-                                  <View
-                                    style={
-                                      Array [
-                                        Object {
-                                          "zIndex": 1,
-                                        },
-                                        undefined,
-                                      ]
-                                    }
-                                  >
+                                  <View>
                                     <View
                                       style={
-                                        Array [
-                                          Object {
-                                            "borderColor": "#b9b9b9",
-                                            "borderRadius": 1,
-                                            "borderWidth": 1,
-                                          },
-                                          Array [
-                                            Object {
-                                              "flex": 1,
-                                              "flexDirection": "row",
-                                            },
-                                            Object {
-                                              "borderWidth": 0,
-                                            },
-                                          ],
-                                        ]
+                                        Object {
+                                          "borderWidth": 0,
+                                        }
                                       }
                                     >
-                                      <TextInput
-                                        data={Array []}
-                                        flatListProps={
-                                          Object {
-                                            "keyExtractor": [Function],
-                                            "renderItem": [Function],
-                                          }
-                                        }
-                                        hideResults={true}
-                                        inputContainerStyle={
-                                          Array [
-                                            Object {
-                                              "flex": 1,
-                                              "flexDirection": "row",
-                                            },
-                                            Object {
-                                              "borderWidth": 0,
-                                            },
-                                          ]
-                                        }
-                                        listContainerStyle={
-                                          Object {
-                                            "backgroundColor": "#fff",
-                                            "borderRadius": 8,
-                                            "left": 0,
-                                            "position": "absolute",
-                                            "right": 0,
-                                            "shadowColor": "#000",
-                                            "shadowOffset": Object {
-                                              "height": 5,
-                                              "width": 5,
-                                            },
-                                            "shadowOpacity": 0.1,
-                                            "shadowRadius": 3,
-                                            "top": "100%",
-                                            "zIndex": 100,
-                                          }
-                                        }
-                                        onChangeText={[Function]}
-                                        onFocus={[Function]}
-                                        onStartShouldSetResponderCapture={[Function]}
-                                        placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
-                                        placeholderTextColor="#8E8E8E"
-                                        renderResultList={[Function]}
-                                        renderTextInput={[Function]}
+                                      <View
                                         style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderColor": "#fff",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                          ]
+                                          Object {
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
                                         }
-                                        value=""
-                                      />
+                                      >
+                                        <TextInput
+                                          editable={true}
+                                          onChangeText={[Function]}
+                                          onFocus={[Function]}
+                                          placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                          placeholderTextColor="#8E8E8E"
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderColor": "#fff",
+                                                "borderRadius": 8,
+                                                "borderWidth": 1,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                            ]
+                                          }
+                                          value=""
+                                        />
+                                      </View>
                                     </View>
                                   </View>
                                 </View>
@@ -1163,103 +1111,51 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                     }
                                   }
                                 >
-                                  <View
-                                    style={
-                                      Array [
-                                        Object {
-                                          "zIndex": 1,
-                                        },
-                                        undefined,
-                                      ]
-                                    }
-                                  >
+                                  <View>
                                     <View
                                       style={
-                                        Array [
-                                          Object {
-                                            "borderColor": "#b9b9b9",
-                                            "borderRadius": 1,
-                                            "borderWidth": 1,
-                                          },
-                                          Array [
-                                            Object {
-                                              "flex": 1,
-                                              "flexDirection": "row",
-                                            },
-                                            Object {
-                                              "borderWidth": 0,
-                                            },
-                                          ],
-                                        ]
+                                        Object {
+                                          "borderWidth": 0,
+                                        }
                                       }
                                     >
-                                      <TextInput
-                                        data={Array []}
-                                        flatListProps={
-                                          Object {
-                                            "keyExtractor": [Function],
-                                            "renderItem": [Function],
-                                          }
-                                        }
-                                        hideResults={true}
-                                        inputContainerStyle={
-                                          Array [
-                                            Object {
-                                              "flex": 1,
-                                              "flexDirection": "row",
-                                            },
-                                            Object {
-                                              "borderWidth": 0,
-                                            },
-                                          ]
-                                        }
-                                        listContainerStyle={
-                                          Object {
-                                            "backgroundColor": "#fff",
-                                            "borderRadius": 8,
-                                            "left": 0,
-                                            "position": "absolute",
-                                            "right": 0,
-                                            "shadowColor": "#000",
-                                            "shadowOffset": Object {
-                                              "height": 5,
-                                              "width": 5,
-                                            },
-                                            "shadowOpacity": 0.1,
-                                            "shadowRadius": 3,
-                                            "top": "100%",
-                                            "zIndex": 100,
-                                          }
-                                        }
-                                        onChangeText={[Function]}
-                                        onFocus={[Function]}
-                                        onStartShouldSetResponderCapture={[Function]}
-                                        placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
-                                        placeholderTextColor="#8E8E8E"
-                                        renderResultList={[Function]}
-                                        renderTextInput={[Function]}
+                                      <View
                                         style={
-                                          Array [
-                                            Object {
-                                              "color": "#000",
-                                              "fontSize": 20,
-                                              "lineHeight": 26,
-                                              "marginBottom": 16,
-                                              "textAlign": "left",
-                                            },
-                                            Object {
-                                              "backgroundColor": "#fff",
-                                              "borderColor": "#fff",
-                                              "borderRadius": 8,
-                                              "borderWidth": 1,
-                                              "flex": 1,
-                                              "padding": 8,
-                                              "width": 50,
-                                            },
-                                          ]
+                                          Object {
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
                                         }
-                                        value="some pop token"
-                                      />
+                                      >
+                                        <TextInput
+                                          editable={true}
+                                          onChangeText={[Function]}
+                                          onFocus={[Function]}
+                                          placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                          placeholderTextColor="#8E8E8E"
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderColor": "#fff",
+                                                "borderRadius": 8,
+                                                "borderWidth": 1,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                            ]
+                                          }
+                                          value="some pop token"
+                                        />
+                                      </View>
                                     </View>
                                   </View>
                                 </View>
