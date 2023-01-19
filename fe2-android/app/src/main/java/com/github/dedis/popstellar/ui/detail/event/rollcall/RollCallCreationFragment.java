@@ -104,7 +104,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(getString(R.string.roll_call_setup_title));
+    viewModel.setPageTitle(R.string.roll_call_setup_title);
+    viewModel.setIsTab(false);
   }
 
   private void setupConfirmButton() {
@@ -145,7 +146,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
                         getParentFragmentManager(),
                         R.id.fragment_qrcode,
                         QRCodeScanningFragment::new);
-                    viewModel.setPageTitle(getString(R.string.add_attendee_title));
+                    viewModel.setPageTitle(R.string.add_attendee_title);
                   },
                   error ->
                       ErrorUtils.logAndShow(
@@ -153,13 +154,11 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     } else {
       viewModel.addDisposable(
           createRollCall.subscribe(
-              id -> {
-                setCurrentFragment(
-                    getParentFragmentManager(),
-                    R.id.fragment_lao_detail,
-                    LaoDetailFragment::newInstance);
-                viewModel.setPageTitle(viewModel.getLaoView().getName());
-              },
+              id ->
+                  setCurrentFragment(
+                      getParentFragmentManager(),
+                      R.id.fragment_lao_detail,
+                      LaoDetailFragment::newInstance),
               error ->
                   ErrorUtils.logAndShow(
                       requireContext(), TAG, error, R.string.error_create_rollcall)));

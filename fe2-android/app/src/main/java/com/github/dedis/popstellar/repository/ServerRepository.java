@@ -14,7 +14,7 @@ import javax.inject.Singleton;
 @Singleton
 public class ServerRepository {
 
-  private Map<String, Server> serverByLaoId;
+  private final Map<String, Server> serverByLaoId;
 
   @Inject
   public ServerRepository() {

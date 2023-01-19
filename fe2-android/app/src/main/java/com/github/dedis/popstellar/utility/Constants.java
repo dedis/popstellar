@@ -23,6 +23,9 @@ public class Constants {
   /** The extra value given to the LaoDetailActivity when the wallet content is to be opened */
   public static final String CONTENT_WALLET_EXTRA = "content_wallet";
 
+  /** The tab to open in LaoDetailActivity */
+  public static final String TAB_EXTRA = "tab_extra";
+
   /** The extra value given to the RollCallFragment when opened */
   public static final String RC_PK_EXTRA = "pk";
 

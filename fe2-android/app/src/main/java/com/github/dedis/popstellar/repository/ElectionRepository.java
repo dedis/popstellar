@@ -89,7 +89,7 @@ public class ElectionRepository {
    * @return an observable that will be updated with the set of all election's ids
    */
   @NonNull
-  public Observable<Set<String>> getElectionsObservable(@NonNull String laoId) {
+  public Observable<Set<Election>> getElectionsObservable(@NonNull String laoId) {
     return getLaoElections(laoId).getElectionsSubject();
   }
 
@@ -102,7 +102,7 @@ public class ElectionRepository {
   private static final class LaoElections {
     private final Map<String, Election> electionById = new HashMap<>();
     private final Map<String, Subject<Election>> electionSubjects = new HashMap<>();
-    private final BehaviorSubject<Set<String>> electionsSubject =
+    private final BehaviorSubject<Set<Election>> electionsSubject =
         BehaviorSubject.createDefault(Collections.emptySet());
 
     public synchronized void updateElection(@NonNull Election election) {
@@ -113,7 +113,7 @@ public class ElectionRepository {
       //noinspection ConstantConditions
       electionSubjects.get(id).onNext(election);
 
-      electionsSubject.onNext(electionById.keySet());
+      electionsSubject.onNext(Collections.unmodifiableSet(new HashSet<>(electionById.values())));
     }
 
     public Election getElection(@NonNull String electionId) throws UnknownElectionException {
@@ -126,7 +126,7 @@ public class ElectionRepository {
       }
     }
 
-    public Observable<Set<String>> getElectionsSubject() {
+    public Observable<Set<Election>> getElectionsSubject() {
       return electionsSubject;
     }
 

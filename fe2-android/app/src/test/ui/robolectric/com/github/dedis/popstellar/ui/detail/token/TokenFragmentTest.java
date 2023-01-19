@@ -14,7 +14,6 @@ import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
@@ -26,7 +25,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
-import java.util.*;
+import java.util.HashSet;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
@@ -73,11 +74,9 @@ public class TokenFragmentTest {
           LOCATION,
           ROLL_CALL_DESC);
 
-  private final BehaviorSubject<Set<String>> rollCallsSubject =
-      BehaviorSubject.createDefault(Collections.singleton(ROLL_CALL.getPersistentId()));
+  @Inject RollCallRepository rollCallRepo;
 
   @BindValue @Mock LAORepository repository;
-  @BindValue @Mock RollCallRepository rollCallRepo;
   @BindValue @Mock KeyManager keyManager;
 
   @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
@@ -92,16 +91,14 @@ public class TokenFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws UnknownLaoException, UnknownRollCallException, KeyException {
+        protected void before() throws UnknownLaoException, KeyException {
           hiltRule.inject();
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
           when(keyManager.getMainPublicKey()).thenReturn(USER);
 
-          when(rollCallRepo.getRollCallsObservableInLao(LAO_ID)).thenReturn(rollCallsSubject);
-          when(rollCallRepo.getRollCallWithPersistentId(LAO_ID, ROLL_CALL.getPersistentId()))
-              .thenReturn(ROLL_CALL);
+          rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL);
 
           when(keyManager.getValidPoPToken(any(), any())).thenReturn(USER_TOKEN);
         }

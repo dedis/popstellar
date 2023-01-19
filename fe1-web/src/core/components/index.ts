@@ -6,6 +6,7 @@
  */
 
 export { default as AutocompleteInput } from './AutocompleteInput';
+export { default as BuildInfo } from './BuildInfo';
 export { default as CameraButton } from './CameraButton';
 export { default as CheckboxList } from './CheckboxList';
 export { default as ConfirmModal } from './ConfirmModal';

@@ -13,16 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
+import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.*;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
-
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -35,11 +32,9 @@ public class LaoDetailFragment extends Fragment {
   public static final String TAG = LaoDetailFragment.class.getSimpleName();
 
   @Inject Gson gson;
-  @Inject GlobalNetworkManager networkManager;
 
   private LaoDetailFragmentBinding binding;
   private LaoDetailViewModel viewModel;
-  private EventListAdapter mEventListViewEventAdapter;
   private boolean isRotated = false;
 
   public static LaoDetailFragment newInstance() {
@@ -55,11 +50,16 @@ public class LaoDetailFragment extends Fragment {
     binding = LaoDetailFragmentBinding.inflate(inflater, container, false);
 
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    binding.setViewModel(viewModel);
     binding.setLifecycleOwner(requireActivity());
 
     FloatingActionButton addButton = binding.addEvent;
     addButton.setOnClickListener(fabListener);
+    viewModel
+        .getRole()
+        .observe(
+            requireActivity(),
+            role ->
+                addButton.setVisibility(role.equals(Role.ORGANIZER) ? View.VISIBLE : View.GONE));
 
     binding.addElection.setOnClickListener(openCreateEvent(EventType.ELECTION));
     binding.addElectionText.setOnClickListener(openCreateEvent(EventType.ELECTION));
@@ -113,50 +113,26 @@ public class LaoDetailFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupEventListAdapter();
-    setupEventListUpdates();
   }
 
   @Override
   public void onResume() {
     super.onResume();
-    try {
-      viewModel.setPageTitle(viewModel.getLaoView().getName());
-    } catch (UnknownLaoException e) {
-      Log.d(TAG, "Lao name could not be retrieved");
-    }
+    viewModel.setPageTitle(R.string.event_list);
+    viewModel.setIsTab(true);
   }
 
   private void setupEventListAdapter() {
     RecyclerView eventList = binding.eventList;
 
-    mEventListViewEventAdapter =
-        new EventListAdapter(new ArrayList<>(), new ArrayList<>(), viewModel, requireActivity());
+    EventListAdapter eventListAdapter =
+        new EventListAdapter(viewModel, viewModel.getEvents(), requireActivity());
     Log.d(TAG, "created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
 
     EventListDivider divider = new EventListDivider(getContext());
     eventList.addItemDecoration(divider);
-    eventList.setAdapter(mEventListViewEventAdapter);
-  }
-
-  private void setupEventListUpdates() {
-    viewModel
-        .getRollCalls()
-        .observe(
-            requireActivity(),
-            rollCalls -> {
-              Log.d(TAG, "Got a list update for roll call events " + rollCalls.toString());
-              mEventListViewEventAdapter.replaceRollCalls(rollCalls);
-            });
-
-    viewModel
-        .getElections()
-        .observe(
-            requireActivity(),
-            elections -> {
-              Log.d(TAG, "Got a list update for election events " + elections.toString());
-              mEventListViewEventAdapter.replaceElections(elections);
-            });
+    eventList.setAdapter(eventListAdapter);
   }
 }

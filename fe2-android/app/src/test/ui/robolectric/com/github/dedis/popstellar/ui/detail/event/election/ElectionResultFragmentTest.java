@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event.election;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.fragment.app.FragmentActivity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
@@ -14,14 +13,15 @@ import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
+import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
-import org.junit.*;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -43,6 +43,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.model.objects.Election.generateElectionSetupId;
 import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.election.ElectionResultFragmentPageObject.electionResultElectionTitle;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.election.ElectionResultFragmentPageObject.electionResultLaoTitle;
 import static org.mockito.ArgumentMatchers.any;
@@ -134,23 +135,17 @@ public class ElectionResultFragmentTest {
       };
 
   @Rule(order = 3)
-  public final FragmentScenarioRule<ElectionResultFragment> fragmentRule =
-      FragmentScenarioRule.launch(
-          ElectionResultFragment.class, ElectionResultFragment::newInstance);
-
-  @Before
-  public void setUp() {
-    fragmentRule
-        .getScenario()
-        .onFragment(
-            fragment -> {
-              FragmentActivity fragmentActivity = fragment.requireActivity();
-              LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
-              viewModel.setCurrentLao(new LaoView(LAO));
-              viewModel.setCurrentElection(ELECTION.getId());
-            });
-    fragmentRule.getScenario().recreate();
-  }
+  public final ActivityFragmentScenarioRule<LaoDetailActivity, ElectionResultFragment>
+      fragmentRule =
+          ActivityFragmentScenarioRule.launchIn(
+              LaoDetailActivity.class,
+              new BundleBuilder()
+                  .putString(laoIdExtra(), LAO_ID)
+                  .putString(fragmentToOpenExtra(), laoDetailValue())
+                  .build(),
+              containerId(),
+              ElectionResultFragment.class,
+              () -> ElectionResultFragment.newInstance(ELECTION_ID));
 
   private static Map<String, Set<QuestionResult>> buildResultsMap(
       String id, QuestionResult... questionResults) {

@@ -26,6 +26,11 @@ export const tiny: TextStyle = {
   lineHeight: 14,
 };
 
+export const minuscule: TextStyle = {
+  fontSize: 8,
+  lineHeight: 1,
+};
+
 export const accent: TextStyle = {
   color: accentColor,
 };
@@ -95,4 +100,8 @@ export const baseCentered: TextStyle = {
 export const importantCentered: TextStyle = {
   ...baseCentered,
   fontWeight: 'bold',
+};
+
+export const uppercase: TextStyle = {
+  textTransform: 'uppercase',
 };
