@@ -1,13 +1,15 @@
 # Triggers a new deployment when a release starting with "fe1-" is created.
 
-name: Release and deployment of fe1-web
+name: Release and deployment
 
 on:
   release:
     types: [published]
 
 jobs:
-  deploy:
+  deploy_fe1:
+    name: Release and deploy fe1-web
+
     if:  ${{ startsWith(github.event.release.tag_name, 'fe1-') }}
     runs-on: ubuntu-latest
 
@@ -69,3 +71,45 @@ jobs:
             rsync -chav --delete \
               -e 'ssh -p ${{secrets.FE1_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
               ./web-build/ ${{env.dest}}
+
+  deploy_be1:
+    name: Release and deploy be1-go
+
+    if:  ${{ startsWith(github.event.release.tag_name, 'be1-') }}
+    runs-on: ubuntu-latest
+
+    env:
+      base_folder: be1-go
+
+    defaults:
+      run:
+        working-directory: ./${{ env.base_folder }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use go >= 1.19
+        uses: actions/setup-go@v3
+        with:
+          go-version: ">=1.19"
+
+      - name: build
+        run: |
+          make build
+
+      - name: Upload release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ env.base_folder }}/pop-*
+
+      # Use rsync to deploy the new website
+      - name: Sync
+        env:
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:be1-go/"
+        run: |
+            echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
+            chmod 600 ./deploy_key
+            rsync -chav --delete \
+              -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
+              ./pop ${{env.dest}}

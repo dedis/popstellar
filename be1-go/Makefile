@@ -1,7 +1,17 @@
+version=$(shell git describe --abbrev=0 --tags || echo '0.0.0')
+versionFlag="popstellar.Version=$(version)"
+versionFile=$(shell echo $(version) | tr . _)
+timeFlag="popstellar.BuildTime=$(shell date +'%d/%m/%y_%H:%M')"
+shortsha=$(shell git rev-parse --short HEAD)
+shaFlag="popstellar.ShortSHA=$(shortsha)"
+
 .PHONY: test
 
 build: protocol
-	go build -o pop ./cli
+	go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop ./cli
+	GOOS=linux GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop-linux-amd64-$(versionFile) ./cli
+	GOOS=darwin GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop-darwin-amd64-$(versionFile) ./cli
+	GOOS=windows GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop-windows-amd64-$(versionFile) ./cli
 
 lint:
 	@go install honnef.co/go/tools/cmd/staticcheck@latest
