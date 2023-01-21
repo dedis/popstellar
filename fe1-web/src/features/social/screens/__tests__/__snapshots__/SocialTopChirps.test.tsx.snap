@@ -437,6 +437,35 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                             size={8}
                                             spotColor="#008ec2"
                                           />
+                                          <Text
+                                            numberOfLines={1}
+                                            selectable={true}
+                                            style={
+                                              Array [
+                                                Object {
+                                                  "color": "#000",
+                                                  "fontSize": 20,
+                                                  "lineHeight": 26,
+                                                  "textAlign": "left",
+                                                },
+                                                Object {
+                                                  "fontSize": 16,
+                                                  "lineHeight": 20,
+                                                },
+                                                Object {
+                                                  "color": "#8E8E8E",
+                                                },
+                                                Object {
+                                                  "textAlign": "center",
+                                                },
+                                                Object {
+                                                  "marginTop": 8,
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            Doug
+                                          </Text>
                                         </View>
                                       </View>
                                     </RNGestureHandlerButton>
@@ -529,22 +558,6 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      accessibilityRole="text"
-                                      numberOfLines={1}
-                                      style={
-                                        Object {
-                                          "backgroundColor": "transparent",
-                                          "color": "#8E8E8E",
-                                          "fontSize": 16,
-                                          "lineHeight": 20,
-                                          "textAlign": "left",
-                                        }
-                                      }
-                                      testID="listItemTitle"
-                                    >
-                                      Douglas Adams
-                                    </Text>
                                     <Text
                                       accessibilityRole="text"
                                       style={
@@ -965,6 +978,35 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                             size={8}
                                             spotColor="#008ec2"
                                           />
+                                          <Text
+                                            numberOfLines={1}
+                                            selectable={true}
+                                            style={
+                                              Array [
+                                                Object {
+                                                  "color": "#000",
+                                                  "fontSize": 20,
+                                                  "lineHeight": 26,
+                                                  "textAlign": "left",
+                                                },
+                                                Object {
+                                                  "fontSize": 16,
+                                                  "lineHeight": 20,
+                                                },
+                                                Object {
+                                                  "color": "#8E8E8E",
+                                                },
+                                                Object {
+                                                  "textAlign": "center",
+                                                },
+                                                Object {
+                                                  "marginTop": 8,
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            Gand
+                                          </Text>
                                         </View>
                                       </View>
                                     </RNGestureHandlerButton>
@@ -1057,22 +1099,6 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      accessibilityRole="text"
-                                      numberOfLines={1}
-                                      style={
-                                        Object {
-                                          "backgroundColor": "transparent",
-                                          "color": "#8E8E8E",
-                                          "fontSize": 16,
-                                          "lineHeight": 20,
-                                          "textAlign": "left",
-                                        }
-                                      }
-                                      testID="listItemTitle"
-                                    >
-                                      Gandalf
-                                    </Text>
                                     <Text
                                       accessibilityRole="text"
                                       style={
@@ -1499,6 +1525,35 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                             size={8}
                                             spotColor="#008ec2"
                                           />
+                                          <Text
+                                            numberOfLines={1}
+                                            selectable={true}
+                                            style={
+                                              Array [
+                                                Object {
+                                                  "color": "#000",
+                                                  "fontSize": 20,
+                                                  "lineHeight": 26,
+                                                  "textAlign": "left",
+                                                },
+                                                Object {
+                                                  "fontSize": 16,
+                                                  "lineHeight": 20,
+                                                },
+                                                Object {
+                                                  "color": "#8E8E8E",
+                                                },
+                                                Object {
+                                                  "textAlign": "center",
+                                                },
+                                                Object {
+                                                  "marginTop": 8,
+                                                },
+                                              ]
+                                            }
+                                          >
+                                            Doug
+                                          </Text>
                                         </View>
                                       </View>
                                     </RNGestureHandlerButton>
@@ -1591,22 +1646,6 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                       }
                                     }
                                   >
-                                    <Text
-                                      accessibilityRole="text"
-                                      numberOfLines={1}
-                                      style={
-                                        Object {
-                                          "backgroundColor": "transparent",
-                                          "color": "#8E8E8E",
-                                          "fontSize": 16,
-                                          "lineHeight": 20,
-                                          "textAlign": "left",
-                                        }
-                                      }
-                                      testID="listItemTitle"
-                                    >
-                                      Douglas Adams
-                                    </Text>
                                     <Text
                                       accessibilityRole="text"
                                       style={
