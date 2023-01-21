@@ -38,19 +38,3 @@ describe('ViewSingleRollCallScreenHeader', () => {
     expect(component).toMatchSnapshot();
   });
 });
-
-describe('WalletSingleHeaderRight', () => {
-  it('renders correctly', () => {
-    const component = render(
-      <MockNavigator
-        component={WalletSingleRollCall}
-        params={{
-          rollCallId: mockRollCall.id.valueOf(),
-          rollCallName: mockRollCall.name,
-          rollCallTokenPublicKey: mockPopToken.publicKey.valueOf(),
-        }}
-      />,
-    ).toJSON();
-    expect(component).toMatchSnapshot();
-  });
-});

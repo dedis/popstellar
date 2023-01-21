@@ -12,7 +12,6 @@ import { WalletFeature } from '../interface';
 import { WalletHome } from '../screens';
 import WalletSingleRollCall, {
   ViewSingleRollCallScreenHeader,
-  WalletSingleHeaderRight,
 } from '../screens/WalletSingleRollCall';
 
 const Stack = createStackNavigator<WalletParamList>();
@@ -38,7 +37,6 @@ export default function WalletNavigation() {
         component={WalletSingleRollCall}
         options={{
           headerTitle: ViewSingleRollCallScreenHeader,
-          headerRight: WalletSingleHeaderRight,
         }}
       />
     </Stack.Navigator>
