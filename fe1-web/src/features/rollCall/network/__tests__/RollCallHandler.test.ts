@@ -54,6 +54,7 @@ const rollCallStateClosed = {
 const rollCallStateReopened = {
   ...rollCallStateClosed,
   status: RollCallStatus.REOPENED,
+  closedAt: undefined,
 };
 
 const mockRollCallClosed = RollCall.fromState(rollCallStateClosed);
