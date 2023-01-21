@@ -1,48 +1,32 @@
-import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
-import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { useContext, useState } from 'react';
-import { StyleSheet, Text, TextStyle } from 'react-native';
+import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import ScreenWrapper from 'core/components/ScreenWrapper';
-import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { LaoParamList } from 'core/navigation/typing/LaoParamList';
-import { SocialHomeParamList } from 'core/navigation/typing/social/SocialHomeParamList';
-import { SocialParamList } from 'core/navigation/typing/social/SocialParamList';
 import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
-import { TextInputChirp } from '../components';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { requestAddChirp } from '../network/SocialMessageApi';
-
-type NavigationProps = CompositeScreenProps<
-  CompositeScreenProps<
-    StackScreenProps<SocialHomeParamList, typeof STRINGS.social_media_home_navigation_new_chirp>,
-    StackScreenProps<SocialParamList, typeof STRINGS.social_media_navigation_tab_home>
-  >,
-  CompositeScreenProps<
-    StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
-    StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
-  >
->;
+import { TextInputChirp } from './index';
 
 const styles = StyleSheet.create({
+  wrapper: {
+    marginBottom: Spacing.x1,
+  } as ViewStyle,
   errorMessage: {
     marginTop: Spacing.x1,
   } as TextStyle,
 });
 
-const SocialNewChirp = () => {
+const NewChirp = () => {
   const { currentUserPopTokenPublicKey } = useContext(SocialMediaContext);
   const [inputChirp, setInputChirp] = useState('');
   const toast = useToast();
   const laoId = SocialHooks.useCurrentLaoId();
   const isConnected = SocialHooks.useConnectedToLao();
-  const navigation = useNavigation<NavigationProps['navigation']>();
 
   if (laoId === undefined) {
     throw new Error('Impossible to render Social Home, current lao id is undefined');
@@ -59,7 +43,6 @@ const SocialNewChirp = () => {
     requestAddChirp(currentUserPopTokenPublicKey, inputChirp, laoId)
       .then(() => {
         setInputChirp('');
-        navigation.goBack();
       })
       .catch((err) => {
         console.error('Failed to post chirp, error:', err);
@@ -72,7 +55,7 @@ const SocialNewChirp = () => {
   };
 
   return (
-    <ScreenWrapper>
+    <View style={styles.wrapper}>
       <TextInputChirp
         testID="new_chirp"
         value={inputChirp}
@@ -86,8 +69,8 @@ const SocialNewChirp = () => {
           {STRINGS.social_media_create_chirp_no_pop_token}
         </Text>
       )}
-    </ScreenWrapper>
+    </View>
   );
 };
 
-export default SocialNewChirp;
+export default NewChirp;

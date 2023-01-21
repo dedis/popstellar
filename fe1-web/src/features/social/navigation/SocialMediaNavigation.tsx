@@ -1,8 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
+import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo, useState } from 'react';
 
 import DrawerMenuButton from 'core/components/DrawerMenuButton';
 import { makeIcon } from 'core/components/PoPIcon';
+import { AppParamList } from 'core/navigation/typing/AppParamList';
+import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialParamList } from 'core/navigation/typing/social/SocialParamList';
 import { PublicKey } from 'core/objects';
 import { Color, Spacing, Typography } from 'core/styles';
@@ -11,10 +15,8 @@ import STRINGS from 'resources/strings';
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
 import { SocialFeature } from '../interface';
-import SocialHomeNavigation from './SocialHomeNavigation';
-import SocialProfileNavigation from './SocialProfileNavigation';
+import { SocialHome, SocialProfile, SocialTopChirps } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
-import SocialTopChirpsNavigation from './SocialTopChirpsNavigation';
 
 const Tab = createBottomTabNavigator<SocialParamList>();
 
@@ -23,10 +25,16 @@ const searchIcon = makeIcon('userList');
 const topChirpsIcon = makeIcon('topItems');
 const profileIcon = makeIcon('profile');
 
+type NavigationProps = CompositeScreenProps<
+  StackScreenProps<LaoParamList, typeof STRINGS.navigation_social_media>,
+  StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
+>;
+
 /**
  * This class manages the social media navigation and creates the corresponding navigation bar.
  */
 const SocialMediaNavigation = () => {
+  const navigation = useNavigation<NavigationProps['navigation']>();
   const [currentUserPopTokenPublicKey, setCurrentUserPopTokenPublicKey] = useState(
     undefined as unknown as PublicKey,
   );
@@ -81,19 +89,17 @@ const SocialMediaNavigation = () => {
         }}>
         <Tab.Screen
           name={STRINGS.social_media_navigation_tab_home}
-          component={SocialHomeNavigation}
+          component={SocialHome}
           options={{
             title: STRINGS.social_media_navigation_tab_home_title,
-            headerShown: false,
             tabBarIcon: homeIcon,
           }}
         />
         <Tab.Screen
           name={STRINGS.social_media_navigation_tab_top_chirps}
-          component={SocialTopChirpsNavigation}
+          component={SocialTopChirps}
           options={{
             title: STRINGS.social_media_navigation_tab_top_chirps_title,
-            headerShown: false,
             tabBarIcon: topChirpsIcon,
           }}
         />
@@ -105,13 +111,27 @@ const SocialMediaNavigation = () => {
             headerShown: false,
             tabBarIcon: searchIcon,
           }}
+          listeners={{
+            tabPress: (e) => {
+              // => do nothing
+              e.preventDefault();
+              navigation.navigate(STRINGS.navigation_app_lao, {
+                screen: STRINGS.navigation_social_media,
+                params: {
+                  screen: STRINGS.social_media_navigation_tab_search,
+                  params: {
+                    screen: STRINGS.social_media_search_navigation_attendee_list,
+                  },
+                },
+              });
+            },
+          }}
         />
         <Tab.Screen
           name={STRINGS.social_media_navigation_tab_profile}
-          component={SocialProfileNavigation}
+          component={SocialProfile}
           options={{
             title: STRINGS.social_media_navigation_tab_profile_title,
-            headerShown: false,
             tabBarIcon: profileIcon,
           }}
         />

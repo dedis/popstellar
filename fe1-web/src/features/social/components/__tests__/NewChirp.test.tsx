@@ -4,7 +4,6 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
-import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { laoReducer, setCurrentLao } from 'features/lao/reducer';
@@ -13,7 +12,7 @@ import { SocialMediaContext } from '../../context';
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
 import { requestAddChirp } from '../../network/SocialMessageApi';
 import SocialReducer from '../../reducer/SocialReducer';
-import SocialNewChirp from '../SocialNewChirp';
+import NewChirp from '../NewChirp';
 
 jest.mock('features/social/network/SocialMessageApi', () => {
   const actual = jest.requireActual('features/social/network/SocialMessageApi');
@@ -52,13 +51,13 @@ const mockStore = configureStore({
 });
 mockStore.dispatch(setCurrentLao(mockLao));
 
-describe('SocialNewChirp', () => {
+describe('NewChirp', () => {
   it('renders correctly', () => {
     const { toJSON } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <SocialMediaContext.Provider value={socialContextValue}>
-            <MockNavigator component={SocialNewChirp} />
+            <NewChirp />
           </SocialMediaContext.Provider>
         </FeatureContext.Provider>
       </Provider>,
@@ -71,7 +70,7 @@ describe('SocialNewChirp', () => {
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
           <SocialMediaContext.Provider value={socialContextValue}>
-            <MockNavigator component={SocialNewChirp} />
+            <NewChirp />
           </SocialMediaContext.Provider>
         </FeatureContext.Provider>
       </Provider>,
