@@ -207,9 +207,11 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	// Create the channel
 	channel, err := NewChannel("channel0", fakeHub, messages[0], nolog, keypair.public, nil)
 	require.NoError(t, err)
-	require.Equal(t, "0", messages[0].MessageID)
 
 	laoChannel, ok := channel.(*Channel)
+	require.True(t, ok)
+
+	_, ok = laoChannel.inbox.GetMessage(messages[0].MessageID)
 	require.True(t, ok)
 
 	time.Sleep(time.Millisecond)
