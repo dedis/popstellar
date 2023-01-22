@@ -1,49 +1,386 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AutocompleteInput renders correctly 1`] = `
-<View>
+exports[`ScannerInput renders correctly 1`] = `
+<View
+  style={
+    Object {
+      "alignItems": "center",
+      "flexDirection": "row",
+      "zIndex": 99,
+    }
+  }
+>
   <View
     style={
       Object {
-        "borderWidth": 0,
+        "flex": 1,
+      }
+    }
+  >
+    <View>
+      <View
+        style={
+          Object {
+            "borderWidth": 0,
+          }
+        }
+      >
+        <View
+          style={
+            Object {
+              "flex": 1,
+              "flexDirection": "row",
+            }
+          }
+        >
+          <TextInput
+            editable={true}
+            placeholder=""
+            placeholderTextColor="#8E8E8E"
+            style={
+              Array [
+                Object {
+                  "color": "#000",
+                  "fontSize": 20,
+                  "lineHeight": 26,
+                  "marginBottom": 16,
+                  "textAlign": "left",
+                },
+                Object {
+                  "backgroundColor": "#fff",
+                  "borderColor": "#fff",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "flex": 1,
+                  "padding": 8,
+                  "width": 50,
+                },
+              ]
+            }
+            value=""
+          />
+        </View>
+      </View>
+      <View
+        style={
+          Object {
+            "backgroundColor": "#fff",
+            "borderRadius": 8,
+            "left": 0,
+            "maxHeight": 200,
+            "position": "absolute",
+            "right": 0,
+            "shadowColor": "#000",
+            "shadowOffset": Object {
+              "height": 5,
+              "width": 5,
+            },
+            "shadowOpacity": 0.1,
+            "shadowRadius": 3,
+            "top": "100%",
+            "zIndex": 100,
+          }
+        }
+      >
+        <RCTScrollView
+          collapsable={false}
+          data={
+            Array [
+              "aaa",
+              "aab",
+              "aac",
+            ]
+          }
+          getItem={[Function]}
+          getItemCount={[Function]}
+          handlerTag={1}
+          handlerType="NativeViewGestureHandler"
+          keyExtractor={[Function]}
+          onContentSizeChange={[Function]}
+          onGestureHandlerEvent={[Function]}
+          onGestureHandlerStateChange={[Function]}
+          onLayout={[Function]}
+          onMomentumScrollBegin={[Function]}
+          onMomentumScrollEnd={[Function]}
+          onScroll={[Function]}
+          onScrollBeginDrag={[Function]}
+          onScrollEndDrag={[Function]}
+          removeClippedSubviews={false}
+          renderItem={[Function]}
+          renderScrollComponent={[Function]}
+          scrollEventThrottle={50}
+          stickyHeaderIndices={Array []}
+          viewabilityConfigCallbackPairs={Array []}
+        >
+          <View>
+            <View
+              onLayout={[Function]}
+              style={null}
+            >
+              <View
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  Object {
+                    "borderBottomColor": "rgb(216, 216, 216)",
+                    "borderBottomWidth": 1,
+                    "paddingHorizontal": 16,
+                    "paddingVertical": 8,
+                  }
+                }
+              >
+                <RNGestureHandlerButton
+                  collapsable={false}
+                  exclusive={true}
+                  handlerTag={2}
+                  handlerType="NativeViewGestureHandler"
+                  onGestureEvent={[Function]}
+                  onGestureHandlerEvent={[Function]}
+                  onGestureHandlerStateChange={[Function]}
+                  onHandlerStateChange={[Function]}
+                  rippleColor={0}
+                  touchSoundDisabled={false}
+                >
+                  <View
+                    accessible={true}
+                    collapsable={false}
+                    style={
+                      Object {
+                        "opacity": 1,
+                      }
+                    }
+                  >
+                    <Text
+                      numberOfLines={1}
+                      style={
+                        Object {
+                          "color": "#000",
+                          "fontSize": 20,
+                          "lineHeight": 26,
+                          "textAlign": "left",
+                        }
+                      }
+                    >
+                      aaa
+                    </Text>
+                  </View>
+                </RNGestureHandlerButton>
+              </View>
+            </View>
+            <View
+              onLayout={[Function]}
+              style={null}
+            >
+              <View
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  Object {
+                    "borderBottomColor": "rgb(216, 216, 216)",
+                    "borderBottomWidth": 1,
+                    "paddingHorizontal": 16,
+                    "paddingVertical": 8,
+                  }
+                }
+              >
+                <RNGestureHandlerButton
+                  collapsable={false}
+                  exclusive={true}
+                  handlerTag={3}
+                  handlerType="NativeViewGestureHandler"
+                  onGestureEvent={[Function]}
+                  onGestureHandlerEvent={[Function]}
+                  onGestureHandlerStateChange={[Function]}
+                  onHandlerStateChange={[Function]}
+                  rippleColor={0}
+                  touchSoundDisabled={false}
+                >
+                  <View
+                    accessible={true}
+                    collapsable={false}
+                    style={
+                      Object {
+                        "opacity": 1,
+                      }
+                    }
+                  >
+                    <Text
+                      numberOfLines={1}
+                      style={
+                        Object {
+                          "color": "#000",
+                          "fontSize": 20,
+                          "lineHeight": 26,
+                          "textAlign": "left",
+                        }
+                      }
+                    >
+                      aab
+                    </Text>
+                  </View>
+                </RNGestureHandlerButton>
+              </View>
+            </View>
+            <View
+              onLayout={[Function]}
+              style={null}
+            >
+              <View
+                accessible={true}
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={
+                  Array [
+                    Object {
+                      "borderBottomColor": "rgb(216, 216, 216)",
+                      "borderBottomWidth": 1,
+                      "paddingHorizontal": 16,
+                      "paddingVertical": 8,
+                    },
+                    Object {
+                      "borderRadius": 8,
+                    },
+                  ]
+                }
+              >
+                <RNGestureHandlerButton
+                  collapsable={false}
+                  exclusive={true}
+                  handlerTag={4}
+                  handlerType="NativeViewGestureHandler"
+                  onGestureEvent={[Function]}
+                  onGestureHandlerEvent={[Function]}
+                  onGestureHandlerStateChange={[Function]}
+                  onHandlerStateChange={[Function]}
+                  rippleColor={0}
+                  touchSoundDisabled={false}
+                >
+                  <View
+                    accessible={true}
+                    collapsable={false}
+                    style={
+                      Object {
+                        "opacity": 1,
+                      }
+                    }
+                  >
+                    <Text
+                      numberOfLines={1}
+                      style={
+                        Object {
+                          "color": "#000",
+                          "fontSize": 20,
+                          "lineHeight": 26,
+                          "textAlign": "left",
+                        }
+                      }
+                    >
+                      aac
+                    </Text>
+                  </View>
+                </RNGestureHandlerButton>
+              </View>
+            </View>
+          </View>
+        </RCTScrollView>
+      </View>
+    </View>
+  </View>
+  <View
+    style={
+      Object {
+        "marginLeft": 16,
       }
     }
   >
     <View
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "flex": 1,
-          "flexDirection": "row",
+          "marginBottom": 16,
         }
       }
     >
-      <TextInput
-        editable={true}
-        onChangeText={[Function]}
-        placeholder=""
-        placeholderTextColor="#8E8E8E"
-        style={
-          Array [
+      <RNGestureHandlerButton
+        collapsable={false}
+        exclusive={true}
+        handlerTag={5}
+        handlerType="NativeViewGestureHandler"
+        onGestureEvent={[Function]}
+        onGestureHandlerEvent={[Function]}
+        onGestureHandlerStateChange={[Function]}
+        onHandlerStateChange={[Function]}
+        rippleColor={0}
+        touchSoundDisabled={false}
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          style={
             Object {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "marginBottom": 16,
-              "textAlign": "left",
-            },
-            Object {
-              "backgroundColor": "#fff",
-              "borderColor": "#fff",
-              "borderRadius": 8,
-              "borderWidth": 1,
-              "flex": 1,
-              "padding": 8,
-              "width": 50,
-            },
-          ]
-        }
-        value=""
-      />
+              "opacity": 1,
+            }
+          }
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "backgroundColor": "#3742fa",
+                  "borderColor": "#3742fa",
+                  "borderRadius": 8,
+                  "borderWidth": 1,
+                  "padding": 8,
+                },
+              ]
+            }
+          >
+            <View>
+              {"name":"ios-scan","size":25,"color":"#fff"}
+            </View>
+          </View>
+        </View>
+      </RNGestureHandlerButton>
     </View>
   </View>
 </View>

@@ -1,12 +1,12 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
 
-import ScannerInput from '../ScannerInput';
+import AutocompleteInput from '../AutocompleteInput';
 
-describe('ScannerInput', () => {
+describe('AutocompleteInput', () => {
   it('renders correctly', () => {
     const { toJSON } = render(
-      <ScannerInput value="" onPress={() => {}} suggestions={['aaa', 'aab', 'aac']} />,
+      <AutocompleteInput value="" onChange={() => {}} suggestions={['aaa', 'aab', 'aac']} />,
     );
     expect(toJSON()).toMatchSnapshot();
   });

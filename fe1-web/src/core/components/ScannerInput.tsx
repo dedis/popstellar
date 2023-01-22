@@ -52,13 +52,6 @@ const ScannerInput = ({
           testID={testID || undefined}
         />
       </View>
-      {/* <Input
-        value={value}
-        placeholder={placeholder}
-        onChange={onChange}
-        enabled={enabled}
-        testID={testID}
-        /> */}
       <View style={styles.button}>
         <PoPButton onPress={onPress}>
           <PoPIcon name="scan" color={Color.contrast} />
