@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"popstellar"
 	"popstellar/hub"
 	"popstellar/network/socket"
 	"sync"
@@ -17,6 +18,8 @@ import (
 type key int
 
 const requestIDKey key = 0
+
+const infoPath = "/infos"
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -62,6 +65,8 @@ func NewServer(hub hub.Hub, addr string, port int, st socket.SocketType, log zer
 	path := fmt.Sprintf("/%s/%s", hub.Type(), st)
 	mux := http.NewServeMux()
 	mux.HandleFunc(path, server.ServeHTTP)
+
+	mux.HandleFunc(infoPath, server.infoHandler)
 
 	nextRequestID := func() string {
 		return fmt.Sprintf("%d", time.Now().UnixNano())
@@ -133,6 +138,28 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+}
+
+func (s *Server) infoHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "not supported", http.StatusMethodNotAllowed)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	fmtStr := `{
+	"version": "%s",
+	"commit": "%s",
+	"buildTime": "%s",
+	"hubType": "%s",
+	"socketType": "%s"
+}`
+
+	resp := fmt.Sprintf(fmtStr, popstellar.Version, popstellar.ShortSHA,
+		popstellar.BuildTime, s.hub.Type(), s.st)
+
+	w.Write([]byte(resp))
 }
 
 // Shutdown shuts the HTTP server, signals the read and write pumps to
