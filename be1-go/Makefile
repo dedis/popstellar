@@ -11,6 +11,7 @@ build: protocol
 	go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop ./cli
 	GOOS=linux GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop-linux-amd64-$(versionFile) ./cli
 	GOOS=darwin GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop-darwin-amd64-$(versionFile) ./cli
+	GOOS=darwin GOARCH=arm64 go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop-darwin-arm64-$(versionFile) ./cli
 	GOOS=windows GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop-windows-amd64-$(versionFile) ./cli
 
 lint:
