@@ -1,14 +1,14 @@
 # popstellar: be2-scala branch
+
 Proof-of-personhood, spring 2021: Scala language back-end
 
 [TOC]
 
 ## Running the project
+
 <span style="color:red;font-weight:bold">
 Make sure to open be2-scala project folder as the root of your IDE workspace.
 </span>
-
-
 
 There are two main possible ways of running the project :
 
@@ -21,9 +21,13 @@ __```-Dscala.config=src/main/scala/ch/epfl/pop/config```__
 ![](docs/images/intellij-vm.png)
 
 ### Option 2: SBT
+
 Using `sbt -Dscala.config="path/to/config/file" run`.
 
- There is a default configuration ready to use in `src/main/scala/ch/epfl/pop/config` which contains an __application.config__ where the configuration lives. This can be updated if needed.
+There is a default configuration ready to use in
+`src/main/scala/ch/epfl/pop/config` which contains an __application.config__
+where the configuration lives. This can be updated if needed.
+
  ```apacheconf
 # Snapshot of application.config
 
@@ -35,14 +39,14 @@ ch_epfl_pop_Server {
 	}
 }
  ```
+
 Consequently, from **be2-scala/** folder run the following:
+
 ```bash
  sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" run
 ```
 
 ---
-
-
 
 ## Preprocessor flags
 
@@ -52,8 +56,6 @@ We introduced two custom [preprocessor flags](https://gcc.gnu.org/onlinedocs/gcc
 - Database auto-cleanup (optional). By adding the `-Dclean` flag, the database will be recreated everytime the server starts running
 
 ---
-
-
 
 ## External libraries
 
@@ -68,8 +70,38 @@ The project relies on several sbt dependencies (external libraries) :
 
 ---
 
-
-
 ## Coding convention
 
 Our coding guidelines can be found [here](https://docs.scala-lang.org/style/).
+
+## Install java and sbt on linux and Mac
+
+[skdman](https://sdkman.io/) does a pretty good job for installing the required
+environment:
+
+```sh
+# install sdkman
+curl -s "https://get.sdkman.io" | bash 
+# install java zulu 11
+sdk install java 11.0.18-zulu
+# install sbt
+sdk install sbt
+# check that everything went well
+java -version
+> openjdk version "11.0.18" 2023-01-17 LTS
+```
+
+## Build and run
+
+Build the jar with:
+
+```sh
+sbt assembly
+```
+
+Run by specifying the configuration file:
+
+```sh
+java -Dscala.config="src/main/scala/ch/epfl/pop/config" -jar target/scala-2.13/pop-assembly-<version>-SNAPSHOT.jar
+> ch.epfl.pop.Server online at ws://127.0.0.1:8000/
+```

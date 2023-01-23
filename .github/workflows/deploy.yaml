@@ -113,3 +113,51 @@ jobs:
             rsync -chav --delete \
               -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
               ./pop ${{env.dest}}
+
+  deploy_be2:
+    name: Release and deploy be2-scala
+
+    if:  ${{ startsWith(github.event.release.tag_name, 'be2-') }}
+    runs-on: ubuntu-latest
+
+    env:
+      base_folder: be2-scala
+      scala_version: 2.13
+
+    defaults:
+      run:
+        working-directory: ./${{ env.base_folder }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+
+      - name: build
+        run: |
+          sbt assembly
+
+      - name: Upload release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ env.base_folder }}/target/scala-${{ scala_version }}/pop-assembly-*
+
+      - name: Copy jar
+        run: |
+          find target/scala-${{ scala_version }} -type f -name 'pop-assembly-*' -exec sh -c 'x="{}"; cp "$x" "pop-scala.jar"' \;
+
+      # Use rsync to deploy the new website
+      - name: Sync
+        env:
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:be2-scala/"
+        run: |
+            echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
+            chmod 600 ./deploy_key
+            rsync -chav --delete \
+              -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
+              ./pop-scala.jar ${{env.dest}}
