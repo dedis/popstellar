@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,13 +22,14 @@ import java.util.*;
 
 import io.reactivex.Observable;
 
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
 
 public class EventListAdapter extends EventsAdapter {
 
   private final EnumMap<EventCategory, List<Event>> eventsMap;
 
-  private final boolean[] expanded = new boolean[3];
+  private final boolean[] expanded = new boolean[2];
   public static final int TYPE_HEADER = 0;
   public static final int TYPE_EVENT = 1;
   public static final String TAG = EventListAdapter.class.getSimpleName();
@@ -108,9 +110,6 @@ public class EventListAdapter extends EventsAdapter {
         case PRESENT:
           headerTitle.setText(R.string.present_header_title);
           break;
-        case FUTURE:
-          headerTitle.setText(R.string.future_header_title);
-          break;
         case PAST:
           headerTitle.setText(R.string.past_header_title);
           break;
@@ -148,7 +147,6 @@ public class EventListAdapter extends EventsAdapter {
    * sure the position is occupied by an event or this will throw an exception
    */
   private Event getEvent(int position) {
-    int nbrOfFutureEvents = Objects.requireNonNull(eventsMap.get(FUTURE)).size();
     int nbrOfPresentEvents = Objects.requireNonNull(eventsMap.get(PRESENT)).size();
     int nbrOfPastEvents = Objects.requireNonNull(eventsMap.get(PAST)).size();
 
@@ -160,14 +158,8 @@ public class EventListAdapter extends EventsAdapter {
       }
       eventAccumulator += nbrOfPresentEvents;
     }
-    if (expanded[FUTURE.ordinal()]) {
-      if (position <= nbrOfFutureEvents + eventAccumulator + 1) {
-        return Objects.requireNonNull(eventsMap.get(FUTURE)).get(position - eventAccumulator - 2);
-      }
-      eventAccumulator += nbrOfFutureEvents;
-    }
-    if (expanded[PAST.ordinal()] && position <= nbrOfPastEvents + eventAccumulator + 2) {
-      return Objects.requireNonNull(eventsMap.get(PAST)).get(position - eventAccumulator - 3);
+    if (expanded[PAST.ordinal()] && position <= nbrOfPastEvents + eventAccumulator + 1) {
+      return Objects.requireNonNull(eventsMap.get(PAST)).get(position - eventAccumulator - 2);
     }
     throw new IllegalStateException("no event matches");
   }
@@ -178,9 +170,7 @@ public class EventListAdapter extends EventsAdapter {
    * sure the position is occupied by a header or this will throw an exception
    */
   private EventCategory getHeaderCategory(int position) {
-    int nbrOfFutureEvents = Objects.requireNonNull(eventsMap.get(FUTURE)).size();
     int nbrOfPresentEvents = Objects.requireNonNull(eventsMap.get(PRESENT)).size();
-
     if (position == 0) {
       return PRESENT;
     }
@@ -188,22 +178,15 @@ public class EventListAdapter extends EventsAdapter {
     if (expanded[PRESENT.ordinal()]) {
       eventAccumulator += nbrOfPresentEvents;
     }
-
     if (position == eventAccumulator + 1) {
-      return FUTURE;
-    }
-    if (expanded[FUTURE.ordinal()]) {
-      eventAccumulator += nbrOfFutureEvents;
-    }
-    if (position == eventAccumulator + 2) {
       return PAST;
     }
+    Log.e(TAG, "Illegal position " + position);
     throw new IllegalStateException("No event category");
   }
 
   @Override
   public int getItemCount() {
-    int nbrOfFutureEvents = eventsMap.get(FUTURE).size();
     int nbrOfPresentEvents = eventsMap.get(PRESENT).size();
     int nbrOfPastEvents = eventsMap.get(PAST).size();
     int eventAccumulator = 0;
@@ -211,18 +194,14 @@ public class EventListAdapter extends EventsAdapter {
     if (expanded[PRESENT.ordinal()]) {
       eventAccumulator = nbrOfPresentEvents;
     }
-    if (expanded[FUTURE.ordinal()]) {
-      eventAccumulator += nbrOfFutureEvents;
-    }
     if (expanded[PAST.ordinal()]) {
       eventAccumulator += nbrOfPastEvents;
     }
-    return eventAccumulator + 3; // The number expanded of events + the 3 sub-headers
+    return eventAccumulator + 2; // The number expanded of events + the 2 sub-headers
   }
 
   @Override
   public int getItemViewType(int position) {
-    int nbrOfFutureEvents = eventsMap.get(FUTURE).size();
     int nbrOfPresentEvents = eventsMap.get(PRESENT).size();
     int eventAccumulator = 0;
 
@@ -233,12 +212,6 @@ public class EventListAdapter extends EventsAdapter {
       return TYPE_HEADER;
     }
     if (position == eventAccumulator + 1) {
-      return TYPE_HEADER;
-    }
-    if (expanded[FUTURE.ordinal()]) {
-      eventAccumulator += nbrOfFutureEvents;
-    }
-    if (position == eventAccumulator + 2) {
       return TYPE_HEADER;
     }
     return TYPE_EVENT;
