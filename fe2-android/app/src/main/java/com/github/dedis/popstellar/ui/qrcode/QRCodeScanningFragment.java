@@ -17,7 +17,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrcodeFragmentBinding;
-import com.github.dedis.popstellar.ui.detail.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -226,7 +228,7 @@ public final class QRCodeScanningFragment extends Fragment {
                                 setCurrentFragment(
                                     getParentFragmentManager(),
                                     R.id.fragment_lao_detail,
-                                    LaoDetailFragment::newInstance),
+                                    EventListFragment::newInstance),
                             error ->
                                 ErrorUtils.logAndShow(
                                     requireContext(), TAG, error, R.string.error_close_rollcall))));

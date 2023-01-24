@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail.event;
+package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;

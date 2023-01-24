@@ -7,7 +7,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.testutils.*;
-import com.github.dedis.popstellar.ui.detail.event.EventListAdapter;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListAdapter;
 
 import org.junit.Rule;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail.event;
+package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
 import android.annotation.SuppressLint;
 import android.view.*;
@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventCategory;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
 
 import java.util.*;
 

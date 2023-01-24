@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail.event;
+package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
 import android.util.Log;
 import android.view.View;
@@ -43,7 +43,6 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
       LaoDetailViewModel viewModel,
       FragmentActivity activity,
       String TAG) {
-    this.events = new ArrayList<>(events);
     this.viewModel = viewModel;
     this.activity = activity;
     this.TAG = TAG;

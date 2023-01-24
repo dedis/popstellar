@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail;
+package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +15,9 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
 import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.ui.detail.event.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,11 +27,11 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/** Fragment used to display the LAO Detail UI */
+/** Fragment used to display the list of events */
 @AndroidEntryPoint
-public class LaoDetailFragment extends Fragment {
+public class EventListFragment extends Fragment {
 
-  public static final String TAG = LaoDetailFragment.class.getSimpleName();
+  public static final String TAG = EventListFragment.class.getSimpleName();
 
   @Inject Gson gson;
 
@@ -37,8 +39,8 @@ public class LaoDetailFragment extends Fragment {
   private LaoDetailViewModel viewModel;
   private boolean isRotated = false;
 
-  public static LaoDetailFragment newInstance() {
-    return new LaoDetailFragment();
+  public static EventListFragment newInstance() {
+    return new EventListFragment();
   }
 
   @Nullable

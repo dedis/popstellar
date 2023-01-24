@@ -16,10 +16,12 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion.Question;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.ui.detail.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.ArrayList;
@@ -252,7 +254,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                           setCurrentFragment(
                               getParentFragmentManager(),
                               R.id.fragment_lao_detail,
-                              LaoDetailFragment::newInstance),
+                              EventListFragment::newInstance),
                       error ->
                           ErrorUtils.logAndShow(
                               requireContext(), TAG, error, R.string.error_create_election)));
