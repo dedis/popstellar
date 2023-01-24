@@ -91,7 +91,7 @@ java -version
 > openjdk version "11.0.18" 2023-01-17 LTS
 ```
 
-## Build and run
+## Package and run
 
 Build the jar with:
 
