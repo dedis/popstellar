@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:elevation="0dp"
         android:clickable="true"
-        android:layout_marginTop="@dimen/container_margin"
+        android:layout_marginTop="@dimen/event_list_sections_margin"
         app:cardCornerRadius="@dimen/corner_radius_small">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -58,7 +58,6 @@
         android:id="@+id/event_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/event_list_sections_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/upcoming_events_card" />
 

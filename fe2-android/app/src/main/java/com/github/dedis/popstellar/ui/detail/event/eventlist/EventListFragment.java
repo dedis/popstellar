@@ -153,8 +153,6 @@ public class EventListFragment extends Fragment {
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
 
-    EventListDivider divider = new EventListDivider(getContext());
-    eventList.addItemDecoration(divider);
     eventList.setAdapter(eventListAdapter);
   }
 }
