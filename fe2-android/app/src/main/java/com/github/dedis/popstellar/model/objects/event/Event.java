@@ -36,6 +36,6 @@ public abstract class Event implements Comparable<Event> {
    */
   public boolean isEventToday() {
     long currentTime = System.currentTimeMillis();
-    return getStartTimestamp() - currentTime < Constants.MS_IN_A_DAY;
+    return getEndTimestampInMillis() - currentTime < Constants.MS_IN_A_DAY;
   }
 }
