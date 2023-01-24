@@ -63,14 +63,15 @@
   <dimen name="event_layout_arrow_end_margin">8dp</dimen>
   <dimen name="event_layout_arrow_image_side">20dp</dimen>
   <dimen name="event_layout_type_image_side">30dp</dimen>
-  <dimen name="event_layout_type_start_margin">24dp</dimen>
+  <dimen name="event_layout_type_start_margin">8dp</dimen>
   <dimen name="event_layout_card_view_height">55dp</dimen>
 
   <!--  Header layout-->
   <dimen name="header_layout_arrow_side">16dp</dimen>
   <dimen name="header_layout_margin_start">8dp</dimen>
-  <dimen name="header_title_text_size">14sp</dimen>
+  <dimen name="header_title_text_size">16sp</dimen>
   <dimen name="header_card_view_height">45dp</dimen>
+  <dimen name="upcoming_title_text_size">18sp</dimen>
 
   <!--  Election fragment dimension-->
   <dimen name="inter_buttons_margin">8dp</dimen>
@@ -94,9 +95,10 @@
   <!--  Witnessing dimensions -->
   <dimen name="tab_layout_top_margin">20dp</dimen>
 
-  <!--  LaoDetail Fragment dimensions -->
+  <!--  Event List Fragment dimensions -->
   <dimen name="add_event_texts_size">18sp</dimen>
   <dimen name="add_button_margin_end">8dp</dimen>
+  <dimen name="event_list_sections_margin">16dp</dimen>
 
   <!--  Token dimensions-->
   <dimen name="qr_icon_side">28dp</dimen>
@@ -139,6 +141,7 @@
   <!--  CardView dimensions -->
   <dimen name="cv_horizontal_margin">16dp</dimen>
   <dimen name="padding_standard">8dp</dimen>
+  <dimen name="padding_big">14dp</dimen>
   <dimen name="corner_radius_standard">12dp</dimen>
   <dimen name="corner_radius_small">5dp</dimen>
   <dimen name="stroke_width">1dp</dimen>

@@ -44,9 +44,9 @@
   <!--  Lao Detail-->
   <string name="add_election">New Election</string>
   <string name="add_roll_call">New Roll Call</string>
-  <string name="present_header_title">Current</string>
-  <string name="future_header_title">Upcoming</string>
-  <string name="past_header_title">Previous</string>
+  <string name="present_header_title">Current Events</string>
+  <string name="future_header_title">Upcoming Events</string>
+  <string name="past_header_title">Past Events</string>
   <string name="lao_properties_server_title">Connected to server</string>
   <string name="lao_properties_identifier_title">Identifier</string>
   <string name="identity_name">Name</string>
