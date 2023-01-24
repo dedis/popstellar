@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
+import com.github.dedis.popstellar.databinding.EventListFragmentBinding;
 import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
@@ -35,7 +35,7 @@ public class EventListFragment extends Fragment {
 
   @Inject Gson gson;
 
-  private LaoDetailFragmentBinding binding;
+  private EventListFragmentBinding binding;
   private LaoDetailViewModel viewModel;
   private boolean isRotated = false;
 
@@ -49,7 +49,7 @@ public class EventListFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    binding = LaoDetailFragmentBinding.inflate(inflater, container, false);
+    binding = EventListFragmentBinding.inflate(inflater, container, false);
 
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     binding.setLifecycleOwner(requireActivity());
