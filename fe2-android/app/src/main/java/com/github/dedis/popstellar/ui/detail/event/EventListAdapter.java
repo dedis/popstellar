@@ -1,43 +1,29 @@
 package com.github.dedis.popstellar.ui.detail.event;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.event.*;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.model.objects.event.Event;
+import com.github.dedis.popstellar.model.objects.event.EventCategory;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import io.reactivex.Observable;
 
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.*;
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
-public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class EventListAdapter extends EventsAdapter {
 
-  private final LaoDetailViewModel viewModel;
-  private final FragmentActivity activity;
   private final EnumMap<EventCategory, List<Event>> eventsMap;
 
   private final boolean[] expanded = new boolean[3];
@@ -47,39 +33,34 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
   public EventListAdapter(
       LaoDetailViewModel viewModel, Observable<Set<Event>> events, FragmentActivity activity) {
+    super(events, viewModel, activity, TAG);
     this.eventsMap = new EnumMap<>(EventCategory.class);
     this.eventsMap.put(PAST, new ArrayList<>());
     this.eventsMap.put(PRESENT, new ArrayList<>());
-    this.eventsMap.put(FUTURE, new ArrayList<>());
-    this.activity = activity;
-    this.viewModel = viewModel;
 
     expanded[PAST.ordinal()] = true;
     expanded[PRESENT.ordinal()] = true;
-    expanded[FUTURE.ordinal()] = true;
-
-    subscribeToEventSet(events);
   }
 
-  private void subscribeToEventSet(Observable<Set<Event>> observable) {
-    this.viewModel.addDisposable(
-        observable
-            .map(events -> events.stream().sorted().collect(Collectors.toList()))
-            // No need to check for error as the events errors already handles them
-            .subscribe(this::putEventsInMap, err -> Log.d(TAG, "ERROR", err)));
-  }
-
-  /** A helper method that places the events in the correct key-value pair according to state */
+  /**
+   * A helper method that places the events in the correct key-value pair according to state Closed
+   * events are put in the past section. Opened events in the current section. Created events that
+   * are to be open in less than 24 hours are also in the current section. Created events that are
+   * to be opened in more than 24 hours are not displayed here (They are displayed in a separate
+   * view)
+   */
   @SuppressLint("NotifyDataSetChanged")
-  private void putEventsInMap(List<Event> events) {
+  @Override
+  public void updateEventSet(List<Event> events) {
     this.eventsMap.get(PAST).clear();
-    this.eventsMap.get(FUTURE).clear();
     this.eventsMap.get(PRESENT).clear();
 
     for (Event event : events) {
       switch (event.getState()) {
         case CREATED:
-          eventsMap.get(FUTURE).add(event);
+          if (event.isEventToday()) {
+            eventsMap.get(PRESENT).add(event);
+          }
           break;
         case OPENED:
           eventsMap.get(PRESENT).add(event);
@@ -157,50 +138,6 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       EventViewHolder eventViewHolder = (EventViewHolder) holder;
       Event event = getEvent(position);
       handleEventContent(eventViewHolder, event);
-    }
-  }
-
-  /**
-   * Handle event content, that is setting icon based on RC/Election type, setting the name And
-   * setting an appropriate listener based on the type
-   */
-  private void handleEventContent(EventViewHolder eventViewHolder, Event event) {
-    if (event.getType().equals(EventType.ELECTION)) {
-      eventViewHolder.eventIcon.setImageResource(R.drawable.ic_vote);
-      Election election = (Election) event;
-      eventViewHolder.eventTitle.setText(election.getName());
-      View.OnClickListener listener =
-          view ->
-              LaoDetailActivity.setCurrentFragment(
-                  activity.getSupportFragmentManager(),
-                  R.id.fragment_election,
-                  () -> ElectionFragment.newInstance(election.getId()));
-      eventViewHolder.eventCard.setOnClickListener(listener);
-
-    } else if (event.getType().equals(EventType.ROLL_CALL)) {
-      eventViewHolder.eventIcon.setImageResource(R.drawable.ic_roll_call);
-      RollCall rollCall = (RollCall) event;
-      eventViewHolder.eventTitle.setText(rollCall.getName());
-      eventViewHolder.eventCard.setOnClickListener(
-          view -> {
-            if (viewModel.isWalletSetup()) {
-              try {
-                PoPToken token = viewModel.getCurrentPopToken(rollCall);
-                setCurrentFragment(
-                    activity.getSupportFragmentManager(),
-                    R.id.fragment_roll_call,
-                    () ->
-                        RollCallFragment.newInstance(
-                            token.getPublicKey(), rollCall.getPersistentId()));
-              } catch (KeyException e) {
-                ErrorUtils.logAndShow(activity, TAG, e, R.string.key_generation_exception);
-              } catch (UnknownLaoException e) {
-                ErrorUtils.logAndShow(activity, TAG, e, R.string.error_no_lao);
-              }
-            } else {
-              showWalletNotSetupWarning();
-            }
-          });
     }
   }
 
@@ -307,23 +244,10 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
   }
 
   public void showWalletNotSetupWarning() {
-    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setTitle("You have to setup up your wallet before connecting.");
     builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
     builder.show();
-  }
-
-  public static class EventViewHolder extends RecyclerView.ViewHolder {
-    private final TextView eventTitle;
-    private final ImageView eventIcon;
-    private final CardView eventCard;
-
-    public EventViewHolder(@NonNull View itemView) {
-      super(itemView);
-      eventTitle = itemView.findViewById(R.id.event_card_text_view);
-      eventIcon = itemView.findViewById(R.id.event_type_image);
-      eventCard = itemView.findViewById(R.id.event_card_view);
-    }
   }
 
   public static class HeaderViewHolder extends RecyclerView.ViewHolder {
