@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.EventListFragmentBinding;
 import com.github.dedis.popstellar.model.Role;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
@@ -67,6 +69,24 @@ public class EventListFragment extends Fragment {
     binding.addElectionText.setOnClickListener(openCreateEvent(EventType.ELECTION));
     binding.addRollCall.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
     binding.addRollCallText.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
+
+    // Observing events so that we know when to display the upcoming events card
+    viewModel.addDisposable(
+        viewModel
+            .getEvents()
+            .subscribe(
+                events ->
+                    binding.upcomingEventsCard.setVisibility(
+                        events.stream()
+                                .anyMatch( // We are looking for any event that is in future section
+                                    event ->
+                                        // We want created events that are in more than 24 hours
+                                        event.getState().equals(EventState.CREATED)
+                                            && !event.isEventToday())
+                            ? View.VISIBLE
+                            : View.GONE),
+                error ->
+                    ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_event_observed)));
 
     return binding.getRoot();
   }
