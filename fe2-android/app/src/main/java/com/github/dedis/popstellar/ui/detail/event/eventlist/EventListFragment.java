@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
+import com.github.dedis.popstellar.ui.detail.event.UpcomingEventsFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -87,6 +88,14 @@ public class EventListFragment extends Fragment {
                             : View.GONE),
                 error ->
                     ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_event_observed)));
+
+    // Add listener to upcoming events card
+    binding.upcomingEventsCard.setOnClickListener(
+        v ->
+            LaoDetailActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_upcoming_events,
+                UpcomingEventsFragment::newInstance));
 
     return binding.getRoot();
   }

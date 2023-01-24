@@ -60,6 +60,9 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
   public abstract void updateEventSet(List<Event> events);
 
   public List<Event> getEvents() {
+    if (events == null) {
+      return new ArrayList<>();
+    }
     return new ArrayList<>(events);
   }
 
