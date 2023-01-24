@@ -118,6 +118,9 @@ android {
             resources.srcDirs = []
         }
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 // Disable every task related to release unit tests
@@ -228,6 +231,11 @@ dependencies {
 
     // ================= Hilt ===================
     implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.navigation:navigation-fragment:2.5.2'
+    implementation 'androidx.navigation:navigation-ui:2.5.2'
     annotationProcessor "com.google.dagger:hilt-compiler:$hilt_version"
     // Hilt for Robolectric tests
     testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"

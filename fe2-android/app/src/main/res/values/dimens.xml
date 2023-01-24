@@ -169,4 +169,10 @@
   <dimen name="padding_standard">8dp</dimen>
   <dimen name="corner_radius_standard">12dp</dimen>
   <dimen name="stroke_width">1dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+  <dimen name="activity_horizontal_margin">16dp</dimen>
+  <dimen name="activity_vertical_margin">16dp</dimen>
+  <dimen name="nav_header_vertical_spacing">8dp</dimen>
+  <dimen name="nav_header_height">176dp</dimen>
+  <dimen name="fab_margin">16dp</dimen>
 </resources>
