@@ -56,4 +56,7 @@ public class Constants {
 
   /** Standard size of the side of a displayed QR code */
   public static final int QR_SIDE = 800;
+
+  /** Number of milliseconds in a day */
+  public static final long MS_IN_A_DAY = 86_400_000L;
 }

@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects.event;
 
+import com.github.dedis.popstellar.utility.Constants;
+
 /** Class modeling an Event */
 public abstract class Event implements Comparable<Event> {
 
@@ -27,5 +29,13 @@ public abstract class Event implements Comparable<Event> {
     }
 
     return Long.compare(o.getEndTimestamp(), this.getEndTimestamp());
+  }
+
+  /**
+   * @return true if event the event takes place today
+   */
+  public boolean isEventToday() {
+    long currentTime = System.currentTimeMillis();
+    return getStartTimestamp() - currentTime < Constants.MS_IN_A_DAY;
   }
 }
