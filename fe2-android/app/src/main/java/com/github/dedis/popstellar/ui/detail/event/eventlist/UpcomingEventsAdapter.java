@@ -25,8 +25,8 @@ public class UpcomingEventsAdapter extends EventsAdapter {
       Observable<Set<Event>> observable,
       LaoDetailViewModel viewModel,
       FragmentActivity activity,
-      String TAG) {
-    super(observable, viewModel, activity, TAG);
+      String tag) {
+    super(observable, viewModel, activity, tag);
   }
 
   @SuppressLint("NotifyDataSetChanged")

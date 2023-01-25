@@ -1,18 +1,12 @@
 package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
-
 import android.annotation.SuppressLint;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,13 +17,12 @@ import com.github.dedis.popstellar.model.objects.event.EventCategory;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
 
+import java.util.*;
+
 import io.reactivex.Observable;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
 
 public class EventListAdapter extends EventsAdapter {
 
@@ -112,14 +105,12 @@ public class EventListAdapter extends EventsAdapter {
       ImageView expandIcon = headerViewHolder.expandIcon;
       ConstraintLayout headerLayout = headerViewHolder.headerLayout;
 
-      switch (eventCategory) {
-        case PRESENT:
-          headerTitle.setText(R.string.present_header_title);
-          break;
-        case PAST:
-          headerTitle.setText(R.string.past_header_title);
-          break;
+      if (eventCategory == PRESENT) {
+        headerTitle.setText(R.string.present_header_title);
+      } else if (eventCategory == PAST) {
+        headerTitle.setText(R.string.past_header_title);
       }
+
       expandIcon.setRotation(expanded[eventCategory.ordinal()] ? 180f : 0f);
 
       String numberOfEventsInCategory =
@@ -234,13 +225,6 @@ public class EventListAdapter extends EventsAdapter {
       return TYPE_HEADER;
     }
     return TYPE_EVENT;
-  }
-
-  public void showWalletNotSetupWarning() {
-    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-    builder.setTitle("You have to setup up your wallet before connecting.");
-    builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
-    builder.show();
   }
 
   public static class HeaderViewHolder extends RecyclerView.ViewHolder {

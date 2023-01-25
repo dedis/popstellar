@@ -6,7 +6,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,25 +37,25 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
   private List<Event> events;
   private final LaoDetailViewModel viewModel;
   private final FragmentActivity activity;
-  private final String TAG;
+  private final String tag;
 
-  public EventsAdapter(
+  protected EventsAdapter(
       Observable<Set<Event>> observable,
       LaoDetailViewModel viewModel,
       FragmentActivity activity,
-      String TAG) {
+      String tag) {
     this.viewModel = viewModel;
     this.activity = activity;
-    this.TAG = TAG;
+    this.tag = tag;
     subscribeToEventSet(observable);
   }
 
   private void subscribeToEventSet(Observable<Set<Event>> observable) {
     this.viewModel.addDisposable(
         observable
-            .map(events -> events.stream().sorted().collect(Collectors.toList()))
+            .map(eventList -> eventList.stream().sorted().collect(Collectors.toList()))
             // No need to check for error as the events errors already handles them
-            .subscribe(this::updateEventSet, err -> Log.e(TAG, "ERROR", err)));
+            .subscribe(this::updateEventSet, err -> Log.e(tag, "ERROR", err)));
   }
 
   public abstract void updateEventSet(List<Event> events);
@@ -101,22 +100,18 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
       RollCall rollCall = (RollCall) event;
       eventViewHolder.eventCard.setOnClickListener(
           view -> {
-            if (viewModel.isWalletSetup()) {
-              try {
-                PoPToken token = viewModel.getCurrentPopToken(rollCall);
-                setCurrentFragment(
-                    activity.getSupportFragmentManager(),
-                    R.id.fragment_roll_call,
-                    () ->
-                        RollCallFragment.newInstance(
-                            token.getPublicKey(), rollCall.getPersistentId()));
-              } catch (KeyException e) {
-                ErrorUtils.logAndShow(activity, TAG, e, R.string.key_generation_exception);
-              } catch (UnknownLaoException e) {
-                ErrorUtils.logAndShow(activity, TAG, e, R.string.error_no_lao);
-              }
-            } else {
-              showWalletNotSetupWarning();
+            try {
+              PoPToken token = viewModel.getCurrentPopToken(rollCall);
+              setCurrentFragment(
+                  activity.getSupportFragmentManager(),
+                  R.id.fragment_roll_call,
+                  () ->
+                      RollCallFragment.newInstance(
+                          token.getPublicKey(), rollCall.getPersistentId()));
+            } catch (KeyException e) {
+              ErrorUtils.logAndShow(activity, tag, e, R.string.key_generation_exception);
+            } catch (UnknownLaoException e) {
+              ErrorUtils.logAndShow(activity, tag, e, R.string.error_no_lao);
             }
           });
     }
@@ -150,13 +145,6 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
     String textToDisplay = timeText + location;
     viewHolder.eventTimeAndLoc.setText(textToDisplay);
-  }
-
-  public void showWalletNotSetupWarning() {
-    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-    builder.setTitle("You have to setup up your wallet before connecting.");
-    builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
-    builder.show();
   }
 
   public static class EventViewHolder extends RecyclerView.ViewHolder {

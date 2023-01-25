@@ -64,11 +64,9 @@
   <dimen name="event_layout_arrow_image_side">20dp</dimen>
   <dimen name="event_layout_type_image_side">30dp</dimen>
   <dimen name="event_layout_type_start_margin">8dp</dimen>
-  <dimen name="event_layout_card_view_height">55dp</dimen>
 
   <!--  Header layout-->
   <dimen name="header_layout_arrow_side">16dp</dimen>
-  <dimen name="header_layout_margin_start">8dp</dimen>
   <dimen name="header_title_text_size">16sp</dimen>
   <dimen name="header_card_view_height">45dp</dimen>
   <dimen name="upcoming_title_text_size">18sp</dimen>
@@ -109,7 +107,6 @@
 
   <!--  Container dimensions -->
   <dimen name="container_margin">8dp</dimen>
-  <dimen name="container_top_margin">40dp</dimen>
 
   <!--  Floating action button dimensions-->
   <dimen name="fab_margin_bottom">30dp</dimen>
