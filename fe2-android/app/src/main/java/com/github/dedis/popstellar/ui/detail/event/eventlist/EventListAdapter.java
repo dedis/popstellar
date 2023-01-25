@@ -1,8 +1,13 @@
 package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
+
 import android.annotation.SuppressLint;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,12 +23,13 @@ import com.github.dedis.popstellar.model.objects.event.EventCategory;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
 
-import java.util.*;
-
 import io.reactivex.Observable;
 
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class EventListAdapter extends EventsAdapter {
 
@@ -159,8 +165,11 @@ public class EventListAdapter extends EventsAdapter {
       eventAccumulator += nbrOfPresentEvents;
     }
     if (expanded[PAST.ordinal()] && position <= nbrOfPastEvents + eventAccumulator + 1) {
-      return Objects.requireNonNull(eventsMap.get(PAST)).get(position - eventAccumulator - 2);
+      int secondSectionOffset = nbrOfPresentEvents > 0 ? 2 : 1;
+      return Objects.requireNonNull(eventsMap.get(PAST))
+          .get(position - eventAccumulator - secondSectionOffset);
     }
+    Log.e(TAG, "position was " + position);
     throw new IllegalStateException("no event matches");
   }
 
@@ -172,7 +181,10 @@ public class EventListAdapter extends EventsAdapter {
   private EventCategory getHeaderCategory(int position) {
     int nbrOfPresentEvents = Objects.requireNonNull(eventsMap.get(PRESENT)).size();
     if (position == 0) {
-      return PRESENT;
+      // If this function is called, it means that getSize() > 0. Therefore there are some events
+      // in either past or present (or both). If there are none in the present the first item is the
+      // past header
+      return nbrOfPresentEvents > 0 ? PRESENT : PAST;
     }
     int eventAccumulator = 0;
     if (expanded[PRESENT.ordinal()]) {
@@ -191,13 +203,19 @@ public class EventListAdapter extends EventsAdapter {
     int nbrOfPastEvents = eventsMap.get(PAST).size();
     int eventAccumulator = 0;
 
-    if (expanded[PRESENT.ordinal()]) {
-      eventAccumulator = nbrOfPresentEvents;
+    if (nbrOfPresentEvents > 0) {
+      if (expanded[PRESENT.ordinal()]) {
+        eventAccumulator = nbrOfPresentEvents;
+      }
+      eventAccumulator++; // If there are present events, we want to display the header as well
     }
-    if (expanded[PAST.ordinal()]) {
-      eventAccumulator += nbrOfPastEvents;
+    if (nbrOfPastEvents > 0) {
+      if (expanded[PAST.ordinal()]) {
+        eventAccumulator += nbrOfPastEvents;
+      }
+      eventAccumulator++; // If there are past events, we want to display the header as well
     }
-    return eventAccumulator + 2; // The number expanded of events + the 2 sub-headers
+    return eventAccumulator;
   }
 
   @Override
@@ -211,7 +229,8 @@ public class EventListAdapter extends EventsAdapter {
     if (position == 0) {
       return TYPE_HEADER;
     }
-    if (position == eventAccumulator + 1) {
+
+    if (position == eventAccumulator + 1 && nbrOfPresentEvents > 0) {
       return TYPE_HEADER;
     }
     return TYPE_EVENT;
