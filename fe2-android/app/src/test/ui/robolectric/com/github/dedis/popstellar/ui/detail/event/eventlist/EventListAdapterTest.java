@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail;
+package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -7,7 +7,8 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.testutils.*;
-import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListAdapter;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import org.junit.Rule;
 import org.junit.Test;
