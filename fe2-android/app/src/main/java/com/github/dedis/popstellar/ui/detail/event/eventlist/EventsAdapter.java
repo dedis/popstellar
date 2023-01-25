@@ -25,6 +25,8 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
+import org.ocpsoft.prettytime.PrettyTime;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -86,7 +88,6 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     if (event.getType().equals(EventType.ELECTION)) {
       eventViewHolder.eventIcon.setImageResource(R.drawable.ic_vote);
       Election election = (Election) event;
-      eventViewHolder.eventTitle.setText(election.getName());
       View.OnClickListener listener =
           view ->
               LaoDetailActivity.setCurrentFragment(
@@ -98,7 +99,6 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     } else if (event.getType().equals(EventType.ROLL_CALL)) {
       eventViewHolder.eventIcon.setImageResource(R.drawable.ic_roll_call);
       RollCall rollCall = (RollCall) event;
-      eventViewHolder.eventTitle.setText(rollCall.getName());
       eventViewHolder.eventCard.setOnClickListener(
           view -> {
             if (viewModel.isWalletSetup()) {
@@ -119,8 +119,37 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
               showWalletNotSetupWarning();
             }
           });
-      eventViewHolder.eventTitle.setText(rollCall.getName());
     }
+    eventViewHolder.eventTitle.setText(event.getName());
+    handleTimeAndLocation(eventViewHolder, event);
+  }
+
+  private void handleTimeAndLocation(EventViewHolder viewHolder, Event event) {
+    String location = "";
+    if (event instanceof RollCall) {
+      location = ", at " + ((RollCall) event).getLocation();
+    }
+    String timeText = "";
+    switch (event.getState()) {
+      case CREATED:
+        if (event.isStartPassed()) {
+          timeText = getActivity().getString(R.string.start_anytime);
+        } else {
+          long eventTime = event.getStartTimestampInMillis();
+          timeText = "Starting " + new PrettyTime().format(new Date(eventTime));
+        }
+        break;
+      case OPENED:
+        timeText = getActivity().getString(R.string.ongoing);
+        break;
+
+      case CLOSED:
+      case RESULTS_READY:
+        long eventTime = event.getEndTimestampInMillis();
+        timeText = "Closed " + new PrettyTime().format(new Date(eventTime));
+    }
+    String textToDisplay = timeText + location;
+    viewHolder.eventTimeAndLoc.setText(textToDisplay);
   }
 
   public void showWalletNotSetupWarning() {
@@ -134,12 +163,14 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private final TextView eventTitle;
     private final ImageView eventIcon;
     private final CardView eventCard;
+    private final TextView eventTimeAndLoc;
 
     public EventViewHolder(@NonNull View itemView) {
       super(itemView);
       eventTitle = itemView.findViewById(R.id.event_card_text_view);
       eventIcon = itemView.findViewById(R.id.event_type_image);
       eventCard = itemView.findViewById(R.id.event_card_view);
+      eventTimeAndLoc = itemView.findViewById(R.id.event_card_time_and_loc);
     }
   }
 }

@@ -52,8 +52,7 @@
   <string name="identity_name">Name</string>
   <string name="empty_events_organizer_text">No event has been created in this LAO ! \n\nTo create one, tap on add button with a + on the bottom right
   </string>
-  <string name="empty_events_non_organizer_text">No event has been created in this LAO ! \n\n
-  Since you are not an organizer, you must wait for them to create one.
+  <string name="empty_events_non_organizer_text">No event has been created in this LAO ! \n\nSince you are not an organizer, you must wait for them to create one.
   </string>
 
   <!-- Abstract Event-->
@@ -71,7 +70,8 @@
   <string name="start_time_after_end_time_not_allowed">Start time must be before end time</string>
   <string name="end_time_before_start_time_not_allowed">End time must be after start time</string>
   <string name="end_time_optional">End Time</string>
-
+  <string name="ongoing">Ongoing</string>
+  <string name="start_anytime">Starting anytime now</string>
   <string name="button_cancel">Cancel</string>
 
   <!-- Roll-Call Event -->
