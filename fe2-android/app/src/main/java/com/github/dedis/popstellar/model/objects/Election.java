@@ -101,6 +101,7 @@ public class Election extends Event {
     return electionKey;
   }
 
+  @Override
   public String getName() {
     return name;
   }

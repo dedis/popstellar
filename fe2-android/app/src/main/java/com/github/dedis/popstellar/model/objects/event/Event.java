@@ -17,6 +17,8 @@ public abstract class Event implements Comparable<Event> {
 
   public abstract EventState getState();
 
+  public abstract String getName();
+
   public long getEndTimestampInMillis() {
     return getEndTimestamp() * 1000;
   }
@@ -37,5 +39,9 @@ public abstract class Event implements Comparable<Event> {
   public boolean isEventToday() {
     long currentTime = System.currentTimeMillis();
     return getEndTimestampInMillis() - currentTime < Constants.MS_IN_A_DAY;
+  }
+
+  public boolean isStartPassed() {
+    return System.currentTimeMillis() >= getStartTimestampInMillis();
   }
 }
