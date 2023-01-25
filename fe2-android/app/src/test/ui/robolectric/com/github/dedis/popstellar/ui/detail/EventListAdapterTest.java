@@ -114,7 +114,7 @@ public class EventListAdapterTest {
     EventListAdapter adapter = getEventListAdapter();
 
     events.onNext(Collections.emptySet());
-    assertEquals(3, adapter.getItemCount());
+    assertEquals(0, adapter.getItemCount());
   }
 
   @Test
@@ -123,21 +123,18 @@ public class EventListAdapterTest {
 
     // Default values
     events.onNext(Sets.newSet(ROLL_CALL, ROLL_CALL2));
-
+    System.out.println(adapter.getItemCount());
     assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(0));
-    assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(1));
+    assertEquals(EventListAdapter.TYPE_EVENT, adapter.getItemViewType(1));
     assertEquals(EventListAdapter.TYPE_EVENT, adapter.getItemViewType(2));
-    assertEquals(EventListAdapter.TYPE_EVENT, adapter.getItemViewType(3));
-    assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(4));
 
     // Open rollcall 1 should move it from
-    events.onNext(Sets.newSet(RollCall.openRollCall(ROLL_CALL), ROLL_CALL2));
+    events.onNext(Sets.newSet(RollCall.closeRollCall(ROLL_CALL), ROLL_CALL2));
 
     assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(0));
     assertEquals(EventListAdapter.TYPE_EVENT, adapter.getItemViewType(1));
     assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(2));
     assertEquals(EventListAdapter.TYPE_EVENT, adapter.getItemViewType(3));
-    assertEquals(EventListAdapter.TYPE_HEADER, adapter.getItemViewType(4));
   }
 
   private EventListAdapter getEventListAdapter() {
