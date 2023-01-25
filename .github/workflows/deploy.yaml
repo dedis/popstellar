@@ -145,11 +145,11 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ env.base_folder }}/target/scala-${{ scala_version }}/pop-assembly-*
+          files: ${{ env.base_folder }}/target/scala-${{ env.scala_version }}/pop-assembly-*
 
       - name: Copy jar
         run: |
-          find target/scala-${{ scala_version }} -type f -name 'pop-assembly-*' -exec sh -c 'x="{}"; cp "$x" "pop-scala.jar"' \;
+          find target/scala-${{ env.scala_version }} -type f -name 'pop-assembly-*' -exec sh -c 'x="{}"; cp "$x" "pop-scala.jar"' \;
 
       # Use rsync to deploy the new website
       - name: Sync
