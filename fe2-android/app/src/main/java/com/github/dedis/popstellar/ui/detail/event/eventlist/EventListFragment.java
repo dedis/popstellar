@@ -14,8 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.EventListFragmentBinding;
 import com.github.dedis.popstellar.model.Role;
-import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
@@ -25,6 +24,8 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFrag
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -71,21 +72,16 @@ public class EventListFragment extends Fragment {
     binding.addRollCall.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
     binding.addRollCallText.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
 
-    // Observing events so that we know when to display the upcoming events card
+    // Observing events so that we know when to display the upcoming events card and displaying the
+    // Empty events text
     viewModel.addDisposable(
         viewModel
             .getEvents()
             .subscribe(
-                events ->
-                    binding.upcomingEventsCard.setVisibility(
-                        events.stream()
-                                .anyMatch( // We are looking for any event that is in future section
-                                    event ->
-                                        // We want created events that are in more than 24 hours
-                                        event.getState().equals(EventState.CREATED)
-                                            && !event.isEventToday())
-                            ? View.VISIBLE
-                            : View.GONE),
+                events -> {
+                  setupUpcomingEventsCard(events);
+                  setupEmptyEventsTextVisibility(events);
+                },
                 error ->
                     ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_event_observed)));
 
@@ -96,6 +92,17 @@ public class EventListFragment extends Fragment {
                 getParentFragmentManager(),
                 R.id.fragment_upcoming_events,
                 UpcomingEventsFragment::newInstance));
+
+    // Observe role to match empty event text to it
+    viewModel
+        .getRole()
+        .observe(
+            getViewLifecycleOwner(),
+            role ->
+                binding.emptyEventsText.setText(
+                    role.equals(Role.ORGANIZER)
+                        ? R.string.empty_events_organizer_text
+                        : R.string.empty_events_non_organizer_text));
 
     return binding.getRoot();
   }
@@ -163,5 +170,20 @@ public class EventListFragment extends Fragment {
     eventList.setLayoutManager(mLayoutManager);
 
     eventList.setAdapter(eventListAdapter);
+  }
+
+  private void setupUpcomingEventsCard(Set<Event> events) {
+    binding.upcomingEventsCard.setVisibility(
+        events.stream()
+                .anyMatch( // We are looking for any event that is in future section
+                    event ->
+                        // We want created events that are in more than 24 hours
+                        event.getState().equals(EventState.CREATED) && !event.isEventToday())
+            ? View.VISIBLE
+            : View.GONE);
+  }
+
+  private void setupEmptyEventsTextVisibility(Set<Event> events) {
+    binding.emptyEventsLayout.setVisibility(events.isEmpty() ? View.VISIBLE : View.GONE);
   }
 }

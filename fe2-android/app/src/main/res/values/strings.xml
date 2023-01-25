@@ -50,6 +50,11 @@
   <string name="lao_properties_server_title">Connected to server</string>
   <string name="lao_properties_identifier_title">Identifier</string>
   <string name="identity_name">Name</string>
+  <string name="empty_events_organizer_text">No event has been created in this LAO ! \n\nTo create one, tap on add button with a + on the bottom right
+  </string>
+  <string name="empty_events_non_organizer_text">No event has been created in this LAO ! \n\n
+  Since you are not an organizer, you must wait for them to create one.
+  </string>
 
   <!-- Abstract Event-->
   <string name="open">Open</string>

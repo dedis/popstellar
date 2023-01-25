@@ -145,5 +145,18 @@
         app:layout_constraintBottom_toBottomOf="@id/add_roll_call"
         app:layout_constraintEnd_toStartOf="@id/add_roll_call" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+      android:id="@+id/empty_events_layout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_margin="@dimen/main_horizontal_margin">
+
+      <TextView
+        android:id="@+id/empty_events_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/text_high_emphasis" />
+
+    </LinearLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

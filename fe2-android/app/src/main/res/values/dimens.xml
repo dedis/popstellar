@@ -151,4 +151,6 @@
   <!--  Drawer header dimensions -->
   <dimen name="drawer_header_vertical_margin">20dp</dimen>
   <dimen name="drawer_header_horizontal_margin">16dp</dimen>
+
+  <dimen name="main_horizontal_margin">16dp</dimen>
 </resources>
