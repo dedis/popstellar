@@ -85,38 +85,41 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
    */
   protected void handleEventContent(EventViewHolder eventViewHolder, Event event) {
     if (event.getType().equals(EventType.ELECTION)) {
-      eventViewHolder.eventIcon.setImageResource(R.drawable.ic_vote);
-      Election election = (Election) event;
-      View.OnClickListener listener =
-          view ->
-              LaoDetailActivity.setCurrentFragment(
-                  activity.getSupportFragmentManager(),
-                  R.id.fragment_election,
-                  () -> ElectionFragment.newInstance(election.getId()));
-      eventViewHolder.eventCard.setOnClickListener(listener);
-
+      handleElectionContent(eventViewHolder, (Election) event);
     } else if (event.getType().equals(EventType.ROLL_CALL)) {
-      eventViewHolder.eventIcon.setImageResource(R.drawable.ic_roll_call);
-      RollCall rollCall = (RollCall) event;
-      eventViewHolder.eventCard.setOnClickListener(
-          view -> {
-            try {
-              PoPToken token = viewModel.getCurrentPopToken(rollCall);
-              setCurrentFragment(
-                  activity.getSupportFragmentManager(),
-                  R.id.fragment_roll_call,
-                  () ->
-                      RollCallFragment.newInstance(
-                          token.getPublicKey(), rollCall.getPersistentId()));
-            } catch (KeyException e) {
-              ErrorUtils.logAndShow(activity, tag, e, R.string.key_generation_exception);
-            } catch (UnknownLaoException e) {
-              ErrorUtils.logAndShow(activity, tag, e, R.string.error_no_lao);
-            }
-          });
+      handleRollCallContent(eventViewHolder, (RollCall) event);
     }
     eventViewHolder.eventTitle.setText(event.getName());
     handleTimeAndLocation(eventViewHolder, event);
+  }
+
+  private void handleElectionContent(EventViewHolder eventViewHolder, Election election) {
+    eventViewHolder.eventIcon.setImageResource(R.drawable.ic_vote);
+    eventViewHolder.eventCard.setOnClickListener(
+        view ->
+            LaoDetailActivity.setCurrentFragment(
+                activity.getSupportFragmentManager(),
+                R.id.fragment_election,
+                () -> ElectionFragment.newInstance(election.getId())));
+  }
+
+  private void handleRollCallContent(EventViewHolder eventViewHolder, RollCall rollCall) {
+    eventViewHolder.eventIcon.setImageResource(R.drawable.ic_roll_call);
+    eventViewHolder.eventCard.setOnClickListener(
+        view -> {
+          try {
+            PoPToken token = viewModel.getCurrentPopToken(rollCall);
+            setCurrentFragment(
+                activity.getSupportFragmentManager(),
+                R.id.fragment_roll_call,
+                () ->
+                    RollCallFragment.newInstance(token.getPublicKey(), rollCall.getPersistentId()));
+          } catch (KeyException e) {
+            ErrorUtils.logAndShow(activity, tag, e, R.string.key_generation_exception);
+          } catch (UnknownLaoException e) {
+            ErrorUtils.logAndShow(activity, tag, e, R.string.error_no_lao);
+          }
+        });
   }
 
   private void handleTimeAndLocation(EventViewHolder viewHolder, Event event) {
