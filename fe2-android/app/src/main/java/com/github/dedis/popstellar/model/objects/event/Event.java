@@ -34,7 +34,7 @@ public abstract class Event implements Comparable<Event> {
   }
 
   /**
-   * @return true if event the event takes place today
+   * @return true if event the event takes place within 24 hours
    */
   public boolean isEventEndingToday() {
     long currentTime = System.currentTimeMillis();
