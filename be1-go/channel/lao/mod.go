@@ -26,7 +26,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"go.dedis.ch/kyber/v3"
 
@@ -128,9 +127,6 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	}
 
 	newChannel.registry = newChannel.NewLAORegistry()
-
-	// sleep to avoid misordering messages
-	time.Sleep(time.Nanosecond)
 
 	err := newChannel.createAndSendLAOGreet()
 	if err != nil {

@@ -18,7 +18,8 @@ type messageInfo struct {
 // Inbox represents an in-memory data store to record incoming messages.
 type Inbox struct {
 	mutex     sync.RWMutex
-	msgs      map[string]*messageInfo
+	msgsMap   map[string]*messageInfo
+	msgsArray []*messageInfo
 	channelID string
 }
 
@@ -26,7 +27,8 @@ type Inbox struct {
 func NewInbox(channelID string) *Inbox {
 	return &Inbox{
 		mutex:     sync.RWMutex{},
-		msgs:      make(map[string]*messageInfo),
+		msgsMap:   make(map[string]*messageInfo),
+		msgsArray: make([]*messageInfo, 0),
 		channelID: channelID,
 	}
 }
@@ -66,7 +68,8 @@ func (i *Inbox) StoreMessage(msg message.Message) {
 		storedTime: storedTime,
 	}
 
-	i.msgs[msg.MessageID] = messageInfo
+	i.msgsMap[msg.MessageID] = messageInfo
+	i.msgsArray = append(i.msgsArray, messageInfo)
 }
 
 // GetSortedMessages returns all messages stored sorted by stored time.
@@ -74,22 +77,16 @@ func (i *Inbox) GetSortedMessages() []message.Message {
 	i.mutex.RLock()
 	defer i.mutex.RUnlock()
 
-	messages := make([]messageInfo, 0, len(i.msgs))
-	// iterate over map and collect all the values (messageInfo instances)
-	for _, msgInfo := range i.msgs {
-		messages = append(messages, *msgInfo)
-	}
-
 	// sort.Slice on messages based on the timestamp
-	sort.SliceStable(messages, func(i, j int) bool {
-		return messages[i].storedTime < messages[j].storedTime
+	sort.SliceStable(i.msgsArray, func(k, l int) bool {
+		return i.msgsArray[k].storedTime < i.msgsArray[l].storedTime
 	})
 
-	result := make([]message.Message, len(messages))
+	result := make([]message.Message, len(i.msgsArray))
 
 	// iterate and extract the messages[i].message field and
 	// append it to the result slice
-	for i, msgInfo := range messages {
+	for i, msgInfo := range i.msgsArray {
 		result[i] = msgInfo.message
 	}
 
@@ -102,7 +99,7 @@ func (i *Inbox) GetMessage(messageID string) (*message.Message, bool) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
-	msgInfo, ok := i.msgs[messageID]
+	msgInfo, ok := i.msgsMap[messageID]
 	if !ok {
 		return nil, false
 	}
