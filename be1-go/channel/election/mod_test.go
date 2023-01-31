@@ -479,7 +479,7 @@ func Test_Sending_Election_Key(t *testing.T) {
 	data := messagedata.ElectionKey{}.NewEmpty()
 
 	err := electionKeyMsg.UnmarshalData(data)
-	require.NoError(t, err)
+	require.NoError(t, err, electionKeyMsg)
 
 	dataKey, ok := data.(*messagedata.ElectionKey)
 	require.True(t, ok)
