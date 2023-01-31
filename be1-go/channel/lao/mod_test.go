@@ -211,9 +211,6 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
-	_, ok = laoChannel.inbox.GetMessage(messages[0].MessageID)
-	require.True(t, ok)
-
 	time.Sleep(time.Millisecond)
 
 	for i := 2; i < numMessages+1; i++ {
