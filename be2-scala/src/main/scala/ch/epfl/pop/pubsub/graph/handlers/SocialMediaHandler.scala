@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol._
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects._
@@ -40,6 +40,13 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   private def generateSocialChannel(lao_id: Hash): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + lao_id + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
 
+  // the following function encodes the data and broadcast it
+  private def broadcastData[T](rpcMessage: JsonRpcRequest, data: T, channel: Channel, broadcastChannel: Channel): GraphMessage = {
+    val encodedData: Base64Data = Base64Data.encode(data.toString)
+    val broadcast: Future[GraphMessage] = dbBroadcast(rpcMessage, channel, encodedData, broadcastChannel)
+    Await.result(broadcast, duration)
+  }
+
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
@@ -52,7 +59,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success(_)) =>
         val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[AddChirp](rpcMessage)
         val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, data.timestamp)
-        Await.result(dbBroadcast(rpcMessage, channelChirp, Base64Data.encode(notifyAddChirp.toJson.toString), broadcastChannel), duration)
+        broadcastData[NotifyAddChirp](rpcMessage, notifyAddChirp, channelChirp, broadcastChannel)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleAddChirp failed : ${ex.message}", rpcMessage.getId))
       case _                                       => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.getId))
     }
@@ -70,7 +77,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success(_)) =>
         val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[DeleteChirp](rpcMessage)
         val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, data.timestamp)
-        Await.result(dbBroadcast(rpcMessage, channelChirp, Base64Data.encode(notifyDeleteChirp.toJson.toString), broadcastChannel), duration)
+        broadcastData[NotifyDeleteChirp](rpcMessage, notifyDeleteChirp, channelChirp, broadcastChannel)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleDeleteChirp failed : ${ex.message}", rpcMessage.getId))
       case _                                       => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.getId))
     }
