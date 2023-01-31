@@ -1,9 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
-import ch.epfl.pop.model.network.method.message.data.election.ElectionQuestion
+import ch.epfl.pop.model.network.{JsonRpcRequest}
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
@@ -13,16 +11,6 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
   implicit lazy val dbActor: AskableActorRef = DbActor.getInstance
 
   def validationErrorNoMessage(rpcId: Option[Int]): PipelineError = PipelineError(ErrorCodes.INVALID_DATA.id, s"RPC-params does not contain any message", rpcId)
-
-  def checkParameters[T](rpcMessage: JsonRpcRequest): (GraphMessage, Message, Option[T]) = {
-    rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
-        val message: Message = rpcMessage.getParamsMessage.get
-        val data: T = message.decodedData.get.asInstanceOf[T]
-        (Left(rpcMessage), message, Some(data))
-      case _ => (Right(validationErrorNoMessage(rpcMessage.id)), null, None)
-    }
-  }
 
   // Lower bound for a timestamp to not be stale
   final val TIMESTAMP_BASE_TIME: Timestamp = Timestamp(1577833200L) // 1st january 2020
