@@ -21,8 +21,13 @@ interface SocialReducerState {
   byId: Record<string, ChirpState>;
   // maps a sender to the list of ChirpIds he sent
   byUser: Record<string, string[]>;
-  // maps a chirpId to the pair of the reaction_codepoint and the list of userPublicKeys
-  reactionsByChirp: Record<string, Record<string, string[]>>;
+  // stores the score for each chirp id
+  scoreByChirpId: Record<string, number>;
+
+  // mapping of chirp ids to list of reactions
+  reactionsByChirpId: Record<string, string[]>;
+  // maps a reactionId to its ReactionState
+  reactionsById: Record<string, ReactionState>;
 }
 
 // Root state for the Social Reducer
@@ -31,15 +36,19 @@ export interface SocialLaoReducerState {
   byLaoId: Record<string, SocialReducerState>;
 }
 
+const getEmptyByLaoState = (): SocialLaoReducerState['byLaoId'][''] => ({
+  allIdsInOrder: [],
+  byId: {},
+  byUser: {},
+  scoreByChirpId: {},
+  reactionsByChirpId: {},
+  reactionsById: {},
+});
+
+export const SCORE_BY_CODE_POINT: Record<string, number> = { '👍': 1, '👎': -1, '❤️': 1 };
+
 const initialState: SocialLaoReducerState = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-  },
+  byLaoId: {},
 };
 
 /* Name of the social media slice in storage */
@@ -85,12 +94,7 @@ const socialSlice = createSlice({
         const { laoId, chirp } = action.payload;
 
         if (!(laoId in state.byLaoId)) {
-          state.byLaoId[laoId] = {
-            allIdsInOrder: [],
-            byId: {},
-            byUser: {},
-            reactionsByChirp: {},
-          };
+          state.byLaoId[laoId] = getEmptyByLaoState();
         }
 
         const store = state.byLaoId[laoId];
@@ -106,6 +110,9 @@ const socialSlice = createSlice({
         // even the chirp is deleted, we add it to allIdsInOrder to display the message
         const insertIdxInAll = findInsertIdx(store.allIdsInOrder, store.byId, chirp.time);
         store.allIdsInOrder.splice(insertIdxInAll, 0, chirp.id);
+
+        // initialize the score at 0
+        store.scoreByChirpId[chirp.id] = 0;
 
         if (!state.byLaoId[laoId].byUser[chirp.sender]) {
           store.byUser[chirp.sender] = [chirp.id];
@@ -137,12 +144,7 @@ const socialSlice = createSlice({
         const { laoId, chirp } = action.payload;
 
         if (!(laoId in state.byLaoId)) {
-          state.byLaoId[laoId] = {
-            allIdsInOrder: [],
-            byId: {},
-            byUser: {},
-            reactionsByChirp: {},
-          };
+          state.byLaoId[laoId] = getEmptyByLaoState();
         }
 
         const store = state.byLaoId[laoId];
@@ -186,33 +188,92 @@ const socialSlice = createSlice({
         const { laoId, reaction } = action.payload;
 
         if (!(laoId in state.byLaoId)) {
-          state.byLaoId[laoId] = {
-            allIdsInOrder: [],
-            byId: {},
-            byUser: {},
-            reactionsByChirp: {},
-          };
+          state.byLaoId[laoId] = getEmptyByLaoState();
         }
 
         const store = state.byLaoId[laoId];
 
-        if (!store.reactionsByChirp[reaction.chirpId]) {
-          store.reactionsByChirp[reaction.chirpId] = { [reaction.codepoint]: [reaction.sender] };
-        } else if (!store.reactionsByChirp[reaction.chirpId][reaction.codepoint]) {
-          store.reactionsByChirp[reaction.chirpId][reaction.codepoint] = [reaction.sender];
-        } else if (
-          !store.reactionsByChirp[reaction.chirpId][reaction.codepoint].includes(reaction.sender)
-        ) {
-          store.reactionsByChirp[reaction.chirpId][reaction.codepoint].push(reaction.sender);
+        // add reaction to list of reactions for chirp
+        if (!store.reactionsByChirpId[reaction.chirpId]) {
+          store.reactionsByChirpId[reaction.chirpId] = [reaction.id];
         } else {
-          console.debug('The sender already reacted to this reaction');
+          // check if the user already reacted with this codepoint
+          const duplicateEntry = store.reactionsByChirpId[reaction.chirpId].find((reactionId) => {
+            const storedReaction = store.reactionsById[reactionId];
+
+            return (
+              storedReaction.sender === reaction.sender &&
+              storedReaction.codepoint === reaction.codepoint
+            );
+          });
+
+          if (duplicateEntry) {
+            console.debug('The sender already reacted to this reaction');
+            return;
+          }
+
+          // if not, store it
+          store.reactionsByChirpId[reaction.chirpId].push(reaction.id);
         }
+
+        // store reaction itself
+        store.reactionsById[reaction.id] = reaction;
+        store.scoreByChirpId[reaction.chirpId] =
+          // previous score if there is one
+          (store.scoreByChirpId[reaction.chirpId] || 0) +
+          // difference for codepoint if there is one
+          (SCORE_BY_CODE_POINT[reaction.codepoint] || 0);
+      },
+    },
+
+    // Remove reactions from chirp
+    deleteReaction: {
+      prepare(laoId: Hash, reactionId: Hash) {
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            reactionId: reactionId.toState(),
+          },
+        };
+      },
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          reactionId: string;
+        }>,
+      ) {
+        const { laoId, reactionId } = action.payload;
+
+        if (!(laoId in state.byLaoId)) {
+          state.byLaoId[laoId] = getEmptyByLaoState();
+        }
+
+        const store = state.byLaoId[laoId];
+
+        const reaction = store.reactionsById[reactionId];
+
+        // delete id from mapping, works even if it does not exist
+        delete store.reactionsById[reactionId];
+
+        if (!store.reactionsByChirpId[reaction.chirpId]) {
+          // no need to remove something that does not exist
+          return;
+        }
+
+        // filter out reaction from array
+        store.reactionsByChirpId[reaction.chirpId] = store.reactionsByChirpId[
+          reaction.chirpId
+        ].filter((rId) => rId !== reaction.id);
+
+        // and reset score for chirp
+        store.scoreByChirpId[reaction.chirpId] -= SCORE_BY_CODE_POINT[reaction.codepoint] || 0;
       },
     },
   },
 });
 
-export const { addChirp, deleteChirp, addReaction } = socialSlice.actions;
+export const { addChirp, deleteChirp, addReaction, deleteReaction } = socialSlice.actions;
 
 export const socialReduce = socialSlice.reducer;
 
@@ -282,7 +343,7 @@ export const makeReactionCountsSelector = (laoId: Hash, chirpId: Hash) =>
     const serializedChirpId = chirpId.toState();
     const byLaoId = state.byLaoId[serializedLaoId];
 
-    if (!byLaoId || !byLaoId.reactionsByChirp[serializedChirpId]) {
+    if (!byLaoId || !byLaoId.reactionsByChirpId[serializedChirpId]) {
       // no reactions so far
       return {
         '👍': 0,
@@ -291,38 +352,58 @@ export const makeReactionCountsSelector = (laoId: Hash, chirpId: Hash) =>
       };
     }
 
-    const byChirpId = byLaoId.reactionsByChirp[serializedChirpId];
+    // all reactions for 'serializedChirpId'
+    const reactions = byLaoId.reactionsByChirpId[serializedChirpId].map(
+      (reactionId) => byLaoId.reactionsById[reactionId],
+    );
 
-    return {
-      '👍': byChirpId['👍'] ? byChirpId['👍'].length : 0,
-      '👎': byChirpId['👎'] ? byChirpId['👎'].length : 0,
-      '❤️': byChirpId['❤️'] ? byChirpId['❤️'].length : 0,
-    };
+    // count them by codepoint
+    const reactionCodePointCounts = reactions.reduce<Record<string, number>>(
+      (counts, reaction) => {
+        if (counts[reaction.codepoint]) {
+          counts[reaction.codepoint] += 1;
+        } else {
+          counts[reaction.codepoint] = 1;
+        }
+
+        return counts;
+      },
+      { '👍': 0, '👎': 0, '❤️': 0 },
+    );
+
+    return reactionCodePointCounts;
   });
 
-export const makeHasReactedSelector = (laoId: Hash, chirpId: Hash, user?: PublicKey) =>
-  createSelector(selectSocialState, (state: SocialLaoReducerState): Record<string, boolean> => {
+export const makeReactedSelector = (laoId: Hash, chirpId: Hash, user?: PublicKey) =>
+  createSelector(selectSocialState, (state: SocialLaoReducerState): Record<string, Reaction> => {
     const serializedLaoId = laoId.toState();
     const serializedChirpId = chirpId.toState();
     const serializedPublicKey = user?.toState();
     const byLaoId = state.byLaoId[serializedLaoId];
 
-    if (!serializedPublicKey || !byLaoId || !byLaoId.reactionsByChirp[serializedChirpId]) {
+    if (!serializedPublicKey || !byLaoId || !byLaoId.reactionsByChirpId[serializedChirpId]) {
       // no reactions so far
-      return {
-        '👍': false,
-        '👎': false,
-        '❤️': false,
-      };
+      return {};
     }
 
-    const byChirpId = byLaoId.reactionsByChirp[serializedChirpId];
+    // all reactions for 'serializedChirpId'
+    const reactions = byLaoId.reactionsByChirpId[serializedChirpId].map(
+      (reactionId) => byLaoId.reactionsById[reactionId],
+    );
 
-    return {
-      '👍': byChirpId['👍'] ? byChirpId['👍'].includes(serializedPublicKey) : false,
-      '👎': byChirpId['👎'] ? byChirpId['👎'].includes(serializedPublicKey) : false,
-      '❤️': byChirpId['❤️'] ? byChirpId['❤️'].includes(serializedPublicKey) : false,
-    };
+    // add reaction mapping for each code point if the user matches
+    const reactionByCodepoints = reactions.reduce<Record<string, Reaction>>((obj, reaction) => {
+      if (reaction.sender !== serializedPublicKey) {
+        // skip reactions by other suers
+        return obj;
+      }
+
+      obj[reaction.codepoint] = Reaction.fromState(reaction);
+
+      return obj;
+    }, {});
+
+    return reactionByCodepoints;
   });
 
 export const makeTopChirpsSelector = (laoId: Hash, max: number) =>
@@ -334,16 +415,7 @@ export const makeTopChirpsSelector = (laoId: Hash, max: number) =>
       return [];
     }
 
-    const scorePerId = byLaoId.allIdsInOrder
-      .map<[string, number]>((chirpId) => {
-        const byChirpId = byLaoId.reactionsByChirp[chirpId] || {};
-        const score =
-          (byChirpId['👍']?.length || 0) +
-          (byChirpId['❤️']?.length || 0) -
-          (byChirpId['👎']?.length || 0);
-
-        return [chirpId, score];
-      })
+    const scorePerId = Object.entries(byLaoId.scoreByChirpId)
       // filter deleted chirps
       .filter((tuple) => !byLaoId.byId[tuple[0]].isDeleted);
 

@@ -27,6 +27,7 @@ import dataDeleteChirp from 'protocol/query/method/message/data/dataDeleteChirp.
 import dataNotifyDeleteChirp from 'protocol/query/method/message/data/dataNotifyDeleteChirp.json';
 
 import dataAddReaction from 'protocol/query/method/message/data/dataAddReaction.json';
+import dataDeleteReaction from 'protocol/query/method/message/data/dataDeleteReaction.json';
 /* eslint-enable import/order */
 
 const dataSchemas = [
@@ -57,6 +58,7 @@ const dataSchemas = [
   dataNotifyDeleteChirp,
 
   dataAddReaction,
+  dataDeleteReaction,
 ];
 
 export default dataSchemas;
