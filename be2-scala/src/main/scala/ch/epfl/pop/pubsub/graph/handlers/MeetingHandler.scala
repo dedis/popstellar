@@ -21,7 +21,11 @@ case object MeetingHandler extends MessageHandler {
     Await.ready(ask, duration).value match {
       case Some(Success(_))                        => Left(rpcMessage)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCreateMeeting failed : ${ex.message}", rpcMessage.getId))
-      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateMeeting failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+      case reply => Right(PipelineError(
+          ErrorCodes.SERVER_ERROR.id,
+          s"handleCreateMeeting failed : unexpected DbActor reply '$reply'",
+          rpcMessage.getId
+        ))
     }
   }
 
