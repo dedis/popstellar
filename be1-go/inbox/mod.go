@@ -81,7 +81,7 @@ func (i *Inbox) GetSortedMessages() []message.Message {
 	}
 
 	// sort.Slice on messages based on the timestamp
-	sort.Slice(messages, func(i, j int) bool {
+	sort.SliceStable(messages, func(i, j int) bool {
 		return messages[i].storedTime < messages[j].storedTime
 	})
 
