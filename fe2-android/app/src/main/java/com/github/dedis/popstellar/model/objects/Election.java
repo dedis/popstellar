@@ -33,7 +33,7 @@ public class Election extends Event {
   private final Map<PublicKey, List<Vote>> votesBySender;
 
   // Map that associates each messageId to its sender
-  private final Map<MessageID, PublicKey> messageMap;
+  private final Map<PublicKey, MessageID> messageMap;
 
   private final EventState state;
 
@@ -51,7 +51,7 @@ public class Election extends Event {
       String electionKey,
       ElectionVersion electionVersion,
       Map<PublicKey, List<Vote>> votesBySender,
-      Map<MessageID, PublicKey> messageMap,
+      Map<PublicKey, MessageID> messageMap,
       EventState state,
       Map<String, Set<QuestionResult>> results) {
 
@@ -72,8 +72,7 @@ public class Election extends Event {
     this.votesBySender = Copyable.copyMapOfList(votesBySender);
     this.results = Copyable.copyMapOfSet(results);
     // Create message map as a tree map to sort messages correctly
-    this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
-    this.messageMap.putAll(messageMap);
+    this.messageMap = new HashMap<>(messageMap);
   }
 
   private static void validateVotesTypes(
@@ -129,7 +128,7 @@ public class Election extends Event {
     return state;
   }
 
-  public Map<MessageID, PublicKey> getMessageMap() {
+  public Map<PublicKey, MessageID> getMessageMap() {
     return messageMap;
   }
 
@@ -239,12 +238,13 @@ public class Election extends Event {
    */
   public String computeRegisteredVotesHash() {
     String[] ids =
-        messageMap.values().stream()
+        messageMap.keySet().stream()
             .map(votesBySender::get)
             // Merge lists and drop nulls
             .flatMap(
                 electionVotes -> electionVotes != null ? electionVotes.stream() : Stream.empty())
             .map(Vote::getId)
+            .sorted()
             .toArray(String[]::new);
 
     if (ids.length == 0) {
@@ -330,7 +330,7 @@ public class Election extends Event {
     private String electionKey;
     private ElectionVersion electionVersion;
     private final Map<PublicKey, List<Vote>> votesBySender;
-    private final Map<MessageID, PublicKey> messageMap;
+    private final Map<PublicKey, MessageID> messageMap;
     private EventState state;
     private Map<String, Set<QuestionResult>> results;
 
@@ -408,7 +408,7 @@ public class Election extends Event {
 
     public ElectionBuilder updateMessageMap(
         @NonNull PublicKey senderPk, @NonNull MessageID messageID) {
-      this.messageMap.put(messageID, senderPk);
+      this.messageMap.put(senderPk, messageID);
       return this;
     }
 
