@@ -296,6 +296,7 @@ exports[`CreateMeeting renders correctly 1`] = `
                 }
               >
                 <View
+                  pointerEvents="box-none"
                   style={
                     Array [
                       Object {
@@ -326,50 +327,27 @@ exports[`CreateMeeting renders correctly 1`] = `
                         }
                       }
                     >
-                      <RCTScrollView
-                        collapsable={false}
-                        handlerTag={2}
-                        handlerType="NativeViewGestureHandler"
-                        onGestureHandlerEvent={[Function]}
-                        onGestureHandlerStateChange={[Function]}
+                      <View
                         style={
                           Object {
-                            "padding": 16,
+                            "flex": 1,
                           }
                         }
                       >
-                        <View>
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
+                        <RCTScrollView
+                          collapsable={false}
+                          handlerTag={2}
+                          handlerType="NativeViewGestureHandler"
+                          onGestureHandlerEvent={[Function]}
+                          onGestureHandlerStateChange={[Function]}
+                          style={
+                            Object {
+                              "padding": 16,
                             }
-                          >
-                            Name
-                          </Text>
-                          <View
-                            style={
-                              Object {
-                                "flex": 1,
-                                "flexDirection": "row",
-                              }
-                            }
-                          >
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="Global PoP Meeting"
-                              placeholderTextColor="#8E8E8E"
+                          }
+                        >
+                          <View>
+                            <Text
                               style={
                                 Array [
                                   Object {
@@ -380,181 +358,209 @@ exports[`CreateMeeting renders correctly 1`] = `
                                     "textAlign": "left",
                                   },
                                   Object {
-                                    "backgroundColor": "#fff",
-                                    "borderColor": "#fff",
-                                    "borderRadius": 8,
-                                    "borderWidth": 1,
-                                    "flex": 1,
-                                    "padding": 8,
-                                    "width": 50,
+                                    "fontWeight": "bold",
                                   },
                                 ]
                               }
-                              value=""
-                            />
-                          </View>
-                          <Text
-                            style={
-                              Array [
-                                Object {
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "textAlign": "left",
-                                },
-                                Object {
-                                  "fontWeight": "bold",
-                                },
-                              ]
-                            }
-                          >
-                            Location
-                          </Text>
-                          <View
-                            style={
-                              Object {
-                                "flex": 1,
-                                "flexDirection": "row",
-                              }
-                            }
-                          >
-                            <TextInput
-                              editable={true}
-                              onChangeText={[Function]}
-                              placeholder="BC410"
-                              placeholderTextColor="#8E8E8E"
-                              style={
-                                Array [
-                                  Object {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  Object {
-                                    "backgroundColor": "#fff",
-                                    "borderColor": "#fff",
-                                    "borderRadius": 8,
-                                    "borderWidth": 1,
-                                    "flex": 1,
-                                    "padding": 8,
-                                    "width": 50,
-                                  },
-                                ]
-                              }
-                              value=""
-                            />
-                          </View>
-                          <View
-                            style={
-                              Object {
-                                "marginTop": 16,
-                                "zIndex": 0,
-                              }
-                            }
-                          >
+                            >
+                              Name
+                            </Text>
                             <View
-                              accessible={true}
-                              collapsable={false}
-                              focusable={true}
-                              onBlur={[Function]}
-                              onClick={[Function]}
-                              onFocus={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
                               style={
                                 Object {
-                                  "marginBottom": 16,
+                                  "flex": 1,
+                                  "flexDirection": "row",
                                 }
                               }
                             >
-                              <RNGestureHandlerButton
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="Global PoP Meeting"
+                                placeholderTextColor="#8E8E8E"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "#fff",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                value=""
+                              />
+                            </View>
+                            <Text
+                              style={
+                                Array [
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  Object {
+                                    "fontWeight": "bold",
+                                  },
+                                ]
+                              }
+                            >
+                              Location
+                            </Text>
+                            <View
+                              style={
+                                Object {
+                                  "flex": 1,
+                                  "flexDirection": "row",
+                                }
+                              }
+                            >
+                              <TextInput
+                                editable={true}
+                                onChangeText={[Function]}
+                                placeholder="BC410"
+                                placeholderTextColor="#8E8E8E"
+                                style={
+                                  Array [
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    Object {
+                                      "backgroundColor": "#fff",
+                                      "borderColor": "#fff",
+                                      "borderRadius": 8,
+                                      "borderWidth": 1,
+                                      "flex": 1,
+                                      "padding": 8,
+                                      "width": 50,
+                                    },
+                                  ]
+                                }
+                                value=""
+                              />
+                            </View>
+                            <Modal
+                              hardwareAccelerated={false}
+                              transparent={true}
+                              visible={false}
+                            />
+                            <Modal
+                              hardwareAccelerated={false}
+                              onRequestClose={[Function]}
+                              transparent={true}
+                              visible={false}
+                            />
+                          </View>
+                        </RCTScrollView>
+                        <View
+                          style={
+                            Object {
+                              "alignItems": "center",
+                              "backgroundColor": "#fff",
+                              "borderColor": "rgb(216, 216, 216)",
+                              "borderTopWidth": 1,
+                              "flexDirection": "row",
+                              "justifyContent": "space-around",
+                              "paddingHorizontal": 16,
+                              "paddingVertical": 16,
+                            }
+                          }
+                        >
+                          <View
+                            accessible={true}
+                            collapsable={false}
+                            focusable={true}
+                            onBlur={[Function]}
+                            onClick={[Function]}
+                            onFocus={[Function]}
+                            onResponderGrant={[Function]}
+                            onResponderMove={[Function]}
+                            onResponderRelease={[Function]}
+                            onResponderTerminate={[Function]}
+                            onResponderTerminationRequest={[Function]}
+                            onStartShouldSetResponder={[Function]}
+                            style={Object {}}
+                          >
+                            <RNGestureHandlerButton
+                              collapsable={false}
+                              exclusive={true}
+                              handlerTag={3}
+                              handlerType="NativeViewGestureHandler"
+                              onGestureEvent={[Function]}
+                              onGestureHandlerEvent={[Function]}
+                              onGestureHandlerStateChange={[Function]}
+                              onHandlerStateChange={[Function]}
+                              rippleColor={0}
+                              touchSoundDisabled={false}
+                            >
+                              <View
+                                accessible={true}
                                 collapsable={false}
-                                exclusive={true}
-                                handlerTag={3}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
                                 style={
                                   Object {
-                                    "marginBottom": 16,
+                                    "opacity": 1,
                                   }
                                 }
-                                touchSoundDisabled={false}
                               >
                                 <View
-                                  accessible={true}
-                                  collapsable={false}
                                   style={
-                                    Object {
-                                      "opacity": 1,
-                                    }
+                                    Array [
+                                      Object {
+                                        "backgroundColor": "#3742fa",
+                                        "borderColor": "#3742fa",
+                                        "borderRadius": 8,
+                                        "borderWidth": 1,
+                                        "padding": 8,
+                                      },
+                                      Object {
+                                        "backgroundColor": "#8E8E8E",
+                                        "borderColor": "#8E8E8E",
+                                      },
+                                    ]
                                   }
                                 >
-                                  <View
+                                  <Text
                                     style={
                                       Array [
                                         Object {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 16,
-                                          "borderWidth": 1,
-                                          "padding": 8,
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
                                         },
                                         Object {
-                                          "backgroundColor": "#8E8E8E",
-                                          "borderColor": "#8E8E8E",
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "color": "#fff",
                                         },
                                       ]
                                     }
                                   >
-                                    <Text
-                                      style={
-                                        Array [
-                                          Object {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          Object {
-                                            "textAlign": "center",
-                                          },
-                                          Object {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Create meeting
-                                    </Text>
-                                  </View>
+                                    Create meeting
+                                  </Text>
                                 </View>
-                              </RNGestureHandlerButton>
-                            </View>
+                              </View>
+                            </RNGestureHandlerButton>
                           </View>
-                          <Modal
-                            hardwareAccelerated={false}
-                            transparent={true}
-                            visible={false}
-                          />
-                          <Modal
-                            hardwareAccelerated={false}
-                            onRequestClose={[Function]}
-                            transparent={true}
-                            visible={false}
-                          />
                         </View>
-                      </RCTScrollView>
+                      </View>
                     </View>
                   </View>
                 </View>

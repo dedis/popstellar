@@ -7,6 +7,7 @@ import { Timestamp, Hash } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
 
 import { WitnessConfiguration, WitnessFeature } from '../interface';
+import { MessageToWitnessNotificationState } from '../objects/MessageToWitnessNotification';
 import { addMessageToWitness, isMessageToWitness } from '../reducer';
 import { getWitnessRegistryEntryType, WitnessingType } from './messages/WitnessRegistry';
 import { requestWitnessMessage } from './WitnessMessageApi';
@@ -36,7 +37,7 @@ export const afterMessageProcessingHandler =
       return;
     }
 
-    const storedMessage = isMessageToWitness(msg.message_id.valueOf(), getStore().getState());
+    const storedMessage = isMessageToWitness(msg.message_id, getStore().getState());
     if (storedMessage) {
       // this message is already stored in the witness reducer
       // and hence does not have to be stored a second time
@@ -80,15 +81,15 @@ export const afterMessageProcessingHandler =
            break;
          } */
 
-          dispatch(addMessageToWitness({ messageId: msg.message_id.valueOf() }));
+          dispatch(addMessageToWitness(msg.message_id));
           dispatch(
             addNotification({
-              laoId: msg.laoId.valueOf(),
+              laoId: msg.laoId.toState(),
               title: `Witnessing required: ${msg.messageData.object}#${msg.messageData.action}`,
-              timestamp: Timestamp.EpochNow().valueOf(),
+              timestamp: Timestamp.EpochNow().toState(),
               type: WitnessFeature.NotificationTypes.MESSAGE_TO_WITNESS,
-              messageId: msg.message_id.valueOf(),
-            } as WitnessFeature.MessageToWitnessNotification),
+              messageId: msg.message_id.toState(),
+            } as Omit<MessageToWitnessNotificationState, 'id' | 'hasBeenRead'>),
           );
           break;
 

@@ -60,21 +60,21 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
    */
   private void putEventsInMap(List<Event> events) {
     Collections.sort(events);
-    this.eventsMap.get(PAST).clear();
-    this.eventsMap.get(FUTURE).clear();
-    this.eventsMap.get(PRESENT).clear();
+    Objects.requireNonNull(this.eventsMap.get(PAST)).clear();
+    Objects.requireNonNull(this.eventsMap.get(FUTURE)).clear();
+    Objects.requireNonNull(this.eventsMap.get(PRESENT)).clear();
 
     for (Event event : events) {
       switch (event.getState()) {
         case CREATED:
-          eventsMap.get(FUTURE).add(event);
+          Objects.requireNonNull(eventsMap.get(FUTURE)).add(event);
           break;
         case OPENED:
-          eventsMap.get(PRESENT).add(event);
+          Objects.requireNonNull(eventsMap.get(PRESENT)).add(event);
           break;
         case CLOSED:
         case RESULTS_READY:
-          eventsMap.get(PAST).add(event);
+          Objects.requireNonNull(eventsMap.get(PAST)).add(event);
           break;
       }
     }
@@ -121,7 +121,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
       }
       expandIcon.setRotation(expanded[eventCategory.ordinal()] ? 180f : 0f);
 
-      String numberOfEventsInCategory = "(" + eventsMap.get(eventCategory).size() + ")";
+      String numberOfEventsInCategory =
+          "(" + Objects.requireNonNull(eventsMap.get(eventCategory)).size() + ")";
       ((HeaderViewHolder) holder).headerNumber.setText(numberOfEventsInCategory);
 
       // Expansion/Collapse part
@@ -197,25 +198,26 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
    * sure the position is occupied by an event or this will throw an exception
    */
   private Event getEvent(int position) {
-    int nbrOfFutureEvents = eventsMap.get(FUTURE).size();
-    int nbrOfPresentEvents = eventsMap.get(PRESENT).size();
-    int nbrOfPastEvents = eventsMap.get(PAST).size();
+    int nbrOfFutureEvents = Objects.requireNonNull(eventsMap.get(FUTURE)).size();
+    int nbrOfPresentEvents = Objects.requireNonNull(eventsMap.get(PRESENT)).size();
+    int nbrOfPastEvents = Objects.requireNonNull(eventsMap.get(PAST)).size();
 
     int eventAccumulator = 0;
     if (expanded[PRESENT.ordinal()]) {
       if (position <= nbrOfPresentEvents) {
-        return eventsMap.get(PRESENT).get(position - 1); // position 0 is for the header
+        return Objects.requireNonNull(eventsMap.get(PRESENT))
+            .get(position - 1); // position 0 is for the header
       }
       eventAccumulator += nbrOfPresentEvents;
     }
     if (expanded[FUTURE.ordinal()]) {
       if (position <= nbrOfFutureEvents + eventAccumulator + 1) {
-        return eventsMap.get(FUTURE).get(position - eventAccumulator - 2);
+        return Objects.requireNonNull(eventsMap.get(FUTURE)).get(position - eventAccumulator - 2);
       }
       eventAccumulator += nbrOfFutureEvents;
     }
     if (expanded[PAST.ordinal()] && position <= nbrOfPastEvents + eventAccumulator + 2) {
-      return eventsMap.get(PAST).get(position - eventAccumulator - 3);
+      return Objects.requireNonNull(eventsMap.get(PAST)).get(position - eventAccumulator - 3);
     }
     throw new IllegalStateException("no event matches");
   }
@@ -226,8 +228,8 @@ public class EventListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
    * sure the position is occupied by a header or this will throw an exception
    */
   private EventCategory getHeaderCategory(int position) {
-    int nbrOfFutureEvents = eventsMap.get(FUTURE).size();
-    int nbrOfPresentEvents = eventsMap.get(PRESENT).size();
+    int nbrOfFutureEvents = Objects.requireNonNull(eventsMap.get(FUTURE)).size();
+    int nbrOfPresentEvents = Objects.requireNonNull(eventsMap.get(PRESENT)).size();
 
     if (position == 0) {
       return PRESENT;

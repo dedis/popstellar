@@ -5,7 +5,7 @@ import { Hash, Timestamp } from 'core/objects';
 import { Meeting } from '../Meeting';
 
 const ID = new Hash('meetingId');
-const TIMESTAMP = new Timestamp(1620255600);
+const TIMESTAMP = new Timestamp(1620355600);
 const NAME = 'myMeeting';
 const LOCATION = 'location';
 
@@ -14,6 +14,7 @@ describe('Meeting object', () => {
     const meetingState: any = {
       id: ID.valueOf(),
       start: TIMESTAMP.valueOf(),
+      end: undefined,
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP.valueOf(),
@@ -35,6 +36,7 @@ describe('Meeting object', () => {
     const expected = {
       id: ID.valueOf(),
       start: TIMESTAMP.valueOf(),
+      end: undefined,
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP.valueOf(),

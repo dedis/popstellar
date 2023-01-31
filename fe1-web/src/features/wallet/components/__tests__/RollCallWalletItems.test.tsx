@@ -2,7 +2,7 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
+import { mockLao, serializedMockLaoId, mockLaoId, mockLaoName } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { mockRollCall } from 'features/rollCall/__tests__/utils';
 import {
@@ -15,10 +15,12 @@ import RollCallWalletItems from '../RollCallWalletItems';
 
 const contextValue = (useRollCallsByLaoId: Record<string, WalletFeature.RollCall>) => ({
   [WALLET_FEATURE_IDENTIFIER]: {
-    useCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLaoId: () => mockLaoId,
+    useCurrentLao: () => mockLao,
+    useConnectedToLao: () => true,
     useLaoIds: () => [],
     useRollCallTokensByLaoId: () => [],
-    useNamesByLaoId: () => ({ [mockLaoId]: mockLaoName }),
+    useNamesByLaoId: () => ({ [serializedMockLaoId]: mockLaoName }),
     useRollCallsByLaoId: () => useRollCallsByLaoId,
     walletItemGenerators: [],
     walletNavigationScreens: [],
@@ -27,7 +29,7 @@ const contextValue = (useRollCallsByLaoId: Record<string, WalletFeature.RollCall
 
 describe('RollCallWalletItems', () => {
   it('renders correctly with roll calls', () => {
-    const Screen = () => <RollCallWalletItems laoId={mockLaoIdHash} />;
+    const Screen = () => <RollCallWalletItems laoId={mockLaoId} />;
 
     const { toJSON } = render(
       <FeatureContext.Provider value={contextValue({ [mockRollCall.id.valueOf()]: mockRollCall })}>
@@ -38,7 +40,7 @@ describe('RollCallWalletItems', () => {
   });
 
   it('renders correctly without roll calls', () => {
-    const Screen = () => <RollCallWalletItems laoId={mockLaoIdHash} />;
+    const Screen = () => <RollCallWalletItems laoId={mockLaoId} />;
 
     const { toJSON } = render(
       <FeatureContext.Provider value={contextValue({})}>

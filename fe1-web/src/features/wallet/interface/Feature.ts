@@ -1,4 +1,3 @@
-import { HomeParamList } from 'core/navigation/typing/HomeParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { NavigationScreen, NavigationTabScreen } from 'core/navigation/typing/Screen';
 import { WalletParamList } from 'core/navigation/typing/WalletParamList';
@@ -7,6 +6,7 @@ import { Hash, PopToken } from 'core/objects';
 export namespace WalletFeature {
   export interface Lao {
     id: Hash;
+    name: string;
 
     // ID of the last roll call for which we have a token
     last_tokenized_roll_call_id?: Hash;
@@ -37,10 +37,6 @@ export namespace WalletFeature {
 
   export interface LaoScreen extends NavigationTabScreen {
     id: keyof LaoParamList;
-  }
-
-  export interface HomeScreen extends NavigationTabScreen {
-    id: keyof HomeParamList;
   }
 
   export interface WalletScreen extends NavigationScreen {

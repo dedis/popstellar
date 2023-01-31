@@ -1,3 +1,4 @@
+import { Hash } from 'core/objects';
 import { getStore } from 'core/redux';
 
 import { NoCurrentLaoError } from '../errors/NoCurrentLaoError';
@@ -29,7 +30,7 @@ export const getCurrentLao = () => {
  * Returns the current lao and throws an error if there is none
  * @returns The current lao
  */
-export const getLaoById = (laoId: string) => getLaoByIdFromState(laoId, getStore().getState());
+export const getLaoById = (laoId?: Hash) => getLaoByIdFromState(laoId, getStore().getState());
 
 /**
  * Returns the current lao id or undefined if there is none
@@ -42,7 +43,7 @@ export const getCurrentLaoId = () => selectCurrentLaoId(getStore().getState());
  * @param laoId The lao id
  * @returns The organizer's backend public key for the given lao or undefined if it is not known
  */
-export const getLaoOrganizerBackendPublicKey = (laoId: string) =>
+export const getLaoOrganizerBackendPublicKey = (laoId?: Hash) =>
   makeLaoOrganizerBackendPublicKeySelector(laoId)(getStore().getState());
 
 /**
@@ -54,4 +55,4 @@ export const isLaoWitness = () => selectIsLaoWitness(getStore().getState());
  * Returns the lao organizer's public key
  * @param laoId the lao id
  */
-export const getLaoOrganizer = (laoId: string) => getLaoById(laoId)?.organizer;
+export const getLaoOrganizer = (laoId: Hash) => getLaoById(laoId)?.organizer;

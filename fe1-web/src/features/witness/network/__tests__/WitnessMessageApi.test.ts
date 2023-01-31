@@ -4,7 +4,7 @@ import '__tests__/utils/matchers';
 import { mockChannel, mockKeyPair } from '__tests__/utils/TestUtils';
 import { KeyPairStore } from 'core/keypair';
 import { publish } from 'core/network/JsonRpcApi';
-import { Base64UrlData } from 'core/objects';
+import { Hash } from 'core/objects';
 
 import { WitnessMessage } from '../messages';
 import * as WitnessMessageApi from '../WitnessMessageApi';
@@ -20,7 +20,7 @@ beforeAll(() => {
 
 describe('WitnessMessageApi', () => {
   it('should create the correct request for requestWitnessMessage', async () => {
-    const mockMessageId = Base64UrlData.encode('some message id');
+    const mockMessageId = new Hash('some message id');
 
     await WitnessMessageApi.requestWitnessMessage(mockChannel, mockMessageId);
 

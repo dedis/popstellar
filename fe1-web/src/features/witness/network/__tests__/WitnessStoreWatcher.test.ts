@@ -6,7 +6,7 @@ import {
   mockAddress,
   mockChannel,
   mockKeyPair,
-  mockLaoIdHash,
+  mockLaoId,
 } from '__tests__/utils';
 import {
   addMessages,
@@ -38,16 +38,12 @@ beforeEach(() => {
 describe('makeWitnessStoreWatcher', () => {
   it('returns a listener function', () => {
     expect(
-      makeWitnessStoreWatcher(mockStore, () => mockLaoIdHash, mockAfterProcessingHandler),
+      makeWitnessStoreWatcher(mockStore, () => mockLaoId, mockAfterProcessingHandler),
     ).toBeFunction();
   });
 
   it('afterProcessingHandler is not called when a new message is added', () => {
-    const watcher = makeWitnessStoreWatcher(
-      mockStore,
-      () => mockLaoIdHash,
-      mockAfterProcessingHandler,
-    );
+    const watcher = makeWitnessStoreWatcher(mockStore, () => mockLaoId, mockAfterProcessingHandler);
 
     const msg = ExtendedMessage.fromMessage(
       ExtendedMessage.fromData(
@@ -71,11 +67,7 @@ describe('makeWitnessStoreWatcher', () => {
   });
 
   it('afterProcessingHandler is called when a message has been processed', () => {
-    const watcher = makeWitnessStoreWatcher(
-      mockStore,
-      () => mockLaoIdHash,
-      mockAfterProcessingHandler,
-    );
+    const watcher = makeWitnessStoreWatcher(mockStore, () => mockLaoId, mockAfterProcessingHandler);
 
     const msg = ExtendedMessage.fromMessage(
       ExtendedMessage.fromData(

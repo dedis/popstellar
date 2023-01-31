@@ -4,6 +4,7 @@ import React from 'react';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 
 import { Election } from '../objects';
+import ElectionHeader from './ElectionHeader';
 import ElectionQuestions from './ElectionQuestions';
 
 /**
@@ -12,6 +13,7 @@ import ElectionQuestions from './ElectionQuestions';
 const ElectionResult = ({ election }: IPropTypes) => {
   return (
     <ScreenWrapper>
+      <ElectionHeader election={election} />
       <ElectionQuestions election={election} />
     </ScreenWrapper>
   );

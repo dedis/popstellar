@@ -8,6 +8,7 @@ import { combineReducers } from 'redux';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockKeyPair, mockLao, mockPopToken } from '__tests__/utils';
 import { keyPairReducer, setKeyPair } from 'core/keypair';
+import { Lao } from 'features/lao/objects';
 import { addLao, laoReducer } from 'features/lao/reducer';
 
 import LaoItem from '../LaoItem';
@@ -20,7 +21,7 @@ describe('LaoItem', () => {
         ...keyPairReducer,
       }),
     });
-    mockStore.dispatch(addLao(mockLao.toState()));
+    mockStore.dispatch(addLao(mockLao));
     mockStore.dispatch(setKeyPair(mockKeyPair.toState()));
 
     const component = render(
@@ -41,10 +42,12 @@ describe('LaoItem', () => {
       }),
     });
     mockStore.dispatch(
-      addLao({
-        ...mockLao.toState(),
-        witnesses: [mockPopToken.publicKey.valueOf()],
-      }),
+      addLao(
+        Lao.fromState({
+          ...mockLao.toState(),
+          witnesses: [mockPopToken.publicKey.valueOf()],
+        }),
+      ),
     );
     mockStore.dispatch(setKeyPair(mockPopToken.toState()));
 
@@ -65,7 +68,7 @@ describe('LaoItem', () => {
         ...keyPairReducer,
       }),
     });
-    mockStore.dispatch(addLao(mockLao.toState()));
+    mockStore.dispatch(addLao(mockLao));
     mockStore.dispatch(setKeyPair(mockPopToken.toState()));
 
     const component = render(

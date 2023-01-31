@@ -7,6 +7,7 @@ import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { Election } from '../objects';
+import ElectionHeader from './ElectionHeader';
 import ElectionQuestions from './ElectionQuestions';
 
 /**
@@ -15,6 +16,8 @@ import ElectionQuestions from './ElectionQuestions';
 const ElectionTerminated = ({ election }: IPropTypes) => {
   return (
     <ScreenWrapper>
+      <ElectionHeader election={election} />
+
       <Text style={Typography.base}>{STRINGS.election_terminated_description}</Text>
 
       <ElectionQuestions election={election} />

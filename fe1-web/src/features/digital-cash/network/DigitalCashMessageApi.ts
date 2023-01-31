@@ -22,16 +22,13 @@ export async function requestSendTransaction(
   amount: number,
   laoId: Hash,
 ): Promise<void> {
-  const transactionStates = DigitalCashStore.getTransactionsByPublicKey(
-    laoId.valueOf(),
-    from.publicKey.valueOf(),
-  );
+  const transactionStates = DigitalCashStore.getTransactionsByPublicKey(laoId, from.publicKey);
 
   if (transactionStates.length === 0) {
     throw new Error(makeErr('no transaction out were found for this public key'));
   }
 
-  const balance = getBalance(laoId.valueOf(), from.publicKey.valueOf());
+  const balance = getBalance(laoId, from.publicKey);
 
   if (amount < 0 || amount > balance) {
     throw new Error(makeErr('balance is not sufficient to send this amount'));

@@ -1,11 +1,17 @@
 import {
   Base64UrlData,
+  Base64UrlDataState,
   Channel,
   getLaoIdFromChannel,
   Hash,
+  HashState,
+  ProtocolError,
   PublicKey,
+  PublicKeyState,
   Signature,
+  SignatureState,
   Timestamp,
+  TimestampState,
   WitnessSignature,
   WitnessSignatureState,
 } from 'core/objects';
@@ -13,16 +19,16 @@ import {
 import { Message, ProcessableMessage } from '../jsonrpc/messages';
 
 export interface ExtendedMessageState {
-  receivedAt: number;
+  receivedAt: TimestampState;
   receivedFrom: string;
-  processedAt?: number;
+  processedAt?: TimestampState;
   channel: Channel;
-  laoId: string;
+  laoId: HashState;
 
-  data: string;
-  sender: string;
-  signature: string;
-  message_id: string;
+  data: Base64UrlDataState;
+  sender: PublicKeyState;
+  signature: SignatureState;
+  message_id: HashState;
   witness_signatures: WitnessSignatureState[];
 }
 
@@ -113,6 +119,22 @@ export class ExtendedMessage extends Message implements ProcessableMessage {
   }
 
   public toState(): ExtendedMessageState {
-    return JSON.parse(JSON.stringify(this));
+    if (!this.laoId) {
+      throw new ProtocolError(`Cannot call .toState() on ExtendesMessage with undefined laoId`);
+    }
+
+    return {
+      receivedAt: this.receivedAt.toState(),
+      receivedFrom: this.receivedFrom,
+      processedAt: this.processedAt?.toState(),
+      channel: this.channel,
+      laoId: this.laoId?.toState(),
+
+      data: this.data.toState(),
+      sender: this.sender.toState(),
+      signature: this.signature.toState(),
+      message_id: this.message_id.toState(),
+      witness_signatures: this.witness_signatures.map((sig) => sig.toState()),
+    };
   }
 }

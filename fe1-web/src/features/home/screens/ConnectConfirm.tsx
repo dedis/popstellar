@@ -10,6 +10,7 @@ import ScreenWrapper from 'core/components/ScreenWrapper';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { ConnectParamList } from 'core/navigation/typing/ConnectParamList';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
+import { Hash } from 'core/objects';
 import { Typography } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -34,10 +35,10 @@ const ConnectConfirm = () => {
   const route = useRoute<NavigationProps['route']>();
   const dispatch = useDispatch();
 
-  const laoIdIn = route.params?.laoId || '';
+  const laoIdRouteParam = route.params?.laoId || '';
   const url = route.params?.serverUrl || 'ws://localhost:9000/organizer/client';
   const [serverUrl, setServerUrl] = useState(url);
-  const [laoId, setLaoId] = useState(laoIdIn);
+  const [laoIdInput, setLaoIdInput] = useState(laoIdRouteParam);
 
   const toast = useToast();
   const getLaoChannel = HomeHooks.useGetLaoChannel();
@@ -46,6 +47,7 @@ const ConnectConfirm = () => {
 
   const onButtonConfirm = async () => {
     try {
+      const laoId = new Hash(laoIdInput);
       const connection = await getNetworkManager().connect(serverUrl);
 
       const laoChannel = getLaoChannel(laoId);
@@ -64,7 +66,8 @@ const ConnectConfirm = () => {
       }
 
       navigation.navigate(STRINGS.navigation_app_lao, {
-        screen: STRINGS.navigation_lao_home,
+        screen: STRINGS.navigation_lao_events,
+        params: { screen: STRINGS.navigation_lao_events_home },
       });
     } catch (err) {
       console.error(`Failed to establish lao connection`, err);
@@ -85,7 +88,7 @@ const ConnectConfirm = () => {
         <Input value={serverUrl} onChange={setServerUrl} placeholder={STRINGS.connect_server_uri} />
 
         <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.connect_lao_id}</Text>
-        <Input value={laoId} onChange={setLaoId} placeholder={STRINGS.connect_lao_id} />
+        <Input value={laoIdInput} onChange={setLaoIdInput} placeholder={STRINGS.connect_lao_id} />
 
         <PoPTextButton onPress={onButtonConfirm} testID="connect-button">
           {STRINGS.connect_connect}

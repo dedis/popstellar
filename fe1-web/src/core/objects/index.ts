@@ -1,4 +1,4 @@
-export * from './Base64Url';
+export * from './Base64UrlData';
 export * from './Channel';
 export * from './Hash';
 export * from './KeyPair';

@@ -1,4 +1,10 @@
-import { mockAddress, mockKeyPair, mockLaoId, mockLaoIdHash, mockPublicKey } from '__tests__/utils';
+import {
+  mockAddress,
+  mockKeyPair,
+  serializedMockLaoId,
+  mockLaoId,
+  mockPublicKey,
+} from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, ProtocolError, PublicKey } from 'core/objects';
 
@@ -13,13 +19,13 @@ describe('GreetLao', () => {
 
       const g = new GreetLao({
         address: mockAddress,
-        lao: mockLaoIdHash,
+        lao: mockLaoId,
         peers,
         frontend: mockKeyPair.publicKey,
       });
 
       expect(g.address).toEqual(mockAddress);
-      expect(g.lao).toEqual(mockLaoIdHash);
+      expect(g.lao).toEqual(mockLaoId);
       expect(g.peers).toEqual(peers);
       expect(g.frontend).toEqual(mockKeyPair.publicKey);
     });
@@ -28,7 +34,7 @@ describe('GreetLao', () => {
       const fn = () =>
         new GreetLao({
           address: undefined as unknown as string,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           peers: [{ address: otherAddress }],
           frontend: mockKeyPair.publicKey,
         });
@@ -52,7 +58,7 @@ describe('GreetLao', () => {
       const fn = () =>
         new GreetLao({
           address: mockAddress,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           peers: undefined as unknown as GreetLao['peers'],
           frontend: mockKeyPair.publicKey,
         });
@@ -64,7 +70,7 @@ describe('GreetLao', () => {
       const fn = () =>
         new GreetLao({
           address: mockAddress,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           peers: [{ address: otherAddress }],
           frontend: undefined as unknown as PublicKey,
         });
@@ -76,7 +82,7 @@ describe('GreetLao', () => {
       const fn = () =>
         new GreetLao({
           address: mockAddress,
-          lao: mockLaoIdHash,
+          lao: mockLaoId,
           peers: [{ address: mockAddress }],
           frontend: undefined as unknown as PublicKey,
         });
@@ -93,13 +99,13 @@ describe('GreetLao', () => {
         object: ObjectType.LAO,
         action: ActionType.GREET,
         address: mockAddress,
-        lao: mockLaoId,
+        lao: serializedMockLaoId,
         peers,
         frontend: mockPublicKey,
       });
 
       expect(g.address).toEqual(mockAddress);
-      expect(g.lao.valueOf()).toEqual(mockLaoId);
+      expect(g.lao.valueOf()).toEqual(serializedMockLaoId);
       expect(g.peers).toEqual(peers);
       expect(g.frontend.valueOf()).toEqual(mockPublicKey);
     });

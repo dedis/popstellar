@@ -23,38 +23,44 @@ export namespace DigitalCashHooks {
   };
 
   /**
-   * Gets the current lao id
+   * Gets the current lao id, throws an error if there is none
    */
   export const useCurrentLaoId = () => useDigitalCashContext().useCurrentLaoId();
 
   /**
+   * Returns true if currently connected to a lao, false if in offline mode
+   * and undefined if there is no current lao
+   */
+  export const useConnectedToLao = () => useDigitalCashContext().useConnectedToLao();
+
+  /**
    * Gets whether the current user is organizer of the given lao
    */
-  export const useIsLaoOrganizer = (laoId: string) =>
+  export const useIsLaoOrganizer = (laoId: Hash) =>
     useDigitalCashContext().useIsLaoOrganizer(laoId);
 
   /**
    * Gets the roll call tokens for a given lao id
    */
-  export const useRollCallTokensByLaoId = (laoId: string) =>
+  export const useRollCallTokensByLaoId = (laoId: Hash) =>
     useDigitalCashContext().useRollCallTokensByLaoId(laoId);
 
   /**
    * Gets the roll call token for a given lao id and a given roll call id
    */
-  export const useRollCallTokenByRollCallId = (laoId: string, rollCallId: string) =>
+  export const useRollCallTokenByRollCallId = (laoId: Hash, rollCallId?: Hash) =>
     useDigitalCashContext().useRollCallTokenByRollCallId(laoId, rollCallId);
 
   /**
    * Gets the roll call for a given id
    */
-  export const useRollCallById = (rollCallId: Hash | string) =>
+  export const useRollCallById = (rollCallId?: Hash) =>
     useDigitalCashContext().useRollCallById(rollCallId);
 
   /**
    * Gets all roll calls for a given lao id
    */
-  export const useRollCallsByLaoId = (laoId: string) =>
+  export const useRollCallsByLaoId = (laoId: Hash) =>
     useDigitalCashContext().useRollCallsByLaoId(laoId);
 
   /**
@@ -62,7 +68,7 @@ export namespace DigitalCashHooks {
    * To use only in a React component
    * @param laoId the id of the LAO
    */
-  export const useTransactions = (laoId: Hash | string) => {
+  export const useTransactions = (laoId: Hash) => {
     const transactionsSelector = useMemo(() => makeTransactionsSelector(laoId), [laoId]);
 
     const transactionStates = useSelector(transactionsSelector);
@@ -78,7 +84,7 @@ export namespace DigitalCashHooks {
    * To use only in a react component
    * @param laoId the id of the LAO
    */
-  export const useTransactionsByHash = (laoId: Hash | string) => {
+  export const useTransactionsByHash = (laoId: Hash) => {
     const transactionsByHashSelector = useMemo(
       () => makeTransactionsByHashSelector(laoId),
       [laoId],
@@ -91,8 +97,8 @@ export namespace DigitalCashHooks {
    * To use only in a React component
    * @param laoId
    */
-  export const useTotalBalance = (laoId: string | Hash) => {
-    const rollCallTokens = useRollCallTokensByLaoId(laoId.valueOf());
+  export const useTotalBalance = (laoId: Hash) => {
+    const rollCallTokens = useRollCallTokensByLaoId(laoId);
 
     const balancesSelector = useMemo(() => makeBalancesSelector(laoId), [laoId]);
     const balances = useSelector(balancesSelector);

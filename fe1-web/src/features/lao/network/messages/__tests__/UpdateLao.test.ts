@@ -4,7 +4,7 @@ import '__tests__/utils/matchers';
 import {
   configureTestFeatures,
   mockLao,
-  mockLaoIdHash,
+  mockLaoId,
   mockLaoName,
   mockPublicKey,
   mockPublicKey2,
@@ -21,7 +21,7 @@ const mockWitnesses = [new PublicKey(mockPublicKey), new PublicKey(mockPublicKey
 const sampleUpdateLao: Partial<UpdateLao> = {
   object: ObjectType.LAO,
   action: ActionType.UPDATE_PROPERTIES,
-  id: mockLaoIdHash,
+  id: mockLaoId,
   name: mockLaoName,
   last_modified: TIMESTAMP,
   witnesses: mockWitnesses,
@@ -30,7 +30,7 @@ const sampleUpdateLao: Partial<UpdateLao> = {
 const updateLaoJson = `{
   "object": "${ObjectType.LAO}",
   "action": "${ActionType.UPDATE_PROPERTIES}",
-  "id": "${mockLaoIdHash}",
+  "id": "${mockLaoId}",
   "name": "${mockLaoName}",
   "last_modified": ${TIMESTAMP},
   "witnesses": ${JSON.stringify(mockWitnesses)}
@@ -47,7 +47,7 @@ describe('UpdateLao', () => {
     const temp = {
       object: ObjectType.LAO,
       action: ActionType.UPDATE_PROPERTIES,
-      id: mockLaoIdHash,
+      id: mockLaoId,
       name: mockLaoName,
       last_modified: TIMESTAMP,
       witnesses: mockWitnesses,
@@ -64,7 +64,7 @@ describe('UpdateLao', () => {
     const obj = {
       object: ObjectType.LAO,
       action: ActionType.UPDATE_PROPERTIES,
-      id: mockLaoIdHash,
+      id: mockLaoId,
       name: mockLaoName,
       last_modified: TIMESTAMP,
       witnesses: mockWitnesses,
@@ -79,7 +79,7 @@ describe('UpdateLao', () => {
         new UpdateLao({
           object: ObjectType.LAO,
           action: ActionType.UPDATE_PROPERTIES,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           last_modified: TIMESTAMP,
           witnesses: mockWitnesses,
         });
@@ -91,7 +91,7 @@ describe('UpdateLao', () => {
         new UpdateLao({
           object: ObjectType.LAO,
           action: ActionType.UPDATE_PROPERTIES,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           witnesses: mockWitnesses,
         });
@@ -103,7 +103,7 @@ describe('UpdateLao', () => {
         new UpdateLao({
           object: ObjectType.LAO,
           action: ActionType.UPDATE_PROPERTIES,
-          id: mockLaoIdHash,
+          id: mockLaoId,
           name: mockLaoName,
           last_modified: TIMESTAMP,
         });

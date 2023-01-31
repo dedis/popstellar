@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.testutils;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.view.*;
@@ -18,6 +16,7 @@ import org.hamcrest.*;
 import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.ShadowToast;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
@@ -74,6 +73,17 @@ public class UITestUtils {
    */
   public static Button dialogNegativeButton() {
     return getAlertDialogButton(DialogInterface.BUTTON_NEGATIVE);
+  }
+
+  /**
+   * Retrieve the neutral button of the latest dialog
+   *
+   * <p>For example : The OK button
+   *
+   * @return the button
+   */
+  public static Button dialogNeutralButton() {
+    return getAlertDialogButton(DialogInterface.BUTTON_NEUTRAL);
   }
 
   /**

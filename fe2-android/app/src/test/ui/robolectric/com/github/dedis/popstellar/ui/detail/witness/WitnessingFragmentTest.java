@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,9 +61,10 @@ public class WitnessingFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() {
+        protected void before() throws UnknownLaoException {
           when(repository.getLaoObservable(any()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
+          when(repository.getLaoView(any())).thenReturn(new LaoView(LAO));
         }
       };
 

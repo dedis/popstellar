@@ -25,7 +25,7 @@ jest.mock('features/lao/reducer');
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';
 const LOCATION = 'location';
-const TIMESTAMP_START = new Timestamp(1620255600);
+const TIMESTAMP_START = new Timestamp(1620355600);
 const TIMESTAMP_END = new Timestamp(1620357600);
 const ATTENDEES = ['attendee1', 'attendee2'];
 const rollCallStateCreated: any = {

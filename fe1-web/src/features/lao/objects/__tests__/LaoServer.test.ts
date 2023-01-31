@@ -1,8 +1,8 @@
 import {
   mockAddress,
   mockKeyPair,
+  serializedMockLaoId,
   mockLaoId,
-  mockLaoIdHash,
   mockPopToken,
   mockPublicKey,
   mockPublicKey2,
@@ -15,13 +15,13 @@ describe('Server', () => {
   describe('constructor', () => {
     it('correctly constructs a server object', () => {
       const s = new LaoServer({
-        laoId: mockLaoIdHash,
+        laoId: mockLaoId,
         address: mockAddress,
         serverPublicKey: mockKeyPair.publicKey,
         frontendPublicKey: mockPopToken.publicKey,
       });
 
-      expect(s.laoId.valueOf()).toEqual(mockLaoId);
+      expect(s.laoId.valueOf()).toEqual(serializedMockLaoId);
       expect(s.address).toEqual(mockAddress);
       expect(s.serverPublicKey).toEqual(mockKeyPair.publicKey);
     });
@@ -29,7 +29,7 @@ describe('Server', () => {
     it('throws an error if the address is undefined', () => {
       const fn = () =>
         new LaoServer({
-          laoId: mockLaoIdHash,
+          laoId: mockLaoId,
           address: undefined as unknown as string,
           serverPublicKey: mockKeyPair.publicKey,
           frontendPublicKey: mockPopToken.publicKey,
@@ -41,7 +41,7 @@ describe('Server', () => {
     it('throws an error if the server public key is undefined', () => {
       const fn = () =>
         new LaoServer({
-          laoId: mockLaoIdHash,
+          laoId: mockLaoId,
           address: mockAddress,
           serverPublicKey: undefined as unknown as PublicKey,
           frontendPublicKey: mockPopToken.publicKey,
@@ -53,7 +53,7 @@ describe('Server', () => {
     it('throws an error if the frontend key is undefined', () => {
       const fn = () =>
         new LaoServer({
-          laoId: mockLaoIdHash,
+          laoId: mockLaoId,
           address: mockAddress,
           serverPublicKey: mockKeyPair.publicKey,
           frontendPublicKey: undefined as unknown as PublicKey,
@@ -66,13 +66,13 @@ describe('Server', () => {
   describe('fromState', () => {
     it('correctly constructs a server object from a server state', () => {
       const s = LaoServer.fromState({
-        laoId: mockLaoId,
+        laoId: serializedMockLaoId,
         address: mockAddress,
         serverPublicKey: mockPublicKey,
         frontendPublicKey: mockPublicKey2,
       });
 
-      expect(s.laoId.valueOf()).toEqual(mockLaoId);
+      expect(s.laoId.valueOf()).toEqual(serializedMockLaoId);
       expect(s.address).toEqual(mockAddress);
       expect(s.serverPublicKey.valueOf()).toEqual(mockKeyPair.publicKey.valueOf());
     });
@@ -81,13 +81,13 @@ describe('Server', () => {
   describe('toState', () => {
     it('correctly constructs a server state object from a server instance', () => {
       const s = new LaoServer({
-        laoId: mockLaoIdHash,
+        laoId: mockLaoId,
         address: mockAddress,
         serverPublicKey: mockKeyPair.publicKey,
         frontendPublicKey: mockPopToken.publicKey,
       }).toState();
 
-      expect(s.laoId).toEqual(mockLaoId);
+      expect(s.laoId).toEqual(serializedMockLaoId);
       expect(s.address).toEqual(mockAddress);
       expect(s.serverPublicKey).toEqual(mockPublicKey);
       expect(s.frontendPublicKey).toEqual(mockPublicKey2);

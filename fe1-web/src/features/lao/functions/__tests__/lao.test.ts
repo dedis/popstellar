@@ -30,7 +30,7 @@ describe('getCurrentLao', () => {
 describe('getCurrentLaoId', () => {
   it('should return the current lao id if there is one', () => {
     OpenedLaoStore.store(mockLao);
-    expect(getCurrentLaoId()?.valueOf()).toEqual(mockLaoId);
+    expect(getCurrentLaoId()).toEqual(mockLaoId);
   });
 
   it('should return undefined if there is no current lao', () => {

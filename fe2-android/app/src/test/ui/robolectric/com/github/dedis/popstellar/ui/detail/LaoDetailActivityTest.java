@@ -36,6 +36,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -60,7 +61,7 @@ public class LaoDetailActivityTest {
         @Override
         protected void before() throws UnknownLaoException, GeneralSecurityException {
           hiltAndroidRule.inject();
-          when(laoRepository.getLaoView(anyString())).thenAnswer(invocation -> new LaoView(LAO));
+          when(laoRepository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
           when(laoRepository.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));

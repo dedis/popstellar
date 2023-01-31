@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import { mockLaoIdHash } from '__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 
 import {
   channelFromIds,
@@ -22,37 +22,33 @@ describe('Channel object', () => {
   });
 
   it('getLaoIdFromChannel should return the correct LAO ID for LAO path', () => {
-    const actual = getLaoIdFromChannel(`/root/${mockLaoIdHash}`);
-    expect(actual.valueOf()).toEqual(mockLaoIdHash.valueOf());
+    const actual = getLaoIdFromChannel(`/root/${mockLaoId}`);
+    expect(actual.valueOf()).toEqual(mockLaoId.valueOf());
   });
 
   it('getLaoIdFromChannel should return the correct LAO ID for long paths', () => {
-    const actual = getLaoIdFromChannel(`/root/${mockLaoIdHash}/long/path`);
-    expect(actual.valueOf()).toEqual(mockLaoIdHash.valueOf());
+    const actual = getLaoIdFromChannel(`/root/${mockLaoId}/long/path`);
+    expect(actual.valueOf()).toEqual(mockLaoId.valueOf());
   });
 
   it('channelFromIds should return the correct channel', () => {
     expect(channelFromIds()).toEqual('/root');
-    expect(channelFromIds(mockLaoIdHash)).toStrictEqual(`/root/${mockLaoIdHash}`);
+    expect(channelFromIds(mockLaoId)).toStrictEqual(`/root/${mockLaoId}`);
   });
 
   it('getUserSocialChannel should return the correct channel', () => {
     const userToken = new PublicKey('userToken');
-    expect(getUserSocialChannel(mockLaoIdHash, userToken)).toStrictEqual(
-      `/root/${mockLaoIdHash}/social/${userToken.valueOf()}`,
+    expect(getUserSocialChannel(mockLaoId, userToken)).toStrictEqual(
+      `/root/${mockLaoId}/social/${userToken.valueOf()}`,
     );
   });
 
   it('getGeneralChirpsChannel should return the correct channel', () => {
-    expect(getGeneralChirpsChannel(mockLaoIdHash)).toStrictEqual(
-      `/root/${mockLaoIdHash}/social/chirps`,
-    );
+    expect(getGeneralChirpsChannel(mockLaoId)).toStrictEqual(`/root/${mockLaoId}/social/chirps`);
   });
 
   it('getReactionChannel should return the correct channel', () => {
-    expect(getReactionChannel(mockLaoIdHash)).toStrictEqual(
-      `/root/${mockLaoIdHash}/social/reactions`,
-    );
+    expect(getReactionChannel(mockLaoId)).toStrictEqual(`/root/${mockLaoId}/social/reactions`);
   });
 
   it('getLastPartOfChannel works correctly', () => {

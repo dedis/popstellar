@@ -6,14 +6,21 @@ const Stack = createStackNavigator();
 const MockNavigator = ({
   component,
   params = {},
+  screenOptions = {},
 }: {
   component: React.ComponentType<unknown>;
   params?: Partial<object>;
+  screenOptions?: Partial<object>;
 }) => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="MockScreen" component={component} initialParams={params} />
+        <Stack.Screen
+          name="MockScreen"
+          component={component}
+          initialParams={params}
+          options={screenOptions}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -21,6 +28,7 @@ const MockNavigator = ({
 
 MockNavigator.defaultProps = {
   params: {},
+  screenOptions: {},
 };
 
 export default MockNavigator;

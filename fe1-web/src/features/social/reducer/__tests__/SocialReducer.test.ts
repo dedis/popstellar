@@ -3,7 +3,7 @@ import 'jest-extended';
 import { describe } from '@jest/globals';
 import { AnyAction } from 'redux';
 
-import { mockLaoId } from '__tests__/utils/TestUtils';
+import { serializedMockLaoId, mockLaoId } from '__tests__/utils/TestUtils';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { Chirp, ChirpState, Reaction, ReactionState } from '../../objects';
@@ -57,10 +57,10 @@ let reactionFilledState44: any;
 const initialiseData = () => {
   const mockSender1: PublicKey = new PublicKey('Douglas Adams');
   const mockSender2: PublicKey = new PublicKey('Gandalf');
-  const mockChirpId0: Hash = Hash.fromString('000');
-  mockChirpId1 = Hash.fromString('1234');
-  mockChirpId2 = Hash.fromString('5678');
-  const mockChirpId3: Hash = Hash.fromString('123456');
+  const mockChirpId0: Hash = new Hash('000');
+  mockChirpId1 = new Hash('1234');
+  mockChirpId2 = new Hash('5678');
+  const mockChirpId3: Hash = new Hash('123456');
   const mockTimestamp: Timestamp = new Timestamp(1606666600);
 
   chirp0DeletedFake = new Chirp({
@@ -111,7 +111,7 @@ const initialiseData = () => {
   }).toState();
 
   chirp3 = new Chirp({
-    id: Hash.fromString('12345'),
+    id: new Hash('12345'),
     sender: mockSender1,
     text: 'Time is an illusion',
     time: mockTimestamp,
@@ -133,7 +133,7 @@ const initialiseData = () => {
   }).toState();
 
   reaction1 = new Reaction({
-    id: Hash.fromString('1111'),
+    id: new Hash('1111'),
     sender: mockSender1,
     codepoint: '👍',
     chirpId: mockChirpId1,
@@ -141,7 +141,7 @@ const initialiseData = () => {
   }).toState();
 
   reaction2 = new Reaction({
-    id: Hash.fromString('2222'),
+    id: new Hash('2222'),
     sender: mockSender1,
     codepoint: '❤️',
     chirpId: mockChirpId1,
@@ -149,7 +149,7 @@ const initialiseData = () => {
   }).toState();
 
   reaction3 = new Reaction({
-    id: Hash.fromString('3333'),
+    id: new Hash('3333'),
     sender: mockSender2,
     codepoint: '👍',
     chirpId: mockChirpId1,
@@ -157,7 +157,7 @@ const initialiseData = () => {
   }).toState();
 
   reaction4 = new Reaction({
-    id: Hash.fromString('4444'),
+    id: new Hash('4444'),
     sender: mockSender2,
     codepoint: '👍',
     chirpId: mockChirpId2,
@@ -183,7 +183,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [],
         byId: { [mockChirpId0.toString()]: chirp0DeletedFake },
         byUser: {},
@@ -200,7 +200,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp0.id],
         byId: { [chirp0.id]: chirp0 },
         byUser: { [chirp0.sender]: [chirp0.id] },
@@ -217,7 +217,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp1.id],
         byId: { [chirp1.id]: chirp1 },
         byUser: { [chirp1.sender]: [chirp1.id] },
@@ -234,7 +234,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp2.id, chirp1.id],
         byId: {
           [chirp1.id]: chirp1,
@@ -257,7 +257,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp2.id, chirp3.id, chirp1.id],
         byId: {
           [chirp1.id]: chirp1,
@@ -281,7 +281,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
         byId: {
           [chirp1.id]: chirp1,
@@ -306,7 +306,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
         byId: {
           [chirp1.id]: chirp1Deleted,
@@ -331,7 +331,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
         byId: {
           [chirp1.id]: chirp1,
@@ -356,7 +356,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [],
         byId: {},
         byUser: {},
@@ -373,7 +373,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp1.id],
         byId: { [chirp1.id]: chirp1 },
         byUser: { [chirp1.sender]: [chirp1.id] },
@@ -390,7 +390,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [],
         byId: {},
         byUser: {},
@@ -412,7 +412,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp1.id],
         byId: { [chirp1.id]: chirp1 },
         byUser: { [chirp1.sender]: [chirp1.id] },
@@ -434,7 +434,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [],
         byId: {},
         byUser: {},
@@ -456,7 +456,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp1.id],
         byId: { [chirp1.id]: chirp1 },
         byUser: { [chirp1.sender]: [chirp1.id] },
@@ -478,7 +478,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [],
         byId: {},
         byUser: {},
@@ -498,7 +498,7 @@ const initialiseData = () => {
         byUser: {},
         reactionsByChirp: {},
       },
-      [mockLaoId]: {
+      [serializedMockLaoId]: {
         allIdsInOrder: [chirp2.id, chirp1.id],
         byId: {
           [chirp1.id]: chirp1,
@@ -617,22 +617,21 @@ describe('SocialReducer', () => {
     });
 
     it('should return the correct chirps list for an active user', () => {
-      expect(makeChirpsListOfUser(mockLaoId)(chirp1.sender).resultFunc(chirpFilledState3)).toEqual([
-        chirp3,
-        chirp1,
-      ]);
+      expect(
+        makeChirpsListOfUser(mockLaoId)(new PublicKey(chirp1.sender)).resultFunc(chirpFilledState3),
+      ).toEqual([chirp3, chirp1]);
     });
 
     it('should return an empty list for an inactive user', () => {
-      expect(makeChirpsListOfUser(mockLaoId)(chirp2.sender).resultFunc(chirpFilledState1)).toEqual(
-        [],
-      );
+      expect(
+        makeChirpsListOfUser(mockLaoId)(new PublicKey(chirp2.sender)).resultFunc(chirpFilledState1),
+      ).toEqual([]);
     });
 
     it('should return an empty list for an undefined lao', () => {
-      expect(makeChirpsListOfUser(mockLaoId)(chirp2.sender).resultFunc(chirpFilledState1)).toEqual(
-        [],
-      );
+      expect(
+        makeChirpsListOfUser(mockLaoId)(new PublicKey(chirp2.sender)).resultFunc(chirpFilledState1),
+      ).toEqual([]);
     });
   });
 

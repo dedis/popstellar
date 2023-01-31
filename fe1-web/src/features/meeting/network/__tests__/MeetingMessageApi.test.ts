@@ -4,8 +4,8 @@ import '__tests__/utils/matchers';
 import {
   configureTestFeatures,
   defaultMessageDataFields,
+  serializedMockLaoId,
   mockLaoId,
-  mockLaoIdHash,
 } from '__tests__/utils';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
@@ -58,7 +58,7 @@ const checkDataCreateMeeting = (obj: MessageData) => {
   }
 
   // check id
-  const expected = Hash.fromStringArray('M', mockLaoId, data.creation.toString(), data.name);
+  const expected = Hash.fromArray('M', mockLaoId, data.creation, data.name);
   expect(data.id).toEqual(expected);
 };
 
@@ -71,7 +71,7 @@ beforeEach(() => {
 describe('MessageApi', () => {
   it('should create the correct request for requestCreateMeeting without extra', async () => {
     await msApi.requestCreateMeeting(
-      mockLaoIdHash,
+      mockLaoId,
       mockEventName,
       mockStartTime,
       mockLocation,
@@ -80,14 +80,14 @@ describe('MessageApi', () => {
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}`);
     checkDataCreateMeeting(msgData);
   });
 
   it('should create the correct request for requestCreateMeeting with extra', async () => {
     const mockExtra = { numberParticipants: 12, minAge: 18 };
     await msApi.requestCreateMeeting(
-      mockLaoIdHash,
+      mockLaoId,
       mockEventName,
       mockStartTime,
       mockLocation,
@@ -97,7 +97,7 @@ describe('MessageApi', () => {
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];
-    expect(channel).toBe(`/root/${mockLaoId}`);
+    expect(channel).toBe(`/root/${serializedMockLaoId}`);
     checkDataCreateMeeting(msgData);
   });
 });
