@@ -1,12 +1,12 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.Await
@@ -47,6 +47,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     }
   }
 
+  def checkAttendee(rpcMessage: JsonRpcRequest, sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance, error: PipelineError): GraphMessage = {
+    if (validateAttendee(sender, channel, dbActor)) Left(rpcMessage) else Right(error)
+  }
+
   /** checks whether the sender of the JsonRpcRequest is the LAO owner
     *
     * @param sender
@@ -64,6 +68,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     }
   }
 
+  def checkOwner(rpcMessage: JsonRpcRequest, sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance, error: PipelineError): GraphMessage = {
+    if (validateOwner(sender, channel, dbActor)) Left(rpcMessage) else Right(error)
+  }
+
   /** checks whether the channel of the JsonRpcRequest is of the given type
     *
     * @param channelObjectType
@@ -79,5 +87,9 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       case Success(DbActor.DbActorReadChannelDataAck(channelData)) => channelData.channelType == channelObjectType
       case _                                                       => false
     }
+  }
+
+  def checkChannelType(rpcMessage: JsonRpcRequest, channelObjectType: ObjectType.ObjectType, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance, error: PipelineError): GraphMessage = {
+    if (validateChannelType(channelObjectType, channel, dbActor)) Left(rpcMessage) else Right(error)
   }
 }
