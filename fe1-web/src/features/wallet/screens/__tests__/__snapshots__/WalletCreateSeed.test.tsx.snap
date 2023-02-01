@@ -451,14 +451,19 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                               <View
                                 style={
                                   Object {
+                                    "alignItems": "center",
                                     "backgroundColor": "#3742fa",
                                     "borderRadius": 8,
+                                    "display": "flex",
+                                    "flexDirection": "row",
+                                    "justifyContent": "space-between",
                                     "marginBottom": 16,
                                     "padding": 16,
                                   }
                                 }
                               >
                                 <Text
+                                  selectable={true}
                                   style={
                                     Object {
                                       "color": "#fff",
@@ -471,6 +476,48 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                                 >
                                   one two three
                                 </Text>
+                                <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
+                                  testID="copyButton"
+                                >
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    exclusive={true}
+                                    handlerTag={3}
+                                    handlerType="NativeViewGestureHandler"
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    touchSoundDisabled={false}
+                                  >
+                                    <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      style={
+                                        Object {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <View>
+                                        {"name":"ios-copy","size":26,"color":"#fff"}
+                                      </View>
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                               <Text
                                 style={
@@ -588,7 +635,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                             <RNGestureHandlerButton
                               collapsable={false}
                               exclusive={true}
-                              handlerTag={3}
+                              handlerTag={4}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
@@ -668,7 +715,7 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                             <RNGestureHandlerButton
                               collapsable={false}
                               exclusive={true}
-                              handlerTag={4}
+                              handlerTag={5}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}

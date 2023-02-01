@@ -16,9 +16,32 @@ exports[`CopyButton renders correctly 1`] = `
   onStartShouldSetResponder={[Function]}
   testID="copyButton"
 >
-  <View>
-    {"name":"ios-copy","size":26,"color":"#000"}
-  </View>
+  <RNGestureHandlerButton
+    collapsable={false}
+    exclusive={true}
+    handlerTag={1}
+    handlerType="NativeViewGestureHandler"
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+    touchSoundDisabled={false}
+  >
+    <View
+      accessible={true}
+      collapsable={false}
+      style={
+        Object {
+          "opacity": 1,
+        }
+      }
+    >
+      <View>
+        {"name":"ios-copy","size":26,"color":"#000"}
+      </View>
+    </View>
+  </RNGestureHandlerButton>
 </View>
 `;
 
@@ -38,8 +61,31 @@ exports[`CopyButton renders correctly when negative 1`] = `
   onStartShouldSetResponder={[Function]}
   testID="copyButton"
 >
-  <View>
-    {"name":"ios-copy","size":26,"color":"#fff"}
-  </View>
+  <RNGestureHandlerButton
+    collapsable={false}
+    exclusive={true}
+    handlerTag={2}
+    handlerType="NativeViewGestureHandler"
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+    touchSoundDisabled={false}
+  >
+    <View
+      accessible={true}
+      collapsable={false}
+      style={
+        Object {
+          "opacity": 1,
+        }
+      }
+    >
+      <View>
+        {"name":"ios-copy","size":26,"color":"#fff"}
+      </View>
+    </View>
+  </RNGestureHandlerButton>
 </View>
 `;

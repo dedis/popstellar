@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
+import { CopyButton } from 'core/components';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { ToolbarItem } from 'core/components/Toolbar';
 import { AppScreen } from 'core/navigation/AppNavigation';
@@ -22,6 +23,11 @@ const styles = StyleSheet.create({
     backgroundColor: Color.accent,
     marginBottom: Spacing.x1,
     padding: Spacing.x1,
+
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   } as ViewStyle,
   seed: {
     ...Typography.base,
@@ -116,7 +122,10 @@ const WalletCreateSeed = () => {
           <Text>{STRINGS.wallet_welcome_text_wallet_explanation_4}</Text>
         </Text>
         <View style={styles.words}>
-          <Text style={styles.seed}>{seed}</Text>
+          <Text style={styles.seed} selectable>
+            {seed}
+          </Text>
+          <CopyButton data={seed} negative />
         </View>
         <Text style={Typography.paragraph}>
           <Text>{STRINGS.wallet_welcome_text_wallet_explanation_5}</Text>
