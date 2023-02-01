@@ -3591,8 +3591,9 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               style={
                                 Object {
                                   "alignItems": "center",
-                                  "backgroundColor": "#3498db",
+                                  "borderColor": "#000",
                                   "borderRadius": 8,
+                                  "borderWidth": 1,
                                   "flexDirection": "row",
                                   "marginBottom": 16,
                                   "padding": 16,
@@ -3600,7 +3601,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               }
                             >
                               <View>
-                                {"name":"ios-information-circle-outline","size":50,"color":"#fff"}
+                                {"name":"ios-information-circle-outline","size":50,"color":"#000"}
                               </View>
                               <View
                                 style={
@@ -3622,9 +3623,6 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       Object {
                                         "fontWeight": "bold",
                                       },
-                                      Object {
-                                        "color": "#fff",
-                                      },
                                     ]
                                   }
                                 >
@@ -3632,17 +3630,12 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                 </Text>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    }
                                   }
                                 >
                                   This is an open ballot election, your cast votes will be visible to all members of the LAO.
@@ -10417,8 +10410,9 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               style={
                                 Object {
                                   "alignItems": "center",
-                                  "backgroundColor": "#3498db",
+                                  "borderColor": "#000",
                                   "borderRadius": 8,
+                                  "borderWidth": 1,
                                   "flexDirection": "row",
                                   "marginBottom": 16,
                                   "padding": 16,
@@ -10426,7 +10420,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               }
                             >
                               <View>
-                                {"name":"ios-information-circle-outline","size":50,"color":"#fff"}
+                                {"name":"ios-information-circle-outline","size":50,"color":"#000"}
                               </View>
                               <View
                                 style={
@@ -10448,9 +10442,6 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       Object {
                                         "fontWeight": "bold",
                                       },
-                                      Object {
-                                        "color": "#fff",
-                                      },
                                     ]
                                   }
                                 >
@@ -10458,17 +10449,12 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                 </Text>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "textAlign": "left",
-                                      },
-                                      Object {
-                                        "color": "#fff",
-                                      },
-                                    ]
+                                    Object {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "textAlign": "left",
+                                    }
                                   }
                                 >
                                   This is an open ballot election, your cast votes will be visible to all members of the LAO.

@@ -12,11 +12,12 @@ const styles = StyleSheet.create({
   info: {
     padding: Spacing.x1,
     marginBottom: Spacing.x1,
-    borderRadius: Border.radius,
 
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Color.info,
+    borderColor: Color.primary,
+    borderWidth: 1,
+    borderRadius: Border.radius,
   } as ViewStyle,
   infoText: {
     flex: 1,
@@ -29,28 +30,20 @@ const ElectionVersionNotice = ({ election }: IPropTypes) => {
     case ElectionVersion.OPEN_BALLOT:
       return (
         <View style={styles.info}>
-          <PoPIcon name="info" color={Color.contrast} size={Icon.largeSize} />
+          <PoPIcon name="info" color={Color.primary} size={Icon.largeSize} />
           <View style={styles.infoText}>
-            <Text style={[Typography.base, Typography.important, Typography.negative]}>
-              {STRINGS.general_notice}
-            </Text>
-            <Text style={[Typography.base, Typography.negative]}>
-              {STRINGS.election_warning_open_ballot}
-            </Text>
+            <Text style={[Typography.base, Typography.important]}>{STRINGS.general_notice}</Text>
+            <Text style={Typography.base}>{STRINGS.election_warning_open_ballot}</Text>
           </View>
         </View>
       );
     case ElectionVersion.SECRET_BALLOT:
       return (
         <View style={styles.info}>
-          <PoPIcon name="info" color={Color.contrast} size={Icon.largeSize} />
+          <PoPIcon name="info" color={Color.primary} size={Icon.largeSize} />
           <View style={styles.infoText}>
-            <Text style={[Typography.base, Typography.important, Typography.negative]}>
-              {STRINGS.general_notice}
-            </Text>
-            <Text style={[Typography.base, Typography.negative]}>
-              {STRINGS.election_info_secret_ballot}
-            </Text>
+            <Text style={[Typography.base, Typography.important]}>{STRINGS.general_notice}</Text>
+            <Text style={Typography.base}>{STRINGS.election_info_secret_ballot}</Text>
           </View>
         </View>
       );
