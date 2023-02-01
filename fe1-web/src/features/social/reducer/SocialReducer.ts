@@ -358,7 +358,7 @@ export const makeReactionCountsSelector = (laoId: Hash, chirpId: Hash) =>
     );
 
     // count them by codepoint
-    const reactionCodePointCounts = reactions.reduce<Record<string, number>>(
+    return reactions.reduce<Record<string, number>>(
       (counts, reaction) => {
         if (counts[reaction.codepoint]) {
           counts[reaction.codepoint] += 1;
@@ -370,8 +370,6 @@ export const makeReactionCountsSelector = (laoId: Hash, chirpId: Hash) =>
       },
       { '👍': 0, '👎': 0, '❤️': 0 },
     );
-
-    return reactionCodePointCounts;
   });
 
 export const makeReactedSelector = (laoId: Hash, chirpId: Hash, user?: PublicKey) =>
@@ -392,7 +390,7 @@ export const makeReactedSelector = (laoId: Hash, chirpId: Hash, user?: PublicKey
     );
 
     // add reaction mapping for each code point if the user matches
-    const reactionByCodepoints = reactions.reduce<Record<string, Reaction>>((obj, reaction) => {
+    return reactions.reduce<Record<string, Reaction>>((obj, reaction) => {
       if (reaction.sender !== serializedPublicKey) {
         // skip reactions by other suers
         return obj;
@@ -402,8 +400,6 @@ export const makeReactedSelector = (laoId: Hash, chirpId: Hash, user?: PublicKey
 
       return obj;
     }, {});
-
-    return reactionByCodepoints;
   });
 
 export const makeTopChirpsSelector = (laoId: Hash, max: number) =>
