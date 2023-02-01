@@ -7,12 +7,13 @@ import { Spacing, Typography } from 'core/styles';
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: Spacing.x05,
+    top: Spacing.x3,
     left: Spacing.x05,
+    right: Spacing.x05,
     zIndex: 100,
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'center',
   } as ViewStyle,
 });
 
