@@ -345,9 +345,9 @@ namespace STRINGS {
   export const events_create_event = 'Create';
   export const events_list_past = 'Past Events';
   export const events_list_current = 'Current Events';
-  export const events_list_upcoming = 'Upcoming Events';
 
   export const events_upcoming_events = 'Upcoming Events';
+  export const events_closest_upcoming_event = 'Next Event starts';
   export const events_create_meeting = 'Create Meeting';
   export const events_view_single_meeting = 'Single Meeting';
   export const events_create_roll_call = 'Create Roll-Call';
