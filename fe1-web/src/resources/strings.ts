@@ -253,6 +253,11 @@ namespace STRINGS {
   export const election_questions = 'Questions';
   export const election_results = 'Election Results';
 
+  export const election_status_not_started = 'Not Started';
+  export const election_status_opened = 'Ongoing';
+  export const election_status_terminated = 'Ended';
+  export const election_status_results = 'Ended, Results available';
+
   export const election_warning_open_ballot =
     'This is an open ballot election, your cast votes will be visible to all members of the LAO.';
   export const election_info_secret_ballot =
