@@ -36,14 +36,10 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
   override val EVENT_HASH_PREFIX: String = "R"
 
   private def runList(list: List[GraphMessage]): GraphMessage = {
-    var result = list.head
-    var newlist = list
-
-    while (result.isLeft && !newlist.tail.isEmpty) {
-      newlist = newlist.tail
-      result = newlist.head
-    }
-    result
+    if (list.head.isLeft && !list.tail.isEmpty)
+      runList(list.tail)
+    else
+      list.head
   }
 
   private def extractParameters[T](rpcMessage: JsonRpcRequest): (T, Hash, PublicKey, Channel) = {
