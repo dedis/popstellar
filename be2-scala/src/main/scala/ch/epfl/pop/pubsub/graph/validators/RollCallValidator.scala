@@ -35,23 +35,6 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
   override val EVENT_HASH_PREFIX: String = "R"
 
-  private def runList(list: List[GraphMessage]): GraphMessage = {
-    if (list.head.isLeft && !list.tail.isEmpty)
-      runList(list.tail)
-    else
-      list.head
-  }
-
-  private def extractParameters[T](rpcMessage: JsonRpcRequest): (T, Hash, PublicKey, Channel) = {
-    val message: Message = rpcMessage.getParamsMessage.get
-    val data: T = message.decodedData.get.asInstanceOf[T]
-    val laoId: Hash = rpcMessage.extractLaoId
-    val sender: PublicKey = message.sender
-    val channel: Channel = rpcMessage.getParamsChannel
-
-    (data, laoId, sender, channel)
-  }
-
   /** @param laoId
     *   LAO id of the channel
     * @return
@@ -71,7 +54,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val (data, laoId, sender, channel) = extractParameters[CreateRollCall](rpcMessage)
+        val (data, laoId, sender, channel) = extractData[CreateRollCall](rpcMessage)
         val expectedRollCallId: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
 
         runList(List(
@@ -108,7 +91,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val (data, laoId, sender, channel) = extractParameters[IOpenRollCall](rpcMessage)
+        val (data, laoId, sender, channel) = extractData[IOpenRollCall](rpcMessage)
         val expectedRollCallId: Hash = Hash.fromStrings(
           EVENT_HASH_PREFIX,
           laoId.toString,
@@ -152,7 +135,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val (data, laoId, sender, channel) = extractParameters[CloseRollCall](rpcMessage)
+        val (data, laoId, sender, channel) = extractData[CloseRollCall](rpcMessage)
         val expectedRollCallId: Hash = Hash.fromStrings(
           EVENT_HASH_PREFIX,
           laoId.toString,
