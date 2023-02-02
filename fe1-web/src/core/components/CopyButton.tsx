@@ -13,7 +13,7 @@ import PoPTouchableOpacity from './PoPTouchableOpacity';
 
 function CopyButton({ data, negative, testID }: IPropTypes) {
   return (
-    <PoPTouchableOpacity onPress={() => Clipboard.setStringAsync(data)} testID={testID!}>
+    <PoPTouchableOpacity onPress={() => Clipboard.setStringAsync(data)} testID={testID}>
       <PoPIcon name="copy" color={negative ? Color.contrast : Color.primary} size={26} />
     </PoPTouchableOpacity>
   );
