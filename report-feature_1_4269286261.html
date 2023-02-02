@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>01 Feb 2023, 04:13</td>
+      <td>02 Feb 2023, 04:13</td>
     </tr>
   </tbody>
 </table>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >2</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="37386864252">37.386</td>
+          <td class="duration" data-value="33587441383">33.587</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">3.484</span>
+  <span class="lead-duration duration">2.881</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.034</span>
+  <span class="lead-duration duration">2.539</span>
 
 </div>
 
@@ -288,7 +288,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.322</span>
+  <span class="lead-duration duration">0.276</span>
 
 </div>
 
@@ -342,7 +342,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.126</span>
+  <span class="lead-duration duration">0.064</span>
 
 </div>
 
@@ -463,12 +463,12 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">1.067</span>
+  <span class="lead-duration duration">5.905</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-3">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-3">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Valid transaction: issue 32 mini-Laos to an attendee</span>
 
@@ -479,16 +479,16 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-3" class="collapse collapsable-details  in ">
+  <div id="element-3" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-4">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-4">
 
-<div class="brief failed">
+<div class="brief passed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -498,7 +498,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-4" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-4" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -506,7 +506,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">1.018</span>
+  <span class="lead-duration duration">0.870</span>
 
 </div>
 
@@ -560,7 +560,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def validTransaction =</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -615,7 +615,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.019</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -642,7 +642,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
 
-  <span class="lead-duration duration">0.021</span>
+  <span class="lead-duration duration">0.028</span>
 
 </div>
 
@@ -692,11 +692,11 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-And failed">
+<div class="brief step-name-And passed">
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">5.001</span>
 
 </div>
 
@@ -705,43 +705,9 @@ $(document).ready(function() {
 
 
 
-  <div class="inner-level">
-    <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-6">
-          <a>match</a>
-      </div>
-      <div id="msg-6" class="collapse collapsable-details  in ">
-        <pre>match failed: EQUALS
-  $ | not equal (BOOLEAN:BOOLEAN)
-  false
-  true
-
-classpath:be/digitalCash/transaction.feature:49</pre>
-      </div>
-    </div>
-  </div>
 
 
 
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-7">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-7" class="collapse collapsable-details">
-        <pre>04:07:17.234 classpath:be/digitalCash/transaction.feature:49
-And match frontend.receiveNoMoreResponses() == true
-match failed: EQUALS
-  $ | not equal (BOOLEAN:BOOLEAN)
-  false
-  true
-
-classpath:be/digitalCash/transaction.feature:49
-</pre>
-      </div>
-    </div>
-  </div>
 
 
 
@@ -768,10 +734,10 @@ classpath:be/digitalCash/transaction.feature:49
 </div>
 
 
-  <span class="lead-duration duration">3.367</span>
+  <span class="lead-duration duration">2.809</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-8">
+  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-6">
 
 <div class="brief passed">
   <span class="keyword indention">Background</span>
@@ -784,14 +750,14 @@ classpath:be/digitalCash/transaction.feature:49
   </span>
   <div class="description indention"></div>
 
-  <div id="element-8" class="collapse collapsable-details ">
+  <div id="element-6" class="collapse collapsable-details ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-9">
+  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-7">
 
 <div class="brief passed">
   <span class="keyword indention">Steps</span>
@@ -803,7 +769,7 @@ classpath:be/digitalCash/transaction.feature:49
 
   </div>
 
-  <div id="steps-9" class="inner-level collapse collapsable-details ">
+  <div id="steps-7" class="inner-level collapse collapsable-details ">
       <div class="step">
 
 
@@ -811,7 +777,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.023</span>
+  <span class="lead-duration duration">2.520</span>
 
 </div>
 
@@ -865,7 +831,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.298</span>
+  <span class="lead-duration duration">0.230</span>
 
 </div>
 
@@ -919,7 +885,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.046</span>
+  <span class="lead-duration duration">0.059</span>
 
 </div>
 
@@ -1040,12 +1006,12 @@ classpath:be/digitalCash/transaction.feature:49
 </div>
 
 
-  <span class="lead-duration duration">5.967</span>
+  <span class="lead-duration duration">0.925</span>
 
 
-  <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-10">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-8">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Scenario</span>
   <span class="name">Transfer valid amount should work</span>
 
@@ -1056,16 +1022,16 @@ classpath:be/digitalCash/transaction.feature:49
   </span>
   <div class="description indention"></div>
 
-  <div id="element-10" class="collapse collapsable-details ">
+  <div id="element-8" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#steps-11">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-9">
 
-<div class="brief passed">
+<div class="brief failed">
   <span class="keyword indention">Steps</span>
   <span class="name"></span>
 
@@ -1075,7 +1041,7 @@ classpath:be/digitalCash/transaction.feature:49
 
   </div>
 
-  <div id="steps-11" class="inner-level collapse collapsable-details ">
+  <div id="steps-9" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -1083,7 +1049,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance')</span>
 
-  <span class="lead-duration duration">0.936</span>
+  <span class="lead-duration duration">0.895</span>
 
 </div>
 
@@ -1151,10 +1117,10 @@ classpath:be/digitalCash/transaction.feature:49
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-10">
           <a>Doc string</a>
       </div>
-      <div id="msg-12" class="collapse collapsable-details">
+      <div id="msg-10" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -1198,7 +1164,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransfer), cashChannel)</span>
 
-  <span class="lead-duration duration">0.016</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -1225,7 +1191,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))</span>
 
-  <span class="lead-duration duration">0.013</span>
+  <span class="lead-duration duration">0.022</span>
 
 </div>
 
@@ -1275,11 +1241,11 @@ classpath:be/digitalCash/transaction.feature:49
       <div class="step">
 
 
-<div class="brief step-name-And passed">
+<div class="brief step-name-And failed">
   <span class="keyword indention">And</span>
   <span class="name">match frontend.receiveNoMoreResponses() == true</span>
 
-  <span class="lead-duration duration">5.000</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1288,9 +1254,43 @@ classpath:be/digitalCash/transaction.feature:49
 
 
 
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-11">
+          <a>match</a>
+      </div>
+      <div id="msg-11" class="collapse collapsable-details  in ">
+        <pre>match failed: EQUALS
+  $ | not equal (BOOLEAN:BOOLEAN)
+  false
+  true
+
+classpath:be/digitalCash/transaction.feature:84</pre>
+      </div>
+    </div>
+  </div>
 
 
 
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-12" class="collapse collapsable-details">
+        <pre>04:07:28.174 classpath:be/digitalCash/transaction.feature:84
+And match frontend.receiveNoMoreResponses() == true
+match failed: EQUALS
+  $ | not equal (BOOLEAN:BOOLEAN)
+  false
+  true
+
+classpath:be/digitalCash/transaction.feature:84
+</pre>
+      </div>
+    </div>
+  </div>
 
 
 
@@ -1317,7 +1317,7 @@ classpath:be/digitalCash/transaction.feature:49
 </div>
 
 
-  <span class="lead-duration duration">3.390</span>
+  <span class="lead-duration duration">2.788</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-13">
@@ -1360,7 +1360,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.035</span>
+  <span class="lead-duration duration">2.514</span>
 
 </div>
 
@@ -1414,7 +1414,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.308</span>
+  <span class="lead-duration duration">0.233</span>
 
 </div>
 
@@ -1468,7 +1468,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.046</span>
+  <span class="lead-duration duration">0.032</span>
 
 </div>
 
@@ -1522,7 +1522,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">*</span>
   <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.008</span>
 
 </div>
 
@@ -1589,7 +1589,7 @@ classpath:be/digitalCash/transaction.feature:49
 </div>
 
 
-  <span class="lead-duration duration">1.106</span>
+  <span class="lead-duration duration">0.930</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-15">
@@ -1632,7 +1632,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">1.077</span>
+  <span class="lead-duration duration">0.909</span>
 
 </div>
 
@@ -1686,7 +1686,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">And</span>
   <span class="name">def validTransaction =</span>
 
-  <span class="lead-duration duration">0.008</span>
+  <span class="lead-duration duration">0.004</span>
 
 </div>
 
@@ -1741,7 +1741,7 @@ classpath:be/digitalCash/transaction.feature:49
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.009</span>
+  <span class="lead-duration duration">0.005</span>
 
 </div>
 
@@ -1812,7 +1812,7 @@ classpath:be/digitalCash/transaction.feature:49
       <div id="msg-18" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1985645531,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: String #(getCreateSignatureForCoinIssuance) is not Base64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1472031180,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: String #(getCreateSignatureForCoinIssuance) is not Base64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1830,11 +1830,11 @@ classpath:be/digitalCash/transaction.feature:112</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-19" class="collapse collapsable-details">
-        <pre>04:07:31.797 classpath:be/digitalCash/transaction.feature:112
+        <pre>04:07:31.934 classpath:be/digitalCash/transaction.feature:112
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1985645531,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: String #(getCreateSignatureForCoinIssuance) is not Base64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1472031180,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: String #(getCreateSignatureForCoinIssuance) is not Base64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -1896,7 +1896,7 @@ classpath:be/digitalCash/transaction.feature:112
 </div>
 
 
-  <span class="lead-duration duration">3.434</span>
+  <span class="lead-duration duration">2.820</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-20">
@@ -1939,7 +1939,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.025</span>
+  <span class="lead-duration duration">2.512</span>
 
 </div>
 
@@ -1993,7 +1993,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.351</span>
+  <span class="lead-duration duration">0.276</span>
 
 </div>
 
@@ -2047,7 +2047,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.055</span>
+  <span class="lead-duration duration">0.031</span>
 
 </div>
 
@@ -2168,7 +2168,7 @@ classpath:be/digitalCash/transaction.feature:112
 </div>
 
 
-  <span class="lead-duration duration">6.037</span>
+  <span class="lead-duration duration">5.811</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-22">
@@ -2211,7 +2211,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">1.018</span>
+  <span class="lead-duration duration">0.796</span>
 
 </div>
 
@@ -2265,7 +2265,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">And</span>
   <span class="name">def invalidTransaction =</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.000</span>
 
 </div>
 
@@ -2320,7 +2320,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(invalidTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.012</span>
 
 </div>
 
@@ -2347,7 +2347,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))</span>
 
-  <span class="lead-duration duration">0.011</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -2439,7 +2439,7 @@ classpath:be/digitalCash/transaction.feature:112
 </div>
 
 
-  <span class="lead-duration duration">3.368</span>
+  <span class="lead-duration duration">2.826</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-25">
@@ -2482,7 +2482,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">3.020</span>
+  <span class="lead-duration duration">2.514</span>
 
 </div>
 
@@ -2536,7 +2536,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
 
-  <span class="lead-duration duration">0.321</span>
+  <span class="lead-duration duration">0.227</span>
 
 </div>
 
@@ -2590,7 +2590,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/constants.feature')</span>
 
-  <span class="lead-duration duration">0.026</span>
+  <span class="lead-duration duration">0.075</span>
 
 </div>
 
@@ -2671,7 +2671,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">*</span>
   <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.009</span>
 
 </div>
 
@@ -2711,7 +2711,7 @@ classpath:be/digitalCash/transaction.feature:112
 </div>
 
 
-  <span class="lead-duration duration">6.161</span>
+  <span class="lead-duration duration">5.887</span>
 
 
   <span data-toggle="collapse" class=" collapsed  collapsable-control" data-target="#element-27">
@@ -2754,7 +2754,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">1.136</span>
+  <span class="lead-duration duration">0.870</span>
 
 </div>
 
@@ -2863,7 +2863,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(invalidTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.021</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -2890,7 +2890,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))</span>
 
-  <span class="lead-duration duration">0.002</span>
+  <span class="lead-duration duration">0.008</span>
 
 </div>
 
