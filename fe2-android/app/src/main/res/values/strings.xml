@@ -268,7 +268,7 @@
   <string name="error_storage_wallet">An error occurred during the storage of the wallet seed</string>
   <string name="qr_code_not_pop_token">Error, this QR code is not a pop token or the key format is invalid</string>
   <string name="qr_code_not_main_pk">Error, this QR code is not a main public key or the key format is invalid</string>
-  <string name="error_event_observed">Error, updating events unsuccessful</string>
+  <string name="error_event_observed">Error, could not update events</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
