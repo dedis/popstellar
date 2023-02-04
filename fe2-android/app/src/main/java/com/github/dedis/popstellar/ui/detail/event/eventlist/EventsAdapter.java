@@ -54,7 +54,6 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     this.viewModel.addDisposable(
         observable
             .map(eventList -> eventList.stream().sorted().collect(Collectors.toList()))
-            // No need to check for error as the events errors already handles them
             .subscribe(this::updateEventSet, err -> Log.e(tag, "ERROR", err)));
   }
 
