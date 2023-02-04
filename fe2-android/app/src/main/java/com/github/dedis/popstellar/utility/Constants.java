@@ -58,5 +58,5 @@ public class Constants {
   public static final int QR_SIDE = 800;
 
   /** Number of milliseconds in a day */
-  public static final long MS_IN_A_DAY = 86_400_000L;
+  public static final long MS_IN_A_DAY = 1000 * 60 * 60 * 24L;
 }
