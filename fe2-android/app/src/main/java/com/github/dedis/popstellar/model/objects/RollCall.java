@@ -56,6 +56,7 @@ public class RollCall extends Event {
     return persistentId;
   }
 
+  @Override
   public String getName() {
     return name;
   }

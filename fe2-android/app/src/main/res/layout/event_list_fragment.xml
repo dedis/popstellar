@@ -4,28 +4,64 @@
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_lao_detail"
-
+    android:background="@color/background_gray"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/lao_container"
+      android:layout_marginHorizontal="@dimen/cv_horizontal_margin"
       android:layout_width="match_parent"
       android:layout_height="match_parent">
 
-      <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/lao_container"
+      <com.google.android.material.card.MaterialCardView
+        android:id="@+id/upcoming_events_card"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        android:clickable="true"
+        android:layout_marginTop="@dimen/event_list_sections_margin"
+        app:cardCornerRadius="@dimen/corner_radius_small">
 
-        <androidx.recyclerview.widget.RecyclerView
-          android:id="@+id/event_list"
+        <androidx.constraintlayout.widget.ConstraintLayout
           android:layout_width="match_parent"
-          android:layout_height="0dp"
-          android:layout_marginTop="@dimen/container_top_margin"
-          app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintTop_toTopOf="parent" />
+          android:layout_height="wrap_content"
+          android:paddingVertical="@dimen/padding_big">
 
-      </androidx.constraintlayout.widget.ConstraintLayout>
+          <ImageView
+            android:layout_width="@dimen/event_layout_arrow_image_side"
+            android:layout_height="@dimen/event_layout_arrow_image_side"
+            android:layout_marginEnd="@dimen/event_layout_arrow_end_margin"
+            android:contentDescription="@string/event_right_arrow"
+            android:src="@drawable/ic_right_arrow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+          <TextView
+            android:textColor="@color/black"
+            android:alpha="0.87"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/event_layout_type_start_margin"
+            android:text="@string/future_header_title"
+            android:textSize="@dimen/upcoming_title_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+      </com.google.android.material.card.MaterialCardView>
+
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/event_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/upcoming_events_card" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
       <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_event"
@@ -109,6 +145,18 @@
         app:layout_constraintBottom_toBottomOf="@id/add_roll_call"
         app:layout_constraintEnd_toStartOf="@id/add_roll_call" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+      android:id="@+id/empty_events_layout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_margin="@dimen/main_horizontal_margin">
+
+      <TextView
+        android:id="@+id/empty_events_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/text_high_emphasis" />
+
+    </LinearLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
