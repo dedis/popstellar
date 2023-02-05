@@ -15,11 +15,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Pl
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.ElectionRepository;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.CastVoteViewPagerAdapter;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
@@ -45,7 +46,9 @@ public class CastVoteFragment extends Fragment {
 
   @Inject ElectionRepository electionRepository;
 
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
+  private ElectionViewModel electionViewModel;
+
   private CastVoteFragmentBinding binding;
 
   private String electionId;
@@ -74,7 +77,9 @@ public class CastVoteFragment extends Fragment {
 
     // Inflate the layout for this fragment
     binding = CastVoteFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    electionViewModel =
+        LaoActivity.obtainElectionViewModel(requireActivity(), viewModel.getLaoId());
 
     // Setting the lao ad election name
     if (setLaoName()) {
@@ -155,7 +160,7 @@ public class CastVoteFragment extends Fragment {
       }
 
       viewModel.addDisposable(
-          viewModel
+          electionViewModel
               .sendVote(electionId, plainVotes)
               .subscribe(
                   () -> {

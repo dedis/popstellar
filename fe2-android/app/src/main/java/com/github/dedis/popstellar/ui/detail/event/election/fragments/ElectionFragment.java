@@ -17,7 +17,9 @@ import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.election.ElectionViewModel;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
@@ -41,7 +43,8 @@ public class ElectionFragment extends Fragment {
 
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
+  private ElectionViewModel electionViewModel;
   private View view;
 
   private Button managementButton;
@@ -84,8 +87,9 @@ public class ElectionFragment extends Fragment {
     actionButton = view.findViewById(R.id.election_action_button);
 
     this.electionId = requireArguments().getString(ELECTION_ID);
-
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    electionViewModel =
+        LaoActivity.obtainElectionViewModel(requireActivity(), viewModel.getLaoId());
 
     managementVisibilityMap = buildManagementVisibilityMap();
 
@@ -111,7 +115,7 @@ public class ElectionFragment extends Fragment {
                       R.string.yes,
                       (dialogInterface, i) ->
                           viewModel.addDisposable(
-                              viewModel
+                              electionViewModel
                                   .openElection(election)
                                   .subscribe(
                                       () -> {},
@@ -132,7 +136,7 @@ public class ElectionFragment extends Fragment {
                       R.string.yes,
                       (dialogInterface, i) ->
                           viewModel.addDisposable(
-                              viewModel
+                              electionViewModel
                                   .endElection(election)
                                   .subscribe(
                                       () -> {},

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.CastVoteBallotOptionLayoutBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 
 import java.util.*;
@@ -23,7 +22,6 @@ public class ElectionSetupViewPagerAdapter
     extends RecyclerView.Adapter<ElectionSetupViewPagerAdapter.ViewHolder> {
 
   public static final String TAG = ElectionSetupViewPagerAdapter.class.getSimpleName();
-  private final LaoDetailViewModel mLaoDetailViewModel;
   private final List<String> votingMethod;
   private final List<List<String>> ballotOptions;
   private final List<Integer> numberBallotOptions;
@@ -34,8 +32,7 @@ public class ElectionSetupViewPagerAdapter
   private final Set<Integer> listOfValidBallots;
   private final MutableLiveData<Boolean> isAnInputValid;
 
-  public ElectionSetupViewPagerAdapter(LaoDetailViewModel mLaoDetailViewModel) {
-    this.mLaoDetailViewModel = mLaoDetailViewModel;
+  public ElectionSetupViewPagerAdapter() {
     votingMethod = new ArrayList<>();
     ballotOptions = new ArrayList<>();
     numberBallotOptions = new ArrayList<>();
@@ -228,7 +225,7 @@ public class ElectionSetupViewPagerAdapter
             }
             // Keeps the list of string updated when the user changes the text
             ballotOptions.get(position).set(ballotIndex, editable.toString());
-            Log.d(TAG, "Postion is " + position + " ballot options are" + ballotOptions.toString());
+            Log.d(TAG, "Postion is " + position + " ballot options are" + ballotOptions);
             boolean areFieldsFilled = numberBallotOptions.get(position) >= 2;
             if (areFieldsFilled) {
               listOfValidBallots.add(position);

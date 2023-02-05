@@ -16,12 +16,13 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion.Question;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
+import com.github.dedis.popstellar.ui.detail.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.ArrayList;
@@ -42,7 +43,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   private EditText electionNameText;
   private Button submitButton;
   private ElectionSetupViewPagerAdapter viewPagerAdapter;
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
+  private ElectionViewModel electionViewModel;
 
   // For election version choice
   private ElectionVersion electionVersion;
@@ -99,7 +101,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     ElectionSetupFragmentBinding binding =
         ElectionSetupFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    electionViewModel =
+        LaoActivity.obtainElectionViewModel(requireActivity(), viewModel.getLaoId());
 
     // Set the view for the date and time
     setDateAndTimeView(binding.getRoot());
@@ -114,7 +118,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     electionNameText.addTextChangedListener(submitTextWatcher);
 
     // Set viewPager adapter
-    viewPagerAdapter = new ElectionSetupViewPagerAdapter(viewModel);
+    viewPagerAdapter = new ElectionSetupViewPagerAdapter();
 
     // Set ViewPager
     ViewPager2 viewPager2 = binding.electionSetupViewPager2;
@@ -241,7 +245,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   filteredQuestions));
 
           viewModel.addDisposable(
-              viewModel
+              electionViewModel
                   .createNewElection(
                       electionVersion,
                       electionName,
