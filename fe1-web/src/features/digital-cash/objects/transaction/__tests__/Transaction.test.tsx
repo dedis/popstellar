@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 
-import { mockKeyPair, mockPublicKey2 } from '__tests__/utils';
+import { mockKeyPair, mockPublicKey2 as serializedMockPublicKey2 } from '__tests__/utils';
 import { Hash, PopToken, PublicKey, Timestamp } from 'core/objects';
 import { COINBASE_HASH, SCRIPT_TYPE } from 'resources/const';
 
@@ -18,6 +18,7 @@ import { TransactionOutput } from '../TransactionOutput';
 
 // region Mock value definitions
 const mockPopToken = PopToken.fromState(mockKeyPair.toState());
+const mockPublicKey2 = new PublicKey(serializedMockPublicKey2);
 
 const validCoinbaseState: TransactionState = {
   version: 1,
@@ -293,7 +294,7 @@ describe('Transaction', () => {
         mockTransactionValue,
       );
       const isValid = coinbaseTransaction.checkTransactionValidity(
-        new PublicKey(mockPublicKey2),
+        mockPublicKey2,
         mockTransactionRecordByHash,
       );
       expect(isValid).toBeFalse();
@@ -308,10 +309,49 @@ describe('Transaction', () => {
         [validCoinbaseState],
       );
       const isValid = transaction.checkTransactionValidity(
-        new PublicKey(mockPublicKey2),
+        mockPublicKey2,
         mockTransactionRecordByHash,
       );
       expect(isValid).toBeTrue();
+    });
+
+    it('should not accept transactions referring to unkown input', () => {
+      const transaction = Transaction.create(
+        mockPopToken,
+        mockKeyPair.publicKey,
+        mockTransactionValue,
+        mockTransactionValue,
+        [validCoinbaseState],
+      );
+      const isValid = transaction.checkTransactionValidity(mockPublicKey2, {});
+      expect(isValid).toBeFalse();
+    });
+
+    it('should not accept transactions referring to unkown input index', () => {
+      const transaction = Transaction.create(
+        mockPopToken,
+        mockKeyPair.publicKey,
+        mockTransactionValue,
+        mockTransactionValue,
+        [validCoinbaseState],
+      );
+      const json = transaction.toJSON();
+
+      const invalidTransactionId = Hash.fromState('gobrqgypCyrZoD3Qz294MOjcR9eO9NUo07VgGPSgTYQ=');
+
+      const invalidTransaction = Transaction.fromJSON(
+        {
+          ...json,
+          inputs: [{ ...json.inputs[0], tx_out_index: 100 }],
+        },
+        invalidTransactionId,
+      );
+
+      const isValid = invalidTransaction.checkTransactionValidity(
+        mockPublicKey2,
+        mockTransactionRecordByHash,
+      );
+      expect(isValid).toBeFalse();
     });
   });
 });

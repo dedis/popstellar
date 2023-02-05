@@ -81,6 +81,7 @@ export class Transaction {
       this.transactionId = this.hashTransaction();
     } else {
       if (obj.transactionId.valueOf() !== this.hashTransaction().valueOf()) {
+        console.error(this.hashTransaction().valueOf(), obj.transactionId.valueOf());
         throw new Error(
           "The computed transaction hash does not correspond to the provided one when creating 'Transaction'",
         );
@@ -286,8 +287,21 @@ export class Transaction {
           return false;
         }
       } else {
-        const originTransactionOutput =
-          transactionStates[input.txOutHash.valueOf()].outputs[input.txOutIndex];
+        const txOut = input.txOutHash.valueOf();
+
+        if (!(txOut in transactionStates)) {
+          console.warn(`Transaction refers to unkown input transaction '${txOut}'`);
+          return false;
+        }
+
+        if (input.txOutIndex >= transactionStates[input.txOutHash.valueOf()].outputs.length) {
+          console.warn(
+            `Transaction refers to unkown output index '${input.txOutIndex}' of transaction '${txOut}'`,
+          );
+          return false;
+        }
+
+        const originTransactionOutput = transactionStates[txOut].outputs[input.txOutIndex];
 
         // The public key hash of the used transaction output must correspond
         // to the public key the transaction is using in this input
