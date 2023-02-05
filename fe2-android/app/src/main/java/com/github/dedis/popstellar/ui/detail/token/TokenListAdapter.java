@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class TokenListAdapter extends RecyclerView.Adapter<TokenListAdapter.Toke
     holder.status.setVisibility(View.GONE);
     holder.materialCardView.setOnClickListener(
         view ->
-            LaoDetailActivity.setCurrentFragment(
+            LaoActivity.setCurrentFragment(
                 activity.getSupportFragmentManager(),
                 R.id.fragment_token,
                 () -> TokenFragment.newInstance(rollCall.getPersistentId())));

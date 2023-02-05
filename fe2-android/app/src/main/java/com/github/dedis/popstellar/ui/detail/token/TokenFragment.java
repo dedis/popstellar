@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.home.LaoCreateFragment;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
@@ -89,8 +90,8 @@ public class TokenFragment extends Fragment {
 
     } catch (UnknownRollCallException | KeyException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.error_retrieve_own_token);
-      LaoDetailActivity.setCurrentFragment(
-          getParentFragmentManager(), R.id.fragment_lao_detail, LaoCreateFragment::new);
+      LaoActivity.setCurrentFragment(
+          getParentFragmentManager(), R.id.fragment_event_list, LaoCreateFragment::new);
       return null;
     }
 

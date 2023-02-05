@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -37,7 +38,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 /** Fragment handling the QR code scanning */
 @AndroidEntryPoint
@@ -225,9 +225,9 @@ public final class QRCodeScanningFragment extends Fragment {
                         .closeRollCall()
                         .subscribe(
                             () ->
-                                setCurrentFragment(
+                                LaoActivity.setCurrentFragment(
                                     getParentFragmentManager(),
-                                    R.id.fragment_lao_detail,
+                                    R.id.fragment_event_list,
                                     EventListFragment::newInstance),
                             error ->
                                 ErrorUtils.logAndShow(

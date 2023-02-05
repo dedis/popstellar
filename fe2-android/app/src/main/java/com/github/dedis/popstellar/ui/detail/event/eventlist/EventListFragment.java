@@ -15,7 +15,6 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.EventListFragmentBinding;
 import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.model.objects.event.*;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.event.*;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
@@ -91,7 +90,7 @@ public class EventListFragment extends Fragment {
     // Add listener to upcoming events card
     binding.upcomingEventsCard.setOnClickListener(
         v ->
-            LaoDetailActivity.setCurrentFragment(
+            LaoActivity.setCurrentFragment(
                 getParentFragmentManager(),
                 R.id.fragment_upcoming_events,
                 UpcomingEventsFragment::newInstance));
@@ -135,13 +134,13 @@ public class EventListFragment extends Fragment {
     switch (type) {
       case ROLL_CALL:
         return v ->
-            LaoDetailActivity.setCurrentFragment(
+            LaoActivity.setCurrentFragment(
                 getParentFragmentManager(),
                 R.id.fragment_create_roll_call_event,
                 RollCallCreationFragment::newInstance);
       case ELECTION:
         return v ->
-            LaoDetailActivity.setCurrentFragment(
+            LaoActivity.setCurrentFragment(
                 getParentFragmentManager(),
                 R.id.fragment_setup_election_event,
                 ElectionSetupFragment::newInstance);

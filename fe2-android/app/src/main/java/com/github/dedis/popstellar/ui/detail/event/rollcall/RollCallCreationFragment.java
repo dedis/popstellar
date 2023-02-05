@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
@@ -144,7 +145,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
               .subscribe(
                   // Open the scanning fragment when everything is done
                   () -> {
-                    setCurrentFragment(
+                    LaoActivity.setCurrentFragment(
                         getParentFragmentManager(),
                         R.id.fragment_qrcode,
                         QRCodeScanningFragment::new);
@@ -159,7 +160,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
               id ->
                   setCurrentFragment(
                       getParentFragmentManager(),
-                      R.id.fragment_lao_detail,
+                      R.id.fragment_event_list,
                       EventListFragment::newInstance),
               error ->
                   ErrorUtils.logAndShow(

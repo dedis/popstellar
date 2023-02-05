@@ -16,9 +16,9 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -30,8 +30,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import io.reactivex.Observable;
-
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private List<Event> events;
@@ -96,7 +94,7 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     eventViewHolder.eventIcon.setImageResource(R.drawable.ic_vote);
     eventViewHolder.eventCard.setOnClickListener(
         view ->
-            LaoDetailActivity.setCurrentFragment(
+            LaoActivity.setCurrentFragment(
                 activity.getSupportFragmentManager(),
                 R.id.fragment_election,
                 () -> ElectionFragment.newInstance(election.getId())));
@@ -108,7 +106,7 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         view -> {
           try {
             PoPToken token = viewModel.getCurrentPopToken(rollCall);
-            setCurrentFragment(
+            LaoActivity.setCurrentFragment(
                 activity.getSupportFragmentManager(),
                 R.id.fragment_roll_call,
                 () ->

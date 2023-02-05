@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -37,7 +38,6 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
 import static com.github.dedis.popstellar.utility.Constants.ROLL_CALL_ID;
 
@@ -102,7 +102,7 @@ public class RollCallFragment extends Fragment {
                       .openRollCall(rollCall.getId())
                       .subscribe(
                           () ->
-                              setCurrentFragment(
+                              LaoActivity.setCurrentFragment(
                                   getParentFragmentManager(),
                                   R.id.fragment_qrcode,
                                   QRCodeScanningFragment::new),
@@ -117,9 +117,9 @@ public class RollCallFragment extends Fragment {
                       .closeRollCall()
                       .subscribe(
                           () ->
-                              setCurrentFragment(
+                              LaoActivity.setCurrentFragment(
                                   getParentFragmentManager(),
-                                  R.id.fragment_lao_detail,
+                                  R.id.fragment_event_list,
                                   EventListFragment::newInstance),
                           error ->
                               ErrorUtils.logAndShow(
@@ -132,7 +132,7 @@ public class RollCallFragment extends Fragment {
 
     binding.rollCallScanningButton.setOnClickListener(
         b ->
-            setCurrentFragment(
+            LaoActivity.setCurrentFragment(
                 getParentFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new));
 
     viewModel.addDisposable(

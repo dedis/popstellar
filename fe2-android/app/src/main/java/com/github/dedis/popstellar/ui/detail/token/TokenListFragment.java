@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.databinding.TokenListFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,7 @@ public class TokenListFragment extends Fragment {
                     binding.validTokenLayout.setVisibility(View.VISIBLE);
                     binding.validTokenCard.setOnClickListener(
                         v ->
-                            LaoDetailActivity.setCurrentFragment(
+                            LaoActivity.setCurrentFragment(
                                 requireActivity().getSupportFragmentManager(),
                                 R.id.fragment_token,
                                 () -> TokenFragment.newInstance(lastRollCall.getPersistentId())));

@@ -10,11 +10,10 @@ import androidx.recyclerview.widget.*;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 
 public class WitnessesFragment extends Fragment {
 
@@ -59,6 +58,6 @@ public class WitnessesFragment extends Fragment {
     FragmentManager manager = getParentFragmentManager();
 
     viewModel.setScanningAction(ScanningAction.ADD_WITNESS);
-    setCurrentFragment(manager, R.id.add_witness_button, QRCodeScanningFragment::new);
+    LaoActivity.setCurrentFragment(manager, R.id.add_witness_button, QRCodeScanningFragment::new);
   }
 }

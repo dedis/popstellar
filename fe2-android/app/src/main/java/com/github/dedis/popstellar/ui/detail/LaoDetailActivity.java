@@ -124,7 +124,7 @@ public class LaoDetailActivity extends LaoActivity {
 
   private void openEventsTab() {
     setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_lao_detail, EventListFragment::newInstance);
+        getSupportFragmentManager(), R.id.fragment_event_list, EventListFragment::newInstance);
   }
 
   private void openTokensTab() {
