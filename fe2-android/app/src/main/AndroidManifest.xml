@@ -28,6 +28,7 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+    <activity android:name=".ui.lao.LaoActivity" />
     <activity
       android:name=".ui.detail.LaoDetailActivity"
       android:windowSoftInputMode="adjustPan" />

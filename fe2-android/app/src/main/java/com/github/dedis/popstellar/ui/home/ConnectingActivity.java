@@ -14,7 +14,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -148,7 +148,7 @@ public class ConnectingActivity extends AppCompatActivity {
             .subscribe(
                 () -> {
                   Log.d(TAG, "subscribing to LAO with id " + lao.getId());
-                  startActivity(LaoDetailActivity.newIntentForLao(this, lao.getId()));
+                  startActivity(LaoActivity.newIntentForLao(this, lao.getId()));
                   finish();
                 },
                 error -> {
