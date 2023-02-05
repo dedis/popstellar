@@ -131,8 +131,8 @@ export class RollCall {
     this.proposedEnd = obj.proposedEnd;
     this.status = obj.status;
 
-    if (this.attendees) {
-      const isAttendeeListSorted = this.attendees.reduce<[boolean, PublicKey]>(
+    if (obj.attendees) {
+      const isAttendeeListSorted = obj.attendees.reduce<[boolean, PublicKey]>(
         ([isSorted, lastValue], currentValue) => [
           isSorted && lastValue < currentValue,
           currentValue,
@@ -140,7 +140,7 @@ export class RollCall {
         [true, new PublicKey('')],
       );
 
-      if (!isAttendeeListSorted) {
+      if (!isAttendeeListSorted[0]) {
         throw new Error(
           'Attendee list is not sorted alphabetically, rejecting due to the risk of de-anonymization',
         );
