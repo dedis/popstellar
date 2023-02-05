@@ -10,9 +10,11 @@ import androidx.lifecycle.*;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -41,7 +43,6 @@ public class LaoViewModel extends AndroidViewModel {
    */
   private final LAORepository laoRepo;
   private final RollCallRepository rollCallRepo;
-  private final ElectionRepository electionRepo;
   private final SchedulerProvider schedulerProvider;
   private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
@@ -53,7 +54,6 @@ public class LaoViewModel extends AndroidViewModel {
       @NonNull Application application,
       LAORepository laoRepository,
       RollCallRepository rollCallRepo,
-      ElectionRepository electionRepo,
       SchedulerProvider schedulerProvider,
       GlobalNetworkManager networkManager,
       KeyManager keyManager,
@@ -62,7 +62,6 @@ public class LaoViewModel extends AndroidViewModel {
     super(application);
     this.laoRepo = laoRepository;
     this.rollCallRepo = rollCallRepo;
-    this.electionRepo = electionRepo;
     this.schedulerProvider = schedulerProvider;
     this.networkManager = networkManager;
     this.keyManager = keyManager;
@@ -92,7 +91,7 @@ public class LaoViewModel extends AndroidViewModel {
   }
 
   public LaoView getLao() throws UnknownLaoException {
-    return null;
+    return laoRepo.getLaoView(laoId);
   }
 
   public LiveData<MainMenuTab> getCurrentTab() {
@@ -135,6 +134,15 @@ public class LaoViewModel extends AndroidViewModel {
     return witnessMessages;
   }
 
+  /**
+   * Returns the public key or null if an error occurred.
+   *
+   * @return the public key
+   */
+  public PublicKey getPublicKey() {
+    return keyManager.getMainPublicKey();
+  }
+
   public void setLaoId(String laoId) {
     this.laoId = laoId;
   }
@@ -173,6 +181,10 @@ public class LaoViewModel extends AndroidViewModel {
 
   public void setWitnessMessages(List<WitnessMessage> messages) {
     this.witnessMessages.setValue(messages);
+  }
+
+  public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
+    return keyManager.getPoPToken(getLao(), rollCall);
   }
 
   protected void updateRole() {

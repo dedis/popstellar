@@ -12,11 +12,10 @@ import androidx.annotation.Nullable;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallCreateFragmentBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
@@ -25,8 +24,6 @@ import java.util.Objects;
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Single;
 
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
-
 /** Fragment that shows up when user wants to create a Roll-Call Event */
 @AndroidEntryPoint
 public final class RollCallCreationFragment extends AbstractEventCreationFragment {
@@ -34,7 +31,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   public static final String TAG = RollCallCreationFragment.class.getSimpleName();
 
   private RollCallCreateFragmentBinding binding;
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
+  private RollCallViewModel rollCallViewModel;
   private EditText rollCallTitleEditText;
   private Button confirmButton;
   private Button openButton;
@@ -78,7 +76,9 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
     binding = RollCallCreateFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    rollCallViewModel =
+        LaoActivity.obtainRollCallViewModel(requireActivity(), viewModel.getLaoId());
 
     setDateAndTimeView(binding.getRoot());
     addStartDateAndTimeListener(confirmTextWatcher);
@@ -130,7 +130,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     String location =
         Objects.requireNonNull(binding.rollCallEventLocationText.getText().toString());
     Single<String> createRollCall =
-        viewModel.createNewRollCall(
+        rollCallViewModel.createNewRollCall(
             title,
             description,
             location,
@@ -141,7 +141,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     if (open) {
       viewModel.addDisposable(
           createRollCall
-              .flatMapCompletable(viewModel::openRollCall)
+              .flatMapCompletable(rollCallViewModel::openRollCall)
               .subscribe(
                   // Open the scanning fragment when everything is done
                   () -> {
@@ -158,7 +158,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
       viewModel.addDisposable(
           createRollCall.subscribe(
               id ->
-                  setCurrentFragment(
+                  LaoActivity.setCurrentFragment(
                       getParentFragmentManager(),
                       R.id.fragment_event_list,
                       EventListFragment::newInstance),

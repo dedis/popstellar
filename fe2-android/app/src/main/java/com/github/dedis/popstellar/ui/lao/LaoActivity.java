@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.lao;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -15,7 +17,11 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoActivityBinding;
 import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.ui.detail.InviteFragment;
-import com.github.dedis.popstellar.ui.detail.LaoDetailFragment;
+import com.github.dedis.popstellar.ui.detail.event.EventsViewModel;
+import com.github.dedis.popstellar.ui.detail.event.consensus.ConsensusViewModel;
+import com.github.dedis.popstellar.ui.detail.event.election.ElectionViewModel;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallViewModel;
 import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
@@ -30,6 +36,9 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class LaoActivity extends AppCompatActivity {
   public static final String TAG = LaoActivity.class.getSimpleName();
 
@@ -47,19 +56,22 @@ public class LaoActivity extends AppCompatActivity {
         Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
     viewModel.setLaoId(laoId);
 
+    viewModel.observeLao(laoId);
+    viewModel.observeRollCalls(laoId);
+
     observeRoles();
     observeToolBar();
     observeDrawer();
     setupDrawerHeader();
-
-    viewModel.observeLao(laoId);
-    viewModel.observeRollCalls(laoId);
   }
 
   private void observeRoles() {
     // Observe any change in the following variable to update the role
     viewModel.isWitness().observe(this, any -> viewModel.updateRole());
     viewModel.isAttendee().observe(this, any -> viewModel.updateRole());
+
+    // Update the user's role in the drawer header when it changes
+    viewModel.getRole().observe(this, this::setupHeaderRole);
   }
 
   private void observeToolBar() {
@@ -184,7 +196,7 @@ public class LaoActivity extends AppCompatActivity {
 
   private void openEventsTab() {
     setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
+        getSupportFragmentManager(), R.id.fragment_event_list, EventListFragment::newInstance);
   }
 
   private void openTokensTab() {
@@ -209,6 +221,36 @@ public class LaoActivity extends AppCompatActivity {
     return new ViewModelProvider(activity).get(LaoViewModel.class);
   }
 
+  public static EventsViewModel obtainEventsEventsViewModel(
+      FragmentActivity activity, String laoId) {
+    EventsViewModel eventsViewModel = new ViewModelProvider(activity).get(EventsViewModel.class);
+    eventsViewModel.setId(laoId);
+    return eventsViewModel;
+  }
+
+  public static ConsensusViewModel obtainConsensusViewModel(
+      FragmentActivity activity, String laoId) {
+
+    ConsensusViewModel consensusViewModel =
+        new ViewModelProvider(activity).get(ConsensusViewModel.class);
+    consensusViewModel.setLaoId(laoId);
+    return consensusViewModel;
+  }
+
+  public static ElectionViewModel obtainElectionViewModel(FragmentActivity activity, String laoId) {
+    ElectionViewModel electionViewModel =
+        new ViewModelProvider(activity).get(ElectionViewModel.class);
+    electionViewModel.setLaoId(laoId);
+    return electionViewModel;
+  }
+
+  public static RollCallViewModel obtainRollCallViewModel(FragmentActivity activity, String laoId) {
+    RollCallViewModel rollCallViewModel =
+        new ViewModelProvider(activity).get(RollCallViewModel.class);
+    rollCallViewModel.setLaoId(laoId);
+    return rollCallViewModel;
+  }
+
   /**
    * Set the current fragment in the container of the activity
    *
@@ -218,6 +260,12 @@ public class LaoActivity extends AppCompatActivity {
   public static void setCurrentFragment(
       FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
     ActivityUtils.setFragmentInContainer(
-        manager, R.id.fragment_container_lao_detail, id, fragmentSupplier);
+        manager, R.id.fragment_container_lao, id, fragmentSupplier);
+  }
+
+  public static Intent newIntentForLao(Context ctx, String laoId) {
+    Intent intent = new Intent(ctx, LaoActivity.class);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    return intent;
   }
 }

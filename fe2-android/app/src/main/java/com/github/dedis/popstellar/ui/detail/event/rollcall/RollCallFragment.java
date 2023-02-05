@@ -19,10 +19,10 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -47,13 +47,15 @@ public class RollCallFragment extends Fragment {
   public static final String TAG = RollCallFragment.class.getSimpleName();
 
   @Inject Gson gson;
+  @Inject RollCallRepository rollCallRepo;
 
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
 
   private RollCallFragmentBinding binding;
 
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
+  private RollCallViewModel rollCallViewModel;
   private RollCall rollCall;
 
   private final EnumMap<EventState, Integer> managementTextMap = buildManagementTextMap();
@@ -80,10 +82,15 @@ public class RollCallFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     binding = RollCallFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    rollCallViewModel =
+        LaoActivity.obtainRollCallViewModel(requireActivity(), viewModel.getLaoId());
+
     try {
-      rollCall = viewModel.getRollCall(requireArguments().getString(ROLL_CALL_ID));
-      viewModel.setCurrentRollCallId(rollCall.getPersistentId());
+      rollCall =
+          rollCallRepo.getRollCallWithPersistentId(
+              viewModel.getLaoId(), requireArguments().getString(ROLL_CALL_ID));
+      rollCallViewModel.setCurrentRollCallId(rollCall.getPersistentId());
     } catch (UnknownRollCallException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
       return null;
@@ -98,7 +105,7 @@ public class RollCallFragment extends Fragment {
             case CLOSED:
             case CREATED:
               viewModel.addDisposable(
-                  viewModel
+                  rollCallViewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
                           () ->
@@ -113,7 +120,7 @@ public class RollCallFragment extends Fragment {
             case OPENED:
               // will add the scan to this fragment in the future
               viewModel.addDisposable(
-                  viewModel
+                  rollCallViewModel
                       .closeRollCall()
                       .subscribe(
                           () ->
@@ -136,7 +143,7 @@ public class RollCallFragment extends Fragment {
                 getParentFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new));
 
     viewModel.addDisposable(
-        viewModel
+        rollCallViewModel
             .getRollCallObservable(rollCall.getPersistentId())
             .subscribe(
                 rc -> {
@@ -159,7 +166,9 @@ public class RollCallFragment extends Fragment {
     viewModel.setPageTitle(R.string.roll_call_title);
     viewModel.setIsTab(false);
     try {
-      rollCall = viewModel.getRollCall(requireArguments().getString(ROLL_CALL_ID));
+      rollCall =
+          rollCallRepo.getRollCallWithPersistentId(
+              viewModel.getLaoId(), requireArguments().getString(ROLL_CALL_ID));
     } catch (UnknownRollCallException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
     }
