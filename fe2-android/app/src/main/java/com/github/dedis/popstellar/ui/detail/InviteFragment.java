@@ -13,6 +13,8 @@ import com.github.dedis.popstellar.databinding.InviteFragmentBinding;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.gson.Gson;
@@ -33,7 +35,7 @@ public class InviteFragment extends Fragment {
 
   private static final int QR_SIDE = 800;
 
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
 
   public static InviteFragment newInstance() {
     return new InviteFragment();
@@ -46,7 +48,7 @@ public class InviteFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     InviteFragmentBinding binding = InviteFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
 
     binding.laoPropertiesIdentifierText.setText(viewModel.getPublicKey().getEncoded());
     binding.laoPropertiesServerText.setText(networkManager.getCurrentUrl());
