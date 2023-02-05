@@ -17,9 +17,9 @@ import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -35,13 +35,13 @@ import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrent
 
 public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private List<Event> events;
-  private final LaoDetailViewModel viewModel;
+  private final LaoViewModel viewModel;
   private final FragmentActivity activity;
   private final String tag;
 
   protected EventsAdapter(
       Observable<Set<Event>> observable,
-      LaoDetailViewModel viewModel,
+      LaoViewModel viewModel,
       FragmentActivity activity,
       String tag) {
     this.viewModel = viewModel;
@@ -70,7 +70,7 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     this.events = new ArrayList<>(events);
   }
 
-  public LaoDetailViewModel getViewModel() {
+  public LaoViewModel getViewModel() {
     return viewModel;
   }
 

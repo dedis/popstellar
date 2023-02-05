@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
 import java.util.List;
 import java.util.Set;
@@ -23,7 +23,7 @@ public class UpcomingEventsAdapter extends EventsAdapter {
 
   public UpcomingEventsAdapter(
       Observable<Set<Event>> observable,
-      LaoDetailViewModel viewModel,
+      LaoViewModel viewModel,
       FragmentActivity activity,
       String tag) {
     super(observable, viewModel, activity, tag);

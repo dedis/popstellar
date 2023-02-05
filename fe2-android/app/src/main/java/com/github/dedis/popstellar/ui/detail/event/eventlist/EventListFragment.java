@@ -16,11 +16,11 @@ import com.github.dedis.popstellar.databinding.EventListFragmentBinding;
 import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
-import com.github.dedis.popstellar.ui.detail.event.UpcomingEventsFragment;
+import com.github.dedis.popstellar.ui.detail.event.*;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -40,7 +40,8 @@ public class EventListFragment extends Fragment {
   @Inject Gson gson;
 
   private EventListFragmentBinding binding;
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
+  private EventsViewModel eventsViewModel;
   private boolean isRotated = false;
 
   public static EventListFragment newInstance() {
@@ -55,7 +56,8 @@ public class EventListFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     binding = EventListFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    eventsViewModel = LaoActivity.obtainEventsEventsViewModel(requireActivity());
     binding.setLifecycleOwner(requireActivity());
 
     FloatingActionButton addButton = binding.addEvent;
@@ -75,7 +77,7 @@ public class EventListFragment extends Fragment {
     // Observing events so that we know when to display the upcoming events card and displaying the
     // Empty events text
     viewModel.addDisposable(
-        viewModel
+        eventsViewModel
             .getEvents()
             .subscribe(
                 events -> {
@@ -164,7 +166,7 @@ public class EventListFragment extends Fragment {
     RecyclerView eventList = binding.eventList;
 
     EventListAdapter eventListAdapter =
-        new EventListAdapter(viewModel, viewModel.getEvents(), requireActivity());
+        new EventListAdapter(viewModel, eventsViewModel.getEvents(), requireActivity());
     Log.d(TAG, "created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);

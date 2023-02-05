@@ -1,23 +1,15 @@
-package com.github.dedis.popstellar.ui.detail;
-
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.fragmentToOpenExtra;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.laoDetailValue;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.laoIdExtra;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.testutils.BundleBuilder;
-import com.github.dedis.popstellar.testutils.IntentUtils;
-import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListAdapter;
+import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,16 +21,16 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoTestRule;
 
 import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import dagger.hilt.android.testing.BindValue;
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
+import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+
+import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -153,8 +145,8 @@ public class EventListAdapterTest {
         .getScenario()
         .onActivity(
             activity -> {
-              LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(activity);
-              ref.set(new EventListAdapter(viewModel, events, activity));
+              LaoViewModel eventsViewModel = LaoActivity.obtainViewModel(activity);
+              ref.set(new EventListAdapter(eventsViewModel, events, activity));
             });
 
     return ref.get();

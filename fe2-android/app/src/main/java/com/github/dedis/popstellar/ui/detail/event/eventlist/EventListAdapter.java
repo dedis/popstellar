@@ -1,8 +1,13 @@
 package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
+import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
+
 import android.annotation.SuppressLint;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,15 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventCategory;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
-
-import java.util.*;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
 import io.reactivex.Observable;
 
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
-import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class EventListAdapter extends EventsAdapter {
 
@@ -34,7 +40,7 @@ public class EventListAdapter extends EventsAdapter {
   public static final String TAG = EventListAdapter.class.getSimpleName();
 
   public EventListAdapter(
-      LaoDetailViewModel viewModel, Observable<Set<Event>> events, FragmentActivity activity) {
+      LaoViewModel viewModel, Observable<Set<Event>> events, FragmentActivity activity) {
     super(events, viewModel, activity, TAG);
     this.eventsMap = new EnumMap<>(EventCategory.class);
     this.eventsMap.put(PAST, new ArrayList<>());

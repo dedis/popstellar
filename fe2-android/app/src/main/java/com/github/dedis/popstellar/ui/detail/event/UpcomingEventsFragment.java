@@ -10,14 +10,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.UpcomingEventsFragmentBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.UpcomingEventsAdapter;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
 public class UpcomingEventsFragment extends Fragment {
 
   private static final String TAG = UpcomingEventsFragment.class.getSimpleName();
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
+  private EventsViewModel eventsViewModel;
 
   public static UpcomingEventsFragment newInstance() {
     return new UpcomingEventsFragment();
@@ -32,11 +33,12 @@ public class UpcomingEventsFragment extends Fragment {
 
     UpcomingEventsFragmentBinding binding =
         UpcomingEventsFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    EventsViewModel eventsViewModel = LaoActivity.obtainEventsEventsViewModel(requireActivity());
 
     binding.upcomingEventsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     binding.upcomingEventsRecyclerView.setAdapter(
-        new UpcomingEventsAdapter(viewModel.getEvents(), viewModel, requireActivity(), TAG));
+        new UpcomingEventsAdapter(eventsViewModel.getEvents(), viewModel, requireActivity(), TAG));
 
     return binding.getRoot();
   }
