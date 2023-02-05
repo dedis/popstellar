@@ -19,9 +19,13 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 
+@HiltViewModel
 public class ElectionViewModel extends AndroidViewModel {
   public static final String TAG = ElectionViewModel.class.getSimpleName();
 
@@ -33,6 +37,7 @@ public class ElectionViewModel extends AndroidViewModel {
   private final KeyManager keyManager;
   private final RollCallRepository rollCallRepo;
 
+  @Inject
   public ElectionViewModel(
       @NonNull Application application,
       LAORepository laoRepo,

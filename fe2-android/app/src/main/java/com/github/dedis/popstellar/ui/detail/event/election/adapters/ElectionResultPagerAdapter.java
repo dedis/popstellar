@@ -12,8 +12,8 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.repository.ElectionRepository;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
 import java.util.*;
@@ -33,7 +33,7 @@ public class ElectionResultPagerAdapter
 
   @SuppressLint("NotifyDataSetChanged")
   public ElectionResultPagerAdapter(
-      LaoDetailViewModel viewModel, ElectionRepository electionRepository, String electionId) {
+      LaoViewModel viewModel, ElectionRepository electionRepository, String electionId) {
     try {
       viewModel.addDisposable(
           electionRepository

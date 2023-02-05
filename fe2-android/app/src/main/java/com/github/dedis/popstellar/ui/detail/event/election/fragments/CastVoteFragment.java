@@ -31,7 +31,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 import static com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow;
 
 /**
@@ -164,9 +163,9 @@ public class CastVoteFragment extends Fragment {
               .sendVote(electionId, plainVotes)
               .subscribe(
                   () -> {
-                    setCurrentFragment(
+                    LaoActivity.setCurrentFragment(
                         getParentFragmentManager(),
-                        R.id.fragment_lao_detail,
+                        R.id.fragment_event_list,
                         EventListFragment::newInstance);
                     // Toast ? + send back to election screen or details screen ?
                     Toast.makeText(requireContext(), "vote successfully sent !", Toast.LENGTH_LONG)

@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
-
 @AndroidEntryPoint
 public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
@@ -255,9 +253,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                       filteredQuestions)
                   .subscribe(
                       () ->
-                          setCurrentFragment(
+                          LaoActivity.setCurrentFragment(
                               getParentFragmentManager(),
-                              R.id.fragment_lao_detail,
+                              R.id.fragment_event_list,
                               EventListFragment::newInstance),
                       error ->
                           ErrorUtils.logAndShow(

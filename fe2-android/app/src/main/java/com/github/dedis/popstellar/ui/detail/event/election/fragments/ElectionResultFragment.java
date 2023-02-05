@@ -12,9 +12,9 @@ import com.github.dedis.popstellar.databinding.ElectionResultFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.ElectionRepository;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionResultPagerAdapter;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.*;
 
 import javax.inject.Inject;
@@ -29,6 +29,7 @@ public class ElectionResultFragment extends Fragment {
   private static final String TAG = ElectionResultFragment.class.getSimpleName();
 
   private static final String ELECTION_ID = "election_id";
+  private LaoViewModel viewModel;
 
   @Inject ElectionRepository electionRepository;
 
@@ -52,8 +53,7 @@ public class ElectionResultFragment extends Fragment {
     // Inflate the layout for this fragment
     ElectionResultFragmentBinding binding =
         ElectionResultFragmentBinding.inflate(inflater, container, false);
-    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
     String electionId = requireArguments().getString(ELECTION_ID);
     try {
       LaoView laoView = viewModel.getLao();
@@ -87,7 +87,6 @@ public class ElectionResultFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     viewModel.setPageTitle(R.string.election_result_title);
     viewModel.setIsTab(false);
   }

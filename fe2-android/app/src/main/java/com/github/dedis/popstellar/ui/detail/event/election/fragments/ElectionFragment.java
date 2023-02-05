@@ -16,7 +16,6 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.repository.ElectionRepository;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
@@ -169,13 +168,13 @@ public class ElectionFragment extends Fragment {
           EventState state = election.getState();
           switch (state) {
             case OPENED:
-              LaoDetailActivity.setCurrentFragment(
+              LaoActivity.setCurrentFragment(
                   getParentFragmentManager(),
                   R.id.fragment_cast_vote,
                   () -> CastVoteFragment.newInstance(electionId));
               break;
             case RESULTS_READY:
-              LaoDetailActivity.setCurrentFragment(
+              LaoActivity.setCurrentFragment(
                   getParentFragmentManager(),
                   R.id.fragment_election_result,
                   () -> ElectionResultFragment.newInstance(electionId));
