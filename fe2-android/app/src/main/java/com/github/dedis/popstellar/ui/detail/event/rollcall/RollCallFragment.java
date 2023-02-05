@@ -19,7 +19,9 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
-import com.github.dedis.popstellar.ui.detail.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -118,7 +120,7 @@ public class RollCallFragment extends Fragment {
                               setCurrentFragment(
                                   getParentFragmentManager(),
                                   R.id.fragment_lao_detail,
-                                  LaoDetailFragment::newInstance),
+                                  EventListFragment::newInstance),
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_close_rollcall)));

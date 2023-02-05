@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailActivityBinding;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
@@ -123,7 +124,7 @@ public class LaoDetailActivity extends LaoActivity {
 
   private void openEventsTab() {
     setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
+        getSupportFragmentManager(), R.id.fragment_lao_detail, EventListFragment::newInstance);
   }
 
   private void openTokensTab() {
