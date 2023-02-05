@@ -1,6 +1,7 @@
 import {
   Hash,
   HashState,
+  ProtocolError,
   PublicKey,
   PublicKeyState,
   Timestamp,
@@ -28,9 +29,34 @@ export class RegisteredVote {
   public readonly createdAt: Timestamp;
 
   constructor(registeredVote: OmitMethods<RegisteredVote>) {
+    if (!registeredVote) {
+      throw new Error(
+        'Error encountered while creating a RegisteredVote object: undefined/null parameters',
+      );
+    }
+
+    if (!registeredVote.messageId) {
+      throw new ProtocolError(
+        "Undefined 'messageId' parameter encountered during 'RegisteredVote'",
+      );
+    }
     this.messageId = registeredVote.messageId;
+
+    if (!registeredVote.sender) {
+      throw new ProtocolError("Undefined 'sender' parameter encountered during 'RegisteredVote'");
+    }
     this.sender = registeredVote.sender;
+
+    if (!registeredVote.votes) {
+      throw new ProtocolError("Undefined 'votes' parameter encountered during 'RegisteredVote'");
+    }
     this.votes = registeredVote.votes;
+
+    if (!registeredVote.createdAt) {
+      throw new ProtocolError(
+        "Undefined 'createdAt' parameter encountered during 'RegisteredVote'",
+      );
+    }
     this.createdAt = registeredVote.createdAt;
   }
 
