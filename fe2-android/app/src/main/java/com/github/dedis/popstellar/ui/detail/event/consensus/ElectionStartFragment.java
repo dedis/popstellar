@@ -1,12 +1,8 @@
 package com.github.dedis.popstellar.ui.detail.event.consensus;
 
-import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
-
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.GridView;
 
 import androidx.annotation.NonNull;
@@ -14,31 +10,26 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionStartFragmentBinding;
-import com.github.dedis.popstellar.model.objects.ConsensusNode;
-import com.github.dedis.popstellar.model.objects.ElectInstance;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
-import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.ElectionRepository;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownElectionException;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.error.*;
+
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.*;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-
-import javax.inject.Inject;
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link ElectionStartFragment#newInstance} factory
@@ -59,6 +50,9 @@ public class ElectionStartFragment extends Fragment {
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   private ConsensusNode ownNode;
+
+  private LaoViewModel viewModel;
+  private ConsensusViewModel consensusViewModel;
 
   @Inject ElectionRepository electionRepo;
   private ElectionStartFragmentBinding binding;
@@ -87,12 +81,13 @@ public class ElectionStartFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     binding = ElectionStartFragmentBinding.inflate(inflater, container, false);
 
-    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    consensusViewModel =
+        LaoActivity.obtainConsensusViewModel(requireActivity(), viewModel.getLaoId());
     String electionId = requireArguments().getString(ELECTION_ID);
 
     try {
-      Observable<List<ConsensusNode>> nodes = viewModel.getNodes().observeOn(mainThread());
+      Observable<List<ConsensusNode>> nodes = consensusViewModel.getNodes().observeOn(mainThread());
       Observable<Election> election =
           electionRepo.getElectionObservable(viewModel.getLaoId(), electionId);
 
@@ -107,7 +102,7 @@ public class ElectionStartFragment extends Fragment {
       return null;
     }
 
-    setupButtonListeners(viewModel, electionId);
+    setupButtonListeners(electionId);
 
     try {
       LaoView laoView = viewModel.getLao();
@@ -122,7 +117,9 @@ public class ElectionStartFragment extends Fragment {
 
       String instanceId =
           ElectInstance.generateConsensusId(CONSENSUS_TYPE, electionId, CONSENSUS_PROPERTY);
-      adapter = new NodesAcceptorAdapter(ownNode, instanceId, getViewLifecycleOwner(), viewModel);
+      adapter =
+          new NodesAcceptorAdapter(
+              ownNode, instanceId, getViewLifecycleOwner(), viewModel, consensusViewModel);
       GridView gridView = binding.nodesGrid;
       gridView.setAdapter(adapter);
     } catch (UnknownLaoException e) {
@@ -183,11 +180,11 @@ public class ElectionStartFragment extends Fragment {
     return Instant.now().getEpochSecond() >= election.getStartTimestamp();
   }
 
-  private void setupButtonListeners(LaoDetailViewModel mLaoDetailViewModel, String electionId) {
+  private void setupButtonListeners(String electionId) {
     binding.electionStart.setOnClickListener(
         clicked ->
-            mLaoDetailViewModel.addDisposable(
-                mLaoDetailViewModel
+            viewModel.addDisposable(
+                consensusViewModel
                     .sendConsensusElect(
                         Instant.now().getEpochSecond(),
                         electionId,

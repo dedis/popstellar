@@ -11,7 +11,7 @@ import com.github.dedis.popstellar.databinding.ConsensusNodeLayoutBinding;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.ElectInstance.State;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.*;
@@ -22,17 +22,20 @@ public class NodesAcceptorAdapter extends BaseAdapter {
   private List<ConsensusNode> nodes = new ArrayList<>();
   private final ConsensusNode ownNode;
   private final String instanceId;
-  private final LaoDetailViewModel laoDetailViewModel;
+  private final LaoViewModel viewModel;
+  private final ConsensusViewModel consensusViewModel;
   private final LifecycleOwner lifecycleOwner;
 
   public NodesAcceptorAdapter(
       ConsensusNode ownNode,
       String instanceId,
       LifecycleOwner lifecycleOwner,
-      LaoDetailViewModel laoDetailViewModel) {
+      LaoViewModel viewModel,
+      ConsensusViewModel consensusViewModel) {
     this.ownNode = ownNode;
     this.instanceId = instanceId;
-    this.laoDetailViewModel = laoDetailViewModel;
+    this.viewModel = viewModel;
+    this.consensusViewModel = consensusViewModel;
     this.lifecycleOwner = lifecycleOwner;
   }
 
@@ -101,8 +104,8 @@ public class NodesAcceptorAdapter extends BaseAdapter {
         electInstance ->
             binding.nodeButton.setOnClickListener(
                 clicked ->
-                    laoDetailViewModel.addDisposable(
-                        laoDetailViewModel
+                    viewModel.addDisposable(
+                        consensusViewModel
                             .sendConsensusElectAccept(electInstance, true)
                             .subscribe(
                                 () -> {},
