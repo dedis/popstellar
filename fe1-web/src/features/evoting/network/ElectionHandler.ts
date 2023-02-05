@@ -353,18 +353,13 @@ export const handleElectionResultMessage =
       return false;
     }
 
-    try {
-      election.questionResult = electionResultMessage.questions.map(
-        (q) =>
-          new QuestionResult({
-            id: new Hash(q.id),
-            result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
-          }),
-      );
-    } catch (e: any) {
-      console.warn(makeErr(e?.toString()));
-      return false;
-    }
+    election.questionResult = electionResultMessage.questions.map(
+      (q) =>
+        new QuestionResult({
+          id: new Hash(q.id),
+          result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+        }),
+    );
 
     election.electionStatus = ElectionStatus.RESULT;
     updateElection(election);
