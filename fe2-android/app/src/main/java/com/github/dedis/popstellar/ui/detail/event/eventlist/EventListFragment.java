@@ -57,7 +57,8 @@ public class EventListFragment extends Fragment {
     binding = EventListFragmentBinding.inflate(inflater, container, false);
 
     viewModel = LaoActivity.obtainViewModel(requireActivity());
-    eventsViewModel = LaoActivity.obtainEventsEventsViewModel(requireActivity());
+    eventsViewModel =
+        LaoActivity.obtainEventsEventsViewModel(requireActivity(), viewModel.getLaoId());
     binding.setLifecycleOwner(requireActivity());
 
     FloatingActionButton addButton = binding.addEvent;

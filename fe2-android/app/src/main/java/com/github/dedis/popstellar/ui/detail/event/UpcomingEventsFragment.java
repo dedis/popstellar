@@ -34,7 +34,8 @@ public class UpcomingEventsFragment extends Fragment {
     UpcomingEventsFragmentBinding binding =
         UpcomingEventsFragmentBinding.inflate(inflater, container, false);
     viewModel = LaoActivity.obtainViewModel(requireActivity());
-    EventsViewModel eventsViewModel = LaoActivity.obtainEventsEventsViewModel(requireActivity());
+    EventsViewModel eventsViewModel =
+        LaoActivity.obtainEventsEventsViewModel(requireActivity(), viewModel.getLaoId());
 
     binding.upcomingEventsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     binding.upcomingEventsRecyclerView.setAdapter(
