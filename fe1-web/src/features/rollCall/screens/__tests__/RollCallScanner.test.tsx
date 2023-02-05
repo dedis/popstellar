@@ -226,7 +226,7 @@ describe('RollCallOpened', () => {
         ...mockAttendeePopTokens,
         mockPublicKey2.valueOf(),
         mockPublicKey3.valueOf(),
-      ],
+      ].sort(),
     });
   });
 });

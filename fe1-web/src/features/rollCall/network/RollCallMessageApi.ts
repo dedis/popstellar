@@ -121,7 +121,8 @@ export function requestCloseRollCall(
       update_id: CloseRollCall.computeCloseRollCallId(laoId, rollCallId, time),
       closes: rollCallId,
       closed_at: time,
-      attendees: attendees,
+      // sort the list of tokens to make de-anonymization harder
+      attendees: attendees.sort(),
     },
     laoId,
   );

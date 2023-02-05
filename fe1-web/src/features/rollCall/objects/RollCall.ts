@@ -112,6 +112,22 @@ export class RollCall {
     this.proposedStart = obj.proposedStart;
     this.proposedEnd = obj.proposedEnd;
     this.status = obj.status;
+
+    if (this.attendees) {
+      const isAttendeeListSorted = this.attendees.reduce<[boolean, PublicKey]>(
+        ([isSorted, lastValue], currentValue) => [
+          isSorted && lastValue < currentValue,
+          currentValue,
+        ],
+        [true, new PublicKey('')],
+      );
+
+      if (!isAttendeeListSorted) {
+        throw new Error(
+          'Attendee list is not sorted alphabetically, rejecting due to the risk of de-anonymization',
+        );
+      }
+    }
     this.attendees = obj.attendees;
 
     this.openedAt = obj.openedAt;
