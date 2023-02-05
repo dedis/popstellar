@@ -27,7 +27,7 @@ public class LaoDetailActivityPageObject {
 
   @IdRes
   public static int laoDetailFragmentId() {
-    return R.id.fragment_lao_detail;
+    return R.id.fragment_event_list;
   }
 
   @IdRes
