@@ -279,54 +279,60 @@ export class Transaction {
 
     let totalInputAmount = 0;
 
-    const inputsAreValid = this.inputs.every((input) => {
-      // The public key of this input must have signed the concatenated data
+    // The public key of this input must have signed the concatenated data
+    const inputSignaturesAreValid = this.inputs.every((input) => {
       if (!input.script.signature.verify(input.script.publicKey, encodedData)) {
         console.warn('The signature for this input is not valid');
         return false;
       }
 
-      if (isCoinbase) {
-        // If the transaction is a coinbase transaction, the signer must be the organizer
-        if (input.script.publicKey.valueOf() !== organizerPublicKey.valueOf()) {
-          console.warn('The coinbase transaction input signer is not the organizer');
-          return false;
-        }
-        return true;
-      }
-
-      // if it is not a coinbase transaction we need to verify the inputs
-      const txOut = input.txOutHash.valueOf();
-
-      if (!(txOut in transactionStates)) {
-        console.warn(`Transaction refers to unkown input transaction '${txOut}'`);
-        return false;
-      }
-
-      if (input.txOutIndex >= transactionStates[input.txOutHash.valueOf()].outputs.length) {
-        console.warn(
-          `Transaction refers to unkown output index '${input.txOutIndex}' of transaction '${txOut}'`,
-        );
-        return false;
-      }
-
-      const originTransactionOutput = transactionStates[txOut].outputs[input.txOutIndex];
-
-      // The public key hash of the used transaction output must correspond
-      // to the public key the transaction is using in this input
-      if (
-        Hash.fromPublicKey(input.script.publicKey).valueOf() !==
-        originTransactionOutput.script.publicKeyHash.valueOf()
-      ) {
-        console.warn(
-          "The transaction output public key hash does not correspond to the spender's public key hash",
-        );
-        return false;
-      }
-      totalInputAmount += originTransactionOutput.value;
-
       return true;
     });
+
+    const inputsAreValid =
+      inputSignaturesAreValid &&
+      this.inputs.every((input) => {
+        if (isCoinbase) {
+          // If the transaction is a coinbase transaction, the signer must be the organizer
+          if (input.script.publicKey.valueOf() !== organizerPublicKey.valueOf()) {
+            console.warn('The coinbase transaction input signer is not the organizer');
+            return false;
+          }
+          return true;
+        }
+
+        // if it is not a coinbase transaction we need to verify the inputs
+        const txOut = input.txOutHash.valueOf();
+
+        if (!(txOut in transactionStates)) {
+          console.warn(`Transaction refers to unkown input transaction '${txOut}'`);
+          return false;
+        }
+
+        if (input.txOutIndex >= transactionStates[txOut].outputs.length) {
+          console.warn(
+            `Transaction refers to unkown output index '${input.txOutIndex}' of transaction '${txOut}'`,
+          );
+          return false;
+        }
+
+        const originTransactionOutput = transactionStates[txOut].outputs[input.txOutIndex];
+
+        // The public key hash of the used transaction output must correspond
+        // to the public key the transaction is using in this input
+        if (
+          Hash.fromPublicKey(input.script.publicKey).valueOf() !==
+          originTransactionOutput.script.publicKeyHash.valueOf()
+        ) {
+          console.warn(
+            "The transaction output public key hash does not correspond to the spender's public key hash",
+          );
+          return false;
+        }
+        totalInputAmount += originTransactionOutput.value;
+
+        return true;
+      });
 
     if (!inputsAreValid) {
       console.warn('The transaction inputs are not valid');
