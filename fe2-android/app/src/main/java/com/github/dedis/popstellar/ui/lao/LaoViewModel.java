@@ -17,6 +17,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.*;
@@ -37,6 +38,8 @@ import io.reactivex.disposables.Disposable;
 @HiltViewModel
 public class LaoViewModel extends AndroidViewModel {
   public static final String TAG = LaoViewModel.class.getSimpleName();
+
+  private ScanningAction scanningAction;
 
   /*
    * Dependencies for this class
@@ -80,8 +83,6 @@ public class LaoViewModel extends AndroidViewModel {
   private final MutableLiveData<Boolean> isTab = new MutableLiveData<>(Boolean.TRUE);
   private final MutableLiveData<Integer> pageTitle = new MutableLiveData<>(0);
   private final MutableLiveData<List<PublicKey>> witnesses =
-      new MutableLiveData<>(new ArrayList<>());
-  private final MutableLiveData<List<WitnessMessage>> witnessMessages =
       new MutableLiveData<>(new ArrayList<>());
 
   private final CompositeDisposable disposables = new CompositeDisposable();
@@ -130,9 +131,6 @@ public class LaoViewModel extends AndroidViewModel {
     return witnesses;
   }
 
-  public LiveData<List<WitnessMessage>> getWitnessMessages() {
-    return witnessMessages;
-  }
 
   /**
    * Returns the public key or null if an error occurred.
@@ -179,12 +177,12 @@ public class LaoViewModel extends AndroidViewModel {
     this.witnesses.setValue(witnesses);
   }
 
-  public void setWitnessMessages(List<WitnessMessage> messages) {
-    this.witnessMessages.setValue(messages);
-  }
-
   public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
     return keyManager.getPoPToken(getLao(), rollCall);
+  }
+
+  public void setScanningAction(ScanningAction scanningAction) {
+    this.scanningAction = scanningAction;
   }
 
   protected void updateRole() {
@@ -281,5 +279,20 @@ public class LaoViewModel extends AndroidViewModel {
       Log.e(TAG, "failed to retrieve public key from wallet", e);
       return false;
     }
+  }
+
+  // TODO refactor this away
+  // Witness messages should have a separate repository
+  // Then UI should listen to incoming witness messages via RX java observables
+  // A good example of this is what is done with events
+  private final MutableLiveData<List<WitnessMessage>> witnessMessages =
+      new MutableLiveData<>(new ArrayList<>());
+
+  public LiveData<List<WitnessMessage>> getWitnessMessages() {
+    return witnessMessages;
+  }
+
+  public void setWitnessMessages(List<WitnessMessage> messages) {
+    this.witnessMessages.setValue(messages);
   }
 }

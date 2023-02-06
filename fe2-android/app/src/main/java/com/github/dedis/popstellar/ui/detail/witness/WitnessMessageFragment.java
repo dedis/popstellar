@@ -10,8 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.WitnessMessageFragmentBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
 import java.util.ArrayList;
 
@@ -21,8 +21,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class WitnessMessageFragment extends Fragment {
 
   public static final String TAG = WitnessMessageFragment.class.getSimpleName();
-  private WitnessMessageFragmentBinding mWitnessMessageFragBinding;
-  private LaoDetailViewModel mLaoDetailViewModel;
+  private WitnessMessageFragmentBinding binding;
+  private LaoViewModel laoViewModel;
   private WitnessMessageListViewAdapter mWitnessMessageListViewAdapter;
 
   public static WitnessMessageFragment newInstance() {
@@ -35,13 +35,12 @@ public class WitnessMessageFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mWitnessMessageFragBinding = WitnessMessageFragmentBinding.inflate(inflater, container, false);
+    binding = WitnessMessageFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    mWitnessMessageFragBinding.setViewmodel(mLaoDetailViewModel);
-    mWitnessMessageFragBinding.setLifecycleOwner(getActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
+    binding.setLifecycleOwner(getActivity());
 
-    return mWitnessMessageFragBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
@@ -52,16 +51,16 @@ public class WitnessMessageFragment extends Fragment {
   }
 
   private void setupListAdapter() {
-    ListView listView = mWitnessMessageFragBinding.witnessMessageList;
+    ListView listView = binding.witnessMessageList;
 
     mWitnessMessageListViewAdapter =
-        new WitnessMessageListViewAdapter(new ArrayList<>(), mLaoDetailViewModel, getActivity());
+        new WitnessMessageListViewAdapter(new ArrayList<>(), getActivity());
 
     listView.setAdapter(mWitnessMessageListViewAdapter);
   }
 
   private void setupListUpdates() {
-    mLaoDetailViewModel
+    laoViewModel
         .getWitnessMessages()
         .observe(
             requireActivity(),

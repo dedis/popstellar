@@ -8,16 +8,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class WitnessesFragment extends Fragment {
 
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
 
   public WitnessesFragment() {
     // Required empty public constructor
@@ -32,7 +31,7 @@ public class WitnessesFragment extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.witnesses_fragment, container, false);
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
 
     FloatingActionButton fab = view.findViewById(R.id.add_witness_button);
     fab.setOnClickListener(v -> openAddWitness());

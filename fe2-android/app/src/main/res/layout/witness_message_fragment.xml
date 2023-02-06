@@ -2,15 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <data>
-
-    <import type="android.view.View" />
-
-    <variable
-      name="viewmodel"
-      type="com.github.dedis.popstellar.ui.detail.LaoDetailViewModel" />
-  </data>
-
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_witness_message"
     android:layout_width="match_parent"

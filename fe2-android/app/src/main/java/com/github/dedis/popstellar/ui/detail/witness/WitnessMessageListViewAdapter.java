@@ -11,7 +11,8 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.List;
@@ -20,15 +21,16 @@ import java.util.List;
 public class WitnessMessageListViewAdapter extends BaseAdapter {
 
   private static final String TAG = WitnessMessageListViewAdapter.class.getSimpleName();
-  private final LaoDetailViewModel viewModel;
+  private final LaoViewModel viewModel;
+  private final WitnessingViewModel witnessingViewModel;
 
   private List<WitnessMessage> messages;
 
   private final FragmentActivity activity;
 
-  public WitnessMessageListViewAdapter(
-      List<WitnessMessage> messages, LaoDetailViewModel viewModel, FragmentActivity activity) {
-    this.viewModel = viewModel;
+  public WitnessMessageListViewAdapter(List<WitnessMessage> messages, FragmentActivity activity) {
+    viewModel = LaoActivity.obtainViewModel(activity);
+    witnessingViewModel = LaoActivity.obtainWitnessingViewModel(activity, viewModel.getLaoId());
     this.activity = activity;
     setList(messages);
   }
@@ -91,7 +93,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                 "Confirm",
                 (dialog, which) ->
                     viewModel.addDisposable(
-                        viewModel
+                        witnessingViewModel
                             .signMessage(messages.get(position))
                             .subscribe(
                                 () -> {},
@@ -109,7 +111,6 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     binding.signMessageButton.setOnClickListener(listener);
 
     binding.setMessage(messages.get(position));
-    binding.setViewmodel(viewModel);
     binding.setLifecycleOwner(activity);
 
     binding.executePendingBindings();

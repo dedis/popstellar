@@ -24,6 +24,7 @@ import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallViewModel;
 import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
+import com.github.dedis.popstellar.ui.detail.witness.WitnessingViewModel;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
@@ -249,6 +250,14 @@ public class LaoActivity extends AppCompatActivity {
         new ViewModelProvider(activity).get(RollCallViewModel.class);
     rollCallViewModel.setLaoId(laoId);
     return rollCallViewModel;
+  }
+
+  public static WitnessingViewModel obtainWitnessingViewModel(
+      FragmentActivity activity, String laoId) {
+    WitnessingViewModel witnessingViewModel =
+        new ViewModelProvider(activity).get(WitnessingViewModel.class);
+    witnessingViewModel.setLaoId(laoId);
+    return witnessingViewModel;
   }
 
   /**
