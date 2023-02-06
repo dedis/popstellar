@@ -16,10 +16,9 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.repository.RollCallRepository;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.home.LaoCreateFragment;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
@@ -42,7 +41,7 @@ public class TokenFragment extends Fragment {
   @Inject RollCallRepository rollCallRepo;
   @Inject KeyManager keyManager;
 
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
 
   public TokenFragment() {
     // Required empty public constructor
@@ -67,7 +66,7 @@ public class TokenFragment extends Fragment {
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     TokenFragmentBinding binding = TokenFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
 
     try {
       RollCall rollCall =

@@ -9,8 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
-import com.github.dedis.popstellar.model.objects.Channel;
-import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -18,12 +17,13 @@ import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.*;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -41,12 +41,14 @@ public class RollCallViewModel extends AndroidViewModel {
   private ScanningAction scanningAction;
 
   private final MutableLiveData<Integer> attendeeCount = new MutableLiveData<>();
+  private Observable<List<RollCall>> attendedRollCalls;
 
   private final LAORepository laoRepo;
   private final RollCallRepository rollCallRepo;
   private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
   private final SchedulerProvider schedulerProvider;
+  private final Wallet wallet;
 
   @Inject
   public RollCallViewModel(
@@ -55,17 +57,29 @@ public class RollCallViewModel extends AndroidViewModel {
       RollCallRepository rollCallRepo,
       GlobalNetworkManager networkManager,
       KeyManager keyManager,
+      Wallet wallet,
       SchedulerProvider schedulerProvider) {
     super(application);
     this.laoRepo = laoRepo;
     this.rollCallRepo = rollCallRepo;
     this.networkManager = networkManager;
     this.keyManager = keyManager;
+    this.wallet = wallet;
     this.schedulerProvider = schedulerProvider;
   }
 
   public void setLaoId(String laoId) {
     this.laoId = laoId;
+
+    this.attendedRollCalls =
+        rollCallRepo
+            .getRollCallsObservableInLao(laoId)
+            .map(
+                rcs ->
+                    rcs.stream()
+                        // Keep only attended roll calls
+                        .filter(this::isRollCallAttended)
+                        .collect(Collectors.toList()));
   }
 
   /**
@@ -193,7 +207,7 @@ public class RollCallViewModel extends AndroidViewModel {
             });
   }
 
-  public io.reactivex.Observable<RollCall> getRollCallObservable(String persistentId) {
+  public Observable<RollCall> getRollCallObservable(String persistentId) {
     try {
       return rollCallRepo
           .getRollCallObservable(laoId, persistentId)
@@ -203,11 +217,39 @@ public class RollCallViewModel extends AndroidViewModel {
     }
   }
 
+  public Observable<List<RollCall>> getAttendedRollCalls() {
+    return attendedRollCalls;
+  }
+
   public void setCurrentRollCallId(String rollCallId) {
     this.currentRollCallId = rollCallId;
   }
 
   private LaoView getLao() throws UnknownLaoException {
     return laoRepo.getLaoView(laoId);
+  }
+
+  /**
+   * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall
+   * or was the organizer
+   *
+   * @param rollcall the roll-call considered
+   * @return boolean saying whether user attended or organized the given roll call
+   */
+  private boolean isRollCallAttended(RollCall rollcall) {
+    // find out if user has attended the rollcall
+    try {
+      boolean isOrganizer =
+          laoRepo.getLaoView(laoId).getOrganizer().equals(keyManager.getMainPublicKey());
+      PublicKey pk = wallet.generatePoPToken(laoId, rollcall.getPersistentId()).getPublicKey();
+
+      return rollcall.getAttendees().contains(pk) || isOrganizer;
+    } catch (KeyGenerationException | UninitializedWalletException e) {
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.key_generation_exception);
+      return false;
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      return false;
+    }
   }
 }

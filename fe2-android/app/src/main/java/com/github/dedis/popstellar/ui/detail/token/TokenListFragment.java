@@ -12,12 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.TokenListFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallViewModel;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -28,8 +31,11 @@ public class TokenListFragment extends Fragment {
   public static final String TAG = TokenListFragment.class.getSimpleName();
 
   private TokenListFragmentBinding binding;
-  private LaoDetailViewModel viewModel;
+  private LaoViewModel viewModel;
+  private RollCallViewModel rollCallViewModel;
   private TokenListAdapter tokensAdapter;
+
+  @Inject RollCallRepository rollCallRepo;
 
   public static TokenListFragment newInstance() {
     return new TokenListFragment();
@@ -54,7 +60,9 @@ public class TokenListFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
 
     binding = TokenListFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    rollCallViewModel =
+        LaoActivity.obtainRollCallViewModel(requireActivity(), viewModel.getLaoId());
 
     tokensAdapter = new TokenListAdapter(requireActivity());
     binding.tokensRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -67,12 +75,12 @@ public class TokenListFragment extends Fragment {
 
   private void subscribeToAttendedRollCalls() {
     viewModel.addDisposable(
-        viewModel
+        rollCallViewModel
             .getAttendedRollCalls()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 attendedRollCalls -> {
-                  RollCall lastRollCall = viewModel.getLastClosedRollCall();
+                  RollCall lastRollCall = rollCallRepo.getLastClosedRollCall(viewModel.getLaoId());
 
                   if (attendedRollCalls.contains(lastRollCall)) {
                     // We attended the last roll call
