@@ -75,7 +75,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>scala</td>
-      <td>05 Feb 2023, 04:13</td>
+      <td>06 Feb 2023, 04:13</td>
     </tr>
   </tbody>
 </table>
@@ -125,7 +125,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">0.896</span>
+  <span class="lead-duration duration">0.923</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -168,7 +168,7 @@ $(document).ready(function() {
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
-  <span class="lead-duration duration">0.857</span>
+  <span class="lead-duration duration">0.894</span>
 
 </div>
 
@@ -222,7 +222,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">def validTransaction =</span>
 
-  <span class="lead-duration duration">0.005</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -277,7 +277,7 @@ $(document).ready(function() {
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
-  <span class="lead-duration duration">0.018</span>
+  <span class="lead-duration duration">0.007</span>
 
 </div>
 
@@ -304,7 +304,7 @@ $(document).ready(function() {
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
 
-  <span class="lead-duration duration">0.014</span>
+  <span class="lead-duration duration">0.013</span>
 
 </div>
 
@@ -348,7 +348,7 @@ $(document).ready(function() {
       <div id="msg-4" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-396969634,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: String #(getCreateSignatureForCoinIssuance) is not Base64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1124062630,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: String #(getCreateSignatureForCoinIssuance) is not Base64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -366,11 +366,11 @@ classpath:be/digitalCash/transaction.feature:112</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-5" class="collapse collapsable-details">
-        <pre>04:07:10.159 classpath:be/digitalCash/transaction.feature:112
+        <pre>04:07:19.134 classpath:be/digitalCash/transaction.feature:112
 Then match answer contains VALID_MESSAGE
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'result' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-396969634,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: String #(getCreateSignatureForCoinIssuance) is not Base64&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1124062630,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;Invalid data: String #(getCreateSignatureForCoinIssuance) is not Base64&quot;}}
   {&quot;result&quot;:0}
 
 
@@ -438,7 +438,7 @@ classpath:be/digitalCash/transaction.feature:112
 </div>
 
 
-  <span class="lead-duration duration">0.762</span>
+  <span class="lead-duration duration">0.776</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-6">
@@ -481,7 +481,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
 
-  <span class="lead-duration duration">0.746</span>
+  <span class="lead-duration duration">0.753</span>
 
 </div>
 
@@ -578,7 +578,7 @@ classpath:be/digitalCash/transaction.feature:112
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
 
-  <span class="lead-duration duration">0.001</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -649,7 +649,7 @@ classpath:be/digitalCash/transaction.feature:112
       <div id="msg-9" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1434563390,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:899025979,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -667,11 +667,11 @@ classpath:be/election/electionOpen.feature:75</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-10" class="collapse collapsable-details">
-        <pre>04:09:29.070 classpath:be/election/electionOpen.feature:75
+        <pre>04:09:38.410 classpath:be/election/electionOpen.feature:75
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1434563390,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:899025979,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -739,7 +739,7 @@ classpath:be/election/electionOpen.feature:75
 </div>
 
 
-  <span class="lead-duration duration">0.866</span>
+  <span class="lead-duration duration">0.889</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-11">
@@ -782,7 +782,7 @@ classpath:be/election/electionOpen.feature:75
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_open')</span>
 
-  <span class="lead-duration duration">0.834</span>
+  <span class="lead-duration duration">0.861</span>
 
 </div>
 
@@ -886,7 +886,7 @@ classpath:be/election/electionOpen.feature:75
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(invalidCastVote), electionChannel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -913,7 +913,7 @@ classpath:be/election/electionOpen.feature:75
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidCastVote))</span>
 
-  <span class="lead-duration duration">0.028</span>
+  <span class="lead-duration duration">0.021</span>
 
 </div>
 
@@ -957,7 +957,7 @@ classpath:be/election/electionOpen.feature:75
       <div id="msg-14" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-989863212,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:922852935,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -975,11 +975,11 @@ classpath:be/election/castVote.feature:197</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-15" class="collapse collapsable-details">
-        <pre>04:08:26.208 classpath:be/election/castVote.feature:197
+        <pre>04:08:35.767 classpath:be/election/castVote.feature:197
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-989863212,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:922852935,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -1047,7 +1047,7 @@ classpath:be/election/castVote.feature:197
 </div>
 
 
-  <span class="lead-duration duration">0.545</span>
+  <span class="lead-duration duration">0.515</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-16">
@@ -1135,7 +1135,7 @@ classpath:be/election/castVote.feature:197
   <span class="keyword indention">*</span>
   <span class="name">frontend.changeSenderToBeNonAttendee()</span>
 
-  <span class="lead-duration duration">0.000</span>
+  <span class="lead-duration duration">0.003</span>
 
 </div>
 
@@ -1162,7 +1162,7 @@ classpath:be/election/castVote.feature:197
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
 
-  <span class="lead-duration duration">0.003</span>
+  <span class="lead-duration duration">0.006</span>
 
 </div>
 
@@ -1189,7 +1189,7 @@ classpath:be/election/castVote.feature:197
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
 
-  <span class="lead-duration duration">0.539</span>
+  <span class="lead-duration duration">0.502</span>
 
 </div>
 
@@ -1233,7 +1233,7 @@ classpath:be/election/castVote.feature:197
       <div id="msg-19" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1748820097,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1792093131,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -1258,11 +1258,11 @@ classpath:be/LAO/create.feature:121</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:06:46.837 classpath:be/LAO/create.feature:121
+        <pre>04:06:55.074 classpath:be/LAO/create.feature:121
 Then match answer contains ACCESS_DENIED
 match failed: CONTAINS
   $ | actual does not contain expected | all key-values did not match, expected has un-matched keys - [error] (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1748820097,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1792093131,&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;CreateLao content validation failed: unexpected organizer public key&quot;}}
   {&quot;error&quot;:{&quot;code&quot;:-5,&quot;description&quot;:&quot;#string&quot;}}
 
     $.error | not equal | match failed for name: 'code' (MAP:MAP)
@@ -1337,7 +1337,7 @@ classpath:be/LAO/create.feature:121
 </div>
 
 
-  <span class="lead-duration duration">0.881</span>
+  <span class="lead-duration duration">0.858</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-21">
@@ -1380,7 +1380,7 @@ classpath:be/LAO/create.feature:121
   <span class="keyword indention">Given</span>
   <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
-  <span class="lead-duration duration">0.849</span>
+  <span class="lead-duration duration">0.825</span>
 
 </div>
 
@@ -1478,7 +1478,7 @@ classpath:be/LAO/create.feature:121
   <span class="keyword indention">When</span>
   <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
 
-  <span class="lead-duration duration">0.006</span>
+  <span class="lead-duration duration">0.001</span>
 
 </div>
 
@@ -1505,7 +1505,7 @@ classpath:be/LAO/create.feature:121
   <span class="keyword indention">And</span>
   <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
 
-  <span class="lead-duration duration">0.025</span>
+  <span class="lead-duration duration">0.030</span>
 
 </div>
 
@@ -1549,7 +1549,7 @@ classpath:be/LAO/create.feature:121
       <div id="msg-24" class="collapse collapsable-details  in ">
         <pre>match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1979192083,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-250160637,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
@@ -1567,11 +1567,11 @@ classpath:be/election/electionEnd.feature:116</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-25" class="collapse collapsable-details">
-        <pre>04:09:07.021 classpath:be/election/electionEnd.feature:116
+        <pre>04:09:16.393 classpath:be/election/electionEnd.feature:116
 Then match answer contains INVALID_MESSAGE_FIELD
 match failed: CONTAINS
   $ | actual does not contain expected | actual does not contain key - 'error' (MAP:MAP)
-  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-1979192083,&quot;result&quot;:0}
+  {&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:-250160637,&quot;result&quot;:0}
   {&quot;error&quot;:{&quot;code&quot;:-4,&quot;description&quot;:&quot;#string&quot;}}
 
 
