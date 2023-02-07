@@ -48,7 +48,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
   }
 
   def checkAttendee(rpcMessage: JsonRpcRequest, sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance, error: PipelineError): GraphMessage = {
-    if (validateAttendee(sender, channel, dbActor)) Left(rpcMessage) else Right(error)
+    if (validateAttendee(sender, channel, dbActor))
+      Left(rpcMessage)
+    else
+      Right(error)
   }
 
   /** checks whether the sender of the JsonRpcRequest is the LAO owner
@@ -69,7 +72,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
   }
 
   def checkOwner(rpcMessage: JsonRpcRequest, sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance, error: PipelineError): GraphMessage = {
-    if (validateOwner(sender, channel, dbActor)) Left(rpcMessage) else Right(error)
+    if (validateOwner(sender, channel, dbActor))
+      Left(rpcMessage)
+    else
+      Right(error)
   }
 
   /** checks whether the channel of the JsonRpcRequest is of the given type
@@ -90,7 +96,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
   }
 
   def checkChannelType(rpcMessage: JsonRpcRequest, channelObjectType: ObjectType.ObjectType, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance, error: PipelineError): GraphMessage = {
-    if (validateChannelType(channelObjectType, channel, dbActor)) Left(rpcMessage) else Right(error)
+    if (validateChannelType(channelObjectType, channel, dbActor))
+      Left(rpcMessage)
+    else
+      Right(error)
   }
 
   def extractData[T](rpcMessage: JsonRpcRequest): (T, Hash, PublicKey, Channel) = {
