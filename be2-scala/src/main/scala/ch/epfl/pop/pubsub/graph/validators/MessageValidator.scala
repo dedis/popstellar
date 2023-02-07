@@ -130,9 +130,9 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     (data, laoId, sender, channel)
   }
 
-  def runList(list: List[GraphMessage]): GraphMessage = {
+  def runChecks(list: List[GraphMessage]): GraphMessage = {
     if (list.head.isLeft && !list.tail.isEmpty)
-      runList(list.tail)
+      runChecks(list.tail)
     else
       list.head
   }

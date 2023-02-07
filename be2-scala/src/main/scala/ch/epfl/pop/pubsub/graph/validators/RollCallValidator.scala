@@ -62,7 +62,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           data.name
         )
 
-        runList(List(
+        runChecks(List(
           checkTimestampStaleness(rpcMessage, data.creation, validationError(s"stale 'creation' timestamp (${data.creation})")),
           checkTimestampOrder(
             rpcMessage,
@@ -112,7 +112,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           data.opened_at.toString
         )
 
-        runList(List(
+        runChecks(List(
           checkTimestampStaleness(
             rpcMessage,
             data.opened_at,
@@ -169,7 +169,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           data.closed_at.toString
         )
 
-        runList(List(
+        runChecks(List(
           checkTimestampStaleness(
             rpcMessage,
             data.closed_at,
