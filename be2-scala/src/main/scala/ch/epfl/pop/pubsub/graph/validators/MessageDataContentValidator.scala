@@ -25,7 +25,10 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
   final def validateTimestampStaleness(timestamp: Timestamp): Boolean = TIMESTAMP_BASE_TIME < timestamp
 
   def checkTimestampStaleness(rpcMessage: JsonRpcRequest, timestamp: Timestamp, error: PipelineError): GraphMessage = {
-    if (validateTimestampStaleness(timestamp)) Left(rpcMessage) else Right(error)
+    if (validateTimestampStaleness(timestamp))
+      Left(rpcMessage)
+    else
+      Right(error)
   }
 
   /** Check whether timestamp <first> is not older than timestamp <second>
@@ -39,12 +42,23 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     */
   final def validateTimestampOrder(first: Timestamp, second: Timestamp): Boolean = first <= second
 
-  def checkTimestampOrder(rpcMessage: JsonRpcRequest, first: Timestamp, second: Timestamp, error: PipelineError): GraphMessage = {
-    if (validateTimestampOrder(first, second)) Left(rpcMessage) else Right(error)
+  def checkTimestampOrder(
+      rpcMessage: JsonRpcRequest,
+      first: Timestamp,
+      second: Timestamp,
+      error: PipelineError
+  ): GraphMessage = {
+    if (validateTimestampOrder(first, second))
+      Left(rpcMessage)
+    else
+      Right(error)
   }
 
   def checkId(rpcMessage: JsonRpcRequest, expectedId: Hash, id: Hash, error: PipelineError): GraphMessage = {
-    if (expectedId == id) Left(rpcMessage) else Right(error)
+    if (expectedId == id)
+      Left(rpcMessage)
+    else
+      Right(error)
   }
 
   /** Check whether a list of <witnesses> public keys are valid or not
