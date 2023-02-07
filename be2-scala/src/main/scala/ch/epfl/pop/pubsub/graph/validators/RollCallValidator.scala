@@ -55,7 +55,12 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val (data, laoId, sender, channel) = extractData[CreateRollCall](rpcMessage)
-        val expectedRollCallId: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
+        val expectedRollCallId: Hash = Hash.fromStrings(
+          EVENT_HASH_PREFIX,
+          laoId.toString,
+          data.creation.toString,
+          data.name
+        )
 
         runList(List(
           checkTimestampStaleness(rpcMessage, data.creation, validationError(s"stale 'creation' timestamp (${data.creation})")),
@@ -165,7 +170,11 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
         )
 
         runList(List(
-          checkTimestampStaleness(rpcMessage, data.closed_at, validationError(s"stale 'closed_at' timestamp (${data.closed_at})")),
+          checkTimestampStaleness(
+            rpcMessage,
+            data.closed_at,
+            validationError(s"stale 'closed_at' timestamp (${data.closed_at})")
+          ),
           checkAttendeeSize(
             rpcMessage,
             data.attendees.size,
