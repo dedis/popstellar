@@ -235,6 +235,9 @@ namespace STRINGS {
   export const election_create_question = 'Question';
   export const election_create_question_placeholder = 'What is your favorite color?';
   export const election_create_option_placeholder = 'Blue';
+  export const election_create_invalid_questions_1 =
+    'All questions must have a title and at least ';
+  export const election_create_invalid_questions_2 = ' different ballot options.';
 
   export const election_create_add_question = 'Add Question';
 
@@ -264,13 +267,16 @@ namespace STRINGS {
   export const modal_event_creation_failed = 'Event creation failed';
   export const modal_event_ends_in_past = "The event's end time is in the past.";
   export const modal_event_starts_in_past =
-    "The event's start time is in the past.\nWhat do you want to do ?";
+    "The event's start time is in the past.\nWhat do you want to do?";
   export const modal_button_start_now = 'Start it now';
   export const modal_button_go_back = 'Cancel';
+  export const event_creation_must_be_connected = 'You must be connected to a LAO.';
+  export const event_creation_name_not_empty = 'Name must not be empty.';
+  export const event_creation_location_not_empty = 'Location must not be empty.';
 
   /* --- Cast Vote Strings --- */
   export const cast_vote = 'Cast Vote';
-  export const cast_vote_success = 'Sucessfully casted vote';
+  export const cast_vote_success = 'Successfully casted vote';
 
   /* --- Roll-Call Feature Strings --- */
   export const roll_call_event_name = 'Roll-Call';

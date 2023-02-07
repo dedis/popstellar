@@ -285,6 +285,24 @@ const CreateElection = () => {
         {STRINGS.election_create_add_question}
       </PoPTextButton>
 
+      {!isConnected && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_must_be_connected}
+        </Text>
+      )}
+      {electionName === '' && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_name_not_empty}
+        </Text>
+      )}
+      {questions.some(isQuestionInvalid) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_invalid_questions_1 +
+            MIN_BALLOT_OPTIONS +
+            STRINGS.election_create_invalid_questions_2}
+        </Text>
+      )}
+
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}

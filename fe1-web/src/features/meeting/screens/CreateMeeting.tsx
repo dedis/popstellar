@@ -133,6 +133,17 @@ const CreateMeeting = () => {
         placeholder={STRINGS.meeting_create_location_placeholder}
       />
 
+      {!isConnected && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_must_be_connected}
+        </Text>
+      )}
+      {meetingName === '' && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_name_not_empty}
+        </Text>
+      )}
+
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}
