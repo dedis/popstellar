@@ -119,6 +119,7 @@ const CreateMeeting = () => {
         value={meetingName}
         onChange={setMeetingName}
         placeholder={STRINGS.meeting_create_name_placeholder}
+        testID="meeting_name_selector"
       />
 
       {/* see archive branches for date picker used for native apps */}
