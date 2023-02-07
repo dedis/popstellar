@@ -92,7 +92,7 @@ trait MessageHandler extends AskPatternConstants {
     * @return
     *   the database answer wrapped in a [[scala.concurrent.Future]]
     */
-  def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: Base64Data, broadcastChannel: Channel): Future[GraphMessage] = {
+  def dbBroadcast[T](rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: T, broadcastChannel: Channel): Future[GraphMessage] = {
     val m: Message = rpcMessage.getParamsMessage.getOrElse(
       return Future {
         Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcMessage.id))
@@ -101,9 +101,10 @@ trait MessageHandler extends AskPatternConstants {
 
     val combined = for {
       DbActorReadLaoDataAck(laoData) <- dbActor ? DbActor.ReadLaoData(channel)
-      broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
-      broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
-      broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
+      encodedData: Base64Data = Base64Data.encode(broadcastData.toString)
+      broadcastSignature: Signature = laoData.privateKey.signData(encodedData)
+      broadcastId: Hash = Hash.fromStrings(encodedData.toString, broadcastSignature.toString)
+      broadcastMessage: Message = Message(encodedData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
       _ <- dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
     } yield ()
 

@@ -40,13 +40,6 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   private def generateSocialChannel(lao_id: Hash): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + lao_id + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
 
-  // the following function encodes the data and broadcast it
-  private def broadcastData[T](rpcMessage: JsonRpcRequest, data: T, channel: Channel, broadcastChannel: Channel): GraphMessage = {
-    val encodedData: Base64Data = Base64Data.encode(data.toString)
-    val broadcast: Future[GraphMessage] = dbBroadcast(rpcMessage, channel, encodedData, broadcastChannel)
-    Await.result(broadcast, duration)
-  }
-
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask =
       for {
@@ -59,7 +52,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success(_)) =>
         val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[AddChirp](rpcMessage)
         val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, data.timestamp)
-        broadcastData[NotifyAddChirp](rpcMessage, notifyAddChirp, channelChirp, broadcastChannel)
+        Await.result(dbBroadcast[NotifyAddChirp](rpcMessage, channelChirp, notifyAddChirp, broadcastChannel), duration)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleAddChirp failed : ${ex.message}", rpcMessage.getId))
       case _                                       => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.getId))
     }
@@ -77,7 +70,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success(_)) =>
         val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[DeleteChirp](rpcMessage)
         val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, data.timestamp)
-        broadcastData[NotifyDeleteChirp](rpcMessage, notifyDeleteChirp, channelChirp, broadcastChannel)
+        Await.result(dbBroadcast[NotifyDeleteChirp](rpcMessage, channelChirp, notifyDeleteChirp, broadcastChannel), duration)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleDeleteChirp failed : ${ex.message}", rpcMessage.getId))
       case _                                       => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.getId))
     }
