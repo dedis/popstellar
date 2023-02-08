@@ -276,7 +276,7 @@ exports[`CreateMeeting renders correctly when name is empty 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={4}
+                handlerTag={1}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -336,7 +336,7 @@ exports[`CreateMeeting renders correctly when name is empty 1`] = `
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={5}
+                          handlerTag={2}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -398,7 +398,7 @@ exports[`CreateMeeting renders correctly when name is empty 1`] = `
                                     },
                                   ]
                                 }
-                                testID="meetingNameInput"
+                                testID="meeting_name_selector"
                                 value=""
                               />
                             </View>
@@ -519,7 +519,7 @@ exports[`CreateMeeting renders correctly when name is empty 1`] = `
                             <RNGestureHandlerButton
                               collapsable={false}
                               exclusive={true}
-                              handlerTag={6}
+                              handlerTag={3}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
@@ -991,7 +991,7 @@ exports[`CreateMeeting renders correctly when name is not empty 1`] = `
                                     },
                                   ]
                                 }
-                                testID="meetingNameInput"
+                                testID="meeting_name_selector"
                                 value="myMeeting"
                               />
                             </View>
