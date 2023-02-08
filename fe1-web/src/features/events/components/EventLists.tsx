@@ -4,6 +4,7 @@ import { ListItem } from '@rneui/themed';
 import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
+import ReactTimeago from 'react-timeago';
 
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
@@ -53,9 +54,22 @@ const EventLists = () => {
     return () => clearInterval(interval);
   }, [events]);
 
+  // find upcoming event that is nearest / closest in the future
+  const closestUpcomingEvent = useMemo(
+    () =>
+      upcomingEvents.reduce<EventState | null>((closestEvent, event) => {
+        if (closestEvent === null || event.start < closestEvent.start) {
+          return event;
+        }
+
+        return closestEvent;
+      }, null),
+    [upcomingEvents],
+  );
+
   return (
     <View>
-      {upcomingEvents.length > 0 && (
+      {upcomingEvents.length > 0 && closestUpcomingEvent && (
         <ListItem
           containerStyle={List.getListItemStyles(true, true)}
           style={List.getListItemStyles(true, true)}
@@ -72,6 +86,10 @@ const EventLists = () => {
             <ListItem.Title style={Typography.base}>
               {STRINGS.events_upcoming_events}
             </ListItem.Title>
+            <ListItem.Subtitle style={Typography.small}>
+              {STRINGS.events_closest_upcoming_event}{' '}
+              <ReactTimeago live date={closestUpcomingEvent.start * 1000} />
+            </ListItem.Subtitle>
           </ListItem.Content>
           <ListItem.Chevron />
         </ListItem>
