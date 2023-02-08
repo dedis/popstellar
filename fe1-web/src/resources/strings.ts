@@ -165,6 +165,7 @@ namespace STRINGS {
   export const connect_description =
     'The easiest way to connect to a local organization is to scan its QR code';
   export const connect_scanning_fail = 'Invalid QRCode data';
+  export const connect_connecting_fail = 'Failed connecting and subscribing to LAO';
 
   // Connecting Connect Strings
   export const connect_connect = 'Connect';
