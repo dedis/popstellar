@@ -380,7 +380,13 @@ exports[`SendReceive renders correctly 1`] = `
                             >
                               You can send cash by entering the public key of the beneficiary below and choosing the amount of cash you would like to transfer. To receive money you canshow your PoP token to the sender. To access the QR code of your PoP token, tab the QRcode icon in the top right of this screen.
                             </Text>
-                            <View>
+                            <View
+                              style={
+                                Object {
+                                  "zIndex": 99,
+                                }
+                              }
+                            >
                               <Text
                                 style={
                                   Array [
@@ -404,6 +410,7 @@ exports[`SendReceive renders correctly 1`] = `
                                   Object {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "zIndex": 99,
                                   }
                                 }
                               >
@@ -411,37 +418,56 @@ exports[`SendReceive renders correctly 1`] = `
                                   style={
                                     Object {
                                       "flex": 1,
-                                      "flexDirection": "row",
                                     }
                                   }
                                 >
-                                  <TextInput
-                                    editable={true}
-                                    onChangeText={[Function]}
-                                    placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
-                                    placeholderTextColor="#8E8E8E"
-                                    style={
-                                      Array [
+                                  <View>
+                                    <View
+                                      style={
                                         Object {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "marginBottom": 16,
-                                          "textAlign": "left",
-                                        },
-                                        Object {
-                                          "backgroundColor": "#fff",
-                                          "borderColor": "#fff",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "flex": 1,
-                                          "padding": 8,
-                                          "width": 50,
-                                        },
-                                      ]
-                                    }
-                                    value=""
-                                  />
+                                          "borderWidth": 0,
+                                        }
+                                      }
+                                    >
+                                      <View
+                                        style={
+                                          Object {
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
+                                        }
+                                      >
+                                        <TextInput
+                                          editable={true}
+                                          onChangeText={[Function]}
+                                          onFocus={[Function]}
+                                          placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                          placeholderTextColor="#8E8E8E"
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderColor": "#fff",
+                                                "borderRadius": 8,
+                                                "borderWidth": 1,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                            ]
+                                          }
+                                          value=""
+                                        />
+                                      </View>
+                                    </View>
+                                  </View>
                                 </View>
                                 <View
                                   style={
@@ -1044,7 +1070,13 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                             >
                               You can send cash by entering the public key of the beneficiary below and choosing the amount of cash you would like to transfer. To receive money you canshow your PoP token to the sender. To access the QR code of your PoP token, tab the QRcode icon in the top right of this screen.
                             </Text>
-                            <View>
+                            <View
+                              style={
+                                Object {
+                                  "zIndex": 99,
+                                }
+                              }
+                            >
                               <Text
                                 style={
                                   Array [
@@ -1068,6 +1100,7 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                   Object {
                                     "alignItems": "center",
                                     "flexDirection": "row",
+                                    "zIndex": 99,
                                   }
                                 }
                               >
@@ -1075,37 +1108,56 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                   style={
                                     Object {
                                       "flex": 1,
-                                      "flexDirection": "row",
                                     }
                                   }
                                 >
-                                  <TextInput
-                                    editable={true}
-                                    onChangeText={[Function]}
-                                    placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
-                                    placeholderTextColor="#8E8E8E"
-                                    style={
-                                      Array [
+                                  <View>
+                                    <View
+                                      style={
                                         Object {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "marginBottom": 16,
-                                          "textAlign": "left",
-                                        },
-                                        Object {
-                                          "backgroundColor": "#fff",
-                                          "borderColor": "#fff",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "flex": 1,
-                                          "padding": 8,
-                                          "width": 50,
-                                        },
-                                      ]
-                                    }
-                                    value="some pop token"
-                                  />
+                                          "borderWidth": 0,
+                                        }
+                                      }
+                                    >
+                                      <View
+                                        style={
+                                          Object {
+                                            "flex": 1,
+                                            "flexDirection": "row",
+                                          }
+                                        }
+                                      >
+                                        <TextInput
+                                          editable={true}
+                                          onChangeText={[Function]}
+                                          onFocus={[Function]}
+                                          placeholder="QVGlyoTAEYWxq3hSBuawE-lo3sHEyfIv8uizjQTzsIU="
+                                          placeholderTextColor="#8E8E8E"
+                                          style={
+                                            Array [
+                                              Object {
+                                                "color": "#000",
+                                                "fontSize": 20,
+                                                "lineHeight": 26,
+                                                "marginBottom": 16,
+                                                "textAlign": "left",
+                                              },
+                                              Object {
+                                                "backgroundColor": "#fff",
+                                                "borderColor": "#fff",
+                                                "borderRadius": 8,
+                                                "borderWidth": 1,
+                                                "flex": 1,
+                                                "padding": 8,
+                                                "width": 50,
+                                              },
+                                            ]
+                                          }
+                                          value="some pop token"
+                                        />
+                                      </View>
+                                    </View>
+                                  </View>
                                 </View>
                                 <View
                                   style={
