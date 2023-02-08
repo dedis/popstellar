@@ -158,7 +158,7 @@ const CreateElection = () => {
       });
   };
 
-  const buildDatePickerWeb = () => {
+  const buildDatePicker = () => {
     const startDate = startTime.toDate();
     const endDate = endTime.toDate();
 
@@ -233,8 +233,7 @@ const CreateElection = () => {
           },
         ]}
       />
-      {/* see archive branches for date picker used for native apps */}
-      {Platform.OS === 'web' && buildDatePickerWeb()}
+      {buildDatePicker()}
       {questions.map((value, idx) => (
         // FIXME: Do not use index in key
         // eslint-disable-next-line react/no-array-index-key
@@ -280,11 +279,9 @@ const CreateElection = () => {
           />
         </View>
       ))}
-
       <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
         {STRINGS.election_create_add_question}
       </PoPTextButton>
-
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}

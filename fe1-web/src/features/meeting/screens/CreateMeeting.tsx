@@ -2,7 +2,7 @@ import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { Platform, Text } from 'react-native';
+import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import { ConfirmModal, DatePicker, DismissModal, Input } from 'core/components';
@@ -67,7 +67,7 @@ const CreateMeeting = () => {
       });
   };
 
-  const buildDatePickerWeb = () => {
+  const buildDatePicker = () => {
     const startDate = startTime.toDate();
     const endDate = endTime.toDate();
 
@@ -120,10 +120,7 @@ const CreateMeeting = () => {
         onChange={setMeetingName}
         placeholder={STRINGS.meeting_create_name_placeholder}
       />
-
-      {/* see archive branches for date picker used for native apps */}
-      {Platform.OS === 'web' && buildDatePickerWeb()}
-
+      {buildDatePicker()}
       <Text style={[Typography.paragraph, Typography.important]}>
         {STRINGS.meeting_create_location}
       </Text>
@@ -132,7 +129,6 @@ const CreateMeeting = () => {
         onChange={setLocation}
         placeholder={STRINGS.meeting_create_location_placeholder}
       />
-
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}

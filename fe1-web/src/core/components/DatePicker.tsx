@@ -1,6 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { forwardRef } from 'react';
-import DatePickerElement from 'react-datepicker';
+import WebDatePicker from 'react-datepicker';
+import { Platform } from 'react-native';
+import MobileDatePicker from 'react-native-datepicker';
+
+import STRINGS from 'resources/strings';
 
 import { Timestamp } from '../objects';
 import Input from './Input';
@@ -40,28 +44,39 @@ type CustomInputIPropTypes = PropTypes.InferProps<typeof customInputPropTypes>;
 const DatePicker = (props: IPropTypes) => {
   const { selected, onChange } = props;
 
+  if (Platform.OS === 'web') {
+    return (
+      <WebDatePicker
+        selected={selected}
+        onChange={(date: any) => onChange(date)}
+        dateFormat="MM/dd/yyyy HH:mm"
+        showTimeInput
+        minDate={new Date()}
+        showDisabledMonthNavigation
+        customInput={<CustomInput />}
+      />
+    );
+  }
+
   return (
-    <DatePickerElement
-      selected={selected}
-      onChange={(date: any) => onChange(date)}
-      dateFormat="MM/dd/yyyy HH:mm"
-      showTimeInput
+    <MobileDatePicker
+      mode="datetime"
+      date={selected}
       minDate={new Date()}
-      showDisabledMonthNavigation
-      customInput={<CustomInput />}
+      onDateChange={(dateStr, date) => onChange(date)}
+      is24Hour
+      format="MM/dd/yyyy HH:mm"
+      confirmBtnText={STRINGS.general_button_confirm}
+      cancelBtnText={STRINGS.general_button_cancel}
     />
   );
 };
 
 const propTypes = {
-  selected: PropTypes.instanceOf(Date),
+  selected: PropTypes.instanceOf(Date).isRequired,
   onChange: PropTypes.func.isRequired,
 };
 DatePicker.propTypes = propTypes;
-
-DatePicker.defaultProps = {
-  selected: undefined,
-};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

@@ -56,7 +56,7 @@ const CreateRollCall = () => {
   const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
   const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
 
-  const buildDatePickerWeb = () => {
+  const buildDatePicker = () => {
     const startDate = proposedStartTime.toDate();
     const endDate = proposedEndTime.toDate();
 
@@ -141,7 +141,6 @@ const CreateRollCall = () => {
         placeholder={STRINGS.roll_call_create_name_placeholder}
         testID="roll_call_name_selector"
       />
-
       <Text style={[Typography.paragraph, Typography.important]}>{STRINGS.roll_call_location}</Text>
       <Input
         value={rollCallLocation}
@@ -149,7 +148,6 @@ const CreateRollCall = () => {
         placeholder={STRINGS.roll_call_create_location_placeholder}
         testID="roll_call_location_selector"
       />
-
       <Text style={[Typography.paragraph, Typography.important]}>
         {STRINGS.roll_call_description}
       </Text>
@@ -158,10 +156,7 @@ const CreateRollCall = () => {
         onChange={setRollCallDescription}
         placeholder={STRINGS.roll_call_create_description_placeholder}
       />
-
-      {/* see archive branches for date picker used for native apps */}
-      {Platform.OS === 'web' && buildDatePickerWeb()}
-
+      {buildDatePicker()}
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}
