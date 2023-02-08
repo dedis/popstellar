@@ -414,7 +414,9 @@ namespace STRINGS {
   /* --- Wallet Home Screen Strings --- */
   export const wallet_home_roll_calls = 'Roll Calls';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
-  export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
+  export const wallet_home_rollcall_current_pop_tokens = 'Current tokens';
+  export const wallet_home_rollcall_previous_pop_tokens = 'Previous tokens';
+  export const wallet_home_rollcall_pop_token_valid = 'Current';
 
   export const wallet_home_rollcall_no_pop_tokens = 'No PoP tokens';
   export const wallet_home_rollcall_no_pop_tokens_description =
