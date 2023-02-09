@@ -1476,9 +1476,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 
 	fakeHub.fakeSock.msg = nil
 
-	clock.Add(4 * time.Second)
-	time.Sleep(500 * time.Millisecond)
-	clock.Add(4 * time.Second)
+	clock.Add(12 * time.Second)
 	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
