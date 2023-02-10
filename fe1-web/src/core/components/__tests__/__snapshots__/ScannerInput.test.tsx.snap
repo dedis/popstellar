@@ -111,6 +111,16 @@ exports[`ScannerInput renders correctly 1`] = `
           scrollEventThrottle={50}
           stickyHeaderIndices={Array []}
           viewabilityConfigCallbackPairs={Array []}
+          waitFor={
+            Array [
+              Object {
+                "current": null,
+              },
+              Object {
+                "current": null,
+              },
+            ]
+          }
         >
           <View>
             <View
@@ -141,6 +151,8 @@ exports[`ScannerInput renders correctly 1`] = `
               >
                 <RNGestureHandlerButton
                   collapsable={false}
+                  delayLongPress={600}
+                  enabled={true}
                   exclusive={true}
                   handlerTag={2}
                   handlerType="NativeViewGestureHandler"
@@ -205,6 +217,8 @@ exports[`ScannerInput renders correctly 1`] = `
               >
                 <RNGestureHandlerButton
                   collapsable={false}
+                  delayLongPress={600}
+                  enabled={true}
                   exclusive={true}
                   handlerTag={3}
                   handlerType="NativeViewGestureHandler"
@@ -274,6 +288,8 @@ exports[`ScannerInput renders correctly 1`] = `
               >
                 <RNGestureHandlerButton
                   collapsable={false}
+                  delayLongPress={600}
+                  enabled={true}
                   exclusive={true}
                   handlerTag={4}
                   handlerType="NativeViewGestureHandler"
@@ -343,6 +359,8 @@ exports[`ScannerInput renders correctly 1`] = `
     >
       <RNGestureHandlerButton
         collapsable={false}
+        delayLongPress={600}
+        enabled={true}
         exclusive={true}
         handlerTag={5}
         handlerType="NativeViewGestureHandler"

@@ -127,6 +127,8 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={4}
           handlerType="NativeViewGestureHandler"
@@ -319,6 +321,8 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={5}
           handlerType="NativeViewGestureHandler"
@@ -497,6 +501,8 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={3}
           handlerType="NativeViewGestureHandler"
@@ -669,6 +675,8 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={1}
           handlerType="NativeViewGestureHandler"
@@ -847,6 +855,8 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={2}
           handlerType="NativeViewGestureHandler"

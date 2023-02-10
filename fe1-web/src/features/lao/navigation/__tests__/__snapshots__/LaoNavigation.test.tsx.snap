@@ -601,6 +601,8 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                           >
                                                             <RNGestureHandlerButton
                                                               collapsable={false}
+                                                              delayLongPress={600}
+                                                              enabled={true}
                                                               exclusive={true}
                                                               handlerTag={3}
                                                               handlerType="NativeViewGestureHandler"
@@ -872,6 +874,13 @@ exports[`LaoNavigation renders correctly 1`] = `
                                                                     Object {
                                                                       "padding": 16,
                                                                     }
+                                                                  }
+                                                                  waitFor={
+                                                                    Array [
+                                                                      Object {
+                                                                        "current": null,
+                                                                      },
+                                                                    ]
                                                                   }
                                                                 >
                                                                   <View />

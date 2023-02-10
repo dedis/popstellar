@@ -365,6 +365,8 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={19}
                               handlerType="NativeViewGestureHandler"
@@ -503,7 +505,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#03dac4",
+                                  "secondary": "#ad1457",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
@@ -978,6 +980,8 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={8}
                               handlerType="NativeViewGestureHandler"
@@ -1116,7 +1120,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#03dac4",
+                                  "secondary": "#ad1457",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
@@ -1192,6 +1196,8 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={9}
                                     handlerType="NativeViewGestureHandler"
@@ -1288,6 +1294,8 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={10}
                                     handlerType="NativeViewGestureHandler"
@@ -1380,6 +1388,8 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={11}
                                     handlerType="NativeViewGestureHandler"
@@ -1866,6 +1876,8 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={2}
                               handlerType="NativeViewGestureHandler"
@@ -2004,7 +2016,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#03dac4",
+                                  "secondary": "#ad1457",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
@@ -2080,6 +2092,8 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={3}
                                     handlerType="NativeViewGestureHandler"
@@ -2176,6 +2190,8 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={4}
                                     handlerType="NativeViewGestureHandler"
@@ -2268,6 +2284,8 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={5}
                                     handlerType="NativeViewGestureHandler"
@@ -2360,6 +2378,8 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={6}
                                     handlerType="NativeViewGestureHandler"
@@ -2825,6 +2845,8 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={21}
                               handlerType="NativeViewGestureHandler"
@@ -2963,7 +2985,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#03dac4",
+                                  "secondary": "#ad1457",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
@@ -3039,6 +3061,8 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={22}
                                     handlerType="NativeViewGestureHandler"
@@ -3135,6 +3159,8 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={23}
                                     handlerType="NativeViewGestureHandler"
@@ -3227,6 +3253,8 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={24}
                                     handlerType="NativeViewGestureHandler"
@@ -3319,6 +3347,8 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={25}
                                     handlerType="NativeViewGestureHandler"
@@ -3784,6 +3814,8 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={27}
                               handlerType="NativeViewGestureHandler"
@@ -3922,7 +3954,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   },
                                   "primary": "#2089dc",
                                   "searchBg": "#303337",
-                                  "secondary": "#03dac4",
+                                  "secondary": "#ad1457",
                                   "success": "#52c41a",
                                   "warning": "#faad14",
                                   "white": "#ffffff",
@@ -3998,6 +4030,8 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={28}
                                     handlerType="NativeViewGestureHandler"
@@ -4094,6 +4128,8 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={29}
                                     handlerType="NativeViewGestureHandler"
@@ -4186,6 +4222,8 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={30}
                                     handlerType="NativeViewGestureHandler"

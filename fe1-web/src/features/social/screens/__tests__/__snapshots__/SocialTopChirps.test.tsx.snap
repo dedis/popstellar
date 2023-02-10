@@ -345,6 +345,13 @@ exports[`SocialTopChirps renders correctly 1`] = `
                               "padding": 16,
                             }
                           }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
+                          }
                         >
                           <View>
                             <View
@@ -399,6 +406,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
+                                      delayLongPress={600}
+                                      enabled={true}
                                       exclusive={true}
                                       handlerTag={3}
                                       handlerType="NativeViewGestureHandler"
@@ -543,7 +552,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -619,6 +628,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                         >
                                           <RNGestureHandlerButton
                                             collapsable={false}
+                                            delayLongPress={600}
+                                            enabled={true}
                                             exclusive={true}
                                             handlerTag={4}
                                             handlerType="NativeViewGestureHandler"
@@ -711,6 +722,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                         >
                                           <RNGestureHandlerButton
                                             collapsable={false}
+                                            delayLongPress={600}
+                                            enabled={true}
                                             exclusive={true}
                                             handlerTag={5}
                                             handlerType="NativeViewGestureHandler"
@@ -803,6 +816,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                         >
                                           <RNGestureHandlerButton
                                             collapsable={false}
+                                            delayLongPress={600}
+                                            enabled={true}
                                             exclusive={true}
                                             handlerTag={6}
                                             handlerType="NativeViewGestureHandler"
@@ -949,6 +964,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
+                                      delayLongPress={600}
+                                      enabled={true}
                                       exclusive={true}
                                       handlerTag={7}
                                       handlerType="NativeViewGestureHandler"
@@ -1093,7 +1110,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -1169,6 +1186,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                         >
                                           <RNGestureHandlerButton
                                             collapsable={false}
+                                            delayLongPress={600}
+                                            enabled={true}
                                             exclusive={true}
                                             handlerTag={8}
                                             handlerType="NativeViewGestureHandler"
@@ -1261,6 +1280,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                         >
                                           <RNGestureHandlerButton
                                             collapsable={false}
+                                            delayLongPress={600}
+                                            enabled={true}
                                             exclusive={true}
                                             handlerTag={9}
                                             handlerType="NativeViewGestureHandler"
@@ -1353,6 +1374,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                         >
                                           <RNGestureHandlerButton
                                             collapsable={false}
+                                            delayLongPress={600}
+                                            enabled={true}
                                             exclusive={true}
                                             handlerTag={10}
                                             handlerType="NativeViewGestureHandler"
@@ -1505,6 +1528,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
+                                      delayLongPress={600}
+                                      enabled={true}
                                       exclusive={true}
                                       handlerTag={11}
                                       handlerType="NativeViewGestureHandler"
@@ -1649,7 +1674,7 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -1725,6 +1750,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                         >
                                           <RNGestureHandlerButton
                                             collapsable={false}
+                                            delayLongPress={600}
+                                            enabled={true}
                                             exclusive={true}
                                             handlerTag={12}
                                             handlerType="NativeViewGestureHandler"
@@ -1817,6 +1844,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                         >
                                           <RNGestureHandlerButton
                                             collapsable={false}
+                                            delayLongPress={600}
+                                            enabled={true}
                                             exclusive={true}
                                             handlerTag={13}
                                             handlerType="NativeViewGestureHandler"
@@ -1909,6 +1938,8 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                         >
                                           <RNGestureHandlerButton
                                             collapsable={false}
+                                            delayLongPress={600}
+                                            enabled={true}
                                             exclusive={true}
                                             handlerTag={14}
                                             handlerType="NativeViewGestureHandler"

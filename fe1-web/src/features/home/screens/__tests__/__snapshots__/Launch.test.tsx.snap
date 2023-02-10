@@ -345,6 +345,13 @@ exports[`Launch renders correctly 1`] = `
                               "padding": 16,
                             }
                           }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
+                          }
                         >
                           <View>
                             <View
@@ -516,6 +523,8 @@ exports[`Launch renders correctly 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={3}
                                     handlerType="NativeViewGestureHandler"
@@ -593,6 +602,8 @@ exports[`Launch renders correctly 1`] = `
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
                                     exclusive={true}
                                     handlerTag={4}
                                     handlerType="NativeViewGestureHandler"

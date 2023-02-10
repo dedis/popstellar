@@ -345,6 +345,13 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                               "padding": 16,
                             }
                           }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
+                          }
                         >
                           <View>
                             <View
@@ -587,6 +594,8 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={3}
                               handlerType="NativeViewGestureHandler"
@@ -667,6 +676,8 @@ exports[`Wallet create seed screen renders correctly 1`] = `
                           >
                             <RNGestureHandlerButton
                               collapsable={false}
+                              delayLongPress={600}
+                              enabled={true}
                               exclusive={true}
                               handlerTag={4}
                               handlerType="NativeViewGestureHandler"

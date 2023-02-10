@@ -345,6 +345,13 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                               "padding": 16,
                             }
                           }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
+                          }
                         >
                           <View>
                             <View>
@@ -391,6 +398,8 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                             >
                               <RNGestureHandlerButton
                                 collapsable={false}
+                                delayLongPress={600}
+                                enabled={true}
                                 exclusive={true}
                                 handlerTag={6}
                                 handlerType="NativeViewGestureHandler"
@@ -808,6 +817,13 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                               "padding": 16,
                             }
                           }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
+                          }
                         >
                           <View>
                             <View>
@@ -854,6 +870,8 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                             >
                               <RNGestureHandlerButton
                                 collapsable={false}
+                                delayLongPress={600}
+                                enabled={true}
                                 exclusive={true}
                                 handlerTag={3}
                                 handlerType="NativeViewGestureHandler"

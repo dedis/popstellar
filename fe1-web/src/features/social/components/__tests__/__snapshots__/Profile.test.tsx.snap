@@ -81,6 +81,16 @@ exports[`Profile renders correctly 1`] = `
         scrollEventThrottle={50}
         stickyHeaderIndices={Array []}
         viewabilityConfigCallbackPairs={Array []}
+        waitFor={
+          Array [
+            Object {
+              "current": null,
+            },
+            Object {
+              "current": null,
+            },
+          ]
+        }
       >
         <View />
       </RCTScrollView>

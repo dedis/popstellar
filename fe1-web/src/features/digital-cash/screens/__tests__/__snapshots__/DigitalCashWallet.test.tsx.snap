@@ -345,6 +345,13 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                               "padding": 16,
                             }
                           }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
+                          }
                         >
                           <View>
                             <Text
@@ -500,7 +507,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -746,7 +753,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -1226,6 +1233,13 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                               "padding": 16,
                             }
                           }
+                          waitFor={
+                            Array [
+                              Object {
+                                "current": null,
+                              },
+                            ]
+                          }
                         >
                           <View>
                             <Text
@@ -1375,7 +1389,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -1592,7 +1606,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
@@ -1815,7 +1829,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#03dac4",
+                                          "secondary": "#ad1457",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",
