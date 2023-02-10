@@ -128,14 +128,14 @@ func Serve(cliCtx *cli.Context, user string) error {
 	return nil
 }
 
-// connectToSocket establishes a connection to another server's witness
+// connectToSocket establishes a connection to another server's server
 // endpoint.
 func connectToSocket(address string, h hub.Hub,
 	wg *sync.WaitGroup, done chan struct{}) error {
 
 	log := popstellar.Logger
 
-	urlString := fmt.Sprintf("ws://%s/server/witness", address)
+	urlString := fmt.Sprintf("ws://%s/server/server", address)
 	u, err := url.Parse(urlString)
 	if err != nil {
 		return xerrors.Errorf("failed to parse connection url %s: %v", urlString, err)

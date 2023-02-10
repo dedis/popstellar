@@ -152,7 +152,6 @@ func (s *Server) infoHandler(w http.ResponseWriter, r *http.Request) {
 	"version": "%s",
 	"commit": "%s",
 	"buildTime": "%s",
-	"hubType": "%s",
 	"socketType": "%s"
 }`
 

@@ -44,7 +44,6 @@ func TestInfoHandler(t *testing.T) {
 	"version": "unknown",
 	"commit": "unknown",
 	"buildTime": "unknown",
-	"hubType": "fake",
 	"socketType": "fake"
 }`
 
