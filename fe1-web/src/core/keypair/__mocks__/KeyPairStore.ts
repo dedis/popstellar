@@ -7,11 +7,11 @@ import { KeyPair } from '../../objects';
 let keyPair: KeyPair = mockKeyPair;
 
 export namespace KeyPairStore {
-  export const store = jest.fn<void, [KeyPair]>((kp: KeyPair) => {
+  export const store = jest.fn<(kp: KeyPair) => void>((kp: KeyPair) => {
     keyPair = kp;
   });
 
-  export const get = jest.fn<KeyPair, []>(() => keyPair);
+  export const get = jest.fn<() => KeyPair>(() => keyPair);
 
   export const getPublicKey = () => get().publicKey;
 
