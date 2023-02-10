@@ -199,6 +199,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   onPress={() => addReaction('👍')}
                   disabled={reactionsDisabled['👍']}
                   size="small"
+                  buttonStyle="secondary"
                   toolbar
                 />
                 <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
@@ -212,6 +213,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   onPress={() => addReaction('👎')}
                   disabled={reactionsDisabled['👎']}
                   size="small"
+                  buttonStyle="secondary"
                   toolbar
                 />
                 <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
@@ -225,6 +227,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   onPress={() => addReaction('❤️')}
                   disabled={reactionsDisabled['❤️']}
                   size="small"
+                  buttonStyle="secondary"
                   toolbar
                 />
                 <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
@@ -238,6 +241,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                     testID="chirp_action_options"
                     onPress={() => showActionSheet(actionSheetOptions)}
                     size="small"
+                    buttonStyle="secondary"
                     toolbar
                   />
                 </View>
