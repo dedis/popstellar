@@ -436,7 +436,7 @@ exports[`TransactionHistory renders correctly 1`] = `
                                     },
                                     "primary": "#2089dc",
                                     "searchBg": "#303337",
-                                    "secondary": "#ad1457",
+                                    "secondary": "#03dac4",
                                     "success": "#52c41a",
                                     "warning": "#faad14",
                                     "white": "#ffffff",

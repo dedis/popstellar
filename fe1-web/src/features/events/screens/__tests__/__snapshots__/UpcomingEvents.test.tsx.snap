@@ -345,13 +345,6 @@ exports[`UpcomingEvents renders correctly 1`] = `
                               "padding": 16,
                             }
                           }
-                          waitFor={
-                            Array [
-                              Object {
-                                "current": null,
-                              },
-                            ]
-                          }
                         >
                           <View>
                             <View
@@ -472,7 +465,7 @@ exports[`UpcomingEvents renders correctly 1`] = `
                                         },
                                         "primary": "#2089dc",
                                         "searchBg": "#303337",
-                                        "secondary": "#ad1457",
+                                        "secondary": "#03dac4",
                                         "success": "#52c41a",
                                         "warning": "#faad14",
                                         "white": "#ffffff",
@@ -909,7 +902,7 @@ exports[`UpcomingEvents renders correctly 1`] = `
                                     testID="listItemTitle"
                                   >
                                     Starting
-
+                                     
                                     <time
                                       dateTime="2021-05-07T02:46:40.000Z"
                                       title="2021-05-07 02:46"
@@ -917,7 +910,7 @@ exports[`UpcomingEvents renders correctly 1`] = `
                                       1 day from now
                                     </time>
                                     ,
-
+                                     
                                     location
                                   </Text>
                                 </View>

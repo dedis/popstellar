@@ -345,13 +345,6 @@ exports[`Wallet home renders correctly with a non empty wallet 1`] = `
                               "padding": 16,
                             }
                           }
-                          waitFor={
-                            Array [
-                              Object {
-                                "current": null,
-                              },
-                            ]
-                          }
                         >
                           <View>
                             <View
@@ -964,13 +957,6 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                               "padding": 16,
                             }
                           }
-                          waitFor={
-                            Array [
-                              Object {
-                                "current": null,
-                              },
-                            ]
-                          }
                         >
                           <View>
                             <View
@@ -1092,7 +1078,7 @@ exports[`Wallet home renders correctly with an empty wallet 1`] = `
                                           },
                                           "primary": "#2089dc",
                                           "searchBg": "#303337",
-                                          "secondary": "#ad1457",
+                                          "secondary": "#03dac4",
                                           "success": "#52c41a",
                                           "warning": "#faad14",
                                           "white": "#ffffff",

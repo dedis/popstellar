@@ -476,8 +476,6 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                         >
                                           <RNGestureHandlerButton
                                             collapsable={false}
-                                            delayLongPress={600}
-                                            enabled={true}
                                             exclusive={true}
                                             handlerTag={2}
                                             handlerType="NativeViewGestureHandler"
@@ -749,13 +747,6 @@ exports[`OrganizerNavigation renders correctly 1`] = `
                                                   Object {
                                                     "padding": 16,
                                                   }
-                                                }
-                                                waitFor={
-                                                  Array [
-                                                    Object {
-                                                      "current": null,
-                                                    },
-                                                  ]
                                                 }
                                               >
                                                 <View />

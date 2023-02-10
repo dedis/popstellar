@@ -522,8 +522,6 @@ exports[`HomeNavigation renders correctly 1`] = `
                                       >
                                         <RNGestureHandlerButton
                                           collapsable={false}
-                                          delayLongPress={600}
-                                          enabled={true}
                                           exclusive={true}
                                           handlerTag={2}
                                           handlerType="NativeViewGestureHandler"
@@ -730,13 +728,6 @@ exports[`HomeNavigation renders correctly 1`] = `
                                                     "padding": 16,
                                                   }
                                                 }
-                                                waitFor={
-                                                  Array [
-                                                    Object {
-                                                      "current": null,
-                                                    },
-                                                  ]
-                                                }
                                               >
                                                 <View>
                                                   <Text
@@ -812,8 +803,6 @@ exports[`HomeNavigation renders correctly 1`] = `
                                                 >
                                                   <RNGestureHandlerButton
                                                     collapsable={false}
-                                                    delayLongPress={600}
-                                                    enabled={true}
                                                     exclusive={true}
                                                     handlerTag={5}
                                                     handlerType="NativeViewGestureHandler"
@@ -893,8 +882,6 @@ exports[`HomeNavigation renders correctly 1`] = `
                                                 >
                                                   <RNGestureHandlerButton
                                                     collapsable={false}
-                                                    delayLongPress={600}
-                                                    enabled={true}
                                                     exclusive={true}
                                                     handlerTag={6}
                                                     handlerType="NativeViewGestureHandler"

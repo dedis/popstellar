@@ -345,13 +345,6 @@ exports[`SingleNotificationScreen renders correctly 1`] = `
                               "padding": 16,
                             }
                           }
-                          waitFor={
-                            Array [
-                              Object {
-                                "current": null,
-                              },
-                            ]
-                          }
                         >
                           <View>
                             <Text>

@@ -71,8 +71,6 @@ exports[`QrCodeScanner renders correctly when not showing camera 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
-            delayLongPress={600}
-            enabled={true}
             exclusive={true}
             handlerTag={2}
             handlerType="NativeViewGestureHandler"
@@ -181,8 +179,6 @@ exports[`QrCodeScanner renders correctly when not showing camera with children 1
         >
           <RNGestureHandlerButton
             collapsable={false}
-            delayLongPress={600}
-            enabled={true}
             exclusive={true}
             handlerTag={4}
             handlerType="NativeViewGestureHandler"
@@ -335,8 +331,6 @@ exports[`QrCodeScanner renders correctly when showing camera 1`] = `
         >
           <RNGestureHandlerButton
             collapsable={false}
-            delayLongPress={600}
-            enabled={true}
             exclusive={true}
             handlerTag={1}
             handlerType="NativeViewGestureHandler"
@@ -447,8 +441,6 @@ exports[`QrCodeScanner renders correctly when showing camera with children 1`] =
         >
           <RNGestureHandlerButton
             collapsable={false}
-            delayLongPress={600}
-            enabled={true}
             exclusive={true}
             handlerTag={3}
             handlerType="NativeViewGestureHandler"
