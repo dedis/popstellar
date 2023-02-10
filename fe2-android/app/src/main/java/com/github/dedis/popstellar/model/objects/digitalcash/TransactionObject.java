@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Immutable
 public class TransactionObject {
@@ -70,14 +71,7 @@ public class TransactionObject {
    * @return List<PublicKey> senders public keys
    */
   public List<PublicKey> getSendersTransaction() {
-    List<PublicKey> senders = new ArrayList<>();
-
-    // Through the inputs look at the sender
-    for (InputObject inpObj : getInputs()) {
-      senders.add(inpObj.getScript().getPubKey());
-    }
-
-    return senders;
+    return inputs.stream().map(input -> input.getScript().getPubKey()).collect(Collectors.toList());
   }
 
   /**
@@ -86,13 +80,7 @@ public class TransactionObject {
    * @return List<String> outputs Public Key Hashes
    */
   public List<String> getReceiversHashTransaction() {
-    List<String> receiverHash = new ArrayList<>();
-
-    for (OutputObject outObj : getOutputs()) {
-      receiverHash.add(outObj.getPubKeyHash());
-    }
-
-    return receiverHash;
+    return outputs.stream().map(OutputObject::getPubKeyHash).collect(Collectors.toList());
   }
 
   /**
@@ -104,7 +92,7 @@ public class TransactionObject {
   public List<PublicKey> getReceiversTransaction(Map<String, PublicKey> mapHashKey) {
     List<PublicKey> receivers = new ArrayList<>();
     for (String transactionHash : getReceiversHashTransaction()) {
-      PublicKey pub = mapHashKey.getOrDefault(transactionHash, null);
+      PublicKey pub = mapHashKey.get(transactionHash);
       if (pub == null) {
         throw new IllegalArgumentException("The hash correspond to no key in the dictionary");
       }
@@ -135,67 +123,37 @@ public class TransactionObject {
   }
 
   /**
-   * Function that given a Public Key gives the miniLaoCoin received
+   * Function that given a Public Key gives the miniLaoCoin received for this transaction object
    *
-   * @param receiver Public Key of a potential receiver
+   * @param user Public Key of a potential receiver
    * @return int amount of Lao Coin
    */
-  public long getMiniLaoPerReceiver(PublicKey receiver) {
-    // Check in the future if useful
-    if (!isReceiver(receiver)) {
-      throw new IllegalArgumentException(
-          "The public Key is not contained in the receiver public key");
-    }
-    // Set the return value to nothing
-    long miniLao = 0;
-    // Compute the hash of the public key
-    String hashKey = receiver.computeHash();
-    // iterate through the output and sum if it's for the argument public key
-    for (OutputObject outObj : getOutputs()) {
-      if (outObj.getScript().getPubKeyHash().equals(hashKey)) {
-        miniLao += outObj.getValue();
-      }
+  public long getSumForUser(PublicKey user) {
+    // We are well aware that the logic could be compressed in a single filtering of outputs, but we
+    // rejected it in favour of (some) clarity
+
+    if (isCoinBaseTransaction()) {
+      // If it is an issuance, we return the sum of all output where the user is the recipient
+      return getOutputs().stream()
+          .filter(output -> output.isUserOutputRecipient(user))
+          .mapToLong(OutputObject::getValue)
+          .sum();
     }
 
-    return miniLao;
-  }
-
-  /**
-   * Total MiniLao per public key of a List of Transaction
-   *
-   * @param transactions List<TransactionObject>
-   * @param receiver Public Key
-   * @return long amount per user
-   */
-  public static long getMiniLaoPerReceiverSetTransaction(
-      Set<TransactionObject> transactions, PublicKey receiver) {
-    return transactions.stream().mapToLong(obj -> obj.getMiniLaoPerReceiver(receiver)).sum();
-  }
-
-  /**
-   * Function which return the first amount which correspond to the Public Key (this function is
-   * useful if someone send money to herself, in fact only the first amount in the transaction
-   * correspond to the money he has send to him)
-   *
-   * @param receiver Public Key of a potential receiver
-   * @return int amount of Lao Coin
-   */
-  public long getMiniLaoPerReceiverFirst(PublicKey receiver) {
-    // Check in the future if useful
-    if (!isReceiver(receiver)) {
-      throw new IllegalArgumentException(
-          "The public Key is not contained in the receiver public key");
+    int sum = 0;
+    if (isSender(user)) {
+      // if the user is sender, we subtract the value of all output
+      sum -= getOutputs().stream().mapToLong(OutputObject::getValue).sum();
     }
-    // Compute the hash of the public key
-    String computeHash = receiver.computeHash();
-    // iterate through the output and sum if it's for the argument public key
-    for (OutputObject outObj : getOutputs()) {
-      if (outObj.getPubKeyHash().equals(computeHash)) {
-        // return after first occurrence
-        return outObj.getValue();
-      }
-    }
-    return 0;
+
+    // Regardless of if the user is the sender, we sum all output where the user is the recipient.
+    // This is because of how the protocol is designed i.e. the sender will be in receivers as well
+    sum +=
+        getOutputs().stream()
+            .filter(output -> output.isUserOutputRecipient(user))
+            .mapToLong(OutputObject::getValue)
+            .sum();
+    return sum;
   }
 
   /**
@@ -215,21 +173,6 @@ public class TransactionObject {
     }
     throw new IllegalArgumentException(
         "this public key is not contained in the output of this transaction");
-  }
-
-  /**
-   * Class which return the last roll call open
-   *
-   * @return Rollcall the roll call with the last ending tim e
-   * @param transactions the set of transactions
-   */
-  public static TransactionObject lastLockedTransactionObject(Set<TransactionObject> transactions) {
-    Optional<TransactionObject> transactionObject =
-        transactions.stream().max(Comparator.comparing(TransactionObject::getLockTime));
-    if (!transactionObject.isPresent()) {
-      throw new IllegalStateException();
-    }
-    return transactionObject.get();
   }
 
   /**

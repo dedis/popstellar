@@ -40,7 +40,7 @@ export const handleAddChirpMessage =
       parentId: chirpMessage.parent_id,
     });
 
-    dispatch(addChirp(laoId, chirp.toState()));
+    dispatch(addChirp(laoId, chirp));
     return true;
   };
 
@@ -75,7 +75,7 @@ export const handleDeleteChirpMessage =
       text: '',
     });
 
-    dispatch(deleteChirp(laoId, chirp.toState()));
+    dispatch(deleteChirp(laoId, chirp));
     return true;
   };
 

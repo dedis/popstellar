@@ -812,6 +812,7 @@ exports[`LaoList renders correctly with one item 1`] = `
                             >
                               <Text
                                 accessibilityRole="text"
+                                numberOfLines={1}
                                 style={
                                   Object {
                                     "backgroundColor": "transparent",

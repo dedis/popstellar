@@ -265,6 +265,9 @@ dependencies {
     testImplementation "org.slf4j:slf4j-api:$slf4j_version"
     testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
 
+    // ================= Pretty Time =================
+    implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'
+
     // ============= Test Framework ============
     debugImplementation 'junit:junit:4.13.2'
     // Android framework

@@ -15,23 +15,20 @@ const styles = StyleSheet.create({
     color: Color.primary,
     borderBottomWidth: Border.width,
     borderColor: Color.primary,
-    marginVertical: Spacing.x2,
+    marginVertical: Spacing.x05,
     padding: Spacing.x05,
   } as TextStyle,
-  negative: {
-    color: Color.contrast,
-    borderColor: Color.contrast,
-  },
 });
 
 const TextInputLine = (props: IPropTypes) => {
-  const { onChangeText, placeholder, defaultValue, negative } = props;
+  const { onChangeText, placeholder, defaultValue } = props;
 
   return (
     <TextInput
-      style={negative ? [styles.textInput, styles.negative] : styles.textInput}
+      style={styles.textInput}
       onChangeText={onChangeText}
       placeholder={placeholder || ''}
+      placeholderTextColor={Color.inactive}
       defaultValue={defaultValue || ''}
       selectTextOnFocus
     />
@@ -42,14 +39,12 @@ const propTypes = {
   onChangeText: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   defaultValue: PropTypes.string,
-  negative: PropTypes.bool,
 };
 TextInputLine.propTypes = propTypes;
 
 TextInputLine.defaultProps = {
   placeholder: '',
   defaultValue: '',
-  negative: false,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

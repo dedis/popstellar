@@ -2,10 +2,10 @@ package com.github.dedis.popstellar.utility.error;
 
 import com.github.dedis.popstellar.R;
 
-public class UnknownElectionException extends GenericException {
+public class UnknownElectionException extends UnknownEventException {
 
-  public UnknownElectionException() {
-    super("Could not find a valid election");
+  public UnknownElectionException(String electionId) {
+    super("Election", electionId);
   }
 
   @Override

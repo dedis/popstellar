@@ -1,11 +1,8 @@
 package com.github.dedis.popstellar.model.objects;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Copyable;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
@@ -32,15 +29,8 @@ public final class Lao implements Copyable<Lao> {
    */
   private Set<PendingUpdate> pendingUpdates;
 
-  private Map<String, Election> elections;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
-  // Some useful map for the digital cash
-  private Map<String, PublicKey> pubKeyByHash;
-  // Map for the history
-  private Map<PublicKey, Set<TransactionObject>> transactionHistoryByUser;
-  // Map for the the public_key last transaction
-  private Map<PublicKey, Set<TransactionObject>> transactionByUser;
 
   public Lao(String id) {
     if (id == null) {
@@ -51,16 +41,11 @@ public final class Lao implements Copyable<Lao> {
 
     this.channel = Channel.getLaoChannel(id);
     this.id = id;
-    this.elections = new HashMap<>();
     this.keyToNode = new HashMap<>();
     this.messageIdToElectInstance = new HashMap<>();
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
-    // initialize the maps :
-    this.transactionHistoryByUser = new HashMap<>();
-    this.transactionByUser = new HashMap<>();
-    this.pubKeyByHash = new HashMap<>();
   }
 
   public Lao(String name, PublicKey organizer, long creation) {
@@ -69,7 +54,6 @@ public final class Lao implements Copyable<Lao> {
     this.name = name;
     this.organizer = organizer;
     this.creation = creation;
-    pubKeyByHash.put(organizer.computeHash(), organizer);
   }
 
   /**
@@ -88,23 +72,10 @@ public final class Lao implements Copyable<Lao> {
     this.witnesses = new HashSet<>(lao.witnesses);
     this.witnessMessages = new HashMap<>(lao.witnessMessages);
     this.pendingUpdates = new HashSet<>(lao.pendingUpdates);
-    this.elections = Copyable.copy(lao.elections);
     // FIXME We need to keep the ElectInstance because the current consensus relies on references
     // (Gabriel Fleischer 11.08.22)
     this.messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
     this.keyToNode = Copyable.copy(lao.keyToNode);
-    this.pubKeyByHash = new HashMap<>(lao.pubKeyByHash);
-    this.transactionHistoryByUser = new HashMap<>(lao.transactionHistoryByUser);
-    this.transactionByUser = new HashMap<>(lao.transactionByUser);
-  }
-
-  public void updateElection(String prevId, Election election) {
-    if (election == null) {
-      throw new IllegalArgumentException("The election is null");
-    }
-
-    elections.remove(prevId);
-    elections.put(election.getId(), election);
   }
 
   /**
@@ -145,88 +116,12 @@ public final class Lao implements Copyable<Lao> {
     witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
   }
 
-  /**
-   * Function which update the transaction map public key by transaction hash on the list of the
-   * roll call attendees Update pubKeyByHash, Initialize transactionByUser, transactionHistoryByUser
-   *
-   * @param attendees List<PublicKey> of the roll call attendees
-   */
-  public void updateTransactionHashMap(List<PublicKey> attendees) {
-    pubKeyByHash = new HashMap<>();
-    pubKeyByHash.put(organizer.computeHash(), organizer);
-    attendees.forEach(publicKey -> pubKeyByHash.put(publicKey.computeHash(), publicKey));
-
-    // also update the history and the current transaction per attendees
-    // both map have to be set to empty again
-    transactionByUser = new HashMap<>();
-    transactionHistoryByUser = new HashMap<>();
-  }
-
-  /**
-   * Function that update all the transaction Update transactionByUser (current state of money)
-   * Update transactionHistory (current transaction perform per user)
-   *
-   * @param transactionObject object which was posted and now should update the lao map
-   */
-  public void updateTransactionMaps(TransactionObject transactionObject) {
-    if (transactionObject == null) {
-      throw new IllegalArgumentException("The transaction is null");
-    }
-    /* Change the transaction per public key in transacionperUser
-    for the sender and the receiver*/
-
-    if (this.pubKeyByHash.isEmpty()) {
-      throw new IllegalStateException("A transaction need attendees !");
-    }
-
-    /* Contained in the receiver there are also the sender
-    which has to be in the list of attendees of the roll call*/
-    for (PublicKey current : transactionObject.getReceiversTransaction(pubKeyByHash)) {
-      // Add the transaction in the current state  / for the sender and the receiver
-
-      /* The only case where the map has a list of transaction in memory is when we have several
-      coin base transaction (in fact the issuer send several time money to someone)
-      or our receiver is no sender */
-      if (transactionByUser.containsKey(current)
-          && (transactionObject.isCoinBaseTransaction()
-              || (transactionObject.isReceiver(current) && !transactionObject.isSender(current)))) {
-        transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
-        Set<TransactionObject> set = new HashSet<>(transactionByUser.get(current));
-        set.add(transactionObject);
-        transactionByUser.replace(current, set);
-      } else {
-
-        transactionByUser.put(current, new HashSet<>(Collections.singleton(transactionObject)));
-      }
-
-      // Add the transaction in the history / for the sender and the receiver
-      transactionHistoryByUser.putIfAbsent(current, new HashSet<>());
-      transactionHistoryByUser.get(current).add(transactionObject);
-    }
-    Log.d(TAG, "Transaction by history : " + transactionHistoryByUser.toString());
-    Log.d(this.getClass().toString(), "Transaction by User : " + transactionByUser.toString());
-  }
-
-  public Optional<Election> getElection(String id) {
-    return Optional.ofNullable(elections.get(id));
-  }
-
   public Optional<ElectInstance> getElectInstance(MessageID messageId) {
     return Optional.ofNullable(messageIdToElectInstance.get(messageId));
   }
 
   public Optional<WitnessMessage> getWitnessMessage(MessageID id) {
     return Optional.ofNullable(witnessMessages.get(id));
-  }
-
-  /**
-   * Removes an election from the list of elections.
-   *
-   * @param id the id of the Election
-   * @return true if the election was deleted
-   */
-  public boolean removeElection(String id) {
-    return (elections.remove(id) != null);
   }
 
   public Long getLastModified() {
@@ -340,32 +235,12 @@ public final class Lao implements Copyable<Lao> {
     return keyToNode.get(key);
   }
 
-  public Map<String, Election> getElections() {
-    return elections;
-  }
-
   public Map<MessageID, ElectInstance> getMessageIdToElectInstance() {
     return Collections.unmodifiableMap(messageIdToElectInstance);
   }
 
   public Map<MessageID, WitnessMessage> getWitnessMessages() {
     return witnessMessages;
-  }
-
-  public Map<PublicKey, Set<TransactionObject>> getTransactionHistoryByUser() {
-    return transactionHistoryByUser;
-  }
-
-  public Map<PublicKey, Set<TransactionObject>> getTransactionByUser() {
-    return transactionByUser;
-  }
-
-  public Map<String, PublicKey> getPubKeyByHash() {
-    return pubKeyByHash;
-  }
-
-  public void setElections(Map<String, Election> elections) {
-    this.elections = elections;
   }
 
   /**
@@ -412,16 +287,9 @@ public final class Lao implements Copyable<Lao> {
         + '\''
         + ", witnesses="
         + witnesses
-        + ", elections="
-        + elections
         + ", electInstances="
         + messageIdToElectInstance.values()
         + ", transactionPerUser="
-        + transactionByUser.toString()
-        + ", transactionHistoryByUser"
-        + transactionHistoryByUser.toString()
-        + ", pubKeyByHash"
-        + pubKeyByHash.toString()
         + '}';
   }
 }

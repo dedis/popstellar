@@ -80,7 +80,7 @@ export function configureNetwork(registry: MessageRegistry) {
         if (toast) {
           toast.show(STRINGS.lao_error_disconnect, {
             type: 'danger',
-            placement: 'top',
+            placement: 'bottom',
             duration: FOUR_SECONDS,
           });
         }

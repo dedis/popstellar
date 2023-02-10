@@ -74,7 +74,7 @@ const PoPTokenScanner = () => {
       } catch {
         toast.show(STRINGS.roll_call_invalid_token, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <group
+    android:id="@+id/main_menu_group"
+    android:checkableBehavior="single">
+
+    <item
+      android:id="@+id/main_menu_invite"
+      android:icon="@drawable/invite_icon"
+      android:title="@string/invite" />
+
+    <item
+      android:id="@+id/main_menu_event_list"
+      android:icon="@drawable/ic_lao_detail_event_list_foreground"
+      android:title="@string/event_list" />
+
+    <item
+      android:id="@+id/main_menu_social_media"
+      android:icon="@drawable/ic_common_social_media_enabled"
+      android:title="@string/tab_social_media" />
+
+    <item
+      android:id="@+id/main_menu_digital_cash"
+      android:icon="@drawable/ic_lao_detail_digital_cash_foreground"
+      android:title="@string/tab_digital_cash" />
+
+    <item
+      android:id="@+id/main_menu_witnessing"
+      android:icon="@drawable/ic_lao_detail_witness_foreground"
+      android:title="@string/witnessing" />
+
+    <item
+      android:id="@+id/main_menu_tokens"
+      android:icon="@drawable/qr_code_button_icon"
+      android:title="@string/tokens" />
+  </group>
+
+  <group
+    android:id="@+id/disconnect_menu_group"
+    android:checkableBehavior="single">
+
+    <item
+      android:id="@+id/main_menu_disconnect"
+      android:icon="@drawable/disconnect_icon"
+      android:title="@string/disconnect" />
+  </group>
+</menu>

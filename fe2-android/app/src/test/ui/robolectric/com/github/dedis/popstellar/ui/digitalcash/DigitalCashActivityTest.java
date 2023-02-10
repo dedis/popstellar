@@ -10,11 +10,11 @@ import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.RollCallRepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -29,7 +29,7 @@ import org.mockito.junit.MockitoTestRule;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
+import java.util.*;
 
 import javax.inject.Inject;
 
@@ -79,8 +79,9 @@ public class DigitalCashActivityTest {
   @Inject Gson gson;
 
   @BindValue @Mock GlobalNetworkManager networkManager;
-  @BindValue @Mock LAORepository repository;
+  @BindValue @Mock LAORepository laoRepo;
   @BindValue @Mock RollCallRepository rollCallRepo;
+  @BindValue @Mock DigitalCashRepository digitalCashRepo;
   @BindValue @Mock MessageSender messageSender;
   @BindValue @Mock KeyManager keyManager;
 
@@ -96,9 +97,10 @@ public class DigitalCashActivityTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws KeyException, GeneralSecurityException {
+        protected void before() throws KeyException, GeneralSecurityException, UnknownLaoException {
 
           when(rollCallRepo.getLastClosedRollCall(any())).thenReturn(ROLL_CALL);
+          when(laoRepo.getLaoView(any())).thenReturn(new LaoView(LAO));
           TransactionObjectBuilder builder = new TransactionObjectBuilder();
           builder.setVersion(1);
           builder.setLockTime(0);
@@ -129,11 +131,20 @@ public class DigitalCashActivityTest {
           builder.setOutputs(Collections.singletonList(oo));
           builder.setInputs(Collections.singletonList(io));
           builder.setTransactionId("some id");
+          TransactionObject transaction = builder.build();
+          Set<RollCall> rcIdSet = new HashSet<>();
+          rcIdSet.add(ROLL_CALL);
 
-          LAO.updateTransactionMaps(builder.build());
+          when(digitalCashRepo.getTransactions(any(), any()))
+              .thenReturn(Collections.singletonList(transaction));
+          when(digitalCashRepo.getTransactionsObservable(any(), any()))
+              .thenReturn(BehaviorSubject.createDefault(Collections.singletonList(transaction)));
+          when(rollCallRepo.getRollCallsObservableInLao(any()))
+              .thenReturn(BehaviorSubject.createDefault(rcIdSet));
+          digitalCashRepo.updateTransactions(LAO.getId(), transaction);
 
           hiltRule.inject();
-          when(repository.getLaoObservable(anyString()))
+          when(laoRepo.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
           when(keyManager.getMainPublicKey()).thenReturn(POP_TOKEN.getPublicKey());
           when(keyManager.getValidPoPToken(any(), any())).thenReturn(POP_TOKEN);

@@ -1,9 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
-import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
-import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
-import com.google.gson.Gson;
 
 import org.junit.Test;
 
@@ -23,29 +20,26 @@ public class CastVoteTest {
   private final boolean writeInEnabled = false;
   private final long timestamp = 10;
   private final String write_in = "My write in ballot option";
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry());
 
   // Set up a open ballot election
-  private final ElectionVote electionVote1 =
-      new ElectionVote(questionId1, 1, writeInEnabled, write_in, electionId);
-  private final ElectionVote electionVote2 =
-      new ElectionVote(questionId2, 2, writeInEnabled, write_in, electionId);
-  private final List<ElectionVote> electionVotes = Arrays.asList(electionVote1, electionVote2);
+  private final PlainVote plainVote1 =
+      new PlainVote(questionId1, 1, writeInEnabled, write_in, electionId);
+  private final PlainVote plainVote2 =
+      new PlainVote(questionId2, 2, writeInEnabled, write_in, electionId);
+  private final List<Vote> plainVotes = Arrays.asList(plainVote1, plainVote2);
 
   // Set up a secret ballot election
-  private final ElectionEncryptedVote electionEncryptedVote1 =
-      new ElectionEncryptedVote(questionId1, "2", writeInEnabled, write_in, electionId);
-  private final ElectionEncryptedVote electionEncryptedVote2 =
-      new ElectionEncryptedVote(questionId2, "1", writeInEnabled, write_in, electionId);
-  private final List<ElectionEncryptedVote> electionEncryptedVotes =
-      Arrays.asList(electionEncryptedVote1, electionEncryptedVote2);
+  private final EncryptedVote encryptedVote1 =
+      new EncryptedVote(questionId1, "2", writeInEnabled, write_in, electionId);
+  private final EncryptedVote encryptedVote2 =
+      new EncryptedVote(questionId2, "1", writeInEnabled, write_in, electionId);
+  private final List<Vote> electionEncryptedVotes = Arrays.asList(encryptedVote1, encryptedVote2);
 
   // Create the cast votes messages
-  private final CastVote<ElectionVote> castOpenVote =
-      new CastVote(electionVotes, electionId, laoId);
-  private final CastVote<ElectionVote> castVoteWithTimestamp =
-      new CastVote<>(electionVotes, electionId, laoId, timestamp);
-  private final CastVote<ElectionEncryptedVote> castEncryptedVote =
+  private final CastVote castOpenVote = new CastVote(plainVotes, electionId, laoId);
+  private final CastVote castVoteWithTimestamp =
+      new CastVote(plainVotes, electionId, laoId, timestamp);
+  private final CastVote castEncryptedVote =
       new CastVote(electionEncryptedVotes, electionId, laoId);
 
   @Test
@@ -62,35 +56,35 @@ public class CastVoteTest {
 
   @Test
   public void getVotesTest() {
-    assertThat(electionVotes, is(castOpenVote.getVotes()));
+    assertThat(plainVotes, is(castOpenVote.getVotes()));
     assertThat(electionEncryptedVotes, is(castEncryptedVote.getVotes()));
   }
 
   @Test
   public void isEqualTest() {
     // Test an OPEN_BALLOT cast vote
-    assertEquals(castOpenVote, new CastVote(electionVotes, electionId, laoId));
+    assertEquals(castOpenVote, new CastVote(plainVotes, electionId, laoId));
     assertEquals(castOpenVote, castOpenVote);
     assertNotEquals(
-        castOpenVote, new CastVote(Collections.singletonList(electionVote1), electionId, laoId));
+        castOpenVote, new CastVote(Collections.singletonList(plainVote1), electionId, laoId));
     assertNotEquals(
-        castOpenVote, new CastVote(Collections.singletonList(electionVote1), "random", laoId));
+        castOpenVote, new CastVote(Collections.singletonList(plainVote1), "random", laoId));
     assertNotEquals(
-        castOpenVote, new CastVote(Collections.singletonList(electionVote1), electionId, "random"));
-    assertEquals(castVoteWithTimestamp, new CastVote(electionVotes, electionId, laoId, timestamp));
+        castOpenVote, new CastVote(Collections.singletonList(plainVote1), electionId, "random"));
+    assertEquals(castVoteWithTimestamp, new CastVote(plainVotes, electionId, laoId, timestamp));
 
     // Test a SECRET_BALLOT cast vote
     assertEquals(castEncryptedVote, new CastVote(electionEncryptedVotes, electionId, laoId));
     assertEquals(castEncryptedVote, castEncryptedVote);
     assertNotEquals(
         castEncryptedVote,
-        new CastVote(Collections.singletonList(electionEncryptedVote1), electionId, laoId));
+        new CastVote(Collections.singletonList(encryptedVote1), electionId, laoId));
     assertNotEquals(
         castEncryptedVote,
-        new CastVote(Collections.singletonList(electionEncryptedVote1), "random", laoId));
+        new CastVote(Collections.singletonList(encryptedVote1), "random", laoId));
     assertNotEquals(
         castEncryptedVote,
-        new CastVote(Collections.singletonList(electionEncryptedVote1), electionId, "random"));
+        new CastVote(Collections.singletonList(encryptedVote1), electionId, "random"));
   }
 
   /** Deserialization needs a specific generic type to match correctly the class */

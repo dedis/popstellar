@@ -19,6 +19,9 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
+import static java.util.Collections.emptySet;
+import static java.util.Collections.unmodifiableSet;
+
 /**
  * This class is the repository of the roll call events
  *
@@ -80,7 +83,7 @@ public class RollCallRepository {
    * @return an observable set of ids who correspond to the set of roll calls published on the given
    *     lao
    */
-  public Observable<Set<String>> getRollCallsObservableInLao(String laoId) {
+  public Observable<Set<RollCall>> getRollCallsObservableInLao(String laoId) {
     return getLaoRollCalls(laoId).getRollCallsSubject();
   }
 
@@ -117,8 +120,8 @@ public class RollCallRepository {
     private final Map<String, Subject<RollCall>> rollCallSubjects = new HashMap<>();
 
     // This allows to observe the collection of roll calls as a whole
-    private final Subject<Set<String>> rollCallsSubject =
-        BehaviorSubject.createDefault(Collections.emptySet());
+    private final Subject<Set<RollCall>> rollCallsSubject =
+        BehaviorSubject.createDefault(unmodifiableSet(emptySet()));
 
     /**
      * This either updates the roll call in the repository or adds it if absent
@@ -144,7 +147,7 @@ public class RollCallRepository {
         rollCallSubjects.put(persistentId, BehaviorSubject.createDefault(rollCall));
       }
 
-      rollCallsSubject.onNext(this.rollCallByPersistentId.keySet());
+      rollCallsSubject.onNext(unmodifiableSet(new HashSet<>(this.rollCallByPersistentId.values())));
     }
 
     public RollCall getRollCallWithPersistentId(String persistentId)
@@ -172,8 +175,8 @@ public class RollCallRepository {
       }
     }
 
-    public Observable<Set<String>> getRollCallsSubject() {
-      return rollCallsSubject.map(HashSet::new);
+    public Observable<Set<RollCall>> getRollCallsSubject() {
+      return rollCallsSubject;
     }
 
     public Set<PublicKey> getAllAttendees() {

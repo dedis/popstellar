@@ -5,17 +5,16 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import { mockNavigate } from '__mocks__/useNavigationMock';
+import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { subscribeToChannel } from 'core/network/CommunicationApi';
-import { Channel, Hash, PublicKey } from 'core/objects';
+import { Channel, PublicKey } from 'core/objects';
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from 'features/social/interface';
 import STRINGS from 'resources/strings';
 
 import UserListItem from '../UserListItem';
 
 const publicKey = new PublicKey('PublicKey');
-const laoId = new Hash('LaoId');
 
 const contextValue = {
   [SOCIAL_FEATURE_IDENTIFIER]: {
@@ -43,40 +42,22 @@ beforeEach(() => {
 const mockStore = configureStore({ reducer: combineReducers({}) });
 
 describe('UserListItem', () => {
-  it('calls subscribeToChannel correctly when clicking on follow', () => {
-    const expectedChannel = '/root/LaoId/social/PublicKey';
-    const button = render(
-      <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <UserListItem laoId={laoId} publicKey={publicKey} />
-        </FeatureContext.Provider>
-      </Provider>,
-    ).getByText(STRINGS.follow_button);
-
-    fireEvent.press(button);
-
-    expect(subscribeToChannel).toHaveBeenCalledTimes(1);
-    expect(subscribeToChannel).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      expectedChannel,
-    );
-  });
-
   it('calls navigate correctly when clicking on profile', () => {
-    const { getByText } = render(
+    const { getByTestId } = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <UserListItem laoId={laoId} publicKey={publicKey} />
+          <MockNavigator
+            component={() => (
+              <UserListItem publicKey={publicKey} isFirstItem={false} isLastItem={false} />
+            )}
+          />
         </FeatureContext.Provider>
       </Provider>,
     );
-    const followButton = getByText(STRINGS.follow_button);
-    fireEvent.press(followButton);
-    const profileButton = getByText(STRINGS.profile_button);
+    const profileButton = getByTestId(`user_list_item_${publicKey.toString()}`);
     fireEvent.press(profileButton);
     expect(mockNavigate).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith(STRINGS.social_media_navigation_tab_user_profile, {
+    expect(mockNavigate).toHaveBeenCalledWith(STRINGS.social_media_search_navigation_user_profile, {
       userPkString: publicKey.valueOf(),
     });
   });
@@ -85,23 +66,14 @@ describe('UserListItem', () => {
     const component = render(
       <Provider store={mockStore}>
         <FeatureContext.Provider value={contextValue}>
-          <UserListItem laoId={laoId} publicKey={publicKey} />
+          <MockNavigator
+            component={() => (
+              <UserListItem publicKey={publicKey} isFirstItem={false} isLastItem={false} />
+            )}
+          />
         </FeatureContext.Provider>
       </Provider>,
     ).toJSON();
     expect(component).toMatchSnapshot();
-  });
-
-  it('renders correctly after clicking on follow', () => {
-    const { toJSON, getByText } = render(
-      <Provider store={mockStore}>
-        <FeatureContext.Provider value={contextValue}>
-          <UserListItem laoId={laoId} publicKey={publicKey} />
-        </FeatureContext.Provider>
-      </Provider>,
-    );
-    const button = getByText(STRINGS.follow_button);
-    fireEvent.press(button);
-    expect(toJSON()).toMatchSnapshot();
   });
 });

@@ -158,28 +158,41 @@ export const handleRollCallCloseMessage =
         const hasToken = rollCall.containsToken(token);
         aDispatch(setLaoLastRollCall(laoId, rollCall.id, hasToken));
 
-        // If we had a token in this roll call, we subscribe to our own social media channel
-        if (token && hasToken) {
-          await subscribeToChannel(
-            laoId,
-            dispatch,
-            getUserSocialChannel(laoId, token.publicKey),
-          ).catch((err) => {
-            console.error(
-              `Could not subscribe to our own social channel ${token.publicKey}, error:`,
-              err,
-            );
-          });
+        const promises: Promise<unknown>[] = [];
+
+        if (rollCall.attendees) {
+          // subscribe to all roll call attendee's social media channels
+          const subscriptionPromises = rollCall.attendees.map((attendee) =>
+            subscribeToChannel(laoId, dispatch, getUserSocialChannel(laoId, attendee)).catch(
+              (err) => {
+                console.error(
+                  `Could not subscribe to social channel of attendee with publuc key '${attendee}', error:`,
+                  err,
+                );
+              },
+            ),
+          );
+
+          // push all promises into the array
+          promises.push(...subscriptionPromises);
         }
+
         // everyone is automatically subscribed to the reaction channel after the roll call
-        await subscribeToChannel(laoId, dispatch, getReactionChannel(laoId)).catch((err) => {
-          console.error('Could not subscribe to reaction channel, error:', err);
-        });
+        promises.push(
+          subscribeToChannel(laoId, dispatch, getReactionChannel(laoId)).catch((err) => {
+            console.error('Could not subscribe to reaction channel, error:', err);
+          }),
+        );
 
         // we also subscribe to the coin channel of this roll call
-        await subscribeToChannel(laoId, dispatch, getCoinChannel(laoId)).catch((err) => {
-          console.error('Could not subscribe to coin channel, error: ', err);
-        });
+        promises.push(
+          subscribeToChannel(laoId, dispatch, getCoinChannel(laoId)).catch((err) => {
+            console.error('Could not subscribe to coin channel, error: ', err);
+          }),
+        );
+
+        // wait until all promises return
+        await Promise.all(promises);
       } catch (err) {
         console.debug(err);
       }
@@ -235,6 +248,8 @@ export const handleRollCallReopenMessage =
       idAlias: rcMsgData.update_id,
       openedAt: rcMsgData.opened_at,
       status: RollCallStatus.REOPENED,
+      // unset end as the roll call is open once again
+      closedAt: undefined,
     });
 
     updateRollCall(rollCall);

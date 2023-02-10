@@ -10,9 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashReceiveFragmentBinding;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -20,7 +18,7 @@ import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
 
-import java.util.Objects;
+import java.text.MessageFormat;
 
 import javax.inject.Inject;
 
@@ -66,24 +64,14 @@ public class DigitalCashReceiveFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     try {
-      LaoView laoView = viewModel.getCurrentLaoValue();
       PoPToken token = viewModel.getValidToken();
       PopTokenData tokenData = new PopTokenData(token.getPublicKey());
       Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
       binding.digitalCashReceiveQr.setImageBitmap(myBitmap);
 
-      if (laoView.getTransactionByUser().containsKey(token.getPublicKey())) {
-        TransactionObject transaction =
-            TransactionObject.lastLockedTransactionObject(
-                Objects.requireNonNull(laoView.getTransactionByUser().get(token.getPublicKey())));
-        String sender = transaction.getSendersTransaction().get(0).getEncoded();
-
-        binding.digitalCashReceiveAddress.setText(String.format("Received from : %n %s", sender));
-
-        binding.digitalCashReceiveAmount.setText(
-            String.format(
-                "%s LAOcoin", transaction.getMiniLaoPerReceiverFirst(token.getPublicKey())));
-      }
+      binding.digitalCashReceiveAddress.setText(
+          (MessageFormat.format(
+              "My address: {0}", viewModel.getValidToken().getPublicKey().getEncoded())));
     } catch (KeyException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.digital_cash_please_enter_roll_call);
     }

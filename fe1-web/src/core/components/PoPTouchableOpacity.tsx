@@ -19,7 +19,7 @@ const PoPTouchableOpacity = React.forwardRef<View, IPropTypes>(
 );
 
 const propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
   onPress: PropTypes.func,
   testID: PropTypes.string,
 
@@ -33,6 +33,7 @@ const propTypes = {
 PoPTouchableOpacity.propTypes = propTypes;
 
 PoPTouchableOpacity.defaultProps = {
+  children: undefined,
   onPress: undefined,
   testID: undefined,
   containerStyle: undefined,

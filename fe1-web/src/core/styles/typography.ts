@@ -3,7 +3,6 @@ import { Platform, TextStyle } from 'react-native';
 import {
   contrast,
   accent as accentColor,
-  secondaryAccent as secondaryColor,
   primary as primaryColor,
   error as errorColor,
   inactive as inactiveColor,
@@ -27,6 +26,11 @@ export const tiny: TextStyle = {
   lineHeight: 14,
 };
 
+export const minuscule: TextStyle = {
+  fontSize: 8,
+  lineHeight: 1,
+};
+
 export const accent: TextStyle = {
   color: accentColor,
 };
@@ -37,10 +41,6 @@ export const error: TextStyle = {
 
 export const negative: TextStyle = {
   color: contrast,
-};
-
-export const secondary: TextStyle = {
-  color: secondaryColor,
 };
 
 export const inactive: TextStyle = {
@@ -100,4 +100,8 @@ export const baseCentered: TextStyle = {
 export const importantCentered: TextStyle = {
   ...baseCentered,
   fontWeight: 'bold',
+};
+
+export const uppercase: TextStyle = {
+  textTransform: 'uppercase',
 };

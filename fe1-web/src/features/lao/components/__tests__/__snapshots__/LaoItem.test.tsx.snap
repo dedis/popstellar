@@ -444,6 +444,7 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                           >
                             <Text
                               accessibilityRole="text"
+                              numberOfLines={1}
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -1010,6 +1011,7 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                           >
                             <Text
                               accessibilityRole="text"
+                              numberOfLines={1}
                               style={
                                 Object {
                                   "backgroundColor": "transparent",
@@ -1553,6 +1555,7 @@ exports[`LaoItem renders correctly as witness 1`] = `
                           >
                             <Text
                               accessibilityRole="text"
+                              numberOfLines={1}
                               style={
                                 Object {
                                   "backgroundColor": "transparent",

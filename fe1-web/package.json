@@ -22,7 +22,8 @@
     "depcruise-graph": "depcruise --config .depcruise.js --output-type dot -- src | dot -T svg > dist/graph.svg",
     "depcruise-graph-archi": "depcruise --config .depcruise.js --output-type cdot -- src | dot -T svg > dist/archi.svg",
     "depcruise-graph-focus": "depcruise --config .depcruise.js --focus %npm_config_pkgfocus% --output-type dot -- src | dot -T svg > dist/focus.svg",
-    "docs": "typedoc"
+    "docs": "typedoc",
+    "postinstall": "patch-package --error-on-fail"
   },
   "dependencies": {
     "@dedis/kyber": "^3.4.4",
@@ -126,6 +127,7 @@
     "jest-localstorage-mock": "^2.4.22",
     "jest-matcher-utils": "^26.6.2",
     "jest-sonar-reporter": "^2.0.0",
+    "patch-package": "^6.5.0",
     "prettier": "^2.5.1",
     "react-test-renderer": "18.0.0",
     "sharp-cli": "^2.1.0",

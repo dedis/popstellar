@@ -17,7 +17,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrcodeFragmentBinding;
-import com.github.dedis.popstellar.ui.detail.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -103,7 +105,7 @@ public final class QRCodeScanningFragment extends Fragment {
       binding.addAttendeeConfirm.setVisibility(View.VISIBLE);
 
       LaoDetailViewModel laoDetailViewModel = (LaoDetailViewModel) viewModel;
-      laoDetailViewModel.setPageTitle(getString(R.string.add_attendee_title));
+      laoDetailViewModel.setPageTitle(R.string.add_attendee_title);
 
       // Subscribe to " Nb of attendees"  event
       observeNbAttendeesEvent();
@@ -117,7 +119,7 @@ public final class QRCodeScanningFragment extends Fragment {
 
     if (viewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
       LaoDetailViewModel laoDetailViewModel = (LaoDetailViewModel) viewModel;
-      laoDetailViewModel.setPageTitle(getString(R.string.add_witness_description));
+      laoDetailViewModel.setPageTitle(R.string.add_witness_description);
 
       // Subscribe to " Witness scan confirm " event
       observeWitnessScanConfirmEvent();
@@ -213,7 +215,7 @@ public final class QRCodeScanningFragment extends Fragment {
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     builder.setTitle("Close Roll Call");
     builder.setMessage("You have scanned " + nbAttendees + " attendees.");
-    builder.setOnDismissListener(dialog -> startCamera());
+    builder.setOnDismissListener(dialog -> applyPermissionToView());
     builder.setPositiveButton(
         R.string.confirm,
         (dialog, which) ->
@@ -226,7 +228,7 @@ public final class QRCodeScanningFragment extends Fragment {
                                 setCurrentFragment(
                                     getParentFragmentManager(),
                                     R.id.fragment_lao_detail,
-                                    LaoDetailFragment::newInstance),
+                                    EventListFragment::newInstance),
                             error ->
                                 ErrorUtils.logAndShow(
                                     requireContext(), TAG, error, R.string.error_close_rollcall))));
@@ -240,7 +242,7 @@ public final class QRCodeScanningFragment extends Fragment {
     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
     builder.setTitle("Warning");
     builder.setMessage(msg);
-    builder.setOnDismissListener(dialog -> startCamera());
+    builder.setOnDismissListener(dialog -> applyPermissionToView());
     builder.setPositiveButton(
         "Ok",
         (dialog, which) -> {

@@ -79,7 +79,7 @@ public final class JsonUtils {
       Set<ValidationMessage> errors = schema.validate(OBJECT_MAPPER.readTree(json));
       if (!errors.isEmpty()) {
         throw new JsonParseException(
-            "ValidationMessage errors : " + Arrays.toString(errors.toArray()));
+            "Json : " + json + "\nValidationMessage errors : " + Arrays.toString(errors.toArray()));
       }
     } catch (JsonProcessingException e) {
       throw new JsonParseException(e);

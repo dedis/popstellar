@@ -415,6 +415,21 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                   </Text>
                                 </Text>
                               </Text>
+                              
+
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                Ended, Results available
+                              </Text>
                             </Text>
                             <View
                               style={
@@ -1867,6 +1882,21 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                     00:00:00
                                   </Text>
                                 </Text>
+                              </Text>
+                              
+
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                Not Started
                               </Text>
                             </Text>
                             <View
@@ -5493,6 +5523,21 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                   </Text>
                                 </Text>
                               </Text>
+                              
+
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                Ended
+                              </Text>
                             </Text>
                             <Text
                               style={
@@ -7235,6 +7280,21 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                   </Text>
                                 </Text>
                               </Text>
+                              
+
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                Ended, Results available
+                              </Text>
                             </Text>
                             <View
                               style={
@@ -8687,6 +8747,21 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                     00:00:00
                                   </Text>
                                 </Text>
+                              </Text>
+                              
+
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                Not Started
                               </Text>
                             </Text>
                             <View
@@ -12347,6 +12422,21 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                     00:00:00
                                   </Text>
                                 </Text>
+                              </Text>
+                              
+
+                              <Text
+                                style={
+                                  Object {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  }
+                                }
+                              >
+                                Ended
                               </Text>
                             </Text>
                             <Text

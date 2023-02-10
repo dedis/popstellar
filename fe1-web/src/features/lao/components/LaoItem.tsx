@@ -67,7 +67,7 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       console.error(`Failed to establish lao connection: ${err}`);
       toast.show(`Failed to establish connection, entering offline mode`, {
         type: 'warning',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }
@@ -83,7 +83,9 @@ const LaoItem = ({ lao, isFirstItem, isLastItem }: IPropTypes) => {
       onPress={reconnectToLao}
       bottomDivider>
       <ListItem.Content>
-        <ListItem.Title style={Typography.base}>{lao.name}</ListItem.Title>
+        <ListItem.Title style={Typography.base} numberOfLines={1}>
+          {lao.name}
+        </ListItem.Title>
         <ListItem.Subtitle style={Typography.small}>
           {STRINGS.user_role}: {role}
         </ListItem.Subtitle>

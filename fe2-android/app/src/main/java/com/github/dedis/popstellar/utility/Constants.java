@@ -11,7 +11,7 @@ public class Constants {
   /** The extra key given by the LaoDetailActivity activity to DigitalCashActivity */
   public static final String LAO_NAME = "lao_name";
 
-  /** The extra key given by the home LaoDetailActivity to DigitalCashActivity */
+  /** The extra key given to transmit a roll call id */
   public static final String ROLL_CALL_ID = "roll_call_id";
 
   /** The extra key given to the LaoDetailActivity when opened */
@@ -22,6 +22,9 @@ public class Constants {
 
   /** The extra value given to the LaoDetailActivity when the wallet content is to be opened */
   public static final String CONTENT_WALLET_EXTRA = "content_wallet";
+
+  /** The tab to open in LaoDetailActivity */
+  public static final String TAB_EXTRA = "tab_extra";
 
   /** The extra value given to the RollCallFragment when opened */
   public static final String RC_PK_EXTRA = "pk";
@@ -50,4 +53,10 @@ public class Constants {
   public static final float DISABLED_ALPHA = 0.2f;
 
   public static final float ENABLED_ALPHA = 1.0f;
+
+  /** Standard size of the side of a displayed QR code */
+  public static final int QR_SIDE = 800;
+
+  /** Number of milliseconds in a day */
+  public static final long MS_IN_A_DAY = 1000 * 60 * 60 * 24L;
 }

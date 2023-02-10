@@ -14,15 +14,19 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionSetupFragmentBinding;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion.Question;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
-import com.github.dedis.popstellar.ui.detail.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSetupViewPagerAdapter;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
@@ -184,7 +188,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(getString(R.string.election_setup_title));
+    viewModel.setPageTitle(R.string.election_setup_title);
+    viewModel.setIsTab(false);
   }
 
   /** Setups the submit button that creates the new election */
@@ -205,47 +210,35 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           List<String> votingMethod = viewPagerAdapter.getVotingMethod();
           List<String> questions = viewPagerAdapter.getQuestions();
           List<List<String>> ballotsOptions = viewPagerAdapter.getBallotOptions();
-          List<String> votingMethodFiltered = new ArrayList<>();
-          List<String> questionsFiltered = new ArrayList<>();
-          List<List<String>> ballotsOptionsFiltered = new ArrayList<>();
 
-          ////////////////////////// While write in not
-          // implemented///////////////////////////////////////////////
-          List<Boolean> writeIns = new ArrayList<>();
-          //////////////////////////////////////////////////////////////////////////////////////////////////////
-          for (Integer i : validPositions) {
-            // We filter to only take the questions for which all data is filled
-
-            writeIns.add(false); // While write in is not implemented
-
-            questionsFiltered.add(questions.get(i));
-            votingMethodFiltered.add(votingMethod.get(i));
-            List<String> questionBallotOptions = ballotsOptions.get(i);
-            List<String> filteredQuestionBallotOptions = new ArrayList<>();
-            for (String ballotOption : questionBallotOptions) {
-              // Filter the list of ballot options to keep only non-empty fields
-              if (!ballotOption.equals("")) {
-                filteredQuestionBallotOptions.add(ballotOption);
-              }
-            }
-            ballotsOptionsFiltered.add(filteredQuestionBallotOptions);
-          }
+          List<Question> filteredQuestions =
+              validPositions.stream()
+                  .map(
+                      i ->
+                          new Question(
+                              questions.get(i),
+                              votingMethod.get(i),
+                              ballotsOptions
+                                  .get(i) // Filter out empty options
+                                  .stream()
+                                  .filter(ballotOption -> !"".equals(ballotOption))
+                                  .collect(Collectors.toList()),
+                              false // While write in is not implemented
+                              ))
+                  .collect(Collectors.toList());
 
           String electionName = electionNameText.getText().toString();
 
           Log.d(
               TAG,
               String.format(
-                  "Creating election with version %s, name %s, creation time %d, start time %d, end time %d, voting methods %s, writesIn %s, questions %s, ballotsOptions %s",
+                  "Creating election with version %s, name %s, creation time %d, start time %d, end time %d, questions %s",
                   electionVersion,
                   electionName,
                   creationTimeInSeconds,
                   startTimeInSeconds,
                   endTimeInSeconds,
-                  votingMethodFiltered,
-                  writeIns,
-                  questionsFiltered,
-                  ballotsOptionsFiltered));
+                  filteredQuestions));
 
           viewModel.addDisposable(
               viewModel
@@ -255,16 +248,13 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                       creationTimeInSeconds,
                       startTimeInSeconds,
                       endTimeInSeconds,
-                      votingMethodFiltered,
-                      writeIns,
-                      ballotsOptionsFiltered,
-                      questionsFiltered)
+                      filteredQuestions)
                   .subscribe(
                       () ->
                           setCurrentFragment(
                               getParentFragmentManager(),
                               R.id.fragment_lao_detail,
-                              LaoDetailFragment::newInstance),
+                              EventListFragment::newInstance),
                       error ->
                           ErrorUtils.logAndShow(
                               requireContext(), TAG, error, R.string.error_create_election)));

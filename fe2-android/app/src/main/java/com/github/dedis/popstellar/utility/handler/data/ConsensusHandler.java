@@ -50,8 +50,8 @@ public final class ConsensusHandler {
     Lao lao = laoView.createLaoCopy();
     lao.updateElectInstance(electInstance);
 
-    laoRepo.updateNodes(laoView.getChannel());
     laoRepo.updateLao(lao);
+    laoRepo.updateNodes(laoView.getChannel());
   }
 
   public void handleElectAccept(HandlerContext context, ConsensusElectAccept consensusElectAccept)

@@ -17,6 +17,21 @@ import (
 	"github.com/rs/zerolog"
 )
 
+// Version contains the current or build version. This variable can be changed
+// at build time with:
+//
+//	go build -ldflags="-X 'popstellar.Version=v1.0.0'"
+//
+// Version should be fetched from git: `git describe --tags`
+var Version = "unknown"
+
+// BuildTime indicates the time at which the binary has been built. Must be set
+// as with Version.
+var BuildTime = "unknown"
+
+// ShortSHA is the short SHA commit id. Must be set as with Version.
+var ShortSHA = "unknown"
+
 // EnvLogLevel is the name of the environment variable to change the logging
 // level.
 const EnvLogLevel = "LLVL"
