@@ -11,7 +11,7 @@ import {
   WALLET_FEATURE_IDENTIFIER,
 } from 'features/wallet/interface';
 
-import RollCallWalletItems from '../RollCallWalletItems';
+import TokenList from '../TokenList';
 
 const contextValue = (useRollCallsByLaoId: Record<string, WalletFeature.RollCall>) => ({
   [WALLET_FEATURE_IDENTIFIER]: {
@@ -27,7 +27,7 @@ const contextValue = (useRollCallsByLaoId: Record<string, WalletFeature.RollCall
 
 describe('RollCallWalletItems', () => {
   it('renders correctly with roll calls', () => {
-    const Screen = () => <RollCallWalletItems laoId={mockLaoId} />;
+    const Screen = () => <TokenList laoId={mockLaoId} />;
 
     const { toJSON } = render(
       <FeatureContext.Provider value={contextValue({ [mockRollCall.id.valueOf()]: mockRollCall })}>
@@ -38,7 +38,7 @@ describe('RollCallWalletItems', () => {
   });
 
   it('renders correctly without roll calls', () => {
-    const Screen = () => <RollCallWalletItems laoId={mockLaoId} />;
+    const Screen = () => <TokenList laoId={mockLaoId} />;
 
     const { toJSON } = render(
       <FeatureContext.Provider value={contextValue({})}>

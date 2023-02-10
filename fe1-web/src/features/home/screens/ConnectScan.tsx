@@ -173,6 +173,8 @@ const ConnectScan = () => {
         params: { screen: STRINGS.navigation_lao_events_home },
       });
     } catch (error) {
+      console.error(error);
+
       // close already established connections
       getNetworkManager().disconnectFromAll();
 
@@ -180,7 +182,7 @@ const ConnectScan = () => {
       isProcessingScan.current = false;
       setIsConnecting(false);
 
-      toast.show(STRINGS.connect_scanning_fail, {
+      toast.show(STRINGS.connect_connecting_fail, {
         type: 'danger',
         placement: 'bottom',
         duration: FOUR_SECONDS,

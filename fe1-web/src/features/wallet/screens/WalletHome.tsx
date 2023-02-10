@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { List } from 'core/styles';
 
-import RollCallWalletItems from '../components/RollCallWalletItems';
+import TokenList from '../components/TokenList';
 import { WalletHooks } from '../hooks';
 
 /**
@@ -16,7 +16,7 @@ const WalletHome = () => {
   return (
     <ScreenWrapper>
       <View style={List.container}>
-        <RollCallWalletItems laoId={lao.id} />
+        <TokenList laoId={lao.id} />
       </View>
     </ScreenWrapper>
   );
