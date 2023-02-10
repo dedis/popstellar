@@ -61,9 +61,12 @@ const TextInputChirp = (props: IPropTypes) => {
     testID,
   } = props;
 
-  const [charsLeft, setCharsLeft] = useState(MAX_CHIRP_CHARS);
+  const [focused, setFocused] = useState(false);
+  const charsLeft = MAX_CHIRP_CHARS - value.length;
   const textIsRed = charsLeft < 0;
   const disabled = textIsRed || charsLeft === MAX_CHIRP_CHARS || alwaysDisabled;
+
+  const showFullInput = focused || charsLeft !== MAX_CHIRP_CHARS;
 
   return (
     <View style={styles.container}>
@@ -83,14 +86,13 @@ const TextInputChirp = (props: IPropTypes) => {
           placeholder={placeholder || undefined}
           multiline
           selectTextOnFocus
-          numberOfLines={numberOfLines || undefined}
+          numberOfLines={(showFullInput ? numberOfLines : 1) || undefined}
           style={[Typography.base, styles.textInput]}
           placeholderTextColor={Color.inactive}
-          onChangeText={(input: string) => {
-            onChangeText(input);
-            setCharsLeft(MAX_CHIRP_CHARS - input.length);
-          }}
+          onChangeText={onChangeText}
           testID={testID ? `${testID}_input` : undefined}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
         />
         <View style={styles.buttonView}>
           <View style={styles.charsLeft}>

@@ -397,6 +397,35 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                   }
                                 >
                                   ProfileIcon
+                                  <Text
+                                    numberOfLines={1}
+                                    selectable={true}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "fontSize": 16,
+                                          "lineHeight": 20,
+                                        },
+                                        Object {
+                                          "color": "#8E8E8E",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "marginTop": 8,
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    oKHk
+                                  </Text>
                                 </View>
                               </View>
                             </RNGestureHandlerButton>
@@ -489,22 +518,6 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                               }
                             }
                           >
-                            <Text
-                              accessibilityRole="text"
-                              numberOfLines={1}
-                              style={
-                                Object {
-                                  "backgroundColor": "transparent",
-                                  "color": "#8E8E8E",
-                                  "fontSize": 16,
-                                  "lineHeight": 20,
-                                  "textAlign": "left",
-                                }
-                              }
-                              testID="listItemTitle"
-                            >
-                              oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=
-                            </Text>
                             <Text
                               accessibilityRole="text"
                               style={
@@ -997,6 +1010,35 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   }
                                 >
                                   ProfileIcon
+                                  <Text
+                                    numberOfLines={1}
+                                    selectable={true}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "fontSize": 16,
+                                          "lineHeight": 20,
+                                        },
+                                        Object {
+                                          "color": "#8E8E8E",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "marginTop": 8,
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    oKHk
+                                  </Text>
                                 </View>
                               </View>
                             </RNGestureHandlerButton>
@@ -1089,22 +1131,6 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                               }
                             }
                           >
-                            <Text
-                              accessibilityRole="text"
-                              numberOfLines={1}
-                              style={
-                                Object {
-                                  "backgroundColor": "transparent",
-                                  "color": "#8E8E8E",
-                                  "fontSize": 16,
-                                  "lineHeight": 20,
-                                  "textAlign": "left",
-                                }
-                              }
-                              testID="listItemTitle"
-                            >
-                              oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=
-                            </Text>
                             <Text
                               accessibilityRole="text"
                               style={
@@ -1865,6 +1891,35 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   }
                                 >
                                   ProfileIcon
+                                  <Text
+                                    numberOfLines={1}
+                                    selectable={true}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "fontSize": 16,
+                                          "lineHeight": 20,
+                                        },
+                                        Object {
+                                          "color": "#8E8E8E",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "marginTop": 8,
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    oKHk
+                                  </Text>
                                 </View>
                               </View>
                             </RNGestureHandlerButton>
@@ -1957,22 +2012,6 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                               }
                             }
                           >
-                            <Text
-                              accessibilityRole="text"
-                              numberOfLines={1}
-                              style={
-                                Object {
-                                  "backgroundColor": "transparent",
-                                  "color": "#8E8E8E",
-                                  "fontSize": 16,
-                                  "lineHeight": 20,
-                                  "textAlign": "left",
-                                }
-                              }
-                              testID="listItemTitle"
-                            >
-                              oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=
-                            </Text>
                             <Text
                               accessibilityRole="text"
                               style={
@@ -2804,6 +2843,35 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   }
                                 >
                                   ProfileIcon
+                                  <Text
+                                    numberOfLines={1}
+                                    selectable={true}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "fontSize": 16,
+                                          "lineHeight": 20,
+                                        },
+                                        Object {
+                                          "color": "#8E8E8E",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "marginTop": 8,
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    oKHk
+                                  </Text>
                                 </View>
                               </View>
                             </RNGestureHandlerButton>
@@ -2896,22 +2964,6 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                               }
                             }
                           >
-                            <Text
-                              accessibilityRole="text"
-                              numberOfLines={1}
-                              style={
-                                Object {
-                                  "backgroundColor": "transparent",
-                                  "color": "#8E8E8E",
-                                  "fontSize": 16,
-                                  "lineHeight": 20,
-                                  "textAlign": "left",
-                                }
-                              }
-                              testID="listItemTitle"
-                            >
-                              oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=
-                            </Text>
                             <Text
                               accessibilityRole="text"
                               style={
@@ -3743,6 +3795,35 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   }
                                 >
                                   ProfileIcon
+                                  <Text
+                                    numberOfLines={1}
+                                    selectable={true}
+                                    style={
+                                      Array [
+                                        Object {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        Object {
+                                          "fontSize": 16,
+                                          "lineHeight": 20,
+                                        },
+                                        Object {
+                                          "color": "#8E8E8E",
+                                        },
+                                        Object {
+                                          "textAlign": "center",
+                                        },
+                                        Object {
+                                          "marginTop": 8,
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Anon
+                                  </Text>
                                 </View>
                               </View>
                             </RNGestureHandlerButton>
@@ -3835,22 +3916,6 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                               }
                             }
                           >
-                            <Text
-                              accessibilityRole="text"
-                              numberOfLines={1}
-                              style={
-                                Object {
-                                  "backgroundColor": "transparent",
-                                  "color": "#8E8E8E",
-                                  "fontSize": 16,
-                                  "lineHeight": 20,
-                                  "textAlign": "left",
-                                }
-                              }
-                              testID="listItemTitle"
-                            >
-                              Anonymous
-                            </Text>
                             <Text
                               accessibilityRole="text"
                               style={
