@@ -154,42 +154,7 @@ exports[`CollapsibleContainer container can be opened 1`] = `
           }
         }
         testID="RNE__ListItem__Accordion__Icon"
-      >
-        <View
-          style={
-            {
-              "overflow": "hidden",
-            }
-          }
-          testID="RNE__ICON__CONTAINER"
-        >
-          <View
-            accessibilityRole="button"
-            android_ripple={
-              {
-                "borderless": false,
-                "color": "rgba(0, 0, 0, 0.3)",
-                "radius": -5,
-              }
-            }
-            disabled={false}
-            testID="RNE__ICON__CONTAINER_ACTION"
-          >
-            <View
-              style={
-                {
-                  "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "justifyContent": "center",
-                }
-              }
-              testID="RNE__ICON"
-            >
-              <Text />
-            </View>
-          </View>
-        </View>
-      </View>
+      />
     </View>
   </View>,
   <View
@@ -364,42 +329,7 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
         }
       }
       testID="RNE__ListItem__Accordion__Icon"
-    >
-      <View
-        style={
-          {
-            "overflow": "hidden",
-          }
-        }
-        testID="RNE__ICON__CONTAINER"
-      >
-        <View
-          accessibilityRole="button"
-          android_ripple={
-            {
-              "borderless": false,
-              "color": "rgba(0, 0, 0, 0.3)",
-              "radius": -5,
-            }
-          }
-          disabled={false}
-          testID="RNE__ICON__CONTAINER_ACTION"
-        >
-          <View
-            style={
-              {
-                "alignItems": "center",
-                "backgroundColor": "transparent",
-                "justifyContent": "center",
-              }
-            }
-            testID="RNE__ICON"
-          >
-            <Text />
-          </View>
-        </View>
-      </View>
-    </View>
+    />
   </View>
 </View>
 `;
@@ -558,42 +488,7 @@ exports[`CollapsibleContainer renders correctly when opened 1`] = `
           }
         }
         testID="RNE__ListItem__Accordion__Icon"
-      >
-        <View
-          style={
-            {
-              "overflow": "hidden",
-            }
-          }
-          testID="RNE__ICON__CONTAINER"
-        >
-          <View
-            accessibilityRole="button"
-            android_ripple={
-              {
-                "borderless": false,
-                "color": "rgba(0, 0, 0, 0.3)",
-                "radius": -5,
-              }
-            }
-            disabled={false}
-            testID="RNE__ICON__CONTAINER_ACTION"
-          >
-            <View
-              style={
-                {
-                  "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "justifyContent": "center",
-                }
-              }
-              testID="RNE__ICON"
-            >
-              <Text />
-            </View>
-          </View>
-        </View>
-      </View>
+      />
     </View>
   </View>,
   <View

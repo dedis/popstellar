@@ -550,65 +550,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -1920,65 +1862,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -2864,65 +2748,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -3794,65 +3620,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -5328,42 +5096,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text />
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -6404,42 +6137,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text />
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View

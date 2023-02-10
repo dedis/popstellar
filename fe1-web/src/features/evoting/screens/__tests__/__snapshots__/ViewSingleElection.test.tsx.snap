@@ -584,65 +584,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -1090,65 +1032,7 @@ exports[`ViewSingleElection renders correctly non organizers election with resul
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -2059,65 +1943,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -2534,65 +2360,7 @@ exports[`ViewSingleElection renders correctly non organizers not started electio
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -3865,65 +3633,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -4505,65 +4215,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -5711,65 +5363,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -6186,65 +5780,7 @@ exports[`ViewSingleElection renders correctly non organizers terminated election
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -7449,65 +6985,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -7955,65 +7433,7 @@ exports[`ViewSingleElection renders correctly organizers election with results 1
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -8924,42 +8344,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text />
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -9376,42 +8761,7 @@ exports[`ViewSingleElection renders correctly organizers not started election 1`
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text />
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -10775,42 +10125,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text />
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -11346,42 +10661,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text />
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -12565,42 +11845,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text />
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View
@@ -13017,42 +12262,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                       }
                                     }
                                     testID="RNE__ListItem__Accordion__Icon"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "overflow": "hidden",
-                                        }
-                                      }
-                                      testID="RNE__ICON__CONTAINER"
-                                    >
-                                      <View
-                                        accessibilityRole="button"
-                                        android_ripple={
-                                          {
-                                            "borderless": false,
-                                            "color": "rgba(0, 0, 0, 0.3)",
-                                            "radius": -5,
-                                          }
-                                        }
-                                        disabled={false}
-                                        testID="RNE__ICON__CONTAINER_ACTION"
-                                      >
-                                        <View
-                                          style={
-                                            {
-                                              "alignItems": "center",
-                                              "backgroundColor": "transparent",
-                                              "justifyContent": "center",
-                                            }
-                                          }
-                                          testID="RNE__ICON"
-                                        >
-                                          <Text />
-                                        </View>
-                                      </View>
-                                    </View>
-                                  </View>
+                                  />
                                 </View>
                               </View>
                               <View

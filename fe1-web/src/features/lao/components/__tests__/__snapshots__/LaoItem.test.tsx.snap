@@ -494,41 +494,6 @@ exports[`LaoItem renders correctly as attendee 1`] = `
                               }
                             }
                           />
-                          <View
-                            style={
-                              {
-                                "alignSelf": "center",
-                                "overflow": "hidden",
-                              }
-                            }
-                            testID="RNE__ICON__CONTAINER"
-                          >
-                            <View
-                              accessibilityRole="button"
-                              android_ripple={
-                                {
-                                  "borderless": false,
-                                  "color": "rgba(0, 0, 0, 0.3)",
-                                  "radius": -5,
-                                }
-                              }
-                              disabled={false}
-                              testID="RNE__ICON__CONTAINER_ACTION"
-                            >
-                              <View
-                                style={
-                                  {
-                                    "alignItems": "center",
-                                    "backgroundColor": "transparent",
-                                    "justifyContent": "center",
-                                  }
-                                }
-                                testID="RNE__ICON"
-                              >
-                                <Text />
-                              </View>
-                            </View>
-                          </View>
                         </View>
                       </View>
                     </View>
@@ -1038,41 +1003,6 @@ exports[`LaoItem renders correctly as organizer 1`] = `
                               }
                             }
                           />
-                          <View
-                            style={
-                              {
-                                "alignSelf": "center",
-                                "overflow": "hidden",
-                              }
-                            }
-                            testID="RNE__ICON__CONTAINER"
-                          >
-                            <View
-                              accessibilityRole="button"
-                              android_ripple={
-                                {
-                                  "borderless": false,
-                                  "color": "rgba(0, 0, 0, 0.3)",
-                                  "radius": -5,
-                                }
-                              }
-                              disabled={false}
-                              testID="RNE__ICON__CONTAINER_ACTION"
-                            >
-                              <View
-                                style={
-                                  {
-                                    "alignItems": "center",
-                                    "backgroundColor": "transparent",
-                                    "justifyContent": "center",
-                                  }
-                                }
-                                testID="RNE__ICON"
-                              >
-                                <Text />
-                              </View>
-                            </View>
-                          </View>
                         </View>
                       </View>
                     </View>
@@ -1582,41 +1512,6 @@ exports[`LaoItem renders correctly as witness 1`] = `
                               }
                             }
                           />
-                          <View
-                            style={
-                              {
-                                "alignSelf": "center",
-                                "overflow": "hidden",
-                              }
-                            }
-                            testID="RNE__ICON__CONTAINER"
-                          >
-                            <View
-                              accessibilityRole="button"
-                              android_ripple={
-                                {
-                                  "borderless": false,
-                                  "color": "rgba(0, 0, 0, 0.3)",
-                                  "radius": -5,
-                                }
-                              }
-                              disabled={false}
-                              testID="RNE__ICON__CONTAINER_ACTION"
-                            >
-                              <View
-                                style={
-                                  {
-                                    "alignItems": "center",
-                                    "backgroundColor": "transparent",
-                                    "justifyContent": "center",
-                                  }
-                                }
-                                testID="RNE__ICON"
-                              >
-                                <Text />
-                              </View>
-                            </View>
-                          </View>
                         </View>
                       </View>
                     </View>

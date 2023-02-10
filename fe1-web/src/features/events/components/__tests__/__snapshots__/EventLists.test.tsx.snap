@@ -499,41 +499,6 @@ exports[`EventLists renders correctly for attendees 1`] = `
                                 }
                               }
                             />
-                            <View
-                              style={
-                                {
-                                  "alignSelf": "center",
-                                  "overflow": "hidden",
-                                }
-                              }
-                              testID="RNE__ICON__CONTAINER"
-                            >
-                              <View
-                                accessibilityRole="button"
-                                android_ripple={
-                                  {
-                                    "borderless": false,
-                                    "color": "rgba(0, 0, 0, 0.3)",
-                                    "radius": -5,
-                                  }
-                                }
-                                disabled={false}
-                                testID="RNE__ICON__CONTAINER_ACTION"
-                              >
-                                <View
-                                  style={
-                                    {
-                                      "alignItems": "center",
-                                      "backgroundColor": "transparent",
-                                      "justifyContent": "center",
-                                    }
-                                  }
-                                  testID="RNE__ICON"
-                                >
-                                  <Text />
-                                </View>
-                              </View>
-                            </View>
                           </View>
                         </View>
                         <View
@@ -696,42 +661,7 @@ exports[`EventLists renders correctly for attendees 1`] = `
                                   }
                                 }
                                 testID="RNE__ListItem__Accordion__Icon"
-                              >
-                                <View
-                                  style={
-                                    {
-                                      "overflow": "hidden",
-                                    }
-                                  }
-                                  testID="RNE__ICON__CONTAINER"
-                                >
-                                  <View
-                                    accessibilityRole="button"
-                                    android_ripple={
-                                      {
-                                        "borderless": false,
-                                        "color": "rgba(0, 0, 0, 0.3)",
-                                        "radius": -5,
-                                      }
-                                    }
-                                    disabled={false}
-                                    testID="RNE__ICON__CONTAINER_ACTION"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "alignItems": "center",
-                                          "backgroundColor": "transparent",
-                                          "justifyContent": "center",
-                                        }
-                                      }
-                                      testID="RNE__ICON"
-                                    >
-                                      <Text />
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
+                              />
                             </View>
                           </View>
                           <View
@@ -906,41 +836,6 @@ exports[`EventLists renders correctly for attendees 1`] = `
                                     Ended 2022-05-28 00:00:00, on earth
                                   </Text>
                                 </View>
-                                <View
-                                  style={
-                                    {
-                                      "alignSelf": "center",
-                                      "overflow": "hidden",
-                                    }
-                                  }
-                                  testID="RNE__ICON__CONTAINER"
-                                >
-                                  <View
-                                    accessibilityRole="button"
-                                    android_ripple={
-                                      {
-                                        "borderless": false,
-                                        "color": "rgba(0, 0, 0, 0.3)",
-                                        "radius": -5,
-                                      }
-                                    }
-                                    disabled={false}
-                                    testID="RNE__ICON__CONTAINER_ACTION"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "alignItems": "center",
-                                          "backgroundColor": "transparent",
-                                          "justifyContent": "center",
-                                        }
-                                      }
-                                      testID="RNE__ICON"
-                                    >
-                                      <Text />
-                                    </View>
-                                  </View>
-                                </View>
                               </View>
                             </View>
                             <View
@@ -1105,41 +1000,6 @@ exports[`EventLists renders correctly for attendees 1`] = `
                                   >
                                     Starting anytime now
                                   </Text>
-                                </View>
-                                <View
-                                  style={
-                                    {
-                                      "alignSelf": "center",
-                                      "overflow": "hidden",
-                                    }
-                                  }
-                                  testID="RNE__ICON__CONTAINER"
-                                >
-                                  <View
-                                    accessibilityRole="button"
-                                    android_ripple={
-                                      {
-                                        "borderless": false,
-                                        "color": "rgba(0, 0, 0, 0.3)",
-                                        "radius": -5,
-                                      }
-                                    }
-                                    disabled={false}
-                                    testID="RNE__ICON__CONTAINER_ACTION"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "alignItems": "center",
-                                          "backgroundColor": "transparent",
-                                          "justifyContent": "center",
-                                        }
-                                      }
-                                      testID="RNE__ICON"
-                                    >
-                                      <Text />
-                                    </View>
-                                  </View>
                                 </View>
                               </View>
                             </View>
@@ -1658,41 +1518,6 @@ exports[`EventLists renders correctly for organizers 1`] = `
                                 }
                               }
                             />
-                            <View
-                              style={
-                                {
-                                  "alignSelf": "center",
-                                  "overflow": "hidden",
-                                }
-                              }
-                              testID="RNE__ICON__CONTAINER"
-                            >
-                              <View
-                                accessibilityRole="button"
-                                android_ripple={
-                                  {
-                                    "borderless": false,
-                                    "color": "rgba(0, 0, 0, 0.3)",
-                                    "radius": -5,
-                                  }
-                                }
-                                disabled={false}
-                                testID="RNE__ICON__CONTAINER_ACTION"
-                              >
-                                <View
-                                  style={
-                                    {
-                                      "alignItems": "center",
-                                      "backgroundColor": "transparent",
-                                      "justifyContent": "center",
-                                    }
-                                  }
-                                  testID="RNE__ICON"
-                                >
-                                  <Text />
-                                </View>
-                              </View>
-                            </View>
                           </View>
                         </View>
                         <View
@@ -1855,42 +1680,7 @@ exports[`EventLists renders correctly for organizers 1`] = `
                                   }
                                 }
                                 testID="RNE__ListItem__Accordion__Icon"
-                              >
-                                <View
-                                  style={
-                                    {
-                                      "overflow": "hidden",
-                                    }
-                                  }
-                                  testID="RNE__ICON__CONTAINER"
-                                >
-                                  <View
-                                    accessibilityRole="button"
-                                    android_ripple={
-                                      {
-                                        "borderless": false,
-                                        "color": "rgba(0, 0, 0, 0.3)",
-                                        "radius": -5,
-                                      }
-                                    }
-                                    disabled={false}
-                                    testID="RNE__ICON__CONTAINER_ACTION"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "alignItems": "center",
-                                          "backgroundColor": "transparent",
-                                          "justifyContent": "center",
-                                        }
-                                      }
-                                      testID="RNE__ICON"
-                                    >
-                                      <Text />
-                                    </View>
-                                  </View>
-                                </View>
-                              </View>
+                              />
                             </View>
                           </View>
                           <View
@@ -2065,41 +1855,6 @@ exports[`EventLists renders correctly for organizers 1`] = `
                                     Ended 2022-05-28 00:00:00, on earth
                                   </Text>
                                 </View>
-                                <View
-                                  style={
-                                    {
-                                      "alignSelf": "center",
-                                      "overflow": "hidden",
-                                    }
-                                  }
-                                  testID="RNE__ICON__CONTAINER"
-                                >
-                                  <View
-                                    accessibilityRole="button"
-                                    android_ripple={
-                                      {
-                                        "borderless": false,
-                                        "color": "rgba(0, 0, 0, 0.3)",
-                                        "radius": -5,
-                                      }
-                                    }
-                                    disabled={false}
-                                    testID="RNE__ICON__CONTAINER_ACTION"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "alignItems": "center",
-                                          "backgroundColor": "transparent",
-                                          "justifyContent": "center",
-                                        }
-                                      }
-                                      testID="RNE__ICON"
-                                    >
-                                      <Text />
-                                    </View>
-                                  </View>
-                                </View>
                               </View>
                             </View>
                             <View
@@ -2264,41 +2019,6 @@ exports[`EventLists renders correctly for organizers 1`] = `
                                   >
                                     Starting anytime now
                                   </Text>
-                                </View>
-                                <View
-                                  style={
-                                    {
-                                      "alignSelf": "center",
-                                      "overflow": "hidden",
-                                    }
-                                  }
-                                  testID="RNE__ICON__CONTAINER"
-                                >
-                                  <View
-                                    accessibilityRole="button"
-                                    android_ripple={
-                                      {
-                                        "borderless": false,
-                                        "color": "rgba(0, 0, 0, 0.3)",
-                                        "radius": -5,
-                                      }
-                                    }
-                                    disabled={false}
-                                    testID="RNE__ICON__CONTAINER_ACTION"
-                                  >
-                                    <View
-                                      style={
-                                        {
-                                          "alignItems": "center",
-                                          "backgroundColor": "transparent",
-                                          "justifyContent": "center",
-                                        }
-                                      }
-                                      testID="RNE__ICON"
-                                    >
-                                      <Text />
-                                    </View>
-                                  </View>
                                 </View>
                               </View>
                             </View>
