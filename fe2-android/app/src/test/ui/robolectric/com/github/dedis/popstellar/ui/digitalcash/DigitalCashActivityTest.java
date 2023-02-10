@@ -132,8 +132,8 @@ public class DigitalCashActivityTest {
           builder.setInputs(Collections.singletonList(io));
           builder.setTransactionId("some id");
           TransactionObject transaction = builder.build();
-          Set<String> rcIdSet = new HashSet<>();
-          rcIdSet.add(ROLL_CALL.getId());
+          Set<RollCall> rcIdSet = new HashSet<>();
+          rcIdSet.add(ROLL_CALL);
 
           when(digitalCashRepo.getTransactions(any(), any()))
               .thenReturn(Collections.singletonList(transaction));

@@ -184,7 +184,8 @@ public class LAONetworkManager implements MessageSender {
     } catch (DataHandlingException
         | UnknownLaoException
         | UnknownRollCallException
-        | NoRollCallException e) {
+        | NoRollCallException
+        | UnknownElectionException e) {
       Log.e(TAG, "Error while handling received message", e);
       unprocessed.onNext(broadcast);
     }
@@ -197,7 +198,8 @@ public class LAONetworkManager implements MessageSender {
       } catch (DataHandlingException
           | UnknownLaoException
           | UnknownRollCallException
-          | NoRollCallException e) {
+          | NoRollCallException
+          | UnknownElectionException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
       }
     }

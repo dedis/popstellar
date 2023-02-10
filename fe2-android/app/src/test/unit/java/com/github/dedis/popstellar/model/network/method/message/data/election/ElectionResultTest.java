@@ -14,8 +14,8 @@ import static org.junit.Assert.assertThrows;
 
 public class ElectionResultTest {
 
-  private final List<QuestionResult> results =
-      Collections.singletonList(new QuestionResult("Candidate1", 40));
+  private final Set<QuestionResult> results =
+      Collections.singleton(new QuestionResult("Candidate1", 40));
   private final List<ElectionResultQuestion> questions =
       Collections.singletonList(new ElectionResultQuestion("question id", results));
   private final ElectionResult electionResult = new ElectionResult(questions);

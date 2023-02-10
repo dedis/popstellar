@@ -18,5 +18,5 @@ public interface DataHandler<T extends Data> {
    */
   void accept(HandlerContext context, T data)
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          NoRollCallException;
+          UnknownElectionException, NoRollCallException;
 }

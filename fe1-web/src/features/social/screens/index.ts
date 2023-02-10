@@ -3,4 +3,4 @@ export { default as SocialProfile } from './SocialProfile';
 export { default as SocialSearch } from './SocialSearch';
 export { default as SocialUserProfile } from './SocialUserProfile';
 export { default as SocialTopChirps } from './SocialTopChirps';
-export { default as SocialNewChirp } from './SocialNewChirp';
+export { default as NewChirp } from '../components/NewChirp';

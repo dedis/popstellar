@@ -18,6 +18,7 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
+        new ElectionRepository(),
         new RollCallRepository(),
         new DigitalCashRepository(),
         new MessageRepository(),
@@ -30,7 +31,21 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),
+        new ElectionRepository(),
         rollCallRepo,
+        new DigitalCashRepository(),
+        new MessageRepository(),
+        keyManager,
+        new ServerRepository());
+  }
+
+  public static DataRegistry buildRegistry(
+      LAORepository laoRepository, ElectionRepository electionRepo, KeyManager keyManager) {
+    return buildRegistry(
+        laoRepository,
+        new SocialMediaRepository(),
+        electionRepo,
+        new RollCallRepository(),
         new DigitalCashRepository(),
         new MessageRepository(),
         keyManager,
@@ -45,6 +60,7 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepo,
         socialMediaRepo,
+        new ElectionRepository(),
         rollCallRepo,
         new DigitalCashRepository(),
         new MessageRepository(),
@@ -60,6 +76,7 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         laoRepo,
         new SocialMediaRepository(),
+        new ElectionRepository(),
         new RollCallRepository(),
         new DigitalCashRepository(),
         msgRepo,
@@ -72,6 +89,7 @@ public class DataRegistryModuleHelper {
     return buildRegistry(
         new LAORepository(),
         new SocialMediaRepository(),
+        new ElectionRepository(),
         new RollCallRepository(),
         digitalCashRepo,
         new MessageRepository(),
@@ -82,6 +100,7 @@ public class DataRegistryModuleHelper {
   public static DataRegistry buildRegistry(
       LAORepository laoRepo,
       SocialMediaRepository socialMediaRepo,
+      ElectionRepository electionRepo,
       RollCallRepository rollCallRepo,
       DigitalCashRepository digitalCashRepo,
       MessageRepository msgRepo,
@@ -89,7 +108,7 @@ public class DataRegistryModuleHelper {
       ServerRepository serverRepo) {
     LaoHandler laoHandler = new LaoHandler(keyManager, msgRepo, laoRepo, serverRepo);
     RollCallHandler rollCallHandler = new RollCallHandler(laoRepo, rollCallRepo, digitalCashRepo);
-    ElectionHandler electionHandler = new ElectionHandler(msgRepo, laoRepo);
+    ElectionHandler electionHandler = new ElectionHandler(msgRepo, laoRepo, electionRepo);
     ConsensusHandler consensusHandler = new ConsensusHandler(laoRepo);
     ChirpHandler chirpHandler = new ChirpHandler(laoRepo, socialMediaRepo);
     TransactionCoinHandler transactionCoinHandler = new TransactionCoinHandler(digitalCashRepo);

@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BuildInfo renders correctly 1`] = `
+<View
+  style={
+    Object {
+      "display": "flex",
+      "flexDirection": "row",
+      "justifyContent": "center",
+      "left": 8,
+      "position": "absolute",
+      "right": 8,
+      "top": 48,
+      "zIndex": 100,
+    }
+  }
+>
+  <Text
+    style={
+      Array [
+        Object {
+          "fontSize": 8,
+          "lineHeight": 1,
+        },
+        Object {
+          "color": "#8E8E8E",
+        },
+        Object {
+          "fontFamily": "Courier New",
+        },
+        Object {
+          "textTransform": "uppercase",
+        },
+      ]
+    }
+  >
+    <Text
+      onPress={[Function]}
+    />
+    <Text>
+       | 
+    </Text>
+    <Text
+      onPress={[Function]}
+    />
+    <Text>
+       | 
+    </Text>
+    <Text />
+  </Text>
+</View>
+`;

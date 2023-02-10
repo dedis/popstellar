@@ -6,7 +6,6 @@ import {
   DrawerItem,
   DrawerItemList,
 } from '@react-navigation/drawer';
-import Constants from 'expo-constants';
 import React, { useMemo } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
@@ -38,10 +37,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     margin: Spacing.contentSpacing,
-  } as ViewStyle,
-  spacer: {} as ViewStyle,
-  drawerFooter: {
-    paddingBottom: Spacing.contentSpacing,
   } as ViewStyle,
   drawerHeader: {
     marginBottom: Spacing.x05,
@@ -106,14 +101,6 @@ const LaoDrawerContent = ({ descriptors, navigation, state }: DrawerContentCompo
           inactiveBackgroundColor={drawerNavigationOptions.drawerInactiveBackgroundColor}
         />
       </DrawerContentScrollView>
-      <View style={styles.spacer} />
-      <View style={styles.drawerFooter}>
-        <Text
-          selectable
-          style={[Typography.base, Typography.centered, Typography.tiny, Typography.inactive]}>
-          {Constants?.expoConfig?.extra?.commitHash}
-        </Text>
-      </View>
     </View>
   );
 };
