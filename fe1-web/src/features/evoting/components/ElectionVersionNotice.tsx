@@ -15,8 +15,7 @@ const styles = StyleSheet.create({
 
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: Color.primary,
-    borderWidth: 1,
+    backgroundColor: Color.contrast,
     borderRadius: Border.radius,
   } as ViewStyle,
   infoText: {

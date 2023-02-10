@@ -3591,6 +3591,7 @@ exports[`ViewSingleElection renders correctly non organizers opened election 1`]
                               style={
                                 Object {
                                   "alignItems": "center",
+                                  "backgroundColor": "#fff",
                                   "borderColor": "#000",
                                   "borderRadius": 8,
                                   "borderWidth": 1,
@@ -10410,6 +10411,7 @@ exports[`ViewSingleElection renders correctly organizers opened election 1`] = `
                               style={
                                 Object {
                                   "alignItems": "center",
+                                  "backgroundColor": "#fff",
                                   "borderColor": "#000",
                                   "borderRadius": 8,
                                   "borderWidth": 1,
