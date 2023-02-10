@@ -12596,30 +12596,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                           }
                                           testID="RNE__ICON"
                                         >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
+                                          <Text />
                                         </View>
                                       </View>
                                     </View>
@@ -13071,30 +13048,7 @@ exports[`ViewSingleElection renders correctly organizers terminated election 1`]
                                           }
                                           testID="RNE__ICON"
                                         >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              [
-                                                {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
+                                          <Text />
                                         </View>
                                       </View>
                                     </View>
