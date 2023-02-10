@@ -9,13 +9,6 @@ const aliases = {
 async function configAsync(env, argv) {
   const config = await createExpoWebpackConfigAsync({
       ...env,
-      babel: {
-          // This is a workaround for https://github.com/react-native-elements/react-native-elements/issues/3607
-          // to get the new version of react-native-elements working
-          // Revert this commit as soon as the new version is properly released and this
-          // issue is resolved
-          dangerouslyAddModulePathsToTranspile: ['@rneui/base', '@rneui/themed'],
-      },
   }, argv);
 
   config.resolve.alias = {
