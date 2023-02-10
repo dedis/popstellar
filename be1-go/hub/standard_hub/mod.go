@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"popstellar/channel"
 	"popstellar/crypto"
-	"popstellar/hub"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -47,8 +46,6 @@ var suite = crypto.Suite
 
 // Hub implements the Hub interface.
 type Hub struct {
-	hubType hub.HubType
-
 	serverAdress string
 
 	messageChan chan socket.IncomingMessage
@@ -136,8 +133,8 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 }
 
 // NewHub returns a new Hub.
-func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger, laoFac channel.LaoFactory,
-	hubType hub.HubType) (*Hub, error) {
+func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
+	laoFac channel.LaoFactory) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -149,7 +146,6 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger, l
 	pubServ, secServ := generateKeys()
 
 	hub := Hub{
-		hubType:         hubType,
 		serverAdress:    serverAddress,
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
@@ -169,11 +165,6 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger, l
 	}
 
 	return &hub, nil
-}
-
-// Type implements hub.Hub
-func (h *Hub) Type() hub.HubType {
-	return h.hubType
 }
 
 // Start implements hub.Hub
@@ -457,9 +448,7 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 	switch incomingMessage.Socket.Type() {
 	case socket.ClientSocketType:
 		return h.handleMessageFromClient(incomingMessage)
-	case socket.WitnessSocketType:
-		return h.handleMessageFromServer(incomingMessage)
-	case socket.OrganizerSocketType:
+	case socket.ServerSocketType:
 		return h.handleMessageFromServer(incomingMessage)
 	default:
 		return xerrors.Errorf("invalid socket type")
@@ -579,7 +568,7 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 	h.channelByID[channelID] = channel
 	h.Unlock()
 
-	if sock.Type() == socket.OrganizerSocketType || sock.Type() == socket.WitnessSocketType {
+	if sock.Type() == socket.ServerSocketType {
 		h.log.Info().Msgf("catching up on channel %v", channelID)
 		h.catchupToServer(sock, channelID)
 	}

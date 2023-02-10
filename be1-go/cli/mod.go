@@ -54,15 +54,12 @@ func Serve(cliCtx *cli.Context, user string) error {
 	// compute the client server address
 	clientServerAddress := fmt.Sprintf("%s:%d", publicAddress, clientPort)
 
-	// get the HubType from the user
-	var hubType = hub.HubType(user)
-
 	var point kyber.Point = nil
 	ownerKey(pk, &point)
 
 	// create user hub
 	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
-		lao.NewChannel, hubType)
+		lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the %s hub: %v", user, err)
 	}
@@ -76,9 +73,9 @@ func Serve(cliCtx *cli.Context, user string) error {
 	clientSrv.Start()
 
 	// Start a witness websocket server
-	witnessSrv := network.NewServer(h, privateAddress, witnessPort, socket.WitnessSocketType,
+	serverSrv := network.NewServer(h, privateAddress, witnessPort, socket.ServerSocketType,
 		log.With().Str("role", "witness server").Logger())
-	witnessSrv.Start()
+	serverSrv.Start()
 
 	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}
@@ -88,7 +85,7 @@ func Serve(cliCtx *cli.Context, user string) error {
 		organizerAddress := cliCtx.String("organizer-address")
 
 		// connect to organizer's witness endpoint
-		err = connectToSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
+		err = connectToSocket(organizerAddress, h, wg, done)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to organizer: %v", err)
 		}
@@ -96,21 +93,21 @@ func Serve(cliCtx *cli.Context, user string) error {
 
 	// connect to given witness
 	for _, witnessAddress := range otherWitness {
-		err = connectToSocket(hub.WitnessHubType, witnessAddress, h, wg, done)
+		err = connectToSocket(witnessAddress, h, wg, done)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
 	}
 
 	// Wait for a Ctrl-C
-	err = network.WaitAndShutdownServers(cliCtx.Context, clientSrv, witnessSrv)
+	err = network.WaitAndShutdownServers(cliCtx.Context, clientSrv, serverSrv)
 	if err != nil {
 		return err
 	}
 
 	h.Stop()
 	<-clientSrv.Stopped
-	<-witnessSrv.Stopped
+	<-serverSrv.Stopped
 
 	// notify channs to stop
 	close(done)
@@ -133,12 +130,12 @@ func Serve(cliCtx *cli.Context, user string) error {
 
 // connectToSocket establishes a connection to another server's witness
 // endpoint.
-func connectToSocket(otherHubType hub.HubType, address string, h hub.Hub,
+func connectToSocket(address string, h hub.Hub,
 	wg *sync.WaitGroup, done chan struct{}) error {
 
 	log := popstellar.Logger
 
-	urlString := fmt.Sprintf("ws://%s/%s/witness", address, otherHubType)
+	urlString := fmt.Sprintf("ws://%s/server/witness", address)
 	u, err := url.Parse(urlString)
 	if err != nil {
 		return xerrors.Errorf("failed to parse connection url %s: %v", urlString, err)
@@ -149,35 +146,18 @@ func connectToSocket(otherHubType hub.HubType, address string, h hub.Hub,
 		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
 	}
 
-	log.Info().Msgf("connected to %s at %s", otherHubType, urlString)
+	log.Info().Msgf("connected to server at %s", urlString)
 
-	switch otherHubType {
-	case hub.OrganizerHubType:
-		organizerSocket := socket.NewOrganizerSocket(h.Receiver(),
-			h.OnSocketClose(), ws, wg, done, log)
-		wg.Add(2)
+	organizerSocket := socket.NewServerSocket(h.Receiver(),
+		h.OnSocketClose(), ws, wg, done, log)
+	wg.Add(2)
 
-		go organizerSocket.WritePump()
-		go organizerSocket.ReadPump()
+	go organizerSocket.WritePump()
+	go organizerSocket.ReadPump()
 
-		err = h.NotifyNewServer(organizerSocket)
-		if err != nil {
-			return xerrors.Errorf("error while trying to catchup to server: %v", err)
-		}
-	case hub.WitnessHubType:
-		witnessSocket := socket.NewWitnessSocket(h.Receiver(),
-			h.OnSocketClose(), ws, wg, done, log)
-		wg.Add(2)
-
-		go witnessSocket.WritePump()
-		go witnessSocket.ReadPump()
-
-		err = h.NotifyNewServer(witnessSocket)
-		if err != nil {
-			return xerrors.Errorf("error while trying to catchup to server: %v", err)
-		}
-	default:
-		return xerrors.Errorf("invalid other hub type: %v", otherHubType)
+	err = h.NotifyNewServer(organizerSocket)
+	if err != nil {
+		return xerrors.Errorf("error while trying to catchup to server: %v", err)
 	}
 
 	return nil

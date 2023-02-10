@@ -9,17 +9,6 @@ import (
 	"popstellar/network/socket"
 )
 
-// HubType denotes the type of the hub.
-type HubType string
-
-const (
-	// OrganizerHubType represents the Organizer Hub.
-	OrganizerHubType HubType = "organizer"
-
-	// WitnessHubType represnets the Witness Hub.
-	WitnessHubType HubType = "witness"
-)
-
 // Hub defines the methods a PoP server must implement to receive messages
 // and handle clients.
 type Hub interface {
@@ -39,7 +28,4 @@ type Hub interface {
 	// close events. This allows the hub to cleanup clients which close without
 	// sending an unsubscribe message
 	OnSocketClose() chan<- string
-
-	// Type returns the type of Hub.
-	Type() HubType
 }

@@ -62,7 +62,7 @@ func NewServer(hub hub.Hub, addr string, port int, st socket.SocketType, log zer
 		log:     log,
 	}
 
-	path := fmt.Sprintf("/%s/%s", hub.Type(), st)
+	path := fmt.Sprintf("/server/%s", st)
 	mux := http.NewServeMux()
 	mux.HandleFunc(path, server.ServeHTTP)
 
@@ -122,15 +122,15 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		go client.ReadPump()
 		go client.WritePump()
-	case socket.WitnessSocketType:
-		witness := socket.NewWitnessSocket(s.hub.Receiver(), s.hub.OnSocketClose(),
+	case socket.ServerSocketType:
+		server := socket.NewServerSocket(s.hub.Receiver(), s.hub.OnSocketClose(),
 			conn, s.wg, s.done, s.log)
 		s.wg.Add(2)
 
-		go witness.ReadPump()
-		go witness.WritePump()
+		go server.ReadPump()
+		go server.WritePump()
 
-		err = s.hub.NotifyNewServer(witness)
+		err = s.hub.NotifyNewServer(server)
 		if err != nil {
 			s.log.Err(err).Msg("error while trying to catchup to server")
 
@@ -157,7 +157,7 @@ func (s *Server) infoHandler(w http.ResponseWriter, r *http.Request) {
 }`
 
 	resp := fmt.Sprintf(fmtStr, popstellar.Version, popstellar.ShortSHA,
-		popstellar.BuildTime, s.hub.Type(), s.st)
+		popstellar.BuildTime, s.st)
 
 	w.Write([]byte(resp))
 }

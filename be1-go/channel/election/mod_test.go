@@ -455,14 +455,14 @@ func Test_Process_Election_Open(t *testing.T) {
 	}
 
 	// Fail to process non election open
-	require.Error(t, electChannel.processElectionOpen(m, messagedata.ElectionEnd.NewEmpty, socket.OrganizerSocket{}))
+	require.Error(t, electChannel.processElectionOpen(m, messagedata.ElectionEnd.NewEmpty, socket.ServerSocket{}))
 
 	// Fail for non base64 sender key
-	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.OrganizerSocket{}))
+	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.ServerSocket{}))
 
 	// Fail for non organizer public key
 	m.Sender = base64.URLEncoding.EncodeToString(generateKeyPair(t).publicBuf)
-	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.OrganizerSocket{}))
+	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.ServerSocket{}))
 }
 
 func Test_Sending_Election_Key(t *testing.T) {
