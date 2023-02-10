@@ -3,7 +3,7 @@
 exports[`QrCodeScanner renders correctly when not showing camera 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
       "overflow": "hidden",
     }
@@ -11,7 +11,7 @@ exports[`QrCodeScanner renders correctly when not showing camera 1`] = `
 >
   <View
     style={
-      Object {
+      {
         "bottom": 0,
         "left": 0,
         "position": "absolute",
@@ -23,7 +23,7 @@ exports[`QrCodeScanner renders correctly when not showing camera 1`] = `
   />
   <View
     style={
-      Object {
+      {
         "flex": 1,
         "flexDirection": "column",
         "margin": 16,
@@ -32,7 +32,7 @@ exports[`QrCodeScanner renders correctly when not showing camera 1`] = `
   >
     <View
       style={
-        Object {
+        {
           "bottom": 0,
           "flex": 1,
         }
@@ -40,14 +40,14 @@ exports[`QrCodeScanner renders correctly when not showing camera 1`] = `
     />
     <View
       style={
-        Object {
+        {
           "flexDirection": "column",
         }
       }
     >
       <View
         style={
-          Object {
+          {
             "alignSelf": "flex-end",
             "backgroundColor": "#fff",
             "borderRadius": 8,
@@ -87,7 +87,7 @@ exports[`QrCodeScanner renders correctly when not showing camera 1`] = `
               accessible={true}
               collapsable={false}
               style={
-                Object {
+                {
                   "alignSelf": "flex-end",
                   "marginLeft": "auto",
                   "opacity": 1,
@@ -109,7 +109,7 @@ exports[`QrCodeScanner renders correctly when not showing camera 1`] = `
 exports[`QrCodeScanner renders correctly when not showing camera with children 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
       "overflow": "hidden",
     }
@@ -117,7 +117,7 @@ exports[`QrCodeScanner renders correctly when not showing camera with children 1
 >
   <View
     style={
-      Object {
+      {
         "bottom": 0,
         "left": 0,
         "position": "absolute",
@@ -129,7 +129,7 @@ exports[`QrCodeScanner renders correctly when not showing camera with children 1
   />
   <View
     style={
-      Object {
+      {
         "flex": 1,
         "flexDirection": "column",
         "margin": 16,
@@ -138,7 +138,7 @@ exports[`QrCodeScanner renders correctly when not showing camera with children 1
   >
     <View
       style={
-        Object {
+        {
           "bottom": 0,
           "flex": 1,
         }
@@ -150,14 +150,14 @@ exports[`QrCodeScanner renders correctly when not showing camera with children 1
     </View>
     <View
       style={
-        Object {
+        {
           "flexDirection": "column",
         }
       }
     >
       <View
         style={
-          Object {
+          {
             "alignSelf": "flex-end",
             "backgroundColor": "#fff",
             "borderRadius": 8,
@@ -197,7 +197,7 @@ exports[`QrCodeScanner renders correctly when not showing camera with children 1
               accessible={true}
               collapsable={false}
               style={
-                Object {
+                {
                   "alignSelf": "flex-end",
                   "marginLeft": "auto",
                   "opacity": 1,
@@ -219,7 +219,7 @@ exports[`QrCodeScanner renders correctly when not showing camera with children 1
 exports[`QrCodeScanner renders correctly when permissions are denied 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
       "overflow": "hidden",
     }
@@ -230,7 +230,7 @@ exports[`QrCodeScanner renders correctly when permissions are denied 1`] = `
   </Text>
   <View
     style={
-      Object {
+      {
         "bottom": 0,
         "flex": 1,
       }
@@ -242,7 +242,7 @@ exports[`QrCodeScanner renders correctly when permissions are denied 1`] = `
 exports[`QrCodeScanner renders correctly when requesting for permissions 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
       "overflow": "hidden",
     }
@@ -253,7 +253,7 @@ exports[`QrCodeScanner renders correctly when requesting for permissions 1`] = `
   </Text>
   <View
     style={
-      Object {
+      {
         "bottom": 0,
         "flex": 1,
       }
@@ -265,7 +265,7 @@ exports[`QrCodeScanner renders correctly when requesting for permissions 1`] = `
 exports[`QrCodeScanner renders correctly when showing camera 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
       "overflow": "hidden",
     }
@@ -273,7 +273,7 @@ exports[`QrCodeScanner renders correctly when showing camera 1`] = `
 >
   <View
     style={
-      Object {
+      {
         "bottom": 0,
         "left": 0,
         "position": "absolute",
@@ -287,7 +287,7 @@ exports[`QrCodeScanner renders correctly when showing camera 1`] = `
   </View>
   <View
     style={
-      Object {
+      {
         "flex": 1,
         "flexDirection": "column",
         "margin": 16,
@@ -296,7 +296,7 @@ exports[`QrCodeScanner renders correctly when showing camera 1`] = `
   >
     <View
       style={
-        Object {
+        {
           "bottom": 0,
           "flex": 1,
         }
@@ -304,14 +304,14 @@ exports[`QrCodeScanner renders correctly when showing camera 1`] = `
     />
     <View
       style={
-        Object {
+        {
           "flexDirection": "column",
         }
       }
     >
       <View
         style={
-          Object {
+          {
             "alignSelf": "flex-end",
             "backgroundColor": "#fff",
             "borderRadius": 8,
@@ -351,7 +351,7 @@ exports[`QrCodeScanner renders correctly when showing camera 1`] = `
               accessible={true}
               collapsable={false}
               style={
-                Object {
+                {
                   "alignSelf": "flex-end",
                   "marginLeft": "auto",
                   "opacity": 1,
@@ -373,7 +373,7 @@ exports[`QrCodeScanner renders correctly when showing camera 1`] = `
 exports[`QrCodeScanner renders correctly when showing camera with children 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
       "overflow": "hidden",
     }
@@ -381,7 +381,7 @@ exports[`QrCodeScanner renders correctly when showing camera with children 1`] =
 >
   <View
     style={
-      Object {
+      {
         "bottom": 0,
         "left": 0,
         "position": "absolute",
@@ -395,7 +395,7 @@ exports[`QrCodeScanner renders correctly when showing camera with children 1`] =
   </View>
   <View
     style={
-      Object {
+      {
         "flex": 1,
         "flexDirection": "column",
         "margin": 16,
@@ -404,7 +404,7 @@ exports[`QrCodeScanner renders correctly when showing camera with children 1`] =
   >
     <View
       style={
-        Object {
+        {
           "bottom": 0,
           "flex": 1,
         }
@@ -416,14 +416,14 @@ exports[`QrCodeScanner renders correctly when showing camera with children 1`] =
     </View>
     <View
       style={
-        Object {
+        {
           "flexDirection": "column",
         }
       }
     >
       <View
         style={
-          Object {
+          {
             "alignSelf": "flex-end",
             "backgroundColor": "#fff",
             "borderRadius": 8,
@@ -463,7 +463,7 @@ exports[`QrCodeScanner renders correctly when showing camera with children 1`] =
               accessible={true}
               collapsable={false}
               style={
-                Object {
+                {
                   "alignSelf": "flex-end",
                   "marginLeft": "auto",
                   "opacity": 1,

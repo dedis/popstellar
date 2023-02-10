@@ -3,7 +3,7 @@
 exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -11,8 +11,8 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -21,8 +21,8 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -34,7 +34,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -50,7 +50,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -64,12 +64,12 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -83,7 +83,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -95,7 +95,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -103,7 +103,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -114,7 +114,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -128,7 +128,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -143,7 +143,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -157,7 +157,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -174,7 +174,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -184,7 +184,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -193,7 +193,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -205,7 +205,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -223,12 +223,12 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -238,10 +238,10 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -250,9 +250,9 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -268,7 +268,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -282,13 +282,13 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -298,13 +298,13 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -314,7 +314,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -322,14 +322,14 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
                     >
                       <View
                         style={
-                          Object {
+                          {
                             "flex": 1,
                           }
                         }
@@ -341,13 +341,13 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
                           style={
-                            Object {
+                            {
                               "padding": 16,
                             }
                           }
                           waitFor={
-                            Array [
-                              Object {
+                            [
+                              {
                                 "current": null,
                               },
                             ]
@@ -356,18 +356,18 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                           <View>
                             <View>
                               <qrcode
-                                value="{\\"pop_token\\":\\"oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=\\"}"
+                                value="{"pop_token":"oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms="}"
                               />
                             </View>
                             <Text
                               selectable={true}
                               style={
-                                Array [
-                                  Object {
+                                [
+                                  {
                                     "fontSize": 16,
                                     "lineHeight": 20,
                                   },
-                                  Object {
+                                  {
                                     "color": "#8E8E8E",
                                     "marginVertical": 32,
                                     "textAlign": "center",
@@ -391,7 +391,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                               onResponderTerminationRequest={[Function]}
                               onStartShouldSetResponder={[Function]}
                               style={
-                                Object {
+                                {
                                   "marginBottom": 16,
                                 }
                               }
@@ -414,15 +414,15 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   style={
-                                    Object {
+                                    {
                                       "opacity": 1,
                                     }
                                   }
                                 >
                                   <View
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "backgroundColor": "#3742fa",
                                           "borderColor": "#3742fa",
                                           "borderRadius": 8,
@@ -434,17 +434,17 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                                   >
                                     <Text
                                       style={
-                                        Array [
-                                          Object {
+                                        [
+                                          {
                                             "color": "#000",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
                                           },
-                                          Object {
+                                          {
                                             "textAlign": "center",
                                           },
-                                          Object {
+                                          {
                                             "color": "#fff",
                                           },
                                         ]
@@ -475,7 +475,7 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
 exports[`WalletSingleRollCall renders correctly 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -483,8 +483,8 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -493,8 +493,8 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -506,7 +506,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -522,7 +522,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -536,12 +536,12 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -555,7 +555,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -567,7 +567,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -575,7 +575,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -586,7 +586,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -600,7 +600,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -615,7 +615,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -629,7 +629,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -646,7 +646,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -656,7 +656,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -665,7 +665,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -677,7 +677,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -695,12 +695,12 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -710,10 +710,10 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -722,9 +722,9 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -740,7 +740,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -754,13 +754,13 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -770,13 +770,13 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -786,7 +786,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -794,14 +794,14 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
                     >
                       <View
                         style={
-                          Object {
+                          {
                             "flex": 1,
                           }
                         }
@@ -813,13 +813,13 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
                           style={
-                            Object {
+                            {
                               "padding": 16,
                             }
                           }
                           waitFor={
-                            Array [
-                              Object {
+                            [
+                              {
                                 "current": null,
                               },
                             ]
@@ -828,18 +828,18 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                           <View>
                             <View>
                               <qrcode
-                                value="{\\"pop_token\\":\\"oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms=\\"}"
+                                value="{"pop_token":"oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms="}"
                               />
                             </View>
                             <Text
                               selectable={true}
                               style={
-                                Array [
-                                  Object {
+                                [
+                                  {
                                     "fontSize": 16,
                                     "lineHeight": 20,
                                   },
-                                  Object {
+                                  {
                                     "color": "#8E8E8E",
                                     "marginVertical": 32,
                                     "textAlign": "center",
@@ -863,7 +863,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                               onResponderTerminationRequest={[Function]}
                               onStartShouldSetResponder={[Function]}
                               style={
-                                Object {
+                                {
                                   "marginBottom": 16,
                                 }
                               }
@@ -886,15 +886,15 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                                   accessible={true}
                                   collapsable={false}
                                   style={
-                                    Object {
+                                    {
                                       "opacity": 1,
                                     }
                                   }
                                 >
                                   <View
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "backgroundColor": "#3742fa",
                                           "borderColor": "#3742fa",
                                           "borderRadius": 8,
@@ -906,17 +906,17 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                                   >
                                     <Text
                                       style={
-                                        Array [
-                                          Object {
+                                        [
+                                          {
                                             "color": "#000",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
                                           },
-                                          Object {
+                                          {
                                             "textAlign": "center",
                                           },
-                                          Object {
+                                          {
                                             "color": "#fff",
                                           },
                                         ]

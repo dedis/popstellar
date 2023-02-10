@@ -3,7 +3,7 @@
 exports[`ScannerInput renders correctly 1`] = `
 <View
   style={
-    Object {
+    {
       "alignItems": "center",
       "flexDirection": "row",
       "zIndex": 99,
@@ -12,7 +12,7 @@ exports[`ScannerInput renders correctly 1`] = `
 >
   <View
     style={
-      Object {
+      {
         "flex": 1,
       }
     }
@@ -20,14 +20,14 @@ exports[`ScannerInput renders correctly 1`] = `
     <View>
       <View
         style={
-          Object {
+          {
             "borderWidth": 0,
           }
         }
       >
         <View
           style={
-            Object {
+            {
               "flex": 1,
               "flexDirection": "row",
             }
@@ -35,18 +35,19 @@ exports[`ScannerInput renders correctly 1`] = `
         >
           <TextInput
             editable={true}
+            onChangeText={[Function]}
             placeholder=""
             placeholderTextColor="#8E8E8E"
             style={
-              Array [
-                Object {
+              [
+                {
                   "color": "#000",
                   "fontSize": 20,
                   "lineHeight": 26,
                   "marginBottom": 16,
                   "textAlign": "left",
                 },
-                Object {
+                {
                   "backgroundColor": "#fff",
                   "borderColor": "#fff",
                   "borderRadius": 8,
@@ -63,7 +64,7 @@ exports[`ScannerInput renders correctly 1`] = `
       </View>
       <View
         style={
-          Object {
+          {
             "backgroundColor": "#fff",
             "borderRadius": 8,
             "left": 0,
@@ -71,7 +72,7 @@ exports[`ScannerInput renders correctly 1`] = `
             "position": "absolute",
             "right": 0,
             "shadowColor": "#000",
-            "shadowOffset": Object {
+            "shadowOffset": {
               "height": 5,
               "width": 5,
             },
@@ -85,7 +86,7 @@ exports[`ScannerInput renders correctly 1`] = `
         <RCTScrollView
           collapsable={false}
           data={
-            Array [
+            [
               "aaa",
               "aab",
               "aac",
@@ -109,14 +110,14 @@ exports[`ScannerInput renders correctly 1`] = `
           renderItem={[Function]}
           renderScrollComponent={[Function]}
           scrollEventThrottle={50}
-          stickyHeaderIndices={Array []}
-          viewabilityConfigCallbackPairs={Array []}
+          stickyHeaderIndices={[]}
+          viewabilityConfigCallbackPairs={[]}
           waitFor={
-            Array [
-              Object {
+            [
+              {
                 "current": null,
               },
-              Object {
+              {
                 "current": null,
               },
             ]
@@ -141,7 +142,7 @@ exports[`ScannerInput renders correctly 1`] = `
                 onResponderTerminationRequest={[Function]}
                 onStartShouldSetResponder={[Function]}
                 style={
-                  Object {
+                  {
                     "borderBottomColor": "rgb(216, 216, 216)",
                     "borderBottomWidth": 1,
                     "paddingHorizontal": 16,
@@ -167,7 +168,7 @@ exports[`ScannerInput renders correctly 1`] = `
                     accessible={true}
                     collapsable={false}
                     style={
-                      Object {
+                      {
                         "opacity": 1,
                       }
                     }
@@ -175,7 +176,7 @@ exports[`ScannerInput renders correctly 1`] = `
                     <Text
                       numberOfLines={1}
                       style={
-                        Object {
+                        {
                           "color": "#000",
                           "fontSize": 20,
                           "lineHeight": 26,
@@ -207,7 +208,7 @@ exports[`ScannerInput renders correctly 1`] = `
                 onResponderTerminationRequest={[Function]}
                 onStartShouldSetResponder={[Function]}
                 style={
-                  Object {
+                  {
                     "borderBottomColor": "rgb(216, 216, 216)",
                     "borderBottomWidth": 1,
                     "paddingHorizontal": 16,
@@ -233,7 +234,7 @@ exports[`ScannerInput renders correctly 1`] = `
                     accessible={true}
                     collapsable={false}
                     style={
-                      Object {
+                      {
                         "opacity": 1,
                       }
                     }
@@ -241,7 +242,7 @@ exports[`ScannerInput renders correctly 1`] = `
                     <Text
                       numberOfLines={1}
                       style={
-                        Object {
+                        {
                           "color": "#000",
                           "fontSize": 20,
                           "lineHeight": 26,
@@ -273,14 +274,14 @@ exports[`ScannerInput renders correctly 1`] = `
                 onResponderTerminationRequest={[Function]}
                 onStartShouldSetResponder={[Function]}
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "borderBottomColor": "rgb(216, 216, 216)",
                       "borderBottomWidth": 1,
                       "paddingHorizontal": 16,
                       "paddingVertical": 8,
                     },
-                    Object {
+                    {
                       "borderRadius": 8,
                     },
                   ]
@@ -304,7 +305,7 @@ exports[`ScannerInput renders correctly 1`] = `
                     accessible={true}
                     collapsable={false}
                     style={
-                      Object {
+                      {
                         "opacity": 1,
                       }
                     }
@@ -312,7 +313,7 @@ exports[`ScannerInput renders correctly 1`] = `
                     <Text
                       numberOfLines={1}
                       style={
-                        Object {
+                        {
                           "color": "#000",
                           "fontSize": 20,
                           "lineHeight": 26,
@@ -333,7 +334,7 @@ exports[`ScannerInput renders correctly 1`] = `
   </View>
   <View
     style={
-      Object {
+      {
         "marginLeft": 16,
       }
     }
@@ -352,7 +353,7 @@ exports[`ScannerInput renders correctly 1`] = `
       onResponderTerminationRequest={[Function]}
       onStartShouldSetResponder={[Function]}
       style={
-        Object {
+        {
           "marginBottom": 16,
         }
       }
@@ -375,15 +376,15 @@ exports[`ScannerInput renders correctly 1`] = `
           accessible={true}
           collapsable={false}
           style={
-            Object {
+            {
               "opacity": 1,
             }
           }
         >
           <View
             style={
-              Array [
-                Object {
+              [
+                {
                   "backgroundColor": "#3742fa",
                   "borderColor": "#3742fa",
                   "borderRadius": 8,

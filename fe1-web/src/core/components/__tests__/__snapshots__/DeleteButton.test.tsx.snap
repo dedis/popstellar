@@ -19,7 +19,7 @@ exports[`DeleteButton renders correctly 1`] = `
     accessibilityLabel="delete"
     source={1}
     style={
-      Object {
+      {
         "height": 26,
         "width": 26,
       }

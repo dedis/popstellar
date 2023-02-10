@@ -20,7 +20,7 @@ exports[`WitnessNotification renders correctly 1`] = `
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
     style={
-      Object {
+      {
         "marginBottom": 16,
       }
     }
@@ -43,15 +43,15 @@ exports[`WitnessNotification renders correctly 1`] = `
         accessible={true}
         collapsable={false}
         style={
-          Object {
+          {
             "opacity": 1,
           }
         }
       >
         <View
           style={
-            Array [
-              Object {
+            [
+              {
                 "backgroundColor": "#3742fa",
                 "borderColor": "#3742fa",
                 "borderRadius": 8,
@@ -63,17 +63,17 @@ exports[`WitnessNotification renders correctly 1`] = `
         >
           <Text
             style={
-              Array [
-                Object {
+              [
+                {
                   "color": "#000",
                   "fontSize": 20,
                   "lineHeight": 26,
                   "textAlign": "left",
                 },
-                Object {
+                {
                   "textAlign": "center",
                 },
-                Object {
+                {
                   "color": "#fff",
                 },
               ]
@@ -99,7 +99,7 @@ exports[`WitnessNotification renders correctly 1`] = `
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
     style={
-      Object {
+      {
         "marginBottom": 16,
       }
     }
@@ -122,15 +122,15 @@ exports[`WitnessNotification renders correctly 1`] = `
         accessible={true}
         collapsable={false}
         style={
-          Object {
+          {
             "opacity": 1,
           }
         }
       >
         <View
           style={
-            Array [
-              Object {
+            [
+              {
                 "backgroundColor": "#3742fa",
                 "borderColor": "#3742fa",
                 "borderRadius": 8,
@@ -142,17 +142,17 @@ exports[`WitnessNotification renders correctly 1`] = `
         >
           <Text
             style={
-              Array [
-                Object {
+              [
+                {
                   "color": "#000",
                   "fontSize": 20,
                   "lineHeight": 26,
                   "textAlign": "left",
                 },
-                Object {
+                {
                   "textAlign": "center",
                 },
-                Object {
+                {
                   "color": "#fff",
                 },
               ]

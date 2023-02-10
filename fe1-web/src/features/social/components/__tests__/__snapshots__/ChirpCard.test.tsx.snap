@@ -3,7 +3,7 @@
 exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -11,8 +11,8 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -21,8 +21,8 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -34,7 +34,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -50,7 +50,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -64,12 +64,12 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -83,7 +83,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -95,7 +95,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -103,7 +103,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -114,7 +114,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -128,7 +128,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -143,7 +143,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -157,7 +157,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -174,7 +174,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -184,7 +184,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -193,7 +193,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -205,7 +205,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -223,12 +223,12 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -238,10 +238,10 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -250,9 +250,9 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -268,7 +268,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -282,13 +282,13 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -298,13 +298,13 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -314,7 +314,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -322,15 +322,15 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
                     >
                       <View
                         style={
-                          Array [
-                            Object {
+                          [
+                            {
                               "backgroundColor": "#fff",
                             },
                           ]
@@ -338,7 +338,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                       >
                         <View
                           style={
-                            Object {
+                            {
                               "alignItems": "center",
                               "backgroundColor": "#fff",
                               "borderBottomWidth": 0.5,
@@ -381,18 +381,18 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                 accessible={true}
                                 collapsable={false}
                                 style={
-                                  Object {
+                                  {
                                     "opacity": 1,
                                   }
                                 }
                               >
                                 <View
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "marginRight": 16,
                                       },
-                                      Object {
+                                      {
                                         "alignSelf": "flex-start",
                                       },
                                     ]
@@ -403,24 +403,24 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                     numberOfLines={1}
                                     selectable={true}
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "color": "#000",
                                           "fontSize": 20,
                                           "lineHeight": 26,
                                           "textAlign": "left",
                                         },
-                                        Object {
+                                        {
                                           "fontSize": 16,
                                           "lineHeight": 20,
                                         },
-                                        Object {
+                                        {
                                           "color": "#8E8E8E",
                                         },
-                                        Object {
+                                        {
                                           "textAlign": "center",
                                         },
-                                        Object {
+                                        {
                                           "marginTop": 8,
                                         },
                                       ]
@@ -434,15 +434,15 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                           </View>
                           <View
                             style={
-                              Object {
+                              {
                                 "paddingLeft": 16,
                               }
                             }
                           />
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "alignItems": "flex-start",
                                   "flex": 1,
                                   "justifyContent": "center",
@@ -451,8 +451,8 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                               ]
                             }
                             theme={
-                              Object {
-                                "colors": Object {
+                              {
+                                "colors": {
                                   "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
@@ -465,8 +465,8 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                   "grey4": "#bdc6cf",
                                   "grey5": "#e1e8ee",
                                   "greyOutline": "#bbb",
-                                  "platform": Object {
-                                    "android": Object {
+                                  "platform": {
+                                    "android": {
                                       "error": "#f44336",
                                       "grey": "rgba(0, 0, 0, 0.54)",
                                       "primary": "#2196f3",
@@ -475,7 +475,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                       "success": "#4caf50",
                                       "warning": "#ffeb3b",
                                     },
-                                    "default": Object {
+                                    "default": {
                                       "error": "#ff3b30",
                                       "grey": "#7d7d7d",
                                       "primary": "#007aff",
@@ -484,7 +484,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                       "success": "#4cd964",
                                       "warning": "#ffcc00",
                                     },
-                                    "ios": Object {
+                                    "ios": {
                                       "error": "#ff3b30",
                                       "grey": "#7d7d7d",
                                       "primary": "#007aff",
@@ -493,7 +493,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                       "success": "#4cd964",
                                       "warning": "#ffcc00",
                                     },
-                                    "web": Object {
+                                    "web": {
                                       "error": "#ff190c",
                                       "grey": "#393e42",
                                       "primary": "#2089dc",
@@ -510,7 +510,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                   "warning": "#faad14",
                                   "white": "#ffffff",
                                 },
-                                "spacing": Object {
+                                "spacing": {
                                   "lg": 12,
                                   "md": 8,
                                   "sm": 4,
@@ -523,7 +523,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                             <Text
                               accessibilityRole="text"
                               style={
-                                Object {
+                                {
                                   "backgroundColor": "transparent",
                                   "color": "#242424",
                                   "fontSize": 15,
@@ -533,14 +533,14 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                             >
                               <Text
                                 style={
-                                  Array [
-                                    Object {
+                                  [
+                                    {
                                       "color": "#000",
                                       "fontSize": 20,
                                       "lineHeight": 26,
                                       "textAlign": "left",
                                     },
-                                    Object {
+                                    {
                                       "color": "#8E8E8E",
                                     },
                                   ]
@@ -551,7 +551,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                             </Text>
                             <View
                               style={
-                                Object {
+                                {
                                   "flexDirection": "row",
                                   "flexWrap": "wrap",
                                   "width": "100%",
@@ -560,14 +560,14 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                             >
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "flexGrow": 1,
                                   }
                                 }
                               />
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignSelf": "flex-end",
                                     "marginLeft": "auto",
                                     "marginTop": 16,
@@ -576,14 +576,14 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                               >
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
@@ -618,7 +618,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
 exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -626,8 +626,8 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -636,8 +636,8 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -649,7 +649,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -665,7 +665,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -679,12 +679,12 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -698,7 +698,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -710,7 +710,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -718,7 +718,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -729,7 +729,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -743,7 +743,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -758,7 +758,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -772,7 +772,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -789,7 +789,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -799,7 +799,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -808,7 +808,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -820,7 +820,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -838,12 +838,12 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -853,10 +853,10 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -865,9 +865,9 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -883,7 +883,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -897,13 +897,13 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -913,13 +913,13 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -929,7 +929,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -937,15 +937,15 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
                     >
                       <View
                         style={
-                          Array [
-                            Object {
+                          [
+                            {
                               "backgroundColor": "#fff",
                             },
                           ]
@@ -953,7 +953,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                       >
                         <View
                           style={
-                            Object {
+                            {
                               "alignItems": "center",
                               "backgroundColor": "#fff",
                               "borderBottomWidth": 0.5,
@@ -996,18 +996,18 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                 accessible={true}
                                 collapsable={false}
                                 style={
-                                  Object {
+                                  {
                                     "opacity": 1,
                                   }
                                 }
                               >
                                 <View
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "marginRight": 16,
                                       },
-                                      Object {
+                                      {
                                         "alignSelf": "flex-start",
                                       },
                                     ]
@@ -1018,24 +1018,24 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                     numberOfLines={1}
                                     selectable={true}
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "color": "#000",
                                           "fontSize": 20,
                                           "lineHeight": 26,
                                           "textAlign": "left",
                                         },
-                                        Object {
+                                        {
                                           "fontSize": 16,
                                           "lineHeight": 20,
                                         },
-                                        Object {
+                                        {
                                           "color": "#8E8E8E",
                                         },
-                                        Object {
+                                        {
                                           "textAlign": "center",
                                         },
-                                        Object {
+                                        {
                                           "marginTop": 8,
                                         },
                                       ]
@@ -1049,15 +1049,15 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                           </View>
                           <View
                             style={
-                              Object {
+                              {
                                 "paddingLeft": 16,
                               }
                             }
                           />
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "alignItems": "flex-start",
                                   "flex": 1,
                                   "justifyContent": "center",
@@ -1066,8 +1066,8 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                               ]
                             }
                             theme={
-                              Object {
-                                "colors": Object {
+                              {
+                                "colors": {
                                   "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
@@ -1080,8 +1080,8 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   "grey4": "#bdc6cf",
                                   "grey5": "#e1e8ee",
                                   "greyOutline": "#bbb",
-                                  "platform": Object {
-                                    "android": Object {
+                                  "platform": {
+                                    "android": {
                                       "error": "#f44336",
                                       "grey": "rgba(0, 0, 0, 0.54)",
                                       "primary": "#2196f3",
@@ -1090,7 +1090,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                       "success": "#4caf50",
                                       "warning": "#ffeb3b",
                                     },
-                                    "default": Object {
+                                    "default": {
                                       "error": "#ff3b30",
                                       "grey": "#7d7d7d",
                                       "primary": "#007aff",
@@ -1099,7 +1099,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                       "success": "#4cd964",
                                       "warning": "#ffcc00",
                                     },
-                                    "ios": Object {
+                                    "ios": {
                                       "error": "#ff3b30",
                                       "grey": "#7d7d7d",
                                       "primary": "#007aff",
@@ -1108,7 +1108,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                       "success": "#4cd964",
                                       "warning": "#ffcc00",
                                     },
-                                    "web": Object {
+                                    "web": {
                                       "error": "#ff190c",
                                       "grey": "#393e42",
                                       "primary": "#2089dc",
@@ -1125,7 +1125,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   "warning": "#faad14",
                                   "white": "#ffffff",
                                 },
-                                "spacing": Object {
+                                "spacing": {
                                   "lg": 12,
                                   "md": 8,
                                   "sm": 4,
@@ -1138,7 +1138,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                             <Text
                               accessibilityRole="text"
                               style={
-                                Object {
+                                {
                                   "backgroundColor": "transparent",
                                   "color": "#242424",
                                   "fontSize": 15,
@@ -1148,7 +1148,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                             >
                               <Text
                                 style={
-                                  Object {
+                                  {
                                     "color": "#000",
                                     "fontSize": 20,
                                     "lineHeight": 26,
@@ -1161,7 +1161,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                             </Text>
                             <View
                               style={
-                                Object {
+                                {
                                   "flexDirection": "row",
                                   "flexWrap": "wrap",
                                   "width": "100%",
@@ -1170,7 +1170,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                             >
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -1191,7 +1191,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="thumbs-up"
                                 >
                                   <RNGestureHandlerButton
@@ -1212,26 +1212,26 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "#8E8E8E",
                                               "borderColor": "#8E8E8E",
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -1246,18 +1246,18 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -1268,7 +1268,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -1289,7 +1289,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="thumbs-down"
                                 >
                                   <RNGestureHandlerButton
@@ -1310,22 +1310,22 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -1340,18 +1340,18 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -1362,7 +1362,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -1383,7 +1383,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="heart"
                                 >
                                   <RNGestureHandlerButton
@@ -1404,22 +1404,22 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -1434,18 +1434,18 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -1456,14 +1456,14 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "flexGrow": 1,
                                   }
                                 }
                               />
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignSelf": "flex-end",
                                     "marginLeft": "auto",
                                     "marginTop": 16,
@@ -1472,14 +1472,14 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                               >
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
@@ -1514,7 +1514,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
 exports[`ChirpCard for deletion renders correctly for sender 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -1522,8 +1522,8 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -1532,8 +1532,8 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -1545,7 +1545,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -1561,7 +1561,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -1575,12 +1575,12 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -1594,7 +1594,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -1606,7 +1606,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -1614,7 +1614,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -1625,7 +1625,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -1639,7 +1639,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -1654,7 +1654,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -1668,7 +1668,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -1685,7 +1685,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -1695,7 +1695,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -1704,7 +1704,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -1716,7 +1716,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -1734,12 +1734,12 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -1749,10 +1749,10 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -1761,9 +1761,9 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -1779,7 +1779,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -1793,13 +1793,13 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -1809,13 +1809,13 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -1825,7 +1825,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -1833,15 +1833,15 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
                     >
                       <View
                         style={
-                          Array [
-                            Object {
+                          [
+                            {
                               "backgroundColor": "#fff",
                             },
                           ]
@@ -1849,7 +1849,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                       >
                         <View
                           style={
-                            Object {
+                            {
                               "alignItems": "center",
                               "backgroundColor": "#fff",
                               "borderBottomWidth": 0.5,
@@ -1892,18 +1892,18 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                 accessible={true}
                                 collapsable={false}
                                 style={
-                                  Object {
+                                  {
                                     "opacity": 1,
                                   }
                                 }
                               >
                                 <View
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "marginRight": 16,
                                       },
-                                      Object {
+                                      {
                                         "alignSelf": "flex-start",
                                       },
                                     ]
@@ -1914,24 +1914,24 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                     numberOfLines={1}
                                     selectable={true}
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "color": "#000",
                                           "fontSize": 20,
                                           "lineHeight": 26,
                                           "textAlign": "left",
                                         },
-                                        Object {
+                                        {
                                           "fontSize": 16,
                                           "lineHeight": 20,
                                         },
-                                        Object {
+                                        {
                                           "color": "#8E8E8E",
                                         },
-                                        Object {
+                                        {
                                           "textAlign": "center",
                                         },
-                                        Object {
+                                        {
                                           "marginTop": 8,
                                         },
                                       ]
@@ -1945,15 +1945,15 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                           </View>
                           <View
                             style={
-                              Object {
+                              {
                                 "paddingLeft": 16,
                               }
                             }
                           />
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "alignItems": "flex-start",
                                   "flex": 1,
                                   "justifyContent": "center",
@@ -1962,8 +1962,8 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                               ]
                             }
                             theme={
-                              Object {
-                                "colors": Object {
+                              {
+                                "colors": {
                                   "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
@@ -1976,8 +1976,8 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   "grey4": "#bdc6cf",
                                   "grey5": "#e1e8ee",
                                   "greyOutline": "#bbb",
-                                  "platform": Object {
-                                    "android": Object {
+                                  "platform": {
+                                    "android": {
                                       "error": "#f44336",
                                       "grey": "rgba(0, 0, 0, 0.54)",
                                       "primary": "#2196f3",
@@ -1986,7 +1986,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       "success": "#4caf50",
                                       "warning": "#ffeb3b",
                                     },
-                                    "default": Object {
+                                    "default": {
                                       "error": "#ff3b30",
                                       "grey": "#7d7d7d",
                                       "primary": "#007aff",
@@ -1995,7 +1995,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       "success": "#4cd964",
                                       "warning": "#ffcc00",
                                     },
-                                    "ios": Object {
+                                    "ios": {
                                       "error": "#ff3b30",
                                       "grey": "#7d7d7d",
                                       "primary": "#007aff",
@@ -2004,7 +2004,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       "success": "#4cd964",
                                       "warning": "#ffcc00",
                                     },
-                                    "web": Object {
+                                    "web": {
                                       "error": "#ff190c",
                                       "grey": "#393e42",
                                       "primary": "#2089dc",
@@ -2021,7 +2021,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   "warning": "#faad14",
                                   "white": "#ffffff",
                                 },
-                                "spacing": Object {
+                                "spacing": {
                                   "lg": 12,
                                   "md": 8,
                                   "sm": 4,
@@ -2034,7 +2034,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                             <Text
                               accessibilityRole="text"
                               style={
-                                Object {
+                                {
                                   "backgroundColor": "transparent",
                                   "color": "#242424",
                                   "fontSize": 15,
@@ -2044,7 +2044,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                             >
                               <Text
                                 style={
-                                  Object {
+                                  {
                                     "color": "#000",
                                     "fontSize": 20,
                                     "lineHeight": 26,
@@ -2057,7 +2057,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                             </Text>
                             <View
                               style={
-                                Object {
+                                {
                                   "flexDirection": "row",
                                   "flexWrap": "wrap",
                                   "width": "100%",
@@ -2066,7 +2066,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                             >
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -2087,7 +2087,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="thumbs-up"
                                 >
                                   <RNGestureHandlerButton
@@ -2108,26 +2108,26 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "#8E8E8E",
                                               "borderColor": "#8E8E8E",
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -2142,18 +2142,18 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -2164,7 +2164,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -2185,7 +2185,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="thumbs-down"
                                 >
                                   <RNGestureHandlerButton
@@ -2206,22 +2206,22 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -2236,18 +2236,18 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -2258,7 +2258,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -2279,7 +2279,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="heart"
                                 >
                                   <RNGestureHandlerButton
@@ -2300,22 +2300,22 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -2330,18 +2330,18 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -2352,7 +2352,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -2373,7 +2373,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="chirp_action_options"
                                 >
                                   <RNGestureHandlerButton
@@ -2394,22 +2394,22 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -2425,14 +2425,14 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "flexGrow": 1,
                                   }
                                 }
                               />
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignSelf": "flex-end",
                                     "marginLeft": "auto",
                                     "marginTop": 16,
@@ -2441,14 +2441,14 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                               >
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
@@ -2483,7 +2483,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
 exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -2491,8 +2491,8 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -2501,8 +2501,8 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -2514,7 +2514,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -2530,7 +2530,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -2544,12 +2544,12 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -2563,7 +2563,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -2575,7 +2575,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -2583,7 +2583,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -2594,7 +2594,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -2608,7 +2608,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -2623,7 +2623,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -2637,7 +2637,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -2654,7 +2654,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -2664,7 +2664,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -2673,7 +2673,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -2685,7 +2685,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -2703,12 +2703,12 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -2718,10 +2718,10 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -2730,9 +2730,9 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -2748,7 +2748,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -2762,13 +2762,13 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -2778,13 +2778,13 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -2794,7 +2794,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -2802,15 +2802,15 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
                     >
                       <View
                         style={
-                          Array [
-                            Object {
+                          [
+                            {
                               "backgroundColor": "#fff",
                             },
                           ]
@@ -2818,7 +2818,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                       >
                         <View
                           style={
-                            Object {
+                            {
                               "alignItems": "center",
                               "backgroundColor": "#fff",
                               "borderBottomWidth": 0.5,
@@ -2861,18 +2861,18 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                 accessible={true}
                                 collapsable={false}
                                 style={
-                                  Object {
+                                  {
                                     "opacity": 1,
                                   }
                                 }
                               >
                                 <View
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "marginRight": 16,
                                       },
-                                      Object {
+                                      {
                                         "alignSelf": "flex-start",
                                       },
                                     ]
@@ -2883,24 +2883,24 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                     numberOfLines={1}
                                     selectable={true}
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "color": "#000",
                                           "fontSize": 20,
                                           "lineHeight": 26,
                                           "textAlign": "left",
                                         },
-                                        Object {
+                                        {
                                           "fontSize": 16,
                                           "lineHeight": 20,
                                         },
-                                        Object {
+                                        {
                                           "color": "#8E8E8E",
                                         },
-                                        Object {
+                                        {
                                           "textAlign": "center",
                                         },
-                                        Object {
+                                        {
                                           "marginTop": 8,
                                         },
                                       ]
@@ -2914,15 +2914,15 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                           </View>
                           <View
                             style={
-                              Object {
+                              {
                                 "paddingLeft": 16,
                               }
                             }
                           />
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "alignItems": "flex-start",
                                   "flex": 1,
                                   "justifyContent": "center",
@@ -2931,8 +2931,8 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                               ]
                             }
                             theme={
-                              Object {
-                                "colors": Object {
+                              {
+                                "colors": {
                                   "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
@@ -2945,8 +2945,8 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   "grey4": "#bdc6cf",
                                   "grey5": "#e1e8ee",
                                   "greyOutline": "#bbb",
-                                  "platform": Object {
-                                    "android": Object {
+                                  "platform": {
+                                    "android": {
                                       "error": "#f44336",
                                       "grey": "rgba(0, 0, 0, 0.54)",
                                       "primary": "#2196f3",
@@ -2955,7 +2955,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       "success": "#4caf50",
                                       "warning": "#ffeb3b",
                                     },
-                                    "default": Object {
+                                    "default": {
                                       "error": "#ff3b30",
                                       "grey": "#7d7d7d",
                                       "primary": "#007aff",
@@ -2964,7 +2964,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       "success": "#4cd964",
                                       "warning": "#ffcc00",
                                     },
-                                    "ios": Object {
+                                    "ios": {
                                       "error": "#ff3b30",
                                       "grey": "#7d7d7d",
                                       "primary": "#007aff",
@@ -2973,7 +2973,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       "success": "#4cd964",
                                       "warning": "#ffcc00",
                                     },
-                                    "web": Object {
+                                    "web": {
                                       "error": "#ff190c",
                                       "grey": "#393e42",
                                       "primary": "#2089dc",
@@ -2990,7 +2990,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   "warning": "#faad14",
                                   "white": "#ffffff",
                                 },
-                                "spacing": Object {
+                                "spacing": {
                                   "lg": 12,
                                   "md": 8,
                                   "sm": 4,
@@ -3003,7 +3003,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                             <Text
                               accessibilityRole="text"
                               style={
-                                Object {
+                                {
                                   "backgroundColor": "transparent",
                                   "color": "#242424",
                                   "fontSize": 15,
@@ -3013,7 +3013,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                             >
                               <Text
                                 style={
-                                  Object {
+                                  {
                                     "color": "#000",
                                     "fontSize": 20,
                                     "lineHeight": 26,
@@ -3026,7 +3026,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                             </Text>
                             <View
                               style={
-                                Object {
+                                {
                                   "flexDirection": "row",
                                   "flexWrap": "wrap",
                                   "width": "100%",
@@ -3035,7 +3035,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                             >
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -3056,7 +3056,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="thumbs-up"
                                 >
                                   <RNGestureHandlerButton
@@ -3077,26 +3077,26 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "#8E8E8E",
                                               "borderColor": "#8E8E8E",
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -3111,18 +3111,18 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -3133,7 +3133,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -3154,7 +3154,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="thumbs-down"
                                 >
                                   <RNGestureHandlerButton
@@ -3175,22 +3175,22 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -3205,18 +3205,18 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -3227,7 +3227,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -3248,7 +3248,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="heart"
                                 >
                                   <RNGestureHandlerButton
@@ -3269,22 +3269,22 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -3299,18 +3299,18 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -3321,7 +3321,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -3342,7 +3342,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="chirp_action_options"
                                 >
                                   <RNGestureHandlerButton
@@ -3363,22 +3363,22 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -3394,14 +3394,14 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "flexGrow": 1,
                                   }
                                 }
                               />
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignSelf": "flex-end",
                                     "marginLeft": "auto",
                                     "marginTop": 16,
@@ -3410,14 +3410,14 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                               >
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
@@ -3452,7 +3452,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
 exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -3460,8 +3460,8 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -3470,8 +3470,8 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -3483,7 +3483,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -3499,7 +3499,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -3513,12 +3513,12 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -3532,7 +3532,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -3544,7 +3544,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -3552,7 +3552,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -3563,7 +3563,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -3577,7 +3577,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -3592,7 +3592,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -3606,7 +3606,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -3623,7 +3623,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -3633,7 +3633,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -3642,7 +3642,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -3654,7 +3654,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -3672,12 +3672,12 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -3687,10 +3687,10 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -3699,9 +3699,9 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -3717,7 +3717,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -3731,13 +3731,13 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -3747,13 +3747,13 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -3763,7 +3763,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -3771,15 +3771,15 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
                     >
                       <View
                         style={
-                          Array [
-                            Object {
+                          [
+                            {
                               "backgroundColor": "#fff",
                             },
                           ]
@@ -3787,7 +3787,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                       >
                         <View
                           style={
-                            Object {
+                            {
                               "alignItems": "center",
                               "backgroundColor": "#fff",
                               "borderBottomWidth": 0.5,
@@ -3830,18 +3830,18 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                 accessible={true}
                                 collapsable={false}
                                 style={
-                                  Object {
+                                  {
                                     "opacity": 1,
                                   }
                                 }
                               >
                                 <View
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "marginRight": 16,
                                       },
-                                      Object {
+                                      {
                                         "alignSelf": "flex-start",
                                       },
                                     ]
@@ -3852,24 +3852,24 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                     numberOfLines={1}
                                     selectable={true}
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "color": "#000",
                                           "fontSize": 20,
                                           "lineHeight": 26,
                                           "textAlign": "left",
                                         },
-                                        Object {
+                                        {
                                           "fontSize": 16,
                                           "lineHeight": 20,
                                         },
-                                        Object {
+                                        {
                                           "color": "#8E8E8E",
                                         },
-                                        Object {
+                                        {
                                           "textAlign": "center",
                                         },
-                                        Object {
+                                        {
                                           "marginTop": 8,
                                         },
                                       ]
@@ -3883,15 +3883,15 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                           </View>
                           <View
                             style={
-                              Object {
+                              {
                                 "paddingLeft": 16,
                               }
                             }
                           />
                           <View
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "alignItems": "flex-start",
                                   "flex": 1,
                                   "justifyContent": "center",
@@ -3900,8 +3900,8 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                               ]
                             }
                             theme={
-                              Object {
-                                "colors": Object {
+                              {
+                                "colors": {
                                   "background": "#ffffff",
                                   "black": "#242424",
                                   "disabled": "hsl(208, 8%, 90%)",
@@ -3914,8 +3914,8 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   "grey4": "#bdc6cf",
                                   "grey5": "#e1e8ee",
                                   "greyOutline": "#bbb",
-                                  "platform": Object {
-                                    "android": Object {
+                                  "platform": {
+                                    "android": {
                                       "error": "#f44336",
                                       "grey": "rgba(0, 0, 0, 0.54)",
                                       "primary": "#2196f3",
@@ -3924,7 +3924,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                       "success": "#4caf50",
                                       "warning": "#ffeb3b",
                                     },
-                                    "default": Object {
+                                    "default": {
                                       "error": "#ff3b30",
                                       "grey": "#7d7d7d",
                                       "primary": "#007aff",
@@ -3933,7 +3933,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                       "success": "#4cd964",
                                       "warning": "#ffcc00",
                                     },
-                                    "ios": Object {
+                                    "ios": {
                                       "error": "#ff3b30",
                                       "grey": "#7d7d7d",
                                       "primary": "#007aff",
@@ -3942,7 +3942,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                       "success": "#4cd964",
                                       "warning": "#ffcc00",
                                     },
-                                    "web": Object {
+                                    "web": {
                                       "error": "#ff190c",
                                       "grey": "#393e42",
                                       "primary": "#2089dc",
@@ -3959,7 +3959,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   "warning": "#faad14",
                                   "white": "#ffffff",
                                 },
-                                "spacing": Object {
+                                "spacing": {
                                   "lg": 12,
                                   "md": 8,
                                   "sm": 4,
@@ -3972,7 +3972,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                             <Text
                               accessibilityRole="text"
                               style={
-                                Object {
+                                {
                                   "backgroundColor": "transparent",
                                   "color": "#242424",
                                   "fontSize": 15,
@@ -3982,7 +3982,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                             >
                               <Text
                                 style={
-                                  Object {
+                                  {
                                     "color": "#000",
                                     "fontSize": 20,
                                     "lineHeight": 26,
@@ -3995,7 +3995,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                             </Text>
                             <View
                               style={
-                                Object {
+                                {
                                   "flexDirection": "row",
                                   "flexWrap": "wrap",
                                   "width": "100%",
@@ -4004,7 +4004,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                             >
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -4025,7 +4025,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="thumbs-up"
                                 >
                                   <RNGestureHandlerButton
@@ -4046,26 +4046,26 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "#8E8E8E",
                                               "borderColor": "#8E8E8E",
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -4080,18 +4080,18 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -4102,7 +4102,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -4123,7 +4123,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="thumbs-down"
                                 >
                                   <RNGestureHandlerButton
@@ -4144,22 +4144,22 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -4174,18 +4174,18 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -4196,7 +4196,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignItems": "center",
                                     "flexDirection": "row",
                                     "marginRight": 16,
@@ -4217,7 +4217,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                   onResponderTerminate={[Function]}
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
-                                  style={Object {}}
+                                  style={{}}
                                   testID="heart"
                                 >
                                   <RNGestureHandlerButton
@@ -4238,22 +4238,22 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                       accessible={true}
                                       collapsable={false}
                                       style={
-                                        Object {
+                                        {
                                           "opacity": 1,
                                         }
                                       }
                                     >
                                       <View
                                         style={
-                                          Array [
-                                            Object {
+                                          [
+                                            {
                                               "backgroundColor": "#3742fa",
                                               "borderColor": "#3742fa",
                                               "borderRadius": 8,
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
+                                            {
                                               "backgroundColor": "transparent",
                                             },
                                           ]
@@ -4268,18 +4268,18 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                 </View>
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },
-                                      Object {
+                                      {
                                         "marginLeft": 8,
                                       },
                                     ]
@@ -4290,14 +4290,14 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                               </View>
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "flexGrow": 1,
                                   }
                                 }
                               />
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "alignSelf": "flex-end",
                                     "marginLeft": "auto",
                                     "marginTop": 16,
@@ -4306,14 +4306,14 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                               >
                                 <Text
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "color": "#000",
                                         "fontSize": 20,
                                         "lineHeight": 26,
                                         "textAlign": "left",
                                       },
-                                      Object {
+                                      {
                                         "fontSize": 16,
                                         "lineHeight": 20,
                                       },

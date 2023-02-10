@@ -3,7 +3,7 @@
 exports[`CheckBoxList renders correctly 1`] = `
 <View
   style={
-    Object {
+    {
       "alignContent": "center",
       "alignItems": "center",
       "flexDirection": "column",
@@ -14,7 +14,7 @@ exports[`CheckBoxList renders correctly 1`] = `
 >
   <Text
     style={
-      Object {
+      {
         "color": "#000",
         "fontSize": 20,
         "lineHeight": 26,
@@ -27,15 +27,15 @@ exports[`CheckBoxList renders correctly 1`] = `
   </Text>
   <View
     style={
-      Array [
-        Object {
+      [
+        {
           "alignContent": "center",
           "alignItems": "center",
           "flexDirection": "column",
           "justifyContent": "center",
           "zIndex": 3,
         },
-        Object {
+        {
           "flexDirection": "row",
         },
       ]
@@ -44,7 +44,7 @@ exports[`CheckBoxList renders correctly 1`] = `
     <View
       accessibilityRole="checkbox"
       accessibilityState={
-        Object {
+        {
           "checked": false,
           "disabled": false,
         }
@@ -63,7 +63,7 @@ exports[`CheckBoxList renders correctly 1`] = `
       onResponderTerminationRequest={[Function]}
       onStartShouldSetResponder={[Function]}
       style={
-        Object {
+        {
           "backgroundColor": "#ffffff",
           "borderColor": "#ffffff",
           "margin": 5,
@@ -77,7 +77,7 @@ exports[`CheckBoxList renders correctly 1`] = `
     >
       <View
         style={
-          Object {
+          {
             "alignItems": "center",
             "flexDirection": "row",
           }
@@ -87,7 +87,7 @@ exports[`CheckBoxList renders correctly 1`] = `
         <Text
           accessibilityRole="text"
           style={
-            Object {
+            {
               "color": "#43484d",
               "fontWeight": "bold",
               "marginLeft": 10,
@@ -103,7 +103,7 @@ exports[`CheckBoxList renders correctly 1`] = `
     <View
       accessibilityRole="checkbox"
       accessibilityState={
-        Object {
+        {
           "checked": false,
           "disabled": false,
         }
@@ -122,7 +122,7 @@ exports[`CheckBoxList renders correctly 1`] = `
       onResponderTerminationRequest={[Function]}
       onStartShouldSetResponder={[Function]}
       style={
-        Object {
+        {
           "backgroundColor": "#ffffff",
           "borderColor": "#ffffff",
           "margin": 5,
@@ -136,7 +136,7 @@ exports[`CheckBoxList renders correctly 1`] = `
     >
       <View
         style={
-          Object {
+          {
             "alignItems": "center",
             "flexDirection": "row",
           }
@@ -146,7 +146,7 @@ exports[`CheckBoxList renders correctly 1`] = `
         <Text
           accessibilityRole="text"
           style={
-            Object {
+            {
               "color": "#43484d",
               "fontWeight": "bold",
               "marginLeft": 10,
@@ -162,7 +162,7 @@ exports[`CheckBoxList renders correctly 1`] = `
     <View
       accessibilityRole="checkbox"
       accessibilityState={
-        Object {
+        {
           "checked": false,
           "disabled": false,
         }
@@ -181,7 +181,7 @@ exports[`CheckBoxList renders correctly 1`] = `
       onResponderTerminationRequest={[Function]}
       onStartShouldSetResponder={[Function]}
       style={
-        Object {
+        {
           "backgroundColor": "#ffffff",
           "borderColor": "#ffffff",
           "margin": 5,
@@ -195,7 +195,7 @@ exports[`CheckBoxList renders correctly 1`] = `
     >
       <View
         style={
-          Object {
+          {
             "alignItems": "center",
             "flexDirection": "row",
           }
@@ -205,7 +205,7 @@ exports[`CheckBoxList renders correctly 1`] = `
         <Text
           accessibilityRole="text"
           style={
-            Object {
+            {
               "color": "#43484d",
               "fontWeight": "bold",
               "marginLeft": 10,
@@ -225,7 +225,7 @@ exports[`CheckBoxList renders correctly 1`] = `
 exports[`CheckBoxList renders correctly when disabled 1`] = `
 <View
   style={
-    Object {
+    {
       "alignContent": "center",
       "alignItems": "center",
       "flexDirection": "column",
@@ -236,7 +236,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
 >
   <Text
     style={
-      Object {
+      {
         "color": "#000",
         "fontSize": 20,
         "lineHeight": 26,
@@ -249,15 +249,15 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
   </Text>
   <View
     style={
-      Array [
-        Object {
+      [
+        {
           "alignContent": "center",
           "alignItems": "center",
           "flexDirection": "column",
           "justifyContent": "center",
           "zIndex": 3,
         },
-        Object {
+        {
           "flexDirection": "row",
         },
       ]
@@ -266,7 +266,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
     <View
       accessibilityRole="checkbox"
       accessibilityState={
-        Object {
+        {
           "checked": false,
           "disabled": true,
         }
@@ -285,7 +285,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       onResponderTerminationRequest={[Function]}
       onStartShouldSetResponder={[Function]}
       style={
-        Object {
+        {
           "backgroundColor": "#ffffff",
           "borderColor": "#ffffff",
           "margin": 5,
@@ -299,40 +299,17 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
     >
       <View
         style={
-          Object {
+          {
             "alignItems": "center",
             "flexDirection": "row",
           }
         }
       >
-        <Text
-          allowFontScaling={false}
-          selectable={false}
-          style={
-            Array [
-              Object {
-                "color": "#bfbfbf",
-                "fontSize": 24,
-              },
-              Object {
-                "minWidth": 24,
-              },
-              Object {
-                "fontFamily": "FontAwesome",
-                "fontStyle": "normal",
-                "fontWeight": "normal",
-              },
-              Object {},
-            ]
-          }
-          testID="RNE__Checkbox__Icon"
-        >
-          
-        </Text>
+        <Text />
         <Text
           accessibilityRole="text"
           style={
-            Object {
+            {
               "color": "hsl(208, 8%, 63%)",
               "fontWeight": "bold",
               "marginLeft": 10,
@@ -348,7 +325,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
     <View
       accessibilityRole="checkbox"
       accessibilityState={
-        Object {
+        {
           "checked": false,
           "disabled": true,
         }
@@ -367,7 +344,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       onResponderTerminationRequest={[Function]}
       onStartShouldSetResponder={[Function]}
       style={
-        Object {
+        {
           "backgroundColor": "#ffffff",
           "borderColor": "#ffffff",
           "margin": 5,
@@ -381,40 +358,17 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
     >
       <View
         style={
-          Object {
+          {
             "alignItems": "center",
             "flexDirection": "row",
           }
         }
       >
-        <Text
-          allowFontScaling={false}
-          selectable={false}
-          style={
-            Array [
-              Object {
-                "color": "#bfbfbf",
-                "fontSize": 24,
-              },
-              Object {
-                "minWidth": 24,
-              },
-              Object {
-                "fontFamily": "FontAwesome",
-                "fontStyle": "normal",
-                "fontWeight": "normal",
-              },
-              Object {},
-            ]
-          }
-          testID="RNE__Checkbox__Icon"
-        >
-          
-        </Text>
+        <Text />
         <Text
           accessibilityRole="text"
           style={
-            Object {
+            {
               "color": "hsl(208, 8%, 63%)",
               "fontWeight": "bold",
               "marginLeft": 10,
@@ -430,7 +384,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
     <View
       accessibilityRole="checkbox"
       accessibilityState={
-        Object {
+        {
           "checked": false,
           "disabled": true,
         }
@@ -449,7 +403,7 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
       onResponderTerminationRequest={[Function]}
       onStartShouldSetResponder={[Function]}
       style={
-        Object {
+        {
           "backgroundColor": "#ffffff",
           "borderColor": "#ffffff",
           "margin": 5,
@@ -463,40 +417,17 @@ exports[`CheckBoxList renders correctly when disabled 1`] = `
     >
       <View
         style={
-          Object {
+          {
             "alignItems": "center",
             "flexDirection": "row",
           }
         }
       >
-        <Text
-          allowFontScaling={false}
-          selectable={false}
-          style={
-            Array [
-              Object {
-                "color": "#bfbfbf",
-                "fontSize": 24,
-              },
-              Object {
-                "minWidth": 24,
-              },
-              Object {
-                "fontFamily": "FontAwesome",
-                "fontStyle": "normal",
-                "fontWeight": "normal",
-              },
-              Object {},
-            ]
-          }
-          testID="RNE__Checkbox__Icon"
-        >
-          
-        </Text>
+        <Text />
         <Text
           accessibilityRole="text"
           style={
-            Object {
+            {
               "color": "hsl(208, 8%, 63%)",
               "fontWeight": "bold",
               "marginLeft": 10,

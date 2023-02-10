@@ -3,7 +3,7 @@
 exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -11,8 +11,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -21,8 +21,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -34,7 +34,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -50,7 +50,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -64,12 +64,12 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -83,7 +83,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -95,7 +95,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -103,7 +103,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -114,7 +114,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -128,7 +128,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -143,7 +143,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -157,7 +157,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -174,7 +174,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -184,7 +184,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -193,7 +193,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -205,7 +205,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -223,12 +223,12 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -238,10 +238,10 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -250,9 +250,9 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -268,7 +268,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -282,13 +282,13 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -298,13 +298,13 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -314,7 +314,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -322,14 +322,14 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
                     >
                       <View
                         style={
-                          Object {
+                          {
                             "flex": 1,
                           }
                         }
@@ -341,13 +341,13 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
                           style={
-                            Object {
+                            {
                               "padding": 16,
                             }
                           }
                           waitFor={
-                            Array [
-                              Object {
+                            [
+                              {
                                 "current": null,
                               },
                             ]
@@ -356,15 +356,15 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                           <View>
                             <Text
                               style={
-                                Array [
-                                  Object {
+                                [
+                                  {
                                     "color": "#000",
                                     "fontSize": 20,
                                     "lineHeight": 26,
                                     "marginBottom": 16,
                                     "textAlign": "left",
                                   },
-                                  Object {
+                                  {
                                     "fontWeight": "bold",
                                   },
                                 ]
@@ -376,7 +376,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                             </Text>
                             <Text
                               style={
-                                Object {
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
@@ -389,7 +389,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                             </Text>
                             <View
                               style={
-                                Object {
+                                {
                                   "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
@@ -409,15 +409,15 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                 onResponderTerminationRequest={[Function]}
                                 onStartShouldSetResponder={[Function]}
                                 style={
-                                  Array [
-                                    Object {
+                                  [
+                                    {
                                       "backgroundColor": "#fff",
                                     },
-                                    Object {
+                                    {
                                       "borderTopLeftRadius": 8,
                                       "borderTopRightRadius": 8,
                                     },
-                                    Object {
+                                    {
                                       "borderBottomLeftRadius": 8,
                                       "borderBottomRightRadius": 8,
                                     },
@@ -426,7 +426,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                               >
                                 <View
                                   style={
-                                    Object {
+                                    {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
                                       "borderBottomLeftRadius": 8,
@@ -443,8 +443,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                 >
                                   <View
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "alignItems": "flex-start",
                                           "flex": 1,
                                           "justifyContent": "center",
@@ -453,8 +453,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                       ]
                                     }
                                     theme={
-                                      Object {
-                                        "colors": Object {
+                                      {
+                                        "colors": {
                                           "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
@@ -467,8 +467,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                           "grey4": "#bdc6cf",
                                           "grey5": "#e1e8ee",
                                           "greyOutline": "#bbb",
-                                          "platform": Object {
-                                            "android": Object {
+                                          "platform": {
+                                            "android": {
                                               "error": "#f44336",
                                               "grey": "rgba(0, 0, 0, 0.54)",
                                               "primary": "#2196f3",
@@ -477,7 +477,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                               "success": "#4caf50",
                                               "warning": "#ffeb3b",
                                             },
-                                            "default": Object {
+                                            "default": {
                                               "error": "#ff3b30",
                                               "grey": "#7d7d7d",
                                               "primary": "#007aff",
@@ -486,7 +486,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                               "success": "#4cd964",
                                               "warning": "#ffcc00",
                                             },
-                                            "ios": Object {
+                                            "ios": {
                                               "error": "#ff3b30",
                                               "grey": "#7d7d7d",
                                               "primary": "#007aff",
@@ -495,7 +495,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                               "success": "#4cd964",
                                               "warning": "#ffcc00",
                                             },
-                                            "web": Object {
+                                            "web": {
                                               "error": "#ff190c",
                                               "grey": "#393e42",
                                               "primary": "#2089dc",
@@ -512,7 +512,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                           "warning": "#faad14",
                                           "white": "#ffffff",
                                         },
-                                        "spacing": Object {
+                                        "spacing": {
                                           "lg": 12,
                                           "md": 8,
                                           "sm": 4,
@@ -525,7 +525,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     <Text
                                       accessibilityRole="text"
                                       style={
-                                        Object {
+                                        {
                                           "backgroundColor": "transparent",
                                           "color": "#000",
                                           "fontSize": 20,
@@ -541,7 +541,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                       accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
-                                        Object {
+                                        {
                                           "backgroundColor": "transparent",
                                           "color": "#242424",
                                           "fontSize": 16,
@@ -555,7 +555,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                   </View>
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "paddingLeft": 16,
                                       }
                                     }
@@ -563,7 +563,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                   <Text
                                     accessibilityRole="text"
                                     style={
-                                      Object {
+                                      {
                                         "backgroundColor": "transparent",
                                         "color": "#000",
                                         "fontSize": 20,
@@ -578,14 +578,14 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                   </Text>
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "paddingLeft": 16,
                                       }
                                     }
                                   />
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "alignSelf": "center",
                                         "overflow": "hidden",
                                       }
@@ -595,7 +595,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     <View
                                       accessibilityRole="button"
                                       android_ripple={
-                                        Object {
+                                        {
                                           "borderless": false,
                                           "color": "rgba(0, 0, 0, 0.3)",
                                           "radius": -5,
@@ -606,7 +606,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     >
                                       <View
                                         style={
-                                          Object {
+                                          {
                                             "alignItems": "center",
                                             "backgroundColor": "transparent",
                                             "justifyContent": "center",
@@ -614,30 +614,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                         }
                                         testID="RNE__ICON"
                                       >
-                                        <Text
-                                          allowFontScaling={false}
-                                          selectable={false}
-                                          style={
-                                            Array [
-                                              Object {
-                                                "color": "#D1D1D6",
-                                                "fontSize": 16,
-                                              },
-                                              Object {
-                                                "backgroundColor": "transparent",
-                                              },
-                                              Object {
-                                                "fontFamily": "ionicons",
-                                                "fontStyle": "normal",
-                                                "fontWeight": "normal",
-                                              },
-                                              Object {},
-                                            ]
-                                          }
-                                          testID="RNE__ICON__Component"
-                                        >
-                                          
-                                        </Text>
+                                        <Text />
                                       </View>
                                     </View>
                                   </View>
@@ -646,7 +623,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                             </View>
                             <View
                               style={
-                                Object {
+                                {
                                   "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
@@ -666,7 +643,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                 onResponderTerminationRequest={[Function]}
                                 onStartShouldSetResponder={[Function]}
                                 style={
-                                  Object {
+                                  {
                                     "backgroundColor": "rgb(242, 242, 242)",
                                     "paddingLeft": 0,
                                     "paddingRight": 0,
@@ -675,7 +652,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                               >
                                 <View
                                   style={
-                                    Object {
+                                    {
                                       "alignItems": "center",
                                       "backgroundColor": "rgb(242, 242, 242)",
                                       "borderColor": "#bcbbc1",
@@ -689,8 +666,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                 >
                                   <View
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "alignItems": "flex-start",
                                           "flex": 1,
                                           "justifyContent": "center",
@@ -699,8 +676,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                       ]
                                     }
                                     theme={
-                                      Object {
-                                        "colors": Object {
+                                      {
+                                        "colors": {
                                           "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
@@ -713,8 +690,8 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                           "grey4": "#bdc6cf",
                                           "grey5": "#e1e8ee",
                                           "greyOutline": "#bbb",
-                                          "platform": Object {
-                                            "android": Object {
+                                          "platform": {
+                                            "android": {
                                               "error": "#f44336",
                                               "grey": "rgba(0, 0, 0, 0.54)",
                                               "primary": "#2196f3",
@@ -723,7 +700,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                               "success": "#4caf50",
                                               "warning": "#ffeb3b",
                                             },
-                                            "default": Object {
+                                            "default": {
                                               "error": "#ff3b30",
                                               "grey": "#7d7d7d",
                                               "primary": "#007aff",
@@ -732,7 +709,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                               "success": "#4cd964",
                                               "warning": "#ffcc00",
                                             },
-                                            "ios": Object {
+                                            "ios": {
                                               "error": "#ff3b30",
                                               "grey": "#7d7d7d",
                                               "primary": "#007aff",
@@ -741,7 +718,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                               "success": "#4cd964",
                                               "warning": "#ffcc00",
                                             },
-                                            "web": Object {
+                                            "web": {
                                               "error": "#ff190c",
                                               "grey": "#393e42",
                                               "primary": "#2089dc",
@@ -758,7 +735,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                           "warning": "#faad14",
                                           "white": "#ffffff",
                                         },
-                                        "spacing": Object {
+                                        "spacing": {
                                           "lg": 12,
                                           "md": 8,
                                           "sm": 4,
@@ -771,7 +748,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                     <Text
                                       accessibilityRole="text"
                                       style={
-                                        Object {
+                                        {
                                           "backgroundColor": "transparent",
                                           "color": "#000",
                                           "fontSize": 20,
@@ -787,7 +764,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                   </View>
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "paddingLeft": 16,
                                       }
                                     }
@@ -795,9 +772,9 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                   <View
                                     collapsable={false}
                                     style={
-                                      Object {
-                                        "transform": Array [
-                                          Object {
+                                      {
+                                        "transform": [
+                                          {
                                             "rotate": "0deg",
                                           },
                                         ],
@@ -807,7 +784,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                   >
                                     <View
                                       style={
-                                        Object {
+                                        {
                                           "overflow": "hidden",
                                         }
                                       }
@@ -816,7 +793,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                       <View
                                         accessibilityRole="button"
                                         android_ripple={
-                                          Object {
+                                          {
                                             "borderless": false,
                                             "color": "rgba(0, 0, 0, 0.3)",
                                             "radius": -5,
@@ -827,7 +804,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                       >
                                         <View
                                           style={
-                                            Object {
+                                            {
                                               "alignItems": "center",
                                               "backgroundColor": "transparent",
                                               "justifyContent": "center",
@@ -835,30 +812,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                           }
                                           testID="RNE__ICON"
                                         >
-                                          <Text
-                                            allowFontScaling={false}
-                                            selectable={false}
-                                            style={
-                                              Array [
-                                                Object {
-                                                  "color": "#242424",
-                                                  "fontSize": 24,
-                                                },
-                                                Object {
-                                                  "backgroundColor": "transparent",
-                                                },
-                                                Object {
-                                                  "fontFamily": "material-community",
-                                                  "fontStyle": "normal",
-                                                  "fontWeight": "normal",
-                                                },
-                                                Object {},
-                                              ]
-                                            }
-                                            testID="RNE__ICON__Component"
-                                          >
-                                            󰅀
-                                          </Text>
+                                          <Text />
                                         </View>
                                       </View>
                                     </View>
@@ -891,7 +845,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
 exports[`DigitalCashWallet renders correctly for organizers 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -899,8 +853,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -909,8 +863,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -922,7 +876,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -938,7 +892,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -952,12 +906,12 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -971,7 +925,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -983,7 +937,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -991,7 +945,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -1002,7 +956,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -1016,7 +970,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -1031,7 +985,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -1045,7 +999,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -1062,7 +1016,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -1072,7 +1026,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -1081,7 +1035,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -1093,7 +1047,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -1111,12 +1065,12 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -1126,10 +1080,10 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -1138,9 +1092,9 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -1156,7 +1110,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -1170,13 +1124,13 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -1186,13 +1140,13 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -1202,7 +1156,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -1210,14 +1164,14 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
                     >
                       <View
                         style={
-                          Object {
+                          {
                             "flex": 1,
                           }
                         }
@@ -1229,13 +1183,13 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
                           style={
-                            Object {
+                            {
                               "padding": 16,
                             }
                           }
                           waitFor={
-                            Array [
-                              Object {
+                            [
+                              {
                                 "current": null,
                               },
                             ]
@@ -1244,15 +1198,15 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                           <View>
                             <Text
                               style={
-                                Array [
-                                  Object {
+                                [
+                                  {
                                     "color": "#000",
                                     "fontSize": 20,
                                     "lineHeight": 26,
                                     "marginBottom": 16,
                                     "textAlign": "left",
                                   },
-                                  Object {
+                                  {
                                     "fontWeight": "bold",
                                   },
                                 ]
@@ -1264,7 +1218,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                             </Text>
                             <Text
                               style={
-                                Object {
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
@@ -1277,7 +1231,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                             </Text>
                             <View
                               style={
-                                Object {
+                                {
                                   "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
@@ -1297,11 +1251,11 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                 onResponderTerminationRequest={[Function]}
                                 onStartShouldSetResponder={[Function]}
                                 style={
-                                  Array [
-                                    Object {
+                                  [
+                                    {
                                       "backgroundColor": "#fff",
                                     },
-                                    Object {
+                                    {
                                       "borderTopLeftRadius": 8,
                                       "borderTopRightRadius": 8,
                                     },
@@ -1310,7 +1264,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                               >
                                 <View
                                   style={
-                                    Object {
+                                    {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
                                       "borderBottomWidth": 0.5,
@@ -1325,8 +1279,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                 >
                                   <View
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "alignItems": "flex-start",
                                           "flex": 1,
                                           "justifyContent": "center",
@@ -1335,8 +1289,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                       ]
                                     }
                                     theme={
-                                      Object {
-                                        "colors": Object {
+                                      {
+                                        "colors": {
                                           "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
@@ -1349,8 +1303,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           "grey4": "#bdc6cf",
                                           "grey5": "#e1e8ee",
                                           "greyOutline": "#bbb",
-                                          "platform": Object {
-                                            "android": Object {
+                                          "platform": {
+                                            "android": {
                                               "error": "#f44336",
                                               "grey": "rgba(0, 0, 0, 0.54)",
                                               "primary": "#2196f3",
@@ -1359,7 +1313,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                               "success": "#4caf50",
                                               "warning": "#ffeb3b",
                                             },
-                                            "default": Object {
+                                            "default": {
                                               "error": "#ff3b30",
                                               "grey": "#7d7d7d",
                                               "primary": "#007aff",
@@ -1368,7 +1322,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                               "success": "#4cd964",
                                               "warning": "#ffcc00",
                                             },
-                                            "ios": Object {
+                                            "ios": {
                                               "error": "#ff3b30",
                                               "grey": "#7d7d7d",
                                               "primary": "#007aff",
@@ -1377,7 +1331,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                               "success": "#4cd964",
                                               "warning": "#ffcc00",
                                             },
-                                            "web": Object {
+                                            "web": {
                                               "error": "#ff190c",
                                               "grey": "#393e42",
                                               "primary": "#2089dc",
@@ -1394,7 +1348,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           "warning": "#faad14",
                                           "white": "#ffffff",
                                         },
-                                        "spacing": Object {
+                                        "spacing": {
                                           "lg": 12,
                                           "md": 8,
                                           "sm": 4,
@@ -1407,7 +1361,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     <Text
                                       accessibilityRole="text"
                                       style={
-                                        Object {
+                                        {
                                           "backgroundColor": "transparent",
                                           "color": "#000",
                                           "fontSize": 20,
@@ -1422,7 +1376,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     <Text
                                       accessibilityRole="text"
                                       style={
-                                        Object {
+                                        {
                                           "backgroundColor": "transparent",
                                           "color": "#242424",
                                           "fontSize": 16,
@@ -1436,7 +1390,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   </View>
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "paddingLeft": 16,
                                       }
                                     }
@@ -1444,7 +1398,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   <Text
                                     accessibilityRole="text"
                                     style={
-                                      Object {
+                                      {
                                         "backgroundColor": "transparent",
                                         "color": "#000",
                                         "fontSize": 20,
@@ -1458,14 +1412,14 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   </Text>
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "paddingLeft": 16,
                                       }
                                     }
                                   />
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "alignSelf": "center",
                                         "overflow": "hidden",
                                       }
@@ -1475,7 +1429,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     <View
                                       accessibilityRole="button"
                                       android_ripple={
-                                        Object {
+                                        {
                                           "borderless": false,
                                           "color": "rgba(0, 0, 0, 0.3)",
                                           "radius": -5,
@@ -1486,7 +1440,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     >
                                       <View
                                         style={
-                                          Object {
+                                          {
                                             "alignItems": "center",
                                             "backgroundColor": "transparent",
                                             "justifyContent": "center",
@@ -1514,11 +1468,11 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                 onResponderTerminationRequest={[Function]}
                                 onStartShouldSetResponder={[Function]}
                                 style={
-                                  Array [
-                                    Object {
+                                  [
+                                    {
                                       "backgroundColor": "#fff",
                                     },
-                                    Object {
+                                    {
                                       "borderBottomLeftRadius": 8,
                                       "borderBottomRightRadius": 8,
                                     },
@@ -1527,7 +1481,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                               >
                                 <View
                                   style={
-                                    Object {
+                                    {
                                       "alignItems": "center",
                                       "backgroundColor": "#fff",
                                       "borderBottomLeftRadius": 8,
@@ -1542,8 +1496,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                 >
                                   <View
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "alignItems": "flex-start",
                                           "flex": 1,
                                           "justifyContent": "center",
@@ -1552,8 +1506,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                       ]
                                     }
                                     theme={
-                                      Object {
-                                        "colors": Object {
+                                      {
+                                        "colors": {
                                           "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
@@ -1566,8 +1520,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           "grey4": "#bdc6cf",
                                           "grey5": "#e1e8ee",
                                           "greyOutline": "#bbb",
-                                          "platform": Object {
-                                            "android": Object {
+                                          "platform": {
+                                            "android": {
                                               "error": "#f44336",
                                               "grey": "rgba(0, 0, 0, 0.54)",
                                               "primary": "#2196f3",
@@ -1576,7 +1530,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                               "success": "#4caf50",
                                               "warning": "#ffeb3b",
                                             },
-                                            "default": Object {
+                                            "default": {
                                               "error": "#ff3b30",
                                               "grey": "#7d7d7d",
                                               "primary": "#007aff",
@@ -1585,7 +1539,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                               "success": "#4cd964",
                                               "warning": "#ffcc00",
                                             },
-                                            "ios": Object {
+                                            "ios": {
                                               "error": "#ff3b30",
                                               "grey": "#7d7d7d",
                                               "primary": "#007aff",
@@ -1594,7 +1548,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                               "success": "#4cd964",
                                               "warning": "#ffcc00",
                                             },
-                                            "web": Object {
+                                            "web": {
                                               "error": "#ff190c",
                                               "grey": "#393e42",
                                               "primary": "#2089dc",
@@ -1611,7 +1565,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           "warning": "#faad14",
                                           "white": "#ffffff",
                                         },
-                                        "spacing": Object {
+                                        "spacing": {
                                           "lg": 12,
                                           "md": 8,
                                           "sm": 4,
@@ -1624,7 +1578,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     <Text
                                       accessibilityRole="text"
                                       style={
-                                        Object {
+                                        {
                                           "backgroundColor": "transparent",
                                           "color": "#000",
                                           "fontSize": 20,
@@ -1640,7 +1594,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                       accessibilityRole="text"
                                       numberOfLines={1}
                                       style={
-                                        Object {
+                                        {
                                           "backgroundColor": "transparent",
                                           "color": "#242424",
                                           "fontSize": 16,
@@ -1654,7 +1608,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   </View>
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "paddingLeft": 16,
                                       }
                                     }
@@ -1662,7 +1616,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   <Text
                                     accessibilityRole="text"
                                     style={
-                                      Object {
+                                      {
                                         "backgroundColor": "transparent",
                                         "color": "#000",
                                         "fontSize": 20,
@@ -1677,14 +1631,14 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   </Text>
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "paddingLeft": 16,
                                       }
                                     }
                                   />
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "alignSelf": "center",
                                         "overflow": "hidden",
                                       }
@@ -1694,7 +1648,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     <View
                                       accessibilityRole="button"
                                       android_ripple={
-                                        Object {
+                                        {
                                           "borderless": false,
                                           "color": "rgba(0, 0, 0, 0.3)",
                                           "radius": -5,
@@ -1705,7 +1659,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     >
                                       <View
                                         style={
-                                          Object {
+                                          {
                                             "alignItems": "center",
                                             "backgroundColor": "transparent",
                                             "justifyContent": "center",
@@ -1722,7 +1676,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                             </View>
                             <View
                               style={
-                                Object {
+                                {
                                   "borderRadius": 8,
                                   "marginBottom": 16,
                                 }
@@ -1742,7 +1696,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                 onResponderTerminationRequest={[Function]}
                                 onStartShouldSetResponder={[Function]}
                                 style={
-                                  Object {
+                                  {
                                     "backgroundColor": "rgb(242, 242, 242)",
                                     "paddingLeft": 0,
                                     "paddingRight": 0,
@@ -1751,7 +1705,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                               >
                                 <View
                                   style={
-                                    Object {
+                                    {
                                       "alignItems": "center",
                                       "backgroundColor": "rgb(242, 242, 242)",
                                       "borderColor": "#bcbbc1",
@@ -1765,8 +1719,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                 >
                                   <View
                                     style={
-                                      Array [
-                                        Object {
+                                      [
+                                        {
                                           "alignItems": "flex-start",
                                           "flex": 1,
                                           "justifyContent": "center",
@@ -1775,8 +1729,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                       ]
                                     }
                                     theme={
-                                      Object {
-                                        "colors": Object {
+                                      {
+                                        "colors": {
                                           "background": "#ffffff",
                                           "black": "#242424",
                                           "disabled": "hsl(208, 8%, 90%)",
@@ -1789,8 +1743,8 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           "grey4": "#bdc6cf",
                                           "grey5": "#e1e8ee",
                                           "greyOutline": "#bbb",
-                                          "platform": Object {
-                                            "android": Object {
+                                          "platform": {
+                                            "android": {
                                               "error": "#f44336",
                                               "grey": "rgba(0, 0, 0, 0.54)",
                                               "primary": "#2196f3",
@@ -1799,7 +1753,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                               "success": "#4caf50",
                                               "warning": "#ffeb3b",
                                             },
-                                            "default": Object {
+                                            "default": {
                                               "error": "#ff3b30",
                                               "grey": "#7d7d7d",
                                               "primary": "#007aff",
@@ -1808,7 +1762,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                               "success": "#4cd964",
                                               "warning": "#ffcc00",
                                             },
-                                            "ios": Object {
+                                            "ios": {
                                               "error": "#ff3b30",
                                               "grey": "#7d7d7d",
                                               "primary": "#007aff",
@@ -1817,7 +1771,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                               "success": "#4cd964",
                                               "warning": "#ffcc00",
                                             },
-                                            "web": Object {
+                                            "web": {
                                               "error": "#ff190c",
                                               "grey": "#393e42",
                                               "primary": "#2089dc",
@@ -1834,7 +1788,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                           "warning": "#faad14",
                                           "white": "#ffffff",
                                         },
-                                        "spacing": Object {
+                                        "spacing": {
                                           "lg": 12,
                                           "md": 8,
                                           "sm": 4,
@@ -1847,7 +1801,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                     <Text
                                       accessibilityRole="text"
                                       style={
-                                        Object {
+                                        {
                                           "backgroundColor": "transparent",
                                           "color": "#000",
                                           "fontSize": 20,
@@ -1863,7 +1817,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   </View>
                                   <View
                                     style={
-                                      Object {
+                                      {
                                         "paddingLeft": 16,
                                       }
                                     }
@@ -1871,9 +1825,9 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   <View
                                     collapsable={false}
                                     style={
-                                      Object {
-                                        "transform": Array [
-                                          Object {
+                                      {
+                                        "transform": [
+                                          {
                                             "rotate": "0deg",
                                           },
                                         ],
@@ -1883,7 +1837,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                   >
                                     <View
                                       style={
-                                        Object {
+                                        {
                                           "overflow": "hidden",
                                         }
                                       }
@@ -1892,7 +1846,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                       <View
                                         accessibilityRole="button"
                                         android_ripple={
-                                          Object {
+                                          {
                                             "borderless": false,
                                             "color": "rgba(0, 0, 0, 0.3)",
                                             "radius": -5,
@@ -1903,7 +1857,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                       >
                                         <View
                                           style={
-                                            Object {
+                                            {
                                               "alignItems": "center",
                                               "backgroundColor": "transparent",
                                               "justifyContent": "center",

@@ -3,7 +3,7 @@
 exports[`NotificationScreen renders correctly for a non-empty store 1`] = `
 <View
   style={
-    Object {
+    {
       "alignItems": "center",
       "backgroundColor": "red",
       "borderRadius": 50,

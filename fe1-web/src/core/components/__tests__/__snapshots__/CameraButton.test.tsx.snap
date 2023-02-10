@@ -34,7 +34,7 @@ exports[`CameraButton renders correctly 1`] = `
         accessible={true}
         collapsable={false}
         style={
-          Object {
+          {
             "alignContent": "center",
             "alignItems": "center",
             "backgroundColor": "#2196F3",
@@ -49,7 +49,7 @@ exports[`CameraButton renders correctly 1`] = `
         <Image
           source={1}
           style={
-            Object {
+            {
               "height": 64,
               "width": 64,
             }

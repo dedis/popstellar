@@ -8,7 +8,7 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
 >
   <View
     style={
-      Object {
+      {
         "backgroundColor": "white",
         "borderRadius": 10,
         "borderWidth": 1,
@@ -19,14 +19,14 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
   >
     <View
       style={
-        Object {
+        {
           "borderBottomWidth": 1,
         }
       }
     >
       <Text
         style={
-          Object {
+          {
             "alignSelf": "flex-start",
             "color": "#000",
             "fontSize": 20,
@@ -44,7 +44,7 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
     </View>
     <Text
       style={
-        Object {
+        {
           "alignSelf": "flex-start",
           "color": "#000",
           "fontSize": 20,
@@ -60,7 +60,7 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
     </Text>
     <View
       style={
-        Object {
+        {
           "alignSelf": "center",
           "flexDirection": "row",
           "paddingBottom": 20,
@@ -81,7 +81,7 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
         onResponderTerminationRequest={[Function]}
         onStartShouldSetResponder={[Function]}
         style={
-          Object {
+          {
             "marginBottom": 16,
           }
         }
@@ -104,15 +104,15 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
             accessible={true}
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
           >
             <View
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "backgroundColor": "#3742fa",
                     "borderColor": "#3742fa",
                     "borderRadius": 8,
@@ -124,17 +124,17 @@ exports[`DismissModal disappears correctly after dismissing 1`] = `
             >
               <Text
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
                     },
-                    Object {
+                    {
                       "textAlign": "center",
                     },
-                    Object {
+                    {
                       "color": "#fff",
                     },
                   ]
@@ -159,7 +159,7 @@ exports[`DismissModal renders correctly 1`] = `
 >
   <View
     style={
-      Object {
+      {
         "backgroundColor": "white",
         "borderRadius": 10,
         "borderWidth": 1,
@@ -170,14 +170,14 @@ exports[`DismissModal renders correctly 1`] = `
   >
     <View
       style={
-        Object {
+        {
           "borderBottomWidth": 1,
         }
       }
     >
       <Text
         style={
-          Object {
+          {
             "alignSelf": "flex-start",
             "color": "#000",
             "fontSize": 20,
@@ -195,7 +195,7 @@ exports[`DismissModal renders correctly 1`] = `
     </View>
     <Text
       style={
-        Object {
+        {
           "alignSelf": "flex-start",
           "color": "#000",
           "fontSize": 20,
@@ -211,7 +211,7 @@ exports[`DismissModal renders correctly 1`] = `
     </Text>
     <View
       style={
-        Object {
+        {
           "alignSelf": "center",
           "flexDirection": "row",
           "paddingBottom": 20,
@@ -232,7 +232,7 @@ exports[`DismissModal renders correctly 1`] = `
         onResponderTerminationRequest={[Function]}
         onStartShouldSetResponder={[Function]}
         style={
-          Object {
+          {
             "marginBottom": 16,
           }
         }
@@ -255,15 +255,15 @@ exports[`DismissModal renders correctly 1`] = `
             accessible={true}
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
           >
             <View
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "backgroundColor": "#3742fa",
                     "borderColor": "#3742fa",
                     "borderRadius": 8,
@@ -275,17 +275,17 @@ exports[`DismissModal renders correctly 1`] = `
             >
               <Text
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
                     },
-                    Object {
+                    {
                       "textAlign": "center",
                     },
-                    Object {
+                    {
                       "color": "#fff",
                     },
                   ]

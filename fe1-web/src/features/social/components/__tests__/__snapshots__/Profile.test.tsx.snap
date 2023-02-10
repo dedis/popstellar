@@ -12,7 +12,7 @@ exports[`Profile renders correctly 1`] = `
     />
     <View
       style={
-        Object {
+        {
           "marginTop": 16,
         }
       }
@@ -20,14 +20,14 @@ exports[`Profile renders correctly 1`] = `
       <Text
         numberOfLines={1}
         style={
-          Array [
-            Object {
+          [
+            {
               "color": "#000",
               "fontSize": 20,
               "lineHeight": 26,
               "textAlign": "left",
             },
-            Object {
+            {
               "fontWeight": "bold",
             },
           ]
@@ -42,7 +42,7 @@ exports[`Profile renders correctly 1`] = `
   </View>
   <View
     style={
-      Object {
+      {
         "borderColor": "#8E8E8E",
         "borderTopWidth": 1,
         "flexDirection": "column",
@@ -52,7 +52,7 @@ exports[`Profile renders correctly 1`] = `
   >
     <View
       style={
-        Object {
+        {
           "borderRadius": 8,
           "marginBottom": 16,
         }
@@ -60,7 +60,7 @@ exports[`Profile renders correctly 1`] = `
     >
       <RCTScrollView
         collapsable={false}
-        data={Array []}
+        data={[]}
         getItem={[Function]}
         getItemCount={[Function]}
         handlerTag={1}
@@ -79,14 +79,14 @@ exports[`Profile renders correctly 1`] = `
         renderItem={[Function]}
         renderScrollComponent={[Function]}
         scrollEventThrottle={50}
-        stickyHeaderIndices={Array []}
-        viewabilityConfigCallbackPairs={Array []}
+        stickyHeaderIndices={[]}
+        viewabilityConfigCallbackPairs={[]}
         waitFor={
-          Array [
-            Object {
+          [
+            {
               "current": null,
             },
-            Object {
+            {
               "current": null,
             },
           ]
