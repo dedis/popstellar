@@ -62,15 +62,15 @@ func run(ctx context.Context, args []string) {
 		Usage:   "port to listen websocket connections from clients on",
 		Value:   9000,
 	}
-	witnessPortFlag := &cli.IntFlag{
-		Name:    "witness-port",
-		Aliases: []string{"wp"},
+	serverPortFlag := &cli.IntFlag{
+		Name:    "server-port",
+		Aliases: []string{"sp"},
 		Usage:   "port to listen websocket connections from witnesses on",
 		Value:   9002,
 	}
-	otherWitnessFlag := &cli.StringSliceFlag{
-		Name:    "other-witness",
-		Aliases: []string{"ow"},
+	otherServersFlag := &cli.StringSliceFlag{
+		Name:    "other-servers",
+		Aliases: []string{"os"},
 		Usage:   "address and port to connect to other witness",
 	}
 
@@ -79,8 +79,8 @@ func run(ctx context.Context, args []string) {
 		Usage: "backend for the PoP project",
 		Commands: []*cli.Command{
 			{
-				Name:  "organizer",
-				Usage: "manage the organizer",
+				Name:  "server",
+				Usage: "manage the server",
 				Flags: []cli.Flag{
 					publicKeyFlag,
 				},
@@ -91,36 +91,13 @@ func run(ctx context.Context, args []string) {
 						Flags: []cli.Flag{
 							serverPublicAddressFlag,
 							serverListenAddressFlag,
-							clientPortFlag,
-							witnessPortFlag,
-						},
-						Action: func(c *cli.Context) error {
-							err := Serve(c, "organizer")
-							return err
-						},
-					},
-				},
-			},
-			{
-				Name:  "witness",
-				Usage: "manage the witness",
-				Flags: []cli.Flag{
-					publicKeyFlag,
-				},
-				Subcommands: []*cli.Command{
-					{
-						Name:  "serve",
-						Usage: "start the witness server",
-						Flags: []cli.Flag{
-							serverPublicAddressFlag,
-							serverListenAddressFlag,
 							organizerAddressFlag,
 							clientPortFlag,
-							witnessPortFlag,
-							otherWitnessFlag,
+							serverPortFlag,
+							otherServersFlag,
 						},
 						Action: func(c *cli.Context) error {
-							err := Serve(c, "witness")
+							err := Serve(c)
 							return err
 						},
 					},

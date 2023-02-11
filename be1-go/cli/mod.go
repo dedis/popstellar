@@ -25,17 +25,10 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const witness string = "witness"
-const organizer string = "organizer"
-
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the organizer or the witness
-func Serve(cliCtx *cli.Context, user string) error {
+func Serve(cliCtx *cli.Context) error {
 	log := popstellar.Logger
-
-	if user != organizer && user != witness {
-		return xerrors.Errorf("unrecognized user, should be \"organizer\" or \"witness\"")
-	}
 
 	// get command line args which specify public key, addresses, port to use for clients
 	// and witnesses, witness' address
@@ -43,11 +36,11 @@ func Serve(cliCtx *cli.Context, user string) error {
 	privateAddress := cliCtx.String("server-listen-address")
 
 	clientPort := cliCtx.Int("client-port")
-	witnessPort := cliCtx.Int("witness-port")
-	if clientPort == witnessPort {
-		return xerrors.Errorf("client and witness ports must be different")
+	serverPort := cliCtx.Int("server-port")
+	if clientPort == serverPort {
+		return xerrors.Errorf("client and server ports must be different")
 	}
-	otherWitness := cliCtx.StringSlice("other-witness")
+	otherServers := cliCtx.StringSlice("other-servers")
 
 	pk := cliCtx.String("public-key")
 
@@ -58,10 +51,10 @@ func Serve(cliCtx *cli.Context, user string) error {
 	ownerKey(pk, &point)
 
 	// create user hub
-	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", user).Logger(),
+	h, err := standard_hub.NewHub(point, clientServerAddress, log.With().Str("role", "server").Logger(),
 		lao.NewChannel)
 	if err != nil {
-		return xerrors.Errorf("failed create the %s hub: %v", user, err)
+		return xerrors.Errorf("failed create the hub: %v", err)
 	}
 
 	// start the processing loop
@@ -73,29 +66,19 @@ func Serve(cliCtx *cli.Context, user string) error {
 	clientSrv.Start()
 
 	// Start a witness websocket server
-	serverSrv := network.NewServer(h, privateAddress, witnessPort, socket.ServerSocketType,
-		log.With().Str("role", "witness server").Logger())
+	serverSrv := network.NewServer(h, privateAddress, serverPort, socket.ServerSocketType,
+		log.With().Str("role", "server server").Logger())
 	serverSrv.Start()
 
 	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}
 	done := make(chan struct{})
 
-	if user == "witness" {
-		organizerAddress := cliCtx.String("organizer-address")
-
-		// connect to organizer's witness endpoint
-		err = connectToSocket(organizerAddress, h, wg, done)
-		if err != nil {
-			return xerrors.Errorf("failed to connect to organizer: %v", err)
-		}
-	}
-
 	// connect to given witness
-	for _, witnessAddress := range otherWitness {
-		err = connectToSocket(witnessAddress, h, wg, done)
+	for _, serverAddress := range otherServers {
+		err = connectToSocket(serverAddress, h, wg, done)
 		if err != nil {
-			return xerrors.Errorf("failed to connect to witness: %v", err)
+			return xerrors.Errorf("failed to connect to server: %v", err)
 		}
 	}
 
@@ -140,7 +123,7 @@ func connectToSocket(address string, h hub.Hub,
 	if err != nil {
 		return xerrors.Errorf("failed to parse connection url %s: %v", urlString, err)
 	}
-
+	log.Info().Msgf("test")
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
 		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
