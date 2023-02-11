@@ -631,7 +631,7 @@ If you write E2E tests, please be mindful of making them maintainable through th
 Please reach out to the DEDIS Engineering team members to deploy a build to an
 internet accessible host.
 
-The web application can be packaged for deploynent by executing `npm run build-web`.
+The web application can be packaged for deploynent by executing `npm run build-web`. In case you experience the error `--openssl-legacy-provider is not allowed in NODE_OPTIONS` then it is due to a workaround introduced here: https://github.com/dedis/popstellar/pull/1308#issuecomment-1426683039. The problem is that expo only works with node version > 16 with the `--openssl-legacy-provider` option but this option makes builds fail on v16. You can still create a build using node v16 by manually running `npx expo export:web` rather than `npm run build-web`.
 This will generate a timestamped zip package in the `./dist` folder.
 
 
