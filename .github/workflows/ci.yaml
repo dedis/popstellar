@@ -59,7 +59,7 @@ jobs:
         continue-on-error: true
 
       - name: Run lint
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '16.x' }} # execute even if previous steps failed
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '18.x' }} # execute even if previous steps failed
         run: npm run eslint
 
       - name: Validate dependencies
@@ -75,7 +75,7 @@ jobs:
         run: npm run test -- --runInBand --ci
 
       - name: Run code analysis
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '16.x' }} # execute even if previous steps failed
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '18.x' }} # execute even if previous steps failed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
         run: |
@@ -89,8 +89,14 @@ jobs:
         continue-on-error: true
 
       - name: Build expo web project
+        if: ${{ matrix.node-version != '16.x' }}
         run: |
           npm run build-web
+
+      - name: Build expo web project (legacy, without NODE_OPTIONS=--openssl-legacy-provider)
+        if: ${{ matrix.node-version == '16.x' }}
+        run: |
+          npx expo export:web
 
   be1-go:
     name: Be1-Go
