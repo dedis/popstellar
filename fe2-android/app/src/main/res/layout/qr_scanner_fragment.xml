@@ -8,18 +8,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-      android:id="@+id/qr_code_sight"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:alpha="0.2"
-      android:contentDescription="@string/qr_sight_content_desc"
-      android:src="@drawable/scanner_sight"
-      app:layout_constraintBottom_toTopOf="@id/scanner_bottom_texts"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
-
     <LinearLayout
       android:id="@+id/scanner_bottom_texts"
       android:layout_width="match_parent"
@@ -73,43 +61,6 @@
         android:textSize="@dimen/size_section_title"
         app:cornerRadius="@dimen/corner_radius_standard" />
     </LinearLayout>
-
-    <TextView
-      android:id="@+id/scanned_number"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="2dp"
-      android:text="0"
-      android:textColor="@color/white"
-      android:textSize="16sp"
-      android:visibility="gone"
-      app:layout_constraintBottom_toBottomOf="@+id/scanned_title"
-      app:layout_constraintStart_toEndOf="@id/scanned_title"
-      app:layout_constraintTop_toTopOf="@+id/scanned_title"
-      tools:ignore="HardcodedText" />
-
-    <TextView
-      android:id="@+id/scanner_instruction_text"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_margin="@dimen/main_horizontal_margin"
-      android:gravity="center"
-      android:textColor="@color/white"
-      android:textSize="16sp"
-      app:layout_constraintBottom_toTopOf="@id/qr_code_sight"
-      app:layout_constraintTop_toTopOf="@+id/scanner_camera" />
-
-    <TextView
-      android:id="@+id/scanned_title"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_margin="@dimen/main_horizontal_margin"
-      android:text="@string/scanned_tokens"
-      android:textColor="@color/white"
-      android:textSize="16sp"
-      android:visibility="gone"
-      app:layout_constraintBottom_toTopOf="@id/scanner_bottom_texts"
-      app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.camera.view.PreviewView
       android:id="@+id/scanner_camera"
@@ -188,5 +139,54 @@
 
       </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <ImageView
+      android:id="@+id/qr_code_sight"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:alpha="0.2"
+      android:contentDescription="@string/qr_sight_content_desc"
+      android:src="@drawable/scanner_sight"
+      app:layout_constraintBottom_toTopOf="@id/scanner_bottom_texts"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+      android:id="@+id/scanned_number"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="2dp"
+      android:text="0"
+      android:textColor="@color/white"
+      android:textSize="16sp"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="@+id/scanned_title"
+      app:layout_constraintStart_toEndOf="@id/scanned_title"
+      app:layout_constraintTop_toTopOf="@+id/scanned_title"
+      tools:ignore="HardcodedText" />
+
+    <TextView
+      android:id="@+id/scanner_instruction_text"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/main_horizontal_margin"
+      android:gravity="center"
+      android:textColor="@color/white"
+      android:textSize="16sp"
+      app:layout_constraintBottom_toTopOf="@id/qr_code_sight"
+      app:layout_constraintTop_toTopOf="@+id/scanner_camera" />
+
+    <TextView
+      android:id="@+id/scanned_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/main_horizontal_margin"
+      android:text="@string/scanned_tokens"
+      android:textColor="@color/white"
+      android:textSize="16sp"
+      android:visibility="gone"
+      app:layout_constraintBottom_toTopOf="@id/scanner_bottom_texts"
+      app:layout_constraintStart_toStartOf="parent" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
