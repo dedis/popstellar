@@ -35,33 +35,6 @@
         android:textSize="@dimen/qr_scanner_manual_texts_size" />
     </LinearLayout>
 
-    <LinearLayout
-      android:id="@+id/camera_permission"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:gravity="center"
-      android:orientation="vertical">
-
-      <TextView
-        style="@style/explication_text_style"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:text="@string/allow_camera_text"
-        android:textColor="@color/white" />
-
-      <com.google.android.material.button.MaterialButton
-        android:id="@+id/allow_camera_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/padding_big"
-        android:text="@string/allow_camera_button"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/size_section_title"
-        app:cornerRadius="@dimen/corner_radius_standard" />
-    </LinearLayout>
-
     <androidx.camera.view.PreviewView
       android:id="@+id/scanner_camera"
       android:layout_width="match_parent"
@@ -188,5 +161,33 @@
       android:visibility="gone"
       app:layout_constraintBottom_toTopOf="@id/scanner_bottom_texts"
       app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+      android:id="@+id/camera_permission"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:orientation="vertical">
+
+      <TextView
+        style="@style/explication_text_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_text"
+        android:text="@string/allow_camera_text"
+        android:textColor="@color/white" />
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/allow_camera_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_big"
+        android:text="@string/allow_camera_button"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="@dimen/main_horizontal_margin"
+        android:textSize="@dimen/size_section_title"
+        app:cornerRadius="@dimen/corner_radius_small" />
+    </LinearLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
