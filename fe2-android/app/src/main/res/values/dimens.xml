@@ -15,7 +15,6 @@
   <dimen name="history_card_title">14sp</dimen>
   <dimen name="card_element_text_size">16sp</dimen>
   <dimen name="qr_scanner_manual_texts_size">14sp</dimen>
-  <dimen name="qr_scanner_explanation_text_size">16dp</dimen>
 
   <dimen name="size_for_longer_text">10sp</dimen>
   <dimen name="rounded_edit_text">10dp</dimen>
@@ -26,18 +25,12 @@
   <dimen name="home_button_vertical_margin">30dp</dimen>
 
   <!-- Camera preview -->
-  <dimen name="camera_preview_margin">20dp</dimen>
   <dimen name="qr_rollcall_img">320dp</dimen>
   <dimen name="margin_button">16dp</dimen>
   <dimen name="round_button_size">55dp</dimen>
   <dimen name="rounded_corner_size">10dp</dimen>
   <dimen name="social_media_delete">40dp</dimen>
   <dimen name="qr_code_size">200dp</dimen>
-  <integer name="camera_preview_width">240</integer>
-  <integer name="camera_preview_height">320</integer>
-  <dimen name="camera_height">300dp</dimen>
-  <dimen name="camera_width">228dp</dimen>
-  <dimen name="camera_close_button_end_margin">8dp</dimen>
 
   <!-- Button -->
   <dimen name="standard_button_height">55dp</dimen>
@@ -116,14 +109,6 @@
   <dimen name="floating_action_button_elevation">8dp</dimen>
   <dimen name="fab_border_width">1dp</dimen>
   <dimen name="mini_fab_bottom_margin">10dp</dimen>
-
-  <!--  Manual Add dimensions-->
-  <dimen name="manual_add_edit_text_size">14sp</dimen>
-  <dimen name="manual_add_top_margin">16dp</dimen>
-  <dimen name="manual_add_text_button_size">18sp</dimen>
-
-  <!-- Menu icons dimensions -->
-  <string name="camera_preview_ratio">3:4</string>
 
   <!--  Home dimensions -->
   <dimen name="home_card_view_height">50dp</dimen>

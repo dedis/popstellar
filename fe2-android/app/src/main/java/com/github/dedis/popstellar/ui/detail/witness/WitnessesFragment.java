@@ -53,7 +53,6 @@ public class WitnessesFragment extends Fragment {
   }
 
   private void openAddWitness() {
-    System.out.println("openwitness");
     setCurrentFragment(
         getParentFragmentManager(),
         R.id.fragment_qr_scanner,

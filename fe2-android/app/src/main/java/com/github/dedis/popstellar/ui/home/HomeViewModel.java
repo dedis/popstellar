@@ -39,8 +39,6 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
 
-  private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
-
   /** LiveData objects that represent the state in a fragment */
   private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
 

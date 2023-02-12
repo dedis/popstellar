@@ -155,7 +155,7 @@ public class QrScannerFragment extends Fragment {
             executor,
             result -> {
               List<Barcode> barcodes = result.getValue(barcodeScanner);
-              if (barcodes != null && barcodes.size() > 0) {
+              if (barcodes != null && !barcodes.isEmpty()) {
                 Log.d(TAG, "barcode raw value :" + barcodes.get(0).getRawValue());
                 onResult(barcodes.get(0));
               }
