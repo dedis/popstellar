@@ -146,7 +146,6 @@ public class WitnessAddTest {
         .onActivity(
             activity -> {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
-              laoDetailViewModel.setScanningAction(ScanningAction.ADD_WITNESS);
             });
     activityScenarioRule.getScenario().recreate();
   }

@@ -84,7 +84,6 @@ public class RollCallFragment extends Fragment {
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     try {
       rollCall = viewModel.getRollCall(requireArguments().getString(ROLL_CALL_ID));
-      viewModel.setCurrentRollCallId(rollCall.getPersistentId());
     } catch (UnknownRollCallException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
       return null;
@@ -117,7 +116,7 @@ public class RollCallFragment extends Fragment {
               // will add the scan to this fragment in the future
               viewModel.addDisposable(
                   viewModel
-                      .closeRollCall()
+                      .closeRollCall(rollCall.getId())
                       .subscribe(
                           () ->
                               setCurrentFragment(

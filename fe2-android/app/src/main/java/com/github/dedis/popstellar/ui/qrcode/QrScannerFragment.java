@@ -181,6 +181,6 @@ public class QrScannerFragment extends Fragment {
   }
 
   private void onResult(String data) {
-    viewModel.handleData(data);
+    viewModel.handleData(data, (ScanningAction) requireArguments().get(SCANNING_KEY));
   }
 }

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 
 public interface QRCodeScanningViewModel {
 
-  void handleData(String data);
+  void handleData(String data, ScanningAction scanningAction);
 
   LiveData<Integer> getNbScanned();
 }

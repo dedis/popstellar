@@ -153,7 +153,6 @@ public class RollCallAddAttendeeTest {
         .onActivity(
             activity -> {
               LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
-              laoDetailViewModel.setScanningAction(ScanningAction.ADD_ROLL_CALL_ATTENDEE);
             });
     activityScenarioRule.getScenario().recreate();
   }

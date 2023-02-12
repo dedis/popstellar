@@ -87,7 +87,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   }
 
   @Override
-  public void handleData(String data) {
+  public void handleData(String data, ScanningAction scanningAction) {
     ConnectToLao laoData;
     try {
       laoData = ConnectToLao.extractFrom(gson, data);
