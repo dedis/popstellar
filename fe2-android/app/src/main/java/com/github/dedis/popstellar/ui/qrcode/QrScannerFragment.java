@@ -29,7 +29,7 @@ import static androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFER
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 public class QrScannerFragment extends Fragment {
-  public static String TAG = QrScannerFragment.class.getSimpleName();
+  public static final String TAG = QrScannerFragment.class.getSimpleName();
 
   public static final String SCANNING_KEY = "scanning_action_key";
 
@@ -58,7 +58,7 @@ public class QrScannerFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
 
     binding = QrScannerFragmentBinding.inflate(inflater, container, false);
-    ScanningAction scanningAction = (ScanningAction) requireArguments().get(SCANNING_KEY);
+    ScanningAction scanningAction = getScanningAction();
 
     switch (scanningAction) {
       case ADD_WITNESS:
@@ -85,7 +85,7 @@ public class QrScannerFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    ScanningAction scanningAction = (ScanningAction) requireArguments().get(SCANNING_KEY);
+    ScanningAction scanningAction = getScanningAction();
     viewModel.setScannerTitle(scanningAction.pageTitle());
     applyPermissionToView();
   }
@@ -95,6 +95,14 @@ public class QrScannerFragment extends Fragment {
     super.onDestroy();
     if (barcodeScanner != null) {
       barcodeScanner.close();
+    }
+  }
+
+  private ScanningAction getScanningAction() {
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+      return requireArguments().getSerializable(SCANNING_KEY, ScanningAction.class);
+    } else {
+      return (ScanningAction) requireArguments().getSerializable(SCANNING_KEY);
     }
   }
 
@@ -185,6 +193,6 @@ public class QrScannerFragment extends Fragment {
   }
 
   private void onResult(String data) {
-    viewModel.handleData(data, (ScanningAction) requireArguments().get(SCANNING_KEY));
+    viewModel.handleData(data, getScanningAction());
   }
 }
