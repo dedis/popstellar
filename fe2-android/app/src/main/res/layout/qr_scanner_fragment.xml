@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_qr_scanner"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+      android:id="@+id/qr_code_sight"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:alpha="0.2"
+      android:contentDescription="@string/qr_sight_content_desc"
+      android:src="@drawable/scanner_sight"
+      app:layout_constraintBottom_toTopOf="@id/scanner_bottom_texts"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+      android:id="@+id/scanner_bottom_texts"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/padding_bigger"
+      android:gravity="center_horizontal"
+      app:layout_constraintBottom_toBottomOf="parent">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/no_camera"
+        android:textSize="@dimen/qr_scanner_manual_texts_size" />
+
+      <TextView
+        android:id="@+id/scanner_enter_manually"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:clickable="true"
+        android:text="@string/enter_manually"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/qr_scanner_manual_texts_size" />
+    </LinearLayout>
+
+    <LinearLayout
+      android:id="@+id/camera_permission"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:orientation="vertical">
+
+      <TextView
+        style="@style/explication_text_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_text"
+        android:text="@string/allow_camera_text"
+        android:textColor="@color/white" />
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/allow_camera_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_big"
+        android:text="@string/allow_camera_button"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/size_section_title"
+        app:cornerRadius="@dimen/corner_radius_standard" />
+    </LinearLayout>
+
+    <TextView
+      android:id="@+id/scanned_number"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="2dp"
+      android:text="0"
+      android:textColor="@color/white"
+      android:textSize="16sp"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="@+id/scanned_title"
+      app:layout_constraintStart_toEndOf="@id/scanned_title"
+      app:layout_constraintTop_toTopOf="@+id/scanned_title"
+      tools:ignore="HardcodedText" />
+
+    <TextView
+      android:id="@+id/scanner_instruction_text"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/main_horizontal_margin"
+      android:gravity="center"
+      android:textColor="@color/white"
+      android:textSize="16sp"
+      app:layout_constraintBottom_toTopOf="@id/qr_code_sight"
+      app:layout_constraintTop_toTopOf="@+id/scanner_camera" />
+
+    <TextView
+      android:id="@+id/scanned_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/main_horizontal_margin"
+      android:text="@string/scanned_tokens"
+      android:textColor="@color/white"
+      android:textSize="16sp"
+      android:visibility="gone"
+      app:layout_constraintBottom_toTopOf="@id/scanner_bottom_texts"
+      app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.camera.view.PreviewView
+      android:id="@+id/scanner_camera"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toTopOf="@id/scanner_bottom_texts"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+      android:id="@+id/enter_manually_card"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginHorizontal="@dimen/overlay_cv_horizontal_margin"
+      android:layout_marginVertical="@dimen/overlay_cv_vertical_margin"
+      android:backgroundTint="@color/background_gray"
+      android:visibility="gone"
+      app:cardCornerRadius="@dimen/corner_radius_standard">
+
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+          android:id="@+id/manual_add_button"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="@dimen/main_horizontal_margin"
+          android:text="@string/add"
+          android:textAllCaps="false"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/manual_add_input_layout" />
+
+        <ImageView
+          android:id="@+id/add_manual_close"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:contentDescription="@string/add_manual_close_button_desc"
+          android:src="@drawable/close_icon"
+          app:layout_constraintBottom_toBottomOf="@+id/add_manual_title"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toEndOf="@+id/add_manual_title"
+          app:layout_constraintTop_toTopOf="@+id/add_manual_title" />
+
+        <TextView
+          android:id="@+id/add_manual_title"
+          style="@style/text_high_emphasis"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/margin_text"
+          android:textSize="@dimen/size_body"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+          android:id="@+id/manual_add_input_layout"
+          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="@dimen/main_horizontal_margin"
+          app:boxCornerRadiusBottomEnd="8dp"
+          app:boxCornerRadiusBottomStart="8dp"
+          app:boxCornerRadiusTopEnd="8dp"
+          app:boxCornerRadiusTopStart="8dp"
+          app:endIconMode="clear_text"
+          app:layout_constraintTop_toBottomOf="@id/add_manual_title">
+          <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/manual_add_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/white" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
