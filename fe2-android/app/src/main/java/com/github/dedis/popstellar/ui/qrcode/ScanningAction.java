@@ -17,12 +17,17 @@ public enum ScanningAction {
     @Override
     @StringRes
     public int instructions() {
-      return R.string.qrcode_scanning_add_attendee;
+      return R.string.qrcode_scanning_add_witness;
     }
 
     @Override
     int scanningTitle() {
       return R.string.scanned_witness;
+    }
+
+    @Override
+    int pageTitle() {
+      return R.string.add_witness_title;
     }
 
     @Override
@@ -42,13 +47,18 @@ public enum ScanningAction {
     @Override
     @StringRes
     public int instructions() {
-      return R.string.qrcode_scanning_add_witness;
+      return R.string.qrcode_scanning_add_attendee;
     }
 
     @Override
     @StringRes
     int scanningTitle() {
       return R.string.scanned_tokens;
+    }
+
+    @Override
+    int pageTitle() {
+      return R.string.add_attendee_title;
     }
 
     @Override
@@ -79,6 +89,11 @@ public enum ScanningAction {
     }
 
     @Override
+    int pageTitle() {
+      return R.string.join_lao_title;
+    }
+
+    @Override
     @StringRes
     public int hint() {
       return R.string.join_manual_hint;
@@ -90,4 +105,6 @@ public enum ScanningAction {
   abstract int instructions();
 
   abstract int scanningTitle();
+
+  abstract int pageTitle();
 }

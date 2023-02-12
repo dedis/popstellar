@@ -85,6 +85,8 @@ public class QrScannerFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
+    ScanningAction scanningAction = (ScanningAction) requireArguments().get(SCANNING_KEY);
+    viewModel.setScannerTitle(scanningAction.pageTitle());
     applyPermissionToView();
   }
 

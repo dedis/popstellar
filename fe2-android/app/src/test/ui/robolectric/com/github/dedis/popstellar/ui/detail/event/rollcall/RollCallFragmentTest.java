@@ -141,7 +141,7 @@ public class RollCallFragmentTest {
 
   @Test
   public void statusCreatedTest() {
-    rollCallStatusText().check(matches(withText("Closed")));
+    rollCallStatusText().check(matches(withText("Not yet opened")));
   }
 
   @Test

@@ -539,6 +539,11 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
     return nbScanned;
   }
 
+  @Override
+  public void setScannerTitle(int title) {
+    super.setPageTitle(title);
+  }
+
   public Observable<List<ConsensusNode>> getNodes() throws UnknownLaoException {
     return laoRepository.getNodesByChannel(getLao().getChannel());
   }

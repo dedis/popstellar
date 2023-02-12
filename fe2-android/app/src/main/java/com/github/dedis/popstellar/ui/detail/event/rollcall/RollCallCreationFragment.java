@@ -144,13 +144,10 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
               .flatMapCompletable(viewModel::openRollCall)
               .subscribe(
                   // Open the scanning fragment when everything is done
-                  () -> {
-                    setCurrentFragment(
-                        getParentFragmentManager(),
-                        R.id.fragment_qr_scanner,
-                        () -> QrScannerFragment.newInstance(ScanningAction.ADD_ROLL_CALL_ATTENDEE));
-                    viewModel.setPageTitle(R.string.add_attendee_title);
-                  },
+                  () -> setCurrentFragment(
+                      getParentFragmentManager(),
+                      R.id.fragment_qr_scanner,
+                      () -> QrScannerFragment.newInstance(ScanningAction.ADD_ROLL_CALL_ATTENDEE)),
                   error ->
                       ErrorUtils.logAndShow(
                           requireContext(), TAG, error, R.string.error_create_rollcall)));

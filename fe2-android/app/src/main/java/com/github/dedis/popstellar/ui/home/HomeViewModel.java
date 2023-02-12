@@ -87,6 +87,11 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   }
 
   @Override
+  public void setScannerTitle(int title) {
+    setPageTitle(title);
+  }
+
+  @Override
   public void handleData(String data, ScanningAction scanningAction) {
     ConnectToLao laoData;
     try {

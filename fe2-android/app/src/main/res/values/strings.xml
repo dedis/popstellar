@@ -87,7 +87,7 @@
   <string name="qrcode_scanning_connect_lao">Scan the invite QR code to join the LAO</string>
   <string name="event_description">Event Description</string>
   <string name="rc_location_title">Location*</string>
-  <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code</string>
+  <string name="qrcode_scanning_add_attendee">Scan each participant’s Roll-call QR code</string>
   <string name="roll_call_add_manually_hint">Add key manually</string>
   <string name="scan">Scan</string>
   <string name="enter_manually"> Enter Manually</string>
@@ -107,6 +107,7 @@
   <string name="total">Total:</string>
   <string name="submit">Submit</string>
   <string name="manual_witness_hint">Witness public key</string>
+  <string name="add_witness_title">Add Witness</string>
 
   <!--  Roll Call -->
   <string name="roll_call_setup_title">Roll Call Setup</string>
