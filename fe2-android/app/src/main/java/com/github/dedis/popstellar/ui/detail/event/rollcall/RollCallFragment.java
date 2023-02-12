@@ -22,7 +22,8 @@ import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
@@ -104,8 +105,10 @@ public class RollCallFragment extends Fragment {
                           () ->
                               setCurrentFragment(
                                   getParentFragmentManager(),
-                                  R.id.fragment_qrcode,
-                                  QRCodeScanningFragment::new),
+                                  R.id.fragment_qr_scanner,
+                                  () ->
+                                      QrScannerFragment.newInstance(
+                                          ScanningAction.ADD_ROLL_CALL_ATTENDEE)),
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_open_rollcall)));
@@ -133,7 +136,9 @@ public class RollCallFragment extends Fragment {
     binding.rollCallScanningButton.setOnClickListener(
         b ->
             setCurrentFragment(
-                getParentFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new));
+                getParentFragmentManager(),
+                R.id.fragment_qr_scanner,
+                () -> QrScannerFragment.newInstance(ScanningAction.ADD_ROLL_CALL_ATTENDEE)));
 
     viewModel.addDisposable(
         viewModel
