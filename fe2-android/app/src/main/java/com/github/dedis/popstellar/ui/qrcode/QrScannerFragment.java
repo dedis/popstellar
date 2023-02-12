@@ -1,0 +1,186 @@
+package com.github.dedis.popstellar.ui.qrcode;
+
+import android.Manifest;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.*;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.camera.mlkit.vision.MlKitAnalyzer;
+import androidx.camera.view.LifecycleCameraController;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
+import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.google.mlkit.vision.barcode.*;
+import com.google.mlkit.vision.barcode.common.Barcode;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Executor;
+
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFERENCED;
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+
+public class QrScannerFragment extends Fragment {
+  public static String TAG = QrScannerFragment.class.getSimpleName();
+
+  public static final String SCANNING_KEY = "scanning_action_key";
+
+  private QrScannerFragmentBinding binding;
+  private BarcodeScanner barcodeScanner;
+
+  private QRCodeScanningViewModel viewModel;
+
+  public QrScannerFragment() {
+    // Required empty public constructor
+  }
+
+  public static QrScannerFragment newInstance(ScanningAction scanningAction) {
+    QrScannerFragment fragment = new QrScannerFragment();
+    Bundle bundle = new Bundle(1);
+    bundle.putSerializable(SCANNING_KEY, scanningAction);
+    fragment.setArguments(bundle);
+    return fragment;
+  }
+
+  @Nullable
+  @Override
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+
+    binding = QrScannerFragmentBinding.inflate(inflater, container, false);
+    ScanningAction scanningAction = (ScanningAction) requireArguments().get(SCANNING_KEY);
+
+    switch (scanningAction) {
+      case ADD_WITNESS:
+      case ADD_ROLL_CALL_ATTENDEE:
+        viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+        displayCounter();
+        break;
+      case ADD_LAO_PARTICIPANT:
+        viewModel = HomeActivity.obtainViewModel(requireActivity());
+        break;
+    }
+
+    binding.scannedTitle.setText(scanningAction.scanningTitle());
+    binding.addManualTitle.setText(scanningAction.toString());
+    binding.manualAddEditText.setHint(scanningAction.hint());
+    binding.scannerInstructionText.setText(scanningAction.instructions());
+
+    setupNbScanned();
+    setupManualAdd();
+    setupAllowCameraButton();
+    return binding.getRoot();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    applyPermissionToView();
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    barcodeScanner.close();
+  }
+
+  private void setupNbScanned() {
+    viewModel
+        .getNbScanned()
+        .observe(getViewLifecycleOwner(), nb -> binding.scannedNumber.setText(String.valueOf(nb)));
+  }
+
+  private void setupAllowCameraButton() {
+    // Create request permission launcher which will ask for permission
+    ActivityResultLauncher<String> requestPermissionLauncher =
+        registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            requireActivity().getActivityResultRegistry(),
+            isGranted -> applyPermissionToView() // This is the callback of the permission granter
+            );
+
+    // The button launch the build launcher when is it clicked
+    binding.allowCameraButton.setOnClickListener(
+        b -> requestPermissionLauncher.launch(Manifest.permission.CAMERA));
+  }
+
+  private void applyPermissionToView() {
+    if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PERMISSION_GRANTED) {
+      binding.cameraPermission.setVisibility(View.GONE);
+      binding.scannerInstructionText.setVisibility(View.VISIBLE);
+      binding.qrCodeSight.setVisibility(View.VISIBLE);
+      startCamera();
+    } else {
+      // the camera permission is not granted, open the dedicated fragment
+      binding.cameraPermission.setVisibility(View.VISIBLE);
+      binding.scannerInstructionText.setVisibility(View.GONE);
+      binding.qrCodeSight.setVisibility(View.GONE);
+    }
+  }
+
+  private void startCamera() {
+    BarcodeScannerOptions options =
+        new BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build();
+    barcodeScanner = BarcodeScanning.getClient(options);
+    LifecycleCameraController cameraController = new LifecycleCameraController(requireContext());
+    cameraController.bindToLifecycle(this);
+    Executor executor = ContextCompat.getMainExecutor(requireContext());
+    cameraController.setImageAnalysisAnalyzer(
+        executor,
+        new MlKitAnalyzer(
+            Collections.singletonList(barcodeScanner),
+            COORDINATE_SYSTEM_VIEW_REFERENCED,
+            executor,
+            result -> {
+              List<Barcode> barcodes = result.getValue(barcodeScanner);
+              if (barcodes != null && barcodes.size() > 0) {
+                Log.d(TAG, "barcode raw value :" + barcodes.get(0).getRawValue());
+                onResult(barcodes.get(0));
+              }
+            }));
+    binding.scannerCamera.setController(cameraController);
+  }
+
+  private void setupManualAdd() {
+    binding.scannerEnterManually.setOnClickListener(
+        v -> {
+          binding.scannerBottomTexts.setVisibility(View.GONE);
+          binding.enterManuallyCard.setVisibility(View.VISIBLE);
+        });
+
+    binding.addManualClose.setOnClickListener(
+        v -> {
+          binding.scannerBottomTexts.setVisibility(View.VISIBLE);
+          binding.enterManuallyCard.setVisibility(View.GONE);
+        });
+
+    binding.manualAddButton.setOnClickListener(
+        v -> {
+          String input = binding.manualAddEditText.getText().toString();
+          onResult(input);
+        });
+  }
+
+  private void displayCounter() {
+    binding.scannedTitle.setVisibility(View.VISIBLE);
+    binding.scannedNumber.setVisibility(View.VISIBLE);
+  }
+
+  private void onResult(Barcode barcode) {
+    onResult(barcode.getRawValue());
+  }
+
+  private void onResult(String data) {
+    viewModel.handleData(data);
+  }
+}
