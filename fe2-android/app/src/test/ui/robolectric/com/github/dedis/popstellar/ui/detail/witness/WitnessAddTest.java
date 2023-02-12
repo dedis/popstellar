@@ -13,7 +13,6 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.testutils.*;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -36,8 +35,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.UITestUtils.forceTypeText;
 import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.scanning.QrScanningPageObject.manualAddConfirm;
-import static com.github.dedis.popstellar.testutils.pages.scanning.QrScanningPageObject.manualAddEditText;
+import static com.github.dedis.popstellar.testutils.pages.scanning.QrScanningPageObject.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -101,21 +99,21 @@ public class WitnessAddTest {
 
   @Test
   public void addButtonIsDisplayed() {
-    manualAddConfirm().check(matches(isDisplayed()));
+    openManualButton().check(matches(isDisplayed()));
   }
 
   @Test
   public void addingValidManualEntry() {
-    setupViewModel();
+    openManualButton().perform(click());
     manualAddEditText().perform(forceTypeText(VALID_WITNESS_MANUAL_INPUT));
     manualAddConfirm().perform(click());
 
-    UITestUtils.assertToastIsDisplayedWithText(R.string.add_witness_successful);
+    UITestUtils.assertToastContainsText("successfully scanned");
   }
 
   @Test
   public void addingInvalidJsonFormatDoesNotAddAttendees() {
-    setupViewModel();
+    openManualButton().perform(click());
     manualAddEditText().perform(forceTypeText(JSON_INVALID_INPUT));
     manualAddConfirm().perform(click());
 
@@ -124,7 +122,7 @@ public class WitnessAddTest {
 
   @Test
   public void addingValidNonRcFormatDoesNotAddAttendees() {
-    setupViewModel();
+    openManualButton().perform(click());
     manualAddEditText().perform(forceTypeText(VALID_RC_MANUAL_INPUT));
     manualAddConfirm().perform(click());
 
@@ -133,20 +131,10 @@ public class WitnessAddTest {
 
   @Test
   public void addingKeyFormatDoesNotAddAttendees() {
-    setupViewModel();
+    openManualButton().perform(click());
     manualAddEditText().perform(forceTypeText(INVALID_KEY_FORMAT_INPUT));
     manualAddConfirm().perform(click());
 
     UITestUtils.assertToastIsDisplayedWithText(R.string.qr_code_not_main_pk);
-  }
-
-  private void setupViewModel() {
-    activityScenarioRule
-        .getScenario()
-        .onActivity(
-            activity -> {
-              LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
-            });
-    activityScenarioRule.getScenario().recreate();
   }
 }

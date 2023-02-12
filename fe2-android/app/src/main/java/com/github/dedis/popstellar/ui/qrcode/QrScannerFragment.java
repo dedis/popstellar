@@ -91,7 +91,9 @@ public class QrScannerFragment extends Fragment {
   @Override
   public void onDestroy() {
     super.onDestroy();
-    barcodeScanner.close();
+    if (barcodeScanner != null) {
+      barcodeScanner.close();
+    }
   }
 
   private void setupNbScanned() {

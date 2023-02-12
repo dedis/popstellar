@@ -53,9 +53,10 @@ public class WitnessesFragment extends Fragment {
   }
 
   private void openAddWitness() {
+    System.out.println("openwitness");
     setCurrentFragment(
         getParentFragmentManager(),
-        R.id.add_witness_button,
+        R.id.fragment_qr_scanner,
         () -> QrScannerFragment.newInstance(ScanningAction.ADD_WITNESS));
   }
 }

@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /** This class holds utility functions when retrieving particular elements of a view in a test */
 public class UITestUtils {
@@ -36,6 +37,11 @@ public class UITestUtils {
 
     String expected = ApplicationProvider.getApplicationContext().getString(resId, args);
     assertEquals(expected, ShadowToast.getTextOfLatestToast());
+  }
+
+  public static void assertToastContainsText(String text){
+    assertThat("No toast was displayed", ShadowToast.getLatestToast(), notNullValue());
+    assertTrue(ShadowToast.getTextOfLatestToast().contains(text));
   }
 
   /**

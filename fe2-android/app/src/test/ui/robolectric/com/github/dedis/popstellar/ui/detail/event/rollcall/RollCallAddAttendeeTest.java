@@ -13,7 +13,6 @@ import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -97,12 +96,12 @@ public class RollCallAddAttendeeTest {
 
   @Test
   public void addButtonIsDisplayed() {
-    manualAddConfirm().check(matches(isDisplayed()));
+    openManualButton().check(matches(isDisplayed()));
   }
 
   @Test
   public void addingAttendeeManuallyUpdatesCount() {
-    setupViewModel();
+    openManualButton().perform(click());
     manualAddEditText().perform(forceTypeText(VALID_RC_MANUAL_INPUT));
     manualAddConfirm().perform(click());
 
@@ -113,47 +112,28 @@ public class RollCallAddAttendeeTest {
 
   @Test
   public void addingInvalidJsonFormatDoesNotAddAttendees() {
-    setupViewModel();
+    openManualButton().perform(click());
     manualAddEditText().perform(forceTypeText(JSON_INVALID_INPUT));
     manualAddConfirm().perform(click());
 
-    // Since we opened the scanner directly (without going through the openRollCall of the
-    // viewModel), the count was never updated to 0. Here we checked that after submission it is not
-    // updated
-    attendeeCount().check(matches(withText("")));
+    attendeeCount().check(matches(withText("0")));
   }
 
   @Test
   public void addingValidNonRcFormatDoesNotAddAttendees() {
-    setupViewModel();
+    openManualButton().perform(click());
     manualAddEditText().perform(forceTypeText(VALID_WITNESS_MANUAL_INPUT));
     manualAddConfirm().perform(click());
 
-    // Since we opened the scanner directly (without going through the openRollCall of the
-    // viewModel), the count was never updated to 0. Here we checked that after submission it is not
-    // updated
-    attendeeCount().check(matches(withText("")));
+    attendeeCount().check(matches(withText("0")));
   }
 
   @Test
   public void addingKeyFormatDoesNotAddAttendees() {
-    setupViewModel();
+    openManualButton().perform(click());
     manualAddEditText().perform(forceTypeText(INVALID_KEY_FORMAT_INPUT));
     manualAddConfirm().perform(click());
 
-    // Since we opened the scanner directly (without going through the openRollCall of the
-    // viewModel), the count was never updated to 0. Here we checked that after submission it is not
-    // updated
-    attendeeCount().check(matches(withText("")));
-  }
-
-  private void setupViewModel() {
-    activityScenarioRule
-        .getScenario()
-        .onActivity(
-            activity -> {
-              LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
-            });
-    activityScenarioRule.getScenario().recreate();
+    attendeeCount().check(matches(withText("0")));
   }
 }

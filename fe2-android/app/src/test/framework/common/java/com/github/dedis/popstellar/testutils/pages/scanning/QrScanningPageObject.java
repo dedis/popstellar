@@ -17,6 +17,10 @@ public class QrScanningPageObject {
         return onView(withId(R.id.manual_add_edit_text));
     }
 
+    public static ViewInteraction openManualButton(){
+      return onView(withId(R.id.scanner_enter_manually));
+    }
+
     public static ViewInteraction attendeeCount(){
     return onView(withId(R.id.scanned_number));
     }
