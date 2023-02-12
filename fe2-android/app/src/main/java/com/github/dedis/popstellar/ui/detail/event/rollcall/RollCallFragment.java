@@ -241,7 +241,7 @@ public class RollCallFragment extends Fragment {
 
   private EnumMap<EventState, Integer> buildStatusTextMap() {
     EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
-    map.put(EventState.CREATED, R.string.closed);
+    map.put(EventState.CREATED, R.string.created_displayed_text);
     map.put(EventState.OPENED, R.string.open);
     map.put(EventState.CLOSED, R.string.closed);
     return map;

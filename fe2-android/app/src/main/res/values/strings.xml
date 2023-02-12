@@ -118,6 +118,7 @@
   <string name="election_result_title">Election Result</string>
   <string name="election_setup_title">Election Setup</string>
   <string name="closed">Closed</string>
+  <string name="created_displayed_text">Not yet opened</string>
   <string name="finished">Finished</string>
   <string name="add_ballot_options_button_text">Add ballot options</string>
   <string name="add_question_button_text">Add question</string>
