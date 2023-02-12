@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
@@ -56,15 +55,6 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
-  /*
-   * LiveData objects for capturing events like button clicks
-   */
-  // FIXME These events should be removed once the QRScanning is refactored
-  private final MutableLiveData<SingleEvent<String>> mAttendeeScanConfirmEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mWitnessScanConfirmEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mScanWarningEvent = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -548,18 +538,6 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
     return laoRepository.getNodesByChannel(getLao().getChannel());
   }
 
-  public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
-    return mAttendeeScanConfirmEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getWitnessScanConfirmEvent() {
-    return mWitnessScanConfirmEvent;
-  }
-
-  public LiveData<SingleEvent<String>> getScanWarningEvent() {
-    return mScanWarningEvent;
-  }
-
   public RollCall getLastClosedRollCall() throws NoRollCallException {
     return rollCallRepo.getLastClosedRollCall(laoId);
   }
@@ -654,10 +632,6 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
 
   public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
     return keyManager.getPoPToken(getLao(), rollCall);
-  }
-
-  public boolean isWalletSetup() {
-    return wallet.isSetUp();
   }
 
   public void savePersistentData() throws GeneralSecurityException {
