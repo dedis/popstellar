@@ -133,7 +133,7 @@ public class QrScannerFragment extends Fragment {
       binding.qrCodeSight.setVisibility(View.VISIBLE);
       startCamera();
     } else {
-      // the camera permission is not granted, open the dedicated fragment
+      // the camera permission is not granted, make dedicated views visible
       binding.cameraPermission.setVisibility(View.VISIBLE);
       binding.scannerInstructionText.setVisibility(View.GONE);
       binding.qrCodeSight.setVisibility(View.GONE);
