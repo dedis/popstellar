@@ -88,6 +88,7 @@
   <string name="rc_location_title">Location*</string>
   <string name="qrcode_scanning_add_attendee">Scan each participant’s Roll-call QR code</string>
   <string name="scan">Scan</string>
+  <string name="add_attendees">Add Attendees</string>
   <string name="enter_manually"> Enter Manually</string>
   <string name="no_camera">No Camera ? -  </string>
   <string name="scanned_tokens">Scanned tokens: </string>
