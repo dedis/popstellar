@@ -67,7 +67,7 @@ public final class HomeFragment extends Fragment {
           Log.d(TAG, "Opening join fragment");
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(),
-              R.id.fragment_qrcode,
+              R.id.fragment_qr_scanner,
               () -> QrScannerFragment.newInstance(ScanningAction.ADD_LAO_PARTICIPANT));
         });
   }

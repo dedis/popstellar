@@ -14,7 +14,7 @@ import com.github.dedis.popstellar.testutils.*;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -88,17 +88,16 @@ public class WitnessAddTest {
       };
 
   @Rule(order = 3)
-  public ActivityFragmentScenarioRule<LaoDetailActivity, QRCodeScanningFragment>
-      activityScenarioRule =
-          ActivityFragmentScenarioRule.launchIn(
-              LaoDetailActivity.class,
-              new BundleBuilder()
-                  .putString(laoIdExtra(), LAO_ID)
-                  .putString(fragmentToOpenExtra(), laoDetailValue())
-                  .build(),
-              containerId(),
-              QRCodeScanningFragment.class,
-              QRCodeScanningFragment::new);
+  public ActivityFragmentScenarioRule<LaoDetailActivity, QrScannerFragment> activityScenarioRule =
+      ActivityFragmentScenarioRule.launchIn(
+          LaoDetailActivity.class,
+          new BundleBuilder()
+              .putString(laoIdExtra(), LAO_ID)
+              .putString(fragmentToOpenExtra(), laoDetailValue())
+              .build(),
+          containerId(),
+          QrScannerFragment.class,
+          () -> QrScannerFragment.newInstance(ScanningAction.ADD_WITNESS));
 
   @Test
   public void addButtonIsDisplayed() {

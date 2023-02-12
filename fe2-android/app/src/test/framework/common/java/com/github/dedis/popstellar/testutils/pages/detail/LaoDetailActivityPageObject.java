@@ -32,7 +32,7 @@ public class LaoDetailActivityPageObject {
 
   @IdRes
   public static int qrCodeFragmentId() {
-    return R.id.fragment_qrcode;
+    return R.id.fragment_qr_scanner;
   }
 
   public static int containerId() {
