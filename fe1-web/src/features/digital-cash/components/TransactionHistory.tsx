@@ -25,7 +25,13 @@ const TransactionHistory = ({ laoId, publicKey }: IPropTypes) => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const transactions: Transaction[] = DigitalCashHooks.useTransactionsByPublicKey(laoId, publicKey);
+  let pubKey;
+  if (publicKey === null) {
+    pubKey = undefined;
+  } else {
+    pubKey = publicKey;
+  }
+  const transactions: Transaction[] = DigitalCashHooks.useTransactionsByPublicKey(laoId, pubKey);
 
   // We need this mapping to show the amount for each input
   const transactionsByHash: Record<string, TransactionState> =

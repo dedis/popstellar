@@ -193,14 +193,19 @@ export const makeTransactionsByHashSelector = (laoId: Hash) =>
  */
 export const makeTransactionsByPublicKeySelector = (laoId: Hash, publicKey?: PublicKey) =>
   createSelector(
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.allTransactionsHash,
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByPubHash,
     (
+      transactionHashes: string[] | undefined,
       transactionsByHash: Record<string, TransactionState> | undefined,
       transactionsByPubHash: Record<string, string[]> | undefined,
     ) => {
       if (!publicKey) {
-        return makeTransactionsSelector(laoId);
+        if (transactionHashes && transactionsByHash) {
+          return transactionHashes.map((hash) => transactionsByHash[hash]);
+        }
+        return [];
       }
       if (transactionsByHash && transactionsByPubHash) {
         return transactionsByPubHash[Hash.fromPublicKey(publicKey).valueOf()].map(

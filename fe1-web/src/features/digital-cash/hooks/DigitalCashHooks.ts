@@ -117,10 +117,10 @@ export namespace DigitalCashHooks {
 
   /**
    * Gets the list of all transactions where a user is involved. If the public key is undefined,
-   * it returns all transactions.
+   * it returns all transactions of the LAO.
    * To use only in a React component.
    * @param laoId
-   * @param userPublicKey
+   * @param userPublicKey?
    */
   export const useTransactionsByPublicKey = (laoId: Hash, userPublicKey?: PublicKey) => {
     const transactionsByPubKeySelector = useMemo(
