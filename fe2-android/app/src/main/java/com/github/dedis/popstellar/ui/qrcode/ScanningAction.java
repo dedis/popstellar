@@ -12,142 +12,78 @@ import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeFragment;
 
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+
 /** Enum class modeling the the action we want to do when using the QR code fragment */
 public enum ScanningAction {
-  ADD_WITNESS {
-
-    @Override
-    @StringRes
-    public int instructions() {
-      return R.string.qrcode_scanning_add_witness;
-    }
-
-    @Override
-    int scanningTitle() {
-      return R.string.scanned_witness;
-    }
-
-    @Override
-    int pageTitle() {
-      return R.string.add_witness_title;
-    }
-
-    @Override
-    QRCodeScanningViewModel obtainViewModel(FragmentActivity activity) {
-      return LaoDetailActivity.obtainViewModel(activity);
-    }
-
-    @Override
-    OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String unused) {
-      return new OnBackPressedCallback(true) {
-        @Override
-        public void handleOnBackPressed() {
+  ADD_WITNESS(
+      R.string.qrcode_scanning_add_witness,
+      R.string.scanned_witness,
+      R.string.add_witness_title,
+      R.string.manual_witness_hint,
+      R.string.add_witness_title,
+      LaoDetailActivity::obtainViewModel,
+      (manager, unused) ->
           LaoDetailActivity.setCurrentFragment(
-              manager, R.id.fragment_witnessing, WitnessingFragment::new);
-        }
-      };
-    }
-
-    @Override
-    @StringRes
-    public int hint() {
-      return R.string.manual_witness_hint;
-    }
-  },
-
-  ADD_ROLL_CALL_ATTENDEE {
-
-    @Override
-    @StringRes
-    public int instructions() {
-      return R.string.qrcode_scanning_add_attendee;
-    }
-
-    @Override
-    @StringRes
-    int scanningTitle() {
-      return R.string.scanned_tokens;
-    }
-
-    @Override
-    int pageTitle() {
-      return R.string.add_attendee_title;
-    }
-
-    @Override
-    QRCodeScanningViewModel obtainViewModel(FragmentActivity activity) {
-      return LaoDetailActivity.obtainViewModel(activity);
-    }
-
-    @Override
-    OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String rcPersistentId) {
-      return new OnBackPressedCallback(true) {
-        @Override
-        public void handleOnBackPressed() {
+              manager, R.id.fragment_witnessing, WitnessingFragment::new)),
+  ADD_ROLL_CALL_ATTENDEE(
+      R.string.qrcode_scanning_add_attendee,
+      R.string.scanned_tokens,
+      R.string.add_attendee_title,
+      R.string.rc_manual_hint,
+      R.string.add_attendee_title,
+      LaoDetailActivity::obtainViewModel,
+      (manager, rcPersistentId) ->
           LaoDetailActivity.setCurrentFragment(
-              manager, R.id.fragment_roll_call, () -> RollCallFragment.newInstance(rcPersistentId));
-        }
-      };
-    }
+              manager,
+              R.id.fragment_roll_call,
+              () -> RollCallFragment.newInstance(rcPersistentId))),
+  ADD_LAO_PARTICIPANT(
+      R.string.qrcode_scanning_connect_lao,
+      R.string.scanned_tokens,
+      R.string.join_lao_title,
+      R.string.join_manual_hint,
+      R.string.add_lao_participant_title,
+      HomeActivity::obtainViewModel,
+      (manager, unused) ->
+          HomeActivity.setCurrentFragment(manager, R.id.fragment_home, HomeFragment::new));
 
-    @Override
-    @StringRes
-    public int hint() {
-      return R.string.rc_manual_hint;
-    }
-  },
+  @StringRes public final int instruction;
+  @StringRes public final int scanTitle;
+  @StringRes public final int pageTitle;
+  @StringRes public final int hint;
+  @StringRes public final int manualAddTitle;
+  private final Function<FragmentActivity, QRCodeScanningViewModel> viewModelProvider;
+  private final BiConsumer<FragmentManager, String> onBackPressed;
 
-  ADD_LAO_PARTICIPANT {
-    @Override
-    @StringRes
-    public int instructions() {
-      return R.string.qrcode_scanning_connect_lao;
-    }
+  ScanningAction(
+      @StringRes int instruction,
+      @StringRes int scanTitle,
+      @StringRes int pageTitle,
+      @StringRes int hint,
+      int manualAddTitle,
+      Function<FragmentActivity, QRCodeScanningViewModel> viewModelProvider,
+      BiConsumer<FragmentManager, String> onBackPressed) {
+    this.instruction = instruction;
+    this.scanTitle = scanTitle;
+    this.pageTitle = pageTitle;
+    this.hint = hint;
+    this.manualAddTitle = manualAddTitle;
+    this.viewModelProvider = viewModelProvider;
+    this.onBackPressed = onBackPressed;
+  }
 
-    @Override
-    int scanningTitle() {
-      // This does not matter as the view has visibility gone for LAO joining
-      // Nevertheless, a valid string res must be selected
-      return R.string.scanned_tokens;
-    }
+  public QRCodeScanningViewModel obtainViewModel(FragmentActivity activity) {
+    return viewModelProvider.apply(activity);
+  }
 
-    @Override
-    int pageTitle() {
-      return R.string.join_lao_title;
-    }
-
-    @Override
-    QRCodeScanningViewModel obtainViewModel(FragmentActivity activity) {
-      return HomeActivity.obtainViewModel(activity);
-    }
-
-    @Override
-    OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String unused) {
-      return new OnBackPressedCallback(true) {
-        @Override
-        public void handleOnBackPressed() {
-          HomeActivity.setCurrentFragment(manager, R.id.fragment_home, HomeFragment::new);
-        }
-      };
-    }
-
-    @Override
-    @StringRes
-    public int hint() {
-      return R.string.join_manual_hint;
-    }
-  };
-
-  abstract int hint();
-
-  abstract int instructions();
-
-  abstract int scanningTitle();
-
-  abstract int pageTitle();
-
-  abstract QRCodeScanningViewModel obtainViewModel(FragmentActivity activity);
-
-  abstract OnBackPressedCallback onBackPressedCallback(
-      FragmentManager manager, String rcPersistentId);
+  public OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String data) {
+    return new OnBackPressedCallback(true) {
+      @Override
+      public void handleOnBackPressed() {
+        onBackPressed.accept(manager, data);
+      }
+    };
+  }
 }

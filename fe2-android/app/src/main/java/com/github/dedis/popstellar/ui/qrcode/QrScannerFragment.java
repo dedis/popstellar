@@ -87,10 +87,10 @@ public class QrScannerFragment extends Fragment {
       displayCounter();
     }
 
-    binding.scannedTitle.setText(scanningAction.scanningTitle());
-    binding.addManualTitle.setText(scanningAction.toString());
-    binding.manualAddEditText.setHint(scanningAction.hint());
-    binding.scannerInstructionText.setText(scanningAction.instructions());
+    binding.scannedTitle.setText(scanningAction.scanTitle);
+    binding.addManualTitle.setText(scanningAction.manualAddTitle);
+    binding.manualAddEditText.setHint(scanningAction.hint);
+    binding.scannerInstructionText.setText(scanningAction.instruction);
 
     setupNbScanned();
     setupManualAdd();
@@ -102,7 +102,7 @@ public class QrScannerFragment extends Fragment {
   public void onResume() {
     super.onResume();
     ScanningAction scanningAction = getScanningAction();
-    viewModel.setScannerTitle(scanningAction.pageTitle());
+    viewModel.setScannerTitle(scanningAction.pageTitle);
     applyPermissionToView();
 
     // Handle back press navigation

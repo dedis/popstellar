@@ -37,6 +37,7 @@
   <string name="creating_new_lao">Creating new LAO</string>
   <string name="join_lao_title">Join LAO</string>
   <string name="join_manual_hint">Lao information</string>
+  <string name="add_lao_participant_title">Add LAO participant</string>
 
   <!-- Lao Create -->
   <string name="lao_create_title">Create LAO</string>
