@@ -32,13 +32,13 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class DigitalCashActivity extends LaoActivity {
   private DigitalCashViewModel viewModel;
-  private DigitalCashMainActivityBinding binding;
   public static final String TAG = DigitalCashActivity.class.getSimpleName();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    binding = DigitalCashMainActivityBinding.inflate(getLayoutInflater());
+    com.github.dedis.popstellar.databinding.DigitalCashMainActivityBinding binding =
+        DigitalCashMainActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     laoViewModel = viewModel = obtainViewModel(this);
     String laoId = Objects.requireNonNull(getIntent().getStringExtra(Constants.LAO_ID_EXTRA));

@@ -104,14 +104,12 @@ public class DigitalCashHomeFragment extends Fragment {
               if (role == Role.ORGANIZER) {
                 binding.issueButton.setVisibility(View.VISIBLE);
                 binding.issueButton.setOnClickListener(
-                    v -> {
-                      DigitalCashActivity.setCurrentFragment(
-                          getParentFragmentManager(),
-                          R.id.fragment_digital_cash_issue,
-                          DigitalCashIssueFragment::newInstance);
-                    });
-              }
-              else {
+                    v ->
+                        DigitalCashActivity.setCurrentFragment(
+                            getParentFragmentManager(),
+                            R.id.fragment_digital_cash_issue,
+                            DigitalCashIssueFragment::newInstance));
+              } else {
                 binding.issueButton.setVisibility(View.GONE);
               }
             });
