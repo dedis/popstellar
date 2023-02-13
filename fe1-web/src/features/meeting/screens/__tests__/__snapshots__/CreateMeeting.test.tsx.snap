@@ -276,7 +276,7 @@ exports[`CreateMeeting renders correctly when name is empty 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={1}
+                handlerTag={4}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -336,7 +336,7 @@ exports[`CreateMeeting renders correctly when name is empty 1`] = `
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={2}
+                          handlerTag={5}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -519,7 +519,7 @@ exports[`CreateMeeting renders correctly when name is empty 1`] = `
                             <RNGestureHandlerButton
                               collapsable={false}
                               exclusive={true}
-                              handlerTag={3}
+                              handlerTag={6}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
