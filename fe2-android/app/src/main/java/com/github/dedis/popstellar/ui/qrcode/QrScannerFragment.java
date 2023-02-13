@@ -43,6 +43,7 @@ public class QrScannerFragment extends Fragment {
 
   /**
    * This is for scan other than roll call
+   *
    * @param scanningAction which scanning action is to be performed
    * @return a QrScannerFragment with correct arguments in bundle
    */
@@ -56,6 +57,7 @@ public class QrScannerFragment extends Fragment {
 
   /**
    * This newInstance is for RollCall scan of attendees only and must be used.
+   *
    * @param rcPersistentId the id of the roll call
    * @return a QrScannerFragment with correct arguments in bundle
    */
@@ -128,6 +130,7 @@ public class QrScannerFragment extends Fragment {
       return requireArguments().getSerializable(SCANNING_KEY, ScanningAction.class);
     } else {
       // This is deprecated as of Android 13 but it'll be probably 2030 before it's our min SDK
+      // noinspection deprecation
       return (ScanningAction) requireArguments().getSerializable(SCANNING_KEY);
     }
   }
