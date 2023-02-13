@@ -14,6 +14,37 @@ import scala.util.Success
 
 object MessageValidator extends ContentValidator with AskPatternConstants {
 
+  /** Extracts the useful parameters from a rpc message
+    *
+    * @param rpcMessage
+    *   rpc message which contains the parameters to extract
+    * @return
+    *   the decoded data, the id of the LAO, the PublicKey of the sender and the channel
+    */
+  def extractData[T](rpcMessage: JsonRpcRequest): (T, Hash, PublicKey, Channel) = {
+    val message: Message = rpcMessage.getParamsMessage.get
+    val data: T = message.decodedData.get.asInstanceOf[T]
+    val laoId: Hash = rpcMessage.extractLaoId
+    val sender: PublicKey = message.sender
+    val channel: Channel = rpcMessage.getParamsChannel
+
+    (data, laoId, sender, channel)
+  }
+
+  /** Runs the multiple checks of the validators
+    *
+    * @param list
+    *   List of checks which return a GraphMessage
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  def runChecks(list: List[GraphMessage]): GraphMessage = {
+    if (list.head.isLeft && !list.tail.isEmpty)
+      runChecks(list.tail)
+    else
+      list.head
+  }
+
   def validateMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
 
     val message: Message = rpcMessage.getParamsMessage.get
@@ -47,6 +78,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     }
   }
 
+  // Same as validateAttendee except that it returns a GraphMessage
   def checkAttendee(
       rpcMessage: JsonRpcRequest,
       sender: PublicKey,
@@ -77,6 +109,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     }
   }
 
+  // Same as validateOwner except that it returns a GraphMessage
   def checkOwner(
       rpcMessage: JsonRpcRequest,
       sender: PublicKey,
@@ -107,6 +140,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     }
   }
 
+  // Same as validateChannelType except that it returns a GraphMessage
   def checkChannelType(
       rpcMessage: JsonRpcRequest,
       channelObjectType: ObjectType.ObjectType,
@@ -118,22 +152,5 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       Left(rpcMessage)
     else
       Right(error)
-  }
-
-  def extractData[T](rpcMessage: JsonRpcRequest): (T, Hash, PublicKey, Channel) = {
-    val message: Message = rpcMessage.getParamsMessage.get
-    val data: T = message.decodedData.get.asInstanceOf[T]
-    val laoId: Hash = rpcMessage.extractLaoId
-    val sender: PublicKey = message.sender
-    val channel: Channel = rpcMessage.getParamsChannel
-
-    (data, laoId, sender, channel)
-  }
-
-  def runChecks(list: List[GraphMessage]): GraphMessage = {
-    if (list.head.isLeft && !list.tail.isEmpty)
-      runChecks(list.tail)
-    else
-      list.head
   }
 }

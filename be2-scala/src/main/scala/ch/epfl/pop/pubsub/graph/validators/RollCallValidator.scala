@@ -63,12 +63,18 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
         )
 
         runChecks(List(
-          checkTimestampStaleness(rpcMessage, data.creation, validationError(s"stale 'creation' timestamp (${data.creation})")),
+          checkTimestampStaleness(
+            rpcMessage,
+            data.creation,
+            validationError(s"stale 'creation' timestamp (${data.creation})")
+          ),
           checkTimestampOrder(
             rpcMessage,
             data.creation,
             data.proposed_start,
-            validationError(s"'proposed_start' (${data.proposed_start}) timestamp is smaller than 'creation' (${data.creation})")
+            validationError(
+              s"'proposed_start' (${data.proposed_start}) timestamp is smaller than 'creation' (${data.creation})"
+            )
           ),
           checkTimestampOrder(
             rpcMessage,
@@ -133,6 +139,19 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
+  /** Validates the opens id of a OpenRollCAll message
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param laoId
+    *   id of the LAO to which the rollCallDara belongs
+    * @param opens
+    *   opens id of the OpenRollCall which needs to be checked
+    * @param error
+    *   the error to forward in case the opens id does not correspond to the expected id
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
   private def validateOpens(rpcMessage: JsonRpcRequest, laoId: Hash, opens: Hash, error: PipelineError): GraphMessage = {
     val rollCallData: Option[RollCallData] = getRollCallData(laoId)
     rollCallData match {
@@ -197,6 +216,19 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
+  /** Validates the closes id of CloseRollCall message
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param laoId
+    *   id of the LAO to which the rollCallDara belongs
+    * @param closes
+    *   closes id of CloseRollCall message which needs to be checked
+    * @param error
+    *   the error to forward in case the closes id does not correspond to the expected id
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
   private def validateCloses(rpcMessage: JsonRpcRequest, laoId: Hash, closes: Hash, error: PipelineError): GraphMessage = {
     val rollCallData: Option[RollCallData] = getRollCallData(laoId)
     rollCallData match {
@@ -209,6 +241,19 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
+  /** Checks if the number of attendees is as expected
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param size
+    *   size of the actual list of attendees
+    * @param expectedSize
+    *   expected size of attendees
+    * @param error
+    *   the error to forward in case the size is not as expected
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
   private def checkAttendeeSize(rpcMessage: JsonRpcRequest, size: Int, expectedSize: Int, error: PipelineError): GraphMessage = {
     if (size == expectedSize)
       Left(rpcMessage)

@@ -24,6 +24,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     */
   final def validateTimestampStaleness(timestamp: Timestamp): Boolean = TIMESTAMP_BASE_TIME < timestamp
 
+  // Same as validateTimestampStaleness except that it returns a GraphMessage
   def checkTimestampStaleness(rpcMessage: JsonRpcRequest, timestamp: Timestamp, error: PipelineError): GraphMessage = {
     if (validateTimestampStaleness(timestamp))
       Left(rpcMessage)
@@ -42,6 +43,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     */
   final def validateTimestampOrder(first: Timestamp, second: Timestamp): Boolean = first <= second
 
+  // Same as validateTimestampOrder except that it returns a GraphMessage
   def checkTimestampOrder(
       rpcMessage: JsonRpcRequest,
       first: Timestamp,
@@ -54,6 +56,19 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Right(error)
   }
 
+  /** Checks if the id corresponds to the expected id
+    *
+    * @param rpcMessage
+    *   rpc message to check
+    * @param expectedId
+    *   expected id
+    * @param id
+    *   id to check
+    * @param error
+    *   the error to forward in case the id is not the same as the expected id
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
   def checkId(rpcMessage: JsonRpcRequest, expectedId: Hash, id: Hash, error: PipelineError): GraphMessage = {
     if (expectedId == id)
       Left(rpcMessage)
