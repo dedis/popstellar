@@ -1,11 +1,16 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
+import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.home.HomeFragment;
 
 /** Enum class modeling the the action we want to do when using the QR code fragment */
 public enum ScanningAction {
@@ -30,6 +35,17 @@ public enum ScanningAction {
     @Override
     QRCodeScanningViewModel obtainViewModel(FragmentActivity activity) {
       return LaoDetailActivity.obtainViewModel(activity);
+    }
+
+    @Override
+    OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String _unused) {
+      return new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+          LaoDetailActivity.setCurrentFragment(
+              manager, R.id.fragment_witnessing, WitnessingFragment::new);
+        }
+      };
     }
 
     @Override
@@ -64,6 +80,17 @@ public enum ScanningAction {
     }
 
     @Override
+    OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String rcPersistentId) {
+      return new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+          LaoDetailActivity.setCurrentFragment(
+              manager, R.id.fragment_roll_call, () -> RollCallFragment.newInstance(rcPersistentId));
+        }
+      };
+    }
+
+    @Override
     @StringRes
     public int hint() {
       return R.string.rc_manual_hint;
@@ -95,6 +122,16 @@ public enum ScanningAction {
     }
 
     @Override
+    OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String _unused) {
+      return new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+          HomeActivity.setCurrentFragment(manager, R.id.fragment_home, HomeFragment::new);
+        }
+      };
+    }
+
+    @Override
     @StringRes
     public int hint() {
       return R.string.join_manual_hint;
@@ -110,4 +147,7 @@ public enum ScanningAction {
   abstract int pageTitle();
 
   abstract QRCodeScanningViewModel obtainViewModel(FragmentActivity activity);
+
+  abstract OnBackPressedCallback onBackPressedCallback(
+      FragmentManager manager, String rcPersistentId);
 }
