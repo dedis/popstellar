@@ -62,7 +62,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           data.name
         )
 
-        runChecks(List(
+        runChecks(
           checkTimestampStaleness(
             rpcMessage,
             data.creation,
@@ -93,7 +93,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
             dbActorRef,
             validationError(s"trying to send a CreateRollCall message on a wrong type of channel $channel")
           )
-        ))
+        )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
@@ -118,7 +118,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           data.opened_at.toString
         )
 
-        runChecks(List(
+        runChecks(
           checkTimestampStaleness(
             rpcMessage,
             data.opened_at,
@@ -134,7 +134,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
             validationError(s"trying to send a $validatorName message on a wrong type of channel $channel")
           ),
           validateOpens(rpcMessage, laoId, data.opens, validationError("unexpected id 'opens'"))
-        ))
+        )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
@@ -188,7 +188,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           data.closed_at.toString
         )
 
-        runChecks(List(
+        runChecks(
           checkTimestampStaleness(
             rpcMessage,
             data.closed_at,
@@ -211,7 +211,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
             dbActorRef,
             validationError(s"trying to send a CloseRollCall message on a wrong type of channel $channel")
           )
-        ))
+        )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
