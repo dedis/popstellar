@@ -15,8 +15,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.google.mlkit.vision.barcode.*;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
@@ -59,16 +57,10 @@ public class QrScannerFragment extends Fragment {
 
     binding = QrScannerFragmentBinding.inflate(inflater, container, false);
     ScanningAction scanningAction = getScanningAction();
+    viewModel = scanningAction.obtainViewModel(requireActivity());
 
-    switch (scanningAction) {
-      case ADD_WITNESS:
-      case ADD_ROLL_CALL_ATTENDEE:
-        viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-        displayCounter();
-        break;
-      case ADD_LAO_PARTICIPANT:
-        viewModel = HomeActivity.obtainViewModel(requireActivity());
-        break;
+    if (scanningAction != ScanningAction.ADD_LAO_PARTICIPANT){
+      displayCounter();
     }
 
     binding.scannedTitle.setText(scanningAction.scanningTitle());

@@ -1,18 +1,15 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
 
 /** Enum class modeling the the action we want to do when using the QR code fragment */
 public enum ScanningAction {
   ADD_WITNESS {
-    @NonNull
-    @Override
-    public String toString() {
-      return "Add witness";
-    }
 
     @Override
     @StringRes
@@ -31,6 +28,11 @@ public enum ScanningAction {
     }
 
     @Override
+    QRCodeScanningViewModel obtainViewModel(FragmentActivity activity) {
+      return LaoDetailActivity.obtainViewModel(activity);
+    }
+
+    @Override
     @StringRes
     public int hint() {
       return R.string.manual_witness_hint;
@@ -38,11 +40,6 @@ public enum ScanningAction {
   },
 
   ADD_ROLL_CALL_ATTENDEE {
-    @NonNull
-    @Override
-    public String toString() {
-      return "Add attendee";
-    }
 
     @Override
     @StringRes
@@ -62,6 +59,11 @@ public enum ScanningAction {
     }
 
     @Override
+    QRCodeScanningViewModel obtainViewModel(FragmentActivity activity) {
+      return LaoDetailActivity.obtainViewModel(activity);
+    }
+
+    @Override
     @StringRes
     public int hint() {
       return R.string.rc_manual_hint;
@@ -69,12 +71,6 @@ public enum ScanningAction {
   },
 
   ADD_LAO_PARTICIPANT {
-    @NonNull
-    @Override
-    public String toString() {
-      return "Add LAO participant";
-    }
-
     @Override
     @StringRes
     public int instructions() {
@@ -94,6 +90,11 @@ public enum ScanningAction {
     }
 
     @Override
+    QRCodeScanningViewModel obtainViewModel(FragmentActivity activity) {
+      return HomeActivity.obtainViewModel(activity);
+    }
+
+    @Override
     @StringRes
     public int hint() {
       return R.string.join_manual_hint;
@@ -107,4 +108,6 @@ public enum ScanningAction {
   abstract int scanningTitle();
 
   abstract int pageTitle();
+
+  abstract QRCodeScanningViewModel obtainViewModel(FragmentActivity activity);
 }
