@@ -94,6 +94,7 @@ public class QrScannerFragment extends Fragment {
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
       return requireArguments().getSerializable(SCANNING_KEY, ScanningAction.class);
     } else {
+      // This is deprecated as of Android 13 but it'll be probably 2030 before it's our min SDK
       return (ScanningAction) requireArguments().getSerializable(SCANNING_KEY);
     }
   }
