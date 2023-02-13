@@ -13,9 +13,8 @@
   <dimen name="size_section_title">22sp</dimen>
   <dimen name="size_body">18sp</dimen>
   <dimen name="history_card_title">14sp</dimen>
-  <dimen name="history_card_element">16sp</dimen>
-  <dimen name="size_small">12sp</dimen>
-  <dimen name="tab_lao_detail">13sp</dimen>
+  <dimen name="card_element_text_size">16sp</dimen>
+
   <dimen name="size_for_longer_text">10sp</dimen>
   <dimen name="rounded_edit_text">10dp</dimen>
   <dimen name="margin_top_title">50dp</dimen>
@@ -36,16 +35,9 @@
   <integer name="camera_preview_height">320</integer>
   <dimen name="camera_height">300dp</dimen>
   <dimen name="camera_width">228dp</dimen>
-  <integer name="requested_preview_width">1600</integer>
   <dimen name="camera_close_button_end_margin">8dp</dimen>
 
-  <!-- QR code -->
-  <dimen name="channel_qr_code_size">200dp</dimen>
-  <dimen name="pk_qr_code_size">400dp</dimen>
-
   <!-- Button -->
-  <dimen name="event_buttons_width">110dp</dimen>
-  <dimen name="event_buttons_height">43dp</dimen>
   <dimen name="standard_button_height">55dp</dimen>
   <dimen name="standard_button_width">105dp</dimen>
 
@@ -54,15 +46,11 @@
   <dimen name="properties_title_margin">8dp</dimen>
 
   <!-- Event -->
-  <dimen name="election_setup_margin_text">16dp</dimen>
-  <dimen name="election_setup_scrollview_layout_margin_top">40dp</dimen>
-  <dimen name="election_setup_margin_top">16dp</dimen>
   <dimen name="election_setup_question_margin">20dp</dimen>
   <dimen name="election_setup_text_field_margin_lateral">10dp</dimen>
   <dimen name="event_button_text_size">14sp</dimen>
   <dimen name="event_button_margin">24dp</dimen>
   <dimen name="event_button_height">48dp</dimen>
-  <dimen name="event_button_width">100dp</dimen>
   <dimen name="event_clock_icon_side">30dp</dimen>
   <dimen name="in_between_clocks_icon_margin_top">10dp</dimen>
   <dimen name="clock_icon_margin_start">8dp</dimen>
@@ -75,43 +63,27 @@
   <dimen name="event_layout_arrow_end_margin">8dp</dimen>
   <dimen name="event_layout_arrow_image_side">20dp</dimen>
   <dimen name="event_layout_type_image_side">30dp</dimen>
-  <dimen name="event_layout_type_start_margin">24dp</dimen>
-  <dimen name="event_layout_card_view_height">55dp</dimen>
+  <dimen name="event_layout_type_start_margin">8dp</dimen>
 
   <!--  Header layout-->
   <dimen name="header_layout_arrow_side">16dp</dimen>
-  <dimen name="header_layout_margin_start">8dp</dimen>
-  <dimen name="header_title_text_size">14sp</dimen>
+  <dimen name="header_title_text_size">16sp</dimen>
   <dimen name="header_card_view_height">45dp</dimen>
+  <dimen name="upcoming_title_text_size">18sp</dimen>
 
   <!--  Election fragment dimension-->
   <dimen name="inter_buttons_margin">8dp</dimen>
 
   <!-- Election setup dimensions -->
-  <dimen name="election_setup_titles_margin_start">140dp</dimen>
-  <dimen name="election_setup_titles_margin_top">16dp</dimen>
   <dimen name="election_setup_spinner_width">150dp</dimen>
   <dimen name="election_setup_spinner_height">40dp</dimen>
   <dimen name="election_setup_spinner_margin_right">10dp</dimen>
-  <dimen name="election_setup_add_ballot_button_width">148dp</dimen>
-  <dimen name="election_setup_add_ballot_button_margin_top">30dp</dimen>
   <dimen name="cast_vote_dynamic_height">0dp</dimen>
   <dimen name="cast_vote_scrollbar_size">6dp</dimen>
   <dimen name="guideline_tab">60dp</dimen>
   <dimen name="guideline_titles">140dp</dimen>
   <dimen name="swipe_indicator_height">25dp</dimen>
 
-  <!-- Cast vote dimensions -->
-  <dimen name="wallet_divider_height">1dp</dimen>
-  <dimen name="wallet_qr_code_size">100dp</dimen>
-  <dimen name="wallet_attendee_width">300dp</dimen>
-  <dimen name="wallet_buttons_height">38dp</dimen>
-  <dimen name="wallet_buttons_text_size">12dp</dimen>
-
-  <!-- Wallet dimensions -->
-  <dimen name="wallet_sk_width">350dp</dimen>
-  <dimen name="wallet_pk_width">200dp</dimen>
-  <dimen name="wallet_qr_token_size">130dp</dimen>
   <dimen name="min_height_entry_box_chirp">245dp</dimen>
   <dimen name="social_media_divider_height">1dp</dimen>
   <dimen name="bottom_navigation_view_height">56dp</dimen>
@@ -121,16 +93,20 @@
   <!--  Witnessing dimensions -->
   <dimen name="tab_layout_top_margin">20dp</dimen>
 
-  <!--  LaoDetail Fragment dimensions -->
+  <!--  Event List Fragment dimensions -->
   <dimen name="add_event_texts_size">18sp</dimen>
   <dimen name="add_button_margin_end">8dp</dimen>
-  <dimen name="qr_icon_start_margin">30dp</dimen>
-  <dimen name="qr_close_icon_side">30dp</dimen>
-  <dimen name="qr_layout_margin">20dp</dimen>
+  <dimen name="event_list_sections_margin">16dp</dimen>
+  <dimen name="event_list_inter_margin">2dp</dimen>
+  <dimen name="events_header_top_margin">8dp</dimen>
+
+  <!--  Token dimensions-->
+  <dimen name="qr_icon_side">28dp</dimen>
+  <dimen name="copy_button_horizontal_margin">28dp</dimen>
+  <dimen name="token_qr_top_margin">24dp</dimen>
 
   <!--  Container dimensions -->
   <dimen name="container_margin">8dp</dimen>
-  <dimen name="container_top_margin">40dp</dimen>
 
   <!--  Floating action button dimensions-->
   <dimen name="fab_margin_bottom">30dp</dimen>
@@ -143,10 +119,6 @@
   <dimen name="manual_add_edit_text_size">14sp</dimen>
   <dimen name="manual_add_top_margin">16dp</dimen>
   <dimen name="manual_add_text_button_size">18sp</dimen>
-
-  <!-- Recycler View dimensions  -->
-  <integer name="requested_preview_height">1024</integer>
-  <integer name="navigation_reversion_delay">500</integer>
 
   <!-- Menu icons dimensions -->
   <string name="camera_preview_ratio">3:4</string>
@@ -166,7 +138,16 @@
   <dimen name="transaction_title_top_margin">10dp</dimen>
 
   <!--  CardView dimensions -->
+  <dimen name="cv_horizontal_margin">16dp</dimen>
   <dimen name="padding_standard">8dp</dimen>
+  <dimen name="padding_big">14dp</dimen>
   <dimen name="corner_radius_standard">12dp</dimen>
+  <dimen name="corner_radius_small">5dp</dimen>
   <dimen name="stroke_width">1dp</dimen>
+
+  <!--  Drawer header dimensions -->
+  <dimen name="drawer_header_vertical_margin">20dp</dimen>
+  <dimen name="drawer_header_horizontal_margin">16dp</dimen>
+
+  <dimen name="main_horizontal_margin">16dp</dimen>
 </resources>

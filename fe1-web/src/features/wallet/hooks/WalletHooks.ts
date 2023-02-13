@@ -16,11 +16,6 @@ export namespace WalletHooks {
   };
 
   /**
-   * Gets the list of wallet item generators
-   */
-  export const useWalletItemGenerators = () => useWalletContext().walletItemGenerators;
-
-  /**
    * Gets the current lao id, throws error if there is none
    */
   export const useCurrentLaoId = () => useWalletContext().useCurrentLaoId();
@@ -46,9 +41,4 @@ export namespace WalletHooks {
    */
   export const useRollCallTokensByLaoId = (laoId: Hash) =>
     useWalletContext().useRollCallTokensByLaoId(laoId);
-
-  /**
-   * Gets the list of wallet navigation screens
-   */
-  export const useWalletNavigationScreens = () => useWalletContext().walletNavigationScreens;
 }

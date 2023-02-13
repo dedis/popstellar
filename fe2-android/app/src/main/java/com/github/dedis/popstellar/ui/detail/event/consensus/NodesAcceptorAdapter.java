@@ -14,25 +14,22 @@ import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class NodesAcceptorAdapter extends BaseAdapter {
 
   private static final String TAG = NodesAcceptorAdapter.class.getSimpleName();
-  private List<ConsensusNode> nodes;
+  private List<ConsensusNode> nodes = new ArrayList<>();
   private final ConsensusNode ownNode;
   private final String instanceId;
   private final LaoDetailViewModel laoDetailViewModel;
   private final LifecycleOwner lifecycleOwner;
 
   public NodesAcceptorAdapter(
-      List<ConsensusNode> nodes,
       ConsensusNode ownNode,
       String instanceId,
       LifecycleOwner lifecycleOwner,
       LaoDetailViewModel laoDetailViewModel) {
-    this.nodes = nodes;
     this.ownNode = ownNode;
     this.instanceId = instanceId;
     this.laoDetailViewModel = laoDetailViewModel;

@@ -24,18 +24,13 @@ public class ElectionQuestion {
   private final boolean writeIn;
 
   /** Constructor for a data Question, for the election setup */
-  public ElectionQuestion(
-      String question,
-      String votingMethod,
-      boolean writeIn,
-      List<String> ballotOptions,
-      String electionId) {
+  public ElectionQuestion(String electionId, Question question) {
+    this.question = question.title;
+    this.ballotOptions = Collections.unmodifiableList(question.ballotOptions);
+    this.writeIn = question.writeIn;
+    this.votingMethod = question.votingMethod;
 
-    this.question = question;
-    this.ballotOptions = Collections.unmodifiableList(ballotOptions);
-    this.writeIn = writeIn;
-    this.votingMethod = votingMethod;
-    this.id = Election.generateElectionQuestionId(electionId, question);
+    this.id = Election.generateElectionQuestionId(electionId, this.question);
   }
 
   public String getId() {
@@ -98,5 +93,44 @@ public class ElectionQuestion {
         + ", writeIn="
         + writeIn
         + '}';
+  }
+
+  /**
+   * This data class holds the information of an ElectionQuestion except its id.
+   *
+   * <p>This is used to pack the question data when the election id is not available yet
+   */
+  @Immutable
+  public static class Question {
+
+    private final String title;
+    private final String votingMethod;
+    private final List<String> ballotOptions;
+    private final boolean writeIn;
+
+    public Question(
+        String title, String votingMethod, List<String> ballotOptions, boolean writeIn) {
+      this.title = title;
+      this.votingMethod = votingMethod;
+      this.ballotOptions = ballotOptions;
+      this.writeIn = writeIn;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+      return "Question{"
+          + "question='"
+          + title
+          + '\''
+          + ", votingMethod='"
+          + votingMethod
+          + '\''
+          + ", ballotOptions="
+          + ballotOptions
+          + ", writeIn="
+          + writeIn
+          + '}';
+    }
   }
 }

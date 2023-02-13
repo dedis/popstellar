@@ -13,6 +13,14 @@ export class PublicKey extends Base64UrlData {
   }
 
   /**
+   * Checks if two public key instances are equal.
+   * @remark Interestingly enough typescript will complain if we do not define this explicitly
+   */
+  public equals(o: PublicKey): boolean {
+    return super.equals(o);
+  }
+
+  /**
    * Returns the serialized version of the public key that can for instance be stored
    * in redux stores
    */

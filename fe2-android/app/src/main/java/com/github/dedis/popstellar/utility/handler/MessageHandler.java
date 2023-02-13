@@ -7,8 +7,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
 import javax.inject.Inject;
@@ -37,10 +37,14 @@ public final class MessageHandler {
    * @param message the message that was received
    */
   public void handleMessage(MessageSender messageSender, Channel channel, MessageGeneral message)
-      throws DataHandlingException, UnknownLaoException {
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException, NoRollCallException {
     Log.d(TAG, "handle incoming message");
-    // Put the message in the state
-    messageRepo.addMessage(message);
+
+    if (messageRepo.isMessagePresent(message.getMessageId())) {
+      Log.d(TAG, "the message has already been handled in the past");
+      return;
+    }
 
     Data data = message.getData();
     Log.d(TAG, "data with class: " + data.getClass());
@@ -52,5 +56,8 @@ public final class MessageHandler {
         data,
         dataObj,
         dataAction);
+
+    // Put the message in the state
+    messageRepo.addMessage(message);
   }
 }

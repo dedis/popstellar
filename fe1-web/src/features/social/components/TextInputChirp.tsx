@@ -1,11 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import { Button, StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 
-import { ProfileIcon, TextBlock } from 'core/components';
+import { PoPTextButton, ProfileIcon } from 'core/components';
 import { PublicKey } from 'core/objects';
-import { gray, red } from 'core/styles/color';
+import { Border, Color, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 const MAX_CHIRP_CHARS = 300;
@@ -17,31 +17,35 @@ const MAX_CHIRP_CHARS = 300;
 
 const styles = StyleSheet.create({
   container: {
-    borderColor: gray,
-    borderWidth: 1,
+    borderColor: Color.primary,
+    borderRadius: Border.radius,
+    backgroundColor: Color.contrast,
     flexDirection: 'row',
-    padding: 10,
-    width: 600,
+    padding: Spacing.contentSpacing,
   } as ViewStyle,
   leftView: {
-    width: 60,
+    marginRight: Spacing.x1,
   } as ViewStyle,
   rightView: {
     display: 'flex',
     flexDirection: 'column',
+    flexGrow: 1,
   } as ViewStyle,
   textInput: {
-    fontSize: 18,
-    padding: 10,
-    width: 520,
     alignContent: 'flex-end',
-    borderColor: gray,
-    borderWidth: 1,
+    padding: Spacing.x1,
+    borderColor: Color.primary,
+    borderRadius: Border.radius,
+    borderWidth: Border.width,
   } as TextStyle,
   buttonView: {
-    fontSize: 18,
-    alignSelf: 'flex-end',
     flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    marginTop: Spacing.x1,
+  } as ViewStyle,
+  charsLeft: {
+    marginRight: Spacing.x1,
   } as ViewStyle,
 });
 
@@ -57,9 +61,12 @@ const TextInputChirp = (props: IPropTypes) => {
     testID,
   } = props;
 
-  const [charsLeft, setCharsLeft] = useState(MAX_CHIRP_CHARS);
+  const [focused, setFocused] = useState(false);
+  const charsLeft = MAX_CHIRP_CHARS - value.length;
   const textIsRed = charsLeft < 0;
   const disabled = textIsRed || charsLeft === MAX_CHIRP_CHARS || alwaysDisabled;
+
+  const showFullInput = focused || charsLeft !== MAX_CHIRP_CHARS;
 
   return (
     <View style={styles.container}>
@@ -79,22 +86,27 @@ const TextInputChirp = (props: IPropTypes) => {
           placeholder={placeholder || undefined}
           multiline
           selectTextOnFocus
-          numberOfLines={numberOfLines || undefined}
-          style={styles.textInput}
-          onChangeText={(input: string) => {
-            onChangeText(input);
-            setCharsLeft(MAX_CHIRP_CHARS - input.length);
-          }}
+          numberOfLines={(showFullInput ? numberOfLines : 1) || undefined}
+          style={[Typography.base, styles.textInput]}
+          placeholderTextColor={Color.inactive}
+          onChangeText={onChangeText}
           testID={testID ? `${testID}_input` : undefined}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
         />
         <View style={styles.buttonView}>
-          <TextBlock text={charsLeft.toString()} color={textIsRed ? red : undefined} />
-          <Button
-            title={STRINGS.button_publish}
-            onPress={() => onPress()}
+          <View style={styles.charsLeft}>
+            <Text style={textIsRed ? [Typography.base, Typography.error] : [Typography.base]}>
+              {charsLeft.toString()}
+            </Text>
+          </View>
+          <PoPTextButton
+            onPress={onPress}
             disabled={disabled === true}
             testID={testID ? `${testID}_publish` : undefined}
-          />
+            toolbar>
+            {STRINGS.button_publish}
+          </PoPTextButton>
         </View>
       </View>
     </View>

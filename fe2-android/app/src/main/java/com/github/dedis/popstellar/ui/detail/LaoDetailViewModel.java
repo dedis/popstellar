@@ -5,8 +5,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
-import androidx.lifecycle.*;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
@@ -19,19 +19,20 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateL
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
-import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.MainPublicKeyData;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
-import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.navigation.NavigationViewModel;
+import com.github.dedis.popstellar.ui.navigation.LaoViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.*;
+import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
@@ -39,21 +40,20 @@ import com.google.gson.Gson;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.Observable;
 import io.reactivex.*;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
-public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
-    implements QRCodeScanningViewModel {
+public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
@@ -70,59 +70,25 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   /*
    * LiveData objects that represent the state in a fragment
    */
-  private final MutableLiveData<LaoView> mCurrentLao = new MutableLiveData<>();
-  private final MutableLiveData<String> mPageTitle = new MutableLiveData<>();
-  private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
-  private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
   private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
-  private final MutableLiveData<Boolean> showProperties = new MutableLiveData<>(false);
-  private final MutableLiveData<List<Integer>> mCurrentElectionVotes = new MutableLiveData<>();
-  private final LiveData<List<PublicKey>> mWitnesses =
-      Transformations.map(
-          mCurrentLao,
-          lao -> lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnesses()));
-  private final LiveData<String> mCurrentLaoName =
-      Transformations.map(mCurrentLao, lao -> lao == null ? "" : lao.getName());
-  //  Multiple events from Lao may be concatenated using Stream.concat()
-  private final LiveData<List<com.github.dedis.popstellar.model.objects.event.Event>> mLaoEvents =
-      Transformations.map(
-          mCurrentLao,
-          laoView ->
-              laoView == null
-                  ? new ArrayList<>()
-                  : Stream.concat(
-                          laoView.getRollCalls().values().stream(),
-                          laoView.getElections().values().stream())
-                      .collect(Collectors.toList()));
-  private final LiveData<List<WitnessMessage>> mWitnessMessages =
-      Transformations.map(
-          mCurrentLao,
-          lao ->
-              lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnessMessages().values()));
 
-  private final LiveData<List<RollCall>> mLaoAttendedRollCalls =
-      Transformations.map(
-          mCurrentLao,
-          lao ->
-              lao == null
-                  ? new ArrayList<>()
-                  : lao.getRollCalls().values().stream()
-                      .filter(rollCall -> rollCall.getState() == EventState.CLOSED)
-                      .filter(rollCall -> attendedOrOrganized(lao, rollCall))
-                      .collect(Collectors.toList()));
+  private Observable<Set<Event>> events;
+  private Observable<List<RollCall>> attendedRollCalls;
+
   /*
    * Dependencies for this class
    */
   private final LAORepository laoRepository;
+  private final RollCallRepository rollCallRepo;
+  private final ElectionRepository electionRepo;
+  private final SchedulerProvider schedulerProvider;
   private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
   private final CompositeDisposable disposables;
   private final Gson gson;
   private final Wallet wallet;
 
-  private Election currentElection = null;
-  private RollCall currentRollCall = null;
   private String currentRollCallId = "";
   private String laoId;
   // used to know which roll call to close
@@ -135,12 +101,18 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   public LaoDetailViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      RollCallRepository rollCallRepo,
+      ElectionRepository electionRepo,
+      SchedulerProvider schedulerProvider,
       GlobalNetworkManager networkManager,
       KeyManager keyManager,
       Gson gson,
       Wallet wallet) {
     super(application);
     this.laoRepository = laoRepository;
+    this.rollCallRepo = rollCallRepo;
+    this.electionRepo = electionRepo;
+    this.schedulerProvider = schedulerProvider;
     this.networkManager = networkManager;
     this.keyManager = keyManager;
     this.gson = gson;
@@ -152,16 +124,14 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * Predicate used for filtering rollcalls to make sure that the user either attended the rollcall
    * or was the organizer
    *
-   * @param laoView the lao considered
    * @param rollcall the roll-call considered
    * @return boolean saying whether user attended or organized the given roll call
    */
-  private boolean attendedOrOrganized(LaoView laoView, RollCall rollcall) {
+  private boolean attendedOrOrganized(RollCall rollcall) {
     // find out if user has attended the rollcall
-    String firstLaoId = laoView.getId();
     try {
-      PublicKey pk = wallet.generatePoPToken(firstLaoId, rollcall.getPersistentId()).getPublicKey();
-      return rollcall.getAttendees().contains(pk) || Boolean.TRUE.equals(isOrganizer().getValue());
+      PublicKey pk = wallet.generatePoPToken(laoId, rollcall.getPersistentId()).getPublicKey();
+      return rollcall.getAttendees().contains(pk) || isOrganizer();
     } catch (KeyGenerationException | UninitializedWalletException e) {
       Log.e(TAG, "failed to retrieve public key from wallet", e);
       return false;
@@ -175,6 +145,20 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    */
   public PublicKey getPublicKey() {
     return keyManager.getMainPublicKey();
+  }
+
+  public Observable<RollCall> getRollCallObservable(String persistentId) {
+    try {
+      return rollCallRepo
+          .getRollCallObservable(laoId, persistentId)
+          .observeOn(schedulerProvider.mainThread());
+    } catch (UnknownRollCallException e) {
+      return Observable.error(new UnknownRollCallException(persistentId));
+    }
+  }
+
+  public RollCall getRollCall(String persistentId) throws UnknownRollCallException {
+    return rollCallRepo.getRollCallWithPersistentId(laoId, persistentId);
   }
 
   @Override
@@ -193,7 +177,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Log.d(TAG, "opening election with name : " + e.getName());
     LaoView laoView;
     try {
-      laoView = getLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException unknownLaoException) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -214,7 +198,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Log.d(TAG, "ending election with name : " + election.getName());
     LaoView laoView;
     try {
-      laoView = getLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -223,7 +207,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Channel channel = election.getChannel();
     String laoViewId = laoView.getId();
     ElectionEnd electionEnd =
-        new ElectionEnd(election.getId(), laoViewId, election.computerRegisteredVotes());
+        new ElectionEnd(election.getId(), laoViewId, election.computeRegisteredVotesHash());
 
     return networkManager
         .getMessageSender()
@@ -237,12 +221,13 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    *
    * @param votes the corresponding votes for that election
    */
-  public Completable sendVote(List<ElectionVote> votes) {
-    Election election = currentElection;
-
-    if (election == null) {
+  public Completable sendVote(String electionId, List<PlainVote> votes) {
+    Election election;
+    try {
+      election = electionRepo.getElection(laoId, electionId);
+    } catch (UnknownElectionException e) {
       Log.d(TAG, "failed to retrieve current election");
-      return Completable.error(new UnknownElectionException());
+      return Completable.error(e);
     }
 
     Log.d(
@@ -254,17 +239,18 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     final LaoView laoView;
     try {
-      laoView = getLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
 
-    return Single.fromCallable(() -> keyManager.getValidPoPToken(laoView))
+    return Single.fromCallable(
+            () -> keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId)))
         .doOnSuccess(token -> Log.d(TAG, "Retrieved PoP Token to send votes : " + token))
         .flatMapCompletable(
             token -> {
-              CastVote<?> vote = createCastVote(votes, election, laoView);
+              CastVote vote = createCastVote(votes, election, laoView);
 
               Channel electionChannel = election.getChannel();
               return networkManager.getMessageSender().publish(token, electionChannel, vote);
@@ -272,16 +258,15 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
   }
 
   @NonNull
-  private CastVote<?> createCastVote(List<ElectionVote> votes, Election election, LaoView laoView) {
-    CastVote<?> vote;
+  private CastVote createCastVote(List<PlainVote> votes, Election election, LaoView laoView) {
     if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-      vote = new CastVote<>(votes, election.getId(), laoView.getId());
+      return new CastVote(votes, election.getId(), laoView.getId());
     } else {
-      List<ElectionEncryptedVote> encryptedVotes = election.encrypt(votes);
-      vote = new CastVote<>(encryptedVotes, election.getId(), laoView.getId());
+      List<EncryptedVote> encryptedVotes = election.encrypt(votes);
+
       Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG).show();
+      return new CastVote(encryptedVotes, election.getId(), laoView.getId());
     }
-    return vote;
   }
 
   /**
@@ -294,9 +279,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
    * @param creation the creation time of the election
    * @param start the start time of the election
    * @param end the end time of the election
-   * @param votingMethod the type of voting method (e.g Plurality)
-   * @param ballotOptions the list of ballot options
-   * @param question the question associated to the election
+   * @param questions questions of the election
    */
   public Completable createNewElection(
       ElectionVersion electionVersion,
@@ -304,15 +287,12 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
       long creation,
       long start,
       long end,
-      List<String> votingMethod,
-      List<Boolean> writeIn,
-      List<List<String>> ballotOptions,
-      List<String> question) {
+      List<ElectionQuestion.Question> questions) {
     Log.d(TAG, "creating a new election with name " + name);
 
     LaoView laoView;
     try {
-      laoView = getLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -320,17 +300,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     Channel channel = laoView.getChannel();
     ElectionSetup electionSetup =
-        new ElectionSetup(
-            writeIn,
-            name,
-            creation,
-            start,
-            end,
-            votingMethod,
-            laoView.getId(),
-            ballotOptions,
-            question,
-            electionVersion);
+        new ElectionSetup(name, creation, start, end, laoView.getId(), electionVersion, questions);
 
     return networkManager
         .getMessageSender()
@@ -361,7 +331,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
@@ -399,7 +369,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
@@ -450,20 +420,21 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
-
     long openedAt = Instant.now().getEpochSecond();
-    Optional<RollCall> optRollCall = laoView.getRollCall(id);
-    if (!optRollCall.isPresent()) {
+
+    RollCall rollCall;
+    try {
       Log.d(TAG, "failed to retrieve roll call with id " + id + "laoID: " + laoView.getId());
-      return Completable.error(new NoRollCallException(laoView));
+      rollCall = rollCallRepo.getRollCallWithId(laoId, id);
+    } catch (UnknownRollCallException e) {
+      return Completable.error(new UnknownRollCallException(id));
     }
 
-    RollCall rollCall = optRollCall.get();
     OpenRollCall openRollCall =
         new OpenRollCall(laoView.getId(), id, openedAt, rollCall.getState());
 
@@ -500,7 +471,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -526,7 +497,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId());
     final LaoView laoView;
     try {
-      laoView = getLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -557,53 +528,13 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     this.scanningAction = scanningAction;
   }
 
-  public LiveData<List<com.github.dedis.popstellar.model.objects.event.Event>> getLaoEvents() {
-    return mLaoEvents;
+  public Observable<Set<Event>> getEvents() {
+    return events;
   }
 
-  public LiveData<List<RollCall>> getLaoAttendedRollCalls() {
-    return mLaoAttendedRollCalls;
-  }
-
-  public LiveData<LaoView> getCurrentLao() {
-    return mCurrentLao;
-  }
-
-  public String getLaoId() {
-    return laoId;
-  }
-
-  public LaoView getLaoView() throws UnknownLaoException {
+  @Override
+  public LaoView getLao() throws UnknownLaoException {
     return laoRepository.getLaoView(laoId);
-  }
-
-  @VisibleForTesting
-  public void setCurrentLao(LaoView laoView) {
-    laoId = laoView.getId();
-    mCurrentLao.postValue(laoView);
-  }
-
-  public LiveData<String> getCurrentLaoName() {
-    return mCurrentLaoName;
-  }
-
-  public MutableLiveData<String> getPageTitle() {
-    return mPageTitle;
-  }
-
-  public void setPageTitle(String title) {
-    mPageTitle.postValue(title);
-  }
-
-  public LiveData<Boolean> isOrganizer() {
-    return mIsOrganizer;
-  }
-
-  public LiveData<Boolean> isWitness() throws UnknownLaoException {
-    boolean isWitness = getLaoView().getWitnesses().contains(keyManager.getMainPublicKey());
-    Log.d(TAG, "isWitness: " + isWitness);
-    mIsWitness.setValue(isWitness);
-    return mIsWitness;
   }
 
   public LiveData<Boolean> isSignedByCurrentWitness(Set<PublicKey> witnesses) {
@@ -613,28 +544,14 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mIsSignedByCurrentWitness;
   }
 
-  public LiveData<Boolean> getShowProperties() {
-    return showProperties;
-  }
-
-  public LiveData<List<PublicKey>> getWitnesses() {
-    return mWitnesses;
-  }
-
-  public LiveData<List<WitnessMessage>> getWitnessMessages() {
-    return mWitnessMessages;
-  }
-
   public LiveData<Integer> getNbAttendees() {
     return mNbAttendees;
   }
 
-  public LiveData<List<ConsensusNode>> getNodes() throws UnknownLaoException {
-    return LiveDataReactiveStreams.fromPublisher(
-        laoRepository
-            .getNodesByChannel(getLaoView().getChannel())
-            .toFlowable(BackpressureStrategy.LATEST));
+  public Observable<List<ConsensusNode>> getNodes() throws UnknownLaoException {
+    return laoRepository.getNodesByChannel(getLao().getChannel());
   }
+
 
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
     return mAttendeeScanConfirmEvent;
@@ -648,52 +565,12 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
     return mScanWarningEvent;
   }
 
-  public Election getCurrentElection() {
-    return currentElection;
-  }
-
-  public void setCurrentElection(Election e) {
-    currentElection = e;
-  }
-
-  public MutableLiveData<List<Integer>> getCurrentElectionVotes() {
-    return mCurrentElectionVotes;
-  }
-
-  public RollCall getCurrentRollCall() {
-    return currentRollCall;
-  }
-
-  public void setCurrentRollCall(RollCall rc) {
-    currentRollCall = rc;
+  public RollCall getLastClosedRollCall() throws NoRollCallException {
+    return rollCallRepo.getLastClosedRollCall(laoId);
   }
 
   public void setCurrentRollCallId(String rollCallId) {
     currentRollCallId = rollCallId;
-  }
-
-  public void setCurrentElectionVotes(List<Integer> currentElectionVotes) {
-    if (currentElectionVotes == null) {
-      throw new IllegalArgumentException();
-    }
-    mCurrentElectionVotes.setValue(currentElectionVotes);
-  }
-
-  public void setCurrentElectionQuestionVotes(Integer votes, int position) {
-    if (votes == null
-        || position < 0
-        || position > Objects.requireNonNull(mCurrentElectionVotes.getValue()).size()) {
-      throw new IllegalArgumentException();
-    }
-    if (mCurrentElectionVotes.getValue().size() <= position) {
-      mCurrentElectionVotes.getValue().add(votes);
-    } else {
-      mCurrentElectionVotes.getValue().set(position, votes);
-    }
-  }
-
-  public void setShowProperties(boolean show) {
-    showProperties.postValue(show);
   }
 
   /**
@@ -705,7 +582,7 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
     LaoView laoView;
     try {
-      laoView = getLaoView();
+      laoView = getLao();
     } catch (UnknownLaoException e) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
@@ -724,6 +601,10 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
         .publish(channel, msg)
         .doOnComplete(() -> Log.d(TAG, "updated lao witnesses"))
         .andThen(dispatchLaoUpdate(updateLao, laoView, channel, msg));
+  }
+
+  public Observable<List<RollCall>> getAttendedRollCalls() {
+    return attendedRollCalls;
   }
 
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */
@@ -748,44 +629,40 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
 
   public void subscribeToLao(String laoId) {
     this.laoId = laoId;
-    disposables.add(
-        laoRepository
-            .getLaoObservable(laoId)
+
+    // For some reason, trying to use the same observable twice breaks the event list,
+    // even while sharing it.
+    //
+    // Thus, we need to create the rollcall event list twice ¯\_(ツ)_/¯
+    this.attendedRollCalls =
+        rollCallRepo
+            .getRollCallsObservableInLao(laoId)
+            .map(
+                rcs ->
+                    rcs.stream()
+                        // Keep only attended roll calls
+                        .filter(this::attendedOrOrganized)
+                        .collect(Collectors.toList()));
+
+    // Create the events set observable
+    this.events =
+        Observable.combineLatest(
+                rollCallRepo.getRollCallsObservableInLao(laoId),
+                electionRepo.getElectionsObservable(laoId),
+                (rcs, elecs) -> {
+                  Set<Event> union = new HashSet<>(rcs);
+                  union.addAll(elecs);
+                  return union;
+                })
+            // Only dispatch the latest element once every 50 milliseconds
+            // This avoids multiple updates in a short period of time
+            .throttleLatest(50, TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                laoView -> {
-                  Log.d(TAG, "got an update for lao: " + laoView.getName());
-
-                  mCurrentLao.postValue(laoView);
-                  boolean isOrganizer =
-                      laoView.getOrganizer().equals(keyManager.getMainPublicKey());
-                  mIsOrganizer.setValue(isOrganizer);
-                  updateCurrentObjects(laoView);
-                },
-                error -> Log.d(TAG, "error updating LAO :" + error)));
+            .observeOn(AndroidSchedulers.mainThread());
   }
 
-  private void updateCurrentObjects(LaoView laoView) {
-    if (currentRollCall != null) {
-      Optional<RollCall> rcOption =
-          laoView.getRollCallWithPersistentId(currentRollCall.getPersistentId());
-      if (!rcOption.isPresent()) {
-        throw new IllegalStateException("Roll call must be present if in current id");
-      }
-      currentRollCall = rcOption.get();
-    }
-    if (currentElection != null) {
-      Optional<Election> electionOption = laoView.getElection(currentElection.getId());
-      if (!electionOption.isPresent()) {
-        throw new IllegalStateException("Election must be present if in current");
-      }
-      currentElection = electionOption.get();
-    }
-  }
-
-  public PoPToken getCurrentPopToken() throws KeyException, UnknownLaoException {
-    return keyManager.getPoPToken(getLaoView(), currentRollCall);
+  public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
+    return keyManager.getPoPToken(getLao(), rollCall);
   }
 
   public boolean isWalletSetup() {
@@ -889,18 +766,5 @@ public class LaoDetailViewModel extends NavigationViewModel<LaoTab>
                         getApplication(), TAG, error, R.string.error_update_lao)));
 
     return true;
-  }
-
-  /**
-   * This function should be used to add disposable object generated from subscription to sent
-   * messages flows
-   *
-   * <p>They will be disposed of when the view model is cleaned which ensures that the subscription
-   * stays relevant throughout the whole lifecycle of the activity and it is not bound to a fragment
-   *
-   * @param disposable to add
-   */
-  public void addDisposable(Disposable disposable) {
-    this.disposables.add(disposable);
   }
 }

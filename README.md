@@ -17,10 +17,12 @@ in the context of the following folders:
 
 * [docs](https://github.com/dedis/popstellar/tree/master/docs): The system & protocol documentation
 
-* [tests](https://github.com/dedis/popstellar/tree/master/tests): (Future) the system-wide, cross-implementation tests
+* [tests](https://github.com/dedis/popstellar/tree/master/tests): (WIP) the system-wide, cross-implementation tests
 
+## Integration Tests
+[![be1-go](https://github.com/dedis/popstellar/actions/workflows/karate_be1-go.yaml/badge.svg)](https://github.com/dedis/popstellar/actions/workflows/karate_be1-go.yaml) [Report](https://htmlpreview.github.io/?https://github.com/dedis/popstellar/blob/report-karate-be1-go/overview-features.html)
 
-
+[![be2-scala](https://github.com/dedis/popstellar/actions/workflows/karate_be2-scala.yaml/badge.svg)](https://github.com/dedis/popstellar/actions/workflows/karate_be2-scala.yaml) [Report](https://htmlpreview.github.io/?https://github.com/dedis/popstellar/blob/report-karate-be2-scala/overview-features.html)
 
 ## Branch organization
 Everyone working on the project,
@@ -41,5 +43,3 @@ if I need a branch to develop the ballot casting feature.
 
 
 This project is licensed under the terms of the AGPL licence. If this license is not suitable for your project, please contact us to discuss licensing terms.
-
-

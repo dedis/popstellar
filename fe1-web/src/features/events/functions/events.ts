@@ -13,7 +13,7 @@ export const getEventById = (eventId: Hash) => getEvent(eventId, getStore().getS
 
 export { makeEventByTypeSelector, makeEventSelector } from '../reducer';
 
-const CURRENT_EVENTS_THRESHOLD_MINUTES = 15;
+const CURRENT_EVENTS_THRESHOLD_HOURS = 24;
 
 export const categorizeEventsByTime = (time: Timestamp, events: EventState[]) => {
   const t = time.valueOf();
@@ -33,8 +33,8 @@ export const categorizeEventsByTime = (time: Timestamp, events: EventState[]) =>
     // or an upcoming one
 
     // current events are the ones that already started or will start within
-    // the next {CURRENT_EVENTS_THRESHOLD_MINUTES} minutes
-    if (e.start <= t + CURRENT_EVENTS_THRESHOLD_MINUTES * 60) {
+    // the next {CURRENT_EVENTS_THRESHOLD_HOURS} hours
+    if (e.start <= t + CURRENT_EVENTS_THRESHOLD_HOURS * 60 * 60) {
       currentEvents.push(e);
       return;
     }

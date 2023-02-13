@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event.election.adapters;
 
+import android.annotation.SuppressLint;
 import android.view.*;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -10,20 +11,50 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
-import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
+import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+
+import static com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow;
 
 public class ElectionResultPagerAdapter
     extends RecyclerView.Adapter<ElectionResultPagerAdapter.Pager2ViewHolder> {
 
-  private final LaoDetailViewModel mLaoDetailViewModel;
+  private static final String TAG = ElectionResultFragment.class.getSimpleName();
+
+  private List<QuestionResults> currentResults;
   private ElectionResultListAdapter adapter;
 
-  public ElectionResultPagerAdapter(LaoDetailViewModel mLaoDetailViewModel) {
-    this.mLaoDetailViewModel = mLaoDetailViewModel;
+  @SuppressLint("NotifyDataSetChanged")
+  public ElectionResultPagerAdapter(
+      LaoDetailViewModel viewModel, ElectionRepository electionRepository, String electionId) {
+    try {
+      viewModel.addDisposable(
+          electionRepository
+              .getElectionObservable(viewModel.getLaoId(), electionId)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  e -> {
+                    List<QuestionResults> results =
+                        e.getElectionQuestions().stream()
+                            .map(q -> new QuestionResults(q, e.getResultsForQuestionId(q.getId())))
+                            .collect(Collectors.toList());
+
+                    if (!results.equals(currentResults)) {
+                      // The results were updated, update the result list
+                      currentResults = results;
+                      notifyDataSetChanged();
+                    }
+                  }));
+    } catch (UnknownElectionException err) {
+      logAndShow(viewModel.getApplication(), TAG, err, R.string.generic_error);
+    }
   }
 
   @NonNull
@@ -32,6 +63,7 @@ public class ElectionResultPagerAdapter
     adapter =
         new ElectionResultListAdapter(
             parent.getContext(), R.layout.election_result_list_view_layout, new ArrayList<>());
+
     return new Pager2ViewHolder(
         LayoutInflater.from(parent.getContext())
             .inflate(R.layout.election_result_pager_layout, parent, false));
@@ -39,32 +71,36 @@ public class ElectionResultPagerAdapter
 
   @Override
   public void onBindViewHolder(@NonNull Pager2ViewHolder holder, int position) {
-    Election election = mLaoDetailViewModel.getCurrentElection();
-
     // setting the question
-    ElectionQuestion electionQuestion = election.getElectionQuestions().get(position);
-    String question = electionQuestion.getQuestion();
+    QuestionResults results = currentResults.get(position);
+    String question = results.question.getQuestion();
+    Set<QuestionResult> questionResults = results.results;
 
     holder.questionView.setText(question);
 
-    List<QuestionResult> questionResults =
-        election.getResultsForQuestionId(electionQuestion.getId());
+    // Create the displayable results
+    List<ElectionResultListAdapter.ElectionResult> adaptedResults =
+        questionResults.stream()
+            .sorted(Comparator.comparing(QuestionResult::getCount).reversed())
+            .map(
+                result ->
+                    new ElectionResultListAdapter.ElectionResult(
+                        result.getBallot(), result.getCount()))
+            .collect(Collectors.toList());
 
-    List<ElectionResultListAdapter.ElectionResult> electionResults = new ArrayList<>();
-    for (int i = 0; i < questionResults.size(); i++) {
-      electionResults.add(
-          new ElectionResultListAdapter.ElectionResult(
-              questionResults.get(i).getBallot(), questionResults.get(i).getCount()));
-    }
     adapter.clear();
-    adapter.addAll(electionResults);
+    adapter.addAll(adaptedResults);
 
     holder.resultListView.setAdapter(adapter);
   }
 
   @Override
   public int getItemCount() {
-    return mLaoDetailViewModel.getCurrentElection().getElectionQuestions().size();
+    if (this.currentResults == null) {
+      return 0;
+    }
+
+    return this.currentResults.size();
   }
 
   protected static class Pager2ViewHolder extends RecyclerView.ViewHolder {
@@ -74,8 +110,19 @@ public class ElectionResultPagerAdapter
 
     public Pager2ViewHolder(View itemView) {
       super(itemView);
-      resultListView = (ListView) itemView.findViewById(R.id.election_result_listView);
-      questionView = (TextView) itemView.findViewById(R.id.election_result_question);
+      resultListView = itemView.findViewById(R.id.election_result_listView);
+      questionView = itemView.findViewById(R.id.election_result_question);
+    }
+  }
+
+  private static class QuestionResults {
+
+    private final ElectionQuestion question;
+    private final Set<QuestionResult> results;
+
+    private QuestionResults(ElectionQuestion question, Set<QuestionResult> results) {
+      this.question = question;
+      this.results = results;
     }
   }
 }

@@ -1,43 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto">
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
 
-  <androidx.constraintlayout.widget.ConstraintLayout
+  <androidx.drawerlayout.widget.DrawerLayout
+    android:id="@+id/digital_cash_drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:openDrawer="start">
 
-    <com.google.android.material.appbar.AppBarLayout
-      android:id="@+id/digital_cash_app_bar_layout"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      app:layout_constraintTop_toTopOf="parent">
+      android:layout_height="match_parent"
+      android:fitsSystemWindows="true">
 
-      <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/digital_cash_app_bar"
-        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+      <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:navigationIcon="@drawable/ic_back_arrow" />
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <FrameLayout
-      android:id="@+id/fragment_container_digital_cash"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:gravity="center"
-      android:orientation="vertical"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_nav_bar"
-      app:layout_constraintTop_toBottomOf="@+id/digital_cash_app_bar_layout" />
+        <FrameLayout
+          android:id="@+id/fragment_container_digital_cash"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toTopOf="@id/digital_cash_nav_bar" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-      android:id="@+id/digital_cash_nav_bar"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:background="@color/white"
-      app:labelVisibilityMode="labeled"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:menu="@menu/digital_cash_menu" />
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+          android:id="@+id/digital_cash_nav_bar"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:labelVisibilityMode="labeled"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:menu="@menu/digital_cash_menu" />
+      </androidx.constraintlayout.widget.ConstraintLayout>
 
-  </androidx.constraintlayout.widget.ConstraintLayout>
+      <com.google.android.material.appbar.AppBarLayout
+        style="@style/Widget.MaterialComponents.AppBarLayout.Primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.MaterialToolbar
+          android:id="@+id/digital_cash_app_bar"
+          style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"
+          android:layout_width="match_parent"
+          android:layout_height="?attr/actionBarSize"
+          app:navigationContentDescription="Open Menu"
+          app:navigationIcon="@drawable/menu_icon" />
+      </com.google.android.material.appbar.AppBarLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.navigation.NavigationView
+      android:id="@+id/digital_cash_navigation_drawer"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_gravity="start"
+      app:headerLayout="@layout/header_navigation_drawer"
+      app:menu="@menu/main_menu" />
+
+  </androidx.drawerlayout.widget.DrawerLayout>
 
 </layout>

@@ -14,6 +14,7 @@ import io.reactivex.observers.TestObserver;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static com.github.dedis.popstellar.testutils.ObservableUtils.assertCurrentValueIs;
 import static java.util.Collections.addAll;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
@@ -142,9 +143,5 @@ public class SocialMediaRepositoryTest {
     Set<E> set = new HashSet<>();
     addAll(set, elems);
     return set;
-  }
-
-  private <T> void assertCurrentValueIs(TestObserver<T> ids, T value) {
-    ids.assertValueAt(ids.valueCount() - 1, value);
   }
 }

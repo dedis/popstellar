@@ -2,7 +2,7 @@ import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Clipboard from 'expo-clipboard';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Modal, StyleSheet, Text, TextStyle, View } from 'react-native';
+import { Modal, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import {
   ScrollView,
   TouchableOpacity,
@@ -10,25 +10,30 @@ import {
 } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 
-import { DropdownSelector, Input, PoPIcon, PoPTextButton, QRCode } from 'core/components';
+import {
+  ScannerInput,
+  DropdownSelector,
+  Input,
+  PoPIcon,
+  PoPTextButton,
+  QRCode,
+} from 'core/components';
 import ModalHeader from 'core/components/ModalHeader';
-import ScannerInput from 'core/components/ScannerInput';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { KeyPairStore } from 'core/keypair';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
-import { WalletParamList } from 'core/navigation/typing/WalletParamList';
+import { DigitalCashParamList } from 'core/navigation/typing/DigitalCashParamList';
 import { Hash, PublicKey } from 'core/objects';
 import { ScannablePopToken } from 'core/objects/ScannablePopToken';
 import { Color, Icon, ModalStyles, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { DigitalCashHooks } from '../../hooks';
-import { DigitalCashFeature } from '../../interface';
 import { requestCoinbaseTransaction, requestSendTransaction } from '../../network';
 import { makeBalanceSelector } from '../../reducer';
 
 type NavigationProps = CompositeScreenProps<
-  StackScreenProps<WalletParamList, typeof STRINGS.navigation_wallet_digital_cash_send_receive>,
+  StackScreenProps<DigitalCashParamList, typeof STRINGS.navigation_digital_cash_send_receive>,
   StackScreenProps<AppParamList, typeof STRINGS.navigation_app_lao>
 >;
 
@@ -38,6 +43,9 @@ const styles = StyleSheet.create({
     color: Color.inactive,
     textAlign: 'center',
   } as TextStyle,
+  beneficiaries: {
+    zIndex: 99,
+  } as ViewStyle,
 });
 
 const SendReceive = () => {
@@ -52,12 +60,14 @@ const SendReceive = () => {
     [serializedRollCallId],
   );
 
-  // will be undefined for the organizer
+  // will be undefined for coinbase transactions
   const rollCallToken = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallId);
+
+  const rollCall = DigitalCashHooks.useRollCallById(rollCallId);
 
   const allRollCalls = DigitalCashHooks.useRollCallsByLaoId(laoId);
 
-  const allClosedRollCall = useMemo(
+  const allClosedRollCalls = useMemo(
     () => Object.values(allRollCalls).filter((rc) => rc.status === 2),
     [allRollCalls],
   );
@@ -72,8 +82,20 @@ const SendReceive = () => {
   const selectedRollCall = DigitalCashHooks.useRollCallById(selectedRollCallId);
 
   const [beneficiary, setBeneficiary] = useState('');
+  const [beneficiaryFocused, setBeneficiaryFocused] = useState(false);
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
+
+  const suggestedBeneficiaries = useMemo(() => {
+    // do not show any suggestions if no text has been entered
+    if (!beneficiaryFocused && beneficiary.trim().length === 0) {
+      return [];
+    }
+
+    return (rollCall?.attendees || [])
+      .map((key) => key.toString())
+      .filter((key) => key.startsWith(beneficiary));
+  }, [beneficiary, beneficiaryFocused, rollCall]);
 
   if (!(rollCallId || isCoinbase)) {
     throw new Error(
@@ -199,7 +221,7 @@ const SendReceive = () => {
       <Text style={Typography.paragraph}>
         {STRINGS.digital_cash_wallet_transaction_description}
       </Text>
-      <View>
+      <View style={styles.beneficiaries}>
         <Text style={[Typography.paragraph, Typography.important]}>
           {STRINGS.digital_cash_wallet_beneficiary}
         </Text>
@@ -216,7 +238,7 @@ const SendReceive = () => {
                 value: '',
                 label: STRINGS.digital_cash_wallet_issue_single_beneficiary,
               },
-              ...allClosedRollCall.map((rc) => ({
+              ...allClosedRollCalls.map((rc) => ({
                 value: rc.id.valueOf(),
                 label: `${STRINGS.digital_cash_wallet_issue_all_attendees} "${rc.name}"`,
               })),
@@ -226,13 +248,15 @@ const SendReceive = () => {
         {serializedSelectedRollCallId === '' && (
           <ScannerInput
             value={beneficiary}
+            suggestions={suggestedBeneficiaries}
             onChange={setBeneficiary}
             onPress={() => {
-              navigation.navigate(STRINGS.navigation_wallet_digital_cash_wallet_scanner, {
+              navigation.navigate(STRINGS.navigation_digital_cash_wallet_scanner, {
                 rollCallId: rollCallId?.valueOf(),
                 isCoinbase: isCoinbase,
               });
             }}
+            onFocus={() => setBeneficiaryFocused(true)}
             placeholder={STRINGS.digital_cash_wallet_beneficiary_placeholder}
           />
         )}
@@ -299,7 +323,7 @@ export const SendReceiveHeaderRight = () => {
         />
         <ScrollView style={ModalStyles.modalContainer}>
           <ModalHeader onClose={() => setModalVisible(!modalVisible)}>
-            {STRINGS.wallet_single_roll_call_pop_token}
+            {STRINGS.general_your_pop_token}
           </ModalHeader>
 
           <View>
@@ -310,17 +334,10 @@ export const SendReceiveHeaderRight = () => {
             {popToken}
           </Text>
           <PoPTextButton onPress={() => Clipboard.setStringAsync(popToken)}>
-            {STRINGS.wallet_single_roll_call_copy_pop_token}
+            {STRINGS.general_copy}
           </PoPTextButton>
         </ScrollView>
       </Modal>
     </>
   );
-};
-
-export const SendReceiveScreen: DigitalCashFeature.WalletScreen = {
-  id: STRINGS.navigation_wallet_digital_cash_send_receive,
-  title: STRINGS.navigation_wallet_digital_cash_send_receive_title,
-  Component: SendReceive,
-  headerRight: SendReceiveHeaderRight,
 };
