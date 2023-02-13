@@ -24,27 +24,20 @@ public class DigitalCashPageObject {
   }
 
   public static ViewInteraction sendButton() {
-    return onView(withId(R.id.digital_cash_send_menu));
+    return onView(withId(R.id.digital_cash_send_button));
   }
 
   public static ViewInteraction receiveButton() {
-    return onView(withId(R.id.digital_cash_receive_menu));
+    return onView(withId(R.id.digital_cash_receive_button));
   }
 
   public static ViewInteraction historyButton() {
-    return onView(withId(R.id.digital_cash_history_menu));
+    return onView(withId(R.id.history_menu_toolbar));
   }
 
-  public static ViewInteraction homeButton() {
-    return onView(withId(R.id.digital_cash_home_menu));
-  }
 
   public static ViewInteraction issueButton() {
-    return onView(withId(R.id.digital_cash_issue_menu));
-  }
-
-  public static ViewInteraction navBar() {
-    return onView(withId(R.id.digital_cash_nav_bar));
+    return onView(withId(R.id.issue_button));
   }
 
   @IdRes
