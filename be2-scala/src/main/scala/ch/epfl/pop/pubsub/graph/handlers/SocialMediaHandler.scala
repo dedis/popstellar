@@ -51,6 +51,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     Await.ready(ask, duration).value match {
       case Some(Success(_)) =>
         val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[AddChirp](rpcMessage)
+        //  create and propagate the notifyAddChirp message
         val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, data.timestamp)
         Await.result(dbBroadcast(rpcMessage, channelChirp, notifyAddChirp.toJson.toString, broadcastChannel), duration)
       case Some(Failure(ex: DbActorNAckException)) =>
@@ -71,6 +72,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     Await.ready(ask, duration).value match {
       case Some(Success(_)) =>
         val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[DeleteChirp](rpcMessage)
+        // create and propagate the notifyDeleteChirp message
         val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, data.timestamp)
         Await.result(dbBroadcast(rpcMessage, channelChirp, notifyDeleteChirp.toJson.toString, broadcastChannel), duration)
       case Some(Failure(ex: DbActorNAckException)) =>
@@ -99,7 +101,13 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     Await.result(ask, duration)
   }
 
-  // generates the parameters that will be used to broadcast the chirps
+  /** Helper function that extracts the useful parameters from the message
+    *
+    * @param rpcMessage
+    *   : message from which we extract the parameters
+    * @return
+    *   the id of the chirp, the channel, the decoded data and the channel in which we broadcast
+    */
   private def parametersToBroadcast[T](rpcMessage: JsonRpcRequest): (Hash, Channel, T, Channel) = {
     val channelChirp: Channel = rpcMessage.getParamsChannel
     val lao_id: Hash = channelChirp.decodeChannelLaoId.get
