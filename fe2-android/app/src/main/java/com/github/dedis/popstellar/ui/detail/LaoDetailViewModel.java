@@ -673,9 +673,8 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
     }
 
     attendees.add(publicKey);
-    String successMessage = "Attendee " + publicKey + " successfully added";
-    Log.d(TAG, successMessage);
-    Toast.makeText(getApplication(), successMessage, Toast.LENGTH_SHORT).show();
+    Log.d(TAG, "Attendee " + publicKey + " successfully added");
+    Toast.makeText(getApplication(), R.string.attendee_scan_success, Toast.LENGTH_SHORT).show();
     nbScanned.postValue(attendees.size());
   }
 
@@ -695,9 +694,8 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
     }
 
     witnesses.add(publicKey);
-    String successMessage = "Witness " + publicKey + " successfully scanned";
-    Log.d(TAG, successMessage);
-    Toast.makeText(getApplication(), successMessage, Toast.LENGTH_SHORT).show();
+    Log.d(TAG, "Witness " + publicKey + " successfully scanned");
+    Toast.makeText(getApplication(), R.string.witness_scan_success, Toast.LENGTH_SHORT).show();
     disposables.add(
         updateLaoWitnesses()
             .subscribe(

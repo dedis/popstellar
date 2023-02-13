@@ -95,6 +95,9 @@
   <string name="scanned_witness">Scanned witnesses: </string>
   <string name="attendee_already_scanned_warning">Attendee was already scanned</string>
   <string name="witness_already_scanned_warning">"This key already belongs to a witness"</string>
+  <string name="attendee_scan_success">Attendee successfully scanned</string>
+  <string name="witness_scan_success">Witness successfully scanned</string>
+
 
   <!--  Witnessing-->
   <string name="messages">Messages</string>

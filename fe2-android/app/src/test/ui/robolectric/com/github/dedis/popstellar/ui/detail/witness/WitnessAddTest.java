@@ -108,7 +108,7 @@ public class WitnessAddTest {
     manualAddEditText().perform(forceTypeText(VALID_WITNESS_MANUAL_INPUT));
     manualAddConfirm().perform(click());
 
-    UITestUtils.assertToastContainsText("successfully scanned");
+    UITestUtils.assertToastIsDisplayedWithText(R.string.witness_scan_success);
   }
 
   @Test
