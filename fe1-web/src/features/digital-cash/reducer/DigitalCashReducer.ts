@@ -184,3 +184,29 @@ export const makeTransactionsByHashSelector = (laoId: Hash) =>
       return transactionsByHash || {};
     },
   );
+
+/**
+ * Selector for the transactions that involve a user (characterized by its public key). If the public key
+ * is undefined, it returns all transactions.
+ * @param laoId
+ * @param publicKey
+ */
+export const makeTransactionsByPublicKeySelector = (laoId: Hash, publicKey?: PublicKey) =>
+  createSelector(
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByPubHash,
+    (
+      transactionsByHash: Record<string, TransactionState> | undefined,
+      transactionsByPubHash: Record<string, string[]> | undefined,
+    ) => {
+      if (!publicKey) {
+        return makeTransactionsSelector(laoId);
+      }
+      if (transactionsByHash && transactionsByPubHash) {
+        return transactionsByPubHash[Hash.fromPublicKey(publicKey).valueOf()].map(
+          (hash) => transactionsByHash[hash],
+        );
+      }
+      return [];
+    },
+  );

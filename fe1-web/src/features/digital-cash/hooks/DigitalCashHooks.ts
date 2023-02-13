@@ -2,13 +2,14 @@ import { useContext, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
-import { Hash } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 
 import { DigitalCashReactContext, DIGITAL_CASH_FEATURE_IDENTIFIER } from '../interface';
 import { Transaction } from '../objects/transaction';
 import {
   makeBalancesSelector,
   makeTransactionsByHashSelector,
+  makeTransactionsByPublicKeySelector,
   makeTransactionsSelector,
 } from '../reducer';
 
@@ -111,6 +112,27 @@ export namespace DigitalCashHooks {
           0,
         ),
       [rollCallTokens, balances],
+    );
+  };
+
+  /**
+   * Gets the list of all transactions where a user is involved. If the public key is undefined,
+   * it returns all transactions.
+   * To use only in a React component.
+   * @param laoId
+   * @param userPublicKey
+   */
+  export const useTransactionsByPublicKey = (laoId: Hash, userPublicKey?: PublicKey) => {
+    const transactionsByPubKeySelector = useMemo(
+      () => makeTransactionsByPublicKeySelector(laoId, userPublicKey),
+      [laoId, userPublicKey],
+    );
+
+    const transactionStates = useSelector(transactionsByPubKeySelector);
+
+    return useMemo(
+      () => transactionStates.map((state) => Transaction.fromState(state)),
+      [transactionStates],
     );
   };
 }

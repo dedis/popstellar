@@ -1,4 +1,4 @@
-import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ListItem } from '@rneui/themed';
 import React, { useMemo } from 'react';
@@ -27,12 +27,16 @@ type NavigationProps = CompositeScreenProps<
 
 const DigitalCashWallet = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
+  const route = useRoute<NavigationProps['route']>();
   const laoId = DigitalCashHooks.useCurrentLaoId();
 
   const balances = useSelector(useMemo(() => makeBalancesSelector(laoId), [laoId]));
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
 
+  const rollCallIdHash = route.params.rollCallId ? new Hash(route.params.rollCallId) : undefined;
   const rollCallTokens = DigitalCashHooks.useRollCallTokensByLaoId(laoId);
+  const publicKey = DigitalCashHooks.useRollCallTokenByRollCallId(laoId, rollCallIdHash)?.token
+    .publicKey;
 
   const balance = rollCallTokens.reduce(
     (sum, account) => sum + (balances[Hash.fromPublicKey(account.token.publicKey).valueOf()] || 0),
@@ -105,7 +109,7 @@ const DigitalCashWallet = () => {
         })}
       </View>
 
-      <TransactionHistory laoId={laoId} />
+      <TransactionHistory laoId={laoId} publicKey={publicKey} />
     </ScreenWrapper>
   );
 };

@@ -5,7 +5,7 @@ import { Modal, View } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 import ModalHeader from 'core/components/ModalHeader';
-import { Hash } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import { List, ModalStyles, Typography } from 'core/styles';
 import { COINBASE_HASH } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -14,9 +14,10 @@ import { DigitalCashHooks } from '../hooks';
 import { Transaction, TransactionState } from '../objects/transaction';
 
 /**
- * UI for the transactions history
+ * UI for the transactions history. If a public key is given, it displays only the transactions involving the user.
+ * Otherwise, it displays the entire history.
  */
-const TransactionHistory = ({ laoId }: IPropTypes) => {
+const TransactionHistory = ({ laoId, publicKey }: IPropTypes) => {
   const [showTransactionHistory, setShowTransactionHistory] = useState<boolean>(false);
   const [showInputs, setShowInputs] = useState<boolean>(true);
   const [showOutputs, setShowOutputs] = useState<boolean>(true);
@@ -24,7 +25,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const transactions: Transaction[] = DigitalCashHooks.useTransactions(laoId);
+  const transactions: Transaction[] = DigitalCashHooks.useTransactionsByPublicKey(laoId, publicKey);
 
   // We need this mapping to show the amount for each input
   const transactionsByHash: Record<string, TransactionState> =
@@ -193,9 +194,14 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
 
 const propTypes = {
   laoId: PropTypes.instanceOf(Hash).isRequired,
+  publicKey: PropTypes.instanceOf(PublicKey),
 };
 
 TransactionHistory.propTypes = propTypes;
+
+TransactionHistory.defaultProps = {
+  publicKey: undefined,
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
