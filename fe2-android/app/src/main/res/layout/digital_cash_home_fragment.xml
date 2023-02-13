@@ -8,21 +8,20 @@
     android:id="@+id/fragment_digital_cash_home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".ui.digitalcash.DigitalCashHomeFragment">
 
     <TextView
       android:id="@+id/coin_amount_text"
+      style="@style/text_high_emphasis"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center"
-      android:text="42"
       android:textSize="@dimen/size_title"
-      style="@style/text_high_emphasis"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintVertical_bias="0.40"
+      app:layout_constraintVertical_bias="0.30"
       tools:layout_editor_absoluteX="0dp" />
-
     <TextView
       android:id="@+id/textView"
       style="@style/text_medium_emphasis"
@@ -33,33 +32,73 @@
       android:textSize="@dimen/size_section_title"
       app:layout_constraintTop_toBottomOf="@id/coin_amount_text" />
 
-    <!--    <androidx.constraintlayout.widget.Guideline-->
-    <!--      android:layout_width="0dp"-->
-    <!--      android:layout_height="match_parent"-->
-    <!--      android:orientation="vertical"-->
-    <!--      />-->
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/digital_cash_receive_button"
       android:layout_width="@dimen/floating_buttons_radius_digital_cash"
       android:layout_height="@dimen/floating_buttons_radius_digital_cash"
       android:backgroundTint="@color/white"
+      android:src="@drawable/receive_icon"
       android:tintMode="@color/black"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/textView"
+      app:backgroundTint="@color/black"
+      android:clickable="true"
+      app:fabCustomSize="@dimen/floating_buttons_radius_digital_cash"
+      app:layout_constraintBottom_toTopOf="@+id/issue_button"
+      app:layout_constraintEnd_toStartOf="@id/guideline_digital_cash_center"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintEnd_toStartOf="@id/guideline_digital_cash_center" />
+      app:layout_constraintTop_toBottomOf="@+id/textView"
+      app:maxImageSize="50dp"
+      android:contentDescription="@string/receive_button_content_desc" />
+
+    <TextView
+      android:id="@+id/digital_cash_receive_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_receive_button"
+      app:layout_constraintStart_toStartOf="@id/digital_cash_receive_button"
+      app:layout_constraintEnd_toEndOf="@id/digital_cash_receive_button"
+      android:text="@string/digital_cash_receive"
+      android:textSize="22sp"
+      style="@style/text_high_emphasis"
+      android:layout_marginTop="8dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/digital_cash_send_button"
       android:layout_width="@dimen/floating_buttons_radius_digital_cash"
       android:layout_height="@dimen/floating_buttons_radius_digital_cash"
       android:backgroundTint="@color/white"
+      android:src="@drawable/send_coin_icon"
       android:tintMode="@color/black"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/textView"
+      app:backgroundTint="@color/black"
+      app:fabCustomSize="@dimen/floating_buttons_radius_digital_cash"
+      android:clickable="true"
+      app:layout_constraintBottom_toTopOf="@+id/issue_button"
+      app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toEndOf="@id/guideline_digital_cash_center"
-      app:layout_constraintEnd_toEndOf="parent" />
+      app:layout_constraintTop_toBottomOf="@+id/textView"
+      app:maxImageSize="50dp"
+      android:contentDescription="@string/send_button_content_desc" />
+
+    <TextView
+      android:id="@+id/digital_cash_send_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/digital_cash_send_button"
+      app:layout_constraintStart_toStartOf="@id/digital_cash_send_button"
+      app:layout_constraintEnd_toEndOf="@id/digital_cash_send_button"
+      android:text="@string/send"
+      android:textSize="22sp"
+      style="@style/text_high_emphasis"
+      android:layout_marginTop="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/issue_button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAllCaps="false"
+      android:text="@string/digital_cash_issue"
+      app:cornerRadius="@dimen/corner_radius_small"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:layout_margin="@dimen/main_horizontal_margin" />
 
     <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline_digital_cash_center"

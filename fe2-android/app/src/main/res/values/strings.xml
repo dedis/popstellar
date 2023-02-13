@@ -240,6 +240,8 @@
   <string name="add_witness_description">Add Witness</string>
   <string name="qr_code_icon_description">An icon representing a qr code</string>
   <string name="qr_code_token_content">The QR code displaying token information</string>
+  <string name="send_button_content_desc">Send button</string>
+  <string name="receive_button_content_desc">Receive button</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
