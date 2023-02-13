@@ -70,6 +70,15 @@ const isQuestionInvalid = (question: NewQuestion): boolean =>
   question.question === '' || question.ballot_options.length < MIN_BALLOT_OPTIONS;
 
 /**
+ * Checks whether a question title is not unique within a list of questions
+ * @param questions The list of questions
+ */
+const haveQuestionsSameTitle = (questions: NewQuestion[]): boolean => {
+  const questionTitles = questions.map((q: NewQuestion) => q.question);
+  return questionTitles.length === new Set(questionTitles).size;
+};
+
+/**
  * Creates a new election based on the given values and returns the related request promise
  * @param laoId The id of the lao in which the new election should be created
  * @param version The version of the lection that should be created
@@ -141,7 +150,10 @@ const CreateElection = () => {
 
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const confirmButtonEnabled: boolean =
-    isConnected === true && electionName !== '' && !questions.some(isQuestionInvalid);
+    isConnected === true &&
+    electionName !== '' &&
+    !questions.some(isQuestionInvalid) &&
+    haveQuestionsSameTitle(questions);
 
   const onCreateElection = () => {
     createElection(currentLao.id, version, electionName, questions, startTime, endTime)
@@ -300,6 +312,11 @@ const CreateElection = () => {
           {STRINGS.election_create_invalid_questions_1 +
             MIN_BALLOT_OPTIONS +
             STRINGS.election_create_invalid_questions_2}
+        </Text>
+      )}
+      {!haveQuestionsSameTitle(questions) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_same_questions}
         </Text>
       )}
 
