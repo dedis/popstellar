@@ -77,7 +77,6 @@
 
   <!-- Roll-Call Event -->
   <string name="roll_call_title_required">Roll Call Title*</string>
-  <string name="roll_call_open_attendees">Open</string>
   <string name="reopen_rollcall">REOPEN</string>
   <string name="rc_manual_hint">Attendee token</string>
 

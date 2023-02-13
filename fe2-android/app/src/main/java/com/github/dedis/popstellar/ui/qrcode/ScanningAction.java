@@ -38,7 +38,7 @@ public enum ScanningAction {
     }
 
     @Override
-    OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String _unused) {
+    OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String unused) {
       return new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
@@ -122,7 +122,7 @@ public enum ScanningAction {
     }
 
     @Override
-    OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String _unused) {
+    OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String unused) {
       return new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
