@@ -53,7 +53,10 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
         val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[AddChirp](rpcMessage)
         //  create and propagate the notifyAddChirp message
         val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, data.timestamp)
-        Await.result(dbBroadcast(rpcMessage, channelChirp, notifyAddChirp.toJson.toString, broadcastChannel), duration)
+        Await.result(
+          dbBroadcast(rpcMessage, channelChirp, notifyAddChirp.toJson.toString, broadcastChannel),
+          duration
+        )
 
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(
           ex.code,
@@ -82,7 +85,10 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
         val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[DeleteChirp](rpcMessage)
         // create and propagate the notifyDeleteChirp message
         val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, data.timestamp)
-        Await.result(dbBroadcast(rpcMessage, channelChirp, notifyDeleteChirp.toJson.toString, broadcastChannel), duration)
+        Await.result(
+          dbBroadcast(rpcMessage, channelChirp, notifyDeleteChirp.toJson.toString, broadcastChannel),
+          duration
+        )
 
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(
           ex.code,
