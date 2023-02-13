@@ -3,14 +3,6 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools">
 
-  <data>
-
-    <import type="android.view.View" />
-
-    <variable
-      name="view_model"
-      type="com.github.dedis.popstellar.ui.digitalcash.DigitalCashViewModel" />
-  </data>
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_digital_cash_home"
@@ -19,41 +11,62 @@
     tools:context=".ui.digitalcash.DigitalCashHomeFragment">
 
     <TextView
-      android:id="@+id/digital_cash_home_title"
-      android:layout_width="wrap_content"
+      android:id="@+id/coin_amount_text"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center"
-      style="@style/title_style"
-      android:text="@string/digital_cash_home"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_home_address"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-      android:id="@+id/digital_cash_home_address"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:gravity="center"
-      style="@style/style_border"
-      android:text="@string/digital_cash_my_address"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_home_title"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/digital_cash_send_address" />
-
-    <TextView
-      android:id="@+id/digital_cash_send_address"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:gravity="center"
-      style="@style/title_style"
-      android:text="@string/digital_cash_laocoindefault"
+      android:text="42"
+      android:textSize="@dimen/size_title"
+      style="@style/text_high_emphasis"
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_bias="0.40"
+      tools:layout_editor_absoluteX="0dp" />
+
+    <TextView
+      android:id="@+id/textView"
+      style="@style/text_medium_emphasis"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:text="@string/lao_coins"
+      android:textSize="@dimen/size_section_title"
+      app:layout_constraintTop_toBottomOf="@id/coin_amount_text" />
+
+    <!--    <androidx.constraintlayout.widget.Guideline-->
+    <!--      android:layout_width="0dp"-->
+    <!--      android:layout_height="match_parent"-->
+    <!--      android:orientation="vertical"-->
+    <!--      />-->
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/digital_cash_receive_button"
+      android:layout_width="@dimen/floating_buttons_radius_digital_cash"
+      android:layout_height="@dimen/floating_buttons_radius_digital_cash"
+      android:backgroundTint="@color/white"
+      android:tintMode="@color/black"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/textView"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/digital_cash_home_address" />
+      app:layout_constraintEnd_toStartOf="@id/guideline_digital_cash_center" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/digital_cash_send_button"
+      android:layout_width="@dimen/floating_buttons_radius_digital_cash"
+      android:layout_height="@dimen/floating_buttons_radius_digital_cash"
+      android:backgroundTint="@color/white"
+      android:tintMode="@color/black"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/textView"
+      app:layout_constraintStart_toEndOf="@id/guideline_digital_cash_center"
+      app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline_digital_cash_center"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_percent="0.5" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>

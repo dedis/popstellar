@@ -136,6 +136,7 @@
   <dimen name="history_expanded_bottom_margin">10dp</dimen>
   <dimen name="provenance_title_top_margin">12dp</dimen>
   <dimen name="transaction_title_top_margin">10dp</dimen>
+  <dimen name="floating_buttons_radius_digital_cash">100dp</dimen>
 
   <!--  CardView dimensions -->
   <dimen name="cv_horizontal_margin">16dp</dimen>
