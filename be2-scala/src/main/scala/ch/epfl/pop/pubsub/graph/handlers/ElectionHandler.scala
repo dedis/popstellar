@@ -66,8 +66,10 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
           case OPEN_BALLOT => Left(rpcMessage)
           case SECRET_BALLOT =>
             val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
-            val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
-            Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel), duration)
+            Await.result(
+              dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, KeyElectionFormat.write(keyElection).toString, electionChannel),
+              duration
+            )
         }
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
@@ -113,9 +115,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       _ <- dbAskWritePropagate(rpcMessage)
       // data to be broadcast
       resultElection: ResultElection = ResultElection(electionQuestionResults, witnessSignatures)
-      data: Base64Data = Base64Data.encode(resultElectionFormat.write(resultElection).toString)
       // create & propagate the resultMessage
-      _ <- dbBroadcast(rpcMessage, electionChannel, data, electionChannel)
+      _ <- dbBroadcast(rpcMessage, electionChannel, resultElectionFormat.write(resultElection).toString, electionChannel)
     } yield ()
     Await.ready(combined, duration).value match {
       case Some(Success(_)) => Left(rpcMessage)

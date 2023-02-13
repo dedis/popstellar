@@ -52,7 +52,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success(_)) =>
         val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[AddChirp](rpcMessage)
         val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, data.timestamp)
-        Await.result(dbBroadcast[NotifyAddChirp](rpcMessage, channelChirp, notifyAddChirp, broadcastChannel), duration)
+        Await.result(dbBroadcast[NotifyAddChirp](rpcMessage, channelChirp, notifyAddChirp.toJson.toString, broadcastChannel), duration)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleAddChirp failed : ${ex.message}", rpcMessage.getId))
       case _                                       => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.getId))
     }
@@ -70,7 +70,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success(_)) =>
         val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[DeleteChirp](rpcMessage)
         val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, data.timestamp)
-        Await.result(dbBroadcast[NotifyDeleteChirp](rpcMessage, channelChirp, notifyDeleteChirp, broadcastChannel), duration)
+        Await.result(dbBroadcast[NotifyDeleteChirp](rpcMessage, channelChirp, notifyDeleteChirp.toJson.toString, broadcastChannel), duration)
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleDeleteChirp failed : ${ex.message}", rpcMessage.getId))
       case _                                       => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.getId))
     }
