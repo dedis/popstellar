@@ -1,5 +1,4 @@
-// Package main contains the entry point for starting the organizer
-// or witness server.
+// Package main contains the entry point for starting a server.
 package main
 
 import (
@@ -26,12 +25,12 @@ import (
 )
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
-// the organizer or the witness
+// the server
 func Serve(cliCtx *cli.Context) error {
 	log := popstellar.Logger
 
 	// get command line args which specify public key, addresses, port to use for clients
-	// and witnesses, witness' address
+	// and servers, remote servers address
 	publicAddress := cliCtx.String("server-public-address")
 	privateAddress := cliCtx.String("server-listen-address")
 
@@ -60,21 +59,21 @@ func Serve(cliCtx *cli.Context) error {
 	// start the processing loop
 	h.Start()
 
-	// Start a client websocket server
+	// Start websocket server for clients
 	clientSrv := network.NewServer(h, privateAddress, clientPort, socket.ClientSocketType,
-		log.With().Str("role", "client server").Logger())
+		log.With().Str("role", "client websocket").Logger())
 	clientSrv.Start()
 
-	// Start a witness websocket server
+	// Start a websocket server for remote servers
 	serverSrv := network.NewServer(h, privateAddress, serverPort, socket.ServerSocketType,
-		log.With().Str("role", "server server").Logger())
+		log.With().Str("role", "server websocket").Logger())
 	serverSrv.Start()
 
 	// create wait group which waits for goroutines to finish
 	wg := &sync.WaitGroup{}
 	done := make(chan struct{})
 
-	// connect to given witness
+	// connect to given remote servers
 	for _, serverAddress := range otherServers {
 		err = connectToSocket(serverAddress, h, wg, done)
 		if err != nil {
@@ -118,12 +117,12 @@ func connectToSocket(address string, h hub.Hub,
 
 	log := popstellar.Logger
 
-	urlString := fmt.Sprintf("ws://%s/server/server", address)
+	urlString := fmt.Sprintf("ws://%s/sockets/server", address)
 	u, err := url.Parse(urlString)
 	if err != nil {
 		return xerrors.Errorf("failed to parse connection url %s: %v", urlString, err)
 	}
-	log.Info().Msgf("test")
+
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
 		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
@@ -131,14 +130,14 @@ func connectToSocket(address string, h hub.Hub,
 
 	log.Info().Msgf("connected to server at %s", urlString)
 
-	organizerSocket := socket.NewServerSocket(h.Receiver(),
+	remoteSocket := socket.NewServerSocket(h.Receiver(),
 		h.OnSocketClose(), ws, wg, done, log)
 	wg.Add(2)
 
-	go organizerSocket.WritePump()
-	go organizerSocket.ReadPump()
+	go remoteSocket.WritePump()
+	go remoteSocket.ReadPump()
 
-	err = h.NotifyNewServer(organizerSocket)
+	err = h.NotifyNewServer(remoteSocket)
 	if err != nil {
 		return xerrors.Errorf("error while trying to catchup to server: %v", err)
 	}

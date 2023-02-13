@@ -10,7 +10,7 @@ import (
 
 const waitUp = time.Second * 2
 
-func TestOrganizerAndWitness(t *testing.T) {
+func TestConnectMultipleServers(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	wait := sync.WaitGroup{}
@@ -61,7 +61,7 @@ func TestOrganizerAndWitness(t *testing.T) {
 	wait.Wait()
 }
 
-func TestOrganizerAndWitnessWithoutPK(t *testing.T) {
+func TestConnectMultipleServersWithoutPK(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	wait := sync.WaitGroup{}

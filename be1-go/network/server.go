@@ -27,8 +27,8 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-// Server represents a Websocket Server for an organizer or a witness and it may
-// listen to requests from organizer, witness or an attendee.
+// Server represents a Websocket Server for server and it may
+// listen to requests from other servers or clients.
 type Server struct {
 	hub hub.Hub
 	st  socket.SocketType
@@ -62,7 +62,7 @@ func NewServer(hub hub.Hub, addr string, port int, st socket.SocketType, log zer
 		log:     log,
 	}
 
-	path := fmt.Sprintf("/server/%s", st)
+	path := fmt.Sprintf("/sockets/%s", st)
 	mux := http.NewServeMux()
 	mux.HandleFunc(path, server.ServeHTTP)
 

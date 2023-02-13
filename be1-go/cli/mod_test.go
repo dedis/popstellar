@@ -22,9 +22,9 @@ func TestConnectToSocket(t *testing.T) {
 	require.NoError(t, err)
 	oh.Start()
 
-	witnessSrv := network.NewServer(oh, "localhost", 9001, socket.ServerSocketType, log)
-	witnessSrv.Start()
-	<-witnessSrv.Started
+	remoteSrv := network.NewServer(oh, "localhost", 9001, socket.ServerSocketType, log)
+	remoteSrv.Start()
+	<-remoteSrv.Started
 
 	time.Sleep(1 * time.Second)
 
@@ -37,9 +37,9 @@ func TestConnectToSocket(t *testing.T) {
 	err = connectToSocket("localhost:9001", wh, wg, wDone)
 	require.NoError(t, err)
 
-	err = witnessSrv.Shutdown()
+	err = remoteSrv.Shutdown()
 	require.NoError(t, err)
-	<-witnessSrv.Stopped
+	<-remoteSrv.Stopped
 
 	oh.Stop()
 	wh.Stop()

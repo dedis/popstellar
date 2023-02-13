@@ -653,7 +653,7 @@ func Test_Create_LAO(t *testing.T) {
 	require.Equal(t, msg.Signature, fakeChannelFac.msg.Signature)
 	require.Equal(t, msg.WitnessSignatures, fakeChannelFac.msg.WitnessSignatures)
 
-	// the organizer should have saved the channel locally
+	// the server should have saved the channel locally
 
 	require.Contains(t, hub.channelByID, rootPrefix+data.ID)
 	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
@@ -1126,7 +1126,7 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 	require.Equal(t, msg.Signature, fakeChannelFac.msg.Signature)
 	require.Equal(t, msg.WitnessSignatures, fakeChannelFac.msg.WitnessSignatures)
 
-	// the organizer should have saved the channel locally
+	// the server should have saved the channel locally
 
 	require.Contains(t, hub.channelByID, rootPrefix+data.ID)
 	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
@@ -1210,7 +1210,7 @@ func Test_Create_LAO_Broadcast_Wrong_MessageID(t *testing.T) {
 	require.EqualError(t, sock.err, fmt.Sprintf("failed to handle method: message_id is wrong: expected %q found %q", expectedMessageID, fakeMessageID))
 }
 
-// Check that if the organizer receives a subscribe message, it will call the
+// Check that if the server receives a subscribe message, it will call the
 // subscribe function on the appropriate channel.
 func Test_Handle_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
@@ -1273,9 +1273,9 @@ func Test_Handle_Subscribe(t *testing.T) {
 	require.Equal(t, subscribe, c.subscribe)
 }
 
-// Check that if the organizer receives an unsubscribe message, it will call the
+// Check that if the server receives an unsubscribe message, it will call the
 // unsubscribe function on the appropriate channel.
-func TestOrganizer_Handle_Unsubscribe(t *testing.T) {
+func TestServer_Handle_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	c := &fakeChannel{}
@@ -1338,9 +1338,9 @@ func TestOrganizer_Handle_Unsubscribe(t *testing.T) {
 	require.Equal(t, sock.id, c.socketID)
 }
 
-// Check that if the organizer receives a catchup message, it will call the
+// Check that if the server receives a catchup message, it will call the
 // catchup function on the appropriate channel.
-func TestOrganizer_Handle_Catchup(t *testing.T) {
+func TestServer_Handle_Catchup(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	fakeMessages := []message.Message{

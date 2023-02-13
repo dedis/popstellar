@@ -354,7 +354,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	return nil
 }
 
-// handleMessageFromServer handles an incoming message from a witness server.
+// handleMessageFromServer handles an incoming message from a server.
 func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) error {
 	socket := incomingMessage.Socket
 	byteMessage := incomingMessage.Message

@@ -2,8 +2,8 @@
 // is responsible for low level communication over websockets, i.e. sending
 // and receiving marshaled messages over the wire.
 //
-// The Socket interface has multiple concrete implementations - one for each
-// type of client the backend interacts with: an Attendee, Organizer or Witness.
+// The Socket interface has multiple concrete implementations - one for servers
+// and one for clients.
 package socket
 
 import (

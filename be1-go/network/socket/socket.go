@@ -22,7 +22,7 @@ const (
 	// ClientSocketType denotes a client.
 	ClientSocketType SocketType = "client"
 
-	// ServerSocketType denotes an organizer.
+	// ServerSocketType denotes a server.
 	ServerSocketType SocketType = "server"
 )
 
@@ -276,12 +276,12 @@ type ServerSocket struct {
 	*baseSocket
 }
 
-// NewServerSocket returns a new OrganizerSocket.
+// NewServerSocket returns a new ServerSocket.
 func NewServerSocket(receiver chan<- IncomingMessage,
 	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
 	done chan struct{}, log zerolog.Logger) *ServerSocket {
 
-	log = log.With().Str("role", "organizer socket").Logger()
+	log = log.With().Str("role", "server socket").Logger()
 
 	return &ServerSocket{
 		baseSocket: newBaseSocket(ServerSocketType, receiver, closedSockets,

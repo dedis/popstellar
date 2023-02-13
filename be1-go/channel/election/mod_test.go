@@ -652,7 +652,7 @@ type fakeHub struct {
 	fakeSock fakeSocket
 }
 
-// NewHub returns a Organizer Hub.
+// NewFakeHub returns a fake Hub.
 func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)

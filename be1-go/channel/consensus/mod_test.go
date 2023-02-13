@@ -1946,7 +1946,7 @@ type fakeHub struct {
 	fakeSock fakeSocket
 }
 
-// NewHub returns a Organizer Hub.
+// NewFakeHub returns a fake Hub.
 func NewFakeHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)

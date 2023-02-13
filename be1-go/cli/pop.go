@@ -12,8 +12,7 @@
 //	  pop [global options] command [command options] [arguments...]
 //
 //	COMMANDS:
-//	   organizer  manage the organizer
-//	   witness    manage the witness
+//	   server  manage the server
 //	   help, h    Shows a list of commands or help for one command
 //
 //	GLOBAL OPTIONS:
@@ -50,10 +49,10 @@ func run(ctx context.Context, args []string) {
 		Usage:   "address where the server should listen to",
 		Value:   "localhost",
 	}
-	organizerAddressFlag := &cli.StringFlag{
-		Name:    "organizer-address",
-		Aliases: []string{"org"},
-		Usage:   "address and witness port of organizer",
+	serverAddressFlag := &cli.StringFlag{
+		Name:    "server-address",
+		Aliases: []string{"srv"},
+		Usage:   "address and remote server port of the server",
 		Value:   "localhost:9002",
 	}
 	clientPortFlag := &cli.IntFlag{
@@ -65,13 +64,13 @@ func run(ctx context.Context, args []string) {
 	serverPortFlag := &cli.IntFlag{
 		Name:    "server-port",
 		Aliases: []string{"sp"},
-		Usage:   "port to listen websocket connections from witnesses on",
+		Usage:   "port to listen websocket connections from remote servers on",
 		Value:   9002,
 	}
 	otherServersFlag := &cli.StringSliceFlag{
 		Name:    "other-servers",
 		Aliases: []string{"os"},
-		Usage:   "address and port to connect to other witness",
+		Usage:   "address and port to connect to other servers",
 	}
 
 	app := &cli.App{
@@ -87,11 +86,11 @@ func run(ctx context.Context, args []string) {
 				Subcommands: []*cli.Command{
 					{
 						Name:  "serve",
-						Usage: "start the organizer server",
+						Usage: "start the server",
 						Flags: []cli.Flag{
 							serverPublicAddressFlag,
 							serverListenAddressFlag,
-							organizerAddressFlag,
+							serverAddressFlag,
 							clientPortFlag,
 							serverPortFlag,
 							otherServersFlag,
