@@ -91,7 +91,7 @@ trait MessageHandler extends AskPatternConstants {
     * @return
     *   the database answer wrapped in a [[scala.concurrent.Future]]
     */
-  def dbBroadcast[T](rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: String, broadcastChannel: Channel): Future[GraphMessage] = {
+  def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: String, broadcastChannel: Channel): Future[GraphMessage] = {
     val m: Message = rpcMessage.getParamsMessage.getOrElse(
       return Future {
         Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcMessage.id))
