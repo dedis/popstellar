@@ -131,7 +131,6 @@ public class RollCallFragmentTest {
           () -> RollCallFragment.newInstance(ROLL_CALL),
           new BundleBuilder()
               .putString(Constants.ROLL_CALL_ID, ROLL_CALL.getPersistentId())
-              .putString(Constants.RC_PK_EXTRA, SENDER.getEncoded())
               .build());
 
   @Test

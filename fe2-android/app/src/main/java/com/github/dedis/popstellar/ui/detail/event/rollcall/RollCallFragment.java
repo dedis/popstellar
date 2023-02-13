@@ -235,7 +235,12 @@ public class RollCallFragment extends Fragment {
   }
 
   private void retrieveAndDisplayPublicKey() {
-    String pk = getPopToken().getPublicKey().getEncoded();
+    PoPToken popToken = getPopToken();
+    if (popToken == null){
+      return;
+    }
+
+    String pk = popToken.getPublicKey().getEncoded();
     Log.d(TAG, "key displayed is " + pk);
 
     PopTokenData data = new PopTokenData(new PublicKey(pk));
