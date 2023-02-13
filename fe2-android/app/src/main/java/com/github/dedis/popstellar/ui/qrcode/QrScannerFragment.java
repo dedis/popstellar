@@ -61,7 +61,7 @@ public class QrScannerFragment extends Fragment {
    * @param rcPersistentId the id of the roll call
    * @return a QrScannerFragment with correct arguments in bundle
    */
-  public static QrScannerFragment newInstance(String rcPersistentId) {
+  public static QrScannerFragment newRollCallScanInstance(String rcPersistentId) {
     QrScannerFragment fragment = new QrScannerFragment();
     Bundle bundle = new Bundle(2);
 

@@ -24,7 +24,6 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -89,7 +88,6 @@ public class RollCallFragment extends Fragment {
       return null;
     }
 
-
     setUpStateDependantContent();
 
     binding.rollCallManagementButton.setOnClickListener(
@@ -102,13 +100,7 @@ public class RollCallFragment extends Fragment {
                   viewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
-                          () ->
-                              setCurrentFragment(
-                                  getParentFragmentManager(),
-                                  R.id.fragment_qr_scanner,
-                                  () ->
-                                      QrScannerFragment.newInstance(
-                                          ScanningAction.ADD_ROLL_CALL_ATTENDEE)),
+                          () -> {},
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_open_rollcall)));
@@ -138,7 +130,9 @@ public class RollCallFragment extends Fragment {
             setCurrentFragment(
                 getParentFragmentManager(),
                 R.id.fragment_qr_scanner,
-                () -> QrScannerFragment.newInstance(requireArguments().getString(ROLL_CALL_ID))));
+                () ->
+                    QrScannerFragment.newRollCallScanInstance(
+                        requireArguments().getString(ROLL_CALL_ID))));
 
     viewModel.addDisposable(
         viewModel
@@ -170,7 +164,7 @@ public class RollCallFragment extends Fragment {
     }
   }
 
-  private PoPToken getPopToken(){
+  private PoPToken getPopToken() {
     try {
       return viewModel.getCurrentPopToken(rollCall);
     } catch (KeyException e) {
@@ -236,7 +230,7 @@ public class RollCallFragment extends Fragment {
 
   private void retrieveAndDisplayPublicKey() {
     PoPToken popToken = getPopToken();
-    if (popToken == null){
+    if (popToken == null) {
       return;
     }
 
