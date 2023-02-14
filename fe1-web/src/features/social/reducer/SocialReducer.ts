@@ -392,7 +392,7 @@ export const makeReactedSelector = (laoId: Hash, chirpId: Hash, user?: PublicKey
     // add reaction mapping for each code point if the user matches
     return reactions.reduce<Record<string, Reaction>>((obj, reaction) => {
       if (reaction.sender !== serializedPublicKey) {
-        // skip reactions by other suers
+        // skip reactions by other users
         return obj;
       }
 
