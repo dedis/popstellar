@@ -16,7 +16,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.LaoActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
-import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaHomeFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -175,7 +175,7 @@ public class DigitalCashActivity extends LaoActivity {
   }
 
   private void openSocialMediaTab() {
-    startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId()));
+    startActivity(SocialMediaHomeFragment.newIntent(this, viewModel.getLaoId()));
   }
 
   private void openInviteTab() {

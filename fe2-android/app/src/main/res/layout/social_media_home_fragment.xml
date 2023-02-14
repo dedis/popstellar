@@ -1,48 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools">
-
-  <data>
-
-    <import type="android.view.View" />
-
-    <variable
-      name="view_model"
-      type="com.github.dedis.popstellar.ui.socialmedia.SocialMediaViewModel" />
-  </data>
+  xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_social_media_home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.socialmedia.SocialMediaHomeFragment">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <RelativeLayout
+    <FrameLayout
+      android:id="@+id/fragment_container_social_media"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_marginBottom="@dimen/bottom_navigation_view_height">
+      android:layout_height="0dp"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintBottom_toTopOf="@id/social_media_nav_bar" />
 
-      <ListView
-        android:id="@+id/chirps_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@color/categoryTab"
-        android:dividerHeight="@dimen/social_media_divider_height"
-        tools:listitem="@layout/chirp_card" />
-
-      <ImageButton
-        android:id="@+id/social_media_send_fragment_button"
-        android:layout_width="@dimen/round_button_size"
-        android:layout_height="@dimen/round_button_size"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/margin_top"
-        android:layout_marginBottom="@dimen/margin_top"
-        android:background="@drawable/round_button"
-        android:contentDescription="@string/send_button_desc"
-        android:src="@drawable/ic_social_media_send_foreground" />
-    </RelativeLayout>
-
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+      android:id="@+id/social_media_nav_bar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:labelVisibilityMode="labeled"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:menu="@menu/social_media_menu" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

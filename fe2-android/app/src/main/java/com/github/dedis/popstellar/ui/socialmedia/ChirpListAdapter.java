@@ -8,6 +8,7 @@ import android.widget.*;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.time.Instant;
@@ -19,17 +20,20 @@ public class ChirpListAdapter extends BaseAdapter {
 
   private static final String TAG = ChirpListAdapter.class.getSimpleName();
 
+  private final LaoViewModel viewModel;
   private final SocialMediaViewModel socialMediaViewModel;
   private final Context context;
   private final LayoutInflater layoutInflater;
   private List<Chirp> chirps;
 
-  public ChirpListAdapter(Context ctx, SocialMediaViewModel socialMediaViewModel) {
+  public ChirpListAdapter(
+      Context ctx, SocialMediaViewModel socialMediaViewModel, LaoViewModel viewModel) {
     this.context = ctx;
     this.socialMediaViewModel = socialMediaViewModel;
-    layoutInflater = LayoutInflater.from(ctx);
+    this.viewModel = viewModel;
 
-    socialMediaViewModel.addDisposable(
+    layoutInflater = LayoutInflater.from(ctx);
+    viewModel.addDisposable(
         socialMediaViewModel
             .getChirps()
             .subscribe(
@@ -80,7 +84,7 @@ public class ChirpListAdapter extends BaseAdapter {
       deleteChirp.setVisibility(View.VISIBLE);
       deleteChirp.setOnClickListener(
           v ->
-              socialMediaViewModel.addDisposable(
+              viewModel.addDisposable(
                   socialMediaViewModel
                       .deleteChirp(chirp.getId(), Instant.now().getEpochSecond())
                       .subscribe(

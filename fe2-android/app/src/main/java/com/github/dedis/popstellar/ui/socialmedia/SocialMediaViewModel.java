@@ -5,21 +5,19 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.navigation.LaoViewModel;
-import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -27,7 +25,6 @@ import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,11 +36,13 @@ import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 
 @HiltViewModel
-public class SocialMediaViewModel extends LaoViewModel {
+public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String SOCIAL = "social";
   public static final Integer MAX_CHAR_NUMBERS = 300;
+
+  private String laoId;
 
   /*
    * LiveData objects for capturing events
@@ -55,7 +54,7 @@ public class SocialMediaViewModel extends LaoViewModel {
   /*
    * Dependencies for this class
    */
-  private final LAORepository laoRepository;
+  private final LAORepository laoRepo;
   private final RollCallRepository rollCallRepo;
   private final SchedulerProvider schedulerProvider;
   private final SocialMediaRepository socialMediaRepository;
@@ -63,28 +62,25 @@ public class SocialMediaViewModel extends LaoViewModel {
   private final Gson gson;
   private final KeyManager keyManager;
   private final CompositeDisposable disposables;
-  private final Wallet wallet;
 
   @Inject
   public SocialMediaViewModel(
       @NonNull Application application,
-      LAORepository laoRepository,
+      LAORepository laoRepo,
       RollCallRepository rollCallRepo,
       SchedulerProvider schedulerProvider,
       SocialMediaRepository socialMediaRepository,
       GlobalNetworkManager networkManager,
       Gson gson,
-      KeyManager keyManager,
-      Wallet wallet) {
+      KeyManager keyManager) {
     super(application);
-    this.laoRepository = laoRepository;
+    this.laoRepo = laoRepo;
     this.rollCallRepo = rollCallRepo;
     this.schedulerProvider = schedulerProvider;
     this.socialMediaRepository = socialMediaRepository;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
-    this.wallet = wallet;
 
     disposables = new CompositeDisposable();
   }
@@ -187,13 +183,13 @@ public class SocialMediaViewModel extends LaoViewModel {
 
   public Observable<List<Chirp>> getChirps() {
     return socialMediaRepository
-        .getChirpsOfLao(getLaoId())
+        .getChirpsOfLao(laoId)
         // Retrieve chirp subjects per id
         .map(
             ids -> {
               List<Observable<Chirp>> chirps = new ArrayList<>(ids.size());
               for (MessageID id : ids) {
-                chirps.add(socialMediaRepository.getChirp(getLaoId(), id));
+                chirps.add(socialMediaRepository.getChirp(laoId, id));
               }
               return chirps;
             })
@@ -232,17 +228,15 @@ public class SocialMediaViewModel extends LaoViewModel {
     }
   }
 
-  public void savePersistentData() throws GeneralSecurityException {
-    ActivityUtils.activitySavingRoutine(
-        networkManager, wallet, getApplication().getApplicationContext());
-  }
-
-  @Override
-  public LaoView getLao() throws UnknownLaoException {
-    return laoRepository.getLaoView(getLaoId());
+  public void setLaoId(String laoId) {
+    this.laoId = laoId;
   }
 
   public PoPToken getValidPoPToken() throws KeyException {
-    return keyManager.getValidPoPToken(getLaoId(), rollCallRepo.getLastClosedRollCall(getLaoId()));
+    return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
+  }
+
+  private LaoView getLao() throws UnknownLaoException {
+    return laoRepo.getLaoView(laoId);
   }
 }

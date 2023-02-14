@@ -1,29 +1,37 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
-import android.widget.ListView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaHomeFragmentBinding;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.Constants;
+
+import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/** Fragment of the home feed of the social media */
+/**
+ * The purpose of this fragment is to provide a bottom nav bar and fragment container to social
+ * media fragments. In itself this fragment does not provide any social media feature
+ */
 @AndroidEntryPoint
 public class SocialMediaHomeFragment extends Fragment {
-  public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
 
-  private SocialMediaHomeFragmentBinding mSocialMediaHomeFragBinding;
-  private SocialMediaViewModel viewModel;
+  private SocialMediaViewModel socialMediaViewModel;
+  private SocialMediaHomeFragmentBinding binding;
 
-  public static SocialMediaHomeFragment newInstance() {
-    return new SocialMediaHomeFragment();
-  }
+  public static final String TAG = SocialMediaHomeFragment.class.getSimpleName();
 
   @Nullable
   @Override
@@ -31,43 +39,94 @@ public class SocialMediaHomeFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mSocialMediaHomeFragBinding =
-        SocialMediaHomeFragmentBinding.inflate(inflater, container, false);
+    binding = SocialMediaHomeFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = SocialMediaActivity.obtainViewModel(requireActivity());
+    LaoViewModel viewModel = LaoActivity.obtainViewModel(requireActivity());
+    socialMediaViewModel =
+        LaoActivity.obtainSocialMediaViewModel(requireActivity(), viewModel.getLaoId());
 
-    mSocialMediaHomeFragBinding.setViewModel(viewModel);
-    mSocialMediaHomeFragBinding.setLifecycleOwner(getViewLifecycleOwner());
-
-    return mSocialMediaHomeFragBinding.getRoot();
+    setupBottomNavBar();
+    openChirpList();
+    return binding.getRoot();
   }
 
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
+  private void setupBottomNavBar() {
+    socialMediaViewModel
+        .getBottomNavigationTab()
+        .observe(
+            getViewLifecycleOwner(),
+            tab -> binding.socialMediaNavBar.setSelectedItemId(tab.getMenuId()));
 
-    setupSendButton();
-    setupListViewAdapter();
+    binding.socialMediaNavBar.setOnItemSelectedListener(
+        item -> {
+          SocialMediaTab tab = SocialMediaTab.findByMenu(item.getItemId());
+          Log.i(TAG, "Opening tab : " + tab.getName());
+          openBottomTab(tab);
+          return true;
+        });
+
+    binding.socialMediaNavBar.setOnItemReselectedListener(item -> {});
+    socialMediaViewModel.setBottomNavigationTab(SocialMediaTab.HOME);
   }
 
-  @Override
-  public void onResume() {
-    super.onResume();
-    viewModel.setPageTitle(R.string.home);
+  private void openBottomTab(SocialMediaTab tab) {
+    switch (tab) {
+      case HOME:
+        openChirpList();
+        break;
+      case SEARCH:
+        openSearchTab();
+        break;
+      case FOLLOWING:
+        openFollowingTab();
+        break;
+      case PROFILE:
+        openProfileTab();
+        break;
+    }
   }
 
-  private void setupSendButton() {
-    mSocialMediaHomeFragBinding.socialMediaSendFragmentButton.setOnClickListener(
-        v ->
-            SocialMediaActivity.setCurrentFragment(
-                getParentFragmentManager(),
-                R.id.fragment_social_media_send,
-                SocialMediaSendFragment::newInstance));
+  private void openChirpList() {
+    setCurrentFragment(
+        getParentFragmentManager(), R.id.fragment_chirp_list, ChirpListFragment::newInstance);
   }
 
-  private void setupListViewAdapter() {
-    ListView listView = mSocialMediaHomeFragBinding.chirpsList;
-    ChirpListAdapter mChirpListAdapter = new ChirpListAdapter(requireActivity(), viewModel);
-    listView.setAdapter(mChirpListAdapter);
+  private void openSearchTab() {
+    setCurrentFragment(
+        getParentFragmentManager(),
+        R.id.fragment_social_media_search,
+        SocialMediaSearchFragment::newInstance);
+  }
+
+  private void openFollowingTab() {
+    setCurrentFragment(
+        getParentFragmentManager(),
+        R.id.fragment_social_media_following,
+        SocialMediaFollowingFragment::newInstance);
+  }
+
+  private void openProfileTab() {
+    setCurrentFragment(
+        getParentFragmentManager(),
+        R.id.fragment_social_media_profile,
+        SocialMediaProfileFragment::newInstance);
+  }
+
+  public static Intent newIntent(Context ctx, String laoId) {
+    Intent intent = new Intent(ctx, SocialMediaHomeFragment.class);
+    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
+    return intent;
+  }
+
+  /**
+   * Set the current fragment in the container of the home fragment
+   *
+   * @param id of the fragment
+   * @param fragmentSupplier provides the fragment if it is missing
+   */
+  public static void setCurrentFragment(
+      FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
+    ActivityUtils.setFragmentInContainer(
+        manager, R.id.fragment_container_social_media, id, fragmentSupplier);
   }
 }

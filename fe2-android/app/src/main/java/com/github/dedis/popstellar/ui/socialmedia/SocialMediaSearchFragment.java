@@ -9,12 +9,16 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaSearchFragmentBinding;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment that let us search for chirps and users */
 @AndroidEntryPoint
 public class SocialMediaSearchFragment extends Fragment {
+
+  private LaoViewModel viewModel;
 
   public static SocialMediaSearchFragment newInstance() {
     return new SocialMediaSearchFragment();
@@ -26,24 +30,24 @@ public class SocialMediaSearchFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    SocialMediaSearchFragmentBinding mSocialMediaSearchFragBinding;
-    SocialMediaViewModel mSocialMediaViewModel;
+    SocialMediaSearchFragmentBinding binding;
 
-    mSocialMediaSearchFragBinding =
-        SocialMediaSearchFragmentBinding.inflate(inflater, container, false);
+    binding = SocialMediaSearchFragmentBinding.inflate(inflater, container, false);
 
-    mSocialMediaViewModel = SocialMediaActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    SocialMediaViewModel socialMediaViewModel =
+        LaoActivity.obtainSocialMediaViewModel(requireActivity(), viewModel.getLaoId());
 
-    mSocialMediaSearchFragBinding.setViewModel(mSocialMediaViewModel);
-    mSocialMediaSearchFragBinding.setLifecycleOwner(getViewLifecycleOwner());
+    binding.setViewModel(socialMediaViewModel);
+    binding.setLifecycleOwner(getViewLifecycleOwner());
 
-    return mSocialMediaSearchFragBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
   public void onResume() {
     super.onResume();
-    SocialMediaViewModel viewModel = SocialMediaActivity.obtainViewModel(requireActivity());
     viewModel.setPageTitle(R.string.search);
+    viewModel.setIsTab(true);
   }
 }

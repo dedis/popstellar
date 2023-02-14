@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaSendFragmentBinding;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
@@ -23,8 +25,9 @@ public class SocialMediaSendFragment extends Fragment {
 
   public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
 
-  private SocialMediaSendFragmentBinding mSocialMediaSendFragBinding;
-  private SocialMediaViewModel viewModel;
+  private SocialMediaSendFragmentBinding binding;
+  private LaoViewModel viewModel;
+  private SocialMediaViewModel socialMediaViewModel;
 
   public static SocialMediaSendFragment newInstance() {
     return new SocialMediaSendFragment();
@@ -36,15 +39,16 @@ public class SocialMediaSendFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mSocialMediaSendFragBinding =
-        SocialMediaSendFragmentBinding.inflate(inflater, container, false);
+    binding = SocialMediaSendFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = SocialMediaActivity.obtainViewModel(requireActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    socialMediaViewModel =
+        LaoActivity.obtainSocialMediaViewModel(requireActivity(), viewModel.getLaoId());
 
-    mSocialMediaSendFragBinding.setViewModel(viewModel);
-    mSocialMediaSendFragBinding.setLifecycleOwner(getViewLifecycleOwner());
+    binding.setViewModel(socialMediaViewModel);
+    binding.setLifecycleOwner(getViewLifecycleOwner());
 
-    return mSocialMediaSendFragBinding.getRoot();
+    return binding.getRoot();
   }
 
   @Override
@@ -58,31 +62,29 @@ public class SocialMediaSendFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.send);
+    viewModel.setIsTab(false);
   }
 
   private void setupSendChirpButton() {
-    mSocialMediaSendFragBinding.sendChirpButton.setOnClickListener(v -> sendNewChirp());
+    binding.sendChirpButton.setOnClickListener(v -> sendNewChirp());
   }
 
   private void sendNewChirp() {
     // Trying to send a chirp when no LAO has been chosen in the application will not send it, it
-    // will
-    // make a toast appear and it will log the error
+    // will make a toast appear and it will log the error
     if (viewModel.getLaoId() == null) {
       ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
     } else {
       viewModel.addDisposable(
-          viewModel
+          socialMediaViewModel
               .sendChirp(
-                  mSocialMediaSendFragBinding.entryBoxChirp.getText().toString(),
-                  null,
-                  Instant.now().getEpochSecond())
+                  binding.entryBoxChirp.getText().toString(), null, Instant.now().getEpochSecond())
               .subscribe(
                   msg ->
-                      SocialMediaActivity.setCurrentFragment(
+                      SocialMediaHomeFragment.setCurrentFragment(
                           getParentFragmentManager(),
-                          R.id.fragment_social_media_home,
-                          SocialMediaHomeFragment::newInstance),
+                          R.id.fragment_chirp_list,
+                          ChirpListFragment::newInstance),
                   error -> {
                     if (error instanceof KeyException
                         || error instanceof GeneralSecurityException) {
@@ -93,7 +95,7 @@ public class SocialMediaSendFragment extends Fragment {
                           requireContext(), TAG, error, R.string.error_sending_chirp);
                     }
                   }));
-      viewModel.setBottomNavigationTab(SocialMediaTab.HOME);
+      socialMediaViewModel.setBottomNavigationTab(SocialMediaTab.HOME);
     }
   }
 }

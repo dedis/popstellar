@@ -28,7 +28,8 @@ import com.github.dedis.popstellar.ui.detail.witness.WitnessingViewModel;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
-import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaHomeFragment;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -215,7 +216,8 @@ public class LaoActivity extends AppCompatActivity {
   }
 
   private void openSocialMediaTab() {
-    startActivity(SocialMediaActivity.newIntent(this, viewModel.getLaoId()));
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_social_media_home, SocialMediaHomeFragment::new);
   }
 
   public static LaoViewModel obtainViewModel(FragmentActivity activity) {
@@ -258,6 +260,14 @@ public class LaoActivity extends AppCompatActivity {
         new ViewModelProvider(activity).get(WitnessingViewModel.class);
     witnessingViewModel.setLaoId(laoId);
     return witnessingViewModel;
+  }
+
+  public static SocialMediaViewModel obtainSocialMediaViewModel(
+      FragmentActivity activity, String laoId) {
+    SocialMediaViewModel socialMediaViewModel =
+        new ViewModelProvider(activity).get(SocialMediaViewModel.class);
+    socialMediaViewModel.setLaoId(laoId);
+    return socialMediaViewModel;
   }
 
   /**
