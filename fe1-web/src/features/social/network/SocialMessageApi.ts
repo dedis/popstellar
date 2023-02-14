@@ -79,11 +79,10 @@ export function requestAddReaction(
 }
 
 /**
- * Sends a query to the server to add a new reaction.
+ * Sends a query to the server to delete an existing reaction.
  *
- * @param reaction_codepoint - The codepoint corresponding to the reaction type
- * @param chirp_id - The id of the chirp where the reaction is added
- * @param laoId - The id of the Lao in which to add a reaction
+ * @param reactionId - The id of the reaction that should be deleted
+ * @param laoId - The id of the lao to which the reaction belongs
  */
 export function requestDeleteReaction(reactionId: Hash, laoId: Hash): Promise<void> {
   const message = new DeleteReaction({
