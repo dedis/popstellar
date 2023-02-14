@@ -22,7 +22,8 @@
     "depcruise-graph": "depcruise --config .depcruise.js --output-type dot -- src | dot -T svg > dist/graph.svg",
     "depcruise-graph-archi": "depcruise --config .depcruise.js --output-type cdot -- src | dot -T svg > dist/archi.svg",
     "depcruise-graph-focus": "depcruise --config .depcruise.js --focus %npm_config_pkgfocus% --output-type dot -- src | dot -T svg > dist/focus.svg",
-    "docs": "typedoc"
+    "docs": "typedoc",
+    "postinstall": "patch-package --error-on-fail"
   },
   "dependencies": {
     "@dedis/kyber": "^3.4.4",
@@ -33,6 +34,7 @@
     "@react-native-picker/picker": "^2.4.4",
     "@react-navigation/bottom-tabs": "^6.4.3",
     "@react-navigation/core": "^6.4.3",
+    "@react-navigation/drawer": "^6.5.4",
     "@react-navigation/native": "^6.0.16",
     "@react-navigation/routers": "^6.1.5",
     "@react-navigation/stack": "^6.3.7",
@@ -47,6 +49,7 @@
     "expo": "^46.0.10",
     "expo-camera": "~12.3.0",
     "expo-clipboard": "~3.1.0",
+    "expo-constants": "~13.2.4",
     "expo-status-bar": "~1.4.0",
     "idb-keyval": "^5.1.5",
     "js-sha256": "^0.9.0",
@@ -124,6 +127,7 @@
     "jest-localstorage-mock": "^2.4.22",
     "jest-matcher-utils": "^26.6.2",
     "jest-sonar-reporter": "^2.0.0",
+    "patch-package": "^6.5.0",
     "prettier": "^2.5.1",
     "react-test-renderer": "18.0.0",
     "sharp-cli": "^2.1.0",

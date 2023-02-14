@@ -95,7 +95,7 @@ const RollCallOpen = ({
       console.log(err);
       toast.show(STRINGS.roll_call_error_close_roll_call, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }

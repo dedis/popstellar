@@ -470,6 +470,27 @@ exports[`EventLists renders correctly for attendees 1`] = `
                               >
                                 Upcoming Events
                               </Text>
+                              <Text
+                                accessibilityRole="text"
+                                style={
+                                  Object {
+                                    "backgroundColor": "transparent",
+                                    "color": "#242424",
+                                    "fontSize": 16,
+                                    "lineHeight": 20,
+                                  }
+                                }
+                                testID="listItemTitle"
+                              >
+                                Next Event starts
+                                 
+                                <time
+                                  dateTime="2021-05-07T02:46:40.000Z"
+                                  title="2021-05-07 02:46"
+                                >
+                                  1 day from now
+                                </time>
+                              </Text>
                             </View>
                             <View
                               style={
@@ -1607,6 +1628,27 @@ exports[`EventLists renders correctly for organizers 1`] = `
                                 testID="listItemTitle"
                               >
                                 Upcoming Events
+                              </Text>
+                              <Text
+                                accessibilityRole="text"
+                                style={
+                                  Object {
+                                    "backgroundColor": "transparent",
+                                    "color": "#242424",
+                                    "fontSize": 16,
+                                    "lineHeight": 20,
+                                  }
+                                }
+                                testID="listItemTitle"
+                              >
+                                Next Event starts
+                                 
+                                <time
+                                  dateTime="2021-05-07T02:46:40.000Z"
+                                  title="2021-05-07 02:46"
+                                >
+                                  1 day from now
+                                </time>
                               </Text>
                             </View>
                             <View

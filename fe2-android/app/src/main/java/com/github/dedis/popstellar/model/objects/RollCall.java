@@ -2,125 +2,87 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
-import com.github.dedis.popstellar.model.Copyable;
+import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.event.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Set;
 
-public class RollCall extends Event implements Copyable<RollCall> {
+@Immutable
+public class RollCall extends Event {
 
-  private String id;
+  private final String id;
   private final String persistentId;
-  private String name;
-  private long creation;
-  private long start;
-  private long end;
-  private EventState state;
-  private Set<PublicKey> attendees;
+  private final String name;
+  private final long creation;
+  private final long start;
+  private final long end;
+  private final EventState state;
+  private final Set<PublicKey> attendees;
 
-  private String location;
-  private String description;
+  private final String location;
+  private final String description;
 
-  public RollCall(String id) {
+  public RollCall(
+      String id,
+      String persistentId,
+      String name,
+      long creation,
+      long start,
+      long end,
+      EventState state,
+      Set<PublicKey> attendees,
+      String location,
+      String description) {
     this.id = id;
-    this.persistentId = id;
-    this.attendees = new HashSet<>();
-  }
-
-  public RollCall(String laoId, long creation, String name) {
-    this(generateCreateRollCallId(laoId, creation, name));
-    if (name == null) {
-      throw new IllegalArgumentException("The name of the RollCall is null");
-    }
+    this.persistentId = persistentId;
     this.name = name;
     this.creation = creation;
-  }
-
-  public RollCall(RollCall rollCall) {
-    this.id = rollCall.id;
-    this.persistentId = rollCall.persistentId;
-    this.name = rollCall.name;
-    this.creation = rollCall.creation;
-    this.start = rollCall.start;
-    this.end = rollCall.end;
-    this.state = rollCall.state;
-    this.attendees = new HashSet<>(rollCall.attendees);
-    this.location = rollCall.location;
-    this.description = rollCall.description;
+    this.start = start;
+    this.end = end;
+    this.state = state;
+    this.attendees = attendees;
+    this.location = location;
+    this.description = description;
   }
 
   public String getId() {
     return id;
   }
 
-  public void setId(String id) {
-    this.id = id;
-  }
-
   public String getPersistentId() {
     return persistentId;
   }
 
+  @Override
   public String getName() {
     return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public long getCreation() {
     return creation;
   }
 
-  public void setCreation(long creation) {
-    this.creation = creation;
-  }
-
   public long getStart() {
     return start;
-  }
-
-  public void setStart(long start) {
-    this.start = start;
   }
 
   public long getEnd() {
     return end;
   }
 
-  public void setEnd(long end) {
-    this.end = end;
-  }
-
-  public void setState(EventState state) {
-    this.state = state;
-  }
-
   public Set<PublicKey> getAttendees() {
     return attendees;
-  }
-
-  public void setAttendees(Set<PublicKey> attendees) {
-    this.attendees = attendees;
   }
 
   public String getLocation() {
     return location;
   }
 
-  public void setLocation(String location) {
-    this.location = location;
-  }
-
   public String getDescription() {
     return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   @Override
@@ -185,16 +147,23 @@ public class RollCall extends Event implements Copyable<RollCall> {
     return Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, closes, Long.toString(closedAt));
   }
 
+  public static RollCall openRollCall(RollCall rollCall) {
+    return setRollCallState(rollCall, EventState.OPENED);
+  }
+
+  public static RollCall closeRollCall(RollCall rollCall) {
+    return setRollCallState(rollCall, EventState.CLOSED);
+  }
+
+  private static RollCall setRollCallState(RollCall rollCall, EventState state) {
+    return new RollCallBuilder(rollCall).setState(state).build();
+  }
+
   /**
    * @return true if the roll-call is closed, false otherwise
    */
   public boolean isClosed() {
     return EventState.CLOSED.equals(state);
-  }
-
-  @Override
-  public RollCall copy() {
-    return new RollCall(this);
   }
 
   @NonNull

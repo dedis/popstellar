@@ -94,7 +94,7 @@ const ConnectScan = () => {
         // invalid lao id
         toast.show(STRINGS.connect_scanning_fail, {
           type: 'warning',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
 
@@ -107,7 +107,7 @@ const ConnectScan = () => {
 
       toast.show(`The scanned QR code is invalid`, {
         type: 'warning',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
 
@@ -173,6 +173,8 @@ const ConnectScan = () => {
         params: { screen: STRINGS.navigation_lao_events_home },
       });
     } catch (error) {
+      console.error(error);
+
       // close already established connections
       getNetworkManager().disconnectFromAll();
 
@@ -180,9 +182,9 @@ const ConnectScan = () => {
       isProcessingScan.current = false;
       setIsConnecting(false);
 
-      toast.show(STRINGS.connect_scanning_fail, {
+      toast.show(STRINGS.connect_connecting_fail, {
         type: 'danger',
-        placement: 'top',
+        placement: 'bottom',
         duration: FOUR_SECONDS,
       });
     }
@@ -206,7 +208,7 @@ const ConnectScan = () => {
         <View style={styles.enterManually}>
           <View style={QrCodeScannerUIElementContainer}>
             <PoPTouchableOpacity
-              onPress={() => navigation.push(STRINGS.navigation_connect_confirm)}>
+              onPress={() => navigation.navigate(STRINGS.navigation_connect_confirm)}>
               <Text style={[Typography.base, Typography.accent]}>
                 {STRINGS.general_enter_manually}
               </Text>

@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.utility.Constants;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,10 +28,20 @@ import static org.junit.Assert.assertEquals;
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
 public class ChirpListAdapterTest {
+  private static final long CREATION_TIME = 1631280815;
+  private static final String LAO_NAME = "laoName";
+
+  private static final KeyPair SENDER_KEY_1 = generatePoPToken();
+  private static final KeyPair SENDER_KEY_2 = generatePoPToken();
+
+  private static final PublicKey SENDER_1 = SENDER_KEY_1.getPublicKey();
+  private static final PublicKey SENDER_2 = SENDER_KEY_2.getPublicKey();
+
+  private static final String LAO_ID = Lao.generateLaoId(SENDER_1, CREATION_TIME, LAO_NAME);
 
   private final Intent intent =
       new Intent(ApplicationProvider.getApplicationContext(), SocialMediaActivity.class)
-          .putExtra("OPENED_FROM", "");
+          .putExtra(Constants.LAO_ID_EXTRA, LAO_ID);
 
   private final ActivityScenarioRule<SocialMediaActivity> activityScenarioRule =
       new ActivityScenarioRule<>(intent);
@@ -41,16 +52,6 @@ public class ChirpListAdapterTest {
 
   private static final MessageID MESSAGE_ID_1 = generateMessageID();
   private static final MessageID MESSAGE_ID_2 = generateMessageID();
-
-  private static final KeyPair SENDER_KEY_1 = generatePoPToken();
-  private static final KeyPair SENDER_KEY_2 = generatePoPToken();
-
-  private static final PublicKey SENDER_1 = SENDER_KEY_1.getPublicKey();
-  private static final PublicKey SENDER_2 = SENDER_KEY_2.getPublicKey();
-
-  private static final long CREATION_TIME = 1631280815;
-  private static final String LAO_NAME = "laoName";
-  private static final String LAO_ID = Lao.generateLaoId(SENDER_1, CREATION_TIME, LAO_NAME);
 
   private static final Channel CHIRP_CHANNEL_1 =
       Channel.getLaoChannel(LAO_ID).subChannel("social").subChannel(SENDER_1.getEncoded());

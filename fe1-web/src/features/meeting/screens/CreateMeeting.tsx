@@ -61,7 +61,7 @@ const CreateMeeting = () => {
         console.error('Could not create meeting, error:', err);
         toast.show(`Could not create meeting, error: ${err}`, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       });

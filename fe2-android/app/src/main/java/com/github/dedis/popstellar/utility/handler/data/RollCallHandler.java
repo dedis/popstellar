@@ -6,12 +6,15 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.event.RollCallBuilder;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.repository.*;
+import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 
-import java.util.Optional;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -24,10 +27,17 @@ public final class RollCallHandler {
   private static final String MESSAGE_ID = "Message ID : ";
 
   private final LAORepository laoRepo;
+  private final RollCallRepository rollCallRepo;
+  private final DigitalCashRepository digitalCashRepo;
 
   @Inject
-  public RollCallHandler(LAORepository laoRepo) {
+  public RollCallHandler(
+      LAORepository laoRepo,
+      RollCallRepository rollCallRepo,
+      DigitalCashRepository digitalCashRepo) {
     this.laoRepo = laoRepo;
+    this.rollCallRepo = rollCallRepo;
+    this.digitalCashRepo = digitalCashRepo;
   }
 
   /**
@@ -44,20 +54,24 @@ public final class RollCallHandler {
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
-    RollCall rollCall = new RollCall(createRollCall.getId());
-    rollCall.setCreation(createRollCall.getCreation());
-    rollCall.setState(EventState.CREATED);
-    rollCall.setStart(createRollCall.getProposedStart());
-    rollCall.setEnd(createRollCall.getProposedEnd());
-    rollCall.setName(createRollCall.getName());
-    rollCall.setLocation(createRollCall.getLocation());
-    rollCall.setLocation(createRollCall.getLocation());
-    rollCall.setDescription(createRollCall.getDescription().orElse(""));
+    RollCallBuilder builder = new RollCallBuilder();
+    builder
+        .setId(createRollCall.getId())
+        .setPersistentId(createRollCall.getId())
+        .setCreation(createRollCall.getCreation())
+        .setState(EventState.CREATED)
+        .setStart(createRollCall.getProposedStart())
+        .setEnd(createRollCall.getProposedEnd())
+        .setName(createRollCall.getName())
+        .setLocation(createRollCall.getLocation())
+        .setDescription(createRollCall.getDescription().orElse(""))
+        .setEmptyAttendees();
 
+    RollCall rollCall = builder.build();
     Lao lao = laoView.createLaoCopy();
-    lao.updateRollCall(rollCall.getId(), rollCall);
     lao.updateWitnessMessage(messageId, createRollCallWitnessMessage(messageId, rollCall));
 
+    rollCallRepo.updateRollCall(laoView.getId(), rollCall);
     laoRepo.updateLao(lao);
   }
 
@@ -68,7 +82,7 @@ public final class RollCallHandler {
    * @param openRollCall the message that was received
    */
   public void handleOpenRollCall(HandlerContext context, OpenRollCall openRollCall)
-      throws DataHandlingException, UnknownLaoException {
+      throws UnknownLaoException, UnknownRollCallException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -78,21 +92,25 @@ public final class RollCallHandler {
     String updateId = openRollCall.getUpdateId();
     String opens = openRollCall.getOpens();
 
-    Optional<RollCall> rollCallOptional = laoView.getRollCall(opens);
-    if (!rollCallOptional.isPresent()) {
-      Log.w(TAG, "Cannot find roll call to open : " + opens);
-      throw new InvalidDataException(openRollCall, "open id", opens);
-    }
+    RollCall existingRollCall = rollCallRepo.getRollCallWithId(laoView.getId(), opens);
+    RollCallBuilder builder = new RollCallBuilder();
+    builder
+        .setId(updateId)
+        .setPersistentId(existingRollCall.getPersistentId())
+        .setCreation(existingRollCall.getCreation())
+        .setState(EventState.OPENED)
+        .setStart(openRollCall.getOpenedAt())
+        .setEnd(existingRollCall.getEnd())
+        .setName(existingRollCall.getName())
+        .setLocation(existingRollCall.getLocation())
+        .setDescription(existingRollCall.getDescription())
+        .setEmptyAttendees();
 
-    RollCall rollCall = rollCallOptional.get();
-    rollCall.setStart(openRollCall.getOpenedAt());
-    rollCall.setState(EventState.OPENED);
-    rollCall.setId(updateId);
-
+    RollCall rollCall = builder.build();
     Lao lao = laoView.createLaoCopy();
-    lao.updateRollCall(opens, rollCall);
     lao.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
 
+    rollCallRepo.updateRollCall(laoView.getId(), rollCall);
     laoRepo.updateLao(lao);
   }
 
@@ -104,7 +122,7 @@ public final class RollCallHandler {
    */
   @SuppressLint("CheckResult")
   public void handleCloseRollCall(HandlerContext context, CloseRollCall closeRollCall)
-      throws DataHandlingException, UnknownLaoException {
+      throws UnknownLaoException, UnknownRollCallException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
@@ -114,22 +132,30 @@ public final class RollCallHandler {
     String updateId = closeRollCall.getUpdateId();
     String closes = closeRollCall.getCloses();
 
-    Optional<RollCall> rollCallOptional = laoView.getRollCall(closes);
-    if (!rollCallOptional.isPresent()) {
-      Log.w(TAG, "Cannot find roll call to close : " + closes);
-      throw new InvalidDataException(closeRollCall, "close id", closes);
-    }
+    RollCall existingRollCall = rollCallRepo.getRollCallWithId(laoView.getId(), closes);
+    Set<PublicKey> currentAttendees = existingRollCall.getAttendees();
+    currentAttendees.addAll(closeRollCall.getAttendees());
 
-    RollCall rollCall = rollCallOptional.get();
-    rollCall.setEnd(closeRollCall.getClosedAt());
-    rollCall.setId(updateId);
-    rollCall.getAttendees().addAll(closeRollCall.getAttendees());
-    rollCall.setState(EventState.CLOSED);
+    RollCallBuilder builder = new RollCallBuilder();
+    builder
+        .setId(updateId)
+        .setPersistentId(existingRollCall.getPersistentId())
+        .setCreation(existingRollCall.getCreation())
+        .setState(EventState.CLOSED)
+        .setStart(existingRollCall.getStart())
+        .setName(existingRollCall.getName())
+        .setLocation(existingRollCall.getLocation())
+        .setDescription(existingRollCall.getDescription())
+        .setAttendees(currentAttendees)
+        .setEnd(closeRollCall.getClosedAt());
+
+    RollCall rollCall = builder.build();
+    rollCallRepo.updateRollCall(laoView.getId(), rollCall);
 
     Lao lao = laoView.createLaoCopy();
-    lao.updateRollCall(closes, rollCall);
-    lao.updateTransactionHashMap(closeRollCall.getAttendees());
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
+
+    digitalCashRepo.initializeDigitalCash(laoView.getId(), closeRollCall.getAttendees());
 
     // Subscribe to the social media channels
     // (this is not the expected behavior as users should be able to choose who to subscribe to. But

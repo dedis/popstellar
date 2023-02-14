@@ -19,10 +19,13 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
-import com.github.dedis.popstellar.ui.detail.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
@@ -36,6 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
 import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
+import static com.github.dedis.popstellar.utility.Constants.ROLL_CALL_ID;
 
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
@@ -62,10 +66,11 @@ public class RollCallFragment extends Fragment {
     // Required empty public constructor
   }
 
-  public static RollCallFragment newInstance(PublicKey pk) {
+  public static RollCallFragment newInstance(PublicKey pk, String persistentId) {
     RollCallFragment fragment = new RollCallFragment();
     Bundle bundle = new Bundle(1);
     bundle.putString(Constants.RC_PK_EXTRA, pk.getEncoded());
+    bundle.putString(Constants.ROLL_CALL_ID, persistentId);
     fragment.setArguments(bundle);
     return fragment;
   }
@@ -76,7 +81,13 @@ public class RollCallFragment extends Fragment {
     // Inflate the layout for this fragment
     binding = RollCallFragmentBinding.inflate(inflater, container, false);
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    rollCall = viewModel.getCurrentRollCall();
+    try {
+      rollCall = viewModel.getRollCall(requireArguments().getString(ROLL_CALL_ID));
+      viewModel.setCurrentRollCallId(rollCall.getPersistentId());
+    } catch (UnknownRollCallException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
+      return null;
+    }
 
     setUpStateDependantContent();
 
@@ -93,7 +104,7 @@ public class RollCallFragment extends Fragment {
                           () ->
                               setCurrentFragment(
                                   getParentFragmentManager(),
-                                  R.id.add_attendee_layout,
+                                  R.id.fragment_qrcode,
                                   QRCodeScanningFragment::new),
                           error ->
                               ErrorUtils.logAndShow(
@@ -109,7 +120,7 @@ public class RollCallFragment extends Fragment {
                               setCurrentFragment(
                                   getParentFragmentManager(),
                                   R.id.fragment_lao_detail,
-                                  LaoDetailFragment::newInstance),
+                                  EventListFragment::newInstance),
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_close_rollcall)));
@@ -122,11 +133,20 @@ public class RollCallFragment extends Fragment {
     binding.rollCallScanningButton.setOnClickListener(
         b ->
             setCurrentFragment(
-                getParentFragmentManager(), R.id.add_attendee_layout, QRCodeScanningFragment::new));
+                getParentFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new));
 
-    viewModel
-        .getLaoEvents()
-        .observe(getViewLifecycleOwner(), eventState -> setUpStateDependantContent());
+    viewModel.addDisposable(
+        viewModel
+            .getRollCallObservable(rollCall.getPersistentId())
+            .subscribe(
+                rc -> {
+                  Log.d(TAG, "Received rc update: " + rc);
+                  rollCall = rc;
+                  setUpStateDependantContent();
+                },
+                error ->
+                    ErrorUtils.logAndShow(
+                        requireContext(), TAG, error, R.string.unknown_roll_call_exception)));
 
     retrieveAndDisplayPublicKey();
 
@@ -136,18 +156,20 @@ public class RollCallFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(getString(R.string.roll_call_title));
+    viewModel.setPageTitle(R.string.roll_call_title);
+    viewModel.setIsTab(false);
+    try {
+      rollCall = viewModel.getRollCall(requireArguments().getString(ROLL_CALL_ID));
+    } catch (UnknownRollCallException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
+    }
   }
 
   private void setUpStateDependantContent() {
-    rollCall = viewModel.getCurrentRollCall();
-    if (rollCall == null) {
-      return;
-    }
     setupTime(); // Suggested time is updated in case of early/late close/open/reopen
 
     EventState rcState = rollCall.getState();
-    boolean isOrganizer = Boolean.TRUE.equals(viewModel.isOrganizer().getValue());
+    boolean isOrganizer = viewModel.isOrganizer();
 
     binding.rollCallFragmentTitle.setText(rollCall.getName());
     binding.rollCallManagementButton.setVisibility(isOrganizer ? View.VISIBLE : View.GONE);
@@ -202,8 +224,7 @@ public class RollCallFragment extends Fragment {
     PopTokenData data = new PopTokenData(new PublicKey(pk));
     Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
-    binding.rollCallPkQrCode.setVisibility(
-        Boolean.TRUE.equals(viewModel.isOrganizer().getValue()) ? View.INVISIBLE : View.VISIBLE);
+    binding.rollCallPkQrCode.setVisibility(viewModel.isOrganizer() ? View.INVISIBLE : View.VISIBLE);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {

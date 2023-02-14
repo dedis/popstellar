@@ -1,8 +1,8 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,13 +10,11 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
-import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
-import java.util.Set;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity.TAG;
 
@@ -61,36 +59,37 @@ public class DigitalCashHomeFragment extends Fragment {
   }
 
   public void setHomeInterface() {
-    viewModel
-        .getCurrentLao()
-        .observe(
-            requireActivity(),
-            lao -> {
-              if (lao == null) {
-                Toast.makeText(
-                        requireContext(),
-                        getString(R.string.digital_cash_please_enter_a_lao),
-                        Toast.LENGTH_SHORT)
-                    .show();
-              } else {
-                try {
-                  PoPToken token = viewModel.getKeyManager().getValidPoPToken(lao);
+    // Subscribe to roll calls so that our own address is kept updated in case a new rc is closed
+    viewModel.addDisposable(
+        viewModel
+            .getRollCallsObservable()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                ids -> {
+                  PoPToken token = viewModel.getValidToken();
                   PublicKey publicKey = token.getPublicKey();
                   binding.digitalCashHomeAddress.setText(publicKey.getEncoded());
-                  if (lao.getTransactionByUser().containsKey(publicKey)) {
-                    Set<TransactionObject> transactions = lao.getTransactionByUser().get(publicKey);
-                    long totalAmount =
-                        TransactionObject.getMiniLaoPerReceiverSetTransaction(
-                            transactions, publicKey);
-                    binding.digitalCashSendAddress.setText(
-                        String.format("LAO coin : %s", totalAmount));
-                  }
+                  subscribeToTransactions();
+                },
+                error ->
+                    ErrorUtils.logAndShow(
+                        requireContext(), TAG, error, R.string.error_retrieve_own_token)));
+  }
 
-                } catch (KeyException e) {
-                  ErrorUtils.logAndShow(
-                      requireContext(), TAG, e, R.string.digital_cash_please_enter_roll_call);
-                }
-              }
-            });
+  private void subscribeToTransactions() {
+    viewModel.addDisposable(
+        viewModel
+            .getTransactionsObservable()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                transactions -> {
+                  Log.d(TAG, "updating transactions " + transactions);
+                  long totalAmount = viewModel.getOwnBalance();
+                  binding.digitalCashSendAddress.setText(
+                      String.format("LAO coin : %s", totalAmount));
+                },
+                error ->
+                    ErrorUtils.logAndShow(
+                        requireContext(), TAG, error, R.string.error_retrieve_own_token)));
   }
 }

@@ -6,15 +6,15 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.DigitalCashRepository;
 import com.github.dedis.popstellar.repository.MessageRepository;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -26,12 +26,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+
+import io.reactivex.Completable;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -71,9 +74,8 @@ public class TransactionCoinHandlerTest {
       new Transaction(VERSION, TX_INS, TX_OUTS, TIMESTAMP);
 
   private Lao lao;
-  private RollCall rollCall;
 
-  private LAORepository laoRepo;
+  private DigitalCashRepository digitalCashRepo;
   private MessageHandler messageHandler;
   private Channel coinChannel;
   private Gson gson;
@@ -84,60 +86,39 @@ public class TransactionCoinHandlerTest {
   @Mock KeyManager keyManager;
 
   @Before
-  public void setup() throws GeneralSecurityException, DataHandlingException, IOException {
+  public void setup()
+      throws GeneralSecurityException, DataHandlingException, IOException, UnknownRollCallException,
+          UnknownLaoException, NoRollCallException {
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
+    lenient().when(messageSender.subscribe(any())).then(args -> Completable.complete());
 
     postTransactionCoin = new PostTransactionCoin(TRANSACTION);
 
-    laoRepo = new LAORepository();
-    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(laoRepo, keyManager);
+    digitalCashRepo = new DigitalCashRepository();
+    DataRegistry dataRegistry = DataRegistryModuleHelper.buildRegistry(digitalCashRepo, keyManager);
     MessageRepository messageRepo = new MessageRepository();
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
-    // Create one LAO
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
     lao.setLastModified(lao.getCreation());
 
-    // Create one Roll Call and add it to the LAO
-    rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
-    lao.setRollCalls(
-        new HashMap<String, RollCall>() {
-          {
-            put(rollCall.getId(), rollCall);
-          }
-        });
-
-    // Add the LAO to the LAORepository
-    laoRepo.updateLao(lao);
-
-    // Add the CreateLao message to the LAORepository
-    MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
-    messageRepo.addMessage(createLaoMessage);
-
-    CloseRollCall closeRollCall =
-        new CloseRollCall(
-            CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
-    MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, gson);
-    messageRepo.addMessage(message);
+    digitalCashRepo.initializeDigitalCash(lao.getId(), Collections.singletonList(SENDER));
     coinChannel = lao.getChannel().subChannel("coin").subChannel(SENDER.getEncoded());
   }
 
   @Test
-  public void testHandlePostTransactionCoin() throws DataHandlingException, UnknownLaoException {
+  public void testHandlePostTransactionCoin()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException, NoRollCallException {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, postTransactionCoin, gson);
     messageHandler.handleMessage(messageSender, coinChannel, message);
 
-    Lao updatedLao = laoRepo.getLaoViewByChannel(lao.getChannel()).createLaoCopy();
-
-    assertEquals(1, updatedLao.getTransactionByUser().size());
-    assertEquals(1, updatedLao.getTransactionHistoryByUser().size());
-    Set<TransactionObject> transactionObjects =
-        updatedLao.getTransactionByUser().get(SENDER_KEY.getPublicKey());
+    List<TransactionObject> transactions = digitalCashRepo.getTransactions(lao.getId(), SENDER);
+    assertEquals(1, transactions.size());
     assertTrue(
-        transactionObjects.stream()
+        transactions.stream()
             .anyMatch(transactionObject -> transactionObject.getChannel().equals(coinChannel)));
-    assertEquals(1, lao.getPubKeyByHash().size());
   }
 }

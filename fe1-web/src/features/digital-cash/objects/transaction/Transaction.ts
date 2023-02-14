@@ -81,6 +81,7 @@ export class Transaction {
       this.transactionId = this.hashTransaction();
     } else {
       if (obj.transactionId.valueOf() !== this.hashTransaction().valueOf()) {
+        console.error(this.hashTransaction().valueOf(), obj.transactionId.valueOf());
         throw new Error(
           "The computed transaction hash does not correspond to the provided one when creating 'Transaction'",
         );
@@ -278,16 +279,44 @@ export class Transaction {
 
     let totalInputAmount = 0;
 
-    const inputsAreValid = this.inputs.every((input) => {
-      if (isCoinbase) {
-        // If the transaction is a coinbase transaction, the signer must be the organizer
-        if (input.script.publicKey.valueOf() !== organizerPublicKey.valueOf()) {
-          console.warn('The coinbase transaction input signer is not the organizer');
+    // The public key of this input must have signed the concatenated data
+    const inputSignaturesAreValid = this.inputs.every((input) => {
+      if (!input.script.signature.verify(input.script.publicKey, encodedData)) {
+        console.warn('The signature for this input is not valid');
+        return false;
+      }
+
+      return true;
+    });
+
+    const inputsAreValid =
+      inputSignaturesAreValid &&
+      this.inputs.every((input) => {
+        if (isCoinbase) {
+          // If the transaction is a coinbase transaction, the signer must be the organizer
+          if (input.script.publicKey.valueOf() !== organizerPublicKey.valueOf()) {
+            console.warn('The coinbase transaction input signer is not the organizer');
+            return false;
+          }
+          return true;
+        }
+
+        // if it is not a coinbase transaction we need to verify the inputs
+        const txOut = input.txOutHash.valueOf();
+
+        if (!(txOut in transactionStates)) {
+          console.warn(`Transaction refers to unkown input transaction '${txOut}'`);
           return false;
         }
-      } else {
-        const originTransactionOutput =
-          transactionStates[input.txOutHash.valueOf()].outputs[input.txOutIndex];
+
+        if (input.txOutIndex >= transactionStates[txOut].outputs.length) {
+          console.warn(
+            `Transaction refers to unkown output index '${input.txOutIndex}' of transaction '${txOut}'`,
+          );
+          return false;
+        }
+
+        const originTransactionOutput = transactionStates[txOut].outputs[input.txOutIndex];
 
         // The public key hash of the used transaction output must correspond
         // to the public key the transaction is using in this input
@@ -301,14 +330,9 @@ export class Transaction {
           return false;
         }
         totalInputAmount += originTransactionOutput.value;
-      }
-      // The public key of this input must have signed the concatenated data
-      if (!input.script.signature.verify(input.script.publicKey, encodedData)) {
-        console.warn('The signature for this input is not valid');
-        return false;
-      }
-      return true;
-    });
+
+        return true;
+      });
 
     if (!inputsAreValid) {
       console.warn('The transaction inputs are not valid');

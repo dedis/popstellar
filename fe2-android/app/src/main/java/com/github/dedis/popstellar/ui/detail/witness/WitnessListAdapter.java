@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.witness;
 
+import android.annotation.SuppressLint;
 import android.view.*;
 import android.widget.TextView;
 
@@ -9,12 +10,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Adapter to show witnesses of an Event */
 public class WitnessListAdapter extends RecyclerView.Adapter<WitnessListAdapter.WitnessViewHolder> {
 
-  private List<PublicKey> witnesses;
+  private List<PublicKey> witnesses = new ArrayList<>();
 
   public WitnessListAdapter(List<PublicKey> witness) {
     setList(witness);
@@ -24,9 +26,12 @@ public class WitnessListAdapter extends RecyclerView.Adapter<WitnessListAdapter.
     setList(witnesses);
   }
 
+  @SuppressLint("NotifyDataSetChanged")
   private void setList(List<PublicKey> witnesses) {
-    this.witnesses = witnesses;
-    notifyDataSetChanged();
+    if (witnesses != null) {
+      this.witnesses = witnesses;
+      notifyDataSetChanged();
+    }
   }
 
   @NonNull

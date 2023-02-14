@@ -29,7 +29,7 @@ public class ErrorUtils {
   public static void logAndShow(Context context, String tag, @StringRes int action) {
     String message = context.getString(action);
 
-    Log.d(tag, message);
+    Log.e(tag, message);
     displayToast(context, message);
   }
 

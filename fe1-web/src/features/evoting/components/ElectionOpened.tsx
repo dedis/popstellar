@@ -54,7 +54,7 @@ const ElectionOpened = ({ election, isConnected, isOrganizer }: IPropTypes) => {
         console.error('Could not terminate election, error:', err);
         toast.show(`Could not terminate election, error: ${err}`, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       });
@@ -66,7 +66,7 @@ const ElectionOpened = ({ election, isConnected, isOrganizer }: IPropTypes) => {
       .then(() => {
         toast.show(STRINGS.cast_vote_success, {
           type: 'success',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       })
@@ -74,7 +74,7 @@ const ElectionOpened = ({ election, isConnected, isOrganizer }: IPropTypes) => {
         console.error('Could not cast Vote, error:', err);
         toast.show(`Could not cast Vote, error: ${err}`, {
           type: 'danger',
-          placement: 'top',
+          placement: 'bottom',
           duration: FOUR_SECONDS,
         });
       });

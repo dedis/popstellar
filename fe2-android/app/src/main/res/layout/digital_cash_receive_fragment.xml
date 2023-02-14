@@ -7,19 +7,8 @@
     android:id="@+id/fragment_digital_cash_receive"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/container_margin"
     tools:context=".ui.digitalcash.DigitalCashReceiveFragment">
-
-    <TextView
-      android:id="@+id/digital_cash_receive_title"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:gravity="center"
-      style="@style/title_style"
-      android:text="@string/digital_cash_receive"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_receive_address"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
       android:id="@+id/digital_cash_receive_address"
@@ -28,33 +17,20 @@
       android:gravity="center"
       style="@style/style_border"
       android:text="@string/digital_cash_my_address"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_receive_amount"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/digital_cash_receive_title" />
-
-    <TextView
-      android:id="@+id/digital_cash_receive_amount"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:gravity="center"
-      style="@style/title_style"
-      android:text="@string/digital_cash_laocoindefault"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_receive_qr"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/digital_cash_receive_address" />
+      app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
       android:id="@+id/digital_cash_receive_qr"
       android:layout_width="@dimen/qr_digital_cash"
       android:layout_height="@dimen/qr_digital_cash"
       android:contentDescription="@string/digital_cash_content_description_qr_receive"
+      android:foregroundGravity="center"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.497"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/digital_cash_receive_amount" />
+      app:layout_constraintTop_toBottomOf="@+id/digital_cash_receive_address" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 
