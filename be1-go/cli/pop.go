@@ -49,12 +49,6 @@ func run(ctx context.Context, args []string) {
 		Usage:   "address where the server should listen to",
 		Value:   "localhost",
 	}
-	serverAddressFlag := &cli.StringFlag{
-		Name:    "server-address",
-		Aliases: []string{"srv"},
-		Usage:   "address and remote server port of the server",
-		Value:   "localhost:9002",
-	}
 	clientPortFlag := &cli.IntFlag{
 		Name:    "client-port",
 		Aliases: []string{"cp"},
@@ -65,7 +59,7 @@ func run(ctx context.Context, args []string) {
 		Name:    "server-port",
 		Aliases: []string{"sp"},
 		Usage:   "port to listen websocket connections from remote servers on",
-		Value:   9002,
+		Value:   9001,
 	}
 	otherServersFlag := &cli.StringSliceFlag{
 		Name:    "other-servers",
@@ -90,7 +84,6 @@ func run(ctx context.Context, args []string) {
 						Flags: []cli.Flag{
 							serverPublicAddressFlag,
 							serverListenAddressFlag,
-							serverAddressFlag,
 							clientPortFlag,
 							serverPortFlag,
 							otherServersFlag,
