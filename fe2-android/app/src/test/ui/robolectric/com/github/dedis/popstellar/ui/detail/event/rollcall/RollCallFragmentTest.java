@@ -18,7 +18,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -44,8 +44,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.rollcall.RollCallFragmentPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -119,13 +119,10 @@ public class RollCallFragmentTest {
       };
 
   @Rule(order = 3)
-  public ActivityFragmentScenarioRule<LaoDetailActivity, RollCallFragment> activityScenarioRule =
+  public ActivityFragmentScenarioRule<LaoActivity, RollCallFragment> activityScenarioRule =
       ActivityFragmentScenarioRule.launchIn(
-          LaoDetailActivity.class,
-          new BundleBuilder()
-              .putString(laoIdExtra(), LAO_ID)
-              .putString(fragmentToOpenExtra(), laoDetailValue())
-              .build(),
+          LaoActivity.class,
+          new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
           containerId(),
           RollCallFragment.class,
           () -> RollCallFragment.newInstance(ROLL_CALL),

@@ -16,8 +16,8 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
@@ -46,8 +46,9 @@ import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.election.ElectionFragmentPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -130,13 +131,10 @@ public class ElectionFragmentTest {
       };
 
   @Rule(order = 3)
-  public ActivityFragmentScenarioRule<LaoDetailActivity, ElectionFragment> activityScenarioRule =
+  public ActivityFragmentScenarioRule<LaoActivity, ElectionFragment> activityScenarioRule =
       ActivityFragmentScenarioRule.launchIn(
-          LaoDetailActivity.class,
-          new BundleBuilder()
-              .putString(laoIdExtra(), LAO_ID)
-              .putString(fragmentToOpenExtra(), laoDetailValue())
-              .build(),
+          LaoActivity.class,
+          new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
           containerId(),
           ElectionFragment.class,
           () -> ElectionFragment.newInstance(ELECTION.getId()));

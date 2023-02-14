@@ -12,7 +12,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import org.junit.Rule;
@@ -30,8 +30,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.witness.WitnessFragmentPageObject.addWitnessButton;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -69,13 +69,10 @@ public class WitnessingFragmentTest {
       };
 
   @Rule(order = 3)
-  public final ActivityFragmentScenarioRule<LaoDetailActivity, WitnessesFragment> scenarioRule =
+  public final ActivityFragmentScenarioRule<LaoActivity, WitnessesFragment> scenarioRule =
       ActivityFragmentScenarioRule.launchIn(
-          LaoDetailActivity.class,
-          new BundleBuilder()
-              .putString(laoIdExtra(), LAO_ID)
-              .putString(fragmentToOpenExtra(), laoDetailValue())
-              .build(),
+          LaoActivity.class,
+          new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
           containerId(),
           WitnessesFragment.class,
           WitnessesFragment::newInstance);

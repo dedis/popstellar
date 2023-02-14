@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -50,10 +51,10 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailFragmentPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.election.ElectionSetupPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.rollcall.RollCallCreatePageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -126,14 +127,11 @@ public class EventListFragmentTest {
       };
 
   @Rule(order = 3)
-  public ActivityScenarioRule<LaoDetailActivity> activityScenarioRule =
+  public ActivityScenarioRule<LaoActivity> activityScenarioRule =
       new ActivityScenarioRule<>(
           IntentUtils.createIntent(
               LaoDetailActivity.class,
-              new BundleBuilder()
-                  .putString(laoIdExtra(), LAO_ID)
-                  .putString(fragmentToOpenExtra(), laoDetailValue())
-                  .build()));
+              new BundleBuilder().putString(laoIdExtra(), LAO_ID).build()));
 
   @Test
   public void addEventButtonIsDisplayedForOrganizer() {

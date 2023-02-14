@@ -20,7 +20,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
@@ -54,8 +54,9 @@ import io.reactivex.Completable;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.consensus.ElectionStartPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -158,13 +159,10 @@ public class ElectionStartFragmentTest {
       };
 
   @Rule(order = 3)
-  public final ActivityFragmentScenarioRule<LaoDetailActivity, ElectionStartFragment> fragmentRule =
+  public final ActivityFragmentScenarioRule<LaoActivity, ElectionStartFragment> fragmentRule =
       ActivityFragmentScenarioRule.launchIn(
-          LaoDetailActivity.class,
-          new BundleBuilder()
-              .putString(laoIdExtra(), LAO_ID)
-              .putString(fragmentToOpenExtra(), laoDetailValue())
-              .build(),
+          LaoActivity.class,
+          new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
           containerId(),
           ElectionStartFragment.class,
           () -> ElectionStartFragment.newInstance(ELECTION.getId()));

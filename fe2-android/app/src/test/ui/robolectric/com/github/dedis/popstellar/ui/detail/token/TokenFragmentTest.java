@@ -12,7 +12,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -36,8 +36,9 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.token.TokenPageObject.tokenTextView;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -105,13 +106,10 @@ public class TokenFragmentTest {
       };
 
   @Rule(order = 3)
-  public ActivityFragmentScenarioRule<LaoDetailActivity, TokenFragment> activityScenarioRule =
+  public ActivityFragmentScenarioRule<LaoActivity, TokenFragment> activityScenarioRule =
       ActivityFragmentScenarioRule.launchIn(
-          LaoDetailActivity.class,
-          new BundleBuilder()
-              .putString(laoIdExtra(), LAO_ID)
-              .putString(fragmentToOpenExtra(), laoDetailValue())
-              .build(),
+          LaoActivity.class,
+          new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
           containerId(),
           TokenFragment.class,
           () -> TokenFragment.newInstance(ROLL_CALL.getPersistentId()));

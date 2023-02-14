@@ -15,8 +15,8 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
@@ -43,9 +43,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.model.objects.Election.generateElectionSetupId;
 import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.election.ElectionResultFragmentPageObject.electionResultElectionTitle;
 import static com.github.dedis.popstellar.testutils.pages.detail.event.election.ElectionResultFragmentPageObject.electionResultLaoTitle;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -135,17 +136,13 @@ public class ElectionResultFragmentTest {
       };
 
   @Rule(order = 3)
-  public final ActivityFragmentScenarioRule<LaoDetailActivity, ElectionResultFragment>
-      fragmentRule =
-          ActivityFragmentScenarioRule.launchIn(
-              LaoDetailActivity.class,
-              new BundleBuilder()
-                  .putString(laoIdExtra(), LAO_ID)
-                  .putString(fragmentToOpenExtra(), laoDetailValue())
-                  .build(),
-              containerId(),
-              ElectionResultFragment.class,
-              () -> ElectionResultFragment.newInstance(ELECTION_ID));
+  public final ActivityFragmentScenarioRule<LaoActivity, ElectionResultFragment> fragmentRule =
+      ActivityFragmentScenarioRule.launchIn(
+          LaoActivity.class,
+          new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
+          containerId(),
+          ElectionResultFragment.class,
+          () -> ElectionResultFragment.newInstance(ELECTION_ID));
 
   private static Map<String, Set<QuestionResult>> buildResultsMap(
       String id, QuestionResult... questionResults) {
