@@ -125,10 +125,10 @@ a source of truth since the validation library checks the messages against it.
 
 ```scala
 register.add(
-  (ObjectType.LAO, ActionType.CREATE), 	
-  SchemaValidator.createSchemaValidator("dataCreateLao.json"), 
-  CreateLao.buildFromJson, 
-  LaoValidator.validateCreateLao, 
+  (ObjectType.LAO, ActionType.CREATE),
+  SchemaValidator.createSchemaValidator("dataCreateLao.json"),
+  CreateLao.buildFromJson,
+  LaoValidator.validateCreateLao,
   LaoHandler.handleCreateLao
 )
 ```
@@ -206,6 +206,8 @@ Summary of the keys used to retrieve data:
 - for a message: `channel#message_id`
 - for ChannelData: `channel`
 - for LaoData: `root/lao_id#laodata`
+- for RollCallData: `root/rollcall/lao_id`
+- for ElectionData: `root/private/election_id`
 
 We use `/` as a separator for parts of a channel and `#` as a separator for data objects when needed.
 
@@ -303,7 +305,26 @@ final case class DbActorReadLaoDataAck(laoData: LaoData) extends DbActorMessage
 
 For the Social Media functionality, each user has their own channel with the identifier `root/lao_id/own_pop_token` and each broadcast containing the message_id of a post will be written to `root/lao_id/posts`.
 
+For the Election functionality, we need to have a key pair stored safely somewhere so that we can encrypt/decrypt messages. That is why we use a `ELectionData` object to store the key pairs for the corresponding election.
+The path root is `root/private/election_id` as stated above.
+The key pair can be stored and retrieved by the following functions.
 
+```scala
+final case class CreateElectionData(id: Hash, keyPair: KeyPair) extends Event
+final case class ReadElectionData(electionId: Hash) extends Event
+
+final case class DbActorReadElectionDataAck(electionData: ElectionData) extends DbActorMessage
+```
+
+The RollCallData is an object that stores the id and state of the previous rollcall action (`CREATE`, `OPEN`, `REOPEN`, `CLOSE`). It ensures that we cannot open a closed rollcall or close a non-opened rollcall.
+The stored parameters can be modified or retrieved by the following functions.
+
+```scala
+final case class ReadRollCallData(laoId: Hash) extends Event
+final case class WriteRollCallData(laoId: Hash, message: Message) extends Event
+
+final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends DbActorMessage
+```
 
 :information_source: the database may easily be reset/purged by deleting the `database` folder entirely. You may add the `-Dclean` flag at compilation for automatic database purge
 
