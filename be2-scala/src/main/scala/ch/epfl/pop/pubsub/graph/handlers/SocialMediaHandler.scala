@@ -38,7 +38,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
 
-  private def generateSocialChannel(lao_id: Hash): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + lao_id + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
+  private def generateSocialChannel(laoId: Hash): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
 
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask =
@@ -50,9 +50,9 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
     Await.ready(ask, duration).value match {
       case Some(Success(_)) =>
-        val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[AddChirp](rpcMessage)
+        val (chirpId, channelChirp, data, broadcastChannel) = parametersToBroadcast[AddChirp](rpcMessage)
         //  create and propagate the notifyAddChirp message
-        val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, data.timestamp)
+        val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirpId, channelChirp, data.timestamp)
         Await.result(
           dbBroadcast(rpcMessage, channelChirp, notifyAddChirp.toJson.toString, broadcastChannel),
           duration
@@ -82,9 +82,9 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
     Await.ready(ask, duration).value match {
       case Some(Success(_)) =>
-        val (chirp_id, channelChirp, data, broadcastChannel) = parametersToBroadcast[DeleteChirp](rpcMessage)
+        val (chirpId, channelChirp, data, broadcastChannel) = parametersToBroadcast[DeleteChirp](rpcMessage)
         // create and propagate the notifyDeleteChirp message
-        val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, data.timestamp)
+        val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirpId, channelChirp, data.timestamp)
         Await.result(
           dbBroadcast(rpcMessage, channelChirp, notifyDeleteChirp.toJson.toString, broadcastChannel),
           duration
@@ -132,12 +132,12 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
     */
   private def parametersToBroadcast[T](rpcMessage: JsonRpcRequest): (Hash, Channel, T, Channel) = {
     val channelChirp: Channel = rpcMessage.getParamsChannel
-    val lao_id: Hash = channelChirp.decodeChannelLaoId.get
-    val broadcastChannel: Channel = generateSocialChannel(lao_id)
+    val laoId: Hash = channelChirp.decodeChannelLaoId.get
+    val broadcastChannel: Channel = generateSocialChannel(laoId)
     val params: Message = rpcMessage.getParamsMessage.get
-    val chirp_id: Hash = params.message_id
+    val chirpId: Hash = params.message_id
     val data: T = params.decodedData.get.asInstanceOf[T]
 
-    (chirp_id, channelChirp, data, broadcastChannel)
+    (chirpId, channelChirp, data, broadcastChannel)
   }
 }
