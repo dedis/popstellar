@@ -47,6 +47,12 @@ Here's the annotated directory tree:
 │
 │   ├── components               # library of simple, reusable UI component
 │   │
+│   ├── contexts                 # feature context type definition
+│   │
+│   ├── functions                # module containing functions that are useful in the whole application
+│   │
+│   ├── hooks                    # contains a wrapper for a useful react hook
+│   │
 │   ├── keypair                  # module dealing with the storage of a global, unique keypair
 │   │
 │   ├── navigation               # module dealing with the top-level React navigation
@@ -54,6 +60,7 @@ Here's the annotated directory tree:
 │   ├── network                  # module to network with the backend
 │   │   ├── ingestion              # implementation and configuration of the processing of incoming messages
 │   │   ├── jsonrpc                # network & protocol objects
+│   │   ├── strategies             # sending strategies when there are multiple server
 │   │   └── validation             # protocol validation utilities
 │   │
 │   ├── objects                  # module containing the core business objects
@@ -62,14 +69,23 @@ Here's the annotated directory tree:
 │   │
 │   ├── redux                    # module dealing with the global configuration of the application state (Redux-based)
 │   │
-│   └── styles                   # stylesheets
+│   ├── styles                   # stylesheets
+│   │
+│   └── types                    # some generic types
 │
 ├── features                 # independent features in the system
 │
-│   ├── connect                  # feature dealing with LAO/server connection
+│   ├── digital cash             # feature dealing with digital cash
+│   │
+│   ├── events                   # feature dealing with events happening in a LAO
+│   │
+│   ├── evoting                  # feature dealing with E-Voting and Elections
+│   │
+│   ├── home                     # feature dealing with the app's home screen
 │   │
 │   ├── lao                      # feature dealing with the notion of a LAO, showing the typical feature structure
 │   │   ├── components             # feature components
+│   │   ├── errors                 # feature errors definition
 │   │   ├── functions              # feature functions
 │   │   ├── hooks                  # feature hooks
 │   │   ├── interface              # defines the dependencies of the feature and the interface it exposes
@@ -79,12 +95,6 @@ Here's the annotated directory tree:
 │   │   ├── reducer                # redux-based state management for the feature
 │   │   ├── screens                # UI screens of the feature
 │   │   └── store                  # static access to the feature's reducer store (DEPRECATED)
-│   │
-│   ├── events                   # feature dealing with events happening in a LAO
-│   │
-│   ├── evoting                  # feature dealing with E-Voting and Elections
-│   │
-│   ├── home                     # feature dealing with the app's home screen
 │   │
 │   ├── meeting                  # feature dealing with meetings, a type of event
 │   │
