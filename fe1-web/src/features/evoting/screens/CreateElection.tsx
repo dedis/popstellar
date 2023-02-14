@@ -309,9 +309,7 @@ const CreateElection = () => {
       )}
       {questions.some(isQuestionInvalid) && (
         <Text style={[Typography.paragraph, Typography.error]}>
-          {STRINGS.election_create_invalid_questions_1 +
-            MIN_BALLOT_OPTIONS +
-            STRINGS.election_create_invalid_questions_2}
+          {STRINGS.election_create_invalid_questions.replace('{}', MIN_BALLOT_OPTIONS.toString())}
         </Text>
       )}
       {!haveQuestionsSameTitle(questions) && (

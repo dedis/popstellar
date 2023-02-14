@@ -235,9 +235,8 @@ namespace STRINGS {
   export const election_create_question = 'Question';
   export const election_create_question_placeholder = 'What is your favorite color?';
   export const election_create_option_placeholder = 'Blue';
-  export const election_create_invalid_questions_1 =
-    'All questions must have a title and at least ';
-  export const election_create_invalid_questions_2 = ' different ballot options.';
+  export const election_create_invalid_questions =
+    'All questions must have a title and at least {} different ballot options.';
   export const election_create_same_questions = 'Two or more questions are the same.';
 
   export const election_create_add_question = 'Add Question';
