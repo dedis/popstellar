@@ -8,10 +8,11 @@ import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadLaoDataAck
+import spray.json.JsValue
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future}
-import scala.util.{Success}
+import scala.concurrent.Future
+import scala.util.Success
 
 trait MessageHandler extends AskPatternConstants {
 
@@ -91,7 +92,7 @@ trait MessageHandler extends AskPatternConstants {
     * @return
     *   the database answer wrapped in a [[scala.concurrent.Future]]
     */
-  def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: String, broadcastChannel: Channel): Future[GraphMessage] = {
+  def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: JsValue, broadcastChannel: Channel): Future[GraphMessage] = {
     val m: Message = rpcMessage.getParamsMessage.getOrElse(
       return Future {
         Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcMessage.id))
@@ -100,7 +101,7 @@ trait MessageHandler extends AskPatternConstants {
 
     val combined = for {
       DbActorReadLaoDataAck(laoData) <- dbActor ? DbActor.ReadLaoData(channel)
-      encodedData: Base64Data = Base64Data.encode(broadcastData)
+      encodedData: Base64Data = Base64Data.encode(broadcastData.toString)
       broadcastSignature: Signature = laoData.privateKey.signData(encodedData)
       broadcastId: Hash = Hash.fromStrings(encodedData.toString, broadcastSignature.toString)
       broadcastMessage: Message = Message(encodedData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)

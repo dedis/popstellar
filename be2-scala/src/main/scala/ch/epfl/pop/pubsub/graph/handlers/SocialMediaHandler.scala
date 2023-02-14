@@ -54,7 +54,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
         //  create and propagate the notifyAddChirp message
         val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirpId, channelChirp, data.timestamp)
         Await.result(
-          dbBroadcast(rpcMessage, channelChirp, notifyAddChirp.toJson.toString, broadcastChannel),
+          dbBroadcast(rpcMessage, channelChirp, notifyAddChirp.toJson, broadcastChannel),
           duration
         )
 
@@ -86,7 +86,7 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
         // create and propagate the notifyDeleteChirp message
         val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirpId, channelChirp, data.timestamp)
         Await.result(
-          dbBroadcast(rpcMessage, channelChirp, notifyDeleteChirp.toJson.toString, broadcastChannel),
+          dbBroadcast(rpcMessage, channelChirp, notifyDeleteChirp.toJson, broadcastChannel),
           duration
         )
 

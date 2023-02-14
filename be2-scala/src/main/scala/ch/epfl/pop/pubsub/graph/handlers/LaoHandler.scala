@@ -7,7 +7,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
@@ -53,7 +53,7 @@ case object LaoHandler extends MessageHandler {
           _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message, address)
           // after creating the lao, we need to send a lao#greet message to the frontend
           greet: GreetLao = GreetLao(data.id, params.get.sender, address.get, List.empty)
-          _ <- dbBroadcast(rpcMessage, laoChannel, GreetLaoFormat.write(greet).toString(), laoChannel)
+          _ <- dbBroadcast(rpcMessage, laoChannel, GreetLaoFormat.write(greet), laoChannel)
         } yield ()
 
         Await.ready(combined, duration).value.get match {
