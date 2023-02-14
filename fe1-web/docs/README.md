@@ -628,11 +628,12 @@ If you write E2E tests, please be mindful of making them maintainable through th
 
 ## Deployments
 
-Please reach out to the DEDIS Engineering team members to deploy a build to an
-internet accessible host.
+The application can be automatically deployed to `fe1.personhood.online` by
+creating a [release](https://github.com/dedis/popstellar/releases) on GitHub
+starting with the prefix `fe1-`.
 
-The web application can be packaged for deployment by executing `npm run
-build-web`.
+The web application can also be locally packaged for deployment by executing
+`npm run build-web`.
 
 ### `--openssl-legacy-provider` is not allowed in NODE_OPTIONS
 
