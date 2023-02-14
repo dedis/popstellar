@@ -26,9 +26,6 @@ public class Constants {
   /** The tab to open in LaoDetailActivity */
   public static final String TAB_EXTRA = "tab_extra";
 
-  /** The extra value given to the RollCallFragment when opened */
-  public static final String RC_PK_EXTRA = "pk";
-
   /** The extra key given to indicate the activity to open for {@link ConnectingActivity} */
   public static final String ACTIVITY_TO_OPEN_EXTRA = "activity_to_open";
 

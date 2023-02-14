@@ -165,13 +165,6 @@ public class EventListFragmentTest {
   }
 
   @Test
-  public void openRollCallOpensPermission() {
-    goToRollCallCreationAndEnterTitleAndLocation();
-    rollCreateOpenButton().perform(click());
-    fragmentContainer().check(matches(withChild(withId(qrCodeFragmentId()))));
-  }
-
-  @Test
   public void submitElectionOpensEventList() {
     createElection();
     fragmentContainer().check(matches(withChild(withId(laoDetailFragmentId()))));

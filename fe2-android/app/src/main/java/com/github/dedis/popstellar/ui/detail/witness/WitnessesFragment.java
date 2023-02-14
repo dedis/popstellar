@@ -1,20 +1,25 @@
 package com.github.dedis.popstellar.ui.detail.witness;
 
+import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
+
 import android.os.Bundle;
 import android.view.*;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class WitnessesFragment extends Fragment {
+  private LaoDetailViewModel viewModel;
 
   private LaoViewModel viewModel;
 
@@ -54,9 +59,10 @@ public class WitnessesFragment extends Fragment {
   }
 
   private void openAddWitness() {
-    FragmentManager manager = getParentFragmentManager();
-
-    viewModel.setScanningAction(ScanningAction.ADD_WITNESS);
-    LaoActivity.setCurrentFragment(manager, R.id.add_witness_button, QRCodeScanningFragment::new);
+    viewModel.setIsTab(false);
+    setCurrentFragment(
+        getParentFragmentManager(),
+        R.id.fragment_qr_scanner,
+        () -> QrScannerFragment.newInstance(ScanningAction.ADD_WITNESS));
   }
 }

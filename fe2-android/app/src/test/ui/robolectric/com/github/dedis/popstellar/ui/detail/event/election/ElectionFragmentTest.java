@@ -146,7 +146,7 @@ public class ElectionFragmentTest {
 
   @Test
   public void statusCreatedTests() {
-    electionFragmentStatus().check(matches(withText("Closed")));
+    electionFragmentStatus().check(matches(withText("Not yet opened")));
   }
 
   @Test

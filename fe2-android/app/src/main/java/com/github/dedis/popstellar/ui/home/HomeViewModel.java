@@ -20,7 +20,6 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
-import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -39,8 +38,6 @@ import io.reactivex.disposables.Disposable;
 public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
-
-  private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
   /** LiveData objects that represent the state in a fragment */
   private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
@@ -83,29 +80,17 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
   }
 
   @Override
-  public int getScanDescription() {
-    return R.string.qrcode_scanning_connect_lao;
+  public LiveData<Integer> getNbScanned() {
+    return new MutableLiveData<>(0);
   }
 
   @Override
-  public ScanningAction getScanningAction() {
-    return scanningAction;
+  public void setScannerTitle(int title) {
+    setPageTitle(title);
   }
 
   @Override
-  public boolean addManually(String data) {
-    Log.d(TAG, "Lao data added manually with value: " + data);
-    handleConnectionToLao(data);
-    return true;
-  }
-
-  @Override
-  public void onQRCodeDetected(Barcode barcode) {
-    Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    handleConnectionToLao(barcode.rawValue);
-  }
-
-  private void handleConnectionToLao(String data) {
+  public void handleData(String data, ScanningAction scanningAction) {
     ConnectToLao laoData;
     try {
       laoData = ConnectToLao.extractFrom(gson, data);
