@@ -38,7 +38,6 @@
       android:layout_height="@dimen/floating_buttons_radius_digital_cash"
       android:backgroundTint="@color/white"
       android:src="@drawable/receive_icon"
-      android:tintMode="@color/black"
       app:backgroundTint="@color/black"
       android:clickable="true"
       app:fabCustomSize="@dimen/floating_buttons_radius_digital_cash"
@@ -46,7 +45,7 @@
       app:layout_constraintEnd_toStartOf="@id/guideline_digital_cash_center"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/textView"
-      app:maxImageSize="50dp"
+      app:maxImageSize="@dimen/digital_cash_max_image_size"
       android:contentDescription="@string/receive_button_content_desc" />
 
     <TextView
@@ -57,9 +56,9 @@
       app:layout_constraintStart_toStartOf="@id/digital_cash_receive_button"
       app:layout_constraintEnd_toEndOf="@id/digital_cash_receive_button"
       android:text="@string/digital_cash_receive"
-      android:textSize="22sp"
+      android:textSize="@dimen/digital_cash_button_text_size"
       style="@style/text_high_emphasis"
-      android:layout_marginTop="8dp" />
+      android:layout_marginTop="@dimen/digital_cash_button_to_text_margin" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/digital_cash_send_button"
@@ -67,7 +66,6 @@
       android:layout_height="@dimen/floating_buttons_radius_digital_cash"
       android:backgroundTint="@color/white"
       android:src="@drawable/send_coin_icon"
-      android:tintMode="@color/black"
       app:backgroundTint="@color/black"
       app:fabCustomSize="@dimen/floating_buttons_radius_digital_cash"
       android:clickable="true"
@@ -75,7 +73,7 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toEndOf="@id/guideline_digital_cash_center"
       app:layout_constraintTop_toBottomOf="@+id/textView"
-      app:maxImageSize="50dp"
+      app:maxImageSize="@dimen/digital_cash_max_image_size"
       android:contentDescription="@string/send_button_content_desc" />
 
     <TextView
@@ -86,9 +84,9 @@
       app:layout_constraintStart_toStartOf="@id/digital_cash_send_button"
       app:layout_constraintEnd_toEndOf="@id/digital_cash_send_button"
       android:text="@string/send"
-      android:textSize="22sp"
+      android:textSize="@dimen/digital_cash_button_text_size"
       style="@style/text_high_emphasis"
-      android:layout_marginTop="8dp" />
+      android:layout_marginTop="@dimen/digital_cash_button_to_text_margin" />
 
     <com.google.android.material.button.MaterialButton
       android:id="@+id/issue_button"
