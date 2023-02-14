@@ -1,20 +1,24 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
-import android.content.Intent;
-
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.fragment.app.FragmentActivity;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.*;
+import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
+import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.Constants;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
+import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoTestRule;
 
 import java.util.*;
 
@@ -39,16 +43,31 @@ public class ChirpListAdapterTest {
 
   private static final String LAO_ID = Lao.generateLaoId(SENDER_1, CREATION_TIME, LAO_NAME);
 
-  private final Intent intent =
-      new Intent(ApplicationProvider.getApplicationContext(), SocialMediaActivity.class)
-          .putExtra(Constants.LAO_ID_EXTRA, LAO_ID);
+  @Rule public InstantTaskExecutorRule rule = new InstantTaskExecutorRule();
 
-  private final ActivityScenarioRule<SocialMediaActivity> activityScenarioRule =
-      new ActivityScenarioRule<>(intent);
+  @Rule(order = 0)
+  public final MockitoTestRule mockitoRule = MockitoJUnit.testRule(this);
 
-  private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+  @Rule(order = 1)
+  public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
-  @Rule public final RuleChain chain = RuleChain.outerRule(hiltRule).around(activityScenarioRule);
+  @Rule(order = 2)
+  public final ExternalResource setupRule =
+      new ExternalResource() {
+        @Override
+        protected void before() {
+          hiltRule.inject();
+        }
+      };
+
+  @Rule(order = 3)
+  public ActivityFragmentScenarioRule<LaoActivity, ChirpListFragment> activityScenarioRule =
+      ActivityFragmentScenarioRule.launchIn(
+          LaoActivity.class,
+          new BundleBuilder().putString(Constants.LAO_ID_EXTRA, LAO_ID).build(),
+          LaoActivityPageObject.containerId(),
+          ChirpListFragment.class,
+          ChirpListFragment::new);
 
   private static final MessageID MESSAGE_ID_1 = generateMessageID();
   private static final MessageID MESSAGE_ID_2 = generateMessageID();
@@ -76,9 +95,11 @@ public class ChirpListAdapterTest {
         .onActivity(
             activity -> {
               SocialMediaViewModel socialMediaViewModel =
-                  SocialMediaActivity.obtainViewModel(activity);
+                  LaoActivity.obtainSocialMediaViewModel(activity, LAO_ID);
+              LaoViewModel viewModel = LaoActivity.obtainViewModel(activity);
               ChirpListAdapter chirpListAdapter =
-                  createChirpListAdapter(activity, socialMediaViewModel, new ArrayList<>());
+                  createChirpListAdapter(
+                      activity, viewModel, socialMediaViewModel, new ArrayList<>());
               chirpListAdapter.replaceList(chirps);
               assertEquals(chirps.size(), chirpListAdapter.getCount());
             });
@@ -93,9 +114,10 @@ public class ChirpListAdapterTest {
         .onActivity(
             activity -> {
               SocialMediaViewModel socialMediaViewModel =
-                  SocialMediaActivity.obtainViewModel(activity);
+                  LaoActivity.obtainSocialMediaViewModel(activity, LAO_ID);
+              LaoViewModel viewModel = LaoActivity.obtainViewModel(activity);
               ChirpListAdapter chirpListAdapter =
-                  createChirpListAdapter(activity, socialMediaViewModel, null);
+                  createChirpListAdapter(activity, viewModel, socialMediaViewModel, null);
               assertEquals(0, chirpListAdapter.getCount());
               chirpListAdapter.replaceList(chirps);
               assertEquals(chirps.size(), chirpListAdapter.getCount());
@@ -111,9 +133,10 @@ public class ChirpListAdapterTest {
         .onActivity(
             activity -> {
               SocialMediaViewModel socialMediaViewModel =
-                  SocialMediaActivity.obtainViewModel(activity);
+                  LaoActivity.obtainSocialMediaViewModel(activity, LAO_ID);
+              LaoViewModel viewModel = LaoActivity.obtainViewModel(activity);
               ChirpListAdapter chirpListAdapter =
-                  createChirpListAdapter(activity, socialMediaViewModel, chirps);
+                  createChirpListAdapter(activity, viewModel, socialMediaViewModel, chirps);
               assertEquals(CHIRP_1, chirpListAdapter.getItem(0));
               assertEquals(CHIRP_2, chirpListAdapter.getItem(1));
             });
@@ -128,9 +151,10 @@ public class ChirpListAdapterTest {
         .onActivity(
             activity -> {
               SocialMediaViewModel socialMediaViewModel =
-                  SocialMediaActivity.obtainViewModel(activity);
+                  LaoActivity.obtainSocialMediaViewModel(activity, LAO_ID);
+              LaoViewModel viewModel = LaoActivity.obtainViewModel(activity);
               ChirpListAdapter chirpListAdapter =
-                  createChirpListAdapter(activity, socialMediaViewModel, chirps);
+                  createChirpListAdapter(activity, viewModel, socialMediaViewModel, chirps);
               assertEquals(0, chirpListAdapter.getItemId(0));
               assertEquals(1, chirpListAdapter.getItemId(1));
             });
@@ -142,8 +166,11 @@ public class ChirpListAdapterTest {
   }
 
   private ChirpListAdapter createChirpListAdapter(
-      FragmentActivity activity, SocialMediaViewModel socialMediaViewModel, List<Chirp> chirps) {
-    ChirpListAdapter adapter = new ChirpListAdapter(activity, socialMediaViewModel);
+      FragmentActivity activity,
+      LaoViewModel viewModel,
+      SocialMediaViewModel socialMediaViewModel,
+      List<Chirp> chirps) {
+    ChirpListAdapter adapter = new ChirpListAdapter(activity, socialMediaViewModel, viewModel);
     adapter.replaceList(chirps);
     return adapter;
   }
