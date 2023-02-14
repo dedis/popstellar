@@ -65,6 +65,7 @@ public class LaoActivity extends AppCompatActivity {
     observeToolBar();
     observeDrawer();
     setupDrawerHeader();
+    openEventsTab();
   }
 
   private void observeRoles() {

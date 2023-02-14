@@ -22,7 +22,6 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
@@ -130,8 +129,7 @@ public class EventListFragmentTest {
   public ActivityScenarioRule<LaoActivity> activityScenarioRule =
       new ActivityScenarioRule<>(
           IntentUtils.createIntent(
-              LaoDetailActivity.class,
-              new BundleBuilder().putString(laoIdExtra(), LAO_ID).build()));
+              LaoActivity.class, new BundleBuilder().putString(laoIdExtra(), LAO_ID).build()));
 
   @Test
   public void addEventButtonIsDisplayedForOrganizer() {
