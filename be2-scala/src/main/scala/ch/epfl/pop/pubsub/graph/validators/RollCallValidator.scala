@@ -1,12 +1,12 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcRequest}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.{CLOSE, CREATE, OPEN, REOPEN}
-import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.{ObjectType}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, IOpenRollCall}
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, RollCallData}
+import ch.epfl.pop.model.objects.{Hash, RollCallData}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -54,29 +54,46 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
+        val (data, laoId, sender, channel) = extractData[CreateRollCall](rpcMessage)
+        val expectedRollCallId: Hash = Hash.fromStrings(
+          EVENT_HASH_PREFIX,
+          laoId.toString,
+          data.creation.toString,
+          data.name
+        )
 
-        val laoId: Hash = rpcMessage.extractLaoId
-        val expectedRollCallId: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
-
-        val sender: PublicKey = message.sender
-        val channel: Channel = rpcMessage.getParamsChannel
-
-        if (!validateTimestampStaleness(data.creation)) {
-          Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
-        } else if (!validateTimestampOrder(data.creation, data.proposed_start)) {
-          Right(validationError(s"'proposed_start' (${data.proposed_start}) timestamp is smaller than 'creation' (${data.creation})"))
-        } else if (!validateTimestampOrder(data.proposed_start, data.proposed_end)) {
-          Right(validationError(s"'proposed_end' (${data.proposed_end}) timestamp is smaller than 'proposed_start' (${data.proposed_start})"))
-        } else if (expectedRollCallId != data.id) {
-          Right(validationError(s"unexpected id"))
-        } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a CreateRollCall message on a wrong type of channel $channel"))
-        } else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            data.creation,
+            validationError(s"stale 'creation' timestamp (${data.creation})")
+          ),
+          checkTimestampOrder(
+            rpcMessage,
+            data.creation,
+            data.proposed_start,
+            validationError(
+              s"'proposed_start' (${data.proposed_start}) timestamp is smaller than 'creation' (${data.creation})"
+            )
+          ),
+          checkTimestampOrder(
+            rpcMessage,
+            data.proposed_start,
+            data.proposed_end,
+            validationError(
+              s"'proposed_end' (${data.proposed_end}) timestamp is smaller than 'proposed_start' (${data.proposed_start})"
+            )
+          ),
+          checkId(rpcMessage, expectedRollCallId, data.id, validationError(s"unexpected id")),
+          checkOwner(rpcMessage, sender, channel, dbActorRef, validationError(s"invalid sender $sender")),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.LAO,
+            channel,
+            dbActorRef,
+            validationError(s"trying to send a CreateRollCall message on a wrong type of channel $channel")
+          )
+        )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
@@ -93,8 +110,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: IOpenRollCall = message.decodedData.get.asInstanceOf[IOpenRollCall]
-        val laoId: Hash = rpcMessage.extractLaoId
+        val (data, laoId, sender, channel) = extractData[IOpenRollCall](rpcMessage)
         val expectedRollCallId: Hash = Hash.fromStrings(
           EVENT_HASH_PREFIX,
           laoId.toString,
@@ -102,32 +118,49 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           data.opened_at.toString
         )
 
-        val sender: PublicKey = message.sender
-        val channel: Channel = rpcMessage.getParamsChannel
-
-        if (!validateTimestampStaleness(data.opened_at)) {
-          Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
-        } else if (expectedRollCallId != data.update_id) {
-          Right(validationError("unexpected id 'update_id'"))
-        } else if (!validateOpens(laoId, data.opens)) {
-          Right(validationError("unexpected id 'opens'"))
-        } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a $validatorName message on a wrong type of channel $channel"))
-        } else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            data.opened_at,
+            validationError(s"stale 'opened_at' timestamp (${data.opened_at})")
+          ),
+          checkId(rpcMessage, expectedRollCallId, data.update_id, validationError("unexpected id 'update_id'")),
+          checkOwner(rpcMessage, sender, channel, dbActorRef, validationError(s"invalid sender $sender")),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.LAO,
+            channel,
+            dbActorRef,
+            validationError(s"trying to send a $validatorName message on a wrong type of channel $channel")
+          ),
+          validateOpens(rpcMessage, laoId, data.opens, validationError("unexpected id 'opens'"))
+        )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
-  private def validateOpens(laoId: Hash, opens: Hash): Boolean = {
+  /** Validates the opens id of a OpenRollCAll message
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param laoId
+    *   id of the LAO to which the rollCallDara belongs
+    * @param opens
+    *   opens id of the OpenRollCall which needs to be checked
+    * @param error
+    *   the error to forward in case the opens id does not correspond to the expected id
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def validateOpens(rpcMessage: JsonRpcRequest, laoId: Hash, opens: Hash, error: PipelineError): GraphMessage = {
     val rollCallData: Option[RollCallData] = getRollCallData(laoId)
     rollCallData match {
       case Some(data) =>
-        (data.state == CREATE || data.state == CLOSE) && data.updateId == opens
-      case _ => false
+        if ((data.state == CREATE || data.state == CLOSE) && data.updateId == opens)
+          Left(rpcMessage)
+        else
+          Right(error)
+      case _ => Right(error)
     }
   }
 
@@ -147,9 +180,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
-
-        val laoId: Hash = rpcMessage.extractLaoId
+        val (data, laoId, sender, channel) = extractData[CloseRollCall](rpcMessage)
         val expectedRollCallId: Hash = Hash.fromStrings(
           EVENT_HASH_PREFIX,
           laoId.toString,
@@ -157,35 +188,76 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
           data.closed_at.toString
         )
 
-        val sender: PublicKey = message.sender
-        val channel: Channel = rpcMessage.getParamsChannel
-
-        if (!validateTimestampStaleness(data.closed_at)) {
-          Right(validationError(s"stale 'closed_at' timestamp (${data.closed_at})"))
-        } else if (data.attendees.size != data.attendees.toSet.size) {
-          Right(validationError("duplicate attendees keys"))
-        } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError("unexpected attendees keys"))
-        } else if (expectedRollCallId != data.update_id) {
-          Right(validationError("unexpected id 'update_id'"))
-        } else if (!validateCloses(laoId, data.closes)) {
-          Right(validationError("unexpected id 'closes'"))
-        } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a CloseRollCall message on a wrong type of channel $channel"))
-        } else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            data.closed_at,
+            validationError(s"stale 'closed_at' timestamp (${data.closed_at})")
+          ),
+          checkAttendeeSize(
+            rpcMessage,
+            data.attendees.size,
+            data.attendees.toSet.size,
+            validationError("duplicate attendees keys")
+          ),
+          checkAttendee(rpcMessage, sender, channel, dbActorRef, validationError("unexpected attendees keys")),
+          checkId(rpcMessage, expectedRollCallId, data.update_id, validationError("unexpected id 'update_id'")),
+          validateCloses(rpcMessage, laoId, data.closes, validationError("unexpected id 'closes'")),
+          checkOwner(rpcMessage, sender, channel, dbActorRef, validationError(s"invalid sender $sender")),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.LAO,
+            channel,
+            dbActorRef,
+            validationError(s"trying to send a CloseRollCall message on a wrong type of channel $channel")
+          )
+        )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
-  private def validateCloses(laoId: Hash, closes: Hash): Boolean = {
+  /** Validates the closes id of CloseRollCall message
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param laoId
+    *   id of the LAO to which the rollCallDara belongs
+    * @param closes
+    *   closes id of CloseRollCall message which needs to be checked
+    * @param error
+    *   the error to forward in case the closes id does not correspond to the expected id
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def validateCloses(rpcMessage: JsonRpcRequest, laoId: Hash, closes: Hash, error: PipelineError): GraphMessage = {
     val rollCallData: Option[RollCallData] = getRollCallData(laoId)
     rollCallData match {
-      case Some(data) => (data.state == OPEN || data.state == REOPEN) && data.updateId == closes
-      case _          => false
+      case Some(data) =>
+        if ((data.state == OPEN || data.state == REOPEN) && data.updateId == closes)
+          Left(rpcMessage)
+        else
+          Right(error)
+      case _ => Right(error)
     }
+  }
+
+  /** Checks if the number of attendees is as expected
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param size
+    *   size of the actual list of attendees
+    * @param expectedSize
+    *   expected size of attendees
+    * @param error
+    *   the error to forward in case the size is not as expected
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def checkAttendeeSize(rpcMessage: JsonRpcRequest, size: Int, expectedSize: Int, error: PipelineError): GraphMessage = {
+    if (size == expectedSize)
+      Left(rpcMessage)
+    else
+      Right(error)
   }
 }
