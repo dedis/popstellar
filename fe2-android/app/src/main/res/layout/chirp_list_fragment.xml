@@ -7,7 +7,7 @@
     android:id="@+id/fragment_chirp_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.socialmedia.ChirpListFragment">
+    tools:context=".ui.lao.socialmedia.ChirpListFragment">
 
     <RelativeLayout
       android:layout_width="match_parent"

@@ -7,11 +7,11 @@ import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.PopViewModel;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
-import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeFragment;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment;
+import com.github.dedis.popstellar.ui.lao.witness.WitnessingFragment;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;

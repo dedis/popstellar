@@ -16,8 +16,8 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 

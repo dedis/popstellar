@@ -3,12 +3,13 @@ package com.github.dedis.popstellar.testutils.pages.digitalcash;
 import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.ui.lao.digitalcash.DigitalCashHomeFragment;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 /**
- * Page object of {@link com.github.dedis.popstellar.ui.digitalcash.DigitalCashHomeFragment}
+ * Page object of {@link DigitalCashHomeFragment}
  *
  * <p>Creation : 20.05.2022
  */

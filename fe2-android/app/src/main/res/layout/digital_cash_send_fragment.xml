@@ -9,14 +9,14 @@
 
     <variable
       name="view_model"
-      type="com.github.dedis.popstellar.ui.digitalcash.DigitalCashViewModel" />
+      type="com.github.dedis.popstellar.ui.lao.digitalcash.DigitalCashViewModel" />
   </data>
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_digital_cash_send"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.digitalcash.DigitalCashSendFragment">
+    tools:context=".ui.lao.digitalcash.DigitalCashSendFragment">
 
     <com.google.android.material.textfield.TextInputLayout
       style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"

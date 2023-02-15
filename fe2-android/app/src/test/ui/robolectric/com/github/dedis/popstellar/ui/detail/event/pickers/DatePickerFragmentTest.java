@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.testutils.ResultReceiver;
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
+import com.github.dedis.popstellar.ui.lao.event.pickers.DatePickerFragment;
 
 import org.junit.Rule;
 import org.junit.Test;

@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaSendFragment;
 import com.github.dedis.popstellar.utility.Constants;
 
 import org.junit.Rule;

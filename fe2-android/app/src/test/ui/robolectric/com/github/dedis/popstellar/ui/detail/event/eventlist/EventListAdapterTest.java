@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.testutils.*;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListAdapter;
 
 import org.junit.Rule;
 import org.junit.Test;

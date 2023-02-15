@@ -6,7 +6,7 @@
     android:id="@+id/fragment_digital_cash_history"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.digitalcash.DigitalCashHistoryFragment">
+    tools:context=".ui.lao.digitalcash.DigitalCashHistoryFragment">
 
     <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/transaction_history_list"

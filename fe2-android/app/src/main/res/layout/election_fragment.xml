@@ -5,7 +5,7 @@
   android:id="@+id/fragment_election"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context=".ui.detail.event.election.fragments.ElectionFragment">
+  tools:context=".ui.lao.event.election.fragments.ElectionFragment">
 
   <TextView
     android:id="@+id/election_fragment_title"

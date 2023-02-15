@@ -17,7 +17,7 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.HomeActivityBinding;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.repository.local.PersistentData;
-import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
+import com.github.dedis.popstellar.ui.home.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
