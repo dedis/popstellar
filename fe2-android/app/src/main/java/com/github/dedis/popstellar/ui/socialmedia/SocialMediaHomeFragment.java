@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
@@ -15,7 +13,6 @@ import com.github.dedis.popstellar.databinding.SocialMediaHomeFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.Constants;
 
 import java.util.function.Supplier;
 
@@ -110,12 +107,6 @@ public class SocialMediaHomeFragment extends Fragment {
         getParentFragmentManager(),
         R.id.fragment_social_media_profile,
         SocialMediaProfileFragment::newInstance);
-  }
-
-  public static Intent newIntent(Context ctx, String laoId) {
-    Intent intent = new Intent(ctx, SocialMediaHomeFragment.class);
-    intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
-    return intent;
   }
 
   /**

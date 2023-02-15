@@ -3,12 +3,11 @@ package com.github.dedis.popstellar.ui.socialmedia;
 import androidx.annotation.IdRes;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ui.navigation.Tab;
 
 import java.util.Arrays;
 import java.util.List;
 
-public enum SocialMediaTab implements Tab {
+public enum SocialMediaTab {
   HOME(R.id.social_media_home_menu),
   SEARCH(R.id.social_media_search_menu),
   FOLLOWING(R.id.social_media_following_menu),
@@ -39,12 +38,10 @@ public enum SocialMediaTab implements Tab {
   }
 
   @IdRes
-  @Override
   public int getMenuId() {
     return menuId;
   }
 
-  @Override
   public String getName() {
     return toString();
   }

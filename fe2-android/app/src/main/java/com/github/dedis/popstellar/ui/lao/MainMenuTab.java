@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.navigation;
+package com.github.dedis.popstellar.ui.lao;
 
 import androidx.annotation.IdRes;
 

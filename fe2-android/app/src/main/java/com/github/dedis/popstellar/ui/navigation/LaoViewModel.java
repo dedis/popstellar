@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.ui.lao.MainMenuTab;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.ArrayList;

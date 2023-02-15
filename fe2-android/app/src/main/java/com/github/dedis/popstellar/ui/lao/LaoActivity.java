@@ -28,7 +28,6 @@ import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingViewModel;
 import com.github.dedis.popstellar.ui.digitalcash.*;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
-import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaHomeFragment;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
