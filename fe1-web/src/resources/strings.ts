@@ -150,8 +150,6 @@ namespace STRINGS {
   export const social_media_delete_chirp = 'Delete Chirp';
   export const social_media_create_chirps_yet =
     'So far nobody has published a chirp and you could be the first one to do so!';
-  export const social_media_howto_create_chirps =
-    'The button for doing so is located in the navigation bar all the way to the right. Be creative ✨';
   export const social_media_create_chirp_no_pop_token =
     'In order to post chirps, you first need to participate in a roll-call.';
   export const social_media_user_list_unavailable =
