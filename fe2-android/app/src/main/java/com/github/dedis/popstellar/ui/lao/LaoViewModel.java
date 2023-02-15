@@ -9,7 +9,8 @@ import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.Role;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
@@ -18,15 +19,13 @@ import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.PopViewModel;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.*;
-import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-import com.google.gson.Gson;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.security.GeneralSecurityException;
 
 import javax.inject.Inject;
 
@@ -44,10 +43,8 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
    */
   private final LAORepository laoRepo;
   private final RollCallRepository rollCallRepo;
-  private final SchedulerProvider schedulerProvider;
   private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
-  private final Gson gson;
   private final Wallet wallet;
 
   @Inject
@@ -55,18 +52,14 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
       @NonNull Application application,
       LAORepository laoRepository,
       RollCallRepository rollCallRepo,
-      SchedulerProvider schedulerProvider,
       GlobalNetworkManager networkManager,
       KeyManager keyManager,
-      Gson gson,
       Wallet wallet) {
     super(application);
     this.laoRepo = laoRepository;
     this.rollCallRepo = rollCallRepo;
-    this.schedulerProvider = schedulerProvider;
     this.networkManager = networkManager;
     this.keyManager = keyManager;
-    this.gson = gson;
     this.wallet = wallet;
   }
 
@@ -80,8 +73,6 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
   private final MutableLiveData<Role> role = new MutableLiveData<>(Role.MEMBER);
   private final MutableLiveData<Boolean> isTab = new MutableLiveData<>(Boolean.TRUE);
   private final MutableLiveData<Integer> pageTitle = new MutableLiveData<>(0);
-  private final MutableLiveData<List<PublicKey>> witnesses =
-      new MutableLiveData<>(new ArrayList<>());
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -126,11 +117,6 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
     return pageTitle;
   }
 
-  public LiveData<List<PublicKey>> getWitnesses() {
-    return witnesses;
-  }
-
-
   /**
    * Returns the public key or null if an error occurred.
    *
@@ -173,10 +159,6 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
     }
   }
 
-  public void setWitnesses(List<PublicKey> witnesses) {
-    this.witnesses.setValue(witnesses);
-  }
-
   public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
     return keyManager.getPoPToken(getLao(), rollCall);
   }
@@ -207,6 +189,11 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
     disposables.dispose();
   }
 
+  public void savePersistentData() throws GeneralSecurityException {
+    ActivityUtils.activitySavingRoutine(
+        networkManager, wallet, getApplication().getApplicationContext());
+  }
+
   protected Role determineRole() {
     if (isOrganizer) {
       return Role.ORGANIZER;
@@ -228,9 +215,6 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
             .subscribe(
                 laoView -> {
                   Log.d(TAG, "got an update for lao: " + laoView);
-
-                  setWitnessMessages(new ArrayList<>(laoView.getWitnessMessages().values()));
-                  setWitnesses(new ArrayList<>(laoView.getWitnesses()));
 
                   boolean isOrganizer =
                       laoView.getOrganizer().equals(keyManager.getMainPublicKey());
@@ -275,20 +259,5 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
       Log.e(TAG, "failed to retrieve public key from wallet", e);
       return false;
     }
-  }
-
-  // TODO refactor this away
-  // Witness messages should have a separate repository
-  // Then UI should listen to incoming witness messages via RX java observables
-  // A good example of this is what is done with events
-  private final MutableLiveData<List<WitnessMessage>> witnessMessages =
-      new MutableLiveData<>(new ArrayList<>());
-
-  public LiveData<List<WitnessMessage>> getWitnessMessages() {
-    return witnessMessages;
-  }
-
-  public void setWitnessMessages(List<WitnessMessage> messages) {
-    this.witnessMessages.setValue(messages);
   }
 }
