@@ -6,6 +6,7 @@ import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -57,7 +58,7 @@ public class DigitalCashSendFragment extends Fragment {
         LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
     binding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
-    // Inflate the layout for this fragment
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -191,6 +192,23 @@ public class DigitalCashSendFragment extends Fragment {
               } else {
                 ErrorUtils.logAndShow(
                     requireContext(), TAG, error, R.string.error_post_transaction);
+              }
+            });
+  }
+
+  private void handleBackNav() {
+    requireActivity()
+        .getOnBackPressedDispatcher()
+        .addCallback(
+            getViewLifecycleOwner(),
+            new OnBackPressedCallback(true) {
+              @Override
+              public void handleOnBackPressed() {
+                Log.d(TAG, "Back pressed, going to digital cash home");
+                LaoActivity.setCurrentFragment(
+                    getParentFragmentManager(),
+                    R.id.fragment_digital_cash_home,
+                    DigitalCashHomeFragment::new);
               }
             });
   }

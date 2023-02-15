@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,6 +19,7 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
  * create an instance of this fragment.
  */
 public class DigitalCashReceiptFragment extends Fragment {
+  public static final String TAG = DigitalCashReceiptFragment.class.getSimpleName();
   private DigitalCashReceiptFragmentBinding binding;
   private LaoViewModel viewModel;
   private DigitalCashViewModel digitalCashViewModel;
@@ -38,6 +41,8 @@ public class DigitalCashReceiptFragment extends Fragment {
     digitalCashViewModel =
         LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
     binding = DigitalCashReceiptFragmentBinding.inflate(inflater, container, false);
+
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -72,5 +77,22 @@ public class DigitalCashReceiptFragment extends Fragment {
     super.onResume();
     viewModel.setPageTitle(R.string.digital_cash_receipt);
     viewModel.setIsTab(false);
+  }
+
+  private void handleBackNav() {
+    requireActivity()
+        .getOnBackPressedDispatcher()
+        .addCallback(
+            getViewLifecycleOwner(),
+            new OnBackPressedCallback(true) {
+              @Override
+              public void handleOnBackPressed() {
+                Log.d(TAG, "Back pressed, going to digital cash home");
+                LaoActivity.setCurrentFragment(
+                    getParentFragmentManager(),
+                    R.id.fragment_digital_cash_home,
+                    DigitalCashHomeFragment::new);
+              }
+            });
   }
 }
