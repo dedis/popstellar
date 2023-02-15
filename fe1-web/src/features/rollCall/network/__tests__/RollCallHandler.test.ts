@@ -10,6 +10,7 @@ import {
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { RollCall, RollCallStatus } from 'features/rollCall/objects';
 
+import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from '../messages';
 import {
   handleRollCallCloseMessage,
   handleRollCallCreateMessage,
@@ -128,6 +129,19 @@ describe('RollCallHandler', () => {
       ).toBeFalse();
     });
 
+    it('should return false if something is off with the message data', () => {
+      const message = createMockMsg(ActionType.CREATE, rollCallStateCreated);
+      expect(
+        handleRollCallCreateMessage(jest.fn())({
+          ...message,
+          messageData: {
+            ...message.messageData,
+            id: undefined as unknown as Hash,
+          } as CreateRollCall,
+        }),
+      ).toBeFalse();
+    });
+
     it('should create a correct RollCall object from msgData', async () => {
       const usedMockMsg = createMockMsg(ActionType.CREATE, rollCallStateCreated);
 
@@ -181,6 +195,22 @@ describe('RollCallHandler', () => {
           jest.fn(() => undefined),
           jest.fn(),
         )(createMockMsg(ActionType.OPEN, rollCallStateOpened)),
+      ).toBeFalse();
+    });
+
+    it('should return false if there is an issue with the message data', () => {
+      const message = createMockMsg(ActionType.OPEN, rollCallStateOpened);
+      expect(
+        handleRollCallOpenMessage(
+          () => RollCall.fromState(mockRollCallCreated.toState()),
+          jest.fn(),
+        )({
+          ...message,
+          messageData: {
+            ...message.messageData,
+            update_id: undefined as unknown as Hash,
+          } as OpenRollCall,
+        }),
       ).toBeFalse();
     });
 
@@ -249,6 +279,25 @@ describe('RollCallHandler', () => {
       ).toBeFalse();
     });
 
+    it('should return false in case of issues with the message data', () => {
+      const message = createMockMsg(ActionType.CLOSE, rollCallStateOpened);
+
+      expect(
+        handleRollCallCloseMessage(
+          jest.fn(() => RollCall.fromState(mockRollCallOpened.toState())),
+          jest.fn(),
+          () => Promise.resolve(mockPopToken),
+          jest.fn(),
+        )({
+          ...message,
+          messageData: {
+            ...message.messageData,
+            closed_at: undefined as unknown as Timestamp,
+          } as CloseRollCall,
+        }),
+      ).toBeFalse();
+    });
+
     it('should create a correct RollCall object from msgData in handleRollCallCloseMessage', async () => {
       const usedMockMsg = createMockMsg(ActionType.CLOSE, rollCallStateClosed);
 
@@ -312,6 +361,22 @@ describe('RollCallHandler', () => {
           jest.fn(() => mockRollCallOpened),
           jest.fn(),
         )(createMockMsg(ActionType.REOPEN, rollCallStateOpened)),
+      ).toBeFalse();
+    });
+
+    it('should return false in case of issues with the message data', () => {
+      const message = createMockMsg(ActionType.REOPEN, rollCallStateOpened);
+      expect(
+        handleRollCallReopenMessage(
+          jest.fn(() => mockRollCallClosed),
+          jest.fn(),
+        )({
+          ...message,
+          messageData: {
+            ...message.messageData,
+            opened_at: undefined as unknown as Timestamp,
+          } as ReopenRollCall,
+        }),
       ).toBeFalse();
     });
 

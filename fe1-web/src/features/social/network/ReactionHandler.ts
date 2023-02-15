@@ -35,13 +35,20 @@ export const handleAddReactionMessage =
     const { sender } = msg;
     const reactionMessage = msg.messageData as AddReaction;
 
-    const reaction = new Reaction({
-      id: messageId,
-      sender: sender,
-      codepoint: reactionMessage.reaction_codepoint,
-      chirpId: reactionMessage.chirp_id,
-      time: reactionMessage.timestamp,
-    });
+    let reaction: Reaction;
+
+    try {
+      reaction = new Reaction({
+        id: messageId,
+        sender: sender,
+        codepoint: reactionMessage.reaction_codepoint,
+        chirpId: reactionMessage.chirp_id,
+        time: reactionMessage.timestamp,
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     dispatch(addReaction(laoId, reaction));
     return true;
