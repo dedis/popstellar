@@ -65,6 +65,9 @@ public class LaoActivity extends AppCompatActivity {
     observeToolBar();
     observeDrawer();
     setupDrawerHeader();
+
+    // Open Event list on activity creation
+    binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
     openEventsTab();
   }
 
@@ -179,13 +182,13 @@ public class LaoActivity extends AppCompatActivity {
         return true;
       case DIGITAL_CASH:
         openDigitalCashTab();
-        return false;
+        return true;
       case SOCIAL_MEDIA:
         openSocialMediaTab();
-        return false;
+        return true;
       case DISCONNECT:
         startActivity(HomeActivity.newIntent(this));
-        return false;
+        return true;
       default:
         Log.w(TAG, "Unhandled tab type : " + tab);
         return false;
