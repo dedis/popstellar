@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
@@ -13,7 +12,10 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
-import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.testutils.Base64DataUtils;
+import com.github.dedis.popstellar.testutils.BundleBuilder;
+import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -41,8 +43,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
-import static com.github.dedis.popstellar.testutils.pages.digitalcash.DigitalCashPageObject.fragmentContainer;
 import static com.github.dedis.popstellar.testutils.pages.digitalcash.DigitalCashPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.digitalcash.HistoryPageObject.fragmentDigitalCashHistoryId;
 import static com.github.dedis.popstellar.testutils.pages.digitalcash.IssuePageObject.fragmentDigitalCashIssueId;
@@ -50,6 +50,7 @@ import static com.github.dedis.popstellar.testutils.pages.digitalcash.ReceiptPag
 import static com.github.dedis.popstellar.testutils.pages.digitalcash.ReceivePageObject.fragmentDigitalCashReceiveId;
 import static com.github.dedis.popstellar.testutils.pages.digitalcash.SendPageObject.fragmentDigitalCashSendId;
 import static com.github.dedis.popstellar.testutils.pages.digitalcash.SendPageObject.sendButtonToReceipt;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -156,14 +157,13 @@ public class DigitalCashActivityTest {
       };
 
   @Rule(order = 3)
-  public ActivityScenarioRule<DigitalCashActivity> activityScenarioRule =
-      new ActivityScenarioRule<>(
-          IntentUtils.createIntent(
-              DigitalCashActivity.class,
-              new BundleBuilder()
-                  .putString(laoIdExtra(), LAO_ID)
-                  .putString(fragmentToOpenExtra(), laoDetailValue())
-                  .build()));
+  public ActivityFragmentScenarioRule<LaoActivity, DigitalCashHomeFragment> activityScenarioRule =
+      ActivityFragmentScenarioRule.launchIn(
+          LaoActivity.class,
+          new BundleBuilder().putString(laoIdExtra(), LAO_ID).build(),
+          containerId(),
+          DigitalCashHomeFragment.class,
+          DigitalCashHomeFragment::new);
 
   @Test
   public void sendButtonGoesToSendThenToReceipt() {
