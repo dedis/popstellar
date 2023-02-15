@@ -43,6 +43,7 @@ public class UpcomingEventsFragment extends Fragment {
     binding.upcomingEventsRecyclerView.setAdapter(
         new UpcomingEventsAdapter(eventsViewModel.getEvents(), viewModel, requireActivity(), TAG));
 
+    handleBackNav();
     return binding.getRoot();
   }
 
