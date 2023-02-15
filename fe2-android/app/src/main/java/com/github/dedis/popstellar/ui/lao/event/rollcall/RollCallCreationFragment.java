@@ -3,10 +3,12 @@ package com.github.dedis.popstellar.ui.lao.event.rollcall;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.*;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -89,6 +91,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
     binding.setLifecycleOwner(getActivity());
 
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -138,5 +141,20 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
             error ->
                 ErrorUtils.logAndShow(
                     requireContext(), TAG, error, R.string.error_create_rollcall)));
+  }
+
+  private void handleBackNav() {
+    requireActivity()
+        .getOnBackPressedDispatcher()
+        .addCallback(
+            getViewLifecycleOwner(),
+            new OnBackPressedCallback(true) {
+              @Override
+              public void handleOnBackPressed() {
+                Log.d(TAG, "Back pressed, going to event list");
+                LaoActivity.setCurrentFragment(
+                    getParentFragmentManager(), R.id.fragment_event_list, EventListFragment::new);
+              }
+            });
   }
 }
