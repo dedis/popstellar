@@ -16,8 +16,8 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.PopViewModel;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.*;
@@ -36,10 +36,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 @HiltViewModel
-public class LaoViewModel extends AndroidViewModel {
+public class LaoViewModel extends AndroidViewModel implements PopViewModel {
   public static final String TAG = LaoViewModel.class.getSimpleName();
-
-  private ScanningAction scanningAction;
 
   /*
    * Dependencies for this class
@@ -87,6 +85,7 @@ public class LaoViewModel extends AndroidViewModel {
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
+  @Override
   public String getLaoId() {
     return laoId;
   }
@@ -167,7 +166,8 @@ public class LaoViewModel extends AndroidViewModel {
     }
   }
 
-  public void setPageTitle(@StringRes Integer pageTitle) {
+  @Override
+  public void setPageTitle(@StringRes int pageTitle) {
     if (!this.pageTitle.getValue().equals(pageTitle)) {
       this.pageTitle.setValue(pageTitle);
     }
@@ -179,10 +179,6 @@ public class LaoViewModel extends AndroidViewModel {
 
   public PoPToken getCurrentPopToken(RollCall rollCall) throws KeyException, UnknownLaoException {
     return keyManager.getPoPToken(getLao(), rollCall);
-  }
-
-  public void setScanningAction(ScanningAction scanningAction) {
-    this.scanningAction = scanningAction;
   }
 
   protected void updateRole() {

@@ -27,7 +27,6 @@ import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.navigation.LaoViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.*;
@@ -525,13 +524,11 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
   }
 
   @Override
-  public LiveData<Integer> getNbScanned() {
-    return nbScanned;
-  }
+  public void handleData(String data) {}
 
   @Override
-  public void setScannerTitle(int title) {
-    super.setPageTitle(title);
+  public LiveData<Integer> getNbScanned() {
+    return nbScanned;
   }
 
   public Observable<List<ConsensusNode>> getNodes() throws UnknownLaoException {
@@ -639,23 +636,7 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
         networkManager, wallet, getApplication().getApplicationContext());
   }
 
-  /**
-   * Checks the key validity and handles the attendee addition process
-   *
-   * @param data the textual representation of the key
-   */
-  @Override
-  public void handleData(String data, ScanningAction scanningAction) {
-    Log.d(TAG, "data input " + data);
-    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      handleRollCallAddition(data);
-    } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-      handleWitnessAddition(data);
-    } else {
-      throw new IllegalStateException(
-          "The scanning action should either be to add witnesses or rc attendees");
-    }
-  }
+
 
   public void handleRollCallAddition(String data) {
     PopTokenData tokenData;

@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.ui.detail.witness;
 
-import static com.github.dedis.popstellar.ui.detail.LaoDetailActivity.setCurrentFragment;
-
 import android.os.Bundle;
 import android.view.*;
 
@@ -11,16 +9,13 @@ import androidx.recyclerview.widget.*;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class WitnessesFragment extends Fragment {
-  private LaoDetailViewModel viewModel;
+import static com.github.dedis.popstellar.ui.lao.LaoActivity.setCurrentFragment;
 
+public class WitnessesFragment extends Fragment {
   private LaoViewModel viewModel;
 
   public WitnessesFragment() {

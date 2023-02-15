@@ -1,13 +1,10 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
-import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 
 public interface QRCodeScanningViewModel {
 
-  void handleData(String data, ScanningAction scanningAction);
+  void handleData(String data);
 
   LiveData<Integer> getNbScanned();
-
-  void setScannerTitle(@StringRes int title);
 }

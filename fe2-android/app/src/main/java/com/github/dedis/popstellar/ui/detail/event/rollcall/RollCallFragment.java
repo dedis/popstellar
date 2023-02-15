@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
@@ -25,7 +24,6 @@ import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
@@ -92,7 +90,6 @@ public class RollCallFragment extends Fragment {
       rollCall =
           rollCallRepo.getRollCallWithPersistentId(
               viewModel.getLaoId(), requireArguments().getString(ROLL_CALL_ID));
-      rollCallViewModel.setCurrentRollCallId(rollCall.getPersistentId());
     } catch (UnknownRollCallException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
       return null;

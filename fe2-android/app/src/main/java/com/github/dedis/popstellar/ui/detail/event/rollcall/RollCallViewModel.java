@@ -2,24 +2,26 @@ package com.github.dedis.popstellar.ui.detail.event.rollcall;
 
 import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
+import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
+import com.google.gson.Gson;
 
 import java.time.Instant;
 import java.util.*;
@@ -32,15 +34,13 @@ import io.reactivex.Observable;
 import io.reactivex.*;
 
 @HiltViewModel
-public class RollCallViewModel extends AndroidViewModel {
+public class RollCallViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
   public static final String TAG = RollCallViewModel.class.getSimpleName();
   private String laoId;
-  private String currentRollCallId = "";
 
   private final Set<PublicKey> attendees = new HashSet<>();
-  private ScanningAction scanningAction;
 
-  private final MutableLiveData<Integer> attendeeCount = new MutableLiveData<>();
+  private final MutableLiveData<Integer> nbScanned = new MutableLiveData<>();
   private Observable<List<RollCall>> attendedRollCalls;
 
   private final LAORepository laoRepo;
@@ -49,6 +49,7 @@ public class RollCallViewModel extends AndroidViewModel {
   private final KeyManager keyManager;
   private final SchedulerProvider schedulerProvider;
   private final Wallet wallet;
+  private final Gson gson;
 
   @Inject
   public RollCallViewModel(
@@ -58,7 +59,8 @@ public class RollCallViewModel extends AndroidViewModel {
       GlobalNetworkManager networkManager,
       KeyManager keyManager,
       Wallet wallet,
-      SchedulerProvider schedulerProvider) {
+      SchedulerProvider schedulerProvider,
+      Gson gson) {
     super(application);
     this.laoRepo = laoRepo;
     this.rollCallRepo = rollCallRepo;
@@ -66,6 +68,7 @@ public class RollCallViewModel extends AndroidViewModel {
     this.keyManager = keyManager;
     this.wallet = wallet;
     this.schedulerProvider = schedulerProvider;
+    this.gson = gson;
   }
 
   public void setLaoId(String laoId) {
@@ -160,9 +163,7 @@ public class RollCallViewModel extends AndroidViewModel {
   }
 
   private void openRollCall(String currentId, LaoView laoView, RollCall rollCall) {
-    currentRollCallId = currentId;
-    Log.d(TAG, "opening rollcall with id " + currentRollCallId);
-    scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
+    Log.d(TAG, "opening rollcall with id " + currentId);
     attendees.addAll(rollCall.getAttendees());
 
     try {
@@ -172,7 +173,7 @@ public class RollCallViewModel extends AndroidViewModel {
     }
 
     // this to display the initial number of attendees
-    attendeeCount.postValue(attendees.size());
+    nbScanned.postValue(attendees.size());
   }
 
   /**
@@ -180,7 +181,7 @@ public class RollCallViewModel extends AndroidViewModel {
    *
    * <p>Publish a GeneralMessage containing CloseRollCall data.
    */
-  public Completable closeRollCall() {
+  public Completable closeRollCall(String id) {
     Log.d(TAG, "call closeRollCall");
 
     LaoView laoView;
@@ -194,15 +195,14 @@ public class RollCallViewModel extends AndroidViewModel {
     long end = Instant.now().getEpochSecond();
     Channel channel = laoView.getChannel();
     CloseRollCall closeRollCall =
-        new CloseRollCall(laoView.getId(), currentRollCallId, end, new ArrayList<>(attendees));
+        new CloseRollCall(laoView.getId(), id, end, new ArrayList<>(attendees));
 
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, closeRollCall)
         .doOnComplete(
             () -> {
-              Log.d(TAG, "closed the roll call with id " + currentRollCallId);
-              currentRollCallId = "";
+              Log.d(TAG, "closed the roll call with id " + id);
               attendees.clear();
             });
   }
@@ -221,9 +221,6 @@ public class RollCallViewModel extends AndroidViewModel {
     return attendedRollCalls;
   }
 
-  public void setCurrentRollCallId(String rollCallId) {
-    this.currentRollCallId = rollCallId;
-  }
 
   private LaoView getLao() throws UnknownLaoException {
     return laoRepo.getLaoView(laoId);
@@ -251,5 +248,32 @@ public class RollCallViewModel extends AndroidViewModel {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return false;
     }
+  }
+
+  @Override
+  public void handleData(String data) {
+    PopTokenData tokenData;
+    try {
+      tokenData = PopTokenData.extractFrom(gson, data);
+    } catch (Exception e) {
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(), TAG, R.string.qr_code_not_pop_token);
+      return;
+    }
+    PublicKey publicKey = tokenData.getPopToken();
+    if (attendees.contains(publicKey)) {
+      ErrorUtils.logAndShow(getApplication(), TAG, R.string.attendee_already_scanned_warning);
+      return;
+    }
+
+    attendees.add(publicKey);
+    Log.d(TAG, "Attendee " + publicKey + " successfully added");
+    Toast.makeText(getApplication(), R.string.attendee_scan_success, Toast.LENGTH_SHORT).show();
+    nbScanned.postValue(attendees.size());
+  }
+
+  @Override
+  public LiveData<Integer> getNbScanned() {
+    return nbScanned;
   }
 }
