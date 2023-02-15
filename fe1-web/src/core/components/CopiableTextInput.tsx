@@ -30,9 +30,7 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const CopiableTextInput = (props: IPropTypes) => {
-  const { text, negative } = props;
-
+const CopiableTextInput = ({ text, negative }: IPropTypes) => {
   return (
     <View style={styles.view}>
       <TextInput
