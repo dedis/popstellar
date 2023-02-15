@@ -223,6 +223,7 @@
   <string name="username">username</string>
   <string name="time_ago">time ago</string>
   <string name="text">text</string>
+  <string name="chirp_list">Chirp List</string>
   <string name="delete_button">delete button</string>
 
   <!--  Storage-->

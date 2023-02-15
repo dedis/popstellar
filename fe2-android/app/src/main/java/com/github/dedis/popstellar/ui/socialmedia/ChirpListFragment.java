@@ -55,7 +55,7 @@ public class ChirpListFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.home);
+    viewModel.setPageTitle(R.string.chirp_list);
     viewModel.setIsTab(true);
   }
 
