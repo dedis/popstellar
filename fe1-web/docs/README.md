@@ -51,7 +51,7 @@ Here's the annotated directory tree:
 │   │
 │   ├── functions                # module containing functions that are useful in the whole application
 │   │
-│   ├── hooks                    # contains a wrapper for a useful react hook
+│   ├── hooks                    # contains utility react hooks
 │   │
 │   ├── keypair                  # module dealing with the storage of a global, unique keypair
 │   │
