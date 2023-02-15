@@ -7,15 +7,14 @@
     android:id="@+id/fragment_digital_cash_receive"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/container_margin"
     tools:context=".ui.digitalcash.DigitalCashReceiveFragment">
 
     <TextView
       android:id="@+id/digital_cash_receive_address"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:gravity="center"
       style="@style/style_border"
+      android:layout_margin="@dimen/main_horizontal_margin"
       android:text="@string/digital_cash_my_address"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"

@@ -19,7 +19,6 @@ import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaHomeFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.security.GeneralSecurityException;
 import java.util.Objects;
@@ -31,13 +30,13 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class DigitalCashActivity extends LaoActivity {
   private DigitalCashViewModel viewModel;
-  private DigitalCashMainActivityBinding binding;
   public static final String TAG = DigitalCashActivity.class.getSimpleName();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    binding = DigitalCashMainActivityBinding.inflate(getLayoutInflater());
+    DigitalCashMainActivityBinding binding =
+        DigitalCashMainActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
     laoViewModel = viewModel = obtainViewModel(this);
     String laoId = Objects.requireNonNull(getIntent().getStringExtra(Constants.LAO_ID_EXTRA));
@@ -47,10 +46,19 @@ public class DigitalCashActivity extends LaoActivity {
         binding.digitalCashNavigationDrawer,
         binding.digitalCashAppBar,
         binding.digitalCashDrawerLayout);
-
     laoViewModel.setCurrentTab(MainMenuTab.DIGITAL_CASH);
-    setupBottomNavBar();
     openHomeTab();
+    binding.digitalCashAppBar.setOnMenuItemClickListener(
+        menuItem -> {
+          if (menuItem.getItemId() == R.id.history_menu_toolbar) {
+            DigitalCashActivity.setCurrentFragment(
+                getSupportFragmentManager(),
+                R.id.fragment_digital_cash_history,
+                DigitalCashHistoryFragment::newInstance);
+            return true;
+          }
+          return false;
+        });
   }
 
   @Override
@@ -66,43 +74,13 @@ public class DigitalCashActivity extends LaoActivity {
     }
   }
 
+  @Override
+  public void onBackPressed() {
+    openHomeTab();
+  }
+
   public static DigitalCashViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(DigitalCashViewModel.class);
-  }
-
-  private void setupBottomNavBar() {
-    viewModel
-        .getBottomNavigationTab()
-        .observe(this, tab -> binding.digitalCashNavBar.setSelectedItemId(tab.getMenuId()));
-
-    binding.digitalCashNavBar.setOnItemSelectedListener(
-        item -> {
-          DigitalCashTab tab = DigitalCashTab.findByMenu(item.getItemId());
-          Log.i(TAG, "Opening tab : " + tab.getName());
-          openBottomTab(tab);
-          return true;
-        });
-    binding.digitalCashNavBar.setOnItemReselectedListener(item -> {});
-    viewModel.setBottomNavigationTab(DigitalCashTab.HOME);
-  }
-
-  private void openBottomTab(DigitalCashTab tab) {
-    switch (tab) {
-      case HOME:
-        openHomeTab();
-        break;
-      case HISTORY:
-        openHistoryTab();
-        break;
-      case SEND:
-        openSendTab();
-        break;
-      case RECEIVE:
-        openReceiveTab();
-        break;
-      case ISSUE:
-        openIssueTab();
-    }
   }
 
   @Override
@@ -140,38 +118,6 @@ public class DigitalCashActivity extends LaoActivity {
         getSupportFragmentManager(),
         R.id.fragment_digital_cash_home,
         DigitalCashHomeFragment::newInstance);
-  }
-
-  private void openHistoryTab() {
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_digital_cash_history,
-        DigitalCashHistoryFragment::newInstance);
-  }
-
-  private void openSendTab() {
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_digital_cash_send,
-        DigitalCashSendFragment::newInstance);
-  }
-
-  private void openReceiveTab() {
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_digital_cash_receive,
-        DigitalCashReceiveFragment::newInstance);
-  }
-
-  private void openIssueTab() {
-    if (!viewModel.isOrganizer()) {
-      ErrorUtils.logAndShow(this, TAG, R.string.digital_cash_non_organizer_error_issue);
-    }
-    setCurrentFragment(
-        getSupportFragmentManager(),
-        R.id.fragment_digital_cash_issue,
-        DigitalCashIssueFragment::newInstance);
-    viewModel.setPageTitle(R.string.digital_cash_issue);
   }
 
   private void openSocialMediaTab() {

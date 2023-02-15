@@ -165,6 +165,7 @@ namespace STRINGS {
   export const connect_description =
     'The easiest way to connect to a local organization is to scan its QR code';
   export const connect_scanning_fail = 'Invalid QRCode data';
+  export const connect_connecting_fail = 'Failed connecting and subscribing to LAO';
 
   // Connecting Connect Strings
   export const connect_connect = 'Connect';
@@ -252,6 +253,11 @@ namespace STRINGS {
   export const election_end = 'End Election';
   export const election_questions = 'Questions';
   export const election_results = 'Election Results';
+
+  export const election_status_not_started = 'Not Started';
+  export const election_status_opened = 'Ongoing';
+  export const election_status_terminated = 'Ended';
+  export const election_status_results = 'Ended, Results available';
 
   export const election_warning_open_ballot =
     'This is an open ballot election, your cast votes will be visible to all members of the LAO.';
@@ -345,9 +351,9 @@ namespace STRINGS {
   export const events_create_event = 'Create';
   export const events_list_past = 'Past Events';
   export const events_list_current = 'Current Events';
-  export const events_list_upcoming = 'Upcoming Events';
 
   export const events_upcoming_events = 'Upcoming Events';
+  export const events_closest_upcoming_event = 'Next Event starts';
   export const events_create_meeting = 'Create Meeting';
   export const events_view_single_meeting = 'Single Meeting';
   export const events_create_roll_call = 'Create Roll-Call';
@@ -414,7 +420,9 @@ namespace STRINGS {
   /* --- Wallet Home Screen Strings --- */
   export const wallet_home_roll_calls = 'Roll Calls';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
-  export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
+  export const wallet_home_rollcall_current_pop_tokens = 'Current tokens';
+  export const wallet_home_rollcall_previous_pop_tokens = 'Previous tokens';
+  export const wallet_home_rollcall_pop_token_valid = 'Current';
 
   export const wallet_home_rollcall_no_pop_tokens = 'No PoP tokens';
   export const wallet_home_rollcall_no_pop_tokens_description =

@@ -68,9 +68,6 @@ public class DigitalCashViewModel extends LaoViewModel {
       new MutableLiveData<>();
 
 
-  private final MutableLiveData<DigitalCashTab> bottomNavigationTab =
-      new MutableLiveData<>(DigitalCashTab.HOME);
-
   /*
    * Dependencies for this class
    */
@@ -123,16 +120,6 @@ public class DigitalCashViewModel extends LaoViewModel {
 
   public LiveData<SingleEvent<String>> getUpdateReceiptAddressEvent() {
     return updateReceiptAddressEvent;
-  }
-
-  public LiveData<DigitalCashTab> getBottomNavigationTab() {
-    return bottomNavigationTab;
-  }
-
-  public void setBottomNavigationTab(DigitalCashTab tab) {
-    if (tab != bottomNavigationTab.getValue()) {
-      bottomNavigationTab.setValue(tab);
-    }
   }
 
   public void updateReceiptAddressEvent(String address) {
@@ -300,10 +287,6 @@ public class DigitalCashViewModel extends LaoViewModel {
   @Override
   public LaoView getLao() throws UnknownLaoException {
     return laoRepository.getLaoView(getLaoId());
-  }
-
-  public Set<PublicKey> getAllAttendees() {
-    return rollCallRepo.getAllAttendeesInLao(getLaoId());
   }
 
   public PoPToken getValidToken() throws KeyException {
