@@ -17,8 +17,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
-        node-version: [16.x, 18.x]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        node-version: [18.x]
+		include:
+		  # additionally also run it on node v16
+		  # but just on ubuntu to not have too many runs
+          - os: ubuntu-latest
+		    node-version: 16.x
 
     defaults:
       run:
