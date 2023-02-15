@@ -38,6 +38,19 @@ import io.reactivex.disposables.Disposable;
 public class LaoViewModel extends AndroidViewModel implements PopViewModel {
   public static final String TAG = LaoViewModel.class.getSimpleName();
 
+  private final MutableLiveData<MainMenuTab> currentTab = new MutableLiveData<>();
+
+  private boolean isOrganizer = false;
+  private String laoId;
+
+  private final MutableLiveData<Boolean> isWitness = new MutableLiveData<>(Boolean.FALSE);
+  private final MutableLiveData<Boolean> isAttendee = new MutableLiveData<>(Boolean.FALSE);
+  private final MutableLiveData<Role> role = new MutableLiveData<>(Role.MEMBER);
+  private final MutableLiveData<Boolean> isTab = new MutableLiveData<>(Boolean.TRUE);
+  private final MutableLiveData<Integer> pageTitle = new MutableLiveData<>(0);
+
+  private final CompositeDisposable disposables = new CompositeDisposable();
+
   /*
    * Dependencies for this class
    */
@@ -62,19 +75,6 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
     this.keyManager = keyManager;
     this.wallet = wallet;
   }
-
-  private final MutableLiveData<MainMenuTab> currentTab = new MutableLiveData<>();
-
-  private boolean isOrganizer = false;
-  private String laoId;
-
-  private final MutableLiveData<Boolean> isWitness = new MutableLiveData<>(Boolean.FALSE);
-  private final MutableLiveData<Boolean> isAttendee = new MutableLiveData<>(Boolean.FALSE);
-  private final MutableLiveData<Role> role = new MutableLiveData<>(Role.MEMBER);
-  private final MutableLiveData<Boolean> isTab = new MutableLiveData<>(Boolean.TRUE);
-  private final MutableLiveData<Integer> pageTitle = new MutableLiveData<>(0);
-
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   @Override
   public String getLaoId() {
