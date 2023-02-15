@@ -98,6 +98,8 @@ Here's the annotated directory tree:
 │   │
 │   ├── meeting                  # feature dealing with meetings, a type of event
 │   │
+│   ├── notification             # feature dealing with notifications
+│   │
 │   ├── rollCall                 # feature dealing with roll calls, a type of event
 │   │
 │   ├── social                   # feature dealing with social media functionality
