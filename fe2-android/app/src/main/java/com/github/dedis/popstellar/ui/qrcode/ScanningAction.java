@@ -48,7 +48,7 @@ public enum ScanningAction {
       R.string.join_lao_title,
       R.string.join_manual_hint,
       R.string.add_lao_participant_title,
-      (activity, any) -> HomeActivity.obtainViewModel(activity),
+      (activity, unused) -> HomeActivity.obtainViewModel(activity),
       HomeActivity::obtainViewModel,
       (manager, unused) ->
           HomeActivity.setCurrentFragment(manager, R.id.fragment_home, HomeFragment::new));
