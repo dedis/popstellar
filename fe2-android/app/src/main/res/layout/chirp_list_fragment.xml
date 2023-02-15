@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools">
 
   <androidx.constraintlayout.widget.ConstraintLayout
@@ -10,8 +11,7 @@
 
     <RelativeLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_marginBottom="@dimen/bottom_navigation_view_height">
+      android:layout_height="match_parent">
 
       <ListView
         android:id="@+id/chirps_list"
@@ -21,17 +21,20 @@
         android:dividerHeight="@dimen/social_media_divider_height"
         tools:listitem="@layout/chirp_card" />
 
-      <ImageButton
+      <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/social_media_send_fragment_button"
-        android:layout_width="@dimen/round_button_size"
-        android:layout_height="@dimen/round_button_size"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/margin_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_top"
-        android:background="@drawable/round_button"
+        android:layout_marginEnd="@dimen/margin_top"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:backgroundTint="@color/colorPrimary"
         android:contentDescription="@string/send_button_desc"
-        android:src="@drawable/ic_social_media_send_foreground" />
+        android:tintMode="@color/white"
+        app:backgroundTint="@color/colorPrimary"
+        app:fabSize="normal"
+        android:src="@drawable/ic_plus" />
     </RelativeLayout>
 
   </androidx.constraintlayout.widget.ConstraintLayout>
