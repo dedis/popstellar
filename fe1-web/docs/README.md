@@ -88,7 +88,7 @@ Here's the annotated directory tree:
 │   │   ├── screens                # UI screens of the feature
 │   │   └── store                  # static access to the feature's reducer store (DEPRECATED)
 │   │
-│   ├── digital cash             # feature dealing with digital cash
+│   ├── digital-cash             # feature dealing with digital cash
 │   │
 │   ├── events                   # feature dealing with events happening in a LAO
 │   │
