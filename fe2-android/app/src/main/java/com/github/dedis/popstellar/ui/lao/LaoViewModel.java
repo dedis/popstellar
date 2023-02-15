@@ -215,9 +215,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
                 laoView -> {
                   Log.d(TAG, "got an update for lao: " + laoView);
 
-                  boolean isOrganizer =
-                      laoView.getOrganizer().equals(keyManager.getMainPublicKey());
-                  setIsOrganizer(isOrganizer);
+                  setIsOrganizer(laoView.getOrganizer().equals(keyManager.getMainPublicKey()));
                   setIsWitness(laoView.getWitnesses().contains(keyManager.getMainPublicKey()));
 
                   updateRole();

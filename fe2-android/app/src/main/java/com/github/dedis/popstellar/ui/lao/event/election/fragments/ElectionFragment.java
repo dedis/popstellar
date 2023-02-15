@@ -43,7 +43,6 @@ public class ElectionFragment extends Fragment {
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
   private LaoViewModel viewModel;
-  private ElectionViewModel electionViewModel;
   private View view;
 
   private Button managementButton;
@@ -87,7 +86,7 @@ public class ElectionFragment extends Fragment {
 
     this.electionId = requireArguments().getString(ELECTION_ID);
     viewModel = LaoActivity.obtainViewModel(requireActivity());
-    electionViewModel =
+    ElectionViewModel electionViewModel =
         LaoActivity.obtainElectionViewModel(requireActivity(), viewModel.getLaoId());
 
     managementVisibilityMap = buildManagementVisibilityMap();

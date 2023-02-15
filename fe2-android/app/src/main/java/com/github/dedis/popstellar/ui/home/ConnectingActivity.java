@@ -75,7 +75,7 @@ public class ConnectingActivity extends AppCompatActivity {
    * call for the subscribe and catchup process
    */
   private void handleOpenConnection() {
-    String toOpen = (String) getIntent().getExtras().get(Constants.ACTIVITY_TO_OPEN_EXTRA);
+    String toOpen = getIntent().getStringExtra(Constants.ACTIVITY_TO_OPEN_EXTRA);
     boolean isDestinationHome = toOpen.equals(Constants.HOME_EXTRA);
 
     // This object will allow us to get all the event of the underlying observable, even if they

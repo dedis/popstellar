@@ -18,7 +18,6 @@ public class UpcomingEventsFragment extends Fragment {
 
   private static final String TAG = UpcomingEventsFragment.class.getSimpleName();
   private LaoViewModel viewModel;
-  private EventsViewModel eventsViewModel;
 
   public static UpcomingEventsFragment newInstance() {
     return new UpcomingEventsFragment();

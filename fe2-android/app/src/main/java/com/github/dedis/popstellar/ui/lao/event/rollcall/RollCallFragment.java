@@ -56,7 +56,6 @@ public class RollCallFragment extends Fragment {
   private RollCallFragmentBinding binding;
 
   private LaoViewModel viewModel;
-  private RollCallViewModel rollCallViewModel;
   private RollCall rollCall;
 
   private final EnumMap<EventState, Integer> managementTextMap = buildManagementTextMap();
@@ -83,7 +82,7 @@ public class RollCallFragment extends Fragment {
     // Inflate the layout for this fragment
     binding = RollCallFragmentBinding.inflate(inflater, container, false);
     viewModel = LaoActivity.obtainViewModel(requireActivity());
-    rollCallViewModel =
+    RollCallViewModel rollCallViewModel =
         LaoActivity.obtainRollCallViewModel(requireActivity(), viewModel.getLaoId());
 
     try {
