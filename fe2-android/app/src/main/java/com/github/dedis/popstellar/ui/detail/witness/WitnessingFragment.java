@@ -7,8 +7,8 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -45,7 +45,7 @@ public class WitnessingFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
+    LaoViewModel viewModel = LaoActivity.obtainViewModel(requireActivity());
     viewModel.setPageTitle(R.string.witnessing);
     viewModel.setIsTab(true);
   }
