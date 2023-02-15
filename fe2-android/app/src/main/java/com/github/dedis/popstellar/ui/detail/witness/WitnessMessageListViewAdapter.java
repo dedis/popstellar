@@ -109,11 +109,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
           adb.show();
         };
     binding.signMessageButton.setOnClickListener(listener);
-
-    binding.setMessage(messages.get(position));
     binding.setLifecycleOwner(activity);
-
-    binding.executePendingBindings();
 
     return binding.getRoot();
   }

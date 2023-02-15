@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <data>
-
-    <import type="android.view.View" />
-
-    <variable
-      name="viewmodel"
-      type="com.github.dedis.popstellar.ui.detail.LaoDetailViewModel" />
-  </data>
-
   <LinearLayout
     android:id="@+id/new_ballot_option_ll"
     android:layout_width="match_parent"

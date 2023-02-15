@@ -29,9 +29,6 @@
       </intent-filter>
     </activity>
     <activity android:name=".ui.lao.LaoActivity" />
-    <activity
-      android:name=".ui.detail.LaoDetailActivity"
-      android:windowSoftInputMode="adjustPan" />
 
     <uses-library
       android:name="android.test.runner"
