@@ -32,13 +32,20 @@ export const handleAddChirpMessage =
     const { sender } = msg;
     const chirpMessage = msg.messageData as AddChirp;
 
-    const chirp = new Chirp({
-      id: messageId,
-      sender: sender,
-      text: chirpMessage.text,
-      time: chirpMessage.timestamp,
-      parentId: chirpMessage.parent_id,
-    });
+    let chirp: Chirp;
+
+    try {
+      chirp = new Chirp({
+        id: messageId,
+        sender: sender,
+        text: chirpMessage.text,
+        time: chirpMessage.timestamp,
+        parentId: chirpMessage.parent_id,
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     dispatch(addChirp(laoId, chirp));
     return true;
@@ -68,12 +75,19 @@ export const handleDeleteChirpMessage =
     const { sender } = msg;
     const chirpMessage = msg.messageData as DeleteChirp;
 
-    const chirp = new Chirp({
-      id: chirpMessage.chirp_id,
-      sender: sender,
-      time: chirpMessage.timestamp,
-      text: '',
-    });
+    let chirp: Chirp;
+
+    try {
+      chirp = new Chirp({
+        id: chirpMessage.chirp_id,
+        sender: sender,
+        time: chirpMessage.timestamp,
+        text: '',
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     dispatch(deleteChirp(laoId, chirp));
     return true;

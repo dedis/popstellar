@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 
 import MockNavigator from '__tests__/components/MockNavigator';
@@ -31,7 +31,19 @@ const contextValue = {
 };
 
 describe('CreateElection', () => {
-  it('renders correctly', () => {
+  it('renders correctly when question is empty', () => {
+    const { getByTestId, toJSON } = render(
+      <FeatureContext.Provider value={contextValue}>
+        <MockNavigator component={CreateElection} />
+      </FeatureContext.Provider>,
+    );
+
+    const nameInput = getByTestId('election_name_selector');
+    fireEvent.changeText(nameInput, 'myElection');
+    expect(toJSON()).toMatchSnapshot();
+  });
+
+  it('renders correctly when name and question are empty', () => {
     const component = render(
       <FeatureContext.Provider value={contextValue}>
         <MockNavigator component={CreateElection} />

@@ -64,6 +64,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   },
   [ObjectType.REACTION]: {
     [ActionType.ADD]: 'dataAddReaction',
+    [ActionType.DELETE]: 'dataDeleteReaction',
   },
   [ObjectType.COIN]: {
     [ActionType.POST_TRANSACTION]: 'postTransaction',

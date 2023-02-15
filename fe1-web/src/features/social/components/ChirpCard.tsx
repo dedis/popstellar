@@ -15,14 +15,19 @@ import { ActionSheetOption, useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialParamList } from 'core/navigation/typing/social';
+import { Hash } from 'core/objects';
 import { List, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { SocialMediaContext } from '../context';
 import { SocialHooks } from '../hooks';
-import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
+import {
+  requestAddReaction,
+  requestDeleteChirp,
+  requestDeleteReaction,
+} from '../network/SocialMessageApi';
 import { Chirp } from '../objects';
-import { makeHasReactedSelector, makeReactionCountsSelector } from '../reducer';
+import { makeReactedSelector, makeReactionCountsSelector } from '../reducer';
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<
@@ -93,20 +98,20 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
   );
   const reactions = useSelector(selectReactionList);
 
-  const selectHasReacted = useMemo(
-    () => makeHasReactedSelector(laoId, chirp.id, currentUserPopTokenPublicKey),
+  const selectReacted = useMemo(
+    () => makeReactedSelector(laoId, chirp.id, currentUserPopTokenPublicKey),
     [laoId, chirp.id, currentUserPopTokenPublicKey],
   );
-  const hasReacted = useSelector(selectHasReacted);
+  const reacted = useSelector(selectReacted);
 
   const thumbsUp = reactions['👍'];
   const thumbsDown = reactions['👎'];
   const heart = reactions['❤️'];
 
   const reactionsDisabled = {
-    '👍': !isConnected || !currentUserPopTokenPublicKey || hasReacted['👍'],
-    '👎': !isConnected || !currentUserPopTokenPublicKey || hasReacted['👎'],
-    '❤️': !isConnected || !currentUserPopTokenPublicKey || hasReacted['❤️'],
+    '👍': !isConnected || !currentUserPopTokenPublicKey,
+    '👎': !isConnected || !currentUserPopTokenPublicKey,
+    '❤️': !isConnected || !currentUserPopTokenPublicKey,
   };
 
   const showActionSheet = useActionSheet();
@@ -114,6 +119,16 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
       toast.show(`Could not add reaction, error: ${err}`, {
+        type: 'danger',
+        placement: 'bottom',
+        duration: FOUR_SECONDS,
+      });
+    });
+  };
+
+  const deleteReaction = (reactionId: Hash) => {
+    requestDeleteReaction(reactionId, laoId).catch((err) => {
+      toast.show(`Could not delete reaction, error: ${err}`, {
         type: 'danger',
         placement: 'bottom',
         duration: FOUR_SECONDS,
@@ -196,10 +211,12 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="thumbsUp"
                   testID="thumbs-up"
-                  onPress={() => addReaction('👍')}
+                  onPress={() =>
+                    reacted['👍'] ? deleteReaction(reacted['👍'].id) : addReaction('👍')
+                  }
                   disabled={reactionsDisabled['👍']}
                   size="small"
-                  buttonStyle="secondary"
+                  buttonStyle={reacted['👍'] ? 'primary' : 'secondary'}
                   toolbar
                 />
                 <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
@@ -210,10 +227,12 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="thumbsDown"
                   testID="thumbs-down"
-                  onPress={() => addReaction('👎')}
+                  onPress={() =>
+                    reacted['👎'] ? deleteReaction(reacted['👎'].id) : addReaction('👎')
+                  }
                   disabled={reactionsDisabled['👎']}
                   size="small"
-                  buttonStyle="secondary"
+                  buttonStyle={reacted['👎'] ? 'primary' : 'secondary'}
                   toolbar
                 />
                 <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>
@@ -224,10 +243,12 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="heart"
                   testID="heart"
-                  onPress={() => addReaction('❤️')}
+                  onPress={() =>
+                    reacted['❤️'] ? deleteReaction(reacted['❤️'].id) : addReaction('❤️')
+                  }
                   disabled={reactionsDisabled['❤️']}
                   size="small"
-                  buttonStyle="secondary"
+                  buttonStyle={reacted['❤️'] ? 'primary' : 'secondary'}
                   toolbar
                 />
                 <Text style={[Typography.base, Typography.small, styles.reactionCounter]}>

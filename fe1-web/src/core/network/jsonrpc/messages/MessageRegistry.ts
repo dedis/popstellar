@@ -88,6 +88,7 @@ export class MessageRegistry {
 
     // Reactions
     [k(REACTION, ADD), { signature: POP_TOKEN }],
+    [k(REACTION, DELETE), { signature: POP_TOKEN }],
 
     // Coin
     [k(COIN, POST_TRANSACTION), { signature: KEYPAIR }],

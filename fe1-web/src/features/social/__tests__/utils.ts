@@ -111,3 +111,19 @@ export const mockReaction4 = new Reaction({
   chirpId: mockChirpId2,
   time: mockChirpTimestamp,
 });
+
+export const mockReaction5 = new Reaction({
+  id: new Hash('5555'),
+  sender: mockSender2,
+  codepoint: '👎',
+  chirpId: mockChirpId1,
+  time: mockChirpTimestamp,
+});
+
+export const mockReaction6 = new Reaction({
+  id: new Hash('6666'),
+  sender: mockSender2,
+  codepoint: '👍',
+  chirpId: mockChirpId3,
+  time: mockChirpTimestamp,
+});

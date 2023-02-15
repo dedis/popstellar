@@ -1227,18 +1227,11 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            {
-                                              "backgroundColor": "#8E8E8E",
-                                              "borderColor": "#8E8E8E",
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"thumbs-up-sharp","size":16,"color":"#8E8E8E"}
+                                          {"name":"thumbs-up-sharp","size":16,"color":"#fff"}
                                         </View>
                                       </View>
                                     </View>
@@ -2123,18 +2116,11 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            {
-                                              "backgroundColor": "#8E8E8E",
-                                              "borderColor": "#8E8E8E",
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"thumbs-up-sharp","size":16,"color":"#8E8E8E"}
+                                          {"name":"thumbs-up-sharp","size":16,"color":"#fff"}
                                         </View>
                                       </View>
                                     </View>
@@ -3092,18 +3078,11 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            {
-                                              "backgroundColor": "#8E8E8E",
-                                              "borderColor": "#8E8E8E",
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"thumbs-up-sharp","size":16,"color":"#8E8E8E"}
+                                          {"name":"thumbs-up-sharp","size":16,"color":"#fff"}
                                         </View>
                                       </View>
                                     </View>
@@ -4061,18 +4040,11 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            {
-                                              "backgroundColor": "#8E8E8E",
-                                              "borderColor": "#8E8E8E",
-                                            },
-                                            {
-                                              "backgroundColor": "transparent",
-                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"thumbs-up-sharp","size":16,"color":"#8E8E8E"}
+                                          {"name":"thumbs-up-sharp","size":16,"color":"#fff"}
                                         </View>
                                       </View>
                                     </View>

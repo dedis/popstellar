@@ -162,6 +162,22 @@ const CreateRollCall = () => {
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
 
+      {!isConnected && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_must_be_connected}
+        </Text>
+      )}
+      {rollCallName === '' && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_name_not_empty}
+        </Text>
+      )}
+      {rollCallLocation === '' && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_location_not_empty}
+        </Text>
+      )}
+
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}

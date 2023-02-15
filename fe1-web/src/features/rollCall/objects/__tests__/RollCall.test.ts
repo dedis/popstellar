@@ -19,22 +19,25 @@ describe('RollCall object', () => {
   it('can do a state round trip correctly 1', () => {
     const rollCallState: any = {
       id: ID.valueOf(),
+      idAlias: ID.valueOf(),
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
       proposedStart: TIMESTAMP_START.valueOf(),
       proposedEnd: TIMESTAMP_END.valueOf(),
+      openedAt: TIMESTAMP_START,
+      closedAt: TIMESTAMP_END,
       status: RollCallStatus.CLOSED,
       attendees: ATTENDEES,
     };
     const expected = {
       id: ID.valueOf(),
+      idAlias: ID.valueOf(),
       name: NAME,
       location: LOCATION,
-      closedAt: undefined,
+      closedAt: TIMESTAMP_END.valueOf(),
       description: undefined,
-      idAlias: undefined,
-      openedAt: undefined,
+      openedAt: TIMESTAMP_START.valueOf(),
       creation: TIMESTAMP_START.valueOf(),
       proposedStart: TIMESTAMP_START.valueOf(),
       proposedEnd: TIMESTAMP_END.valueOf(),
@@ -80,11 +83,14 @@ describe('RollCall object', () => {
   it('containsToken function works when attendees is undefined', () => {
     const rollCall = new RollCall({
       id: ID,
+      idAlias: ID,
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START,
       proposedStart: TIMESTAMP_START,
       proposedEnd: TIMESTAMP_END,
+      openedAt: TIMESTAMP_START,
+      closedAt: TIMESTAMP_END,
       status: RollCallStatus.CLOSED,
     });
     expect(rollCall.containsToken(token)).toBeFalse();
@@ -93,11 +99,14 @@ describe('RollCall object', () => {
   it('containsToken function works when token is undefined', () => {
     const rollCall = new RollCall({
       id: ID,
+      idAlias: ID,
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START,
       proposedStart: TIMESTAMP_START,
       proposedEnd: TIMESTAMP_END,
+      openedAt: TIMESTAMP_START,
+      closedAt: TIMESTAMP_END,
       status: RollCallStatus.CLOSED,
       attendees: ATTENDEES.map((s: string) => new PublicKey(s)),
     });
@@ -107,11 +116,14 @@ describe('RollCall object', () => {
   it('containsToken function works when attendees and token are defined', () => {
     const rollCall = new RollCall({
       id: ID,
+      idAlias: ID,
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START,
       proposedStart: TIMESTAMP_START,
       proposedEnd: TIMESTAMP_END,
+      openedAt: TIMESTAMP_START,
+      closedAt: TIMESTAMP_END,
       status: RollCallStatus.CLOSED,
       attendees: ATTENDEES.map((s: string) => new PublicKey(s)),
     });
@@ -219,6 +231,116 @@ describe('RollCall object', () => {
           creation: TIMESTAMP_START,
           proposedStart: TIMESTAMP_START,
           proposedEnd: TIMESTAMP_END,
+        });
+      expect(createWrongRollCall).toThrow(Error);
+    });
+
+    it("throws an error when 'idAlias' is undefined in status 'OPENED'", () => {
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposedStart: TIMESTAMP_START,
+          proposedEnd: TIMESTAMP_END,
+          status: RollCallStatus.OPENED,
+        });
+      expect(createWrongRollCall).toThrow(Error);
+    });
+
+    it("throws an error when 'opened' is undefined in status 'OPENED'", () => {
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          idAlias: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposedStart: TIMESTAMP_START,
+          proposedEnd: TIMESTAMP_END,
+          status: RollCallStatus.OPENED,
+        });
+      expect(createWrongRollCall).toThrow(Error);
+    });
+
+    it("throws an error when 'idAlias' is undefined in status 'REOPENED'", () => {
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposedStart: TIMESTAMP_START,
+          proposedEnd: TIMESTAMP_END,
+          status: RollCallStatus.REOPENED,
+        });
+      expect(createWrongRollCall).toThrow(Error);
+    });
+
+    it("throws an error when 'openedAt' is undefined in status 'REOPENED'", () => {
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          idAlias: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposedStart: TIMESTAMP_START,
+          proposedEnd: TIMESTAMP_END,
+          status: RollCallStatus.REOPENED,
+        });
+      expect(createWrongRollCall).toThrow(Error);
+    });
+
+    it("throws an error when 'idAlias' is undefined in status 'CLOSED'", () => {
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposedStart: TIMESTAMP_START,
+          proposedEnd: TIMESTAMP_END,
+          status: RollCallStatus.CLOSED,
+        });
+      expect(createWrongRollCall).toThrow(Error);
+    });
+
+    it("throws an error when 'openedAt' is undefined in status 'CLOSED'", () => {
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          idAlias: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposedStart: TIMESTAMP_START,
+          proposedEnd: TIMESTAMP_END,
+          status: RollCallStatus.CLOSED,
+        });
+      expect(createWrongRollCall).toThrow(Error);
+    });
+
+    it("throws an error when 'closedAt' is undefined in status 'CLOSED'", () => {
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          idAlias: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposedStart: TIMESTAMP_START,
+          proposedEnd: TIMESTAMP_END,
+          openedAt: TIMESTAMP_START,
+          status: RollCallStatus.CLOSED,
         });
       expect(createWrongRollCall).toThrow(Error);
     });
