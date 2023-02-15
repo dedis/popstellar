@@ -111,7 +111,7 @@ public class SocialMediaSendFragment extends Fragment {
               @Override
               public void handleOnBackPressed() {
                 Log.d(TAG, "Back pressed, going back to chirp list");
-                LaoActivity.setCurrentFragment(
+                SocialMediaHomeFragment.setCurrentFragment(
                     getParentFragmentManager(),
                     R.id.fragment_chirp_list,
                     ChirpListFragment::newInstance);
