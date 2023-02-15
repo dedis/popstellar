@@ -46,6 +46,7 @@ public class WitnessingFragment extends Fragment {
   public void onResume() {
     super.onResume();
     LaoDetailViewModel viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
-    viewModel.setPageTitle(getString(R.string.witnessing));
+    viewModel.setPageTitle(R.string.witnessing);
+    viewModel.setIsTab(true);
   }
 }

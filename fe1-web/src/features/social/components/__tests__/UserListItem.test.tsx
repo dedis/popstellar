@@ -57,7 +57,7 @@ describe('UserListItem', () => {
     const profileButton = getByTestId(`user_list_item_${publicKey.toString()}`);
     fireEvent.press(profileButton);
     expect(mockNavigate).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith(STRINGS.social_media_navigation_user_profile, {
+    expect(mockNavigate).toHaveBeenCalledWith(STRINGS.social_media_search_navigation_user_profile, {
       userPkString: publicKey.valueOf(),
     });
   });

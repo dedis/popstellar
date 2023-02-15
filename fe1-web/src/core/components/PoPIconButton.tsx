@@ -15,6 +15,18 @@ const SIZE_MAP = {
 const PoPIconButton = (props: IPropTypes) => {
   const { onPress, buttonStyle, disabled, toolbar, size, testID, name } = props;
 
+  let iconColor = Color.contrast;
+
+  if (buttonStyle === 'secondary') {
+    // in case of an outlined button, the icon color
+    // should be the same as the border's
+    if (disabled) {
+      iconColor = Color.inactive;
+    } else {
+      iconColor = Color.accent;
+    }
+  }
+
   return (
     <PoPButton
       onPress={onPress}
@@ -22,11 +34,7 @@ const PoPIconButton = (props: IPropTypes) => {
       disabled={disabled}
       toolbar={toolbar}
       testID={testID}>
-      <PoPIcon
-        name={name}
-        size={SIZE_MAP[size]}
-        color={buttonStyle === 'primary' ? Color.contrast : Color.accent}
-      />
+      <PoPIcon name={name} size={SIZE_MAP[size]} color={iconColor} />
     </PoPButton>
   );
 };

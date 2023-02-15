@@ -89,7 +89,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleUpdateLao()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create the update LAO message
     UpdateLao updateLao =
         new UpdateLao(
@@ -118,7 +118,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleStateLao()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create the state LAO message
     StateLao stateLao =
         new StateLao(
@@ -145,7 +145,7 @@ public class LaoHandlerTest {
   @Test()
   public void testGreetLao()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create the Greet Lao
     GreetLao greetLao =
         new GreetLao(

@@ -17,6 +17,8 @@ namespace STRINGS {
   export const general_notice = 'Notice';
   export const general_enter_manually = 'Enter Manually';
   export const general_offline = 'Offline';
+  export const general_your_pop_token = 'Your PoP token';
+  export const general_copy = 'Copy to Clipboard';
 
   export const general_closed = 'Closed';
   export const general_ongoing = 'Ongoing';
@@ -101,29 +103,21 @@ namespace STRINGS {
   export const navigation_digital_cash_wallet_scanner = 'Digital Cash Scanner';
 
   /* --- Social Media Navigation Strings --- */
-  export const social_media_navigation_user_profile = 'User profile';
 
-  export const social_media_navigation_tab_home = 'Social Media Home Navigtion';
+  export const social_media_navigation_tab_home = 'Social Media Home';
   export const social_media_navigation_tab_home_title = 'Feed';
-
-  export const social_media_home_navigation_home = 'Social Media Home';
-  export const social_media_home_navigation_home_title = 'Feed';
-  export const social_media_home_navigation_new_chirp = 'New Chirp';
 
   export const social_media_navigation_tab_search = 'User List Navigation';
   export const social_media_navigation_tab_search_title = 'User List';
 
   export const social_media_search_navigation_attendee_list = 'List of roll call attendees';
+  export const social_media_search_navigation_user_profile = 'User profile';
 
-  export const social_media_navigation_tab_top_chirps = 'Top Chirps Navigation';
+  export const social_media_navigation_tab_top_chirps = 'Top Chirps';
   export const social_media_navigation_tab_top_chirps_title = 'Top Chirps';
 
-  export const social_media_top_chirps_navigation_top_chirps = 'Top Chirps';
-
-  export const social_media_navigation_tab_profile = 'My Profile Navigation';
+  export const social_media_navigation_tab_profile = 'My Profile';
   export const social_media_navigation_tab_profile_title = 'My Profile';
-
-  export const social_media_profile_navigation_profile = 'My Profile';
 
   /* --- Lao Strings --- */
   export const lao_properties_modal_heading = 'Lao Properties';
@@ -171,6 +165,7 @@ namespace STRINGS {
   export const connect_description =
     'The easiest way to connect to a local organization is to scan its QR code';
   export const connect_scanning_fail = 'Invalid QRCode data';
+  export const connect_connecting_fail = 'Failed connecting and subscribing to LAO';
 
   // Connecting Connect Strings
   export const connect_connect = 'Connect';
@@ -258,6 +253,11 @@ namespace STRINGS {
   export const election_end = 'End Election';
   export const election_questions = 'Questions';
   export const election_results = 'Election Results';
+
+  export const election_status_not_started = 'Not Started';
+  export const election_status_opened = 'Ongoing';
+  export const election_status_terminated = 'Ended';
+  export const election_status_results = 'Ended, Results available';
 
   export const election_warning_open_ballot =
     'This is an open ballot election, your cast votes will be visible to all members of the LAO.';
@@ -351,9 +351,9 @@ namespace STRINGS {
   export const events_create_event = 'Create';
   export const events_list_past = 'Past Events';
   export const events_list_current = 'Current Events';
-  export const events_list_upcoming = 'Upcoming Events';
 
   export const events_upcoming_events = 'Upcoming Events';
+  export const events_closest_upcoming_event = 'Next Event starts';
   export const events_create_meeting = 'Create Meeting';
   export const events_view_single_meeting = 'Single Meeting';
   export const events_create_roll_call = 'Create Roll-Call';
@@ -420,16 +420,13 @@ namespace STRINGS {
   /* --- Wallet Home Screen Strings --- */
   export const wallet_home_roll_calls = 'Roll Calls';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
-  export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
+  export const wallet_home_rollcall_current_pop_tokens = 'Current tokens';
+  export const wallet_home_rollcall_previous_pop_tokens = 'Previous tokens';
+  export const wallet_home_rollcall_pop_token_valid = 'Current';
 
   export const wallet_home_rollcall_no_pop_tokens = 'No PoP tokens';
   export const wallet_home_rollcall_no_pop_tokens_description =
     "You haven't received any PoP token received in this LAO yet.";
-
-  export const wallet_single_roll_call_description =
-    'You own a PoP token for this roll call. To view the corresponding QR Code, press the icon in the right.';
-  export const wallet_single_roll_call_pop_token = 'Your PoP token';
-  export const wallet_single_roll_call_copy_pop_token = 'Copy to Clipboard';
 
   export const no_tokens_in_wallet =
     'No token is yet associated with your wallet seed, once you participate in a roll-call event your PoP tokens will be shown here';

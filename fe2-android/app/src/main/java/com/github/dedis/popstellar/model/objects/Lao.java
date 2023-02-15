@@ -29,7 +29,6 @@ public final class Lao implements Copyable<Lao> {
    */
   private Set<PendingUpdate> pendingUpdates;
 
-  private Map<String, Election> elections;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
 
@@ -42,7 +41,6 @@ public final class Lao implements Copyable<Lao> {
 
     this.channel = Channel.getLaoChannel(id);
     this.id = id;
-    this.elections = new HashMap<>();
     this.keyToNode = new HashMap<>();
     this.messageIdToElectInstance = new HashMap<>();
     this.witnessMessages = new HashMap<>();
@@ -74,20 +72,10 @@ public final class Lao implements Copyable<Lao> {
     this.witnesses = new HashSet<>(lao.witnesses);
     this.witnessMessages = new HashMap<>(lao.witnessMessages);
     this.pendingUpdates = new HashSet<>(lao.pendingUpdates);
-    this.elections = Copyable.copy(lao.elections);
     // FIXME We need to keep the ElectInstance because the current consensus relies on references
     // (Gabriel Fleischer 11.08.22)
     this.messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
     this.keyToNode = Copyable.copy(lao.keyToNode);
-  }
-
-  public void updateElection(String prevId, Election election) {
-    if (election == null) {
-      throw new IllegalArgumentException("The election is null");
-    }
-
-    elections.remove(prevId);
-    elections.put(election.getId(), election);
   }
 
   /**
@@ -128,26 +116,12 @@ public final class Lao implements Copyable<Lao> {
     witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
   }
 
-  public Optional<Election> getElection(String id) {
-    return Optional.ofNullable(elections.get(id));
-  }
-
   public Optional<ElectInstance> getElectInstance(MessageID messageId) {
     return Optional.ofNullable(messageIdToElectInstance.get(messageId));
   }
 
   public Optional<WitnessMessage> getWitnessMessage(MessageID id) {
     return Optional.ofNullable(witnessMessages.get(id));
-  }
-
-  /**
-   * Removes an election from the list of elections.
-   *
-   * @param id the id of the Election
-   * @return true if the election was deleted
-   */
-  public boolean removeElection(String id) {
-    return (elections.remove(id) != null);
   }
 
   public Long getLastModified() {
@@ -261,20 +235,12 @@ public final class Lao implements Copyable<Lao> {
     return keyToNode.get(key);
   }
 
-  public Map<String, Election> getElections() {
-    return elections;
-  }
-
   public Map<MessageID, ElectInstance> getMessageIdToElectInstance() {
     return Collections.unmodifiableMap(messageIdToElectInstance);
   }
 
   public Map<MessageID, WitnessMessage> getWitnessMessages() {
     return witnessMessages;
-  }
-
-  public void setElections(Map<String, Election> elections) {
-    this.elections = elections;
   }
 
   /**
@@ -321,8 +287,6 @@ public final class Lao implements Copyable<Lao> {
         + '\''
         + ", witnesses="
         + witnesses
-        + ", elections="
-        + elections
         + ", electInstances="
         + messageIdToElectInstance.values()
         + ", transactionPerUser="

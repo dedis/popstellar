@@ -17,7 +17,6 @@ public class MessageRepository {
   @Inject
   public MessageRepository() {
     // Constructor required by Hilt
-
   }
 
   public MessageGeneral getMessage(MessageID messageID) {

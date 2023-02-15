@@ -5,6 +5,8 @@
  * this is the module in which the user interface component should be defined.
  */
 
+export { default as AutocompleteInput } from './AutocompleteInput';
+export { default as BuildInfo } from './BuildInfo';
 export { default as CameraButton } from './CameraButton';
 export { default as CheckboxList } from './CheckboxList';
 export { default as ConfirmModal } from './ConfirmModal';
@@ -19,6 +21,7 @@ export { default as ProfileIcon } from './ProfileIcon';
 export { default as QRCode } from './QRCode';
 export { default as RecorderButton } from './RecorderButton';
 export { default as RemovableTextInput } from './RemovableTextInput';
+export { default as ScannerInput } from './ScannerInput';
 export { default as TextInputLine } from './TextInputLine';
 export { default as TextInputList } from './TextInputList';
 export { default as TimeDisplay } from './TimeDisplay';

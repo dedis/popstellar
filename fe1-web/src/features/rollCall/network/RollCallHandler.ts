@@ -248,6 +248,8 @@ export const handleRollCallReopenMessage =
       idAlias: rcMsgData.update_id,
       openedAt: rcMsgData.opened_at,
       status: RollCallStatus.REOPENED,
+      // unset end as the roll call is open once again
+      closedAt: undefined,
     });
 
     updateRollCall(rollCall);
