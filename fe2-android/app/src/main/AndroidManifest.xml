@@ -32,7 +32,6 @@
     <activity
       android:name=".ui.detail.LaoDetailActivity"
       android:windowSoftInputMode="adjustPan" />
-    <activity android:name=".ui.digitalcash.DigitalCashActivity" />
 
     <uses-library
       android:name="android.test.runner"

@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashReceiptFragmentBinding;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiptFragment} factory method to
@@ -16,7 +18,8 @@ import com.github.dedis.popstellar.databinding.DigitalCashReceiptFragmentBinding
  */
 public class DigitalCashReceiptFragment extends Fragment {
   private DigitalCashReceiptFragmentBinding binding;
-  private DigitalCashViewModel viewModel;
+  private LaoViewModel viewModel;
+  private DigitalCashViewModel digitalCashViewModel;
 
   /**
    * Use this factory method to create a new instance of this fragment using the provided
@@ -31,7 +34,9 @@ public class DigitalCashReceiptFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    viewModel = DigitalCashActivity.obtainViewModel(getActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    digitalCashViewModel =
+        LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
     binding = DigitalCashReceiptFragmentBinding.inflate(inflater, container, false);
     return binding.getRoot();
   }
@@ -39,7 +44,7 @@ public class DigitalCashReceiptFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    viewModel
+    digitalCashViewModel
         .getUpdateReceiptAmountEvent()
         .observe(
             getViewLifecycleOwner(),
@@ -49,7 +54,7 @@ public class DigitalCashReceiptFragment extends Fragment {
                 binding.digitalCashReceiptAmount.setText(amount);
               }
             });
-    viewModel
+    digitalCashViewModel
         .getUpdateReceiptAddressEvent()
         .observe(
             getViewLifecycleOwner(),
@@ -66,5 +71,6 @@ public class DigitalCashReceiptFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.digital_cash_receipt);
+    viewModel.setIsTab(false);
   }
 }

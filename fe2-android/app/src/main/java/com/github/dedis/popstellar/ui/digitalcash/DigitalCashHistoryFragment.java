@@ -8,11 +8,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class DigitalCashHistoryFragment extends Fragment {
   private static final String TAG = DigitalCashHistoryFragment.class.getSimpleName();
+
+  private LaoViewModel viewModel;
 
   public static DigitalCashHistoryFragment newInstance() {
     return new DigitalCashHistoryFragment();
@@ -23,13 +27,16 @@ public class DigitalCashHistoryFragment extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.digital_cash_history_fragment, container, false);
-    DigitalCashViewModel viewModel = DigitalCashActivity.obtainViewModel(getActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    DigitalCashViewModel digitalCashViewModel =
+        LaoActivity.obtainDigitalCashViewModel(getActivity(), viewModel.getLaoId());
+
     RecyclerView transactionList = view.findViewById(R.id.transaction_history_list);
     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
     RecyclerView.ItemDecoration decoration =
         new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
 
-    HistoryListAdapter adapter = new HistoryListAdapter(viewModel, requireActivity());
+    HistoryListAdapter adapter = new HistoryListAdapter(digitalCashViewModel, requireActivity());
 
     transactionList.setLayoutManager(layoutManager);
     transactionList.addItemDecoration(decoration);
@@ -37,7 +44,7 @@ public class DigitalCashHistoryFragment extends Fragment {
 
     // Update dynamically the events in History
     viewModel.addDisposable(
-        viewModel
+        digitalCashViewModel
             .getTransactionsObservable()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -48,7 +55,6 @@ public class DigitalCashHistoryFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    DigitalCashViewModel viewModel = DigitalCashActivity.obtainViewModel(requireActivity());
     viewModel.setPageTitle(R.string.digital_cash_history);
     viewModel.setIsTab(false);
   }

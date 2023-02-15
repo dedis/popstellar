@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -34,7 +36,8 @@ public class DigitalCashIssueFragment extends Fragment {
   public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
 
   private DigitalCashIssueFragmentBinding binding;
-  private DigitalCashViewModel viewModel;
+  private LaoViewModel viewModel;
+  private DigitalCashViewModel digitalCashViewModel;
 
   private int selectOneMember;
   private int selectAllRollCallAttendees;
@@ -53,8 +56,11 @@ public class DigitalCashIssueFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    viewModel = DigitalCashActivity.obtainViewModel(getActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    digitalCashViewModel =
+        LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
     binding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
+
     selectOneMember = binding.radioButton.getId();
     selectAllRollCallAttendees = binding.radioButtonAttendees.getId();
     selectAllLaoWitnesses = binding.radioButtonWitnesses.getId();
@@ -82,7 +88,8 @@ public class DigitalCashIssueFragment extends Fragment {
     String currentPublicKeySelected =
         String.valueOf(binding.digitalCashIssueSpinner.getEditText().getText());
     int radioGroup = binding.digitalCashIssueSelect.getCheckedRadioButtonId();
-    if (viewModel.canPerformTransaction(currentAmount, currentPublicKeySelected, radioGroup)) {
+    if (digitalCashViewModel.canPerformTransaction(
+        currentAmount, currentPublicKeySelected, radioGroup)) {
       try {
         Map<String, String> issueMap =
             computeMapForPostTransaction(currentAmount, currentPublicKeySelected, radioGroup);
@@ -136,9 +143,9 @@ public class DigitalCashIssueFragment extends Fragment {
     if (radioGroup == selectOneMember && !currentSelected.equals("")) {
       attendees.add(new PublicKey(currentSelected));
     } else if (radioGroup == selectAllRollCallAttendees) {
-      attendees = viewModel.getAttendeesFromLastRollCall();
+      attendees = digitalCashViewModel.getAttendeesFromLastRollCall();
     } else if (radioGroup == selectAllLaoWitnesses) {
-      attendees = Objects.requireNonNull(viewModel.getLao()).getWitnesses();
+      attendees = Objects.requireNonNull(digitalCashViewModel.getLao()).getWitnesses();
     }
     return attendees;
   }
@@ -153,7 +160,7 @@ public class DigitalCashIssueFragment extends Fragment {
     /* Roll Call attendees to which we can send*/
     List<String> myArray;
     try {
-      myArray = viewModel.getAttendeesFromTheRollCallList();
+      myArray = digitalCashViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
       Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
       Toast.makeText(
@@ -162,7 +169,7 @@ public class DigitalCashIssueFragment extends Fragment {
               Toast.LENGTH_SHORT)
           .show();
       myArray = new ArrayList<>();
-      DigitalCashActivity.setCurrentFragment(
+      LaoActivity.setCurrentFragment(
           getParentFragmentManager(),
           R.id.fragment_digital_cash_home,
           DigitalCashHomeFragment::newInstance);
@@ -179,32 +186,29 @@ public class DigitalCashIssueFragment extends Fragment {
    *     issue to
    */
   private void postTransaction(Map<String, String> publicKeyAmount) {
-    if (viewModel.getLaoId() == null) {
-      Toast.makeText(
-              requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
-          .show();
-    } else {
-      viewModel.addDisposable(
-          viewModel
-              .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true)
-              .subscribe(
-                  () ->
-                      Toast.makeText(
-                              requireContext(),
-                              R.string.digital_cash_post_transaction,
-                              Toast.LENGTH_LONG)
-                          .show(),
-                  error -> {
-                    if (error instanceof KeyException
-                        || error instanceof GeneralSecurityException) {
-                      ErrorUtils.logAndShow(
-                          requireContext(), TAG, error, R.string.error_retrieve_own_token);
-                    } else {
-                      ErrorUtils.logAndShow(
-                          requireContext(), TAG, error, R.string.error_post_transaction);
-                    }
-                  }));
-      viewModel.updateLaoCoinEvent();
-    }
+    viewModel.addDisposable(
+        digitalCashViewModel
+            .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true)
+            .subscribe(
+                () -> {
+                  Toast.makeText(
+                          requireContext(),
+                          R.string.digital_cash_post_transaction,
+                          Toast.LENGTH_LONG)
+                      .show();
+                  LaoActivity.setCurrentFragment(
+                      getParentFragmentManager(),
+                      R.id.fragment_digital_cash_home,
+                      DigitalCashHomeFragment::newInstance);
+                },
+                error -> {
+                  if (error instanceof KeyException || error instanceof GeneralSecurityException) {
+                    ErrorUtils.logAndShow(
+                        requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                  } else {
+                    ErrorUtils.logAndShow(
+                        requireContext(), TAG, error, R.string.error_post_transaction);
+                  }
+                }));
   }
 }

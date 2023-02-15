@@ -10,11 +10,12 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
 import com.github.dedis.popstellar.model.Role;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity.TAG;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashHomeFragment#newInstance} factory
@@ -22,7 +23,8 @@ import static com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity.TAG
  */
 public class DigitalCashHomeFragment extends Fragment {
   private DigitalCashHomeFragmentBinding binding;
-  private DigitalCashViewModel viewModel;
+  private LaoViewModel viewModel;
+  private DigitalCashViewModel digitalCashViewModel;
 
   public DigitalCashHomeFragment() {
     // Required empty constructor
@@ -36,11 +38,17 @@ public class DigitalCashHomeFragment extends Fragment {
     return new DigitalCashHomeFragment();
   }
 
+  public static final String TAG = DigitalCashHomeFragment.class.getSimpleName();
+
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    viewModel = DigitalCashActivity.obtainViewModel(getActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+
+    digitalCashViewModel =
+        LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
     binding = DigitalCashHomeFragmentBinding.inflate(inflater, container, false);
+
     subscribeToTransactions();
     subscribeToRole();
     setupReceiveButton();
@@ -57,13 +65,13 @@ public class DigitalCashHomeFragment extends Fragment {
 
   private void subscribeToTransactions() {
     viewModel.addDisposable(
-        viewModel
+        digitalCashViewModel
             .getTransactionsObservable()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 transactions -> {
                   Log.d(TAG, "updating transactions " + transactions);
-                  long totalAmount = viewModel.getOwnBalance();
+                  long totalAmount = digitalCashViewModel.getOwnBalance();
                   binding.coinAmountText.setText(String.valueOf(totalAmount));
                 },
                 error ->
@@ -74,7 +82,7 @@ public class DigitalCashHomeFragment extends Fragment {
   private void setupReceiveButton() {
     View.OnClickListener receiveListener =
         v ->
-            DigitalCashActivity.setCurrentFragment(
+            LaoActivity.setCurrentFragment(
                 getParentFragmentManager(),
                 R.id.fragment_digital_cash_receive,
                 DigitalCashReceiveFragment::newInstance);
@@ -86,7 +94,7 @@ public class DigitalCashHomeFragment extends Fragment {
   private void setupSendButton() {
     View.OnClickListener sendListener =
         v ->
-            DigitalCashActivity.setCurrentFragment(
+            LaoActivity.setCurrentFragment(
                 getParentFragmentManager(),
                 R.id.fragment_digital_cash_send,
                 DigitalCashSendFragment::newInstance);
@@ -105,7 +113,7 @@ public class DigitalCashHomeFragment extends Fragment {
                 binding.issueButton.setVisibility(View.VISIBLE);
                 binding.issueButton.setOnClickListener(
                     v ->
-                        DigitalCashActivity.setCurrentFragment(
+                        LaoActivity.setCurrentFragment(
                             getParentFragmentManager(),
                             R.id.fragment_digital_cash_issue,
                             DigitalCashIssueFragment::newInstance));

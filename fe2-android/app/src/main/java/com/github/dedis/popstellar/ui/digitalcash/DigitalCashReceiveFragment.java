@@ -12,6 +12,8 @@ import com.github.dedis.popstellar.databinding.DigitalCashReceiveFragmentBinding
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.gson.Gson;
 
@@ -33,7 +35,8 @@ public class DigitalCashReceiveFragment extends Fragment {
   @Inject Gson gson;
 
   private DigitalCashReceiveFragmentBinding binding;
-  private DigitalCashViewModel viewModel;
+  private LaoViewModel viewModel;
+  private DigitalCashViewModel digitalCashViewModel;
 
   public DigitalCashReceiveFragment() {
     // Required empty constructor
@@ -52,7 +55,9 @@ public class DigitalCashReceiveFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    viewModel = DigitalCashActivity.obtainViewModel(getActivity());
+    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    digitalCashViewModel =
+        LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
     binding = DigitalCashReceiveFragmentBinding.inflate(inflater, container, false);
     setHomeInterface();
     return binding.getRoot();
@@ -61,12 +66,12 @@ public class DigitalCashReceiveFragment extends Fragment {
   public void setHomeInterface() {
     // Subscribe to roll calls so that our own address is kept updated in case a new rc is closed
     viewModel.addDisposable(
-        viewModel
+        digitalCashViewModel
             .getRollCallsObservable()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 ids -> {
-                  PoPToken token = viewModel.getValidToken();
+                  PoPToken token = digitalCashViewModel.getValidToken();
                   PublicKey publicKey = token.getPublicKey();
                   binding.digitalCashReceiveAddress.setText(publicKey.getEncoded());
                   PopTokenData tokenData = new PopTokenData(token.getPublicKey());

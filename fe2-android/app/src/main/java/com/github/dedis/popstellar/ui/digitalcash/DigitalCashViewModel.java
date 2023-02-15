@@ -6,20 +6,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
-import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.ui.navigation.LaoViewModel;
-import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -36,12 +34,13 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Observable;
 import io.reactivex.*;
-import io.reactivex.disposables.CompositeDisposable;
 
 @HiltViewModel
-public class DigitalCashViewModel extends LaoViewModel {
+public class DigitalCashViewModel extends AndroidViewModel {
 
   public static final String TAG = DigitalCashViewModel.class.getSimpleName();
+
+  private String laoId;
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String RECEIVER_KEY_ERROR = "Error on the receiver s public key";
   private static final String COIN = "coin";
@@ -57,9 +56,6 @@ public class DigitalCashViewModel extends LaoViewModel {
    */
   private final MutableLiveData<SingleEvent<Boolean>> postTransactionEvent =
       new MutableLiveData<>();
-
-  /* Is used to change the lao Coin amount on the home fragment*/
-  private final MutableLiveData<SingleEvent<Boolean>> updateLaoCoinEvent = new MutableLiveData<>();
 
   /* Update the receipt after sending a transaction */
   private final MutableLiveData<SingleEvent<String>> updateReceiptAddressEvent =
@@ -77,8 +73,6 @@ public class DigitalCashViewModel extends LaoViewModel {
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
-  private final Wallet wallet;
-  private final CompositeDisposable disposables = new CompositeDisposable();
 
   @Inject
   public DigitalCashViewModel(
@@ -88,8 +82,7 @@ public class DigitalCashViewModel extends LaoViewModel {
       DigitalCashRepository digitalCashRepo,
       GlobalNetworkManager networkManager,
       Gson gson,
-      KeyManager keyManager,
-      Wallet wallet) {
+      KeyManager keyManager) {
     super(application);
     this.laoRepository = laoRepository;
     this.rollCallRepo = rollCallRepo;
@@ -97,13 +90,10 @@ public class DigitalCashViewModel extends LaoViewModel {
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
-    this.wallet = wallet;
   }
 
-  @Override
-  protected void onCleared() {
-    super.onCleared();
-    disposables.dispose();
+  public void setLaoId(String laoId) {
+    this.laoId = laoId;
   }
 
   public LiveData<SingleEvent<Boolean>> getPostTransactionEvent() {
@@ -112,10 +102,6 @@ public class DigitalCashViewModel extends LaoViewModel {
 
   public void postTransactionEvent() {
     postTransactionEvent.postValue(new SingleEvent<>(true));
-  }
-
-  public void updateLaoCoinEvent() {
-    updateLaoCoinEvent.postValue(new SingleEvent<>(true));
   }
 
   public LiveData<SingleEvent<String>> getUpdateReceiptAddressEvent() {
@@ -269,7 +255,7 @@ public class DigitalCashViewModel extends LaoViewModel {
 
   @Nullable
   public Set<PublicKey> getAttendeesFromLastRollCall() throws NoRollCallException {
-    return rollCallRepo.getLastClosedRollCall(getLaoId()).getAttendees();
+    return rollCallRepo.getLastClosedRollCall(laoId).getAttendees();
   }
 
   @Nullable
@@ -284,13 +270,12 @@ public class DigitalCashViewModel extends LaoViewModel {
         .collect(Collectors.toList());
   }
 
-  @Override
   public LaoView getLao() throws UnknownLaoException {
-    return laoRepository.getLaoView(getLaoId());
+    return laoRepository.getLaoView(laoId);
   }
 
   public PoPToken getValidToken() throws KeyException {
-    return keyManager.getValidPoPToken(getLaoId(), rollCallRepo.getLastClosedRollCall(getLaoId()));
+    return keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
   }
 
   public boolean canPerformTransaction(
@@ -306,11 +291,6 @@ public class DigitalCashViewModel extends LaoViewModel {
     } else {
       return true;
     }
-  }
-
-  public void savePersistentData() throws GeneralSecurityException {
-    ActivityUtils.activitySavingRoutine(
-        networkManager, wallet, getApplication().getApplicationContext());
   }
 
   private void processNotCoinbaseTransaction(
@@ -337,23 +317,23 @@ public class DigitalCashViewModel extends LaoViewModel {
   }
 
   public List<TransactionObject> getTransactionsForUser(PublicKey user) {
-    return digitalCashRepo.getTransactions(getLaoId(), user);
+    return digitalCashRepo.getTransactions(laoId, user);
   }
 
   public Observable<List<TransactionObject>> getTransactionsObservable() {
     try {
-      return digitalCashRepo.getTransactionsObservable(getLaoId(), getValidToken().getPublicKey());
+      return digitalCashRepo.getTransactionsObservable(laoId, getValidToken().getPublicKey());
     } catch (KeyException e) {
       return Observable.error(e);
     }
   }
 
   public Observable<Set<RollCall>> getRollCallsObservable() {
-    return rollCallRepo.getRollCallsObservableInLao(getLaoId());
+    return rollCallRepo.getRollCallsObservableInLao(laoId);
   }
 
   public long getUserBalance(PublicKey user) {
-    return digitalCashRepo.getUserBalance(getLaoId(), user);
+    return digitalCashRepo.getUserBalance(laoId, user);
   }
 
   public long getOwnBalance() throws KeyException {

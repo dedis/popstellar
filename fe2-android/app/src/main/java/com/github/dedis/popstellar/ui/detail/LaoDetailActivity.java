@@ -17,7 +17,6 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
-import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.LaoActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
@@ -133,7 +132,6 @@ public class LaoDetailActivity extends LaoActivity {
   }
 
   private void openDigitalCashTab() {
-    startActivity(DigitalCashActivity.newIntent(this, viewModel.getLaoId()));
   }
 
   private void openSocialMediaTab() {

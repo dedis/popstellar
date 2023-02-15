@@ -26,7 +26,8 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallViewModel;
 import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingViewModel;
-import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashHomeFragment;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashViewModel;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaHomeFragment;
@@ -238,7 +239,8 @@ public class LaoActivity extends AppCompatActivity {
   }
 
   private void openDigitalCashTab() {
-    startActivity(DigitalCashActivity.newIntent(this, viewModel.getLaoId()));
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_digital_cash_home, DigitalCashHomeFragment::new);
   }
 
   private void openSocialMediaTab() {
@@ -294,6 +296,14 @@ public class LaoActivity extends AppCompatActivity {
         new ViewModelProvider(activity).get(SocialMediaViewModel.class);
     socialMediaViewModel.setLaoId(laoId);
     return socialMediaViewModel;
+  }
+
+  public static DigitalCashViewModel obtainDigitalCashViewModel(
+      FragmentActivity activity, String laoId) {
+    DigitalCashViewModel digitalCashViewModel =
+        new ViewModelProvider(activity).get(DigitalCashViewModel.class);
+    digitalCashViewModel.setLaoId(laoId);
+    return digitalCashViewModel;
   }
 
   /**
