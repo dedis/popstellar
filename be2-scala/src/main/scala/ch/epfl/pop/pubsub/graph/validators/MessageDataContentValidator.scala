@@ -1,10 +1,10 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.method.message.data.election.ElectionQuestion
+import ch.epfl.pop.model.network.{JsonRpcRequest}
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
 trait MessageDataContentValidator extends ContentValidator with AskPatternConstants {
@@ -24,6 +24,14 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     */
   final def validateTimestampStaleness(timestamp: Timestamp): Boolean = TIMESTAMP_BASE_TIME < timestamp
 
+  // Same as validateTimestampStaleness except that it returns a GraphMessage
+  def checkTimestampStaleness(rpcMessage: JsonRpcRequest, timestamp: Timestamp, error: PipelineError): GraphMessage = {
+    if (validateTimestampStaleness(timestamp))
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
   /** Check whether timestamp <first> is not older than timestamp <second>
     *
     * @param first
@@ -34,6 +42,39 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     *   true iff the timestamps are in chronological order
     */
   final def validateTimestampOrder(first: Timestamp, second: Timestamp): Boolean = first <= second
+
+  // Same as validateTimestampOrder except that it returns a GraphMessage
+  def checkTimestampOrder(
+      rpcMessage: JsonRpcRequest,
+      first: Timestamp,
+      second: Timestamp,
+      error: PipelineError
+  ): GraphMessage = {
+    if (validateTimestampOrder(first, second))
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Checks if the id corresponds to the expected id
+    *
+    * @param rpcMessage
+    *   rpc message to check
+    * @param expectedId
+    *   expected id
+    * @param id
+    *   id to check
+    * @param error
+    *   the error to forward in case the id is not the same as the expected id
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  def checkId(rpcMessage: JsonRpcRequest, expectedId: Hash, id: Hash, error: PipelineError): GraphMessage = {
+    if (expectedId == id)
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
 
   /** Check whether a list of <witnesses> public keys are valid or not
     *

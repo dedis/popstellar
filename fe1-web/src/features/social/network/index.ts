@@ -8,8 +8,8 @@ import {
   handleNotifyDeleteChirpMessage,
 } from './ChirpHandler';
 import { AddChirp, DeleteChirp, NotifyAddChirp, NotifyDeleteChirp } from './messages/chirp';
-import { AddReaction } from './messages/reaction';
-import { handleAddReactionMessage } from './ReactionHandler';
+import { AddReaction, DeleteReaction } from './messages/reaction';
+import { handleAddReactionMessage, handleDeleteReactionMessage } from './ReactionHandler';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
@@ -49,5 +49,11 @@ export function configureNetwork(configuration: SocialConfiguration) {
     ActionType.ADD,
     handleAddReactionMessage(configuration.getCurrentLaoId),
     AddReaction.fromJson,
+  );
+  configuration.messageRegistry.add(
+    ObjectType.REACTION,
+    ActionType.DELETE,
+    handleDeleteReactionMessage(configuration.getCurrentLaoId),
+    DeleteReaction.fromJson,
   );
 }

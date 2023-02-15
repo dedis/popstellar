@@ -1,4 +1,4 @@
-import { Hash, HashState } from 'core/objects';
+import { Hash, HashState, ProtocolError } from 'core/objects';
 import { OmitMethods } from 'core/types';
 
 export interface MajorityResult {
@@ -17,7 +17,24 @@ export class QuestionResult {
   result: MajorityResult[];
 
   constructor(questionResult: OmitMethods<QuestionResult>) {
+    if (!questionResult) {
+      throw new Error(
+        'Error encountered while creating a QuestionResult object: undefined/null parameters',
+      );
+    }
+
+    if (!questionResult.id) {
+      throw new ProtocolError(
+        "Undefined 'messageId' parameter encountered during 'QuestionResult'",
+      );
+    }
     this.id = questionResult.id;
+
+    if (!questionResult.result) {
+      throw new ProtocolError(
+        "Undefined 'messageId' parameter encountered during 'QuestionResult'",
+      );
+    }
     this.result = questionResult.result;
   }
 

@@ -1221,10 +1221,6 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
-                                              "backgroundColor": "#8E8E8E",
-                                              "borderColor": "#8E8E8E",
-                                            },
                                           ]
                                         }
                                       >
@@ -1314,11 +1310,14 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
+                                            Object {
+                                              "backgroundColor": "transparent",
+                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"thumbs-down-sharp","size":16,"color":"#fff"}
+                                          {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
@@ -1403,11 +1402,14 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
+                                            Object {
+                                              "backgroundColor": "transparent",
+                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"heart","size":16,"color":"#fff"}
+                                          {"name":"heart","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
@@ -2100,10 +2102,6 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
-                                              "backgroundColor": "#8E8E8E",
-                                              "borderColor": "#8E8E8E",
-                                            },
                                           ]
                                         }
                                       >
@@ -2193,11 +2191,14 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
+                                            Object {
+                                              "backgroundColor": "transparent",
+                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"thumbs-down-sharp","size":16,"color":"#fff"}
+                                          {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
@@ -2282,11 +2283,14 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
+                                            Object {
+                                              "backgroundColor": "transparent",
+                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"heart","size":16,"color":"#fff"}
+                                          {"name":"heart","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
@@ -2371,11 +2375,14 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
+                                            Object {
+                                              "backgroundColor": "transparent",
+                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"ios-ellipsis-horizontal","size":16,"color":"#fff"}
+                                          {"name":"ios-ellipsis-horizontal","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
@@ -3047,10 +3054,6 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
-                                              "backgroundColor": "#8E8E8E",
-                                              "borderColor": "#8E8E8E",
-                                            },
                                           ]
                                         }
                                       >
@@ -3140,11 +3143,14 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
+                                            Object {
+                                              "backgroundColor": "transparent",
+                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"thumbs-down-sharp","size":16,"color":"#fff"}
+                                          {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
@@ -3229,11 +3235,14 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
+                                            Object {
+                                              "backgroundColor": "transparent",
+                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"heart","size":16,"color":"#fff"}
+                                          {"name":"heart","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
@@ -3318,11 +3327,14 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
+                                            Object {
+                                              "backgroundColor": "transparent",
+                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"ios-ellipsis-horizontal","size":16,"color":"#fff"}
+                                          {"name":"ios-ellipsis-horizontal","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
@@ -3994,10 +4006,6 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
-                                            Object {
-                                              "backgroundColor": "#8E8E8E",
-                                              "borderColor": "#8E8E8E",
-                                            },
                                           ]
                                         }
                                       >
@@ -4087,11 +4095,14 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
+                                            Object {
+                                              "backgroundColor": "transparent",
+                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"thumbs-down-sharp","size":16,"color":"#fff"}
+                                          {"name":"thumbs-down-sharp","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
@@ -4176,11 +4187,14 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                               "borderWidth": 1,
                                               "padding": 8,
                                             },
+                                            Object {
+                                              "backgroundColor": "transparent",
+                                            },
                                           ]
                                         }
                                       >
                                         <View>
-                                          {"name":"heart","size":16,"color":"#fff"}
+                                          {"name":"heart","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>

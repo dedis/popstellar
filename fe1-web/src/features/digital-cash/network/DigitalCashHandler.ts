@@ -41,7 +41,14 @@ export const handleTransactionPost =
       return false;
     }
 
-    const transaction = Transaction.fromJSON(tx.transaction, tx.transaction_id);
+    let transaction: Transaction;
+
+    try {
+      transaction = Transaction.fromJSON(tx.transaction, tx.transaction_id);
+    } catch (e: any) {
+      console.warn(`handleTransactionPost failed: ${e?.toString()}`);
+      return false;
+    }
 
     // Check the transaction signatures over the inputs and outputs,
     // and check that the transaction inputs used are consistent with our current state

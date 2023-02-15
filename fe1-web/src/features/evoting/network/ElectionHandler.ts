@@ -107,18 +107,25 @@ export const handleElectionSetupMessage =
       return false;
     }
 
-    const election = new Election({
-      lao: elecMsg.lao,
-      id: elecMsg.id,
-      name: elecMsg.name,
-      version: elecMsg.version as ElectionVersion,
-      createdAt: elecMsg.created_at,
-      start: elecMsg.start_time,
-      end: elecMsg.end_time,
-      questions: elecMsg.questions,
-      electionStatus: ElectionStatus.NOT_STARTED,
-      registeredVotes: [],
-    });
+    let election: Election;
+
+    try {
+      election = new Election({
+        lao: elecMsg.lao,
+        id: elecMsg.id,
+        name: elecMsg.name,
+        version: elecMsg.version as ElectionVersion,
+        createdAt: elecMsg.created_at,
+        start: elecMsg.start_time,
+        end: elecMsg.end_time,
+        questions: elecMsg.questions,
+        electionStatus: ElectionStatus.NOT_STARTED,
+        registeredVotes: [],
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     // Subscribing to the election channel corresponding to that election
     const electionChannel = channelFromIds(election.lao, election.id);
@@ -213,12 +220,19 @@ export const handleCastVoteMessage =
       return false;
     }
 
-    const currentVote = new RegisteredVote({
-      createdAt: castVoteMsg.created_at,
-      sender: msg.sender,
-      votes: castVoteMsg.votes,
-      messageId: msg.message_id,
-    });
+    let currentVote: RegisteredVote;
+
+    try {
+      currentVote = new RegisteredVote({
+        createdAt: castVoteMsg.created_at,
+        sender: msg.sender,
+        votes: castVoteMsg.votes,
+        messageId: msg.message_id,
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     if (election.registeredVotes.some((votes) => votes.sender.equals(currentVote.sender))) {
       // Update the vote if the person has already voted before

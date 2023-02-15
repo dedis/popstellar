@@ -103,6 +103,24 @@ export class RollCall {
       throw new Error("Undefined 'status' when creating 'RollCall'");
     }
 
+    if (obj.status !== RollCallStatus.CREATED && !obj.idAlias) {
+      throw new Error(
+        `Error when creating 'RollCall': 'idAlias' can only be undefined in status 'CREATED'`,
+      );
+    }
+
+    if (obj.status !== RollCallStatus.CREATED && !obj.openedAt) {
+      throw new Error(
+        `Error when creating 'RollCall': 'openedAt' can only be undefined in status 'CREATED'`,
+      );
+    }
+
+    if (obj.status === RollCallStatus.CLOSED && !obj.closedAt) {
+      throw new Error(
+        `Error when creating 'RollCall': 'closedAt' cannot be undefined when in status 'CLOSED'`,
+      );
+    }
+
     this.id = obj.id;
     this.idAlias = obj.idAlias;
     this.name = obj.name;
