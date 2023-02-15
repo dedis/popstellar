@@ -7,10 +7,14 @@ import FeatureContext from 'core/contexts/FeatureContext';
 import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
+import { mockReaction1 } from 'features/social/__tests__/utils';
 import { SocialMediaContext } from 'features/social/context';
 
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
-import { requestAddReaction as mockRequestAddReaction } from '../../network/SocialMessageApi';
+import {
+  requestAddReaction as mockRequestAddReaction,
+  requestDeleteReaction as mockRequestDeleteReaction,
+} from '../../network/SocialMessageApi';
 import { Chirp } from '../../objects';
 import ChirpCard from '../ChirpCard';
 
@@ -52,14 +56,25 @@ const chirp1 = new Chirp({
 // endregion
 
 jest.mock('features/social/network/SocialMessageApi');
-jest.mock('react-redux', () => ({
-  ...jest.requireActual('react-redux'),
-  useSelector: jest.fn(() => ({
-    '👍': 1,
-    '👎': 0,
-    '❤️': 0,
-  })),
-}));
+jest.mock('react-redux', () => {
+  // use this to return the same values on the first and second call in each render
+  let x = 1;
+
+  return {
+    ...jest.requireActual('react-redux'),
+    useSelector: jest.fn(() => {
+      x = (x + 1) % 2;
+
+      if (x === 0) {
+        return { '👍': 1, '👎': 0, '❤️': 0 };
+      }
+
+      return {
+        '👍': mockReaction1,
+      };
+    }),
+  };
+});
 
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
 
@@ -131,11 +146,11 @@ describe('ChirpCard', () => {
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
-    it('adds thumbs up correctly', () => {
+    it('removes thumbs up correctly', () => {
       const { getByTestId } = renderChirp(chirp, true);
       const thumbsUpButton = getByTestId('thumbs-up');
       fireEvent.press(thumbsUpButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID, mockLaoId);
+      expect(mockRequestDeleteReaction).toHaveBeenCalledWith(mockReaction1.id, mockLaoId);
     });
 
     it('adds thumbs down correctly', () => {

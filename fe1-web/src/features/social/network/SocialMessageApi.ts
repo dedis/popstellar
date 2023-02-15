@@ -2,7 +2,7 @@ import { publish } from 'core/network';
 import { getReactionChannel, getUserSocialChannel, Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { AddChirp, DeleteChirp } from './messages/chirp';
-import { AddReaction } from './messages/reaction';
+import { AddReaction, DeleteReaction } from './messages/reaction';
 
 /**
  * Contains all functions to send social media related messages.
@@ -73,6 +73,21 @@ export function requestAddReaction(
     reaction_codepoint: reaction_codepoint,
     chirp_id: chirp_id,
     timestamp: timestamp,
+  });
+
+  return publish(getReactionChannel(laoId), message);
+}
+
+/**
+ * Sends a query to the server to delete an existing reaction.
+ *
+ * @param reactionId - The id of the reaction that should be deleted
+ * @param laoId - The id of the lao to which the reaction belongs
+ */
+export function requestDeleteReaction(reactionId: Hash, laoId: Hash): Promise<void> {
+  const message = new DeleteReaction({
+    reaction_id: reactionId,
+    timestamp: Timestamp.EpochNow(),
   });
 
   return publish(getReactionChannel(laoId), message);

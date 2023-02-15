@@ -3,8 +3,8 @@ import { dispatch } from 'core/redux';
 
 import { SocialConfiguration } from '../interface';
 import { Reaction } from '../objects';
-import { addReaction } from '../reducer';
-import { AddReaction } from './messages/reaction';
+import { addReaction, deleteReaction } from '../reducer';
+import { AddReaction, DeleteReaction } from './messages/reaction';
 
 /**
  * Handler for social media chirp's reactions
@@ -44,5 +44,32 @@ export const handleAddReactionMessage =
     });
 
     dispatch(addReaction(laoId, reaction));
+    return true;
+  };
+
+/**
+ * Handles an deleteReaction message by deleting the respective reaction
+ */
+export const handleDeleteReactionMessage =
+  (getCurrentLaoId: SocialConfiguration['getCurrentLaoId']) => (msg: ProcessableMessage) => {
+    if (
+      msg.messageData.object !== ObjectType.REACTION ||
+      msg.messageData.action !== ActionType.DELETE
+    ) {
+      console.warn('handleDeleteReactionMessage was called to process an unsupported message');
+      return false;
+    }
+
+    const makeErr = (err: string) => `reaction/delete was not processed: ${err}`;
+
+    const laoId = getCurrentLaoId();
+    if (!laoId) {
+      console.warn(makeErr('no Lao is currently active'));
+      return false;
+    }
+
+    const reactionMessage = msg.messageData as DeleteReaction;
+
+    dispatch(deleteReaction(laoId, reactionMessage.reaction_id));
     return true;
   };
