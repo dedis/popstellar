@@ -20,10 +20,10 @@ jobs:
         os: [ubuntu-latest, macOS-latest, windows-latest]
         node-version: [18.x]
         include:
-		  # Additionally also run it on node v16
-		  # but just on ubuntu to not have too many runs
+          # Additionally also run it on node v16
+          # but just on ubuntu to not have too many runs
           - os: ubuntu-latest
-		    node-version: 16.x
+            node-version: 16.x
 
     defaults:
       run:
