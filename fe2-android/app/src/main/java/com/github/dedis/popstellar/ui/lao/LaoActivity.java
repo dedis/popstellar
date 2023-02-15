@@ -26,8 +26,7 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallViewModel;
 import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingViewModel;
-import com.github.dedis.popstellar.ui.digitalcash.DigitalCashHomeFragment;
-import com.github.dedis.popstellar.ui.digitalcash.DigitalCashViewModel;
+import com.github.dedis.popstellar.ui.digitalcash.*;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.navigation.MainMenuTab;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaHomeFragment;
@@ -137,6 +136,18 @@ public class LaoActivity extends AppCompatActivity {
                 binding.laoAppBar.setTitle(resId);
               }
             });
+
+    binding.laoAppBar.setOnMenuItemClickListener(
+        menuItem -> {
+          if (menuItem.getItemId() == R.id.history_menu_toolbar) {
+            setCurrentFragment(
+                getSupportFragmentManager(),
+                R.id.fragment_digital_cash_history,
+                DigitalCashHistoryFragment::newInstance);
+            return true;
+          }
+          return false;
+        });
   }
 
   private void observeDrawer() {

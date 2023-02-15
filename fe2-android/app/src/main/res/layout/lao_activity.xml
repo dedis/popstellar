@@ -27,6 +27,7 @@
           android:layout_width="match_parent"
           android:layout_height="?attr/actionBarSize"
           app:navigationContentDescription="Open Menu"
+          app:menu="@menu/digital_cash_menu"
           app:navigationIcon="@drawable/menu_icon" />
       </com.google.android.material.appbar.AppBarLayout>
 
