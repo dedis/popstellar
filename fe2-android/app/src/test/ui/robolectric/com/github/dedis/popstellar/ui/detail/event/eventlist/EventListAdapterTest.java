@@ -7,7 +7,6 @@ import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.testutils.*;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
@@ -28,7 +27,7 @@ import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
-import static com.github.dedis.popstellar.testutils.pages.detail.LaoDetailActivityPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -102,14 +101,10 @@ public class EventListAdapterTest {
       };
 
   @Rule(order = 3)
-  public ActivityScenarioRule<LaoDetailActivity> activityScenarioRule =
+  public ActivityScenarioRule<LaoActivity> activityScenarioRule =
       new ActivityScenarioRule<>(
           IntentUtils.createIntent(
-              LaoDetailActivity.class,
-              new BundleBuilder()
-                  .putString(laoIdExtra(), LAO_ID)
-                  .putString(fragmentToOpenExtra(), laoDetailValue())
-                  .build()));
+              LaoActivity.class, new BundleBuilder().putString(laoIdExtra(), LAO_ID).build()));
 
   @Test
   public void emptyAdapterTest() {
