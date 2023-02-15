@@ -60,7 +60,7 @@ Here's the annotated directory tree:
 │   ├── network                  # module to network with the backend
 │   │   ├── ingestion              # implementation and configuration of the processing of incoming messages
 │   │   ├── jsonrpc                # network & protocol objects
-│   │   ├── strategies             # sending strategies when there are multiple server
+│   │   ├── strategies             # sending strategies when there are multiple servers
 │   │   └── validation             # protocol validation utilities
 │   │
 │   ├── objects                  # module containing the core business objects
