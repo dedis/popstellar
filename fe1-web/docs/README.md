@@ -75,14 +75,6 @@ Here's the annotated directory tree:
 │
 ├── features                 # independent features in the system
 │
-│   ├── digital cash             # feature dealing with digital cash
-│   │
-│   ├── events                   # feature dealing with events happening in a LAO
-│   │
-│   ├── evoting                  # feature dealing with E-Voting and Elections
-│   │
-│   ├── home                     # feature dealing with the app's home screen
-│   │
 │   ├── lao                      # feature dealing with the notion of a LAO, showing the typical feature structure
 │   │   ├── components             # feature components
 │   │   ├── errors                 # feature errors definition
@@ -95,6 +87,14 @@ Here's the annotated directory tree:
 │   │   ├── reducer                # redux-based state management for the feature
 │   │   ├── screens                # UI screens of the feature
 │   │   └── store                  # static access to the feature's reducer store (DEPRECATED)
+│   │
+│   ├── digital cash             # feature dealing with digital cash
+│   │
+│   ├── events                   # feature dealing with events happening in a LAO
+│   │
+│   ├── evoting                  # feature dealing with E-Voting and Elections
+│   │
+│   ├── home                     # feature dealing with the app's home screen
 │   │
 │   ├── meeting                  # feature dealing with meetings, a type of event
 │   │
