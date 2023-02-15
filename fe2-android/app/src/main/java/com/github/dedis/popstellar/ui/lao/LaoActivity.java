@@ -144,6 +144,7 @@ public class LaoActivity extends AppCompatActivity {
                 getSupportFragmentManager(),
                 R.id.fragment_digital_cash_history,
                 DigitalCashHistoryFragment::newInstance);
+            binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.DIGITAL_CASH.getMenuId());
             return true;
           }
           return false;
