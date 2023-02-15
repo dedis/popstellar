@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 
 import androidx.activity.OnBackPressedCallback;
@@ -105,9 +106,11 @@ public class SocialMediaSendFragment extends Fragment {
     requireActivity()
         .getOnBackPressedDispatcher()
         .addCallback(
+            getViewLifecycleOwner(),
             new OnBackPressedCallback(true) {
               @Override
               public void handleOnBackPressed() {
+                Log.d(TAG, "Back pressed, going back to chirp list");
                 LaoActivity.setCurrentFragment(
                     getParentFragmentManager(),
                     R.id.fragment_chirp_list,

@@ -110,9 +110,11 @@ public class TokenFragment extends Fragment {
     requireActivity()
         .getOnBackPressedDispatcher()
         .addCallback(
+            getViewLifecycleOwner(),
             new OnBackPressedCallback(true) {
               @Override
               public void handleOnBackPressed() {
+                Log.d(TAG, "Back pressed, going to token list");
                 LaoActivity.setCurrentFragment(
                     getParentFragmentManager(), R.id.fragment_tokens, TokenListFragment::new);
               }
