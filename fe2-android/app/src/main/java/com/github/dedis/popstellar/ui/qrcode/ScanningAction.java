@@ -15,7 +15,10 @@ import com.github.dedis.popstellar.ui.home.HomeFragment;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-/** Enum class modeling the the action we want to do when using the QR code fragment */
+/**
+ * Enum class modeling the the action we want to do when using the QR code fragment. It provides
+ * strings to display and functions, i.e. to obtain view models and on back press behaviour
+ */
 public enum ScanningAction {
   ADD_WITNESS(
       R.string.qrcode_scanning_add_witness,
@@ -74,10 +77,25 @@ public enum ScanningAction {
     this.onBackPressed = onBackPressed;
   }
 
+  /**
+   * Provides the view model implementing the QRCodeScanningViewModel interface based on scanning
+   * action
+   *
+   * @param activity the activity of the caller
+   * @return QRCodeScanningViewModel view model
+   */
   public QRCodeScanningViewModel obtainViewModel(FragmentActivity activity) {
     return viewModelProvider.apply(activity);
   }
 
+  /**
+   * Call back that describes the action to take (i.e. which Fragment to open) when back arrow is
+   * pressed
+   *
+   * @param manager needed to open a fragment
+   * @param data data necessary (i.e. rc id when opening the RC fragment) to open target fragment
+   * @return the callback describing what to do on back button pressed
+   */
   public OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String data) {
     return new OnBackPressedCallback(true) {
       @Override
