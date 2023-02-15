@@ -5,8 +5,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
+import androidx.lifecycle.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -34,6 +33,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
 @HiltViewModel
@@ -41,7 +41,14 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   public static final String TAG = WitnessingViewModel.class.getSimpleName();
 
   private String laoId;
-  private final Set<PublicKey> witnesses = new HashSet<>();
+
+  // Scanned witnesses, not necessarily accepted by LAO
+  private final Set<PublicKey> scannedWitnesses = new HashSet<>();
+
+  // Accepted witnesses
+  private final MutableLiveData<List<PublicKey>> witnesses = new MutableLiveData<>();
+  private final MutableLiveData<List<WitnessMessage>> witnessMessages = new MutableLiveData<>();
+  private final MutableLiveData<Integer> nbScanned = new MutableLiveData<>(0);
 
   private final LAORepository laoRepo;
   private final KeyManager keyManager;
@@ -64,11 +71,57 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     this.gson = gson;
   }
 
-  public void setLaoId(String laoId) {
-    this.laoId = laoId;
+  public MutableLiveData<List<PublicKey>> getWitnesses() {
+    return witnesses;
   }
 
-  public Completable signMessage(WitnessMessage witnessMessage) {
+  public MutableLiveData<List<WitnessMessage>> getWitnessMessages() {
+    return witnessMessages;
+  }
+
+  public void setWitnessMessages(List<WitnessMessage> messages) {
+    this.witnessMessages.setValue(messages);
+  }
+
+  public void setWitnesses(List<PublicKey> witnesses) {
+    this.witnesses.setValue(witnesses);
+  }
+
+  /*
+  // TODO refactor this away
+   This is done so because of the absence of witnessing repository. It should be added
+   and then witnesses can be observed the same way as events. You can have a look at
+   either the roll call or election repository and view model.
+  */
+  public void setLaoId(String laoId) {
+    this.laoId = laoId;
+
+    disposables.add(
+        laoRepo
+            .getLaoObservable(laoId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                laoView -> {
+                  Log.d(TAG, "got an update for lao: " + laoView);
+
+                  setWitnessMessages(new ArrayList<>(laoView.getWitnessMessages().values()));
+                  setWitnesses(new ArrayList<>(laoView.getWitnesses()));
+                },
+                error -> Log.d(TAG, "error updating LAO :" + error)));
+  }
+
+  @Override
+  protected void onCleared() {
+    super.onCleared();
+    disposables.clear();
+  }
+
+  @Override
+  public LiveData<Integer> getNbScanned() {
+    return nbScanned;
+  }
+
+  protected Completable signMessage(WitnessMessage witnessMessage) {
     Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId());
     final LaoView laoView;
     try {
@@ -94,9 +147,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
             });
   }
 
-  private LaoView getLao() throws UnknownLaoException {
-    return laoRepo.getLaoView(laoId);
-  }
+
 
   @Override
   public void handleData(String data) {
@@ -109,12 +160,13 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
       return;
     }
     PublicKey publicKey = pkData.getPublicKey();
-    if (witnesses.contains(publicKey)) {
+    if (scannedWitnesses.contains(publicKey)) {
       ErrorUtils.logAndShow(getApplication(), TAG, R.string.witness_already_scanned_warning);
       return;
     }
 
-    witnesses.add(publicKey);
+    scannedWitnesses.add(publicKey);
+    nbScanned.setValue(scannedWitnesses.size());
     Log.d(TAG, "Witness " + publicKey + " successfully scanned");
     Toast.makeText(getApplication(), R.string.witness_scan_success, Toast.LENGTH_SHORT).show();
     disposables.add(
@@ -125,12 +177,14 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                   Log.d(TAG, networkSuccess);
                   Toast.makeText(getApplication(), networkSuccess, Toast.LENGTH_SHORT).show();
                 },
-                error ->
-                    ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_update_lao)));
+                error -> {
+                  scannedWitnesses.remove(publicKey);
+                  nbScanned.setValue(scannedWitnesses.size());
+                  ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao);
+                }));
   }
 
-  public Completable updateLaoWitnesses() {
+  private Completable updateLaoWitnesses() {
     Log.d(TAG, "Updating lao witnesses ");
 
     LaoView laoView;
@@ -146,7 +200,11 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     long now = Instant.now().getEpochSecond();
     UpdateLao updateLao =
         new UpdateLao(
-            mainKey.getPublicKey(), laoView.getCreation(), laoView.getName(), now, witnesses);
+            mainKey.getPublicKey(),
+            laoView.getCreation(),
+            laoView.getName(),
+            now,
+            scannedWitnesses);
     MessageGeneral msg = new MessageGeneral(mainKey, updateLao, gson);
 
     return networkManager
@@ -175,14 +233,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
         .doOnComplete(() -> Log.d(TAG, "updated lao with " + stateLao));
   }
 
-  @Override
-  protected void onCleared() {
-    super.onCleared();
-    disposables.clear();
-  }
-
-  @Override
-  public LiveData<Integer> getNbScanned() {
-    return null;
+  private LaoView getLao() throws UnknownLaoException {
+    return laoRepo.getLaoView(laoId);
   }
 }

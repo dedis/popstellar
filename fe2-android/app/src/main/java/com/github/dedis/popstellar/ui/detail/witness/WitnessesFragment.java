@@ -32,13 +32,16 @@ public class WitnessesFragment extends Fragment {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.witnesses_fragment, container, false);
     viewModel = LaoActivity.obtainViewModel(requireActivity());
+    WitnessingViewModel witnessingViewModel =
+        LaoActivity.obtainWitnessingViewModel(requireActivity(), viewModel.getLaoId());
 
     FloatingActionButton fab = view.findViewById(R.id.add_witness_button);
     fab.setOnClickListener(v -> openAddWitness());
 
     RecyclerView recyclerView = view.findViewById(R.id.witness_list);
 
-    WitnessListAdapter adapter = new WitnessListAdapter(viewModel.getWitnesses().getValue());
+    WitnessListAdapter adapter =
+        new WitnessListAdapter(witnessingViewModel.getWitnesses().getValue());
     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
     recyclerView.setLayoutManager(layoutManager);
     DividerItemDecoration itemDecoration =
@@ -48,7 +51,7 @@ public class WitnessesFragment extends Fragment {
     recyclerView.addItemDecoration(itemDecoration);
     recyclerView.setAdapter(adapter);
 
-    viewModel.getWitnesses().observe(getViewLifecycleOwner(), adapter::replaceList);
+    witnessingViewModel.getWitnesses().observe(getViewLifecycleOwner(), adapter::replaceList);
 
     return view;
   }

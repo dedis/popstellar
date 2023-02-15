@@ -22,8 +22,8 @@ public class WitnessMessageFragment extends Fragment {
 
   public static final String TAG = WitnessMessageFragment.class.getSimpleName();
   private WitnessMessageFragmentBinding binding;
-  private LaoViewModel laoViewModel;
-  private WitnessMessageListViewAdapter mWitnessMessageListViewAdapter;
+  private WitnessingViewModel witnessingViewModel;
+  private WitnessMessageListViewAdapter adapter;
 
   public static WitnessMessageFragment newInstance() {
     return new WitnessMessageFragment();
@@ -37,36 +37,31 @@ public class WitnessMessageFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     binding = WitnessMessageFragmentBinding.inflate(inflater, container, false);
 
-    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
+    LaoViewModel viewModel = LaoActivity.obtainViewModel(requireActivity());
+    witnessingViewModel =
+        LaoActivity.obtainWitnessingViewModel(requireActivity(), viewModel.getLaoId());
     binding.setLifecycleOwner(getActivity());
-
-    return binding.getRoot();
-  }
-
-  @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
     setupListAdapter();
     setupListUpdates();
+    return binding.getRoot();
   }
 
   private void setupListAdapter() {
     ListView listView = binding.witnessMessageList;
 
-    mWitnessMessageListViewAdapter =
-        new WitnessMessageListViewAdapter(new ArrayList<>(), getActivity());
+    adapter = new WitnessMessageListViewAdapter(new ArrayList<>(), getActivity());
 
-    listView.setAdapter(mWitnessMessageListViewAdapter);
+    listView.setAdapter(adapter);
   }
 
   private void setupListUpdates() {
-    laoViewModel
+    witnessingViewModel
         .getWitnessMessages()
         .observe(
             requireActivity(),
             messages -> {
               Log.d(TAG, "witness messages updated");
-              mWitnessMessageListViewAdapter.replaceList(messages);
+              adapter.replaceList(messages);
             });
   }
 }
