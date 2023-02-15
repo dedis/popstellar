@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.lao.socialmedia;
 import android.os.Bundle;
 import android.view.*;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -48,6 +49,7 @@ public class SocialMediaSendFragment extends Fragment {
     binding.setViewModel(socialMediaViewModel);
     binding.setLifecycleOwner(getViewLifecycleOwner());
 
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -97,5 +99,20 @@ public class SocialMediaSendFragment extends Fragment {
                   }));
       socialMediaViewModel.setBottomNavigationTab(SocialMediaTab.HOME);
     }
+  }
+
+  private void handleBackNav() {
+    requireActivity()
+        .getOnBackPressedDispatcher()
+        .addCallback(
+            new OnBackPressedCallback(true) {
+              @Override
+              public void handleOnBackPressed() {
+                LaoActivity.setCurrentFragment(
+                    getParentFragmentManager(),
+                    R.id.fragment_chirp_list,
+                    ChirpListFragment::newInstance);
+              }
+            });
   }
 }
