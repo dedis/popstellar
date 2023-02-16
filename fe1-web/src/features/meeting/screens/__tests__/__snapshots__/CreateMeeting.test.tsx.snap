@@ -425,6 +425,232 @@ exports[`CreateMeeting renders correctly when name is empty 1`] = `
                                 ]
                               }
                             >
+                              Start time
+                            </Text>
+                            <View
+                              accessible={true}
+                              focusable={true}
+                              onClick={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
+                              style={
+                                [
+                                  {
+                                    "width": 142,
+                                  },
+                                  undefined,
+                                ]
+                              }
+                            >
+                              <View
+                                style={
+                                  [
+                                    {
+                                      "alignItems": "center",
+                                      "flexDirection": "row",
+                                      "height": 40,
+                                      "justifyContent": "center",
+                                    },
+                                    undefined,
+                                  ]
+                                }
+                              >
+                                <View
+                                  style={
+                                    [
+                                      {
+                                        "alignItems": "center",
+                                        "borderColor": "#aaa",
+                                        "borderWidth": 1,
+                                        "flex": 1,
+                                        "height": 40,
+                                        "justifyContent": "center",
+                                      },
+                                      undefined,
+                                      false,
+                                      false,
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    allowFontScaling={true}
+                                    style={
+                                      [
+                                        {
+                                          "color": "#333",
+                                        },
+                                        undefined,
+                                      ]
+                                    }
+                                  >
+                                    05/Th/2021 01:00
+                                  </Text>
+                                </View>
+                                <Image
+                                  source={1}
+                                  style={
+                                    [
+                                      {
+                                        "height": 32,
+                                        "marginLeft": 5,
+                                        "marginRight": 5,
+                                        "width": 32,
+                                      },
+                                      undefined,
+                                    ]
+                                  }
+                                />
+                                <Modal
+                                  animationType="none"
+                                  hardwareAccelerated={false}
+                                  onRequestClose={[Function]}
+                                  supportedOrientations={
+                                    [
+                                      "portrait",
+                                      "portrait-upside-down",
+                                      "landscape",
+                                      "landscape-left",
+                                      "landscape-right",
+                                    ]
+                                  }
+                                  transparent={true}
+                                  visible={false}
+                                />
+                              </View>
+                            </View>
+                            <Text
+                              style={
+                                [
+                                  {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  {
+                                    "fontWeight": "bold",
+                                  },
+                                ]
+                              }
+                            >
+                              End time
+                            </Text>
+                            <View
+                              accessible={true}
+                              focusable={true}
+                              onClick={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
+                              style={
+                                [
+                                  {
+                                    "width": 142,
+                                  },
+                                  undefined,
+                                ]
+                              }
+                            >
+                              <View
+                                style={
+                                  [
+                                    {
+                                      "alignItems": "center",
+                                      "flexDirection": "row",
+                                      "height": 40,
+                                      "justifyContent": "center",
+                                    },
+                                    undefined,
+                                  ]
+                                }
+                              >
+                                <View
+                                  style={
+                                    [
+                                      {
+                                        "alignItems": "center",
+                                        "borderColor": "#aaa",
+                                        "borderWidth": 1,
+                                        "flex": 1,
+                                        "height": 40,
+                                        "justifyContent": "center",
+                                      },
+                                      undefined,
+                                      false,
+                                      false,
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    allowFontScaling={true}
+                                    style={
+                                      [
+                                        {
+                                          "color": "#333",
+                                        },
+                                        undefined,
+                                      ]
+                                    }
+                                  >
+                                    05/Th/2021 02:00
+                                  </Text>
+                                </View>
+                                <Image
+                                  source={1}
+                                  style={
+                                    [
+                                      {
+                                        "height": 32,
+                                        "marginLeft": 5,
+                                        "marginRight": 5,
+                                        "width": 32,
+                                      },
+                                      undefined,
+                                    ]
+                                  }
+                                />
+                                <Modal
+                                  animationType="none"
+                                  hardwareAccelerated={false}
+                                  onRequestClose={[Function]}
+                                  supportedOrientations={
+                                    [
+                                      "portrait",
+                                      "portrait-upside-down",
+                                      "landscape",
+                                      "landscape-left",
+                                      "landscape-right",
+                                    ]
+                                  }
+                                  transparent={true}
+                                  visible={false}
+                                />
+                              </View>
+                            </View>
+                            <Text
+                              style={
+                                [
+                                  {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  {
+                                    "fontWeight": "bold",
+                                  },
+                                ]
+                              }
+                            >
                               Location
                             </Text>
                             <View
@@ -1010,6 +1236,232 @@ exports[`CreateMeeting renders correctly when name is not empty 1`] = `
                                 testID="meeting_name_selector"
                                 value="myMeeting"
                               />
+                            </View>
+                            <Text
+                              style={
+                                [
+                                  {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  {
+                                    "fontWeight": "bold",
+                                  },
+                                ]
+                              }
+                            >
+                              Start time
+                            </Text>
+                            <View
+                              accessible={true}
+                              focusable={true}
+                              onClick={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
+                              style={
+                                [
+                                  {
+                                    "width": 142,
+                                  },
+                                  undefined,
+                                ]
+                              }
+                            >
+                              <View
+                                style={
+                                  [
+                                    {
+                                      "alignItems": "center",
+                                      "flexDirection": "row",
+                                      "height": 40,
+                                      "justifyContent": "center",
+                                    },
+                                    undefined,
+                                  ]
+                                }
+                              >
+                                <View
+                                  style={
+                                    [
+                                      {
+                                        "alignItems": "center",
+                                        "borderColor": "#aaa",
+                                        "borderWidth": 1,
+                                        "flex": 1,
+                                        "height": 40,
+                                        "justifyContent": "center",
+                                      },
+                                      undefined,
+                                      false,
+                                      false,
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    allowFontScaling={true}
+                                    style={
+                                      [
+                                        {
+                                          "color": "#333",
+                                        },
+                                        undefined,
+                                      ]
+                                    }
+                                  >
+                                    05/Th/2021 01:00
+                                  </Text>
+                                </View>
+                                <Image
+                                  source={1}
+                                  style={
+                                    [
+                                      {
+                                        "height": 32,
+                                        "marginLeft": 5,
+                                        "marginRight": 5,
+                                        "width": 32,
+                                      },
+                                      undefined,
+                                    ]
+                                  }
+                                />
+                                <Modal
+                                  animationType="none"
+                                  hardwareAccelerated={false}
+                                  onRequestClose={[Function]}
+                                  supportedOrientations={
+                                    [
+                                      "portrait",
+                                      "portrait-upside-down",
+                                      "landscape",
+                                      "landscape-left",
+                                      "landscape-right",
+                                    ]
+                                  }
+                                  transparent={true}
+                                  visible={false}
+                                />
+                              </View>
+                            </View>
+                            <Text
+                              style={
+                                [
+                                  {
+                                    "color": "#000",
+                                    "fontSize": 20,
+                                    "lineHeight": 26,
+                                    "marginBottom": 16,
+                                    "textAlign": "left",
+                                  },
+                                  {
+                                    "fontWeight": "bold",
+                                  },
+                                ]
+                              }
+                            >
+                              End time
+                            </Text>
+                            <View
+                              accessible={true}
+                              focusable={true}
+                              onClick={[Function]}
+                              onResponderGrant={[Function]}
+                              onResponderMove={[Function]}
+                              onResponderRelease={[Function]}
+                              onResponderTerminate={[Function]}
+                              onResponderTerminationRequest={[Function]}
+                              onStartShouldSetResponder={[Function]}
+                              style={
+                                [
+                                  {
+                                    "width": 142,
+                                  },
+                                  undefined,
+                                ]
+                              }
+                            >
+                              <View
+                                style={
+                                  [
+                                    {
+                                      "alignItems": "center",
+                                      "flexDirection": "row",
+                                      "height": 40,
+                                      "justifyContent": "center",
+                                    },
+                                    undefined,
+                                  ]
+                                }
+                              >
+                                <View
+                                  style={
+                                    [
+                                      {
+                                        "alignItems": "center",
+                                        "borderColor": "#aaa",
+                                        "borderWidth": 1,
+                                        "flex": 1,
+                                        "height": 40,
+                                        "justifyContent": "center",
+                                      },
+                                      undefined,
+                                      false,
+                                      false,
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    allowFontScaling={true}
+                                    style={
+                                      [
+                                        {
+                                          "color": "#333",
+                                        },
+                                        undefined,
+                                      ]
+                                    }
+                                  >
+                                    05/Th/2021 02:00
+                                  </Text>
+                                </View>
+                                <Image
+                                  source={1}
+                                  style={
+                                    [
+                                      {
+                                        "height": 32,
+                                        "marginLeft": 5,
+                                        "marginRight": 5,
+                                        "width": 32,
+                                      },
+                                      undefined,
+                                    ]
+                                  }
+                                />
+                                <Modal
+                                  animationType="none"
+                                  hardwareAccelerated={false}
+                                  onRequestClose={[Function]}
+                                  supportedOrientations={
+                                    [
+                                      "portrait",
+                                      "portrait-upside-down",
+                                      "landscape",
+                                      "landscape-left",
+                                      "landscape-right",
+                                    ]
+                                  }
+                                  transparent={true}
+                                  visible={false}
+                                />
+                              </View>
                             </View>
                             <Text
                               style={
