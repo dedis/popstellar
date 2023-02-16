@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`CollapsibleContainer container can be opened 1`] = `
-Array [
+[
   <View
     accessible={true}
     collapsable={false}
@@ -16,7 +16,7 @@ Array [
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
     style={
-      Object {
+      {
         "backgroundColor": "rgb(242, 242, 242)",
         "paddingLeft": 0,
         "paddingRight": 0,
@@ -25,7 +25,7 @@ Array [
   >
     <View
       style={
-        Object {
+        {
           "alignItems": "center",
           "backgroundColor": "rgb(242, 242, 242)",
           "borderColor": "#bcbbc1",
@@ -39,8 +39,8 @@ Array [
     >
       <View
         style={
-          Array [
-            Object {
+          [
+            {
               "alignItems": "flex-start",
               "flex": 1,
               "justifyContent": "center",
@@ -49,8 +49,8 @@ Array [
           ]
         }
         theme={
-          Object {
-            "colors": Object {
+          {
+            "colors": {
               "background": "#ffffff",
               "black": "#242424",
               "disabled": "hsl(208, 8%, 90%)",
@@ -63,8 +63,8 @@ Array [
               "grey4": "#bdc6cf",
               "grey5": "#e1e8ee",
               "greyOutline": "#bbb",
-              "platform": Object {
-                "android": Object {
+              "platform": {
+                "android": {
                   "error": "#f44336",
                   "grey": "rgba(0, 0, 0, 0.54)",
                   "primary": "#2196f3",
@@ -73,7 +73,7 @@ Array [
                   "success": "#4caf50",
                   "warning": "#ffeb3b",
                 },
-                "default": Object {
+                "default": {
                   "error": "#ff3b30",
                   "grey": "#7d7d7d",
                   "primary": "#007aff",
@@ -82,7 +82,7 @@ Array [
                   "success": "#4cd964",
                   "warning": "#ffcc00",
                 },
-                "ios": Object {
+                "ios": {
                   "error": "#ff3b30",
                   "grey": "#7d7d7d",
                   "primary": "#007aff",
@@ -91,7 +91,7 @@ Array [
                   "success": "#4cd964",
                   "warning": "#ffcc00",
                 },
-                "web": Object {
+                "web": {
                   "error": "#ff190c",
                   "grey": "#393e42",
                   "primary": "#2089dc",
@@ -103,12 +103,12 @@ Array [
               },
               "primary": "#2089dc",
               "searchBg": "#303337",
-              "secondary": "#03dac4",
+              "secondary": "#ad1457",
               "success": "#52c41a",
               "warning": "#faad14",
               "white": "#ffffff",
             },
-            "spacing": Object {
+            "spacing": {
               "lg": 12,
               "md": 8,
               "sm": 4,
@@ -121,7 +121,7 @@ Array [
         <Text
           accessibilityRole="text"
           style={
-            Object {
+            {
               "backgroundColor": "transparent",
               "color": "#000",
               "fontSize": 20,
@@ -137,7 +137,7 @@ Array [
       </View>
       <View
         style={
-          Object {
+          {
             "paddingLeft": 16,
           }
         }
@@ -145,80 +145,22 @@ Array [
       <View
         collapsable={false}
         style={
-          Object {
-            "transform": Array [
-              Object {
+          {
+            "transform": [
+              {
                 "rotate": "0deg",
               },
             ],
           }
         }
         testID="RNE__ListItem__Accordion__Icon"
-      >
-        <View
-          style={
-            Object {
-              "overflow": "hidden",
-            }
-          }
-          testID="RNE__ICON__CONTAINER"
-        >
-          <View
-            accessibilityRole="button"
-            android_ripple={
-              Object {
-                "borderless": false,
-                "color": "rgba(0, 0, 0, 0.3)",
-                "radius": -5,
-              }
-            }
-            disabled={false}
-            testID="RNE__ICON__CONTAINER_ACTION"
-          >
-            <View
-              style={
-                Object {
-                  "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "justifyContent": "center",
-                }
-              }
-              testID="RNE__ICON"
-            >
-              <Text
-                allowFontScaling={false}
-                selectable={false}
-                style={
-                  Array [
-                    Object {
-                      "color": "#242424",
-                      "fontSize": 24,
-                    },
-                    Object {
-                      "backgroundColor": "transparent",
-                    },
-                    Object {
-                      "fontFamily": "material-community",
-                      "fontStyle": "normal",
-                      "fontWeight": "normal",
-                    },
-                    Object {},
-                  ]
-                }
-                testID="RNE__ICON__Component"
-              >
-                󰅀
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
+      />
     </View>
   </View>,
   <View
     collapsable={false}
     style={
-      Object {
+      {
         "opacity": 0,
       }
     }
@@ -249,7 +191,7 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Object {
+    {
       "backgroundColor": "rgb(242, 242, 242)",
       "paddingLeft": 0,
       "paddingRight": 0,
@@ -258,7 +200,7 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
 >
   <View
     style={
-      Object {
+      {
         "alignItems": "center",
         "backgroundColor": "rgb(242, 242, 242)",
         "borderColor": "#bcbbc1",
@@ -272,8 +214,8 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "alignItems": "flex-start",
             "flex": 1,
             "justifyContent": "center",
@@ -282,8 +224,8 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
         ]
       }
       theme={
-        Object {
-          "colors": Object {
+        {
+          "colors": {
             "background": "#ffffff",
             "black": "#242424",
             "disabled": "hsl(208, 8%, 90%)",
@@ -296,8 +238,8 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
             "grey4": "#bdc6cf",
             "grey5": "#e1e8ee",
             "greyOutline": "#bbb",
-            "platform": Object {
-              "android": Object {
+            "platform": {
+              "android": {
                 "error": "#f44336",
                 "grey": "rgba(0, 0, 0, 0.54)",
                 "primary": "#2196f3",
@@ -306,7 +248,7 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
                 "success": "#4caf50",
                 "warning": "#ffeb3b",
               },
-              "default": Object {
+              "default": {
                 "error": "#ff3b30",
                 "grey": "#7d7d7d",
                 "primary": "#007aff",
@@ -315,7 +257,7 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
                 "success": "#4cd964",
                 "warning": "#ffcc00",
               },
-              "ios": Object {
+              "ios": {
                 "error": "#ff3b30",
                 "grey": "#7d7d7d",
                 "primary": "#007aff",
@@ -324,7 +266,7 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
                 "success": "#4cd964",
                 "warning": "#ffcc00",
               },
-              "web": Object {
+              "web": {
                 "error": "#ff190c",
                 "grey": "#393e42",
                 "primary": "#2089dc",
@@ -336,12 +278,12 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
             },
             "primary": "#2089dc",
             "searchBg": "#303337",
-            "secondary": "#03dac4",
+            "secondary": "#ad1457",
             "success": "#52c41a",
             "warning": "#faad14",
             "white": "#ffffff",
           },
-          "spacing": Object {
+          "spacing": {
             "lg": 12,
             "md": 8,
             "sm": 4,
@@ -354,7 +296,7 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
       <Text
         accessibilityRole="text"
         style={
-          Object {
+          {
             "backgroundColor": "transparent",
             "color": "#000",
             "fontSize": 20,
@@ -370,7 +312,7 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
     </View>
     <View
       style={
-        Object {
+        {
           "paddingLeft": 16,
         }
       }
@@ -378,57 +320,22 @@ exports[`CollapsibleContainer renders correctly when closed 1`] = `
     <View
       collapsable={false}
       style={
-        Object {
-          "transform": Array [
-            Object {
+        {
+          "transform": [
+            {
               "rotate": "0deg",
             },
           ],
         }
       }
       testID="RNE__ListItem__Accordion__Icon"
-    >
-      <View
-        style={
-          Object {
-            "overflow": "hidden",
-          }
-        }
-        testID="RNE__ICON__CONTAINER"
-      >
-        <View
-          accessibilityRole="button"
-          android_ripple={
-            Object {
-              "borderless": false,
-              "color": "rgba(0, 0, 0, 0.3)",
-              "radius": -5,
-            }
-          }
-          disabled={false}
-          testID="RNE__ICON__CONTAINER_ACTION"
-        >
-          <View
-            style={
-              Object {
-                "alignItems": "center",
-                "backgroundColor": "transparent",
-                "justifyContent": "center",
-              }
-            }
-            testID="RNE__ICON"
-          >
-            <Text />
-          </View>
-        </View>
-      </View>
-    </View>
+    />
   </View>
 </View>
 `;
 
 exports[`CollapsibleContainer renders correctly when opened 1`] = `
-Array [
+[
   <View
     accessible={true}
     collapsable={false}
@@ -443,7 +350,7 @@ Array [
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
     style={
-      Object {
+      {
         "backgroundColor": "rgb(242, 242, 242)",
         "paddingLeft": 0,
         "paddingRight": 0,
@@ -452,7 +359,7 @@ Array [
   >
     <View
       style={
-        Object {
+        {
           "alignItems": "center",
           "backgroundColor": "rgb(242, 242, 242)",
           "borderColor": "#bcbbc1",
@@ -466,8 +373,8 @@ Array [
     >
       <View
         style={
-          Array [
-            Object {
+          [
+            {
               "alignItems": "flex-start",
               "flex": 1,
               "justifyContent": "center",
@@ -476,8 +383,8 @@ Array [
           ]
         }
         theme={
-          Object {
-            "colors": Object {
+          {
+            "colors": {
               "background": "#ffffff",
               "black": "#242424",
               "disabled": "hsl(208, 8%, 90%)",
@@ -490,8 +397,8 @@ Array [
               "grey4": "#bdc6cf",
               "grey5": "#e1e8ee",
               "greyOutline": "#bbb",
-              "platform": Object {
-                "android": Object {
+              "platform": {
+                "android": {
                   "error": "#f44336",
                   "grey": "rgba(0, 0, 0, 0.54)",
                   "primary": "#2196f3",
@@ -500,7 +407,7 @@ Array [
                   "success": "#4caf50",
                   "warning": "#ffeb3b",
                 },
-                "default": Object {
+                "default": {
                   "error": "#ff3b30",
                   "grey": "#7d7d7d",
                   "primary": "#007aff",
@@ -509,7 +416,7 @@ Array [
                   "success": "#4cd964",
                   "warning": "#ffcc00",
                 },
-                "ios": Object {
+                "ios": {
                   "error": "#ff3b30",
                   "grey": "#7d7d7d",
                   "primary": "#007aff",
@@ -518,7 +425,7 @@ Array [
                   "success": "#4cd964",
                   "warning": "#ffcc00",
                 },
-                "web": Object {
+                "web": {
                   "error": "#ff190c",
                   "grey": "#393e42",
                   "primary": "#2089dc",
@@ -530,12 +437,12 @@ Array [
               },
               "primary": "#2089dc",
               "searchBg": "#303337",
-              "secondary": "#03dac4",
+              "secondary": "#ad1457",
               "success": "#52c41a",
               "warning": "#faad14",
               "white": "#ffffff",
             },
-            "spacing": Object {
+            "spacing": {
               "lg": 12,
               "md": 8,
               "sm": 4,
@@ -548,7 +455,7 @@ Array [
         <Text
           accessibilityRole="text"
           style={
-            Object {
+            {
               "backgroundColor": "transparent",
               "color": "#000",
               "fontSize": 20,
@@ -564,7 +471,7 @@ Array [
       </View>
       <View
         style={
-          Object {
+          {
             "paddingLeft": 16,
           }
         }
@@ -572,80 +479,22 @@ Array [
       <View
         collapsable={false}
         style={
-          Object {
-            "transform": Array [
-              Object {
+          {
+            "transform": [
+              {
                 "rotate": "0deg",
               },
             ],
           }
         }
         testID="RNE__ListItem__Accordion__Icon"
-      >
-        <View
-          style={
-            Object {
-              "overflow": "hidden",
-            }
-          }
-          testID="RNE__ICON__CONTAINER"
-        >
-          <View
-            accessibilityRole="button"
-            android_ripple={
-              Object {
-                "borderless": false,
-                "color": "rgba(0, 0, 0, 0.3)",
-                "radius": -5,
-              }
-            }
-            disabled={false}
-            testID="RNE__ICON__CONTAINER_ACTION"
-          >
-            <View
-              style={
-                Object {
-                  "alignItems": "center",
-                  "backgroundColor": "transparent",
-                  "justifyContent": "center",
-                }
-              }
-              testID="RNE__ICON"
-            >
-              <Text
-                allowFontScaling={false}
-                selectable={false}
-                style={
-                  Array [
-                    Object {
-                      "color": "#242424",
-                      "fontSize": 24,
-                    },
-                    Object {
-                      "backgroundColor": "transparent",
-                    },
-                    Object {
-                      "fontFamily": "material-community",
-                      "fontStyle": "normal",
-                      "fontWeight": "normal",
-                    },
-                    Object {},
-                  ]
-                }
-                testID="RNE__ICON__Component"
-              >
-                󰅀
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
+      />
     </View>
   </View>,
   <View
     collapsable={false}
     style={
-      Object {
+      {
         "opacity": 0,
       }
     }

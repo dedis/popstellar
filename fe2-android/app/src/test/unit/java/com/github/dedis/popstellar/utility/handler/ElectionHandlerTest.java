@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.reactivex.Completable;
 
@@ -59,7 +60,7 @@ public class ElectionHandlerTest {
   private static final long CREATED_AT = CREATE_LAO.getCreation() + 10 * 1000; // 10 seconds later
   private static final long STARTED_AT = CREATE_LAO.getCreation() + 20 * 1000; // 20 seconds later
   private static final long OPENED_AT = CREATE_LAO.getCreation() + 30 * 1000; // 30 seconds later
-  private static final long END_AT = CREATE_LAO.getCreation() + 600 * 1000; // 60 seconds later
+  private static final long END_AT = CREATE_LAO.getCreation() + 60 * 1000; // 60 seconds later
 
   private static final String ELECTION_NAME = "Election Name";
   private static final String ELECTION_ID =
@@ -164,7 +165,7 @@ public class ElectionHandlerTest {
     messageHandler.handleMessage(messageSender, election.getChannel(), message);
   }
 
-  private MessageID handleCastVote(Vote vote, KeyPair senderKey)
+  private void handleCastVote(Vote vote, KeyPair senderKey)
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
           DataHandlingException, NoRollCallException {
 
@@ -173,7 +174,6 @@ public class ElectionHandlerTest {
 
     MessageGeneral message = new MessageGeneral(senderKey, castVote, gson);
     messageHandler.handleMessage(messageSender, OPEN_BALLOT_ELECTION.getChannel(), message);
-    return message.getMessageId();
   }
 
   private void handleElectionEnd()
@@ -293,15 +293,12 @@ public class ElectionHandlerTest {
     handleElectionSetup(OPEN_BALLOT_ELECTION);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
-    MessageID vote1Id = handleCastVote(vote1, SENDER_KEY);
-    MessageID vote2Id = handleCastVote(vote2, ATTENDEE_KEY);
+    handleCastVote(vote1, SENDER_KEY);
+    handleCastVote(vote2, ATTENDEE_KEY);
 
+    // The expected hash is made on the sorted vote ids
+    String[] voteIds = Stream.of(vote1, vote2).map(Vote::getId).sorted().toArray(String[]::new);
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
-    // Sort the vote ids based on the message id
-    String[] voteIds =
-        vote1Id.getEncoded().compareTo(vote2Id.getEncoded()) < 0
-            ? new String[] {vote1.getId(), vote2.getId()}
-            : new String[] {vote2.getId(), vote1.getId()};
 
     assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
   }
@@ -321,15 +318,12 @@ public class ElectionHandlerTest {
     handleElectionKey(SECRET_BALLOT_ELECTION, encodedKey.getEncoded());
     handleElectionOpen(SECRET_BALLOT_ELECTION);
 
-    MessageID vote1Id = handleCastVote(vote1, SENDER_KEY);
-    MessageID vote2Id = handleCastVote(vote2, ATTENDEE_KEY);
+    handleCastVote(vote1, SENDER_KEY);
+    handleCastVote(vote2, ATTENDEE_KEY);
 
+    // The expected hash is made on the sorted vote ids
+    String[] voteIds = Stream.of(vote1, vote2).map(Vote::getId).sorted().toArray(String[]::new);
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
-    // Sort the vote ids based on the message id
-    String[] voteIds =
-        vote1Id.getEncoded().compareTo(vote2Id.getEncoded()) < 0
-            ? new String[] {vote1.getId(), vote2.getId()}
-            : new String[] {vote2.getId(), vote1.getId()};
 
     assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
   }

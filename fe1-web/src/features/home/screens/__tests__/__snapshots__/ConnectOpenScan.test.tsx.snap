@@ -3,7 +3,7 @@
 exports[`ConnectOpenScan renders correctly 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -11,8 +11,8 @@ exports[`ConnectOpenScan renders correctly 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -21,8 +21,8 @@ exports[`ConnectOpenScan renders correctly 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -34,7 +34,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -50,7 +50,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -64,12 +64,12 @@ exports[`ConnectOpenScan renders correctly 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -83,7 +83,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -95,7 +95,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -103,7 +103,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -114,7 +114,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -128,7 +128,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -143,7 +143,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -157,7 +157,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -174,7 +174,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -184,7 +184,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -193,7 +193,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -205,7 +205,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -223,12 +223,12 @@ exports[`ConnectOpenScan renders correctly 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -238,10 +238,10 @@ exports[`ConnectOpenScan renders correctly 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -250,9 +250,9 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -268,7 +268,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -282,13 +282,13 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -298,13 +298,13 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -314,7 +314,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -322,14 +322,14 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
                     >
                       <View
                         style={
-                          Object {
+                          {
                             "flex": 1,
                             "overflow": "hidden",
                           }
@@ -337,7 +337,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                       >
                         <View
                           style={
-                            Object {
+                            {
                               "bottom": 0,
                               "left": 0,
                               "position": "absolute",
@@ -349,7 +349,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                         />
                         <View
                           style={
-                            Object {
+                            {
                               "flex": 1,
                               "flexDirection": "column",
                               "margin": 16,
@@ -358,7 +358,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                         >
                           <View
                             style={
-                              Object {
+                              {
                                 "bottom": 0,
                                 "flex": 1,
                               }
@@ -366,7 +366,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                           >
                             <View
                               style={
-                                Object {
+                                {
                                   "alignItems": "center",
                                   "flex": 1,
                                   "justifyContent": "space-between",
@@ -377,27 +377,27 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                               <View />
                               <View
                                 style={
-                                  Object {
+                                  {
                                     "opacity": 0.5,
                                   }
                                 }
                               >
                                 <RNSVGSvgView
                                   align="xMidYMid"
-                                  bbHeight={300}
-                                  bbWidth={300}
+                                  bbHeight="300"
+                                  bbWidth="300"
                                   focusable={false}
                                   height={300}
                                   meetOrSlice={0}
                                   minX={0}
                                   minY={0}
                                   style={
-                                    Array [
-                                      Object {
+                                    [
+                                      {
                                         "backgroundColor": "transparent",
                                         "borderWidth": 0,
                                       },
-                                      Object {
+                                      {
                                         "flex": 0,
                                         "height": 300,
                                         "width": 300,
@@ -411,9 +411,14 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                                   <RNSVGGroup>
                                     <RNSVGPath
                                       d="M392.4 101.2h-22.398v22.398H392.4V101.2Zm44.801-44.801h-112v112h112v-112Zm-22.398 89.602h-67.199V78.802h67.199v67.199Zm-313.6-22.398h22.398v-22.398h-22.398v22.398ZM56.402 168.4h112v-112h-112v112Zm22.402-89.598h67.199v67.199H78.804V78.802Zm313.6 291.2h-22.398V392.4h22.398v-22.398Zm44.801-44.801h-112v112h112v-112Zm-22.398 89.602h-67.199v-67.199h67.199v67.199Zm-156.8-291.2h22.398v-22.398h22.398V78.807h-22.398V56.409h-67.199v22.398h44.801v22.398h-22.398v44.801h22.398v-22.403Zm-22.398 22.398h-22.398v22.398h22.398v-22.398Zm-44.801-22.398v22.398h22.398v-22.398h-22.398Zm0-22.402h22.398V78.803h-22.398v22.398Zm-44.801 112h-22.398v22.398h22.398v-22.398Zm89.602-22.398v22.398h67.199v-22.398H280.41v-44.801h-22.398v44.801h-22.403Zm-22.402-22.402h-22.398v44.801h22.398v-44.801Zm-44.801 22.402h-22.398v22.398h22.398v-22.398Zm-89.598 0v22.398h44.801v-22.398H78.808Zm112 44.801v-22.398H168.41v22.398h22.398Zm-44.801 22.398h22.398v-22.398h-22.398v22.398Zm-89.602-22.398h22.398v-22.398H56.405v22.398Zm0 22.398V280.4h22.398v-22.398H56.405ZM78.807 280.4v22.398h22.398V280.4H78.807Zm-22.402 44.801v44.801h22.398v-22.398h22.398v-22.398l-44.796-.005Zm44.801 44.801h44.801v-22.398h-44.801v22.398Zm246.4-112v-22.398h-22.398v22.398h22.398Zm-156.8 112h-22.398V392.4h22.398v-22.398ZM168.404 392.4h-112v44.801h22.398v-22.398H101.2v22.398h22.398v-22.398h22.398v22.398h67.199v-22.398h-44.801l.01-22.403Zm89.602 44.801v-22.398h-22.398v22.398h22.398Zm22.398 0h22.398v-22.398h-22.398v22.398Zm0-156.8h44.801v-22.398h-22.398v-22.398h-22.398v22.398h-22.398v67.199h44.801v-22.398h-22.398l-.01-22.403Zm-67.199 134.4h22.398v-22.398h-22.398v22.398Zm-44.801-89.602h-22.398v22.398h44.801v-44.801h-22.398l-.005 22.403ZM146.006 258h-22.398v-22.398H101.21v44.801h22.398v22.398H101.21v22.398h44.801L146.006 258Zm89.602 112v22.398h22.398V370h22.398v22.398h22.398v-44.801h-67.199v-44.801h-22.398v67.199l22.403.005Zm-67.203-89.602h22.398v22.398h22.398v-22.398h22.398V258H168.4l.005 22.398Zm44.801-44.797h22.398v-22.398h-22.398v22.398Zm22.402 0v22.398h22.398v-22.398h-22.398Zm89.598 0v-22.398h-22.398v22.398h22.398Zm22.402-44.801H325.21v22.398h22.398V190.8Zm22.398 0v44.801h22.398V190.8h-22.398Zm0 89.598v22.398h22.398v-22.398h22.398V258H437.2v-44.801h-22.398v22.398h-22.398v22.398h-44.801v22.398l22.403.005ZM325.205 302.8h22.398v-22.398h-22.398V302.8ZM414.807.4v22.398h56v56h22.398V.4h-78.398Zm-392 22.402h56V.404H.409v78.398h22.398v-56Zm0 392H.409V493.2h78.398v-22.398h-56v-56Zm448 56h-56V493.2h78.398v-78.398h-22.398v56Zm-33.602-168v-22.398h-22.398v22.398h22.398Z"
-                                      fill={4294967295}
+                                      fill={
+                                        {
+                                          "payload": 4294967295,
+                                          "type": 0,
+                                        }
+                                      }
                                       propList={
-                                        Array [
+                                        [
                                           "fill",
                                         ]
                                       }
@@ -422,11 +427,11 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                                 </RNSVGSvgView>
                               </View>
                               <View
-                                style={Object {}}
+                                style={{}}
                               >
                                 <View
                                   style={
-                                    Object {
+                                    {
                                       "backgroundColor": "#fff",
                                       "borderRadius": 8,
                                       "padding": 8,
@@ -449,6 +454,8 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                                   >
                                     <RNGestureHandlerButton
                                       collapsable={false}
+                                      delayLongPress={600}
+                                      enabled={true}
                                       exclusive={true}
                                       handlerTag={2}
                                       handlerType="NativeViewGestureHandler"
@@ -463,21 +470,21 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                                         accessible={true}
                                         collapsable={false}
                                         style={
-                                          Object {
+                                          {
                                             "opacity": 1,
                                           }
                                         }
                                       >
                                         <Text
                                           style={
-                                            Array [
-                                              Object {
+                                            [
+                                              {
                                                 "color": "#000",
                                                 "fontSize": 20,
                                                 "lineHeight": 26,
                                                 "textAlign": "left",
                                               },
-                                              Object {
+                                              {
                                                 "color": "#3742fa",
                                               },
                                             ]
@@ -494,14 +501,14 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                           </View>
                           <View
                             style={
-                              Object {
+                              {
                                 "flexDirection": "column",
                               }
                             }
                           >
                             <View
                               style={
-                                Object {
+                                {
                                   "alignSelf": "flex-end",
                                   "backgroundColor": "#fff",
                                   "borderRadius": 8,
@@ -525,6 +532,8 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                               >
                                 <RNGestureHandlerButton
                                   collapsable={false}
+                                  delayLongPress={600}
+                                  enabled={true}
                                   exclusive={true}
                                   handlerTag={3}
                                   handlerType="NativeViewGestureHandler"
@@ -539,7 +548,7 @@ exports[`ConnectOpenScan renders correctly 1`] = `
                                     accessible={true}
                                     collapsable={false}
                                     style={
-                                      Object {
+                                      {
                                         "alignSelf": "flex-end",
                                         "marginLeft": "auto",
                                         "opacity": 1,

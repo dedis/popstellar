@@ -38,15 +38,22 @@ export const handleMeetingCreateMessage =
 
     const meetingMessage = msg.messageData as CreateMeeting;
 
-    const meeting = new Meeting({
-      id: meetingMessage.id,
-      name: meetingMessage.name,
-      location: meetingMessage.location,
-      creation: meetingMessage.creation,
-      start: meetingMessage.start,
-      end: meetingMessage.end ? meetingMessage.end : undefined,
-      extra: meetingMessage.extra ? { ...meetingMessage.extra } : {},
-    });
+    let meeting: Meeting;
+
+    try {
+      meeting = new Meeting({
+        id: meetingMessage.id,
+        name: meetingMessage.name,
+        location: meetingMessage.location,
+        creation: meetingMessage.creation,
+        start: meetingMessage.start,
+        end: meetingMessage.end ? meetingMessage.end : undefined,
+        extra: meetingMessage.extra ? { ...meetingMessage.extra } : {},
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     addMeeting(msg.laoId, meeting);
     return true;
@@ -100,17 +107,24 @@ export const handleMeetingStateMessage =
       return false;
     }
 
-    const meeting = new Meeting({
-      ...oldMeeting,
-      lastModified: meetingMessage.last_modified,
-      location: meetingMessage.location,
-      start: meetingMessage.start,
-      end: meetingMessage.end,
-      extra: {
-        ...oldMeeting.extra,
-        ...meetingMessage.extra,
-      },
-    });
+    let meeting: Meeting;
+
+    try {
+      meeting = new Meeting({
+        ...oldMeeting,
+        lastModified: meetingMessage.last_modified,
+        location: meetingMessage.location,
+        start: meetingMessage.start,
+        end: meetingMessage.end,
+        extra: {
+          ...oldMeeting.extra,
+          ...meetingMessage.extra,
+        },
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     updateMeeting(meeting);
     return true;

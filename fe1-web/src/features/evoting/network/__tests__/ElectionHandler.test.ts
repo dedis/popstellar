@@ -34,7 +34,7 @@ import {
 } from 'features/evoting/__tests__/utils';
 import { addElectionKey } from 'features/evoting/reducer/ElectionKeyReducer';
 
-import { Election, ElectionStatus, QuestionResult, RegisteredVote } from '../../objects';
+import { Election, ElectionStatus, QuestionResult, RegisteredVote, Vote } from '../../objects';
 import {
   handleCastVoteMessage,
   handleElectionEndMessage,
@@ -251,6 +251,28 @@ describe('ElectionHandler', () => {
       ).toBeFalse();
     });
 
+    it('should return false if there is an issue with the message data', () => {
+      const addEvent = jest.fn();
+
+      expect(
+        handleElectionSetupMessage(addEvent)({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.SETUP,
+            lao: mockLaoId,
+            id: undefined as unknown as Hash,
+            name: mockElectionNotStarted.name,
+            version: mockElectionNotStarted.version,
+            created_at: mockElectionNotStarted.createdAt,
+            start_time: mockElectionNotStarted.start,
+            end_time: mockElectionNotStarted.end,
+            questions: mockElectionNotStarted.questions,
+          } as SetupElection,
+        }),
+      ).toBeFalse();
+    });
+
     it('should create the election', () => {
       const addEvent = jest.fn();
 
@@ -451,6 +473,30 @@ describe('ElectionHandler', () => {
             election: mockElectionId.valueOf(),
             opened_at: TIMESTAMP,
           } as MessageData,
+        }),
+      ).toBeFalse();
+    });
+
+    it('it should return false if something is off with the message data', () => {
+      const mockElection = Election.fromState({
+        ...mockElectionOpened.toState(),
+        registeredVotes: [],
+      });
+
+      expect(
+        handleCastVoteMessage(
+          mockGetEventById.mockImplementationOnce(() => Election.fromState(mockElection.toState())),
+          mockUpdateEvent,
+        )({
+          ...mockMessageData,
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.CAST_VOTE,
+            election: mockElectionId,
+            created_at: TIMESTAMP,
+            lao: mockLaoId,
+            votes: undefined as unknown as Vote[],
+          } as CastVote,
         }),
       ).toBeFalse();
     });

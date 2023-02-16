@@ -118,6 +118,7 @@ public class DigitalCashSendFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.digital_cash_send);
+    viewModel.setIsTab(false);
   }
 
   public boolean canPostTransaction(PublicKey publicKey, int amount) {
@@ -140,11 +141,14 @@ public class DigitalCashSendFragment extends Fragment {
     try {
       myArray = viewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      viewModel.setBottomNavigationTab(DigitalCashTab.HOME);
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
           .show();
       myArray = new ArrayList<>();
+      DigitalCashActivity.setCurrentFragment(
+          getParentFragmentManager(),
+          R.id.fragment_digital_cash_home,
+          DigitalCashHomeFragment::newInstance);
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);

@@ -65,6 +65,7 @@ The project relies on several sbt dependencies (external libraries) :
 - database : [**leveldb**](https://github.com/codeborui/leveldb-scala) which relies on both [snappy](https://search.maven.org/artifact/org.xerial.snappy/snappy-java/1.1.7.3/jar) (for compression/decompression) and [akka-persistence](https://doc.akka.io/docs/akka/current/persistence.html)
 - Json parser : [**spray-json**](https://github.com/spray/spray-json) for Json encoding/decoding
 - encryption : [**tink**](https://github.com/google/tink/blob/master/docs/JAVA-HOWTO.md) to verify signatures
+- encryption : [**kyber**](https://github.com/dedis/kyber) to encrypt and decrypt messages of an election
 - testing : [**scalatest**](https://www.scalatest.org/) for unit tests
 - Json schema validator : [**networknt**](https://github.com/networknt/json-schema-validator) for Json schema validation
 

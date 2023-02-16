@@ -3,7 +3,7 @@
 exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] = `
 <View
   style={
-    Object {
+    {
       "backgroundColor": "#fff",
       "borderColor": "#000",
       "borderRadius": 8,
@@ -14,7 +14,7 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
 >
   <View
     style={
-      Object {
+      {
         "marginRight": 16,
       }
     }
@@ -29,7 +29,7 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
   </View>
   <View
     style={
-      Object {
+      {
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
@@ -42,13 +42,13 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
       onBlur={[Function]}
       onChangeText={
         [MockFunction] {
-          "calls": Array [
-            Array [
+          "calls": [
+            [
               "Hello World !",
             ],
           ],
-          "results": Array [
-            Object {
+          "results": [
+            {
               "type": "return",
               "value": undefined,
             },
@@ -60,14 +60,14 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
       placeholderTextColor="#8E8E8E"
       selectTextOnFocus={true}
       style={
-        Array [
-          Object {
+        [
+          {
             "color": "#000",
             "fontSize": 20,
             "lineHeight": 26,
             "textAlign": "left",
           },
-          Object {
+          {
             "alignContent": "flex-end",
             "borderColor": "#000",
             "borderRadius": 8,
@@ -80,7 +80,7 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
     />
     <View
       style={
-        Object {
+        {
           "alignItems": "center",
           "alignSelf": "flex-end",
           "flexDirection": "row",
@@ -90,15 +90,15 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
     >
       <View
         style={
-          Object {
+          {
             "marginRight": 16,
           }
         }
       >
         <Text
           style={
-            Array [
-              Object {
+            [
+              {
                 "color": "#000",
                 "fontSize": 20,
                 "lineHeight": 26,
@@ -123,10 +123,12 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
         onResponderTerminate={[Function]}
         onResponderTerminationRequest={[Function]}
         onStartShouldSetResponder={[Function]}
-        style={Object {}}
+        style={{}}
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={4}
           handlerType="NativeViewGestureHandler"
@@ -141,22 +143,22 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
             accessible={true}
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
           >
             <View
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "backgroundColor": "#3742fa",
                     "borderColor": "#3742fa",
                     "borderRadius": 8,
                     "borderWidth": 1,
                     "padding": 8,
                   },
-                  Object {
+                  {
                     "backgroundColor": "#8E8E8E",
                     "borderColor": "#8E8E8E",
                   },
@@ -165,17 +167,17 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
             >
               <Text
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
                     },
-                    Object {
+                    {
                       "textAlign": "center",
                     },
-                    Object {
+                    {
                       "color": "#fff",
                     },
                   ]
@@ -195,7 +197,7 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
 exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] = `
 <View
   style={
-    Object {
+    {
       "backgroundColor": "#fff",
       "borderColor": "#000",
       "borderRadius": 8,
@@ -206,7 +208,7 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
 >
   <View
     style={
-      Object {
+      {
         "marginRight": 16,
       }
     }
@@ -221,7 +223,7 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
   </View>
   <View
     style={
-      Object {
+      {
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
@@ -234,13 +236,13 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
       onBlur={[Function]}
       onChangeText={
         [MockFunction] {
-          "calls": Array [
-            Array [
+          "calls": [
+            [
               "It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit. It seems that this message won't fit.",
             ],
           ],
-          "results": Array [
-            Object {
+          "results": [
+            {
               "type": "return",
               "value": undefined,
             },
@@ -252,14 +254,14 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
       placeholderTextColor="#8E8E8E"
       selectTextOnFocus={true}
       style={
-        Array [
-          Object {
+        [
+          {
             "color": "#000",
             "fontSize": 20,
             "lineHeight": 26,
             "textAlign": "left",
           },
-          Object {
+          {
             "alignContent": "flex-end",
             "borderColor": "#000",
             "borderRadius": 8,
@@ -272,7 +274,7 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
     />
     <View
       style={
-        Object {
+        {
           "alignItems": "center",
           "alignSelf": "flex-end",
           "flexDirection": "row",
@@ -282,15 +284,15 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
     >
       <View
         style={
-          Object {
+          {
             "marginRight": 16,
           }
         }
       >
         <Text
           style={
-            Array [
-              Object {
+            [
+              {
                 "color": "#000",
                 "fontSize": 20,
                 "lineHeight": 26,
@@ -315,10 +317,12 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
         onResponderTerminate={[Function]}
         onResponderTerminationRequest={[Function]}
         onStartShouldSetResponder={[Function]}
-        style={Object {}}
+        style={{}}
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={5}
           handlerType="NativeViewGestureHandler"
@@ -333,22 +337,22 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
             accessible={true}
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
           >
             <View
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "backgroundColor": "#3742fa",
                     "borderColor": "#3742fa",
                     "borderRadius": 8,
                     "borderWidth": 1,
                     "padding": 8,
                   },
-                  Object {
+                  {
                     "backgroundColor": "#8E8E8E",
                     "borderColor": "#8E8E8E",
                   },
@@ -357,17 +361,17 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
             >
               <Text
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
                     },
-                    Object {
+                    {
                       "textAlign": "center",
                     },
-                    Object {
+                    {
                       "color": "#fff",
                     },
                   ]
@@ -387,7 +391,7 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
 exports[`TextInputChirp renders correctly with placeholder 1`] = `
 <View
   style={
-    Object {
+    {
       "backgroundColor": "#fff",
       "borderColor": "#000",
       "borderRadius": 8,
@@ -398,7 +402,7 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
 >
   <View
     style={
-      Object {
+      {
         "marginRight": 16,
       }
     }
@@ -413,7 +417,7 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
   </View>
   <View
     style={
-      Object {
+      {
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
@@ -430,14 +434,14 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
       placeholderTextColor="#8E8E8E"
       selectTextOnFocus={true}
       style={
-        Array [
-          Object {
+        [
+          {
             "color": "#000",
             "fontSize": 20,
             "lineHeight": 26,
             "textAlign": "left",
           },
-          Object {
+          {
             "alignContent": "flex-end",
             "borderColor": "#000",
             "borderRadius": 8,
@@ -450,7 +454,7 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
     />
     <View
       style={
-        Object {
+        {
           "alignItems": "center",
           "alignSelf": "flex-end",
           "flexDirection": "row",
@@ -460,15 +464,15 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
     >
       <View
         style={
-          Object {
+          {
             "marginRight": 16,
           }
         }
       >
         <Text
           style={
-            Array [
-              Object {
+            [
+              {
                 "color": "#000",
                 "fontSize": 20,
                 "lineHeight": 26,
@@ -493,10 +497,12 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
         onResponderTerminate={[Function]}
         onResponderTerminationRequest={[Function]}
         onStartShouldSetResponder={[Function]}
-        style={Object {}}
+        style={{}}
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={3}
           handlerType="NativeViewGestureHandler"
@@ -511,22 +517,22 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
             accessible={true}
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
           >
             <View
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "backgroundColor": "#3742fa",
                     "borderColor": "#3742fa",
                     "borderRadius": 8,
                     "borderWidth": 1,
                     "padding": 8,
                   },
-                  Object {
+                  {
                     "backgroundColor": "#8E8E8E",
                     "borderColor": "#8E8E8E",
                   },
@@ -535,17 +541,17 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
             >
               <Text
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
                     },
-                    Object {
+                    {
                       "textAlign": "center",
                     },
-                    Object {
+                    {
                       "color": "#fff",
                     },
                   ]
@@ -565,7 +571,7 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
 exports[`TextInputChirp renders correctly with undefined public key 1`] = `
 <View
   style={
-    Object {
+    {
       "backgroundColor": "#fff",
       "borderColor": "#000",
       "borderRadius": 8,
@@ -576,7 +582,7 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
 >
   <View
     style={
-      Object {
+      {
         "marginRight": 16,
       }
     }
@@ -585,7 +591,7 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
   </View>
   <View
     style={
-      Object {
+      {
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
@@ -602,14 +608,14 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
       placeholderTextColor="#8E8E8E"
       selectTextOnFocus={true}
       style={
-        Array [
-          Object {
+        [
+          {
             "color": "#000",
             "fontSize": 20,
             "lineHeight": 26,
             "textAlign": "left",
           },
-          Object {
+          {
             "alignContent": "flex-end",
             "borderColor": "#000",
             "borderRadius": 8,
@@ -622,7 +628,7 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
     />
     <View
       style={
-        Object {
+        {
           "alignItems": "center",
           "alignSelf": "flex-end",
           "flexDirection": "row",
@@ -632,15 +638,15 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
     >
       <View
         style={
-          Object {
+          {
             "marginRight": 16,
           }
         }
       >
         <Text
           style={
-            Array [
-              Object {
+            [
+              {
                 "color": "#000",
                 "fontSize": 20,
                 "lineHeight": 26,
@@ -665,10 +671,12 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
         onResponderTerminate={[Function]}
         onResponderTerminationRequest={[Function]}
         onStartShouldSetResponder={[Function]}
-        style={Object {}}
+        style={{}}
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={1}
           handlerType="NativeViewGestureHandler"
@@ -683,22 +691,22 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
             accessible={true}
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
           >
             <View
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "backgroundColor": "#3742fa",
                     "borderColor": "#3742fa",
                     "borderRadius": 8,
                     "borderWidth": 1,
                     "padding": 8,
                   },
-                  Object {
+                  {
                     "backgroundColor": "#8E8E8E",
                     "borderColor": "#8E8E8E",
                   },
@@ -707,17 +715,17 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
             >
               <Text
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
                     },
-                    Object {
+                    {
                       "textAlign": "center",
                     },
-                    Object {
+                    {
                       "color": "#fff",
                     },
                   ]
@@ -737,7 +745,7 @@ exports[`TextInputChirp renders correctly with undefined public key 1`] = `
 exports[`TextInputChirp renders correctly without placeholder 1`] = `
 <View
   style={
-    Object {
+    {
       "backgroundColor": "#fff",
       "borderColor": "#000",
       "borderRadius": 8,
@@ -748,7 +756,7 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
 >
   <View
     style={
-      Object {
+      {
         "marginRight": 16,
       }
     }
@@ -763,7 +771,7 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
   </View>
   <View
     style={
-      Object {
+      {
         "display": "flex",
         "flexDirection": "column",
         "flexGrow": 1,
@@ -780,14 +788,14 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
       placeholderTextColor="#8E8E8E"
       selectTextOnFocus={true}
       style={
-        Array [
-          Object {
+        [
+          {
             "color": "#000",
             "fontSize": 20,
             "lineHeight": 26,
             "textAlign": "left",
           },
-          Object {
+          {
             "alignContent": "flex-end",
             "borderColor": "#000",
             "borderRadius": 8,
@@ -800,7 +808,7 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
     />
     <View
       style={
-        Object {
+        {
           "alignItems": "center",
           "alignSelf": "flex-end",
           "flexDirection": "row",
@@ -810,15 +818,15 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
     >
       <View
         style={
-          Object {
+          {
             "marginRight": 16,
           }
         }
       >
         <Text
           style={
-            Array [
-              Object {
+            [
+              {
                 "color": "#000",
                 "fontSize": 20,
                 "lineHeight": 26,
@@ -843,10 +851,12 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
         onResponderTerminate={[Function]}
         onResponderTerminationRequest={[Function]}
         onStartShouldSetResponder={[Function]}
-        style={Object {}}
+        style={{}}
       >
         <RNGestureHandlerButton
           collapsable={false}
+          delayLongPress={600}
+          enabled={true}
           exclusive={true}
           handlerTag={2}
           handlerType="NativeViewGestureHandler"
@@ -861,22 +871,22 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
             accessible={true}
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
           >
             <View
               style={
-                Array [
-                  Object {
+                [
+                  {
                     "backgroundColor": "#3742fa",
                     "borderColor": "#3742fa",
                     "borderRadius": 8,
                     "borderWidth": 1,
                     "padding": 8,
                   },
-                  Object {
+                  {
                     "backgroundColor": "#8E8E8E",
                     "borderColor": "#8E8E8E",
                   },
@@ -885,17 +895,17 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
             >
               <Text
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "color": "#000",
                       "fontSize": 20,
                       "lineHeight": 26,
                       "textAlign": "left",
                     },
-                    Object {
+                    {
                       "textAlign": "center",
                     },
-                    Object {
+                    {
                       "color": "#fff",
                     },
                   ]

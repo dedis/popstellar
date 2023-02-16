@@ -5,24 +5,22 @@ import android.os.Bundle;
 import android.view.*;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashReceiveFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
 
-import java.text.MessageFormat;
-
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiveFragment#newInstance}
@@ -56,30 +54,34 @@ public class DigitalCashReceiveFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     viewModel = DigitalCashActivity.obtainViewModel(getActivity());
     binding = DigitalCashReceiveFragmentBinding.inflate(inflater, container, false);
+    setHomeInterface();
     return binding.getRoot();
   }
 
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-
-    try {
-      PoPToken token = viewModel.getValidToken();
-      PopTokenData tokenData = new PopTokenData(token.getPublicKey());
-      Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
-      binding.digitalCashReceiveQr.setImageBitmap(myBitmap);
-
-      binding.digitalCashReceiveAddress.setText(
-          (MessageFormat.format(
-              "My address: {0}", viewModel.getValidToken().getPublicKey().getEncoded())));
-    } catch (KeyException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.digital_cash_please_enter_roll_call);
-    }
+  public void setHomeInterface() {
+    // Subscribe to roll calls so that our own address is kept updated in case a new rc is closed
+    viewModel.addDisposable(
+        viewModel
+            .getRollCallsObservable()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                ids -> {
+                  PoPToken token = viewModel.getValidToken();
+                  PublicKey publicKey = token.getPublicKey();
+                  binding.digitalCashReceiveAddress.setText(publicKey.getEncoded());
+                  PopTokenData tokenData = new PopTokenData(token.getPublicKey());
+                  Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
+                  binding.digitalCashReceiveQr.setImageBitmap(myBitmap);
+                },
+                error ->
+                    ErrorUtils.logAndShow(
+                        requireContext(), TAG, error, R.string.error_retrieve_own_token)));
   }
 
   @Override
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.digital_cash_receive);
+    viewModel.setIsTab(false);
   }
 }

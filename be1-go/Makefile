@@ -22,6 +22,9 @@ lint:
 test: protocol
 	go test -v -race ./...
 
+test-no-cache: protocol
+	go test -v -race ./... -count=1
+
 test-cov: protocol
 	go test -v -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
 

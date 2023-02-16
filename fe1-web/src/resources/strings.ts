@@ -150,8 +150,6 @@ namespace STRINGS {
   export const social_media_delete_chirp = 'Delete Chirp';
   export const social_media_create_chirps_yet =
     'So far nobody has published a chirp and you could be the first one to do so!';
-  export const social_media_howto_create_chirps =
-    'The button for doing so is located in the navigation bar all the way to the right. Be creative ✨';
   export const social_media_create_chirp_no_pop_token =
     'In order to post chirps, you first need to participate in a roll-call.';
   export const social_media_user_list_unavailable =
@@ -165,6 +163,7 @@ namespace STRINGS {
   export const connect_description =
     'The easiest way to connect to a local organization is to scan its QR code';
   export const connect_scanning_fail = 'Invalid QRCode data';
+  export const connect_connecting_fail = 'Failed connecting and subscribing to LAO';
 
   // Connecting Connect Strings
   export const connect_connect = 'Connect';
@@ -235,6 +234,9 @@ namespace STRINGS {
   export const election_create_question = 'Question';
   export const election_create_question_placeholder = 'What is your favorite color?';
   export const election_create_option_placeholder = 'Blue';
+  export const election_create_invalid_questions =
+    'All questions must have a title and at least {} different ballot options.';
+  export const election_create_same_questions = 'Two or more questions are the same.';
 
   export const election_create_add_question = 'Add Question';
 
@@ -253,6 +255,11 @@ namespace STRINGS {
   export const election_questions = 'Questions';
   export const election_results = 'Election Results';
 
+  export const election_status_not_started = 'Not Started';
+  export const election_status_opened = 'Ongoing';
+  export const election_status_terminated = 'Ended';
+  export const election_status_results = 'Ended, Results available';
+
   export const election_warning_open_ballot =
     'This is an open ballot election, your cast votes will be visible to all members of the LAO.';
   export const election_info_secret_ballot =
@@ -264,13 +271,16 @@ namespace STRINGS {
   export const modal_event_creation_failed = 'Event creation failed';
   export const modal_event_ends_in_past = "The event's end time is in the past.";
   export const modal_event_starts_in_past =
-    "The event's start time is in the past.\nWhat do you want to do ?";
+    "The event's start time is in the past.\nWhat do you want to do?";
   export const modal_button_start_now = 'Start it now';
   export const modal_button_go_back = 'Cancel';
+  export const event_creation_must_be_connected = 'You must be connected to a LAO.';
+  export const event_creation_name_not_empty = 'Name must not be empty.';
+  export const event_creation_location_not_empty = 'Location must not be empty.';
 
   /* --- Cast Vote Strings --- */
   export const cast_vote = 'Cast Vote';
-  export const cast_vote_success = 'Sucessfully casted vote';
+  export const cast_vote_success = 'Successfully casted vote';
 
   /* --- Roll-Call Feature Strings --- */
   export const roll_call_event_name = 'Roll-Call';
@@ -345,9 +355,9 @@ namespace STRINGS {
   export const events_create_event = 'Create';
   export const events_list_past = 'Past Events';
   export const events_list_current = 'Current Events';
-  export const events_list_upcoming = 'Upcoming Events';
 
   export const events_upcoming_events = 'Upcoming Events';
+  export const events_closest_upcoming_event = 'Next Event starts';
   export const events_create_meeting = 'Create Meeting';
   export const events_view_single_meeting = 'Single Meeting';
   export const events_create_roll_call = 'Create Roll-Call';
@@ -414,7 +424,9 @@ namespace STRINGS {
   /* --- Wallet Home Screen Strings --- */
   export const wallet_home_roll_calls = 'Roll Calls';
   export const wallet_home_toggle_debug = 'Toggle debug mode';
-  export const wallet_home_rollcall_pop_token = 'A PoP token received in a roll call';
+  export const wallet_home_rollcall_current_pop_tokens = 'Current tokens';
+  export const wallet_home_rollcall_previous_pop_tokens = 'Previous tokens';
+  export const wallet_home_rollcall_pop_token_valid = 'Current';
 
   export const wallet_home_rollcall_no_pop_tokens = 'No PoP tokens';
   export const wallet_home_rollcall_no_pop_tokens_description =

@@ -35,12 +35,18 @@ export const handleWitnessMessage =
     }
 
     const wsMsgData = msg.messageData as WitnessMessage;
-
     const msgId = wsMsgData.message_id;
-    const ws = new WitnessSignature({
-      witness: msg.sender,
-      signature: wsMsgData.signature,
-    });
+
+    let ws: WitnessSignature;
+    try {
+      ws = new WitnessSignature({
+        witness: msg.sender,
+        signature: wsMsgData.signature,
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     if (!ws.verify(msgId)) {
       console.warn(
@@ -48,6 +54,7 @@ export const handleWitnessMessage =
           `signature by ${ws.witness} doesn't match message ${msgId}`,
         msg,
       );
+
       return false;
     }
 

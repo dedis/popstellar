@@ -38,11 +38,7 @@ const SocialHome = () => {
         <Text style={[Typography.base, Typography.paragraph]}>
           {STRINGS.social_media_create_chirps_yet}
         </Text>
-        {currentUserPopTokenPublicKey ? (
-          <Text style={[Typography.base, Typography.paragraph]}>
-            {STRINGS.social_media_howto_create_chirps}
-          </Text>
-        ) : (
+        {!currentUserPopTokenPublicKey && (
           <Text style={[Typography.base, Typography.paragraph]}>
             {STRINGS.social_media_create_chirp_no_pop_token}
           </Text>

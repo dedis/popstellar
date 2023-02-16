@@ -27,7 +27,6 @@
   <!-- Camera preview -->
   <dimen name="qr_rollcall_img">320dp</dimen>
   <dimen name="margin_button">16dp</dimen>
-  <dimen name="round_button_size">55dp</dimen>
   <dimen name="rounded_corner_size">10dp</dimen>
   <dimen name="social_media_delete">40dp</dimen>
   <dimen name="qr_code_size">200dp</dimen>
@@ -119,11 +118,14 @@
   <dimen name="spinner_width_digital_cash">300dp</dimen>
   <dimen name="spinner_height_digital_cash">70dp</dimen>
   <dimen name="history_recycler_view_top_margin">40dp</dimen>
-  <dimen name="layout_horizontal_margin">8dp</dimen>
   <dimen name="history_card_view_height">40dp</dimen>
   <dimen name="history_expanded_bottom_margin">10dp</dimen>
   <dimen name="provenance_title_top_margin">12dp</dimen>
   <dimen name="transaction_title_top_margin">10dp</dimen>
+  <dimen name="floating_buttons_radius_digital_cash">90dp</dimen>
+  <dimen name="digital_cash_button_text_size">22sp</dimen>
+  <dimen name="digital_cash_button_to_text_margin">8dp</dimen>
+  <dimen name="digital_cash_max_image_size">50dp</dimen>
 
   <!--  CardView dimensions -->
   <dimen name="cv_horizontal_margin">16dp</dimen>

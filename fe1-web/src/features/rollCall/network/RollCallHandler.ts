@@ -35,16 +35,23 @@ export const handleRollCallCreateMessage =
 
     const rcMsgData = msg.messageData as CreateRollCall;
 
-    const rollCall = new RollCall({
-      id: rcMsgData.id,
-      name: rcMsgData.name,
-      location: rcMsgData.location,
-      description: rcMsgData.description,
-      creation: rcMsgData.creation,
-      proposedStart: rcMsgData.proposed_start,
-      proposedEnd: rcMsgData.proposed_end,
-      status: RollCallStatus.CREATED,
-    });
+    let rollCall;
+
+    try {
+      rollCall = new RollCall({
+        id: rcMsgData.id,
+        name: rcMsgData.name,
+        location: rcMsgData.location,
+        description: rcMsgData.description,
+        creation: rcMsgData.creation,
+        proposedStart: rcMsgData.proposed_start,
+        proposedEnd: rcMsgData.proposed_end,
+        status: RollCallStatus.CREATED,
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     addRollCall(msg.laoId, rollCall);
     return true;
@@ -87,12 +94,19 @@ export const handleRollCallOpenMessage =
       return false;
     }
 
-    const rollCall = new RollCall({
-      ...oldRC,
-      idAlias: rcMsgData.update_id,
-      openedAt: rcMsgData.opened_at,
-      status: RollCallStatus.OPENED,
-    });
+    let rollCall: RollCall;
+
+    try {
+      rollCall = new RollCall({
+        ...oldRC,
+        idAlias: rcMsgData.update_id,
+        openedAt: rcMsgData.opened_at,
+        status: RollCallStatus.OPENED,
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     updateRollCall(rollCall);
     return true;
@@ -141,13 +155,20 @@ export const handleRollCallCloseMessage =
       return false;
     }
 
-    const rollCall = new RollCall({
-      ...oldRC,
-      idAlias: rcMsgData.update_id,
-      closedAt: rcMsgData.closed_at,
-      status: RollCallStatus.CLOSED,
-      attendees: rcMsgData.attendees,
-    });
+    let rollCall: RollCall;
+
+    try {
+      rollCall = new RollCall({
+        ...oldRC,
+        idAlias: rcMsgData.update_id,
+        closedAt: rcMsgData.closed_at,
+        status: RollCallStatus.CLOSED,
+        attendees: rcMsgData.attendees,
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     updateRollCall(rollCall);
 
@@ -243,14 +264,21 @@ export const handleRollCallReopenMessage =
       return false;
     }
 
-    const rollCall = new RollCall({
-      ...oldRC,
-      idAlias: rcMsgData.update_id,
-      openedAt: rcMsgData.opened_at,
-      status: RollCallStatus.REOPENED,
-      // unset end as the roll call is open once again
-      closedAt: undefined,
-    });
+    let rollCall: RollCall;
+
+    try {
+      rollCall = new RollCall({
+        ...oldRC,
+        idAlias: rcMsgData.update_id,
+        openedAt: rcMsgData.opened_at,
+        status: RollCallStatus.REOPENED,
+        // unset end as the roll call is open once again
+        closedAt: undefined,
+      });
+    } catch (e: any) {
+      console.warn(makeErr(e?.toString()));
+      return false;
+    }
 
     updateRollCall(rollCall);
     return true;

@@ -5,13 +5,11 @@ import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.Role;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -43,37 +41,18 @@ public class DigitalCashHomeFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     viewModel = DigitalCashActivity.obtainViewModel(getActivity());
     binding = DigitalCashHomeFragmentBinding.inflate(inflater, container, false);
+    subscribeToTransactions();
+    subscribeToRole();
+    setupReceiveButton();
+    setupSendButton();
     return binding.getRoot();
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    setHomeInterface();
   }
 
   @Override
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.digital_cash_home);
-  }
-
-  public void setHomeInterface() {
-    // Subscribe to roll calls so that our own address is kept updated in case a new rc is closed
-    viewModel.addDisposable(
-        viewModel
-            .getRollCallsObservable()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                ids -> {
-                  PoPToken token = viewModel.getValidToken();
-                  PublicKey publicKey = token.getPublicKey();
-                  binding.digitalCashHomeAddress.setText(publicKey.getEncoded());
-                  subscribeToTransactions();
-                },
-                error ->
-                    ErrorUtils.logAndShow(
-                        requireContext(), TAG, error, R.string.error_retrieve_own_token)));
+    viewModel.setIsTab(true);
   }
 
   private void subscribeToTransactions() {
@@ -85,11 +64,54 @@ public class DigitalCashHomeFragment extends Fragment {
                 transactions -> {
                   Log.d(TAG, "updating transactions " + transactions);
                   long totalAmount = viewModel.getOwnBalance();
-                  binding.digitalCashSendAddress.setText(
-                      String.format("LAO coin : %s", totalAmount));
+                  binding.coinAmountText.setText(String.valueOf(totalAmount));
                 },
                 error ->
                     ErrorUtils.logAndShow(
                         requireContext(), TAG, error, R.string.error_retrieve_own_token)));
+  }
+
+  private void setupReceiveButton() {
+    View.OnClickListener receiveListener =
+        v ->
+            DigitalCashActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_digital_cash_receive,
+                DigitalCashReceiveFragment::newInstance);
+
+    binding.digitalCashReceiveButton.setOnClickListener(receiveListener);
+    binding.digitalCashReceiveText.setOnClickListener(receiveListener);
+  }
+
+  private void setupSendButton() {
+    View.OnClickListener sendListener =
+        v ->
+            DigitalCashActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_digital_cash_send,
+                DigitalCashSendFragment::newInstance);
+
+    binding.digitalCashSendButton.setOnClickListener(sendListener);
+    binding.digitalCashSendText.setOnClickListener(sendListener);
+  }
+
+  private void subscribeToRole() {
+    viewModel
+        .getRole()
+        .observe(
+            getViewLifecycleOwner(),
+            role -> {
+              if (role == Role.ORGANIZER) {
+                binding.issueButton.setVisibility(View.VISIBLE);
+                binding.issueButton.setOnClickListener(
+                    v ->
+                        DigitalCashActivity.setCurrentFragment(
+                            getParentFragmentManager(),
+                            R.id.fragment_digital_cash_issue,
+                            DigitalCashIssueFragment::newInstance));
+              } else {
+                binding.issueButton.setVisibility(View.GONE);
+              }
+            });
   }
 }

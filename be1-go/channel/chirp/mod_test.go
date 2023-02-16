@@ -348,6 +348,8 @@ func Test_Delete_Chirp(t *testing.T) {
 	// publish add chirp message
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
 
+	time.Sleep(time.Millisecond)
+
 	// create delete chirp message
 	file = filepath.Join(relativeMsgDataExamplePath, "chirp_delete_publish",
 		"chirp_delete_publish.json")

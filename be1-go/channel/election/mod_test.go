@@ -476,13 +476,10 @@ func Test_Sending_Election_Key(t *testing.T) {
 
 	electionKeyMsg := catchupAnswer[1]
 
-	data := messagedata.ElectionKey{}.NewEmpty()
+	var dataKey messagedata.ElectionKey
 
-	err := electionKeyMsg.UnmarshalData(data)
-	require.NoError(t, err)
-
-	dataKey, ok := data.(*messagedata.ElectionKey)
-	require.True(t, ok)
+	err := electionKeyMsg.UnmarshalData(&dataKey)
+	require.NoError(t, err, electionKeyMsg)
 
 	key, err := base64.URLEncoding.DecodeString(dataKey.Key)
 	require.NoError(t, err)

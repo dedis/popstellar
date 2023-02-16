@@ -4,8 +4,16 @@ import { Text } from 'react-native';
 
 import DateRange from 'core/components/DateRange';
 import { Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 
-import { Election } from '../objects';
+import { Election, ElectionStatus } from '../objects';
+
+const LABEL_BY_ELECTION_STATUS: Record<ElectionStatus, string> = {
+  [ElectionStatus.NOT_STARTED]: STRINGS.election_status_not_started,
+  [ElectionStatus.OPENED]: STRINGS.election_status_opened,
+  [ElectionStatus.TERMINATED]: STRINGS.election_status_terminated,
+  [ElectionStatus.RESULT]: STRINGS.election_status_results,
+};
 
 const ElectionHeader = ({ election }: IPropTypes) => {
   return (
@@ -15,6 +23,8 @@ const ElectionHeader = ({ election }: IPropTypes) => {
       <Text style={Typography.paragraph}>
         <DateRange start={election.start.toDate()} end={election.end.toDate()} />
       </Text>
+      {'\n'}
+      <Text style={Typography.paragraph}>{LABEL_BY_ELECTION_STATUS[election.electionStatus]}</Text>
     </Text>
   );
 };
