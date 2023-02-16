@@ -7,11 +7,13 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.*;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
@@ -332,5 +334,10 @@ public class LaoActivity extends AppCompatActivity {
     Intent intent = new Intent(ctx, LaoActivity.class);
     intent.putExtra(Constants.LAO_ID_EXTRA, laoId);
     return intent;
+  }
+
+  public static void addBackNavigationInstruction(
+      FragmentActivity activity, LifecycleOwner lifecycleOwner, OnBackPressedCallback callback) {
+    activity.getOnBackPressedDispatcher().addCallback(lifecycleOwner, callback);
   }
 }

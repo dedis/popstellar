@@ -7,6 +7,7 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ChirpListFragmentBinding;
@@ -73,5 +74,10 @@ public class ChirpListFragment extends Fragment {
     ChirpListAdapter mChirpListAdapter =
         new ChirpListAdapter(requireActivity(), socialMediaViewModel, viewModel);
     listView.setAdapter(mChirpListAdapter);
+  }
+
+  public static void OpenFragment(FragmentManager manager) {
+    SocialMediaHomeFragment.setCurrentFragment(
+        manager, R.id.fragment_chirp_list, ChirpListFragment::newInstance);
   }
 }

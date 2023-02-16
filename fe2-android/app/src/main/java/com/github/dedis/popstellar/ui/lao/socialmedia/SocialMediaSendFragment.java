@@ -103,19 +103,15 @@ public class SocialMediaSendFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    requireActivity()
-        .getOnBackPressedDispatcher()
-        .addCallback(
-            getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-              @Override
-              public void handleOnBackPressed() {
-                Log.d(TAG, "Back pressed, going back to chirp list");
-                SocialMediaHomeFragment.setCurrentFragment(
-                    getParentFragmentManager(),
-                    R.id.fragment_chirp_list,
-                    ChirpListFragment::newInstance);
-              }
-            });
+    LaoActivity.addBackNavigationInstruction(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going back to chirp list");
+            ChirpListFragment.OpenFragment(getParentFragmentManager());
+          }
+        });
   }
 }
