@@ -1,4 +1,4 @@
-import { CompositeScreenProps, useNavigation, useRoute } from '@react-navigation/core';
+import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ListItem } from '@rneui/themed';
 import React, { useMemo } from 'react';
@@ -31,6 +31,7 @@ const DigitalCashWallet = () => {
 
   const balances = useSelector(useMemo(() => makeBalancesSelector(laoId), [laoId]));
   const isOrganizer = DigitalCashHooks.useIsLaoOrganizer(laoId);
+
   const rollCallTokens = DigitalCashHooks.useRollCallTokensByLaoId(laoId);
 
   const balance = rollCallTokens.reduce(
