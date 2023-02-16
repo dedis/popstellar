@@ -32,7 +32,7 @@ const protocolRelativePath string = "../../../protocol"
 func Test_General_Channel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	channel := NewChannel("channel0", fakeHub, nolog)
@@ -60,7 +60,7 @@ func Test_General_Channel_Subscribe(t *testing.T) {
 func Test_General_Channel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	channel := NewChannel("channel0", fakeHub, nolog)
@@ -90,7 +90,7 @@ func Test_General_Channel_Unsubscribe(t *testing.T) {
 func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	channel := NewChannel("channel0", fakeHub, nolog)
@@ -115,7 +115,7 @@ func Test_Coin_Channel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the messages
@@ -157,7 +157,7 @@ func Test_General_Channel_Publish(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
@@ -189,7 +189,7 @@ func Test_SendTransaction(t *testing.T) {
 
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
@@ -246,7 +246,7 @@ func Test_SendTransactionMaxAmount(t *testing.T) {
 
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
@@ -303,7 +303,7 @@ func Test_SendTransactionOverflowAmount(t *testing.T) {
 
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
@@ -360,7 +360,7 @@ func Test_SendTransactionZeroAmount(t *testing.T) {
 
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
@@ -417,7 +417,7 @@ func Test_SendTransactionNegativeAmount(t *testing.T) {
 
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
@@ -474,7 +474,7 @@ func Test_SendTransaction_MissingData(t *testing.T) {
 
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
@@ -524,7 +524,7 @@ func Test_SendTransactionWrongId(t *testing.T) {
 
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
@@ -590,7 +590,7 @@ func Test_SendTransactionBadSignature(t *testing.T) {
 
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
@@ -648,7 +648,7 @@ func Test_SendTransactionCoinbase(t *testing.T) {
 
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
