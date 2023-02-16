@@ -31,6 +31,7 @@
   <dimen name="social_media_delete">40dp</dimen>
   <dimen name="qr_code_size">200dp</dimen>
   <dimen name="scanned_text_size">16sp</dimen>
+  <dimen name="scanned_text_bottom_margin">50dp</dimen>
 
   <!-- Button -->
   <dimen name="standard_button_height">55dp</dimen>
