@@ -17,8 +17,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
-        node-version: [16.x]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        node-version: [18.x]
+        include:
+          # Additionally also run it on node v16
+          # but just on ubuntu to not have too many runs
+          - os: ubuntu-latest
+            node-version: 16.x
 
     defaults:
       run:
@@ -35,11 +40,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Setup expo action
-        uses: expo/expo-github-action@v5
-        with:
-          expo-version: 6.x
-
       - name: Setup node cache
         uses: actions/cache@v2
         env:
@@ -53,16 +53,18 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
+      - name: Setup expo
+        run: npm install -g @expo/cli
+
       - name: Setup npm dependencies
-        run: |
-          npm install
+        run: npm install
 
       - name: Check npm security issues
         run: npm audit fix
         continue-on-error: true
 
       - name: Run lint
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '16.x' }} # execute even if previous steps failed
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '18.x' }} # execute even if previous steps failed
         run: npm run eslint
 
       - name: Validate dependencies
@@ -75,10 +77,10 @@ jobs:
 
       - name: Run test
         if: ${{ always() }} # execute even if previous steps failed
-        run: npm run test
+        run: npm run test -- --runInBand --ci
 
       - name: Run code analysis
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '16.x' }} # execute even if previous steps failed
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '18.x' }} # execute even if previous steps failed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
         run: |
@@ -92,8 +94,14 @@ jobs:
         continue-on-error: true
 
       - name: Build expo web project
+        if: ${{ matrix.node-version != '16.x' }}
         run: |
           npm run build-web
+
+      - name: Build expo web project (legacy, without NODE_OPTIONS=--openssl-legacy-provider)
+        if: ${{ matrix.node-version == '16.x' }}
+        run: |
+          npx expo export:web
 
   be1-go:
     name: Be1-Go

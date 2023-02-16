@@ -149,11 +149,13 @@ describe('RollCallOpened', () => {
   it('shows toast when scanning attendees', async () => {
     renderRollCallOpened();
 
+    fakeQrReaderScan(mockPublicKey2.valueOf());
+    fakeQrReaderScan(mockPublicKey3.valueOf());
+
     await waitFor(async () => {
-      fakeQrReaderScan(mockPublicKey2.valueOf());
-      fakeQrReaderScan(mockPublicKey3.valueOf());
       expect(mockGenerateToken).toHaveBeenCalled();
     });
+
     expect(mockToastShow).toHaveBeenCalledTimes(2);
   });
 

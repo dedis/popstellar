@@ -16,6 +16,8 @@ module.exports = (api) => {
           }
         },
       ],
+      '@babel/plugin-proposal-export-namespace-from',
+      // Reanimated plugin has to be listed last (https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation/)
       'react-native-reanimated/plugin'
     ],
   };

@@ -640,11 +640,23 @@ If you write E2E tests, please be mindful of making them maintainable through th
 
 ## Deployments
 
-Please reach out to the DEDIS Engineering team members to deploy a build to an
-internet accessible host.
+The application can be automatically deployed to `fe1.personhood.online` by
+creating a [release](https://github.com/dedis/popstellar/releases) on GitHub
+starting with the prefix `fe1-`.
 
-The web application can be packaged for deploynent by executing `npm run build-web`.
-This will generate a timestamped zip package in the `./dist` folder.
+The web application can also be locally packaged for deployment by executing
+`npm run build-web`.
+
+### `--openssl-legacy-provider` is not allowed in NODE_OPTIONS
+
+In case you experience the error `--openssl-legacy-provider is not
+allowed in NODE_OPTIONS` then it is due to the workaround introduced here:
+https://github.com/dedis/popstellar/pull/1308#issuecomment-1426683039. The
+problem is that expo with node version > 16 only works with the
+`--openssl-legacy-provider` flag but this flag makes builds fail on v16. You can
+still create a build using node v16 by manually running `npx expo export:web`
+rather than `npm run build-web`. This will generate a timestamped zip package in
+the `./dist` folder.
 
 
 ## Coding Style

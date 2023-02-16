@@ -3,14 +3,14 @@
 exports[`NewChirp renders correctly 1`] = `
 <View
   style={
-    Object {
+    {
       "marginBottom": 16,
     }
   }
 >
   <View
     style={
-      Object {
+      {
         "backgroundColor": "#fff",
         "borderColor": "#000",
         "borderRadius": 8,
@@ -21,7 +21,7 @@ exports[`NewChirp renders correctly 1`] = `
   >
     <View
       style={
-        Object {
+        {
           "marginRight": 16,
         }
       }
@@ -36,7 +36,7 @@ exports[`NewChirp renders correctly 1`] = `
     </View>
     <View
       style={
-        Object {
+        {
           "display": "flex",
           "flexDirection": "column",
           "flexGrow": 1,
@@ -53,14 +53,14 @@ exports[`NewChirp renders correctly 1`] = `
         placeholderTextColor="#8E8E8E"
         selectTextOnFocus={true}
         style={
-          Array [
-            Object {
+          [
+            {
               "color": "#000",
               "fontSize": 20,
               "lineHeight": 26,
               "textAlign": "left",
             },
-            Object {
+            {
               "alignContent": "flex-end",
               "borderColor": "#000",
               "borderRadius": 8,
@@ -74,7 +74,7 @@ exports[`NewChirp renders correctly 1`] = `
       />
       <View
         style={
-          Object {
+          {
             "alignItems": "center",
             "alignSelf": "flex-end",
             "flexDirection": "row",
@@ -84,15 +84,15 @@ exports[`NewChirp renders correctly 1`] = `
       >
         <View
           style={
-            Object {
+            {
               "marginRight": 16,
             }
           }
         >
           <Text
             style={
-              Array [
-                Object {
+              [
+                {
                   "color": "#000",
                   "fontSize": 20,
                   "lineHeight": 26,
@@ -117,11 +117,13 @@ exports[`NewChirp renders correctly 1`] = `
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
-          style={Object {}}
+          style={{}}
           testID="new_chirp_publish"
         >
           <RNGestureHandlerButton
             collapsable={false}
+            delayLongPress={600}
+            enabled={true}
             exclusive={true}
             handlerTag={1}
             handlerType="NativeViewGestureHandler"
@@ -136,22 +138,22 @@ exports[`NewChirp renders correctly 1`] = `
               accessible={true}
               collapsable={false}
               style={
-                Object {
+                {
                   "opacity": 1,
                 }
               }
             >
               <View
                 style={
-                  Array [
-                    Object {
+                  [
+                    {
                       "backgroundColor": "#3742fa",
                       "borderColor": "#3742fa",
                       "borderRadius": 8,
                       "borderWidth": 1,
                       "padding": 8,
                     },
-                    Object {
+                    {
                       "backgroundColor": "#8E8E8E",
                       "borderColor": "#8E8E8E",
                     },
@@ -160,17 +162,17 @@ exports[`NewChirp renders correctly 1`] = `
               >
                 <Text
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "color": "#000",
                         "fontSize": 20,
                         "lineHeight": 26,
                         "textAlign": "left",
                       },
-                      Object {
+                      {
                         "textAlign": "center",
                       },
-                      Object {
+                      {
                         "color": "#fff",
                       },
                     ]
