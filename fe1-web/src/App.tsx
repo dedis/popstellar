@@ -19,7 +19,13 @@ import { persist, store } from 'core/redux';
 import { Color } from 'core/styles';
 import { configureFeatures } from 'features';
 
+// polyfill camera api on firefox
 import cameraPolyfill from './core/platform/camera/web-polyfill';
+
+// polyfill "Buffer"
+global.Buffer = require('buffer/').Buffer;
+// polyfill TextEncoder
+require('fastestsmallesttextencoderdecoder');
 
 // load polyfill when the app loads
 cameraPolyfill();

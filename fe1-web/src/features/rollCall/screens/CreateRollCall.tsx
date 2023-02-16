@@ -6,9 +6,9 @@ import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import { ConfirmModal, DatePicker, DismissModal, Input } from 'core/components';
-import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import ScreenWrapper from 'core/components/ScreenWrapper';
 import { ToolbarItem } from 'core/components/Toolbar';
+import { onChangeEndTime, onChangeStartTime } from 'core/functions/DatePicker';
 import { onConfirmEventCreation } from 'core/functions/UI';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
@@ -66,7 +66,7 @@ const CreateRollCall = () => {
           {STRINGS.roll_call_create_proposed_start}
         </Text>
         <DatePicker
-          selected={startDate}
+          value={startDate}
           onChange={(date: Date) =>
             onChangeStartTime(
               date,
@@ -81,7 +81,7 @@ const CreateRollCall = () => {
           {STRINGS.roll_call_create_proposed_end}
         </Text>
         <DatePicker
-          selected={endDate}
+          value={endDate}
           onChange={(date: Date) => onChangeEndTime(date, proposedStartTime, setProposedEndTime)}
         />
       </>

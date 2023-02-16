@@ -35,6 +35,7 @@ be1-go/validation/protocol
 *.iml
 
 fe2-android/app/src/main/resources/protocol
+fe1-web/protocol
 
 .DS_Store
 **/.DS_Store

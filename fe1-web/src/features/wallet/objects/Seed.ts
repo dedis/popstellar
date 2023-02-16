@@ -1,4 +1,5 @@
 import * as bip39 from 'bip39';
+import * as Random from 'expo-random';
 
 import { WalletStore } from '../store';
 
@@ -8,7 +9,11 @@ import { WalletStore } from '../store';
  * @returns a string containing a new generated 12-word mnemonic
  */
 export function generateMnemonicSeed() {
-  return bip39.generateMnemonic();
+  return bip39.generateMnemonic(
+    undefined,
+    // unsafe cast but it works, the interface is similar enough fortunately..
+    Random.getRandomBytes as unknown as (size: number) => Buffer,
+  );
 }
 
 /**

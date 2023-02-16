@@ -12,7 +12,7 @@ module.exports = (api) => {
           extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
           alias: {
             test_data: path.resolve(__dirname, '../tests/data'),
-            protocol: path.resolve(__dirname, '../protocol'),
+            protocol: path.resolve(__dirname, './protocol'),
           }
         },
       ],

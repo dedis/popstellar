@@ -1,3 +1,4 @@
+import * as Random from 'expo-random';
 import { sign } from 'tweetnacl';
 
 import { Base64UrlData, KeyPair, KeyPairState, PrivateKey, PublicKey } from '../objects';
@@ -33,7 +34,8 @@ export namespace KeyPairStore {
 
     if (!keysState) {
       // create new pair of keys
-      const pair = sign.keyPair();
+
+      const pair = sign.keyPair.fromSeed(Random.getRandomBytes(32));
 
       const keyPair: KeyPair = new KeyPair({
         publicKey: new PublicKey(Base64UrlData.fromBuffer(Buffer.from(pair.publicKey)).valueOf()),
