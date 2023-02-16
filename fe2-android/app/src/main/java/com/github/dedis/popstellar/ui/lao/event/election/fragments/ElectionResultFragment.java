@@ -96,19 +96,16 @@ public class ElectionResultFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    requireActivity()
-        .getOnBackPressedDispatcher()
-        .addCallback(
-            getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-              @Override
-              public void handleOnBackPressed() {
-                Log.d(TAG, "Back pressed, going to election");
-                LaoActivity.setCurrentFragment(
-                    getParentFragmentManager(),
-                    R.id.fragment_election,
-                    () -> ElectionFragment.newInstance(requireArguments().getString(ELECTION_ID)));
-              }
-            });
+    LaoActivity.addBackNavigationInstruction(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to election");
+            ElectionFragment.openFragment(
+                getParentFragmentManager(), requireArguments().getString(ELECTION_ID));
+          }
+        });
   }
 }

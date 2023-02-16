@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Election;
@@ -394,5 +395,10 @@ public class ElectionFragment extends Fragment {
                     getParentFragmentManager(), R.id.fragment_event_list, EventListFragment::new);
               }
             });
+  }
+
+  public static void openFragment(FragmentManager manager, String electionId) {
+    LaoActivity.setCurrentFragment(
+        manager, R.id.fragment_election, () -> ElectionFragment.newInstance(electionId));
   }
 }
