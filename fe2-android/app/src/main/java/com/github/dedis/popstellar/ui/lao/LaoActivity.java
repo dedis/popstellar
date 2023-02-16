@@ -336,7 +336,8 @@ public class LaoActivity extends AppCompatActivity {
     return intent;
   }
 
-  public static void addBackNavigationInstruction(
+  /** Adds a callback that describes the action to take the next time the back button is pressed */
+  public static void addBackNavigationCallback(
       FragmentActivity activity, LifecycleOwner lifecycleOwner, OnBackPressedCallback callback) {
     activity.getOnBackPressedDispatcher().addCallback(lifecycleOwner, callback);
   }

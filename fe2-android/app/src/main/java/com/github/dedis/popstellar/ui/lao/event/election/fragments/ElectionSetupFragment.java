@@ -297,7 +297,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationInstruction(
+    LaoActivity.addBackNavigationCallback(
         requireActivity(),
         getViewLifecycleOwner(),
         new OnBackPressedCallback(true) {

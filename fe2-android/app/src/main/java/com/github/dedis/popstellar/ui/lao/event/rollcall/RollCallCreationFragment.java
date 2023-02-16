@@ -144,7 +144,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationInstruction(
+    LaoActivity.addBackNavigationCallback(
         requireActivity(),
         getViewLifecycleOwner(),
         new OnBackPressedCallback(true) {

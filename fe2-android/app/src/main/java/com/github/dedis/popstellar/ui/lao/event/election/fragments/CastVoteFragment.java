@@ -191,7 +191,7 @@ public class CastVoteFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationInstruction(
+    LaoActivity.addBackNavigationCallback(
         requireActivity(),
         getViewLifecycleOwner(),
         new OnBackPressedCallback(true) {
