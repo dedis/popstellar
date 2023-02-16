@@ -49,27 +49,6 @@ exports[`SocialHome renders correctly 1`] = `
       >
         So far nobody has published a chirp and you could be the first one to do so!
       </Text>
-      <Text
-        style={
-          [
-            {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "textAlign": "left",
-            },
-            {
-              "color": "#000",
-              "fontSize": 20,
-              "lineHeight": 26,
-              "marginBottom": 16,
-              "textAlign": "left",
-            },
-          ]
-        }
-      >
-        The button for doing so is located in the navigation bar all the way to the right. Be creative ✨
-      </Text>
       <View
         style={
           {

@@ -1458,14 +1458,13 @@ func Test_Timeout_Prepare(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify that a prepare message was sent and empty the socket
-	// Unmarshal the failure message sent to other servers to verify its values
 	var sentPrepare method.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPrepare)
 	require.NoError(t, err)
 
 	sentMsg := sentPrepare.Params.Message
 
-	// Unmarshal the failure message data to check its values
+	// Unmarshal the prepare message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
 	var prepare messagedata.ConsensusPrepare
