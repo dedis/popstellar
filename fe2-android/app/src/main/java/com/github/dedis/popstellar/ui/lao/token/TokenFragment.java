@@ -107,17 +107,15 @@ public class TokenFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    requireActivity()
-        .getOnBackPressedDispatcher()
-        .addCallback(
-            getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-              @Override
-              public void handleOnBackPressed() {
-                Log.d(TAG, "Back pressed, going to token list");
-                LaoActivity.setCurrentFragment(
-                    getParentFragmentManager(), R.id.fragment_tokens, TokenListFragment::new);
-              }
-            });
+    LaoActivity.addBackNavigationInstruction(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to token list");
+            TokenListFragment.openFragment(getParentFragmentManager());
+          }
+        });
   }
 }
