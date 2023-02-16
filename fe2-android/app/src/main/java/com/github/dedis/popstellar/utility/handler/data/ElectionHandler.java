@@ -4,7 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -175,7 +175,7 @@ public final class ElectionHandler {
    * @param castVote the message that was received
    */
   public void handleCastVote(HandlerContext context, CastVote castVote)
-      throws UnknownElectionException {
+      throws UnknownElectionException, DataHandlingException {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
@@ -185,36 +185,45 @@ public final class ElectionHandler {
     // Verify the vote was created before the end of the election or the election is not closed yet
     if (election.getEndTimestamp() >= castVote.getCreation() || election.getState() != CLOSED) {
       // Retrieve previous cast vote message stored for the given sender
-      Optional<MessageID> previousMessageIdOption =
-          election.getMessageMap().entrySet().stream()
-              .filter(entry -> senderPk.equals(entry.getValue()))
-              .map(Map.Entry::getKey)
-              .findFirst();
-      // Retrieve the creation time of the previous cast vote, if doesn't exist replace with min
-      // Value
-      long previousMessageCreation =
-          previousMessageIdOption
-              .map(messageRepo::getMessage)
-              .map(MessageGeneral::getData)
-              .map(CastVote.class::cast)
-              .map(CastVote::getCreation)
-              .orElse(Long.MIN_VALUE);
+      MessageID previousMessageId = election.getMessageMap().get(senderPk);
+
+      // No previous message, we always handle it
+      if (previousMessageId == null) {
+        updateElectionWithVotes(castVote, messageId, senderPk, election);
+        return;
+      }
+
+      // Retrieve previous message and make sure it is a CastVote
+      Data previousData = messageRepo.getMessage(previousMessageId).getData();
+      if (previousData == null) {
+        throw new IllegalStateException(
+            "The message corresponding to " + messageId + " does not exist");
+      }
+
+      if (!(previousData instanceof CastVote)) {
+        throw new DataHandlingException(
+            previousData, "The previous message of a cast vote was not a CastVote");
+      }
+
+      CastVote previousCastVote = (CastVote) previousData;
 
       // Verify the current cast vote message is the last one received
-      if (previousMessageCreation <= castVote.getCreation()) {
-        List<Vote> votes = castVote.getVotes();
-        votes.sort(Comparator.comparing(Vote::getId));
-
-        Election updated =
-            election
-                .builder()
-                .updateMessageMap(senderPk, messageId)
-                .updateVotes(senderPk, votes)
-                .build();
-
-        electionRepository.updateElection(updated);
+      if (previousCastVote.getCreation() <= castVote.getCreation()) {
+        updateElectionWithVotes(castVote, messageId, senderPk, election);
       }
     }
+  }
+
+  private void updateElectionWithVotes(
+      CastVote castVote, MessageID messageId, PublicKey senderPk, Election election) {
+    Election updated =
+        election
+            .builder()
+            .updateMessageMap(senderPk, messageId)
+            .updateVotes(senderPk, castVote.getVotes())
+            .build();
+
+    electionRepository.updateElection(updated);
   }
 
   public static WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {

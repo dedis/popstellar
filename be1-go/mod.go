@@ -6,8 +6,8 @@
 // be1-go is using a global logger with some default parameters. It is enabled by
 // default at information level. The level can be modified using an environment variable:
 //
-//	LLVL=error ./pop organizer --pk "<base64url encoded pk>" serve
-//	LLVL=warn ./pop organizer --pk "<base64url encoded pk>" serve
+//	LLVL=error ./pop server --pk "<base64url encoded pk>" serve
+//	LLVL=warn ./pop server --pk "<base64url encoded pk>" serve
 package popstellar
 
 import (

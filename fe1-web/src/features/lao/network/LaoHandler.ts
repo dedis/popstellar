@@ -14,15 +14,23 @@ export function handleLaoCreateMessage(msg: ProcessableMessage): boolean {
   }
 
   const createLaoMsg = msg.messageData as CreateLao;
-  const lao = new Lao({
-    id: createLaoMsg.id,
-    name: createLaoMsg.name,
-    creation: createLaoMsg.creation,
-    last_modified: createLaoMsg.creation,
-    organizer: createLaoMsg.organizer,
-    witnesses: createLaoMsg.witnesses,
-    server_addresses: [msg.receivedFrom],
-  });
+
+  let lao: Lao;
+
+  try {
+    lao = new Lao({
+      id: createLaoMsg.id,
+      name: createLaoMsg.name,
+      creation: createLaoMsg.creation,
+      last_modified: createLaoMsg.creation,
+      organizer: createLaoMsg.organizer,
+      witnesses: createLaoMsg.witnesses,
+      server_addresses: [msg.receivedFrom],
+    });
+  } catch (e: any) {
+    console.warn(`handleLaoCreateMessage failed processing lao#create message: ${e?.toString()}`);
+    return false;
+  }
 
   dispatch(setCurrentLao(lao, true));
   return true;
@@ -65,11 +73,18 @@ export function handleLaoStateMessage(msg: ProcessableMessage): boolean {
   }
   const updateLaoData = updateMessage.messageData as UpdateLao;
 
-  const lao = new Lao({
-    ...oldLao,
-    name: updateLaoData.name,
-    witnesses: updateLaoData.witnesses,
-  });
+  let lao: Lao;
+
+  try {
+    lao = new Lao({
+      ...oldLao,
+      name: updateLaoData.name,
+      witnesses: updateLaoData.witnesses,
+    });
+  } catch (e: any) {
+    console.warn(makeErr(e?.toString()));
+    return false;
+  }
 
   dispatch(updateLao(lao.toState()));
   return true; */

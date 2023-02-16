@@ -22,11 +22,8 @@ const (
 	// ClientSocketType denotes a client.
 	ClientSocketType SocketType = "client"
 
-	//OrganizerSocketType denotes an organizer.
-	OrganizerSocketType SocketType = "organizer"
-
-	// WitnessSocketType denotes a witness.
-	WitnessSocketType SocketType = "witness"
+	// ServerSocketType denotes a server.
+	ServerSocketType SocketType = "server"
 )
 
 // baseSocket represents a socket connected to the server.
@@ -274,38 +271,20 @@ func NewClientSocket(receiver chan<- IncomingMessage,
 	}
 }
 
-// OrganizerSocket denotes an organizer socket and implements the Socket interface.
-type OrganizerSocket struct {
+// ServerSocket denotes an organizer socket and implements the Socket interface.
+type ServerSocket struct {
 	*baseSocket
 }
 
-// NewOrganizerSocket returns a new OrganizerSocket.
-func NewOrganizerSocket(receiver chan<- IncomingMessage,
+// NewServerSocket returns a new ServerSocket.
+func NewServerSocket(receiver chan<- IncomingMessage,
 	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
-	done chan struct{}, log zerolog.Logger) *OrganizerSocket {
+	done chan struct{}, log zerolog.Logger) *ServerSocket {
 
-	log = log.With().Str("role", "organizer socket").Logger()
+	log = log.With().Str("role", "server socket").Logger()
 
-	return &OrganizerSocket{
-		baseSocket: newBaseSocket(OrganizerSocketType, receiver, closedSockets,
-			conn, wg, done, log),
-	}
-}
-
-// WitnessSocket denotes a witness socket and implements the Socket interface.
-type WitnessSocket struct {
-	*baseSocket
-}
-
-// NewWitnessSocket returns a new WitnessSocket.
-func NewWitnessSocket(receiver chan<- IncomingMessage,
-	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
-	done chan struct{}, log zerolog.Logger) *WitnessSocket {
-
-	log = log.With().Str("role", "witness socket").Logger()
-
-	return &WitnessSocket{
-		baseSocket: newBaseSocket(WitnessSocketType, receiver, closedSockets,
+	return &ServerSocket{
+		baseSocket: newBaseSocket(ServerSocketType, receiver, closedSockets,
 			conn, wg, done, log),
 	}
 }

@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { combineReducers } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { mockLaoId } from '__tests__/utils';
+import { serializedMockLaoId } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 
 import { mockDigitalCashContextValue, mockRollCall } from '../../../__tests__/utils';
@@ -22,7 +22,7 @@ describe('SendReceive', () => {
           <MockNavigator
             component={SendReceive}
             params={{
-              laoId: mockLaoId,
+              laoId: serializedMockLaoId,
               rollCallId: mockRollCall.id.valueOf(),
             }}
           />
@@ -39,7 +39,7 @@ describe('SendReceive', () => {
           <MockNavigator
             component={SendReceive}
             params={{
-              laoId: mockLaoId,
+              laoId: serializedMockLaoId,
               rollCallId: mockRollCall.id.valueOf(),
               scannedPoPToken: 'some pop token',
             }}

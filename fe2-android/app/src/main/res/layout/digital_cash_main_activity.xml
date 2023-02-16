@@ -15,24 +15,10 @@
       android:fitsSystemWindows="true">
 
       <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fragment_container_digital_cash"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <FrameLayout
-          android:id="@+id/fragment_container_digital_cash"
-          android:layout_width="match_parent"
-          android:layout_height="0dp"
-          app:layout_constraintTop_toTopOf="parent"
-          app:layout_constraintBottom_toTopOf="@id/digital_cash_nav_bar" />
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-          android:id="@+id/digital_cash_nav_bar"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          app:labelVisibilityMode="labeled"
-          app:layout_constraintBottom_toBottomOf="parent"
-          app:menu="@menu/digital_cash_menu" />
       </androidx.constraintlayout.widget.ConstraintLayout>
 
       <com.google.android.material.appbar.AppBarLayout
@@ -46,6 +32,7 @@
           style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"
           android:layout_width="match_parent"
           android:layout_height="?attr/actionBarSize"
+          app:menu="@menu/digital_cash_menu"
           app:navigationContentDescription="Open Menu"
           app:navigationIcon="@drawable/menu_icon" />
       </com.google.android.material.appbar.AppBarLayout>

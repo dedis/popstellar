@@ -9,17 +9,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.digitalcash.DigitalCashIssueFragment">
 
-    <TextView
-      android:id="@+id/digital_cash_issue_title"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:gravity="center"
-      style="@style/title_style"
-      android:text="@string/digital_cash_issue"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintBottom_toTopOf="@id/digital_cash_issue_select" />
 
     <RadioGroup
       android:layout_width="wrap_content"
@@ -28,7 +17,7 @@
       app:layout_constraintBottom_toTopOf="@id/digital_cash_issue_amount"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/digital_cash_issue_title">
+      app:layout_constraintTop_toTopOf="parent">
 
       <RadioButton
         android:id="@+id/radioButton"
@@ -54,19 +43,13 @@
       </com.google.android.material.textfield.TextInputLayout>
 
       <RadioButton
-        android:id="@+id/radioButton1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/digital_cash_select_all_members" />
-
-      <RadioButton
-        android:id="@+id/radioButton2"
+        android:id="@+id/radioButtonAttendees"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/digital_cash_select_all_attendees" />
 
       <RadioButton
-        android:id="@+id/radioButton3"
+        android:id="@+id/radioButtonWitnesses"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/digital_cash_select_all_witnesses" />

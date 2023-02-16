@@ -7,6 +7,7 @@ const TIMESTAMP = 1620455700;
 
 describe('Timestamp object', () => {
   it('EpochNow function works', () => {
+    jest.setSystemTime(NOW * 1000);
     expect(Timestamp.EpochNow().valueOf()).toStrictEqual(NOW);
   });
 

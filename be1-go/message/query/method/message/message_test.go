@@ -47,5 +47,4 @@ func Test_UnmarshalData(t *testing.T) {
 	require.Equal(t, "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=", laoCreate.Organizer)
 
 	require.Len(t, laoCreate.Witnesses, 0)
-	//require.Equal(t, "XXX", laoCreate.Witnesses[0])
 }

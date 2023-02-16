@@ -20,7 +20,7 @@ func TestInbox_AddWitnessSignature(t *testing.T) {
 	// Add a message to the inbox
 	inbox.StoreMessage(msg)
 
-	require.Equal(t, 1, len(inbox.msgs))
+	require.Equal(t, 1, len(inbox.msgsMap))
 
 	// Add the witness signature to the message in the inbox
 	err := inbox.AddWitnessSignature(msg.MessageID, "456", "789")
@@ -47,7 +47,7 @@ func TestInbox_AddSigWrongMessages(t *testing.T) {
 	_, ok := inbox.GetMessage(string(buf))
 	require.False(t, ok)
 
-	require.Equal(t, 0, len(inbox.msgs))
+	require.Equal(t, 0, len(inbox.msgsMap))
 }
 
 func TestInbox_AddWitnessSignatures(t *testing.T) {
@@ -58,7 +58,7 @@ func TestInbox_AddWitnessSignatures(t *testing.T) {
 	// Add a message to the inbox
 	inbox.StoreMessage(msg)
 
-	require.Equal(t, 1, len(inbox.msgs))
+	require.Equal(t, 1, len(inbox.msgsMap))
 
 	signaturesNumber := 100
 	for i := 0; i < signaturesNumber; i++ {

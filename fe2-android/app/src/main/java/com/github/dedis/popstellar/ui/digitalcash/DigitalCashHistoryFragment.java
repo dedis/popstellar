@@ -50,5 +50,6 @@ public class DigitalCashHistoryFragment extends Fragment {
     super.onResume();
     DigitalCashViewModel viewModel = DigitalCashActivity.obtainViewModel(requireActivity());
     viewModel.setPageTitle(R.string.digital_cash_history);
+    viewModel.setIsTab(false);
   }
 }

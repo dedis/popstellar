@@ -2,7 +2,7 @@ import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import {
@@ -68,6 +68,15 @@ const MIN_BALLOT_OPTIONS = 2;
  */
 const isQuestionInvalid = (question: NewQuestion): boolean =>
   question.question === '' || question.ballot_options.length < MIN_BALLOT_OPTIONS;
+
+/**
+ * Checks whether a question title is not unique within a list of questions
+ * @param questions The list of questions
+ */
+const haveQuestionsSameTitle = (questions: NewQuestion[]): boolean => {
+  const questionTitles = questions.map((q: NewQuestion) => q.question);
+  return questionTitles.length === new Set(questionTitles).size;
+};
 
 /**
  * Creates a new election based on the given values and returns the related request promise
@@ -141,7 +150,10 @@ const CreateElection = () => {
 
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const confirmButtonEnabled: boolean =
-    isConnected === true && electionName !== '' && !questions.some(isQuestionInvalid);
+    isConnected === true &&
+    electionName !== '' &&
+    !questions.some(isQuestionInvalid) &&
+    haveQuestionsSameTitle(questions);
 
   const onCreateElection = () => {
     createElection(currentLao.id, version, electionName, questions, startTime, endTime)
@@ -282,6 +294,28 @@ const CreateElection = () => {
       <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
         {STRINGS.election_create_add_question}
       </PoPTextButton>
+
+      {!isConnected && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_must_be_connected}
+        </Text>
+      )}
+      {electionName === '' && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_name_not_empty}
+        </Text>
+      )}
+      {questions.some(isQuestionInvalid) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_invalid_questions.replace('{}', MIN_BALLOT_OPTIONS.toString())}
+        </Text>
+      )}
+      {!haveQuestionsSameTitle(questions) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_same_questions}
+        </Text>
+      )}
+
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}

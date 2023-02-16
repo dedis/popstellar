@@ -2,7 +2,7 @@ import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
-import { Platform, Text } from 'react-native';
+import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 import { ConfirmModal, DatePicker, DismissModal, Input } from 'core/components';
@@ -156,7 +156,25 @@ const CreateRollCall = () => {
         onChange={setRollCallDescription}
         placeholder={STRINGS.roll_call_create_description_placeholder}
       />
+
       {buildDatePicker()}
+
+      {!isConnected && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_must_be_connected}
+        </Text>
+      )}
+      {rollCallName === '' && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_name_not_empty}
+        </Text>
+      )}
+      {rollCallLocation === '' && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_location_not_empty}
+        </Text>
+      )}
+
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}

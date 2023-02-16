@@ -3,16 +3,16 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, Hash, Signature}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, Signature}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadLaoDataAck
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg
+import spray.json.JsValue
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
-import scala.util.{Failure, Success}
+import scala.concurrent.Future
+import scala.util.Success
 
 trait MessageHandler extends AskPatternConstants {
 
@@ -92,7 +92,7 @@ trait MessageHandler extends AskPatternConstants {
     * @return
     *   the database answer wrapped in a [[scala.concurrent.Future]]
     */
-  def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: Base64Data, broadcastChannel: Channel): Future[GraphMessage] = {
+  def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: JsValue, broadcastChannel: Channel): Future[GraphMessage] = {
     val m: Message = rpcMessage.getParamsMessage.getOrElse(
       return Future {
         Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcMessage.id))
@@ -101,9 +101,10 @@ trait MessageHandler extends AskPatternConstants {
 
     val combined = for {
       DbActorReadLaoDataAck(laoData) <- dbActor ? DbActor.ReadLaoData(channel)
-      broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
-      broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
-      broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
+      encodedData: Base64Data = Base64Data.encode(broadcastData.toString)
+      broadcastSignature: Signature = laoData.privateKey.signData(encodedData)
+      broadcastId: Hash = Hash.fromStrings(encodedData.toString, broadcastSignature.toString)
+      broadcastMessage: Message = Message(encodedData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
       _ <- dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
     } yield ()
 

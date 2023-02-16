@@ -119,6 +119,7 @@ const CreateMeeting = () => {
         value={meetingName}
         onChange={setMeetingName}
         placeholder={STRINGS.meeting_create_name_placeholder}
+        testID="meeting_name_selector"
       />
       {buildDatePicker()}
       <Text style={[Typography.paragraph, Typography.important]}>
@@ -129,6 +130,18 @@ const CreateMeeting = () => {
         onChange={setLocation}
         placeholder={STRINGS.meeting_create_location_placeholder}
       />
+
+      {!isConnected && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_must_be_connected}
+        </Text>
+      )}
+      {meetingName === '' && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_name_not_empty}
+        </Text>
+      )}
+
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}

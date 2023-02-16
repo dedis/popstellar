@@ -166,12 +166,6 @@ public class DigitalCashActivityTest {
                   .build()));
 
   @Test
-  public void homeButtonStaysHome() {
-    homeButton().perform(click());
-    fragmentContainer().check(matches(withChild(withId(digitalCashFragmentId()))));
-  }
-
-  @Test
   public void sendButtonGoesToSendThenToReceipt() {
     sendButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashSendId()))));
