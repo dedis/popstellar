@@ -144,17 +144,15 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   }
 
   private void handleBackNav() {
-    requireActivity()
-        .getOnBackPressedDispatcher()
-        .addCallback(
-            getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-              @Override
-              public void handleOnBackPressed() {
-                Log.d(TAG, "Back pressed, going to event list");
-                LaoActivity.setCurrentFragment(
-                    getParentFragmentManager(), R.id.fragment_event_list, EventListFragment::new);
-              }
-            });
+    LaoActivity.addBackNavigationInstruction(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to event list");
+            EventListFragment.openFragment(getParentFragmentManager());
+          }
+        });
   }
 }
