@@ -37,7 +37,6 @@ public class DigitalCashIssueFragment extends Fragment {
   private DigitalCashViewModel viewModel;
 
   private int selectOneMember;
-  private int selectAllLaoMembers;
   private int selectAllRollCallAttendees;
   private int selectAllLaoWitnesses;
 
@@ -57,9 +56,8 @@ public class DigitalCashIssueFragment extends Fragment {
     viewModel = DigitalCashActivity.obtainViewModel(getActivity());
     binding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
     selectOneMember = binding.radioButton.getId();
-    selectAllLaoMembers = binding.radioButton1.getId();
-    selectAllRollCallAttendees = binding.radioButton2.getId();
-    selectAllLaoWitnesses = binding.radioButton3.getId();
+    selectAllRollCallAttendees = binding.radioButtonAttendees.getId();
+    selectAllLaoWitnesses = binding.radioButtonWitnesses.getId();
     return binding.getRoot();
   }
 
@@ -74,6 +72,7 @@ public class DigitalCashIssueFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.digital_cash_issue);
+    viewModel.setIsTab(false);
   }
 
   /** Function which call the view model post transaction when a post transaction event occur */
@@ -136,8 +135,6 @@ public class DigitalCashIssueFragment extends Fragment {
     Set<PublicKey> attendees = new HashSet<>();
     if (radioGroup == selectOneMember && !currentSelected.equals("")) {
       attendees.add(new PublicKey(currentSelected));
-    } else if (radioGroup == selectAllLaoMembers) {
-      attendees = viewModel.getAllAttendees();
     } else if (radioGroup == selectAllRollCallAttendees) {
       attendees = viewModel.getAttendeesFromLastRollCall();
     } else if (radioGroup == selectAllLaoWitnesses) {
@@ -158,7 +155,6 @@ public class DigitalCashIssueFragment extends Fragment {
     try {
       myArray = viewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      viewModel.setBottomNavigationTab(DigitalCashTab.HOME);
       Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
       Toast.makeText(
               requireContext(),
@@ -166,6 +162,10 @@ public class DigitalCashIssueFragment extends Fragment {
               Toast.LENGTH_SHORT)
           .show();
       myArray = new ArrayList<>();
+      DigitalCashActivity.setCurrentFragment(
+          getParentFragmentManager(),
+          R.id.fragment_digital_cash_home,
+          DigitalCashHomeFragment::newInstance);
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);

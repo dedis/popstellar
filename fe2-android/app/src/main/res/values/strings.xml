@@ -179,13 +179,11 @@
   <string name="digital_cash_receipt">Receipt</string>
   <string name="digital_cash_send_button">Send</string>
   <string name="digital_cash_amount">Amount</string>
-  <string name="digital_cash_laocoindefault">LAOcoin: 0.00</string>
   <string name="digital_cash_amount_empty">Amount: 0.00</string>
   <string name="digital_cash_beneficiary_address">Beneficiary: address</string>
   <string name="digital_cash_my_address">My Address: address</string>
   <string name="digital_cash_issue_button">Issue</string>
   <string name="digital_cash_select_single_member">Individual from the Selector</string>
-  <string name="digital_cash_select_all_members">All LAO members</string>
   <string name="digital_cash_select_all_attendees">All LAO attendees</string>
   <string name="digital_cash_select_all_witnesses">All LAO witnesses</string>
   <string name="digital_cash_content_description_qr_receipt">Receipt qr code transaction</string>
@@ -204,7 +202,6 @@
   <string name="digital_cash_no_witness">"There are no witnesses !"</string>
   <string name="digital_cash_warning_not_enough_money">"Can't send more money than you have !"</string>
   <string name="digital_cash_send_initial_amount">0</string>
-  <string name="digital_cash_non_organizer_error_issue">Only the organizer may issue coins</string>
 
   <!-- Social Media -->
   <string name="home">Home</string>
@@ -240,6 +237,8 @@
   <string name="add_witness_description">Add Witness</string>
   <string name="qr_code_icon_description">An icon representing a qr code</string>
   <string name="qr_code_token_content">The QR code displaying token information</string>
+  <string name="send_button_content_desc">Send button</string>
+  <string name="receive_button_content_desc">Receive button</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
@@ -283,4 +282,5 @@
   <string name="unknown_election_exception">Unknown election</string>
   <string name="unknown_chirp_exception">Unknown Chirp</string>
   <string name="unknown_roll_call_exception">Unknown Roll Call</string>
+    <string name="lao_coins">LAO coins</string>
 </resources>
