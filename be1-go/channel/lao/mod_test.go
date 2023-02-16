@@ -33,7 +33,7 @@ const protocolRelativePath string = "../../../protocol"
 func TestLAOChannel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -66,7 +66,7 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 func TestLAOChannel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -102,7 +102,7 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -129,7 +129,7 @@ func TestLAOChannel_Broadcast(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -193,7 +193,7 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the messages
@@ -244,7 +244,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -290,7 +290,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -368,7 +368,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -392,7 +392,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	// Create the hub
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -492,7 +492,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -538,7 +538,7 @@ func TestLAOChannel_Sends_Greeting(t *testing.T) {
 	keypair := generateKeyPair(t)
 	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
@@ -608,8 +608,8 @@ type fakeHub struct {
 	laoFac channel.LaoFactory
 }
 
-// NewHub returns a Organizer Hub.
-func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+// NewFakeHub returns a fake Hub.
+func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {

@@ -100,11 +100,11 @@ cd cli
 go run . -h
 ```
 
-You may start the organizer server at ports `9000` for clients and `9001` for
-witnesses by executing
+You may start a server at ports `9000` for clients and `9001` for servers by
+executing
 
 ```
-./pop organizer serve
+./pop server serve
 ```
 
 if you want to enforce the rule that only the server owner can creates LAO, specify the option --pk (as written below)
@@ -113,20 +113,13 @@ if you want to enforce the rule that only the server owner can creates LAO, spec
 ./pop organizer --pk "<base64url encoded pk of server owner>" serve
 ```
 
-Please use the `-cp` and `-wp` flags to specify an alternative port. The full
-path to connect to the organizer as a client is
-`ws://host:clientport/organizer/client/` and as a witness
-`ws://host:witnessport/organizer/witness/`.
+Please use the `-cp` and `-sp` flags to specify an alternative port, respectively
+for client the client port and for the server port. The full path to connect
+to the organizer as a client is `ws://host:clientport/client/` and as
+a witness `ws://host:serverport/server/`.
 
-You may start the witness server at ports `9000` for clients and `9002` for
-witness, connected to the organizer at `localhost:9000` by executing `./pop
-witness --pk "<base64 encoded pk>" serve`. Please use the `-cp` and `-wp` flags
-to specify an alternative port. Use the -org flag to specify an alternative
-address and port for the organizer. Using the `-ow` flag as many times as
-necessary, you can specify you can specify the `address:port` of each of the
-other witnesses. The full path to connect to the organizer as a client is
-`ws://host:clientport/organizer/client/` and as a witness
-`ws://host:witnessport/organizer/witness/`.
+Using the `-os` flag as many times as necessary, you can specify you can specify
+the `address:port` of each of the other servers.
 
 ## Unit-tests
 

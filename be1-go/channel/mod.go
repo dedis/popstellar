@@ -12,7 +12,7 @@ import (
 	"go.dedis.ch/kyber/v3"
 )
 
-// LaoFactory is the function passed to the organizer that it must use to
+// LaoFactory is the function passed to the hub that it must use to
 // create a new lao channel.
 type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message,
 	log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) (Channel, error)
