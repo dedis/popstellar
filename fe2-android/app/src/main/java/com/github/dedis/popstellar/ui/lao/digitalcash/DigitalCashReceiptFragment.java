@@ -80,19 +80,15 @@ public class DigitalCashReceiptFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    requireActivity()
-        .getOnBackPressedDispatcher()
-        .addCallback(
-            getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-              @Override
-              public void handleOnBackPressed() {
-                Log.d(TAG, "Back pressed, going to digital cash home");
-                LaoActivity.setCurrentFragment(
-                    getParentFragmentManager(),
-                    R.id.fragment_digital_cash_home,
-                    DigitalCashHomeFragment::new);
-              }
-            });
+    LaoActivity.addBackNavigationInstruction(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to digital cash home");
+            DigitalCashHomeFragment.openFragment(getParentFragmentManager());
+          }
+        });
   }
 }
