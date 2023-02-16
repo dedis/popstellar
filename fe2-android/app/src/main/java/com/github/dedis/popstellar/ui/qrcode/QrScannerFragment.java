@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding;
-import com.github.dedis.popstellar.utility.Constants;
 import com.google.mlkit.vision.barcode.*;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
@@ -31,6 +30,7 @@ public class QrScannerFragment extends Fragment {
   public static final String TAG = QrScannerFragment.class.getSimpleName();
 
   public static final String SCANNING_KEY = "scanning_action_key";
+  public static final String BACK_ARGS = "back_arguments";
 
   private QrScannerFragmentBinding binding;
   private BarcodeScanner barcodeScanner;
@@ -41,33 +41,11 @@ public class QrScannerFragment extends Fragment {
     // Required empty public constructor
   }
 
-  /**
-   * This is for scan other than roll call
-   *
-   * @param scanningAction which scanning action is to be performed
-   * @return a QrScannerFragment with correct arguments in bundle
-   */
-  public static QrScannerFragment newInstance(ScanningAction scanningAction) {
+  public static QrScannerFragment newInstance(ScanningAction scanningAction, String... backArgs) {
     QrScannerFragment fragment = new QrScannerFragment();
     Bundle bundle = new Bundle(1);
     bundle.putSerializable(SCANNING_KEY, scanningAction);
-    fragment.setArguments(bundle);
-    return fragment;
-  }
-
-  /**
-   * This newInstance is for RollCall scan of attendees only and must be used.
-   *
-   * @param rcPersistentId the id of the roll call
-   * @return a QrScannerFragment with correct arguments in bundle
-   */
-  public static QrScannerFragment newRollCallScanInstance(String rcPersistentId) {
-    QrScannerFragment fragment = new QrScannerFragment();
-    Bundle bundle = new Bundle(2);
-
-    // We know that this newInstance if for roll call
-    bundle.putSerializable(SCANNING_KEY, ScanningAction.ADD_ROLL_CALL_ATTENDEE);
-    bundle.putString(Constants.ROLL_CALL_ID, rcPersistentId);
+    bundle.putSerializable(BACK_ARGS, backArgs);
     fragment.setArguments(bundle);
     return fragment;
   }
@@ -106,15 +84,10 @@ public class QrScannerFragment extends Fragment {
     applyPermissionToView();
 
     // Handle back press navigation
-    String rcPersistentId = "";
-    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      // If we are in a rc scan we go back to rc screen which needs rc (persistent) id
-      rcPersistentId = requireArguments().getString(Constants.ROLL_CALL_ID);
-    }
     requireActivity()
         .getOnBackPressedDispatcher()
         .addCallback(
-            this, scanningAction.onBackPressedCallback(getParentFragmentManager(), rcPersistentId));
+            this, scanningAction.onBackPressedCallback(getParentFragmentManager(), getBackArgs()));
   }
 
   @Override
@@ -132,6 +105,16 @@ public class QrScannerFragment extends Fragment {
       // This is deprecated as of Android 13 but it'll be probably 2030 before it's our min SDK
       // noinspection deprecation
       return (ScanningAction) requireArguments().getSerializable(SCANNING_KEY);
+    }
+  }
+
+  private String[] getBackArgs() {
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+      return requireArguments().getSerializable(BACK_ARGS, String[].class);
+    } else {
+      // This is deprecated as of Android 13 but it'll be probably 2030 before it's our min SDK
+      // noinspection deprecation
+      return (String[]) requireArguments().getSerializable(BACK_ARGS);
     }
   }
 

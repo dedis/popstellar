@@ -37,11 +37,13 @@ public enum ScanningAction {
       R.string.rc_manual_hint,
       R.string.add_attendee_title,
       LaoDetailActivity::obtainViewModel,
-      (manager, rcPersistentId) ->
+      (manager, stringArray) ->
           LaoDetailActivity.setCurrentFragment(
               manager,
               R.id.fragment_roll_call,
-              () -> RollCallFragment.newInstance(rcPersistentId))),
+              () ->
+                  RollCallFragment.newInstance(
+                      stringArray[0]))), // We only need the first arg (rc id)
   ADD_LAO_PARTICIPANT(
       R.string.qrcode_scanning_connect_lao,
       R.string.scanned_tokens,
@@ -58,7 +60,7 @@ public enum ScanningAction {
   @StringRes public final int hint;
   @StringRes public final int manualAddTitle;
   private final Function<FragmentActivity, QRCodeScanningViewModel> viewModelProvider;
-  private final BiConsumer<FragmentManager, String> onBackPressed;
+  private final BiConsumer<FragmentManager, String[]> onBackPressed;
 
   ScanningAction(
       @StringRes int instruction,
@@ -67,7 +69,7 @@ public enum ScanningAction {
       @StringRes int hint,
       int manualAddTitle,
       Function<FragmentActivity, QRCodeScanningViewModel> viewModelProvider,
-      BiConsumer<FragmentManager, String> onBackPressed) {
+      BiConsumer<FragmentManager, String[]> onBackPressed) {
     this.instruction = instruction;
     this.scanTitle = scanTitle;
     this.pageTitle = pageTitle;
@@ -96,7 +98,7 @@ public enum ScanningAction {
    * @param data data necessary (i.e. rc id when opening the RC fragment) to open target fragment
    * @return the callback describing what to do on back button pressed
    */
-  public OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String data) {
+  public OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String[] data) {
     return new OnBackPressedCallback(true) {
       @Override
       public void handleOnBackPressed() {

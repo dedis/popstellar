@@ -24,6 +24,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -131,7 +132,8 @@ public class RollCallFragment extends Fragment {
                 getParentFragmentManager(),
                 R.id.fragment_qr_scanner,
                 () ->
-                    QrScannerFragment.newRollCallScanInstance(
+                    QrScannerFragment.newInstance(
+                        ScanningAction.ADD_ROLL_CALL_ATTENDEE,
                         requireArguments().getString(ROLL_CALL_ID))));
 
     viewModel.addDisposable(
