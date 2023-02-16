@@ -117,7 +117,7 @@ func connectToSocket(address string, h hub.Hub,
 
 	log := popstellar.Logger
 
-	urlString := fmt.Sprintf("ws://%s/sockets/server", address)
+	urlString := fmt.Sprintf("ws://%s/server", address)
 	u, err := url.Parse(urlString)
 	if err != nil {
 		return xerrors.Errorf("failed to parse connection url %s: %v", urlString, err)

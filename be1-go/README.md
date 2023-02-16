@@ -115,8 +115,8 @@ if you want to enforce the rule that only the server owner can creates LAO, spec
 
 Please use the `-cp` and `-sp` flags to specify an alternative port, respectively
 for client the client port and for the server port. The full path to connect
-to the organizer as a client is `ws://host:clientport/sockets/client/` and as
-a witness `ws://host:serverport/sockets/server/`.
+to the organizer as a client is `ws://host:clientport/client/` and as
+a witness `ws://host:serverport/server/`.
 
 Using the `-os` flag as many times as necessary, you can specify you can specify
 the `address:port` of each of the other servers.
