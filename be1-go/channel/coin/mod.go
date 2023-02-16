@@ -3,8 +3,6 @@ package coin
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/channel/registry"
 	"popstellar/inbox"
@@ -15,8 +13,12 @@ import (
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
+	"popstellar/persistence"
 	"popstellar/validation"
 	"strconv"
+
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -219,4 +221,31 @@ func (c *Channel) processPostTransaction(msg message.Message, msgData interface{
 	}
 
 	return nil
+}
+
+// NewChannelFromState returns a new channel initialized from a previous state
+func NewChannelFromState(state persistence.CoinState, hub channel.HubFunctionalities,
+	log zerolog.Logger) *Channel {
+
+	log = log.With().Str("channel", "coin").Logger()
+
+	newChannel := &Channel{
+		sockets:   channel.NewSockets(),
+		inbox:     inbox.NewInboxFromState(state.Inbox),
+		channelID: state.ChannelPath,
+		hub:       hub,
+		log:       log,
+	}
+
+	newChannel.registry = newChannel.NewDigitalCashRegistry()
+
+	return newChannel
+}
+
+// GetChannelState returns the state of the channel in a JSON object
+func (c *Channel) GetChannelState() persistence.CoinState {
+	return persistence.CoinState{
+		ChannelPath: c.channelID,
+		Inbox:       c.inbox.GetInboxState(),
+	}
 }

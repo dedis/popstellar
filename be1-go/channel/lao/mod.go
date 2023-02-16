@@ -670,7 +670,7 @@ func (c *Channel) createAndSendLAOGreet() error {
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
-		Address:  fmt.Sprintf("wss://%s/sockets/client", c.hub.GetServerAddress()),
+		Address:  fmt.Sprintf("wss://%s/client", c.hub.GetServerAddress()),
 		Peers:    []messagedata.Peer{},
 	}
 

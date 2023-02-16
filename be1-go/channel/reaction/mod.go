@@ -14,6 +14,7 @@ import (
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
+	"popstellar/persistence"
 	"popstellar/validation"
 	"strconv"
 	"sync"
@@ -348,4 +349,46 @@ func (a *attendees) add(key string) {
 	defer a.Unlock()
 
 	a.store[key] = struct{}{}
+}
+
+// NewChannelFromState returns a new channel initialized from a previous state
+func NewChannelFromState(state persistence.ReactionState, hub channel.HubFunctionalities,
+	log zerolog.Logger) *Channel {
+
+	log = log.With().Str("channel", "reaction").Logger()
+
+	newChannel := &Channel{
+		sockets:   channel.NewSockets(),
+		inbox:     inbox.NewInboxFromState(state.Inbox),
+		channelID: state.ChannelPath,
+		attendees: newAttendees(),
+		hub:       hub,
+		log:       log,
+	}
+
+	for _, elem := range state.Attendees {
+		newChannel.attendees.add(elem)
+	}
+
+	newChannel.registry = newChannel.NewReactionRegistry()
+
+	return newChannel
+}
+
+// GetChannelState returns the state of the channel in a JSON object
+func (c *Channel) GetChannelState() persistence.ReactionState {
+
+	attendees := make([]string, 0)
+	c.attendees.Lock()
+	defer c.attendees.Unlock()
+
+	for key := range c.attendees.store {
+		attendees = append(attendees, key)
+	}
+
+	return persistence.ReactionState{
+		ChannelPath: c.channelID,
+		Inbox:       c.inbox.GetInboxState(),
+		Attendees:   attendees,
+	}
 }
