@@ -50,6 +50,8 @@ const mockRollCallState = {
   creation: mockRCTimestampStart.valueOf(),
   proposedStart: mockRCTimestampStart.valueOf(),
   proposedEnd: mockRCTimestampEnd.valueOf(),
+  openedAt: mockRCTimestampStart.valueOf(),
+  closedAt: mockRCTimestampEnd.valueOf(),
   status: RollCallStatus.CLOSED,
   attendees: mockRCAttendees,
 };

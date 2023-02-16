@@ -5,6 +5,8 @@ participants to "chirp", react to chirps and follow each other.
 
 ## Dependencies
 
-**Note**: This feature has not been separated from the other features yet and
-thus the exact dependencies are a bit unclear. Running `npm run depcruise`
-suggests that it depends on the `rollCall`, `lao` and `wallet` features.
+- Basic LAO functionality provided by the `lao` feature
+- LAO Events support provided by the `events` feature
+- Wallet functions to generate PoP tokens
+
+See `interface/Configuration.ts` for more details.

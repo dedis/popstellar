@@ -12,8 +12,10 @@ import androidx.annotation.Nullable;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallCreateFragmentBinding;
-import com.github.dedis.popstellar.ui.detail.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
@@ -158,7 +160,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
                   setCurrentFragment(
                       getParentFragmentManager(),
                       R.id.fragment_lao_detail,
-                      LaoDetailFragment::newInstance),
+                      EventListFragment::newInstance),
               error ->
                   ErrorUtils.logAndShow(
                       requireContext(), TAG, error, R.string.error_create_rollcall)));

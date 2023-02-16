@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailActivityBinding;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.detail.token.TokenListFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
 import com.github.dedis.popstellar.ui.digitalcash.DigitalCashActivity;
@@ -69,9 +70,15 @@ public class LaoDetailActivity extends LaoActivity {
   }
 
   @Override
-  public void onStop() {
-    super.onStop();
-
+  /*
+    Normally the saving routine should be called onStop, such as is done in other activities,
+    Yet here for unknown reasons the subscriptions set in LAONetworkManager is empty when going
+    to HomeActivity. This fixes it. Since our persistence is light for now (13.02.2023) - i.e.
+    server address, wallet seed and channel list - and not computationally intensive this will not
+    be a problem at the moment
+   */
+  public void onPause() {
+    super.onPause();
     try {
       viewModel.savePersistentData();
     } catch (GeneralSecurityException e) {
@@ -123,7 +130,7 @@ public class LaoDetailActivity extends LaoActivity {
 
   private void openEventsTab() {
     setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
+        getSupportFragmentManager(), R.id.fragment_lao_detail, EventListFragment::newInstance);
   }
 
   private void openTokensTab() {

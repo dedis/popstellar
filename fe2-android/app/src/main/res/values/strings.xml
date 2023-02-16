@@ -44,12 +44,16 @@
   <!--  Lao Detail-->
   <string name="add_election">New Election</string>
   <string name="add_roll_call">New Roll Call</string>
-  <string name="present_header_title">Current</string>
-  <string name="future_header_title">Upcoming</string>
-  <string name="past_header_title">Previous</string>
+  <string name="present_header_title">Current Events</string>
+  <string name="future_header_title">Upcoming Events</string>
+  <string name="past_header_title">Past Events</string>
   <string name="lao_properties_server_title">Connected to server</string>
   <string name="lao_properties_identifier_title">Identifier</string>
   <string name="identity_name">Name</string>
+  <string name="empty_events_organizer_text">No event has been created in this LAO ! \n\nTo create one, tap on add button with a + on the bottom right
+  </string>
+  <string name="empty_events_non_organizer_text">No event has been created in this LAO ! \n\nSince you are not an organizer, you must wait for them to create one.
+  </string>
 
   <!-- Abstract Event-->
   <string name="open">Open</string>
@@ -66,7 +70,8 @@
   <string name="start_time_after_end_time_not_allowed">Start time must be before end time</string>
   <string name="end_time_before_start_time_not_allowed">End time must be after start time</string>
   <string name="end_time_optional">End Time</string>
-
+  <string name="ongoing">Ongoing</string>
+  <string name="start_anytime">Starting anytime now</string>
   <string name="button_cancel">Cancel</string>
 
   <!-- Roll-Call Event -->
@@ -263,6 +268,7 @@
   <string name="error_storage_wallet">An error occurred during the storage of the wallet seed</string>
   <string name="qr_code_not_pop_token">Error, this QR code is not a pop token or the key format is invalid</string>
   <string name="qr_code_not_main_pk">Error, this QR code is not a main public key or the key format is invalid</string>
+  <string name="error_event_observed">Error, could not update events</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>

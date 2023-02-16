@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail;
+package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -12,33 +12,39 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
+import com.github.dedis.popstellar.databinding.EventListFragmentBinding;
 import com.github.dedis.popstellar.model.Role;
-import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.ui.detail.event.*;
+import com.github.dedis.popstellar.model.objects.event.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.ui.detail.event.LaoDetailAnimation;
+import com.github.dedis.popstellar.ui.detail.event.UpcomingEventsFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallCreationFragment;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/** Fragment used to display the LAO Detail UI */
+/** Fragment used to display the list of events */
 @AndroidEntryPoint
-public class LaoDetailFragment extends Fragment {
+public class EventListFragment extends Fragment {
 
-  public static final String TAG = LaoDetailFragment.class.getSimpleName();
+  public static final String TAG = EventListFragment.class.getSimpleName();
 
   @Inject Gson gson;
 
-  private LaoDetailFragmentBinding binding;
+  private EventListFragmentBinding binding;
   private LaoDetailViewModel viewModel;
   private boolean isRotated = false;
 
-  public static LaoDetailFragment newInstance() {
-    return new LaoDetailFragment();
+  public static EventListFragment newInstance() {
+    return new EventListFragment();
   }
 
   @Nullable
@@ -47,7 +53,7 @@ public class LaoDetailFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    binding = LaoDetailFragmentBinding.inflate(inflater, container, false);
+    binding = EventListFragmentBinding.inflate(inflater, container, false);
 
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     binding.setLifecycleOwner(requireActivity());
@@ -65,6 +71,38 @@ public class LaoDetailFragment extends Fragment {
     binding.addElectionText.setOnClickListener(openCreateEvent(EventType.ELECTION));
     binding.addRollCall.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
     binding.addRollCallText.setOnClickListener(openCreateEvent(EventType.ROLL_CALL));
+
+    // Observing events so that we know when to display the upcoming events card and displaying the
+    // Empty events text
+    viewModel.addDisposable(
+        viewModel
+            .getEvents()
+            .subscribe(
+                events -> {
+                  setupUpcomingEventsCard(events);
+                  setupEmptyEventsTextVisibility(events);
+                },
+                error ->
+                    ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_event_observed)));
+
+    // Add listener to upcoming events card
+    binding.upcomingEventsCard.setOnClickListener(
+        v ->
+            LaoDetailActivity.setCurrentFragment(
+                getParentFragmentManager(),
+                R.id.fragment_upcoming_events,
+                UpcomingEventsFragment::newInstance));
+
+    // Observe role to match empty event text to it
+    viewModel
+        .getRole()
+        .observe(
+            getViewLifecycleOwner(),
+            role ->
+                binding.emptyEventsText.setText(
+                    role.equals(Role.ORGANIZER)
+                        ? R.string.empty_events_organizer_text
+                        : R.string.empty_events_non_organizer_text));
 
     return binding.getRoot();
   }
@@ -131,8 +169,21 @@ public class LaoDetailFragment extends Fragment {
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
 
-    EventListDivider divider = new EventListDivider(getContext());
-    eventList.addItemDecoration(divider);
     eventList.setAdapter(eventListAdapter);
+  }
+
+  private void setupUpcomingEventsCard(Set<Event> events) {
+    binding.upcomingEventsCard.setVisibility(
+        events.stream()
+                .anyMatch( // We are looking for any event that is in future section
+                    event ->
+                        // We want created events that are in more than 24 hours
+                        event.getState().equals(EventState.CREATED) && !event.isEventEndingToday())
+            ? View.VISIBLE
+            : View.GONE);
+  }
+
+  private void setupEmptyEventsTextVisibility(Set<Event> events) {
+    binding.emptyEventsLayout.setVisibility(events.isEmpty() ? View.VISIBLE : View.GONE);
   }
 }

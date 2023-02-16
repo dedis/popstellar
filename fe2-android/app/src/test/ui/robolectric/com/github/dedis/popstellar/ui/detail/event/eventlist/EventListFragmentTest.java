@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail;
+package com.github.dedis.popstellar.ui.detail.event.eventlist;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -18,12 +18,11 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cr
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.*;
-import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.*;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -62,7 +61,7 @@ import static org.mockito.Mockito.when;
 @LargeTest
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
-public class LaoDetailFragmentTest {
+public class EventListFragmentTest {
 
   private static final String LAO_NAME = "LAO";
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
