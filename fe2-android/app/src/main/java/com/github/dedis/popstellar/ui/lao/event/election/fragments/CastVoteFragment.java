@@ -1,9 +1,11 @@
 package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
@@ -108,6 +110,8 @@ public class CastVoteFragment extends Fragment {
 
     // setUp the cast Vote button
     binding.castVoteButton.setOnClickListener(this::castVote);
+
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -184,5 +188,19 @@ public class CastVoteFragment extends Fragment {
     super.onResume();
     viewModel.setPageTitle(R.string.vote);
     viewModel.setIsTab(false);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to election");
+            ElectionFragment.openFragment(
+                getParentFragmentManager(), getArguments().getString(ELECTION_ID));
+          }
+        });
   }
 }

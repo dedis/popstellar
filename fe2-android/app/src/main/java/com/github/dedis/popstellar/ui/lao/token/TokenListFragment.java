@@ -7,6 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.dedis.popstellar.R;
@@ -117,5 +118,9 @@ public class TokenListFragment extends Fragment {
                   binding.validTokenLayout.setVisibility(View.GONE);
                   binding.previousTokenLayout.setVisibility(View.GONE);
                 }));
+  }
+
+  public static void openFragment(FragmentManager manager) {
+    LaoActivity.setCurrentFragment(manager, R.id.fragment_tokens, TokenListFragment::new);
   }
 }

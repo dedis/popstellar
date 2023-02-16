@@ -8,6 +8,7 @@ import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
@@ -177,14 +178,10 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     setUpElectionVersionSpinner(versionSpinner, listener);
 
     binding.setLifecycleOwner(getActivity());
-
-    return binding.getRoot();
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
     setupElectionSubmitButton();
+
+    handleBackNav();
+    return binding.getRoot();
   }
 
   @Override
@@ -297,5 +294,18 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     spinner.setAdapter(adapter);
     spinner.setOnItemSelectedListener(listener);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to event list");
+            EventListFragment.openFragment(getParentFragmentManager());
+          }
+        });
   }
 }

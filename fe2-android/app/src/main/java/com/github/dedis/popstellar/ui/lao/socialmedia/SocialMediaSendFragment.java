@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -48,6 +50,7 @@ public class SocialMediaSendFragment extends Fragment {
     binding.setViewModel(socialMediaViewModel);
     binding.setLifecycleOwner(getViewLifecycleOwner());
 
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -97,5 +100,18 @@ public class SocialMediaSendFragment extends Fragment {
                   }));
       socialMediaViewModel.setBottomNavigationTab(SocialMediaTab.HOME);
     }
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going back to chirp list");
+            ChirpListFragment.OpenFragment(getParentFragmentManager());
+          }
+        });
   }
 }

@@ -6,6 +6,7 @@ import android.view.*;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashHomeFragmentBinding;
@@ -15,7 +16,6 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashHomeFragment#newInstance} factory
@@ -121,5 +121,10 @@ public class DigitalCashHomeFragment extends Fragment {
                 binding.issueButton.setVisibility(View.GONE);
               }
             });
+  }
+
+  public static void openFragment(FragmentManager manager) {
+    LaoActivity.setCurrentFragment(
+        manager, R.id.fragment_digital_cash_home, DigitalCashHomeFragment::new);
   }
 }

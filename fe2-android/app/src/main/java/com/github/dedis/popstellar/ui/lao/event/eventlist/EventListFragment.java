@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -187,5 +188,9 @@ public class EventListFragment extends Fragment {
 
   private void setupEmptyEventsTextVisibility(Set<Event> events) {
     binding.emptyEventsLayout.setVisibility(events.isEmpty() ? View.VISIBLE : View.GONE);
+  }
+
+  public static void openFragment(FragmentManager manager) {
+    LaoActivity.setCurrentFragment(manager, R.id.fragment_event_list, EventListFragment::new);
   }
 }

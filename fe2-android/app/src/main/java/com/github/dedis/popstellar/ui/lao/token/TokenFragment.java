@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -94,6 +95,7 @@ public class TokenFragment extends Fragment {
       return null;
     }
 
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -102,5 +104,18 @@ public class TokenFragment extends Fragment {
         (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
     ClipData clip = ClipData.newPlainText(token, token);
     clipboard.setPrimaryClip(clip);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to token list");
+            TokenListFragment.openFragment(getParentFragmentManager());
+          }
+        });
   }
 }

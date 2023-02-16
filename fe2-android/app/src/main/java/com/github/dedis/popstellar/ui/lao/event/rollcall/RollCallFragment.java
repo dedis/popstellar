@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -155,6 +156,7 @@ public class RollCallFragment extends Fragment {
 
     retrieveAndDisplayPublicKey();
 
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -289,6 +291,21 @@ public class RollCallFragment extends Fragment {
     map.put(EventState.OPENED, R.drawable.ic_lock);
     map.put(EventState.CLOSED, R.drawable.ic_unlock);
     return map;
+  }
+
+  private void handleBackNav() {
+    requireActivity()
+        .getOnBackPressedDispatcher()
+        .addCallback(
+            getViewLifecycleOwner(),
+            new OnBackPressedCallback(true) {
+              @Override
+              public void handleOnBackPressed() {
+                Log.d(TAG, "Back pressed, going to event list");
+                LaoActivity.setCurrentFragment(
+                    getParentFragmentManager(), R.id.fragment_event_list, EventListFragment::new);
+              }
+            });
   }
 
   /**

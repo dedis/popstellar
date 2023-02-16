@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.*;
 
@@ -49,6 +50,8 @@ public class DigitalCashHistoryFragment extends Fragment {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 adapter::setList, error -> Log.d(TAG, "error with history update " + error)));
+
+    handleBackNav();
     return view;
   }
 
@@ -57,5 +60,18 @@ public class DigitalCashHistoryFragment extends Fragment {
     super.onResume();
     viewModel.setPageTitle(R.string.digital_cash_history);
     viewModel.setIsTab(false);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to digital cash home");
+            DigitalCashHomeFragment.openFragment(getParentFragmentManager());
+          }
+        });
   }
 }
