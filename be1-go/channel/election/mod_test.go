@@ -567,7 +567,7 @@ func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	keypair := generateKeyPair(t)
 	pkOrganizer := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	var file string

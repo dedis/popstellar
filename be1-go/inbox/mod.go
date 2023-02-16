@@ -7,6 +7,7 @@ import (
 
 	"popstellar/message/answer"
 	"popstellar/message/query/method/message"
+	"popstellar/persistence"
 )
 
 // messageInfo wraps a message with a stored time for sorting.
@@ -105,4 +106,42 @@ func (i *Inbox) GetMessage(messageID string) (*message.Message, bool) {
 	}
 
 	return &msgInfo.message, true
+}
+
+// NewInboxFromState creates a new inbox from a saved state
+func NewInboxFromState(state persistence.InboxState) *Inbox {
+
+	inbox := &Inbox{
+		mutex:     sync.RWMutex{},
+		msgsMap:   make(map[string]*messageInfo),
+		msgsArray: make([]*messageInfo, len(state.State)),
+		channelID: state.ChannelID,
+	}
+
+	for index, elem := range state.State {
+		messageInfo := messageInfo{
+			message:    elem.Message,
+			storedTime: elem.StoredTime}
+
+		inbox.msgsMap[elem.Message.MessageID] = &messageInfo
+		inbox.msgsArray[index] = &messageInfo
+	}
+
+	return inbox
+}
+
+// GetInboxState returns the messages and their timestamps of the inbox as a JSON
+// object.
+func (i *Inbox) GetInboxState() persistence.InboxState {
+	i.mutex.Lock()
+	defer i.mutex.Unlock()
+
+	state := make([]persistence.MessageState, len(i.msgsArray))
+	for index, elem := range i.msgsArray {
+		state[index] = persistence.MessageState{
+			Message:    elem.message,
+			StoredTime: elem.storedTime}
+	}
+
+	return persistence.InboxState{State: state}
 }

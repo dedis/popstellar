@@ -14,6 +14,7 @@ import (
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
+	"popstellar/persistence"
 	"popstellar/validation"
 	"strconv"
 	"sync"
@@ -1046,5 +1047,188 @@ func (c *Channel) timeoutFailure(instance *ConsensusInstance, messageID string) 
 	err = c.publishNewMessage(byteMsg)
 	if err != nil {
 		c.log.Err(err).Msg(failedFailureSending)
+	}
+}
+
+// NewChannelFromState returns a new channel initialized from a previous state
+func NewChannelFromState(state persistence.ConsensusState, hub channel.HubFunctionalities,
+	log zerolog.Logger, organizerPubKey kyber.Point) *Channel {
+
+	log = log.With().Str("channel", "consensus").Logger()
+
+	attendees := make(map[string]struct{})
+	for _, elem := range state.Attendees {
+		attendees[elem] = struct{}{}
+	}
+
+	newChannel := &Channel{
+		clock:           clock.New(),
+		sockets:         channel.NewSockets(),
+		inbox:           inbox.NewInboxFromState(state.Inbox),
+		channelID:       state.ChannelPath,
+		organizerPubKey: organizerPubKey,
+		attendees:       attendees,
+		consensusInstances: struct {
+			sync.Mutex
+			m map[string]*ConsensusInstance
+		}{
+			sync.Mutex{},
+			make(map[string]*ConsensusInstance),
+		},
+		hub: hub,
+		log: log,
+	}
+
+	for _, elem := range state.Instances {
+		newChannel.consensusInstances.m[elem.ID] = newChannel.NewInstanceFromState(elem)
+	}
+
+	newChannel.registry = newChannel.NewConsensusRegistry()
+
+	return newChannel
+}
+
+// NewInstanceFromState returns a consensus instance from the provided state
+func (c *Channel) NewInstanceFromState(state persistence.InstanceState) *ConsensusInstance {
+
+	promises := make(map[string]messagedata.ConsensusPromise)
+	accepts := make(map[string]messagedata.ConsensusAccept)
+	electInstances := make(map[string]*ElectInstance)
+
+	for _, promise := range state.Promises {
+		promises[promise.Signature] = promise.Message
+	}
+
+	for _, accept := range state.Accepts {
+		accepts[accept.Signature] = accept.Message
+	}
+
+	for _, elect := range state.ElectInstances {
+		positiveAcceptors := make(map[string]int)
+		negativeAcceptors := make(map[string]int)
+
+		for _, acceptor := range elect.PositiveAcceptors {
+			positiveAcceptors[acceptor] = 0
+		}
+		for _, acceptor := range elect.NegativeAcceptors {
+			negativeAcceptors[acceptor] = 0
+		}
+
+		electInstances[elect.ID] = &ElectInstance{
+			timeoutChan: make(chan string),
+
+			acceptorNumber: elect.AcceptorNumber,
+
+			failed: elect.Failed,
+
+			positiveAcceptors: positiveAcceptors,
+			negativeAcceptors: negativeAcceptors,
+		}
+	}
+
+	return &ConsensusInstance{
+		id: state.ID,
+
+		role: state.Role,
+
+		lastSent: state.LastSent,
+
+		proposedTry: state.ProposedTry,
+		promisedTry: state.PromisedTry,
+		acceptedTry: state.AcceptedTry,
+
+		proposedValue: state.ProposedValue,
+		acceptedValue: state.AcceptedValue,
+
+		decided:  state.Decided,
+		decision: state.Decision,
+
+		promises: promises,
+		accepts:  accepts,
+
+		electInstances: electInstances,
+	}
+}
+
+// GetChannelState returns the state of the channel in a JSON object
+func (c *Channel) GetChannelState() persistence.ConsensusState {
+	c.Mutex.Lock()
+	defer c.Mutex.Unlock()
+
+	attendees := make([]string, 0)
+	for elem := range c.attendees {
+		attendees = append(attendees, elem)
+	}
+
+	instances := make([]persistence.InstanceState, 0)
+	for _, elem := range c.consensusInstances.m {
+		instances = append(instances, c.GetInstanceState(elem))
+	}
+
+	return persistence.ConsensusState{
+		ChannelPath: c.channelID,
+		Inbox:       c.inbox.GetInboxState(),
+		Attendees:   attendees,
+		Instances:   instances,
+	}
+}
+
+// GetInstanceState returns a consensus instance state in a JSON object
+func (c *Channel) GetInstanceState(instance *ConsensusInstance) persistence.InstanceState {
+	promises := make([]persistence.PromiseMessage, 0)
+	for signature, message := range instance.promises {
+		promises = append(promises, persistence.PromiseMessage{
+			Signature: signature,
+			Message:   message,
+		})
+	}
+
+	accepts := make([]persistence.AcceptMessage, 0)
+	for signature, message := range instance.accepts {
+		accepts = append(accepts, persistence.AcceptMessage{
+			Signature: signature,
+			Message:   message,
+		})
+	}
+
+	electInstances := make([]persistence.ElectState, 0)
+	for id, elect := range instance.electInstances {
+		electInstance := persistence.ElectState{
+			ID:                id,
+			AcceptorNumber:    elect.acceptorNumber,
+			Failed:            elect.failed,
+			PositiveAcceptors: make([]string, 0),
+			NegativeAcceptors: make([]string, 0),
+		}
+
+		for elem := range elect.positiveAcceptors {
+			electInstance.PositiveAcceptors = append(electInstance.PositiveAcceptors, elem)
+		}
+
+		for elem := range elect.negativeAcceptors {
+			electInstance.NegativeAcceptors = append(electInstance.NegativeAcceptors, elem)
+		}
+
+		electInstances = append(electInstances, electInstance)
+	}
+
+	return persistence.InstanceState{
+		ID:       instance.id,
+		Role:     instance.role,
+		LastSent: instance.lastSent,
+
+		ProposedTry: instance.proposedTry,
+		PromisedTry: instance.promisedTry,
+		AcceptedTry: instance.acceptedTry,
+
+		ProposedValue: instance.proposedValue,
+		AcceptedValue: instance.acceptedValue,
+
+		Decided:  instance.decided,
+		Decision: instance.decision,
+
+		Promises:       promises,
+		Accepts:        accepts,
+		ElectInstances: electInstances,
 	}
 }

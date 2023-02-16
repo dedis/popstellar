@@ -14,6 +14,7 @@ import (
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
+	"popstellar/persistence"
 	"popstellar/validation"
 	"strconv"
 
@@ -359,4 +360,34 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 	}
 
 	return nil
+}
+
+// NewChannelFromState returns a new channel initialized from a previous state
+func NewChannelFromState(state persistence.ChirpState, hub channel.HubFunctionalities,
+	generalChannel channel.Broadcastable, log zerolog.Logger) *Channel {
+
+	log = log.With().Str("channel", "chirp").Logger()
+
+	newChannel := &Channel{
+		sockets:        channel.NewSockets(),
+		inbox:          inbox.NewInboxFromState(state.Inbox),
+		generalChannel: generalChannel,
+		channelID:      state.ChannelPath,
+		owner:          state.OwnerKey,
+		hub:            hub,
+		log:            log,
+	}
+
+	newChannel.registry = newChannel.NewChirpRegistry()
+
+	return newChannel
+}
+
+// GetChannelState returns the state of the channel in a JSON object
+func (c *Channel) GetChannelState() persistence.ChirpState {
+	return persistence.ChirpState{
+		ChannelPath: c.channelID,
+		OwnerKey:    c.owner,
+		Inbox:       c.inbox.GetInboxState(),
+	}
 }
