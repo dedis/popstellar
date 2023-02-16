@@ -43,7 +43,7 @@ const (
 func Test_Chirp_Channel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	cha := NewChannel(chirpChannelName, sender, fakeHub, nil, nolog)
@@ -70,7 +70,7 @@ func Test_Chirp_Channel_Subscribe(t *testing.T) {
 func Test_Chirp_Channel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	cha := NewChannel(chirpChannelName, sender, fakeHub, nil, nolog)
@@ -98,7 +98,7 @@ func Test_Chirp_Channel_Unsubscribe(t *testing.T) {
 func Test_Chirp_Channel_Wrong_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	cha := NewChannel(chirpChannelName, sender, fakeHub, nil, nolog)
@@ -120,7 +120,7 @@ func Test_Chirp_Channel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channels
@@ -170,7 +170,7 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channels
@@ -226,7 +226,7 @@ func Test_Send_Chirp(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channels
@@ -297,7 +297,7 @@ func Test_Delete_Chirp(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channels

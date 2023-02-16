@@ -62,7 +62,7 @@ func NewServer(hub hub.Hub, addr string, port int, st socket.SocketType, log zer
 		log:     log,
 	}
 
-	path := fmt.Sprintf("/%s", st)
+	path := fmt.Sprintf("/sockets/%s", st)
 	mux := http.NewServeMux()
 	mux.HandleFunc(path, server.ServeHTTP)
 

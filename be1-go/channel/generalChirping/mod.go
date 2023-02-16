@@ -14,7 +14,6 @@ import (
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
-	"popstellar/persistence"
 	"popstellar/validation"
 	"strconv"
 
@@ -258,31 +257,4 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 // GetChannelPath is a getter for the channel path
 func (c *Channel) GetChannelPath() string {
 	return c.channelPath
-}
-
-// NewChannelFromState returns a new channel initialized from a previous state
-func NewChannelFromState(state persistence.GeneralChirpingState, hub channel.HubFunctionalities,
-	log zerolog.Logger) *Channel {
-
-	log = log.With().Str("channel", "general chirp").Logger()
-
-	newChannel := &Channel{
-		sockets:     channel.NewSockets(),
-		inbox:       inbox.NewInboxFromState(state.Inbox),
-		channelPath: state.ChannelPath,
-		hub:         hub,
-		log:         log,
-	}
-
-	newChannel.registry = newChannel.NewGeneralChirpingRegistry()
-
-	return newChannel
-}
-
-// GetChannelState returns the state of the channel in a JSON object
-func (c *Channel) GetChannelState() persistence.GeneralChirpingState {
-	return persistence.GeneralChirpingState{
-		ChannelPath: c.channelPath,
-		Inbox:       c.inbox.GetInboxState(),
-	}
 }
