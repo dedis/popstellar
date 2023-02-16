@@ -5,7 +5,7 @@
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Hash, PublicKey } from 'core/objects';
+import { Hash, PublicKey, RollCallToken } from 'core/objects';
 import { COINBASE_HASH } from 'resources/const';
 
 import { Transaction, TransactionState } from '../objects/transaction';
@@ -186,31 +186,31 @@ export const makeTransactionsByHashSelector = (laoId: Hash) =>
   );
 
 /**
- * Selector for the transactions that involve a user (characterized by its public key). If the public key
- * is undefined, it returns all transactions.
+ * Selector for the transactions that involve given roll call tokens.
  * @param laoId
- * @param publicKey
+ * @param rollCallTokens
  */
-export const makeTransactionsByPublicKeySelector = (laoId: Hash, publicKey?: PublicKey) =>
+export const makeTransactionsByRollCallTokens = (laoId: Hash, rollCallTokens: RollCallToken[]) =>
   createSelector(
-    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.allTransactionsHash,
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByPubHash,
     (
-      transactionHashes: string[] | undefined,
       transactionsByHash: Record<string, TransactionState> | undefined,
       transactionsByPubHash: Record<string, string[]> | undefined,
     ) => {
-      if (!publicKey) {
-        if (transactionHashes && transactionsByHash) {
-          return transactionHashes.map((hash) => transactionsByHash[hash]);
-        }
-        return [];
-      }
       if (transactionsByHash && transactionsByPubHash) {
-        return transactionsByPubHash[Hash.fromPublicKey(publicKey).valueOf()].map(
-          (hash) => transactionsByHash[hash],
-        );
+        const transactions: TransactionState[] = [];
+
+        for (let i = 0; i < rollCallTokens.length; i += 1) {
+          const { publicKey } = rollCallTokens[i].token;
+          const transactionsOfToken = transactionsByPubHash[
+            Hash.fromPublicKey(publicKey).valueOf()
+          ].map((hash) => transactionsByHash[hash]);
+
+          transactions.push(...transactionsOfToken);
+        }
+
+        return transactions;
       }
       return [];
     },
