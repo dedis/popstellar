@@ -13,7 +13,6 @@ import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadElectionDataAck
 
-import java.nio.ByteBuffer
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -66,8 +65,10 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
           case OPEN_BALLOT => Left(rpcMessage)
           case SECRET_BALLOT =>
             val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
-            val broadcastKey: Base64Data = Base64Data.encode(KeyElectionFormat.write(keyElection).toString)
-            Await.result(dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, broadcastKey, electionChannel), duration)
+            Await.result(
+              dbBroadcast(rpcMessage, rpcMessage.getParamsChannel, KeyElectionFormat.write(keyElection), electionChannel),
+              duration
+            )
         }
       case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
@@ -113,9 +114,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       _ <- dbAskWritePropagate(rpcMessage)
       // data to be broadcast
       resultElection: ResultElection = ResultElection(electionQuestionResults, witnessSignatures)
-      data: Base64Data = Base64Data.encode(resultElectionFormat.write(resultElection).toString)
       // create & propagate the resultMessage
-      _ <- dbBroadcast(rpcMessage, electionChannel, data, electionChannel)
+      _ <- dbBroadcast(rpcMessage, electionChannel, resultElectionFormat.write(resultElection), electionChannel)
     } yield ()
     Await.ready(combined, duration).value match {
       case Some(Success(_)) => Left(rpcMessage)
@@ -123,28 +123,42 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
   }
 
+  /** Helper function to create the list of ElectionQuestionResult
+    *
+    * @param electionChannel
+    *   : the Channel in which we read the data
+    * @return
+    *   the list of ElectionQuestionResult wrapped in a [[scala.concurrent.Future]]
+    */
   private def createElectionQuestionResults(electionChannel: Channel): Future[List[ElectionQuestionResult]] = {
     for {
+      // get the last votes of the CastVotes messages
       castsVotesElections <- electionChannel.getLastVotes(dbActor)
+      // get the setupElection message of the channel
       setupMessage <- electionChannel.getSetupMessage(dbActor)
+      // associate the questions ids to their ballots
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
       DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
     } yield {
+      // set up the table of results
       val resultsTable = mutable.HashMap.from(for {
         (question, ballots) <- questionToBallots
       } yield question -> ballots.map(_ -> 0).toMap)
       for {
         castVoteElection <- castsVotesElections
         voteElection <- castVoteElection.votes
+        // get the index of the vote
         voteIndex = electionChannel.getVoteIndex(electionData, voteElection.vote)
       } {
         val question = voteElection.question
         val ballots = questionToBallots(question).toArray
         val ballot = ballots.apply(voteIndex)
         val questionResult = resultsTable(question)
+        // update the results by adding a vote to the corresponding ballot
         resultsTable.update(question, questionResult.updated(ballot, questionResult(ballot) + 1))
       }
       (for {
+        // from the results saved in resultsTable, we construct the ElectionQuestionResult
         (qid, ballotToCount) <- resultsTable
         electionBallotVotes = List.from(for {
           (ballot, count) <- ballotToCount
