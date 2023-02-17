@@ -444,7 +444,7 @@ import * as evotingFeature from "./evoting/index.ts";
 
 export const configureFeatures = () => {
   const laoInterface = laoFeature.configure();
-  const evotingInterface = laoFeature.configure({
+  const evotingInterface = evotingFeature.configure({
     getCurrentLaoId: laoInterface.getCurrentLaoId
   });
 };
