@@ -28,7 +28,7 @@ export interface DigitalCashReducerState {
 
   /**
    * A mapping between public key hashes and an array of hash of transactions which contains
-   * this public key hash in one or more of their TxOuts
+   * this public key hash in one or more of their TxOuts or their TxIns
    */
   transactionsByPubHash: Record<string, string[]>;
 }
@@ -98,7 +98,7 @@ const digitalCashSlice = createSlice({
           // If this is not a coinbase transaction, then as we are sure that all inputs are used
           if (input.txOutHash !== COINBASE_HASH) {
             laoState.balances[pubHash] = 0;
-            laoState.transactionsByPubHash[pubHash] = [];
+            laoState.transactionsByPubHash[pubHash] = [transactionHash];
           }
         });
 
@@ -113,7 +113,10 @@ const digitalCashSlice = createSlice({
           if (!(pubKeyHash in laoState.transactionsByPubHash)) {
             laoState.transactionsByPubHash[pubKeyHash] = [];
           }
-          laoState.transactionsByPubHash[pubKeyHash].push(transactionHash);
+
+          if (!(transactionHash in laoState.transactionsByPubHash[pubKeyHash])) {
+            laoState.transactionsByPubHash[pubKeyHash].push(transactionHash);
+          }
         });
       },
     },
