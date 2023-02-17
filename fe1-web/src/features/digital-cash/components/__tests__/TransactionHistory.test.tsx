@@ -10,8 +10,8 @@ import { Transaction } from 'features/digital-cash/objects/transaction';
 import {
   mockCBHash,
   mockCoinbaseTransactionJSON,
-  mockTransactionHash,
   mockTransactionState,
+  mockRollCallToken,
   mockDigitalCashContextValue,
 } from '../../__tests__/utils';
 import TransactionHistory from '../TransactionHistory';
@@ -20,19 +20,16 @@ jest.mock('features/digital-cash/hooks');
 
 const mockCoinbase = Transaction.fromJSON(mockCoinbaseTransactionJSON, mockCBHash);
 
-(DigitalCashHooks.useTransactions as jest.Mock).mockReturnValue([
+(DigitalCashHooks.useTransactionsByRollCallTokens as jest.Mock).mockReturnValue([
   mockCoinbase,
   Transaction.fromState(mockTransactionState),
 ]);
 
-(DigitalCashHooks.useTransactionsByHash as jest.Mock).mockReturnValue({
-  [mockCBHash.valueOf()]: mockCoinbase.toState(),
-  [mockTransactionHash.valueOf()]: mockTransactionState,
-});
-
 describe('TransactionHistory', () => {
   it('renders correctly', () => {
-    const Screen = () => <TransactionHistory laoId={mockLaoId} />;
+    const Screen = () => (
+      <TransactionHistory laoId={mockLaoId} rollCallTokens={[mockRollCallToken]} />
+    );
 
     const { toJSON } = render(
       <FeatureContext.Provider value={mockDigitalCashContextValue(true)}>
