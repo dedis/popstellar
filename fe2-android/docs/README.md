@@ -107,7 +107,8 @@ this [guide to app architecture](https://developer.android.com/jetpack/guide).
   and fragments. Here, there's roughly a view model per feature. A fragment may use more than 1 view model.
 - The **Model** consists of the local and remote data source, the model classes and the repositories.
   The repositories store the current application state in memory.
-  For now, the persistence in the application is done via storing the wallet main seed, the server address and the list of subscribed channels. Upon restoring state a catch-up is sent to the backend for each channel. \While this basic persistence mostly works, it is very sub-optimal. A future better way of doing things is to add a layer of persistence to the repositories. Repositories would save updates on disk and upon querying would first look in memory and if missing would then look on the disk.
+  For now, the persistence in the application is done via storing the wallet main seed, the server address and the list of subscribed channels. Upon restoring state a catch-up is sent to the backend for each channel. 
+While this basic persistence mostly works, it is very sub-optimal. A future better way of doing things is to add a layer of persistence to the repositories. Repositories would save updates on disk and upon querying would first look in memory and if missing would then look on the disk.
 
 Below is the diagram of the application architecture :
 
