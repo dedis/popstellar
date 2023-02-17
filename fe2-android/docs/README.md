@@ -102,11 +102,11 @@ are **always** the source of truth and are more up to date than the Google Doc.
 The application follows the Model-View-ViewModel (MVVM) pattern and uses
 this [guide to app architecture](https://developer.android.com/jetpack/guide).
 
-- The **View** consists of all the activities and fragments of the application. They are responsible for the displaying.
+- The **View** consists of all the activities and fragments of the application. They are responsible for the displaying part.
 - The **ViewModel** implements the UI logic and prepares and manages the data used by the activities
-  and fragments. Here, there's roughly a view model per feature.
+  and fragments. Here, there's roughly a view model per feature. A fragment may use more than 1 view model.
 - The **Model** consists of the local and remote data source, the model classes and the repositories.
-  The repositories store current application state in memory.
+  The repositories store the current application state in memory.
   For now, the persistence in the application is done via storing the wallet main seed, the server address and the list of subscribed channels. Upon restoring state a catch-up is sent to the backend for each channel. \While this basic persistence mostly works, it is very sub-optimal. A future better way of doing things is to add a layer of persistence to the repositories. Repositories would save updates on disk and upon querying would first look in memory and if missing would then look on the disk.
 
 Below is the diagram of the application architecture :
@@ -129,19 +129,18 @@ the same number of associated likes, etc.
 
 In order to achieve this, and as a general rule, the UI displays information from
 the [repositories](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository)
-classes, but it **doesn't** modify the information contained in it. The repositories are separated roughly along feature lines, e.g. there is an `RollCallRepository` for roll call data. Repositories may only be updated in response to an incoming message from the backends.
+classes, but it **doesn't** modify the information contained in it. The repositories are separated roughly along feature lines, e.g. there is a `RollCallRepository` for roll call data. Repositories may only be updated in response to an incoming message from the backends.
 
-As such, let's take the example of a user who wants to perform an action. In our example, the user
-wants to cast a vote in an election and does the necessary UI operations. In turn, the application will send a message
+As such, let's take the example of a user who wants to cast a vote in an election and does the necessary UI operations. In turn, the application will send a message
 to the backend (which the backend should acknowledge), which will then validate it and propagate it in the system.
-Eventually, the vote is sent back to the application (through the publish/subscribe channel), and upon receiving it the application will update its state. As such, the `ElectionRepository` will be updated and UI elements listening to it will be updated as well.
+Eventually, the vote is sent back to the application (through the publish/subscribe channel), and upon receiving it, the application will update its state. Consequently, the `ElectionRepository` will be updated and UI elements listening to it will be updated as well.
 
 Occasionally, the user interface could directly modify the application state, but this would only be
 valid for local operations affecting local data (e.g., changing a local setting, clearing the data
 stored in the browser, etc.).
 
 As a side note, the `ViewModel` classes may act as an intermediary between the views and the repositories.
-Moreover, view models are primarily used to perform actions on behalf of the views and to store views data. To exemplify this, we will take the witness addition process. To add a witness, the main key of an LAO member will be scanned and a message will be sent to the backend(s). The `WitnessingViewModel` will update the list of scanned witness and and the number of scanned people will be displayed on the screen. On the other hand the list of witnesses (accepted and broadcast by a backend) will only be updated once the backend messages are received and processed.
+Moreover, view models are primarily used to perform actions on behalf of the views and to store views data. To exemplify the difference between the state stored in the repositories and the state stored in view models, we will take the witness addition process. To add a witness, the main key of an LAO member will be scanned and a message will be sent to the backend(s). The `WitnessingViewModel` will update the list of scanned witness and and the number of scanned people will be displayed on the screen. On the other hand the list of witnesses (accepted and broadcast by a backend) will only be updated once the backend messages are received and processed.
 
 To better understand how the information is automatically reflected in the UI, check
 the [RxJava](https://github.com/ReactiveX/RxJava) extension and the usage
@@ -224,7 +223,7 @@ achieve this, applications typically resort to the definition and implementation
 reusable components - building bricks - that are reused throughout the application and assembled to
 create the different "views" (or "screens") of the application.
 
-Right now there are two Activities, `HomeActivity` and `LaoActivity`. For the former its purpose is to let a user initialize or retrieve the wallet seed; create, join, and display LAOs, with Fragments responsible for providing those features. The `LaoActivity` follows the single-activity principle. It supports many Fragments which provide all features centered around an LAO.
+Right now there are two Activities, `HomeActivity` and `LaoActivity`. For the former its purpose is to let a user initialize or retrieve the wallet seed; create, join, and display LAOs, with Fragments responsible for providing those features. The `LaoActivity` follows the single-activity principle. It supports many Fragments which provide all features centered around an LAO. Additional features provided in the context of an LAO should be added as fragments hosted by the `LaoActivity`.
 
 In general, the top-level components (the "views" or "screens") will be full of application-specific
 logic, as they'll encompass the full behavior of that screen. As you go down into sub- and
