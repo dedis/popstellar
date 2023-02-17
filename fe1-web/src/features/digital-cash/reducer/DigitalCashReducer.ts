@@ -98,7 +98,14 @@ const digitalCashSlice = createSlice({
           // If this is not a coinbase transaction, then as we are sure that all inputs are used
           if (input.txOutHash !== COINBASE_HASH) {
             laoState.balances[pubHash] = 0;
-            laoState.transactionsByPubHash[pubHash] = [transactionHash];
+          }
+
+          if (!(pubHash in laoState.transactionsByPubHash)) {
+            laoState.transactionsByPubHash[pubHash] = [];
+          }
+
+          if (!laoState.transactionsByPubHash[pubHash].includes(transactionHash)) {
+            laoState.transactionsByPubHash[pubHash].push(transactionHash);
           }
         });
 
@@ -114,10 +121,11 @@ const digitalCashSlice = createSlice({
             laoState.transactionsByPubHash[pubKeyHash] = [];
           }
 
-          if (!(transactionHash in laoState.transactionsByPubHash[pubKeyHash])) {
+          if (!laoState.transactionsByPubHash[pubKeyHash].includes(transactionHash)) {
             laoState.transactionsByPubHash[pubKeyHash].push(transactionHash);
           }
         });
+        console.log(JSON.stringify(laoState.transactionsByPubHash));
       },
     },
   },
