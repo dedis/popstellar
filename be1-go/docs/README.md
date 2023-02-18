@@ -37,7 +37,8 @@ The project is organized into different modules as follows
 ```
 .
 ├── channel             # contains the abstract definition of a channel
-│   ├── chirp
+│   ├── chirp           # channel implementation for a chirp channel
+│   ├── coin            # channel implementation for a coin channel
 │   ├── consensus       # channel implementation for a consensus channel
 │   ├── election        # channel implementation for an election channel
 │   ├── generalChirping # channel implementation for a universal post channel
@@ -46,8 +47,6 @@ The project is organized into different modules as follows
 │   └── registry        # helper for registry
 ├── cli                 # command line interface
 ├── crypto              # defines the cryptographic suite 
-├── db                  # persistance module
-│   ├── sqlite          # sqlite implementation of persistance 
 ├── docs
 ├── hub                 # contains the abstract definition of a hub
 │   ├── standard_hub    # hub implementation 
@@ -71,9 +70,9 @@ application.
 #### Architecture
 
 The PoP Go backend expects actors (depending on the context these may be
-attendees/witnesses/organizer server) to establish long lived websocket
-connections with it and send messages back and forth over websockets using a
-publish/subscribe pattern.
+clients or server) to establish long lived websocket connections with it
+and send messages back and forth over websockets using a publish/subscribe
+pattern.
 
 <div align="center">
   <img alt="Communication Stack" src="images/comm_stack.jpeg" width="600" />
@@ -103,13 +102,13 @@ the Google Doc.
 The `Socket` interface (refer `network/socket/mod.go`) describes the methods
 used for reading or sending data/error messages from/to the end user.
 
-Depending on the type of end user, a `Socket` has three concrete
+Depending on the type of end user, a `Socket` has two concrete
 implementations:
 
 * `ClientSocket`: Used to denote a connection to a user participating in a PoP
   Party
-* `WitnessSocket`: Used to represent a connection to a witness server.
-* `OrganizerSocket`: Used to represent a connection to the organizer server.
+* `ServerSocket`: Used to represent a connection to a witness or organizer
+  server.
 
 The `ReadPump` and `WritePump` are low-level methods which allow reading/writing
 data over the wire. Most users would instead use the `Send(msg []byte)`,
@@ -153,12 +152,6 @@ messages and wrap them using `xerrors.Errorf` with the `%w` format specifier if
 required. The rule of thumb is the leaf/last method called from the hub should
 create/return a `message.Error` and intermediate methods should propagate it up
 by wrapping it until it reaches a point where `Socket.SendError` is invoked.
-
-The backend is able to persist any data on disk and maintains in-memory data
-structures for storing messages. To make use of this functionality set the
-`HUB_DB` environment variable to point to an initialized sqlite database when
-you launch the server. Package `db/sqlite/cli` implements a CLI to initialize
-such db. See the README in `be1-go/README.md` for instructions.
 
 ##### Message definitions
 

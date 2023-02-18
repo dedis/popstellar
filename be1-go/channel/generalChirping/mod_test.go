@@ -30,7 +30,7 @@ const protocolRelativePath string = "../../../protocol"
 func Test_General_Channel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	channel := NewChannel("channel0", fakeHub, nolog)
@@ -55,7 +55,7 @@ func Test_General_Channel_Subscribe(t *testing.T) {
 func Test_General_Channel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	channel := NewChannel("channel0", fakeHub, nolog)
@@ -82,7 +82,7 @@ func Test_General_Channel_Unsubscribe(t *testing.T) {
 func Test_General_Channel_Wrong_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	channel := NewChannel("channel0", fakeHub, nolog)
@@ -104,7 +104,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the messages
@@ -143,7 +143,7 @@ func Test_General_Channel_Publish(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel
@@ -208,8 +208,8 @@ type fakeHub struct {
 	laoFac channel.LaoFactory
 }
 
-// NewHub returns a Organizer Hub.
-func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+// NewFakeHub returns a fake Hub.
+func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {

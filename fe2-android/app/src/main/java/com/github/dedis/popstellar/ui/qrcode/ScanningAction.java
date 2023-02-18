@@ -16,7 +16,10 @@ import com.github.dedis.popstellar.ui.lao.witness.WitnessingFragment;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-/** Enum class modeling the the action we want to do when using the QR code fragment */
+/**
+ * Enum class modeling the the action we want to do when using the QR code fragment. It provides
+ * strings to display and functions, i.e. to obtain view models and on back press behaviour
+ */
 public enum ScanningAction {
   ADD_WITNESS(
       R.string.qrcode_scanning_add_witness,
@@ -35,13 +38,14 @@ public enum ScanningAction {
       R.string.add_attendee_title,
       R.string.rc_manual_hint,
       R.string.add_attendee_title,
-      LaoActivity::obtainRollCallViewModel,
-      LaoActivity::obtainViewModel,
-      (manager, rcPersistentId) ->
-          LaoActivity.setCurrentFragment(
+      LaoDetailActivity::obtainViewModel,
+      (manager, stringArray) ->
+          LaoDetailActivity.setCurrentFragment(
               manager,
               R.id.fragment_roll_call,
-              () -> RollCallFragment.newInstance(rcPersistentId))),
+              () ->
+                  RollCallFragment.newInstance(
+                      stringArray[0]))), // We only need the first arg (rc id)
   ADD_LAO_PARTICIPANT(
       R.string.qrcode_scanning_connect_lao,
       R.string.scanned_tokens,
@@ -61,7 +65,7 @@ public enum ScanningAction {
   private final BiFunction<FragmentActivity, String, QRCodeScanningViewModel>
       scannerViewModelProvider;
   private final Function<FragmentActivity, PopViewModel> popViewModelProvider;
-  private final BiConsumer<FragmentManager, String> onBackPressed;
+  private final BiConsumer<FragmentManager, String[]> onBackPressed;
 
   ScanningAction(
       @StringRes int instruction,
@@ -71,7 +75,7 @@ public enum ScanningAction {
       int manualAddTitle,
       BiFunction<FragmentActivity, String, QRCodeScanningViewModel> scannerViewModelProvider,
       Function<FragmentActivity, PopViewModel> popViewModelProvider,
-      BiConsumer<FragmentManager, String> onBackPressed) {
+      BiConsumer<FragmentManager, String[]> onBackPressed) {
     this.instruction = instruction;
     this.scanTitle = scanTitle;
     this.pageTitle = pageTitle;
@@ -82,15 +86,29 @@ public enum ScanningAction {
     this.onBackPressed = onBackPressed;
   }
 
+  /**
+   * Provides the view model implementing the QRCodeScanningViewModel interface based on scanning
+   * action
+   *
+   * @param activity the activity of the caller
+   * @return QRCodeScanningViewModel view model
+   */
   public QRCodeScanningViewModel obtainScannerViewModel(FragmentActivity activity, String laoId) {
     return scannerViewModelProvider.apply(activity, laoId);
   }
 
   public PopViewModel obtainPopViewModel(FragmentActivity activity) {
     return popViewModelProvider.apply(activity);
-  }
 
-  public OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String data) {
+  /**
+   * Call back that describes the action to take (i.e. which Fragment to open) when back arrow is
+   * pressed
+   *
+   * @param manager needed to open a fragment
+   * @param data data necessary (i.e. rc id when opening the RC fragment) to open target fragment
+   * @return the callback describing what to do on back button pressed
+   */
+  public OnBackPressedCallback onBackPressedCallback(FragmentManager manager, String[] data) {
     return new OnBackPressedCallback(true) {
       @Override
       public void handleOnBackPressed() {

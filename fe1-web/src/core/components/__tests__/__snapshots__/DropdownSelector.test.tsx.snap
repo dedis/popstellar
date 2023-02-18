@@ -3,7 +3,7 @@
 exports[`DropdownSelector renders correclty with an invalid preselected value 1`] = `
 <View
   style={
-    Object {
+    {
       "backgroundColor": "#fff",
       "borderRadius": 8,
       "borderWidth": 0,
@@ -18,14 +18,14 @@ exports[`DropdownSelector renders correclty with an invalid preselected value 1`
 >
   <RNCPicker
     items={
-      Array [
-        Object {
+      [
+        {
           "label": "some label",
           "testID": undefined,
           "textColor": undefined,
           "value": "some value",
         },
-        Object {
+        {
           "label": "some other label",
           "testID": undefined,
           "textColor": undefined,
@@ -37,8 +37,8 @@ exports[`DropdownSelector renders correclty with an invalid preselected value 1`
     onChange={[Function]}
     selectedIndex={0}
     style={
-      Array [
-        Object {
+      [
+        {
           "height": 216,
         },
         undefined,
@@ -51,7 +51,7 @@ exports[`DropdownSelector renders correclty with an invalid preselected value 1`
 exports[`DropdownSelector renders correctly with preselected value 1`] = `
 <View
   style={
-    Object {
+    {
       "backgroundColor": "#fff",
       "borderRadius": 8,
       "borderWidth": 0,
@@ -66,14 +66,14 @@ exports[`DropdownSelector renders correctly with preselected value 1`] = `
 >
   <RNCPicker
     items={
-      Array [
-        Object {
+      [
+        {
           "label": "some label",
           "testID": undefined,
           "textColor": undefined,
           "value": "some value",
         },
-        Object {
+        {
           "label": "some other label",
           "testID": undefined,
           "textColor": undefined,
@@ -85,8 +85,8 @@ exports[`DropdownSelector renders correctly with preselected value 1`] = `
     onChange={[Function]}
     selectedIndex={0}
     style={
-      Array [
-        Object {
+      [
+        {
           "height": 216,
         },
         undefined,
@@ -99,7 +99,7 @@ exports[`DropdownSelector renders correctly with preselected value 1`] = `
 exports[`DropdownSelector renders correctly without preselected value 1`] = `
 <View
   style={
-    Object {
+    {
       "backgroundColor": "#fff",
       "borderRadius": 8,
       "borderWidth": 0,
@@ -114,14 +114,14 @@ exports[`DropdownSelector renders correctly without preselected value 1`] = `
 >
   <RNCPicker
     items={
-      Array [
-        Object {
+      [
+        {
           "label": "some label",
           "testID": undefined,
           "textColor": undefined,
           "value": "some value",
         },
-        Object {
+        {
           "label": "some other label",
           "testID": undefined,
           "textColor": undefined,
@@ -133,8 +133,8 @@ exports[`DropdownSelector renders correctly without preselected value 1`] = `
     onChange={[Function]}
     selectedIndex={0}
     style={
-      Array [
-        Object {
+      [
+        {
           "height": 216,
         },
         undefined,

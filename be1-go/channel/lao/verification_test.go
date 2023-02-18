@@ -236,7 +236,7 @@ func newFakeChannel(t *testing.T) channel.Channel {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	// Create the channel

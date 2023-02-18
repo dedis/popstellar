@@ -455,14 +455,14 @@ func Test_Process_Election_Open(t *testing.T) {
 	}
 
 	// Fail to process non election open
-	require.Error(t, electChannel.processElectionOpen(m, messagedata.ElectionEnd.NewEmpty, socket.OrganizerSocket{}))
+	require.Error(t, electChannel.processElectionOpen(m, messagedata.ElectionEnd.NewEmpty, socket.ServerSocket{}))
 
 	// Fail for non base64 sender key
-	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.OrganizerSocket{}))
+	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.ServerSocket{}))
 
 	// Fail for non organizer public key
 	m.Sender = base64.URLEncoding.EncodeToString(generateKeyPair(t).publicBuf)
-	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.OrganizerSocket{}))
+	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.ServerSocket{}))
 }
 
 func Test_Sending_Election_Key(t *testing.T) {
@@ -476,13 +476,10 @@ func Test_Sending_Election_Key(t *testing.T) {
 
 	electionKeyMsg := catchupAnswer[1]
 
-	data := messagedata.ElectionKey{}.NewEmpty()
+	var dataKey messagedata.ElectionKey
 
-	err := electionKeyMsg.UnmarshalData(data)
-	require.NoError(t, err)
-
-	dataKey, ok := data.(*messagedata.ElectionKey)
-	require.True(t, ok)
+	err := electionKeyMsg.UnmarshalData(&dataKey)
+	require.NoError(t, err, electionKeyMsg)
 
 	key, err := base64.URLEncoding.DecodeString(dataKey.Key)
 	require.NoError(t, err)
@@ -570,7 +567,7 @@ func newFakeChannel(t *testing.T, secret bool) (*Channel, string) {
 	keypair := generateKeyPair(t)
 	pkOrganizer := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	var file string
@@ -655,8 +652,8 @@ type fakeHub struct {
 	fakeSock fakeSocket
 }
 
-// NewHub returns a Organizer Hub.
-func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+// NewFakeHub returns a fake Hub.
+func NewFakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {

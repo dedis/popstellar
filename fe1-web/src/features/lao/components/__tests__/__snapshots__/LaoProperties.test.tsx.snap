@@ -3,7 +3,7 @@
 exports[`LaoProperties renders correctly as attendee 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -11,8 +11,8 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -21,8 +21,8 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -34,7 +34,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -50,7 +50,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -64,12 +64,12 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -83,7 +83,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -95,7 +95,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -103,7 +103,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -114,7 +114,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -128,7 +128,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -143,7 +143,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -157,7 +157,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -174,7 +174,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -184,7 +184,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -193,7 +193,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -205,7 +205,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -223,12 +223,12 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -238,10 +238,10 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -250,9 +250,9 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -268,7 +268,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -282,13 +282,13 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -298,13 +298,13 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -314,7 +314,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -322,7 +322,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
@@ -330,7 +330,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                       <View>
                         <View
                           style={
-                            Object {
+                            {
                               "marginVertical": 8,
                             }
                           }
@@ -338,12 +338,12 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                           <qrcode
                             overlayText="Scan to
 Connect"
-                            value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                            value="{"lao":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE="}"
                           />
                         </View>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -354,14 +354,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -379,7 +379,7 @@ Connect"
                         </Text>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -390,14 +390,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -413,7 +413,7 @@ Connect"
                         </Text>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -424,14 +424,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -447,7 +447,7 @@ Connect"
                         </Text>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -458,14 +458,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -541,7 +541,7 @@ Connect"
 exports[`LaoProperties renders correctly as organizer 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -549,8 +549,8 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -559,8 +559,8 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -572,7 +572,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -588,7 +588,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -602,12 +602,12 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -621,7 +621,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -633,7 +633,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -641,7 +641,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -652,7 +652,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -666,7 +666,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -681,7 +681,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -695,7 +695,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -712,7 +712,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -722,7 +722,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -731,7 +731,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -743,7 +743,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -761,12 +761,12 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -776,10 +776,10 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -788,9 +788,9 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -806,7 +806,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -820,13 +820,13 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -836,13 +836,13 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -852,7 +852,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -860,7 +860,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
@@ -868,7 +868,7 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                       <View>
                         <View
                           style={
-                            Object {
+                            {
                               "marginVertical": 8,
                             }
                           }
@@ -876,12 +876,12 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                           <qrcode
                             overlayText="Scan to
 Connect"
-                            value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                            value="{"lao":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE="}"
                           />
                         </View>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -892,14 +892,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -917,7 +917,7 @@ Connect"
                         </Text>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -928,14 +928,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -951,7 +951,7 @@ Connect"
                         </Text>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -962,14 +962,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -985,7 +985,7 @@ Connect"
                         </Text>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -996,14 +996,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -1079,7 +1079,7 @@ Connect"
 exports[`LaoProperties renders correctly as witness 1`] = `
 <View
   style={
-    Object {
+    {
       "flex": 1,
     }
   }
@@ -1087,8 +1087,8 @@ exports[`LaoProperties renders correctly as witness 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -1097,8 +1097,8 @@ exports[`LaoProperties renders correctly as witness 1`] = `
   >
     <View
       style={
-        Array [
-          Object {
+        [
+          {
             "backgroundColor": "rgb(242, 242, 242)",
             "flex": 1,
           },
@@ -1110,7 +1110,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
         collapsable={false}
         pointerEvents="box-none"
         style={
-          Object {
+          {
             "zIndex": 1,
           }
         }
@@ -1126,7 +1126,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "bottom": 0,
                 "left": 0,
                 "opacity": 1,
@@ -1140,12 +1140,12 @@ exports[`LaoProperties renders correctly as witness 1`] = `
             <View
               collapsable={false}
               style={
-                Object {
+                {
                   "backgroundColor": "rgb(255, 255, 255)",
                   "borderBottomColor": "rgb(216, 216, 216)",
                   "flex": 1,
                   "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": Object {
+                  "shadowOffset": {
                     "height": 0.5,
                     "width": 0,
                   },
@@ -1159,7 +1159,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
             collapsable={false}
             pointerEvents="box-none"
             style={
-              Object {
+              {
                 "height": 44,
                 "maxHeight": undefined,
                 "minHeight": undefined,
@@ -1171,7 +1171,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
             <View
               pointerEvents="none"
               style={
-                Object {
+                {
                   "height": 0,
                 }
               }
@@ -1179,7 +1179,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
             <View
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "alignItems": "stretch",
                   "flex": 1,
                   "flexDirection": "row",
@@ -1190,7 +1190,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-start",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -1204,7 +1204,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "justifyContent": "center",
                     "marginHorizontal": 16,
                     "maxWidth": 718,
@@ -1219,7 +1219,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                   numberOfLines={1}
                   onLayout={[Function]}
                   style={
-                    Object {
+                    {
                       "color": "rgb(28, 28, 30)",
                       "fontSize": 17,
                       "fontWeight": "600",
@@ -1233,7 +1233,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                 collapsable={false}
                 pointerEvents="box-none"
                 style={
-                  Object {
+                  {
                     "alignItems": "flex-end",
                     "flexBasis": 0,
                     "flexGrow": 1,
@@ -1250,7 +1250,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
       <RNSScreenContainer
         onLayout={[Function]}
         style={
-          Object {
+          {
             "flex": 1,
           }
         }
@@ -1260,7 +1260,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
           collapsable={false}
           forwardedRef={[Function]}
           gestureResponseDistance={
-            Object {
+            {
               "bottom": -1,
               "end": -1,
               "start": -1,
@@ -1269,7 +1269,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
           }
           pointerEvents="box-none"
           style={
-            Object {
+            {
               "bottom": 0,
               "left": 0,
               "position": "absolute",
@@ -1281,7 +1281,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
           <View
             collapsable={false}
             style={
-              Object {
+              {
                 "opacity": 1,
               }
             }
@@ -1299,12 +1299,12 @@ exports[`LaoProperties renders correctly as witness 1`] = `
             onTransition={[Function]}
             pointerEvents="box-none"
             style={
-              Array [
-                Object {
+              [
+                {
                   "display": "flex",
                   "overflow": undefined,
                 },
-                Object {
+                {
                   "bottom": 0,
                   "left": 0,
                   "position": "absolute",
@@ -1314,10 +1314,10 @@ exports[`LaoProperties renders correctly as witness 1`] = `
               ]
             }
             transitionSpec={
-              Object {
-                "close": Object {
+              {
+                "close": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -1326,9 +1326,9 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                     "stiffness": 1000,
                   },
                 },
-                "open": Object {
+                "open": {
                   "animation": "spring",
-                  "config": Object {
+                  "config": {
                     "damping": 500,
                     "mass": 3,
                     "overshootClamping": true,
@@ -1344,7 +1344,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
               collapsable={false}
               pointerEvents="box-none"
               style={
-                Object {
+                {
                   "flex": 1,
                 }
               }
@@ -1358,13 +1358,13 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                 onGestureHandlerEvent={[Function]}
                 onGestureHandlerStateChange={[Function]}
                 style={
-                  Object {
+                  {
                     "flex": 1,
-                    "transform": Array [
-                      Object {
+                    "transform": [
+                      {
                         "translateX": 0,
                       },
-                      Object {
+                      {
                         "translateX": 0,
                       },
                     ],
@@ -1374,13 +1374,13 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                 <View
                   pointerEvents="box-none"
                   style={
-                    Array [
-                      Object {
+                    [
+                      {
                         "flex": 1,
                         "overflow": "hidden",
                       },
-                      Array [
-                        Object {
+                      [
+                        {
                           "backgroundColor": "rgb(242, 242, 242)",
                         },
                         undefined,
@@ -1390,7 +1390,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                 >
                   <View
                     style={
-                      Object {
+                      {
                         "flex": 1,
                         "flexDirection": "column-reverse",
                       }
@@ -1398,7 +1398,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                   >
                     <View
                       style={
-                        Object {
+                        {
                           "flex": 1,
                         }
                       }
@@ -1406,7 +1406,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                       <View>
                         <View
                           style={
-                            Object {
+                            {
                               "marginVertical": 8,
                             }
                           }
@@ -1414,12 +1414,12 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                           <qrcode
                             overlayText="Scan to
 Connect"
-                            value="{\\"lao\\":\\"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE=\\"}"
+                            value="{"lao":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE="}"
                           />
                         </View>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -1430,14 +1430,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -1455,7 +1455,7 @@ Connect"
                         </Text>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -1466,14 +1466,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -1489,7 +1489,7 @@ Connect"
                         </Text>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -1500,14 +1500,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]
@@ -1523,7 +1523,7 @@ Connect"
                         </Text>
                         <Text
                           style={
-                            Object {
+                            {
                               "color": "#000",
                               "fontSize": 20,
                               "lineHeight": 26,
@@ -1534,14 +1534,14 @@ Connect"
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
+                              [
+                                {
                                   "color": "#000",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",
                                 },
-                                Object {
+                                {
                                   "fontWeight": "bold",
                                 },
                               ]

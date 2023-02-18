@@ -12,8 +12,7 @@
 //	  pop [global options] command [command options] [arguments...]
 //
 //	COMMANDS:
-//	   organizer  manage the organizer
-//	   witness    manage the witness
+//	   server  manage the server
 //	   help, h    Shows a list of commands or help for one command
 //
 //	GLOBAL OPTIONS:
@@ -50,28 +49,22 @@ func run(ctx context.Context, args []string) {
 		Usage:   "address where the server should listen to",
 		Value:   "localhost",
 	}
-	organizerAddressFlag := &cli.StringFlag{
-		Name:    "organizer-address",
-		Aliases: []string{"org"},
-		Usage:   "address and witness port of organizer",
-		Value:   "localhost:9002",
-	}
 	clientPortFlag := &cli.IntFlag{
 		Name:    "client-port",
 		Aliases: []string{"cp"},
 		Usage:   "port to listen websocket connections from clients on",
 		Value:   9000,
 	}
-	witnessPortFlag := &cli.IntFlag{
-		Name:    "witness-port",
-		Aliases: []string{"wp"},
-		Usage:   "port to listen websocket connections from witnesses on",
-		Value:   9002,
+	serverPortFlag := &cli.IntFlag{
+		Name:    "server-port",
+		Aliases: []string{"sp"},
+		Usage:   "port to listen websocket connections from remote servers on",
+		Value:   9001,
 	}
-	otherWitnessFlag := &cli.StringSliceFlag{
-		Name:    "other-witness",
-		Aliases: []string{"ow"},
-		Usage:   "address and port to connect to other witness",
+	otherServersFlag := &cli.StringSliceFlag{
+		Name:    "other-servers",
+		Aliases: []string{"os"},
+		Usage:   "address and port to connect to other servers",
 	}
 
 	app := &cli.App{
@@ -79,48 +72,24 @@ func run(ctx context.Context, args []string) {
 		Usage: "backend for the PoP project",
 		Commands: []*cli.Command{
 			{
-				Name:  "organizer",
-				Usage: "manage the organizer",
+				Name:  "server",
+				Usage: "manage the server",
 				Flags: []cli.Flag{
 					publicKeyFlag,
 				},
 				Subcommands: []*cli.Command{
 					{
 						Name:  "serve",
-						Usage: "start the organizer server",
+						Usage: "start the server",
 						Flags: []cli.Flag{
 							serverPublicAddressFlag,
 							serverListenAddressFlag,
 							clientPortFlag,
-							witnessPortFlag,
+							serverPortFlag,
+							otherServersFlag,
 						},
 						Action: func(c *cli.Context) error {
-							err := Serve(c, "organizer")
-							return err
-						},
-					},
-				},
-			},
-			{
-				Name:  "witness",
-				Usage: "manage the witness",
-				Flags: []cli.Flag{
-					publicKeyFlag,
-				},
-				Subcommands: []*cli.Command{
-					{
-						Name:  "serve",
-						Usage: "start the witness server",
-						Flags: []cli.Flag{
-							serverPublicAddressFlag,
-							serverListenAddressFlag,
-							organizerAddressFlag,
-							clientPortFlag,
-							witnessPortFlag,
-							otherWitnessFlag,
-						},
-						Action: func(c *cli.Context) error {
-							err := Serve(c, "witness")
+							err := Serve(c)
 							return err
 						},
 					},

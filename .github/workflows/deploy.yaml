@@ -25,7 +25,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       # Save some build information to inject into the APP
       - name: Get the version

@@ -47,6 +47,12 @@ Here's the annotated directory tree:
 │
 │   ├── components               # library of simple, reusable UI component
 │   │
+│   ├── contexts                 # feature context type definition
+│   │
+│   ├── functions                # module containing functions that are useful in the whole application
+│   │
+│   ├── hooks                    # contains utility react hooks
+│   │
 │   ├── keypair                  # module dealing with the storage of a global, unique keypair
 │   │
 │   ├── navigation               # module dealing with the top-level React navigation
@@ -54,6 +60,7 @@ Here's the annotated directory tree:
 │   ├── network                  # module to network with the backend
 │   │   ├── ingestion              # implementation and configuration of the processing of incoming messages
 │   │   ├── jsonrpc                # network & protocol objects
+│   │   ├── strategies             # sending strategies when there are multiple servers
 │   │   └── validation             # protocol validation utilities
 │   │
 │   ├── objects                  # module containing the core business objects
@@ -62,14 +69,15 @@ Here's the annotated directory tree:
 │   │
 │   ├── redux                    # module dealing with the global configuration of the application state (Redux-based)
 │   │
-│   └── styles                   # stylesheets
+│   ├── styles                   # stylesheets
+│   │
+│   └── types                    # some generic types
 │
 ├── features                 # independent features in the system
 │
-│   ├── connect                  # feature dealing with LAO/server connection
-│   │
 │   ├── lao                      # feature dealing with the notion of a LAO, showing the typical feature structure
 │   │   ├── components             # feature components
+│   │   ├── errors                 # feature errors definition
 │   │   ├── functions              # feature functions
 │   │   ├── hooks                  # feature hooks
 │   │   ├── interface              # defines the dependencies of the feature and the interface it exposes
@@ -80,6 +88,8 @@ Here's the annotated directory tree:
 │   │   ├── screens                # UI screens of the feature
 │   │   └── store                  # static access to the feature's reducer store (DEPRECATED)
 │   │
+│   ├── digital-cash             # feature dealing with digital cash
+│   │
 │   ├── events                   # feature dealing with events happening in a LAO
 │   │
 │   ├── evoting                  # feature dealing with E-Voting and Elections
@@ -87,6 +97,8 @@ Here's the annotated directory tree:
 │   ├── home                     # feature dealing with the app's home screen
 │   │
 │   ├── meeting                  # feature dealing with meetings, a type of event
+│   │
+│   ├── notification             # feature dealing with notifications
 │   │
 │   ├── rollCall                 # feature dealing with roll calls, a type of event
 │   │
@@ -432,7 +444,7 @@ import * as evotingFeature from "./evoting/index.ts";
 
 export const configureFeatures = () => {
   const laoInterface = laoFeature.configure();
-  const evotingInterface = laoFeature.configure({
+  const evotingInterface = evotingFeature.configure({
     getCurrentLaoId: laoInterface.getCurrentLaoId
   });
 };
@@ -628,11 +640,23 @@ If you write E2E tests, please be mindful of making them maintainable through th
 
 ## Deployments
 
-Please reach out to the DEDIS Engineering team members to deploy a build to an
-internet accessible host.
+The application can be automatically deployed to `fe1.personhood.online` by
+creating a [release](https://github.com/dedis/popstellar/releases) on GitHub
+starting with the prefix `fe1-`.
 
-The web application can be packaged for deploynent by executing `npm run build-web`.
-This will generate a timestamped zip package in the `./dist` folder.
+The web application can also be locally packaged for deployment by executing
+`npm run build-web`.
+
+### `--openssl-legacy-provider` is not allowed in NODE_OPTIONS
+
+In case you experience the error `--openssl-legacy-provider is not
+allowed in NODE_OPTIONS` then it is due to the workaround introduced here:
+https://github.com/dedis/popstellar/pull/1308#issuecomment-1426683039. The
+problem is that expo with node version > 16 only works with the
+`--openssl-legacy-provider` flag but this flag makes builds fail on v16. You can
+still create a build using node v16 by manually running `npx expo export:web`
+rather than `npm run build-web`. This will generate a timestamped zip package in
+the `./dist` folder.
 
 
 ## Coding Style

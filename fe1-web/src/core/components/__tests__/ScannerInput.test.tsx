@@ -6,7 +6,12 @@ import ScannerInput from '../ScannerInput';
 describe('ScannerInput', () => {
   it('renders correctly', () => {
     const { toJSON } = render(
-      <ScannerInput value="" onPress={() => {}} suggestions={['aaa', 'aab', 'aac']} />,
+      <ScannerInput
+        value=""
+        onChange={() => {}}
+        onPress={() => {}}
+        suggestions={['aaa', 'aab', 'aac']}
+      />,
     );
     expect(toJSON()).toMatchSnapshot();
   });

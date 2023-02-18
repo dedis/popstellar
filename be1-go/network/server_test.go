@@ -16,8 +16,8 @@ import (
 func TestServerStartAndShutdown(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
-	h, err := standard_hub.NewHub(crypto.Suite.Point(), "", log, nil, hub.WitnessHubType)
-	require.NoErrorf(t, err, "could not create witness hub")
+	h, err := standard_hub.NewHub(crypto.Suite.Point(), "", log, nil)
+	require.NoErrorf(t, err, "could not create hub")
 
 	srv := NewServer(h, "", 0, "testsocket", log)
 	srv.Start()
@@ -44,7 +44,6 @@ func TestInfoHandler(t *testing.T) {
 	"version": "unknown",
 	"commit": "unknown",
 	"buildTime": "unknown",
-	"hubType": "fake",
 	"socketType": "fake"
 }`
 
@@ -56,8 +55,4 @@ func TestInfoHandler(t *testing.T) {
 
 type fakeHub struct {
 	hub.Hub
-}
-
-func (fakeHub) Type() hub.HubType {
-	return "fake"
 }
