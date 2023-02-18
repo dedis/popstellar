@@ -38,9 +38,10 @@ public enum ScanningAction {
       R.string.add_attendee_title,
       R.string.rc_manual_hint,
       R.string.add_attendee_title,
-      LaoDetailActivity::obtainViewModel,
+      LaoActivity::obtainRollCallViewModel,
+      LaoActivity::obtainViewModel,
       (manager, stringArray) ->
-          LaoDetailActivity.setCurrentFragment(
+          LaoActivity.setCurrentFragment(
               manager,
               R.id.fragment_roll_call,
               () ->
@@ -99,6 +100,7 @@ public enum ScanningAction {
 
   public PopViewModel obtainPopViewModel(FragmentActivity activity) {
     return popViewModelProvider.apply(activity);
+  }
 
   /**
    * Call back that describes the action to take (i.e. which Fragment to open) when back arrow is
