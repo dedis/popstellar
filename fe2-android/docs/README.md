@@ -104,7 +104,7 @@ this [guide to app architecture](https://developer.android.com/jetpack/guide).
 
 - The **View** consists of all the activities and fragments of the application. They are responsible for the displaying part.
 - The **ViewModel** implements the UI logic. It prepares and manages the data used by the activity
-  and fragments. Here, there's roughly a view model per feature. A fragment may use more than 1 view model.
+  and the fragments. Here, there's roughly a view model per feature. A fragment may use more than 1 view model.
 - The **Model** consists of the local and remote data source, the model classes and the repositories.
   The repositories store the current application state in memory.
   For now, the persistence in the application is done via storing the wallet main seed, the server address and the list of subscribed channels. Upon restoring state a catch-up is sent to the backend for each channel. 
