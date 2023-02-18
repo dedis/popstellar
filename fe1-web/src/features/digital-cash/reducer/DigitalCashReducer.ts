@@ -31,6 +31,12 @@ export interface DigitalCashReducerState {
    * this public key hash in one or more of their TxOuts or their TxIns
    */
   transactionsByPubHash: Record<string, string[]>;
+
+  /**
+   * A mapping between public key hashes and an array of hash of transactions in which the public
+   * key is involved, as input or output.
+   */
+  transactionsByInvPubHash: Record<string, string[]>;
 }
 
 export interface DigitalCashLaoReducerState {
@@ -80,6 +86,7 @@ const digitalCashSlice = createSlice({
             allTransactionsHash: [],
             transactionsByHash: {},
             transactionsByPubHash: {},
+            transactionsByInvPubHash: {},
           };
         }
 
@@ -98,14 +105,15 @@ const digitalCashSlice = createSlice({
           // If this is not a coinbase transaction, then as we are sure that all inputs are used
           if (input.txOutHash !== COINBASE_HASH) {
             laoState.balances[pubHash] = 0;
-          }
-
-          if (!(pubHash in laoState.transactionsByPubHash)) {
             laoState.transactionsByPubHash[pubHash] = [];
           }
 
-          if (!laoState.transactionsByPubHash[pubHash].includes(transactionHash)) {
-            laoState.transactionsByPubHash[pubHash].push(transactionHash);
+          if (!(pubHash in laoState.transactionsByInvPubHash)) {
+            laoState.transactionsByInvPubHash[pubHash] = [];
+          }
+
+          if (!laoState.transactionsByInvPubHash[pubHash].includes(transactionHash)) {
+            laoState.transactionsByInvPubHash[pubHash].push(transactionHash);
           }
         });
 
@@ -120,12 +128,16 @@ const digitalCashSlice = createSlice({
           if (!(pubKeyHash in laoState.transactionsByPubHash)) {
             laoState.transactionsByPubHash[pubKeyHash] = [];
           }
+          laoState.transactionsByPubHash[pubKeyHash].push(transactionHash);
 
-          if (!laoState.transactionsByPubHash[pubKeyHash].includes(transactionHash)) {
-            laoState.transactionsByPubHash[pubKeyHash].push(transactionHash);
+          if (!(pubKeyHash in laoState.transactionsByInvPubHash)) {
+            laoState.transactionsByInvPubHash[pubKeyHash] = [];
+          }
+
+          if (!laoState.transactionsByInvPubHash[pubKeyHash].includes(transactionHash)) {
+            laoState.transactionsByInvPubHash[pubKeyHash].push(transactionHash);
           }
         });
-        console.log(JSON.stringify(laoState.transactionsByPubHash));
       },
     },
   },
@@ -204,17 +216,17 @@ export const makeTransactionsByHashSelector = (laoId: Hash) =>
 export const makeTransactionsByRollCallTokens = (laoId: Hash, rollCallTokens: RollCallToken[]) =>
   createSelector(
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
-    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByPubHash,
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByInvPubHash,
     (
       transactionsByHash: Record<string, TransactionState> | undefined,
-      transactionsByPubHash: Record<string, string[]> | undefined,
+      transactionsByInvPubHash: Record<string, string[]> | undefined,
     ) => {
-      if (transactionsByHash && transactionsByPubHash) {
+      if (transactionsByHash && transactionsByInvPubHash) {
         const transactions: TransactionState[] = [];
 
         for (let i = 0; i < rollCallTokens.length; i += 1) {
           const { publicKey } = rollCallTokens[i].token;
-          const transactionsOfToken = transactionsByPubHash[
+          const transactionsOfToken = transactionsByInvPubHash[
             Hash.fromPublicKey(publicKey).valueOf()
           ].map((hash) => transactionsByHash[hash]);
 
