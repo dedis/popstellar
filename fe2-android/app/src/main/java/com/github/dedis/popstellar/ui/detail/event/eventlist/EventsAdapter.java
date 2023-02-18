@@ -15,14 +15,10 @@ import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownLaoException;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -105,20 +101,11 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
   private void handleRollCallContent(EventViewHolder eventViewHolder, RollCall rollCall) {
     eventViewHolder.eventIcon.setImageResource(R.drawable.ic_roll_call);
     eventViewHolder.eventCard.setOnClickListener(
-        view -> {
-          try {
-            PoPToken token = viewModel.getCurrentPopToken(rollCall);
-            setCurrentFragment(
-                activity.getSupportFragmentManager(),
-                R.id.fragment_roll_call,
-                () ->
-                    RollCallFragment.newInstance(token.getPublicKey(), rollCall.getPersistentId()));
-          } catch (KeyException e) {
-            ErrorUtils.logAndShow(activity, tag, e, R.string.key_generation_exception);
-          } catch (UnknownLaoException e) {
-            ErrorUtils.logAndShow(activity, tag, e, R.string.error_no_lao);
-          }
-        });
+        view -> setCurrentFragment(
+            activity.getSupportFragmentManager(),
+            R.id.fragment_roll_call,
+            () ->
+                RollCallFragment.newInstance(rollCall.getPersistentId())));
   }
 
   private void handleTimeAndLocation(EventViewHolder viewHolder, Event event) {

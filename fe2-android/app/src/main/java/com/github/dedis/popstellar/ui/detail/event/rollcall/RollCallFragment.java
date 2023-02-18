@@ -17,15 +17,17 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.Constants;
-import com.github.dedis.popstellar.utility.error.ErrorUtils;
-import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
+import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
@@ -66,10 +68,9 @@ public class RollCallFragment extends Fragment {
     // Required empty public constructor
   }
 
-  public static RollCallFragment newInstance(PublicKey pk, String persistentId) {
+  public static RollCallFragment newInstance(String persistentId) {
     RollCallFragment fragment = new RollCallFragment();
     Bundle bundle = new Bundle(1);
-    bundle.putString(Constants.RC_PK_EXTRA, pk.getEncoded());
     bundle.putString(Constants.ROLL_CALL_ID, persistentId);
     fragment.setArguments(bundle);
     return fragment;
@@ -83,7 +84,6 @@ public class RollCallFragment extends Fragment {
     viewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     try {
       rollCall = viewModel.getRollCall(requireArguments().getString(ROLL_CALL_ID));
-      viewModel.setCurrentRollCallId(rollCall.getPersistentId());
     } catch (UnknownRollCallException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
       return null;
@@ -101,11 +101,7 @@ public class RollCallFragment extends Fragment {
                   viewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
-                          () ->
-                              setCurrentFragment(
-                                  getParentFragmentManager(),
-                                  R.id.fragment_qrcode,
-                                  QRCodeScanningFragment::new),
+                          () -> {},
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_open_rollcall)));
@@ -114,7 +110,7 @@ public class RollCallFragment extends Fragment {
               // will add the scan to this fragment in the future
               viewModel.addDisposable(
                   viewModel
-                      .closeRollCall()
+                      .closeRollCall(rollCall.getId())
                       .subscribe(
                           () ->
                               setCurrentFragment(
@@ -133,7 +129,12 @@ public class RollCallFragment extends Fragment {
     binding.rollCallScanningButton.setOnClickListener(
         b ->
             setCurrentFragment(
-                getParentFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new));
+                getParentFragmentManager(),
+                R.id.fragment_qr_scanner,
+                () ->
+                    QrScannerFragment.newInstance(
+                        ScanningAction.ADD_ROLL_CALL_ATTENDEE,
+                        requireArguments().getString(ROLL_CALL_ID))));
 
     viewModel.addDisposable(
         viewModel
@@ -162,6 +163,18 @@ public class RollCallFragment extends Fragment {
       rollCall = viewModel.getRollCall(requireArguments().getString(ROLL_CALL_ID));
     } catch (UnknownRollCallException e) {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
+    }
+  }
+
+  private PoPToken getPopToken() {
+    try {
+      return viewModel.getCurrentPopToken(rollCall);
+    } catch (KeyException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.key_generation_exception);
+      return null;
+    } catch (UnknownLaoException e) {
+      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
+      return null;
     }
   }
 
@@ -218,7 +231,12 @@ public class RollCallFragment extends Fragment {
   }
 
   private void retrieveAndDisplayPublicKey() {
-    String pk = requireArguments().getString(Constants.RC_PK_EXTRA);
+    PoPToken popToken = getPopToken();
+    if (popToken == null) {
+      return;
+    }
+
+    String pk = popToken.getPublicKey().getEncoded();
     Log.d(TAG, "key displayed is " + pk);
 
     PopTokenData data = new PopTokenData(new PublicKey(pk));
@@ -237,7 +255,7 @@ public class RollCallFragment extends Fragment {
 
   private EnumMap<EventState, Integer> buildStatusTextMap() {
     EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
-    map.put(EventState.CREATED, R.string.closed);
+    map.put(EventState.CREATED, R.string.created_displayed_text);
     map.put(EventState.OPENED, R.string.open);
     map.put(EventState.CLOSED, R.string.closed);
     return map;

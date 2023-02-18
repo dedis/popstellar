@@ -131,7 +131,6 @@ public class RollCallFragmentTest {
           () -> RollCallFragment.newInstance(ROLL_CALL),
           new BundleBuilder()
               .putString(Constants.ROLL_CALL_ID, ROLL_CALL.getPersistentId())
-              .putString(Constants.RC_PK_EXTRA, SENDER.getEncoded())
               .build());
 
   @Test
@@ -141,7 +140,7 @@ public class RollCallFragmentTest {
 
   @Test
   public void statusCreatedTest() {
-    rollCallStatusText().check(matches(withText("Closed")));
+    rollCallStatusText().check(matches(withText("Not yet opened")));
   }
 
   @Test

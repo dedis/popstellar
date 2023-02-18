@@ -4,7 +4,7 @@
   <!--  General-->
   <string name="yes">Yes</string>
   <string name="no">No</string>
-  <string name="add_caps">ADD</string>
+  <string name="add">Add</string>
 
   <!--  Roles -->
   <string name="role">Role</string>
@@ -31,11 +31,13 @@
 
   <!-- Connect -->
   <string name="allow_camera_text">Please allow the camera to be used by the app</string>
-  <string name="allow_camera_button">Allow camera</string>
+  <string name="allow_camera_button">Allow Camera</string>
   <string name="connecting">Connecting to</string>
   <string name="stored_channels">stored channels</string>
   <string name="creating_new_lao">Creating new LAO</string>
   <string name="join_lao_title">Join LAO</string>
+  <string name="join_manual_hint">Lao information</string>
+  <string name="add_lao_participant_title">Add LAO participant</string>
 
   <!-- Lao Create -->
   <string name="lao_create_title">Create LAO</string>
@@ -76,30 +78,36 @@
 
   <!-- Roll-Call Event -->
   <string name="roll_call_title_required">Roll Call Title*</string>
-  <string name="roll_call_open_attendees">Open</string>
-  <string name="add_attendee_successful">Attendee scanned successfully</string>
   <string name="reopen_rollcall">REOPEN</string>
+  <string name="rc_manual_hint">Attendee token</string>
 
   <!-- QR code -->
   <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
-  <string name="qrcode_scanning_connect_lao">Scan a QR code to connect to a LAO</string>
+  <string name="qrcode_scanning_connect_lao">Scan the invite QR code to join the LAO</string>
   <string name="event_description">Event Description</string>
   <string name="rc_location_title">Location*</string>
-  <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code exactly once.</string>
-  <string name="roll_call_add_manually_hint">Add key manually</string>
+  <string name="qrcode_scanning_add_attendee">Scan each participant’s Roll-call QR code</string>
   <string name="scan">Scan</string>
+  <string name="add_attendees">Add Attendees</string>
+  <string name="enter_manually"> Enter Manually</string>
+  <string name="no_camera">No Camera ? -  </string>
+  <string name="scanned_tokens">Scanned tokens: </string>
+  <string name="scanned_witness">Scanned witnesses: </string>
+  <string name="attendee_already_scanned_warning">Attendee was already scanned</string>
+  <string name="witness_already_scanned_warning">"This key already belongs to a witness"</string>
+  <string name="attendee_scan_success">Attendee successfully scanned</string>
+  <string name="witness_scan_success">Witness successfully scanned</string>
+
 
   <!--  Witnessing-->
   <string name="messages">Messages</string>
   <string name="witnesses">Witnesses</string>
 
   <!-- Witness -->
-  <string name="add_witness_successful">Witness has been added</string>
-
   <string name="button_text">Cast Vote</string>
-
-  <string name="total">Total:</string>
   <string name="submit">Submit</string>
+  <string name="manual_witness_hint">Witness public key</string>
+  <string name="add_witness_title">Add Witness</string>
 
   <!--  Roll Call -->
   <string name="roll_call_setup_title">Roll Call Setup</string>
@@ -111,6 +119,7 @@
   <string name="election_result_title">Election Result</string>
   <string name="election_setup_title">Election Setup</string>
   <string name="closed">Closed</string>
+  <string name="created_displayed_text">Not yet opened</string>
   <string name="finished">Finished</string>
   <string name="add_ballot_options_button_text">Add ballot options</string>
   <string name="add_question_button_text">Add question</string>
@@ -239,6 +248,8 @@
   <string name="qr_code_token_content">The QR code displaying token information</string>
   <string name="send_button_content_desc">Send button</string>
   <string name="receive_button_content_desc">Receive button</string>
+  <string name="qr_sight_content_desc">The sight on top of camera</string>
+  <string name="add_manual_close_button_desc">Close button for manual add window</string>
 
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>

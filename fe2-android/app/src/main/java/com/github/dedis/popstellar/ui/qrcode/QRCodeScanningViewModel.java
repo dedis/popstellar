@@ -1,10 +1,13 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
-public interface QRCodeScanningViewModel extends QRCodeListener {
+import androidx.annotation.StringRes;
+import androidx.lifecycle.LiveData;
 
-  int getScanDescription();
+public interface QRCodeScanningViewModel {
 
-  ScanningAction getScanningAction();
+  void handleData(String data, ScanningAction scanningAction);
 
-  boolean addManually(String data);
+  LiveData<Integer> getNbScanned();
+
+  void setScannerTitle(@StringRes int title);
 }

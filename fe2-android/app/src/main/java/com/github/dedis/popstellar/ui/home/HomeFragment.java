@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
+import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -65,7 +66,9 @@ public final class HomeFragment extends Fragment {
         v -> {
           Log.d(TAG, "Opening join fragment");
           HomeActivity.setCurrentFragment(
-              getParentFragmentManager(), R.id.fragment_qrcode, QRCodeScanningFragment::new);
+              getParentFragmentManager(),
+              R.id.fragment_qr_scanner,
+              () -> QrScannerFragment.newInstance(ScanningAction.ADD_LAO_PARTICIPANT));
         });
   }
 

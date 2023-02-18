@@ -16,7 +16,6 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.eventlist.EventListFragment;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.Objects;
@@ -36,7 +35,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   private LaoDetailViewModel viewModel;
   private EditText rollCallTitleEditText;
   private Button confirmButton;
-  private Button openButton;
 
   private final TextWatcher confirmTextWatcher =
       new TextWatcher() {
@@ -56,7 +54,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
                   && !location.isEmpty();
 
           confirmButton.setEnabled(areFieldsFilled);
-          openButton.setEnabled(areFieldsFilled);
         }
 
         @Override
@@ -86,10 +83,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
     rollCallTitleEditText.addTextChangedListener(confirmTextWatcher);
     binding.rollCallEventLocationText.addTextChangedListener(confirmTextWatcher);
 
-    openButton = binding.rollCallOpen;
     confirmButton = binding.rollCallConfirm;
     confirmButton.setEnabled(false);
-    openButton.setEnabled(false);
 
     binding.setLifecycleOwner(getActivity());
 
@@ -100,7 +95,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupConfirmButton();
-    setupOpenButton();
   }
 
   @Override
@@ -111,14 +105,10 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   }
 
   private void setupConfirmButton() {
-    confirmButton.setOnClickListener(v -> createRollCall(false));
+    confirmButton.setOnClickListener(v -> createRollCall());
   }
 
-  private void setupOpenButton() {
-    openButton.setOnClickListener(v -> createRollCall(true));
-  }
-
-  private void createRollCall(boolean open) {
+  private void createRollCall() {
     if (!computeTimesInSeconds()) {
       return;
     }
@@ -137,23 +127,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
             startTimeInSeconds,
             endTimeInSeconds);
 
-    if (open) {
-      viewModel.addDisposable(
-          createRollCall
-              .flatMapCompletable(viewModel::openRollCall)
-              .subscribe(
-                  // Open the scanning fragment when everything is done
-                  () -> {
-                    setCurrentFragment(
-                        getParentFragmentManager(),
-                        R.id.fragment_qrcode,
-                        QRCodeScanningFragment::new);
-                    viewModel.setPageTitle(R.string.add_attendee_title);
-                  },
-                  error ->
-                      ErrorUtils.logAndShow(
-                          requireContext(), TAG, error, R.string.error_create_rollcall)));
-    } else {
       viewModel.addDisposable(
           createRollCall.subscribe(
               id ->
@@ -164,6 +137,6 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
               error ->
                   ErrorUtils.logAndShow(
                       requireContext(), TAG, error, R.string.error_create_rollcall)));
-    }
+
   }
 }

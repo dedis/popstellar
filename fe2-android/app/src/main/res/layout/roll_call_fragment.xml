@@ -7,27 +7,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
       android:id="@+id/roll_call_management_button"
       android:layout_width="wrap_content"
-      android:layout_height="@dimen/event_button_height"
+      android:layout_height="@dimen/standard_button_height"
       android:layout_margin="@dimen/event_button_margin"
-      android:backgroundTint="@color/colorPrimary"
-      android:drawableStart="@drawable/ic_unlock"
+      style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+      app:strokeColor="@color/colorPrimary"
       android:text="@string/open"
-      android:textColor="@color/white"
       android:textSize="@dimen/event_button_text_size"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.button.MaterialButton
       android:id="@+id/roll_call_scanning_button"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_height="@dimen/standard_button_height"
+      style="@style/Widget.MaterialComponents.Button"
       android:layout_margin="@dimen/event_button_margin"
-      android:backgroundTint="@color/colorPrimary"
       android:scaleType="center"
-      android:src="@drawable/ic_scan"
+      android:text="@string/add_attendees"
+      android:textAllCaps="false"
       android:tintMode="@color/white"
       android:contentDescription="@string/scan"
       android:textColor="@color/white"

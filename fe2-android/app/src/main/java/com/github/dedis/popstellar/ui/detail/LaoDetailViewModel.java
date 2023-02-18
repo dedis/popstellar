@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
@@ -34,7 +33,6 @@ import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
-import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
 import java.security.GeneralSecurityException;
@@ -57,21 +55,12 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
 
   public static final String TAG = LaoDetailViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
-  /*
-   * LiveData objects for capturing events like button clicks
-   */
-  // FIXME These events should be removed once the QRScanning is refactored
-  private final MutableLiveData<SingleEvent<String>> mAttendeeScanConfirmEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mWitnessScanConfirmEvent =
-      new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mScanWarningEvent = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
-  private final MutableLiveData<Integer> mNbAttendees = new MutableLiveData<>();
+  private final MutableLiveData<Integer> nbScanned = new MutableLiveData<>();
 
   private Observable<Set<Event>> events;
   private Observable<List<RollCall>> attendedRollCalls;
@@ -89,13 +78,11 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
   private final Gson gson;
   private final Wallet wallet;
 
-  private String currentRollCallId = "";
   private String laoId;
   // used to know which roll call to close
   private final Set<PublicKey> attendees = new HashSet<>();
   // used to dynamically update the set of witnesses when WR code scanned
   private final Set<PublicKey> witnesses = new HashSet<>();
-  private ScanningAction scanningAction;
 
   @Inject
   public LaoDetailViewModel(
@@ -442,15 +429,13 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, openRollCall)
-        .doOnComplete(() -> openRollCall(openRollCall.getUpdateId(), laoView, rollCall));
+        .doOnComplete(() -> openRollCall(laoView, rollCall));
   }
 
-  private void openRollCall(String currentId, LaoView laoView, RollCall rollCall) {
-    currentRollCallId = currentId;
-    Log.d(TAG, "opening rollcall with id " + currentRollCallId);
-    scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
-    attendees.addAll(rollCall.getAttendees());
+  private void openRollCall(LaoView laoView, RollCall rollCall) {
+    Log.d(TAG, "opening roll call with id " + rollCall.getId());
 
+    attendees.addAll(rollCall.getAttendees());
     try {
       attendees.add(keyManager.getPoPToken(laoView, rollCall).getPublicKey());
     } catch (KeyException e) {
@@ -458,15 +443,19 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
     }
 
     // this to display the initial number of attendees
-    mNbAttendees.postValue(attendees.size());
+    nbScanned.postValue(attendees.size());
   }
 
   /**
-   * Closes the roll call event currently open
+   * Closes the roll call with provided id
    *
    * <p>Publish a GeneralMessage containing CloseRollCall data.
+   *
+   * @param id the mutable id of the roll call
+   * @return a completable which succeeds if the close rc message was successfully received and
+   * acknowledged  by the backend
    */
-  public Completable closeRollCall() {
+  public Completable closeRollCall(String id) {
     Log.d(TAG, "call closeRollCall");
 
     LaoView laoView;
@@ -480,15 +469,14 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
     long end = Instant.now().getEpochSecond();
     Channel channel = laoView.getChannel();
     CloseRollCall closeRollCall =
-        new CloseRollCall(laoView.getId(), currentRollCallId, end, new ArrayList<>(attendees));
+        new CloseRollCall(laoView.getId(), id, end, new ArrayList<>(attendees));
 
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, closeRollCall)
         .doOnComplete(
             () -> {
-              Log.d(TAG, "closed the roll call with id " + currentRollCallId);
-              currentRollCallId = "";
+              Log.d(TAG, "closed the roll call with id " + id);
               attendees.clear();
             });
   }
@@ -520,14 +508,6 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
   }
 
   /** Getters for MutableLiveData instances declared above */
-  public ScanningAction getScanningAction() {
-    return scanningAction;
-  }
-
-  public void setScanningAction(ScanningAction scanningAction) {
-    this.scanningAction = scanningAction;
-  }
-
   public Observable<Set<Event>> getEvents() {
     return events;
   }
@@ -544,33 +524,22 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
     return mIsSignedByCurrentWitness;
   }
 
-  public LiveData<Integer> getNbAttendees() {
-    return mNbAttendees;
+  @Override
+  public LiveData<Integer> getNbScanned() {
+    return nbScanned;
+  }
+
+  @Override
+  public void setScannerTitle(int title) {
+    super.setPageTitle(title);
   }
 
   public Observable<List<ConsensusNode>> getNodes() throws UnknownLaoException {
     return laoRepository.getNodesByChannel(getLao().getChannel());
   }
 
-
-  public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
-    return mAttendeeScanConfirmEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getWitnessScanConfirmEvent() {
-    return mWitnessScanConfirmEvent;
-  }
-
-  public LiveData<SingleEvent<String>> getScanWarningEvent() {
-    return mScanWarningEvent;
-  }
-
   public RollCall getLastClosedRollCall() throws NoRollCallException {
     return rollCallRepo.getLastClosedRollCall(laoId);
-  }
-
-  public void setCurrentRollCallId(String rollCallId) {
-    currentRollCallId = rollCallId;
   }
 
   /**
@@ -665,31 +634,6 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
     return keyManager.getPoPToken(getLao(), rollCall);
   }
 
-  public boolean isWalletSetup() {
-    return wallet.isSetUp();
-  }
-
-  @Override
-  public int getScanDescription() {
-    if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      return R.string.qrcode_scanning_add_attendee; // Message to add attendees to a roll call
-    } else {
-      return R.string.qrcode_scanning_add_witness; // Message to add a witness
-    }
-  }
-
-  @Override
-  public void onQRCodeDetected(Barcode barcode) {
-    Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    handleInputData(barcode.rawValue);
-  }
-
-  @Override
-  public boolean addManually(String data) {
-    Log.d(TAG, "Key manually submitted with value: " + data);
-    return handleInputData(data);
-  }
-
   public void savePersistentData() throws GeneralSecurityException {
     ActivityUtils.activitySavingRoutine(
         networkManager, wallet, getApplication().getApplicationContext());
@@ -699,72 +643,69 @@ public class LaoDetailViewModel extends LaoViewModel implements QRCodeScanningVi
    * Checks the key validity and handles the attendee addition process
    *
    * @param data the textual representation of the key
-   * @return true if an attendee was added false otherwise
    */
-  private boolean handleInputData(String data) {
-    Log.d(TAG, "data scanned " + data);
+  @Override
+  public void handleData(String data, ScanningAction scanningAction) {
+    Log.d(TAG, "data input " + data);
     if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      return handleRollCallAddition(data);
+      handleRollCallAddition(data);
     } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-      return handleWitnessAddition(data);
+      handleWitnessAddition(data);
     } else {
       throw new IllegalStateException(
           "The scanning action should either be to add witnesses or rc attendees");
     }
   }
 
-  public boolean handleRollCallAddition(String data) {
+  public void handleRollCallAddition(String data) {
     PopTokenData tokenData;
     try {
       tokenData = PopTokenData.extractFrom(gson, data);
     } catch (Exception e) {
       ErrorUtils.logAndShow(
           getApplication().getApplicationContext(), TAG, R.string.qr_code_not_pop_token);
-      return false;
+      return;
     }
     PublicKey publicKey = tokenData.getPopToken();
     if (attendees.contains(publicKey)) {
-      Log.d(TAG, "Attendee was already scanned");
-      mScanWarningEvent.postValue(
-          new SingleEvent<>("This attendee key has already been scanned. Please try again."));
-      return false;
+      ErrorUtils.logAndShow(getApplication(), TAG, R.string.attendee_already_scanned_warning);
+      return;
     }
 
     attendees.add(publicKey);
     Log.d(TAG, "Attendee " + publicKey + " successfully added");
-    mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
-    mNbAttendees.postValue(attendees.size());
-    return true;
+    Toast.makeText(getApplication(), R.string.attendee_scan_success, Toast.LENGTH_SHORT).show();
+    nbScanned.postValue(attendees.size());
   }
 
-  public boolean handleWitnessAddition(String data) {
+  public void handleWitnessAddition(String data) {
     MainPublicKeyData pkData;
     try {
       pkData = MainPublicKeyData.extractFrom(gson, data);
     } catch (Exception e) {
       ErrorUtils.logAndShow(
           getApplication().getApplicationContext(), TAG, e, R.string.qr_code_not_main_pk);
-      return false;
+      return;
     }
     PublicKey publicKey = pkData.getPublicKey();
     if (witnesses.contains(publicKey)) {
-      Log.d(TAG, "Witness was already scanned");
-      mScanWarningEvent.postValue(
-          new SingleEvent<>("This attendee key has already been scanned. Please try again."));
-      return false;
+      ErrorUtils.logAndShow(getApplication(), TAG, R.string.witness_already_scanned_warning);
+      return;
     }
 
     witnesses.add(publicKey);
-    Log.d(TAG, "Added witness " + publicKey + " successfully");
-    mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
+    Log.d(TAG, "Witness " + publicKey + " successfully scanned");
+    Toast.makeText(getApplication(), R.string.witness_scan_success, Toast.LENGTH_SHORT).show();
     disposables.add(
         updateLaoWitnesses()
             .subscribe(
-                () -> Log.d(TAG, "Witness " + publicKey + " added"),
+                () -> {
+                  String networkSuccess = "Witness " + publicKey + " successfully added to LAO";
+                  Log.d(TAG, networkSuccess);
+                  Toast.makeText(getApplication(), networkSuccess, Toast.LENGTH_SHORT).show();
+                },
                 error ->
                     ErrorUtils.logAndShow(
                         getApplication(), TAG, error, R.string.error_update_lao)));
-
-    return true;
   }
 }
