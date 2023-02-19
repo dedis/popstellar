@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/election/electionEnd.feature</title>
+<title>Cucumber Reports  - Feature: be/digitalCash/transaction.feature</title>
 
 </head>
 <body>
@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>17 Feb 2023, 04:38</td>
+      <td>19 Feb 2023, 04:38</td>
     </tr>
   </tbody>
 </table>
@@ -126,7 +126,7 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/election/electionEnd.feature</td>
+          <td class="tagname">be/digitalCash/transaction.feature</td>
           <td      class="passed"    >5</td>
           <td      class="failed"    >10</td>
           <td     class="skipped"   >50</td>
@@ -138,7 +138,7 @@ $(document).ready(function() {
           <td  class="failed"    >5</td>
           <td class="total">5</td>
 
-          <td class="duration" data-value="383056840637">6:23.056</td>
+          <td class="duration" data-value="383288498023">6:23.288</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -175,12 +175,12 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/election/electionEnd.feature</span>
+  <span class="name">be/digitalCash/transaction.feature</span>
 
 
 </div>
 
-        <div class="description indention">Terminate an election</div>
+        <div class="description indention">Simple Transactions for digital cash</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">1:16.608</span>
+  <span class="lead-duration duration">1:16.673</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.308</span>
+  <span class="lead-duration duration">38.348</span>
 
 </div>
 
@@ -251,7 +251,7 @@ $(document).ready(function() {
       <div id="msg-3" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/election/electionEnd.feature:15</pre>
+classpath:be/digitalCash/transaction.feature:16</pre>
       </div>
     </div>
   </div>
@@ -265,11 +265,11 @@ classpath:be/election/electionEnd.feature:15</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:18:34.631 classpath:be/election/electionEnd.feature:15
+        <pre>04:10:41.686 classpath:be/digitalCash/transaction.feature:16
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/election/electionEnd.feature:15
+classpath:be/digitalCash/transaction.feature:16
 </pre>
       </div>
     </div>
@@ -316,7 +316,7 @@ classpath:be/election/electionEnd.feature:15
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.299</span>
+  <span class="lead-duration duration">38.324</span>
 
 </div>
 
@@ -407,7 +407,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -434,7 +434,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -483,7 +483,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending a valid election end should succeed</span>
+  <span class="name">Valid transaction: issue 32 mini-Laos to an attendee</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -517,7 +517,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -544,7 +544,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validElectionEnd =</span>
+  <span class="name">def validTransaction =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -565,12 +565,23 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-8" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: '#(getTrxHashForCoinIssuance)',
+        &quot;tx_out_index&quot;: 0,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: &quot;Wsu3pJj7CpBzw4v__21k4pVtSKBeouz1vd0sXFiLQX9iaEERDDwwMuBFwRKk6E6nwxejH-lrsiprLJSojOvPCQ==&quot;
+        }
+      }],
+      &quot;outputs&quot;: '#(getValidOutputs)',
+      &quot;lock_time&quot;: 0
+    }
 }</pre>
       </div>
     </div>
@@ -588,7 +599,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionEnd), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -615,7 +626,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponseWithElectionResults(JSON.stringify(validElectionEnd))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -642,7 +653,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains ELECTION_RESULTS</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -709,7 +720,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.633</span>
+  <span class="lead-duration duration">1:16.672</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
@@ -752,7 +763,7 @@ classpath:be/utils/server.feature:82</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.333</span>
+  <span class="lead-duration duration">38.351</span>
 
 </div>
 
@@ -769,7 +780,7 @@ classpath:be/utils/server.feature:82</pre>
       <div id="msg-11" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/election/electionEnd.feature:15</pre>
+classpath:be/digitalCash/transaction.feature:16</pre>
       </div>
     </div>
   </div>
@@ -783,11 +794,11 @@ classpath:be/election/electionEnd.feature:15</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-12" class="collapse collapsable-details">
-        <pre>04:19:12.970 classpath:be/election/electionEnd.feature:15
+        <pre>04:11:20.042 classpath:be/digitalCash/transaction.feature:16
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/election/electionEnd.feature:15
+classpath:be/digitalCash/transaction.feature:16
 </pre>
       </div>
     </div>
@@ -834,7 +845,7 @@ classpath:be/election/electionEnd.feature:15
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.299</span>
+  <span class="lead-duration duration">38.320</span>
 
 </div>
 
@@ -925,7 +936,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -952,7 +963,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1001,7 +1012,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending an election end with invalid election id should return an error</span>
+  <span class="name">Transfer valid amount should work</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1035,7 +1046,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1062,7 +1073,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
+  <span class="name">def validTransfer =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1083,12 +1094,29 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-16" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getInvalidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;X6dMVyy-4YZ3jyePMlqyo53-eYBkO-gVgy7TybVgd78=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
+        &quot;tx_out_index&quot;: 1,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: &quot;uTrQk9yt-pmG7eWA0dQ50Q4_aloIAwkY_smQml1lswjHp8ckUXAF3Th6xxJY_3-7uLNxpRtTzwBcAixPGjThDg==&quot;
+        }
+      }],
+      &quot;outputs&quot;: [{
+        &quot;value&quot;: 20,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey_hash&quot;: &quot;-_qR4IHwsiq50raa8jURNArds54=&quot;
+        }
+      }],
+      &quot;lock_time&quot;: 0
+    }
 }</pre>
       </div>
     </div>
@@ -1106,7 +1134,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validTransfer), cashChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1133,7 +1161,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1160,7 +1188,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1227,7 +1255,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.609</span>
+  <span class="lead-duration duration">1:16.648</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
@@ -1270,7 +1298,7 @@ classpath:be/utils/server.feature:82</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.308</span>
+  <span class="lead-duration duration">38.329</span>
 
 </div>
 
@@ -1287,7 +1315,7 @@ classpath:be/utils/server.feature:82</pre>
       <div id="msg-19" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/election/electionEnd.feature:15</pre>
+classpath:be/digitalCash/transaction.feature:16</pre>
       </div>
     </div>
   </div>
@@ -1301,11 +1329,11 @@ classpath:be/election/electionEnd.feature:15</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:19:51.282 classpath:be/election/electionEnd.feature:15
+        <pre>04:11:58.375 classpath:be/digitalCash/transaction.feature:16
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/election/electionEnd.feature:15
+classpath:be/digitalCash/transaction.feature:16
 </pre>
       </div>
     </div>
@@ -1352,7 +1380,7 @@ classpath:be/election/electionEnd.feature:15
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.301</span>
+  <span class="lead-duration duration">38.318</span>
 
 </div>
 
@@ -1443,7 +1471,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1470,7 +1498,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1519,7 +1547,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending an election end message with invalid registered votes field should return an error</span>
+  <span class="name">Post transaction with invalid transaction id should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1553,7 +1581,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1580,7 +1608,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
+  <span class="name">def validTransaction =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1601,12 +1629,23 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-24" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getInvalidRegisteredVotes)'
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
+        &quot;tx_out_index&quot;: 1,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+        }
+      }],
+      &quot;outputs&quot;: '#(getValidOutputs)',
+      &quot;lock_time&quot;: 0
+    }
 }</pre>
       </div>
     </div>
@@ -1624,7 +1663,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1651,7 +1690,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1678,7 +1717,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1745,7 +1784,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.600</span>
+  <span class="lead-duration duration">1:16.653</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
@@ -1788,7 +1827,7 @@ classpath:be/utils/server.feature:82</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.303</span>
+  <span class="lead-duration duration">38.333</span>
 
 </div>
 
@@ -1805,7 +1844,7 @@ classpath:be/utils/server.feature:82</pre>
       <div id="msg-27" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/election/electionEnd.feature:15</pre>
+classpath:be/digitalCash/transaction.feature:16</pre>
       </div>
     </div>
   </div>
@@ -1819,11 +1858,11 @@ classpath:be/election/electionEnd.feature:15</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:20:29.596 classpath:be/election/electionEnd.feature:15
+        <pre>04:12:36.712 classpath:be/digitalCash/transaction.feature:16
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/election/electionEnd.feature:15
+classpath:be/digitalCash/transaction.feature:16
 </pre>
       </div>
     </div>
@@ -1870,7 +1909,7 @@ classpath:be/election/electionEnd.feature:15
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.297</span>
+  <span class="lead-duration duration">38.320</span>
 
 </div>
 
@@ -1961,7 +2000,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1988,7 +2027,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2037,7 +2076,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending an election end message with registered votes field set to valid election setup id should return an error</span>
+  <span class="name">Post transaction with invalid tx_out_hash should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2071,7 +2110,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2098,7 +2137,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
+  <span class="name">def invalidTransaction =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2119,12 +2158,23 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-32" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getValidElectionSetupId)'
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;fcDVZofQwuSUs5jz_LXGRtSz-xAV8ss4axY4GsHWnVM=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;,
+        &quot;tx_out_index&quot;: 0,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+        }
+      }],
+      &quot;outputs&quot;: '#(getValidOutputs)',
+      &quot;lock_time&quot;: 0
+    }
 }</pre>
       </div>
     </div>
@@ -2142,7 +2192,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidTransaction), cashChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2169,7 +2219,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2263,7 +2313,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.604</span>
+  <span class="lead-duration duration">1:16.640</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-33">
@@ -2306,7 +2356,7 @@ classpath:be/utils/server.feature:82</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.304</span>
+  <span class="lead-duration duration">38.324</span>
 
 </div>
 
@@ -2323,7 +2373,7 @@ classpath:be/utils/server.feature:82</pre>
       <div id="msg-35" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/election/electionEnd.feature:15</pre>
+classpath:be/digitalCash/transaction.feature:16</pre>
       </div>
     </div>
   </div>
@@ -2337,11 +2387,11 @@ classpath:be/election/electionEnd.feature:15</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-36" class="collapse collapsable-details">
-        <pre>04:21:07.903 classpath:be/election/electionEnd.feature:15
+        <pre>04:13:15.043 classpath:be/digitalCash/transaction.feature:16
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/election/electionEnd.feature:15
+classpath:be/digitalCash/transaction.feature:16
 </pre>
       </div>
     </div>
@@ -2388,7 +2438,7 @@ classpath:be/election/electionEnd.feature:15
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.299</span>
+  <span class="lead-duration duration">38.316</span>
 
 </div>
 
@@ -2479,7 +2529,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2506,7 +2556,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2555,7 +2605,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending a valid election end too early should fail</span>
+  <span class="name">Post transaction with invalid output pubKey should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -2589,7 +2639,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2616,7 +2666,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
+  <span class="name">def invalidTransaction =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2637,12 +2687,23 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-40" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633098900,
-  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;S-UTUqrPfUVw8Ywv6AOb7Qv0M01s7-BcYCSa4SIl9bQ=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
+        &quot;tx_out_index&quot;: 0,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+        }
+      }],
+      &quot;outputs&quot;: '#(getInvalidOutputs)',
+      &quot;lock_time&quot;: 0
+    }
 }</pre>
       </div>
     </div>
@@ -2660,7 +2721,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidTransaction), cashChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2687,7 +2748,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))</span>
 
   <span class="lead-duration duration">0.000</span>
 

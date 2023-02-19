@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>17 Feb 2023, 04:38</td>
+      <td>19 Feb 2023, 04:38</td>
     </tr>
   </tbody>
 </table>
@@ -171,7 +171,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_2621355858.html">be/rollCall/closeRollCall.feature</a>
+      <a href="report-feature_4046913119.html">be/election/electionEnd.feature</a>
     </div>
 
 
@@ -188,7 +188,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Close a valid roll should succeed</span>
+  <span class="name">Sending a valid election end should succeed</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -222,7 +222,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -249,7 +249,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def validElectionEnd =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -270,12 +270,12 @@ $(document).ready(function() {
       </div>
       <div id="msg-3" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseValidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;end&quot;,
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;created_at&quot;: 1633099883,
+  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
 }</pre>
       </div>
     </div>
@@ -293,7 +293,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionEnd), electionChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -320,7 +320,1201 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponseWithElectionResults(JSON.stringify(validElectionEnd))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains ELECTION_RESULTS</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_4046913119.html">be/election/electionEnd.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-4">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Sending an election end with invalid election id should return an error</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-4" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-5">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-5" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def invalidElectionEnd =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-6">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-6" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;end&quot;,
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;election&quot;: '#(getInvalidElectionSetupId)',
+  &quot;created_at&quot;: 1633099883,
+  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_4046913119.html">be/election/electionEnd.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-7">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Sending an election end message with invalid registered votes field should return an error</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-7" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-8">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-8" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def invalidElectionEnd =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-9">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-9" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;end&quot;,
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;created_at&quot;: 1633099883,
+  &quot;registered_votes&quot;: '#(getInvalidRegisteredVotes)'
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_4046913119.html">be/election/electionEnd.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Sending an election end message with registered votes field set to valid election setup id should return an error</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-10" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-11">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-11" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def invalidElectionEnd =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-12" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;end&quot;,
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;created_at&quot;: 1633099883,
+  &quot;registered_votes&quot;: '#(getValidElectionSetupId)'
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_4046913119.html">be/election/electionEnd.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-13">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Sending a valid election end too early should fail</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-13" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-14">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-14" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def invalidElectionEnd =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-15">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-15" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;end&quot;,
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;created_at&quot;: 1633098900,
+  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_1_1959930676.html">be/rollCall/openRollCall.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-16">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Open a valid Roll Call</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-16" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-17">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-17" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def validOpenRollCall =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-18">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-18" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(getRollCallOpenValidUpdateId)',
+  &quot;opens&quot;: '#(getRollCallOpenValidId)',
+  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -410,7 +1604,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_2621355858.html">be/rollCall/closeRollCall.feature</a>
+      <a href="report-feature_1_1959930676.html">be/rollCall/openRollCall.feature</a>
     </div>
 
 
@@ -423,11 +1617,11 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-4">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-19">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Non-organizer closing a roll call should fail</span>
+  <span class="name">Opening a roll call with non-organizer as sender should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -436,14 +1630,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-4" class="collapse collapsable-details  in ">
+  <div id="element-19" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-5">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-20">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -455,13 +1649,13 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-5" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-20" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -488,7 +1682,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def validOpenRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -504,17 +1698,16 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-6">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-21">
           <a>Doc string</a>
       </div>
-      <div id="msg-6" class="collapse collapsable-details">
+      <div id="msg-21" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseValidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(getRollCallOpenValidUpdateId)',
+  &quot;opens&quot;: '#(getRollCallOpenValidId)',
+  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
 }</pre>
       </div>
     </div>
@@ -559,7 +1752,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -586,7 +1779,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -676,7 +1869,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_2621355858.html">be/rollCall/closeRollCall.feature</a>
+      <a href="report-feature_1_1959930676.html">be/rollCall/openRollCall.feature</a>
     </div>
 
 
@@ -689,11 +1882,11 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-7">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-22">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Close a valid roll call with wrong update_id should return an error message</span>
+  <span class="name">Opening a Roll Call that does not exist should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -702,14 +1895,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-7" class="collapse collapsable-details  in ">
+  <div id="element-22" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-8">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-23">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -721,13 +1914,13 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-8" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-23" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -754,7 +1947,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def validOpenRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -770,17 +1963,16 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-9">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
           <a>Doc string</a>
       </div>
-      <div id="msg-9" class="collapse collapsable-details">
+      <div id="msg-24" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseInvalidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(getRollCallOpenValidUpdateId)',
+  &quot;opens&quot;: '#(getRollCallOpenValidId)',
+  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
 }</pre>
       </div>
     </div>
@@ -798,7 +1990,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -825,7 +2017,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -915,7 +2107,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_2621355858.html">be/rollCall/closeRollCall.feature</a>
+      <a href="report-feature_1_1959930676.html">be/rollCall/openRollCall.feature</a>
     </div>
 
 
@@ -928,11 +2120,11 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-10">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Close a valid roll call that was never opened should return an error</span>
+  <span class="name">Opening a Roll Call with invalid update_id should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -941,14 +2133,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-10" class="collapse collapsable-details  in ">
+  <div id="element-25" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-11">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-26">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -960,7 +2152,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-11" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-26" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -993,7 +2185,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def validOpenRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1009,17 +2201,16 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-12">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-27">
           <a>Doc string</a>
       </div>
-      <div id="msg-12" class="collapse collapsable-details">
+      <div id="msg-27" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseValidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(getRollCallOpenInvalidUpdateId)',
+  &quot;opens&quot;: '#(getRollCallOpenValidId)',
+  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
 }</pre>
       </div>
     </div>
@@ -1037,7 +2228,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1064,7 +2255,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1154,7 +2345,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_1_4269286261.html">be/digitalCash/transaction.feature</a>
+      <a href="report-feature_1_1959930676.html">be/rollCall/openRollCall.feature</a>
     </div>
 
 
@@ -1167,7 +2358,326 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-13">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-28">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Opening a Roll Call for which with already received an error should return an error again</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-28" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-29">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-29" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def validOpenRollCall =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-30">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-30" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;open&quot;,
+  &quot;update_id&quot;: '#(getRollCallOpenInvalidUpdateId)',
+  &quot;opens&quot;: '#(getRollCallOpenValidId)',
+  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_2_4269286261.html">be/digitalCash/transaction.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-31">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -1180,14 +2690,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-13" class="collapse collapsable-details  in ">
+  <div id="element-31" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-14">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-32">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1199,7 +2709,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-14" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-32" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -1248,10 +2758,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-15">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-33">
           <a>Doc string</a>
       </div>
-      <div id="msg-15" class="collapse collapsable-details">
+      <div id="msg-33" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -1404,7 +2914,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_1_4269286261.html">be/digitalCash/transaction.feature</a>
+      <a href="report-feature_2_4269286261.html">be/digitalCash/transaction.feature</a>
     </div>
 
 
@@ -1417,7 +2927,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-16">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-34">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -1430,14 +2940,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-16" class="collapse collapsable-details  in ">
+  <div id="element-34" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-17">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-35">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1449,7 +2959,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-17" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-35" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -1498,10 +3008,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-18">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
           <a>Doc string</a>
       </div>
-      <div id="msg-18" class="collapse collapsable-details">
+      <div id="msg-36" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -1660,7 +3170,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_1_4269286261.html">be/digitalCash/transaction.feature</a>
+      <a href="report-feature_2_4269286261.html">be/digitalCash/transaction.feature</a>
     </div>
 
 
@@ -1673,7 +3183,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-19">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-37">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -1686,14 +3196,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-19" class="collapse collapsable-details  in ">
+  <div id="element-37" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-20">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-38">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1705,7 +3215,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-20" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-38" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -1754,10 +3264,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-21">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-39">
           <a>Doc string</a>
       </div>
-      <div id="msg-21" class="collapse collapsable-details">
+      <div id="msg-39" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -1910,7 +3420,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_1_4269286261.html">be/digitalCash/transaction.feature</a>
+      <a href="report-feature_2_4269286261.html">be/digitalCash/transaction.feature</a>
     </div>
 
 
@@ -1923,7 +3433,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-22">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-40">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -1936,14 +3446,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-22" class="collapse collapsable-details  in ">
+  <div id="element-40" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-23">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-41">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1955,7 +3465,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-23" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-41" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2004,10 +3514,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-24">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-42">
           <a>Doc string</a>
       </div>
-      <div id="msg-24" class="collapse collapsable-details">
+      <div id="msg-42" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -2160,7 +3670,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_1_4269286261.html">be/digitalCash/transaction.feature</a>
+      <a href="report-feature_2_4269286261.html">be/digitalCash/transaction.feature</a>
     </div>
 
 
@@ -2173,7 +3683,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-43">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -2186,14 +3696,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-25" class="collapse collapsable-details  in ">
+  <div id="element-43" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-26">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-44">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -2205,7 +3715,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-26" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-44" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -2254,10 +3764,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-27">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-45">
           <a>Doc string</a>
       </div>
-      <div id="msg-27" class="collapse collapsable-details">
+      <div id="msg-45" class="collapse collapsable-details">
         <pre>{
     &quot;object&quot;: &quot;coin&quot;,
     &quot;action&quot;: &quot;post_transaction&quot;,
@@ -2410,1223 +3920,6 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_2_859013492.html">be/election/electionOpen.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-28">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Opening a valid election</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-28" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-29">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-29" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validElectionOpen =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-30">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-30" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;election&quot;,
-    &quot;action&quot;: &quot;open&quot;,
-    &quot;lao&quot;: '#(getLaoValid)',
-    &quot;election&quot;: '#(getValidElectionSetupId)',
-    &quot;opened_at&quot;: 1633098944
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_2_859013492.html">be/election/electionOpen.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-31">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Opening the election without a setup should result in an error</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-31" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-32">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-32" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validElectionOpen =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-33">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-33" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;election&quot;,
-    &quot;action&quot;: &quot;open&quot;,
-    &quot;lao&quot;: '#(getLaoValid)',
-    &quot;election&quot;: '#(getValidElectionSetupId)',
-    &quot;opened_at&quot;: 1633098944
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_2_859013492.html">be/election/electionOpen.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-34">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Opening the election too early results in an error</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-34" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-35">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-35" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validElectionOpen =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-36" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;election&quot;,
-    &quot;action&quot;: &quot;open&quot;,
-    &quot;lao&quot;: '#(getLaoValid)',
-    &quot;election&quot;: '#(getValidElectionSetupId)',
-    &quot;opened_at&quot;: 1620000000
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_2_859013492.html">be/election/electionOpen.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-37">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Non organizer opening the election should result in an error</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-37" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-38">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-38" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validElectionOpen =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-39">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-39" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;election&quot;,
-    &quot;action&quot;: &quot;open&quot;,
-    &quot;lao&quot;: '#(getLaoValid)',
-    &quot;election&quot;: '#(getValidElectionSetupId)',
-    &quot;opened_at&quot;: 1633098944
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_2_859013492.html">be/election/electionOpen.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-40">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Opening the election with wrong election id should result in an error</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-40" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-41">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-41" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validElectionOpen =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-42">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-42" class="collapse collapsable-details">
-        <pre>{
-    &quot;object&quot;: &quot;election&quot;,
-    &quot;action&quot;: &quot;open&quot;,
-    &quot;lao&quot;: '#(getLaoIdNegativeTime)',
-    &quot;election&quot;: '#(getValidElectionSetupId)',
-    &quot;opened_at&quot;: 1633098944
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
       <a href="report-feature_3_655929658.html">be/election/castVote.feature</a>
     </div>
 
@@ -3640,7 +3933,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-43">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-46">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -3653,14 +3946,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-43" class="collapse collapsable-details  in ">
+  <div id="element-46" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-44">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-47">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -3672,7 +3965,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-44" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-47" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -3721,10 +4014,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-45">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-48">
           <a>Doc string</a>
       </div>
-      <div id="msg-45" class="collapse collapsable-details">
+      <div id="msg-48" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -3885,7 +4178,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-46">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-49">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -3898,14 +4191,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-46" class="collapse collapsable-details  in ">
+  <div id="element-49" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-47">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-50">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -3917,7 +4210,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-47" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-50" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -3966,10 +4259,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-48">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-51">
           <a>Doc string</a>
       </div>
-      <div id="msg-48" class="collapse collapsable-details">
+      <div id="msg-51" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -4130,7 +4423,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-49">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-52">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -4143,14 +4436,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-49" class="collapse collapsable-details  in ">
+  <div id="element-52" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-50">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-53">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -4162,7 +4455,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-50" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-53" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -4211,10 +4504,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-51">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-54">
           <a>Doc string</a>
       </div>
-      <div id="msg-51" class="collapse collapsable-details">
+      <div id="msg-54" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -4375,7 +4668,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-52">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-55">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -4388,14 +4681,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-52" class="collapse collapsable-details  in ">
+  <div id="element-55" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-53">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-56">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -4407,7 +4700,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-53" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-56" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -4456,10 +4749,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-54">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-57">
           <a>Doc string</a>
       </div>
-      <div id="msg-54" class="collapse collapsable-details">
+      <div id="msg-57" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -4620,7 +4913,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-55">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-58">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -4633,14 +4926,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-55" class="collapse collapsable-details  in ">
+  <div id="element-58" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-56">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-59">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -4652,7 +4945,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-56" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-59" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -4701,10 +4994,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-57">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-60">
           <a>Doc string</a>
       </div>
-      <div id="msg-57" class="collapse collapsable-details">
+      <div id="msg-60" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -4865,7 +5158,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-58">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-61">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -4878,14 +5171,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-58" class="collapse collapsable-details  in ">
+  <div id="element-61" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-59">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-62">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -4897,7 +5190,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-59" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-62" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -4946,10 +5239,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-60">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-63">
           <a>Doc string</a>
       </div>
-      <div id="msg-60" class="collapse collapsable-details">
+      <div id="msg-63" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -5137,7 +5430,7 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-61">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-64">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
@@ -5150,14 +5443,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-61" class="collapse collapsable-details  in ">
+  <div id="element-64" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-62">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-65">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -5169,7 +5462,7 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-62" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-65" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -5218,10 +5511,10 @@ $(document).ready(function() {
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-63">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-66">
           <a>Doc string</a>
       </div>
-      <div id="msg-63" class="collapse collapsable-details">
+      <div id="msg-66" class="collapse collapsable-details">
         <pre>{
   &quot;object&quot;: &quot;election&quot;,
   &quot;action&quot;: &quot;cast_vote&quot;,
@@ -5369,220 +5662,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_4_212298372.html">be/LAO/create.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-64">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao request with empty lao name should fail with an error response 2</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-64" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-65">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-65" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">def badLaoReq =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-66">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-66" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoIdEmptyName)',
-  &quot;name&quot;: &quot;&quot;,
-  &quot;creation&quot;: 1633098234,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(badLaoReq), channel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_4_212298372.html">be/LAO/create.feature</a>
+      <a href="report-feature_4_859013492.html">be/election/electionOpen.feature</a>
     </div>
 
 
@@ -5599,7 +5679,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao with negative time should fail with an error response</span>
+  <span class="name">Opening a valid election</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -5633,7 +5713,34 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">def badLaoReq =</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def validElectionOpen =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -5654,13 +5761,11 @@ $(document).ready(function() {
       </div>
       <div id="msg-69" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoIdNegativeTime)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: -1633098234,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(getLaoValid)',
+    &quot;election&quot;: '#(getValidElectionSetupId)',
+    &quot;opened_at&quot;: 1633098944
 }</pre>
       </div>
     </div>
@@ -5678,7 +5783,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(badLaoReq), channel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -5705,433 +5810,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_4_212298372.html">be/LAO/create.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-70">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao with invalid id hash should fail with an error response</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-70" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-71">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-71" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">def badLaoReq =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-72">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-72" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getOrganizer)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: 1633098234,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(badLaoReq), channel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-Then skipped">
-  <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-  </div>
-</div>
-
-
-
-
-
-  </div>
-</div>
-
-
-<div class="element">
-    <div class="indention">
-      <b>Feature:</b>
-      <a href="report-feature_4_212298372.html">be/LAO/create.feature</a>
-    </div>
-
-
-<div class="tags indention">
-    <b>Tags:</b>
-       <a href="report-tag_524961969.html">@env=go,scala</a>
-</div>
-
-
-  <span class="lead-duration duration">0.000</span>
-
-
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-73">
-
-<div class="brief failed">
-  <span class="keyword indention">Scenario</span>
-  <span class="name">Create should succeed with a valid creation request</span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </span>
-  <div class="description indention"></div>
-
-  <div id="element-73" class="collapse collapsable-details  in ">
-
-
-
-
-
-<div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-74">
-
-<div class="brief failed">
-  <span class="keyword indention">Steps</span>
-  <span class="name"></span>
-
-
-     <i class="chevron fa fa-fw"></i>
-</div>
-
-  </div>
-
-  <div id="steps-74" class="inner-level collapse collapsable-details  in ">
-      <div class="step">
-
-
-<div class="brief step-name-Given skipped">
-  <span class="keyword indention">Given</span>
-  <span class="name">def laoCreateRequest =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-75">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-75" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: '#(getLaoValidCreationTime)',
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -6221,7 +5900,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_4_212298372.html">be/LAO/create.feature</a>
+      <a href="report-feature_4_859013492.html">be/election/electionOpen.feature</a>
     </div>
 
 
@@ -6234,11 +5913,11 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-76">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-70">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create should fail if signature is invalid</span>
+  <span class="name">Opening the election without a setup should result in an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -6247,14 +5926,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-76" class="collapse collapsable-details  in ">
+  <div id="element-70" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-77">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-71">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -6266,85 +5945,13 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-77" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-71" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">def laoCreateRequest =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-78">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-78" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: 1633035721,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">frontend.setWrongSignature()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=close_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -6371,7 +5978,77 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
+  <span class="name">def validElectionOpen =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-72">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-72" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(getLaoValid)',
+    &quot;election&quot;: '#(getValidElectionSetupId)',
+    &quot;opened_at&quot;: 1633098944
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -6461,7 +6138,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_4_212298372.html">be/LAO/create.feature</a>
+      <a href="report-feature_4_859013492.html">be/election/electionOpen.feature</a>
     </div>
 
 
@@ -6474,11 +6151,11 @@ $(document).ready(function() {
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-79">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-73">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Create Lao with different public key from the organizer should fail with error response</span>
+  <span class="name">Opening the election too early results in an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -6487,14 +6164,14 @@ $(document).ready(function() {
   </span>
   <div class="description indention"></div>
 
-  <div id="element-79" class="collapse collapsable-details  in ">
+  <div id="element-73" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-80">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-74">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -6506,85 +6183,13 @@ $(document).ready(function() {
 
   </div>
 
-  <div id="steps-80" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-74" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">def laoCreateRequest =</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-  <div class="inner-level">
-    <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-81">
-          <a>Doc string</a>
-      </div>
-      <div id="msg-81" class="collapse collapsable-details">
-        <pre>{
-  &quot;object&quot;: &quot;lao&quot;,
-  &quot;action&quot;: &quot;create&quot;,
-  &quot;id&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;LAO&quot;,
-  &quot;creation&quot;: 1633035721,
-  &quot;organizer&quot;: '#(getOrganizer)',
-  &quot;witnesses&quot;: []
-}</pre>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -6611,7 +6216,77 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
+  <span class="name">def validElectionOpen =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-75">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-75" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(getLaoValid)',
+    &quot;election&quot;: '#(getValidElectionSetupId)',
+    &quot;opened_at&quot;: 1620000000
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -6638,7 +6313,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains ACCESS_DENIED</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -6701,7 +6376,510 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_5_1959930676.html">be/rollCall/openRollCall.feature</a>
+      <a href="report-feature_4_859013492.html">be/election/electionOpen.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-76">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Non organizer opening the election should result in an error</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-76" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-77">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-77" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def validElectionOpen =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-78">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-78" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(getLaoValid)',
+    &quot;election&quot;: '#(getValidElectionSetupId)',
+    &quot;opened_at&quot;: 1633098944
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_4_859013492.html">be/election/electionOpen.feature</a>
+    </div>
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-79">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Opening the election with wrong election id should result in an error</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-79" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-80">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-80" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def validElectionOpen =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-81">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-81" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;election&quot;,
+    &quot;action&quot;: &quot;open&quot;,
+    &quot;lao&quot;: '#(getLaoIdNegativeTime)',
+    &quot;election&quot;: '#(getValidElectionSetupId)',
+    &quot;opened_at&quot;: 1633098944
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionOpen), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionOpen))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+    <div class="indention">
+      <b>Feature:</b>
+      <a href="report-feature_5_3139404481.html">be/election/electionSetup.feature</a>
     </div>
 
 
@@ -6718,7 +6896,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Open a valid Roll Call</span>
+  <span class="name">Setting up a valid election should succeed</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -6779,7 +6957,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validOpenRollCall =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -6800,11 +6978,24 @@ $(document).ready(function() {
       </div>
       <div id="msg-84" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(getRollCallOpenValidUpdateId)',
-  &quot;opens&quot;: '#(getRollCallOpenValidId)',
-  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
+  &quot;created_at&quot;: 1633098941,
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
+    }
+  ]
 }</pre>
       </div>
     </div>
@@ -6822,7 +7013,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -6849,7 +7040,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -6939,7 +7130,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_5_1959930676.html">be/rollCall/openRollCall.feature</a>
+      <a href="report-feature_5_3139404481.html">be/election/electionSetup.feature</a>
     </div>
 
 
@@ -6956,7 +7147,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Opening a roll call with non-organizer as sender should fail</span>
+  <span class="name">Setting up an election with invalid election id should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -7017,7 +7208,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validOpenRollCall =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7038,11 +7229,24 @@ $(document).ready(function() {
       </div>
       <div id="msg-87" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(getRollCallOpenValidUpdateId)',
-  &quot;opens&quot;: '#(getRollCallOpenValidId)',
-  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getInvalidElectionSetupId)',
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
+  &quot;created_at&quot;: 1633098941,
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
+    }
+  ]
 }</pre>
       </div>
     </div>
@@ -7058,36 +7262,9 @@ $(document).ready(function() {
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7114,7 +7291,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7204,7 +7381,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_5_1959930676.html">be/rollCall/openRollCall.feature</a>
+      <a href="report-feature_5_3139404481.html">be/election/electionSetup.feature</a>
     </div>
 
 
@@ -7221,7 +7398,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Opening a Roll Call that does not exist should return an error</span>
+  <span class="name">Setting up an election with invalid question id should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -7255,7 +7432,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7282,7 +7459,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validOpenRollCall =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7303,11 +7480,24 @@ $(document).ready(function() {
       </div>
       <div id="msg-90" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(getRollCallOpenValidUpdateId)',
-  &quot;opens&quot;: '#(getRollCallOpenValidId)',
-  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
+  &quot;created_at&quot;: 1633098941,
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: '#(getInvalidQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
+    }
+  ]
 }</pre>
       </div>
     </div>
@@ -7325,7 +7515,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7352,7 +7542,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7442,7 +7632,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_5_1959930676.html">be/rollCall/openRollCall.feature</a>
+      <a href="report-feature_5_3139404481.html">be/election/electionSetup.feature</a>
     </div>
 
 
@@ -7459,7 +7649,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Opening a Roll Call with invalid update_id should return an error</span>
+  <span class="name">Setting up an election with a question containing empty ballot options should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -7520,7 +7710,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validOpenRollCall =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7541,11 +7731,24 @@ $(document).ready(function() {
       </div>
       <div id="msg-93" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(getRollCallOpenInvalidUpdateId)',
-  &quot;opens&quot;: '#(getRollCallOpenValidId)',
-  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
+  &quot;created_at&quot;: 1633098941,
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Plurality&quot;,
+      &quot;ballot_options&quot;: [],
+      &quot;write_in&quot;: false
+    }
+  ]
 }</pre>
       </div>
     </div>
@@ -7563,7 +7766,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7590,7 +7793,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7680,7 +7883,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_5_1959930676.html">be/rollCall/openRollCall.feature</a>
+      <a href="report-feature_5_3139404481.html">be/election/electionSetup.feature</a>
     </div>
 
 
@@ -7697,7 +7900,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Opening a Roll Call for which with already received an error should return an error again</span>
+  <span class="name">Setting up an election with a non-supported voting method should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -7758,7 +7961,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validOpenRollCall =</span>
+  <span class="name">def validElectionSetup =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7779,11 +7982,24 @@ $(document).ready(function() {
       </div>
       <div id="msg-96" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;open&quot;,
-  &quot;update_id&quot;: '#(getRollCallOpenInvalidUpdateId)',
-  &quot;opens&quot;: '#(getRollCallOpenValidId)',
-  &quot;opened_at&quot;: '#(getRollCallOpenValidCreationTime)'
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;setup&quot;,
+  &quot;id&quot;: '#(getValidElectionSetupId)',
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;Election&quot;,
+  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
+  &quot;created_at&quot;: 1633098941,
+  &quot;start_time&quot;: 1633098941,
+  &quot;end_time&quot;: 1633099812,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
+      &quot;question&quot;: &quot;Is this project fun?&quot;,
+      &quot;voting_method&quot;: &quot;Random&quot;,
+      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
+      &quot;write_in&quot;: false
+    }
+  ]
 }</pre>
       </div>
     </div>
@@ -7801,7 +8017,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7828,7 +8044,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -7855,87 +8071,6 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-When skipped">
-  <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validOpenRollCall), laoChannel)</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validOpenRollCall))</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
   <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -10016,7 +10151,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_7_3139404481.html">be/election/electionSetup.feature</a>
+      <a href="report-feature_7_2621355858.html">be/rollCall/closeRollCall.feature</a>
     </div>
 
 
@@ -10033,7 +10168,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up a valid election should succeed</span>
+  <span class="name">Close a valid roll should succeed</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -10067,7 +10202,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10094,7 +10229,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validElectionSetup =</span>
+  <span class="name">def validCloseRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10115,24 +10250,12 @@ $(document).ready(function() {
       </div>
       <div id="msg-123" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(getValidElectionSetupId)',
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;Election&quot;,
-  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
-  &quot;created_at&quot;: 1633098941,
-  &quot;start_time&quot;: 1633098941,
-  &quot;end_time&quot;: 1633099812,
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;question&quot;: &quot;Is this project fun?&quot;,
-      &quot;voting_method&quot;: &quot;Plurality&quot;,
-      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
-      &quot;write_in&quot;: false
-    }
-  ]
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;close&quot;,
+  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
+  &quot;closes&quot;: '#(getRollCallCloseValidId)',
+  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
+  &quot;attendees&quot;: ['#(getAttendee)']
 }</pre>
       </div>
     </div>
@@ -10150,7 +10273,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10177,7 +10300,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10267,7 +10390,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_7_3139404481.html">be/election/electionSetup.feature</a>
+      <a href="report-feature_7_2621355858.html">be/rollCall/closeRollCall.feature</a>
     </div>
 
 
@@ -10284,7 +10407,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with invalid election id should fail</span>
+  <span class="name">Non-organizer closing a roll call should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -10318,7 +10441,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10345,7 +10468,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validElectionSetup =</span>
+  <span class="name">def validCloseRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10366,24 +10489,12 @@ $(document).ready(function() {
       </div>
       <div id="msg-126" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(getInvalidElectionSetupId)',
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;Election&quot;,
-  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
-  &quot;created_at&quot;: 1633098941,
-  &quot;start_time&quot;: 1633098941,
-  &quot;end_time&quot;: 1633099812,
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;question&quot;: &quot;Is this project fun?&quot;,
-      &quot;voting_method&quot;: &quot;Plurality&quot;,
-      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
-      &quot;write_in&quot;: false
-    }
-  ]
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;close&quot;,
+  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
+  &quot;closes&quot;: '#(getRollCallCloseValidId)',
+  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
+  &quot;attendees&quot;: ['#(getAttendee)']
 }</pre>
       </div>
     </div>
@@ -10399,9 +10510,36 @@ $(document).ready(function() {
       <div class="step">
 
 
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10428,7 +10566,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10518,7 +10656,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_7_3139404481.html">be/election/electionSetup.feature</a>
+      <a href="report-feature_7_2621355858.html">be/rollCall/closeRollCall.feature</a>
     </div>
 
 
@@ -10535,7 +10673,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with invalid question id should fail</span>
+  <span class="name">Close a valid roll call with wrong update_id should return an error message</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -10569,7 +10707,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10596,7 +10734,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validElectionSetup =</span>
+  <span class="name">def validCloseRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10617,24 +10755,12 @@ $(document).ready(function() {
       </div>
       <div id="msg-129" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(getValidElectionSetupId)',
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;Election&quot;,
-  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
-  &quot;created_at&quot;: 1633098941,
-  &quot;start_time&quot;: 1633098941,
-  &quot;end_time&quot;: 1633099812,
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(getInvalidQuestionId)',
-      &quot;question&quot;: &quot;Is this project fun?&quot;,
-      &quot;voting_method&quot;: &quot;Plurality&quot;,
-      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
-      &quot;write_in&quot;: false
-    }
-  ]
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;close&quot;,
+  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
+  &quot;closes&quot;: '#(getRollCallCloseInvalidId)',
+  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
+  &quot;attendees&quot;: ['#(getAttendee)']
 }</pre>
       </div>
     </div>
@@ -10652,7 +10778,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10679,7 +10805,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10769,7 +10895,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_7_3139404481.html">be/election/electionSetup.feature</a>
+      <a href="report-feature_7_2621355858.html">be/rollCall/closeRollCall.feature</a>
     </div>
 
 
@@ -10786,7 +10912,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with a question containing empty ballot options should return an error</span>
+  <span class="name">Close a valid roll call that was never opened should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -10847,7 +10973,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validElectionSetup =</span>
+  <span class="name">def validCloseRollCall =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10868,24 +10994,12 @@ $(document).ready(function() {
       </div>
       <div id="msg-132" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(getValidElectionSetupId)',
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;Election&quot;,
-  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
-  &quot;created_at&quot;: 1633098941,
-  &quot;start_time&quot;: 1633098941,
-  &quot;end_time&quot;: 1633099812,
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;question&quot;: &quot;Is this project fun?&quot;,
-      &quot;voting_method&quot;: &quot;Plurality&quot;,
-      &quot;ballot_options&quot;: [],
-      &quot;write_in&quot;: false
-    }
-  ]
+  &quot;object&quot;: &quot;roll_call&quot;,
+  &quot;action&quot;: &quot;close&quot;,
+  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
+  &quot;closes&quot;: '#(getRollCallCloseValidId)',
+  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
+  &quot;attendees&quot;: ['#(getAttendee)']
 }</pre>
       </div>
     </div>
@@ -10903,7 +11017,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -10930,7 +11044,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11020,7 +11134,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_7_3139404481.html">be/election/electionSetup.feature</a>
+      <a href="report-feature_8_212298372.html">be/LAO/create.feature</a>
     </div>
 
 
@@ -11037,7 +11151,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Setting up an election with a non-supported voting method should return an error</span>
+  <span class="name">Create Lao request with empty lao name should fail with an error response 2</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -11071,34 +11185,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validElectionSetup =</span>
+  <span class="name">def badLaoReq =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11119,24 +11206,13 @@ $(document).ready(function() {
       </div>
       <div id="msg-135" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;setup&quot;,
-  &quot;id&quot;: '#(getValidElectionSetupId)',
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;name&quot;: &quot;Election&quot;,
-  &quot;version&quot;: &quot;OPEN_BALLOT&quot;,
-  &quot;created_at&quot;: 1633098941,
-  &quot;start_time&quot;: 1633098941,
-  &quot;end_time&quot;: 1633099812,
-  &quot;questions&quot;: [
-    {
-      &quot;id&quot;: '#(getIsThisProjectFunQuestionId)',
-      &quot;question&quot;: &quot;Is this project fun?&quot;,
-      &quot;voting_method&quot;: &quot;Random&quot;,
-      &quot;ballot_options&quot;: [&quot;Yes&quot;, &quot;No&quot;],
-      &quot;write_in&quot;: false
-    }
-  ]
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: '#(getLaoIdEmptyName)',
+  &quot;name&quot;: &quot;&quot;,
+  &quot;creation&quot;: 1633098234,
+  &quot;organizer&quot;: '#(getOrganizer)',
+  &quot;witnesses&quot;: []
 }</pre>
       </div>
     </div>
@@ -11154,7 +11230,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionSetup), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(badLaoReq), channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11181,7 +11257,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validElectionSetup))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11271,7 +11347,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_8_4046913119.html">be/election/electionEnd.feature</a>
+      <a href="report-feature_8_212298372.html">be/LAO/create.feature</a>
     </div>
 
 
@@ -11288,7 +11364,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending a valid election end should succeed</span>
+  <span class="name">Create Lao with negative time should fail with an error response</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -11322,34 +11398,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def validElectionEnd =</span>
+  <span class="name">def badLaoReq =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11370,12 +11419,13 @@ $(document).ready(function() {
       </div>
       <div id="msg-138" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: '#(getLaoIdNegativeTime)',
+  &quot;name&quot;: &quot;LAO&quot;,
+  &quot;creation&quot;: -1633098234,
+  &quot;organizer&quot;: '#(getOrganizer)',
+  &quot;witnesses&quot;: []
 }</pre>
       </div>
     </div>
@@ -11393,7 +11443,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validElectionEnd), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(badLaoReq), channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11420,7 +11470,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponseWithElectionResults(JSON.stringify(validElectionEnd))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11447,7 +11497,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains ELECTION_RESULTS</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11510,7 +11560,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_8_4046913119.html">be/election/electionEnd.feature</a>
+      <a href="report-feature_8_212298372.html">be/LAO/create.feature</a>
     </div>
 
 
@@ -11527,7 +11577,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending an election end with invalid election id should return an error</span>
+  <span class="name">Create Lao with invalid id hash should fail with an error response</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -11561,34 +11611,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
+  <span class="name">def badLaoReq =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11609,12 +11632,13 @@ $(document).ready(function() {
       </div>
       <div id="msg-141" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getInvalidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: '#(getOrganizer)',
+  &quot;name&quot;: &quot;LAO&quot;,
+  &quot;creation&quot;: 1633098234,
+  &quot;organizer&quot;: '#(getOrganizer)',
+  &quot;witnesses&quot;: []
 }</pre>
       </div>
     </div>
@@ -11632,7 +11656,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(badLaoReq), channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11659,7 +11683,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(badLaoReq))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11749,7 +11773,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_8_4046913119.html">be/election/electionEnd.feature</a>
+      <a href="report-feature_8_212298372.html">be/LAO/create.feature</a>
     </div>
 
 
@@ -11766,7 +11790,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending an election end message with invalid registered votes field should return an error</span>
+  <span class="name">Create should succeed with a valid creation request</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -11800,34 +11824,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
+  <span class="name">def laoCreateRequest =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11848,12 +11845,13 @@ $(document).ready(function() {
       </div>
       <div id="msg-144" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getInvalidRegisteredVotes)'
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;LAO&quot;,
+  &quot;creation&quot;: '#(getLaoValidCreationTime)',
+  &quot;organizer&quot;: '#(getOrganizer)',
+  &quot;witnesses&quot;: []
 }</pre>
       </div>
     </div>
@@ -11871,7 +11869,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11898,7 +11896,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11925,7 +11923,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -11988,7 +11986,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_8_4046913119.html">be/election/electionEnd.feature</a>
+      <a href="report-feature_8_212298372.html">be/LAO/create.feature</a>
     </div>
 
 
@@ -12005,7 +12003,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending an election end message with registered votes field set to valid election setup id should return an error</span>
+  <span class="name">Create should fail if signature is invalid</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -12039,34 +12037,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
+  <span class="name">def laoCreateRequest =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -12087,12 +12058,13 @@ $(document).ready(function() {
       </div>
       <div id="msg-147" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633099883,
-  &quot;registered_votes&quot;: '#(getValidElectionSetupId)'
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;LAO&quot;,
+  &quot;creation&quot;: 1633035721,
+  &quot;organizer&quot;: '#(getOrganizer)',
+  &quot;witnesses&quot;: []
 }</pre>
       </div>
     </div>
@@ -12108,9 +12080,36 @@ $(document).ready(function() {
       <div class="step">
 
 
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">frontend.setWrongSignature()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -12137,7 +12136,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -12227,7 +12226,7 @@ $(document).ready(function() {
 <div class="element">
     <div class="indention">
       <b>Feature:</b>
-      <a href="report-feature_8_4046913119.html">be/election/electionEnd.feature</a>
+      <a href="report-feature_8_212298372.html">be/LAO/create.feature</a>
     </div>
 
 
@@ -12244,7 +12243,7 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Sending a valid election end too early should fail</span>
+  <span class="name">Create Lao with different public key from the organizer should fail with error response</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -12278,34 +12277,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
-<div class="brief step-name-And skipped">
-  <span class="keyword indention">And</span>
-  <span class="name">def invalidElectionEnd =</span>
+  <span class="name">def laoCreateRequest =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -12326,12 +12298,13 @@ $(document).ready(function() {
       </div>
       <div id="msg-150" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;election&quot;,
-  &quot;action&quot;: &quot;end&quot;,
-  &quot;lao&quot;: '#(getLaoValid)',
-  &quot;election&quot;: '#(getValidElectionSetupId)',
-  &quot;created_at&quot;: 1633098900,
-  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
+  &quot;object&quot;: &quot;lao&quot;,
+  &quot;action&quot;: &quot;create&quot;,
+  &quot;id&quot;: '#(getLaoValid)',
+  &quot;name&quot;: &quot;LAO&quot;,
+  &quot;creation&quot;: 1633035721,
+  &quot;organizer&quot;: '#(getOrganizer)',
+  &quot;witnesses&quot;: []
 }</pre>
       </div>
     </div>
@@ -12347,9 +12320,36 @@ $(document).ready(function() {
       <div class="step">
 
 
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(laoCreateRequest), channel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -12376,7 +12376,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(laoCreateRequest))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -12403,7 +12403,7 @@ $(document).ready(function() {
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+  <span class="name">match answer contains ACCESS_DENIED</span>
 
   <span class="lead-duration duration">0.000</span>
 
