@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding;
 import com.github.dedis.popstellar.ui.PopViewModel;
-import com.github.dedis.popstellar.utility.Constants;
 import com.google.mlkit.vision.barcode.*;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
