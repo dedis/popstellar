@@ -38,6 +38,9 @@ const filledState = {
       transactionsByPubHash: {
         [mockKPHash.valueOf()]: [mockTransaction.transactionId.toState()],
       },
+      transactionsByInvPubHash: {
+        [mockKPHash.valueOf()]: [mockTransaction.transactionId.toState()],
+      },
     },
   },
 };
