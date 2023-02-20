@@ -12,8 +12,6 @@ import dagger.hilt.components.SingletonComponent;
 @InstallIn(SingletonComponent.class)
 public abstract class RepositoryModule {
 
-  private static final String DATABASE_NAME = "lao_database";
-
   private RepositoryModule() {}
 
   @Binds
