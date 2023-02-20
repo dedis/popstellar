@@ -10,11 +10,8 @@ import dagger.hilt.components.SingletonComponent;
 
 @Module
 @InstallIn(SingletonComponent.class)
-public abstract class RepositoryModule {
-
-  private RepositoryModule() {}
+public interface RepositoryModule {
 
   @Binds
-  public abstract SchedulerProvider bindsSchedulerProvider(
-      ProdSchedulerProvider prodSchedulerProvider);
+  SchedulerProvider bindsSchedulerProvider(ProdSchedulerProvider prodSchedulerProvider);
 }
