@@ -51,6 +51,20 @@ const initialState: DigitalCashLaoReducerState = {
 /* Name of digital cash slice in storage */
 export const DIGITAL_CASH_REDUCER_PATH = 'digitalCash';
 
+const createEntryAndAddInvPubHash = (
+  laoState: DigitalCashReducerState,
+  pubHash: string,
+  transactionHash: string,
+) => {
+  if (!(pubHash in laoState.transactionsByInvPubHash)) {
+    laoState.transactionsByInvPubHash[pubHash] = [];
+  }
+
+  if (!laoState.transactionsByInvPubHash[pubHash].includes(transactionHash)) {
+    laoState.transactionsByInvPubHash[pubHash].push(transactionHash);
+  }
+};
+
 const digitalCashSlice = createSlice({
   name: DIGITAL_CASH_REDUCER_PATH,
   initialState,
@@ -108,13 +122,7 @@ const digitalCashSlice = createSlice({
             laoState.transactionsByPubHash[pubHash] = [];
           }
 
-          if (!(pubHash in laoState.transactionsByInvPubHash)) {
-            laoState.transactionsByInvPubHash[pubHash] = [];
-          }
-
-          if (!laoState.transactionsByInvPubHash[pubHash].includes(transactionHash)) {
-            laoState.transactionsByInvPubHash[pubHash].push(transactionHash);
-          }
+          createEntryAndAddInvPubHash(laoState, pubHash, transactionHash);
         });
 
         transactionState.outputs.forEach((output) => {
@@ -130,13 +138,7 @@ const digitalCashSlice = createSlice({
           }
           laoState.transactionsByPubHash[pubKeyHash].push(transactionHash);
 
-          if (!(pubKeyHash in laoState.transactionsByInvPubHash)) {
-            laoState.transactionsByInvPubHash[pubKeyHash] = [];
-          }
-
-          if (!laoState.transactionsByInvPubHash[pubKeyHash].includes(transactionHash)) {
-            laoState.transactionsByInvPubHash[pubKeyHash].push(transactionHash);
-          }
+          createEntryAndAddInvPubHash(laoState, pubKeyHash, transactionHash);
         });
       },
     },
@@ -224,8 +226,8 @@ export const makeTransactionsByRollCallTokens = (laoId: Hash, rollCallTokens: Ro
       if (transactionsByHash && transactionsByInvPubHash) {
         const transactions: TransactionState[] = [];
 
-        for (let i = 0; i < rollCallTokens.length; i += 1) {
-          const { publicKey } = rollCallTokens[i].token;
+        for (const rollCallToken of rollCallTokens) {
+          const { publicKey } = rollCallToken.token;
           const transactionsOfToken = transactionsByInvPubHash[
             Hash.fromPublicKey(publicKey).valueOf()
           ].map((hash) => transactionsByHash[hash]);
