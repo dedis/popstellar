@@ -108,7 +108,7 @@ this [guide to app architecture](https://developer.android.com/jetpack/guide).
 - The **Model** consists of the model classes stored in the repositories.
   The repositories store the current application state in memory.
   For now, the persistence in the application is done via storing the wallet main seed, the server address and the list of subscribed channels. Upon restoring state a catch-up is sent to the backend for each channel. 
-While this basic persistence mostly works, it is very sub-optimal. A future better way of doing things is to add a layer of persistence to the repositories. Repositories would save updates on disk and upon querying would first look in memory and if missing would then look on the disk.
+While this basic persistence mostly works, it is very sub-optimal. A future, better way is to add a layer of persistence to the repositories. Repositories would save updates on disk. Upon querying, it would first look in memory. If data is missing in memory, it would then look on the disk.
 
 Below is the diagram of the application architecture :
 
