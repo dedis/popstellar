@@ -141,7 +141,7 @@ valid for local operations affecting local data (e.g., changing a local setting,
 stored in the browser, etc.).
 
 As a side note, the `ViewModel` classes may act as an intermediary between the views and the repositories.
-Moreover, view models are primarily used to perform actions on behalf of the views and to store views data. To exemplify the difference between the state stored in the repositories and the state stored in view models, we will take the witness addition process. To add a witness, the main key of an LAO member will be scanned and a message will be sent to the backend(s). The `WitnessingViewModel` will update the list of scanned witness and and the number of scanned people will be displayed on the screen. On the other hand the list of witnesses (accepted and broadcast by a backend) will only be updated once the backend messages are received and processed.
+Moreover, view models are primarily used to perform actions on behalf of the views and to store views data. To exemplify the difference between the state stored in the repositories and the state stored in view models, we will take the witness addition process. To add a witness, the main key of an LAO member will be scanned and a message will be sent to the backend(s). The `WitnessingViewModel` will update the list of scanned witness and the number of scanned people will be displayed on the screen. On the other hand the list of witnesses (accepted and broadcast by a backend) will only be updated once the backend messages are received and processed.
 
 To better understand how the information is automatically reflected in the UI, check
 the [RxJava](https://github.com/ReactiveX/RxJava) extension and the usage
