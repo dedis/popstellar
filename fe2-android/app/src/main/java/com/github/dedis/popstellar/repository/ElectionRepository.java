@@ -89,7 +89,7 @@ public class ElectionRepository {
    * @return an observable that will be updated with the set of all election's ids
    */
   @NonNull
-  public Observable<Set<Election>> getElectionsObservable(@NonNull String laoId) {
+  public Observable<Set<Election>> getElectionsObservableInLao(@NonNull String laoId) {
     return getLaoElections(laoId).getElectionsSubject();
   }
 

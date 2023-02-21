@@ -31,7 +31,7 @@ public class ElectionRepositoryTest {
   @Test
   public void addingElectionUpdatesIds() {
     ElectionRepository repo = new ElectionRepository();
-    TestObserver<Set<Election>> elections = repo.getElectionsObservable(LAO_ID).test();
+    TestObserver<Set<Election>> elections = repo.getElectionsObservableInLao(LAO_ID).test();
 
     assertCurrentValueIs(elections, emptySet());
 

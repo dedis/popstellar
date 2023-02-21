@@ -42,7 +42,7 @@ public class EventsViewModel extends AndroidViewModel {
     this.events =
         Observable.combineLatest(
                 rollCallRepo.getRollCallsObservableInLao(laoId),
-                electionRepo.getElectionsObservable(laoId),
+                electionRepo.getElectionsObservableInLao(laoId),
                 (rcs, elecs) -> {
                   Set<Event> union = new HashSet<>(rcs);
                   union.addAll(elecs);
