@@ -37,7 +37,7 @@ public class DigitalCashIssueFragment extends Fragment {
   public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
 
   private DigitalCashIssueFragmentBinding binding;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private DigitalCashViewModel digitalCashViewModel;
 
   private int selectOneMember;
