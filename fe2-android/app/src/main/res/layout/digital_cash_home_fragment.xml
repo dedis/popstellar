@@ -9,7 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context=".ui.digitalcash.DigitalCashHomeFragment">
+    tools:context=".ui.lao.digitalcash.DigitalCashHomeFragment">
 
     <TextView
       android:id="@+id/coin_amount_text"

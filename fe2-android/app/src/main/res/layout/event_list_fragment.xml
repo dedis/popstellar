@@ -3,7 +3,7 @@
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/fragment_lao_detail"
+    android:id="@+id/fragment_event_list"
     android:background="@color/background_gray"
     android:layout_width="match_parent"
     android:layout_height="match_parent">

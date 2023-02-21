@@ -7,7 +7,7 @@
     android:id="@+id/fragment_digital_cash_receive"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.digitalcash.DigitalCashReceiveFragment">
+    tools:context=".ui.lao.digitalcash.DigitalCashReceiveFragment">
 
     <TextView
       android:id="@+id/digital_cash_receive_address"

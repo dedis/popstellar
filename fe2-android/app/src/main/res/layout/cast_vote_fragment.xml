@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/container_margin"
-    tools:context=".ui.detail.event.election.fragments.CastVoteFragment">
+    tools:context=".ui.lao.event.election.fragments.CastVoteFragment">
 
     <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline_tab"

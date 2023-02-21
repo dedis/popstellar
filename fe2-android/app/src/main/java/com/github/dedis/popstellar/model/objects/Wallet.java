@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.di.KeysetModule.WalletKeyset;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.ui.wallet.stellar.SLIP10;
+import com.github.dedis.popstellar.ui.home.wallet.stellar.SLIP10;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.Aead;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;

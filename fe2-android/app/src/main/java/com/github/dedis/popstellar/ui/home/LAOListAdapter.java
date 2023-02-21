@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.util.Log;
 import android.view.*;
@@ -11,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.util.List;
@@ -23,16 +24,15 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
   private final Activity activity;
 
   private List<String> laoIdList;
-  private final boolean openLaoDetail;
 
   private final HomeViewModel homeViewModel;
 
-  public LAOListAdapter(HomeViewModel homeViewModel, Activity activity, boolean openLaoDetail) {
+  public LAOListAdapter(HomeViewModel homeViewModel, Activity activity) {
     this.activity = activity;
-    this.openLaoDetail = openLaoDetail;
     this.homeViewModel = homeViewModel;
   }
 
+  @SuppressLint("NotifyDataSetChanged")
   public void setList(List<String> laoIdList) {
     this.laoIdList = laoIdList;
     notifyDataSetChanged();
@@ -54,13 +54,8 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
     CardView cardView = holder.cardView;
     cardView.setOnClickListener(
         v -> {
-          if (openLaoDetail) {
-            Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
-            activity.startActivity(LaoDetailActivity.newIntentForLao(activity, laoId));
-          } else {
-            Log.d(TAG, "Opening lao detail activity on the wallet tab for lao " + laoId);
-            activity.startActivity(LaoDetailActivity.newIntentForWallet(activity, laoId));
-          }
+          Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
+          activity.startActivity(LaoActivity.newIntentForLao(activity, laoId));
         });
 
     TextView laoTitle = holder.laoTitle;

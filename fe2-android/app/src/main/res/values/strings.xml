@@ -182,7 +182,7 @@
   <!-- Digital Cash -->
   <string name="digital_cash_send">Send</string>
   <string name="digital_cash_issue">Issue</string>
-  <string name="digital_cash_history">History</string>
+  <string name="digital_cash_history">Transaction History</string>
   <string name="digital_cash_receive">Receive</string>
   <string name="digital_cash_home">Home</string>
   <string name="digital_cash_receipt">Receipt</string>
@@ -223,6 +223,7 @@
   <string name="username">username</string>
   <string name="time_ago">time ago</string>
   <string name="text">text</string>
+  <string name="chirp_list">Chirp List</string>
   <string name="delete_button">delete button</string>
 
   <!--  Storage-->

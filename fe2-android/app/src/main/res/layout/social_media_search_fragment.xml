@@ -8,14 +8,14 @@
 
     <variable
       name="view_model"
-      type="com.github.dedis.popstellar.ui.socialmedia.SocialMediaViewModel" />
+      type="com.github.dedis.popstellar.ui.lao.socialmedia.SocialMediaViewModel" />
   </data>
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_social_media_search"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.socialmedia.SocialMediaSearchFragment">
+    tools:context=".ui.lao.socialmedia.SocialMediaSearchFragment">
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 

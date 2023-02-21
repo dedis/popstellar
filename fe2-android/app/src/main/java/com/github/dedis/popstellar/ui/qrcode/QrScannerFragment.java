@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.QrScannerFragmentBinding;
+import com.github.dedis.popstellar.ui.PopViewModel;
 import com.google.mlkit.vision.barcode.*;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
@@ -35,7 +36,8 @@ public class QrScannerFragment extends Fragment {
   private QrScannerFragmentBinding binding;
   private BarcodeScanner barcodeScanner;
 
-  private QRCodeScanningViewModel viewModel;
+  private QRCodeScanningViewModel scanningViewModel;
+  private PopViewModel popViewModel;
 
   public QrScannerFragment() {
     // Required empty public constructor
@@ -59,7 +61,9 @@ public class QrScannerFragment extends Fragment {
 
     binding = QrScannerFragmentBinding.inflate(inflater, container, false);
     ScanningAction scanningAction = getScanningAction();
-    viewModel = scanningAction.obtainViewModel(requireActivity());
+    popViewModel = scanningAction.obtainPopViewModel(requireActivity());
+    scanningViewModel =
+        scanningAction.obtainScannerViewModel(requireActivity(), popViewModel.getLaoId());
 
     if (scanningAction != ScanningAction.ADD_LAO_PARTICIPANT) {
       displayCounter();
@@ -80,7 +84,7 @@ public class QrScannerFragment extends Fragment {
   public void onResume() {
     super.onResume();
     ScanningAction scanningAction = getScanningAction();
-    viewModel.setScannerTitle(scanningAction.pageTitle);
+    popViewModel.setPageTitle(scanningAction.pageTitle);
     applyPermissionToView();
 
     // Handle back press navigation
@@ -119,7 +123,7 @@ public class QrScannerFragment extends Fragment {
   }
 
   private void setupNbScanned() {
-    viewModel
+    scanningViewModel
         .getNbScanned()
         .observe(getViewLifecycleOwner(), nb -> binding.scannedNumber.setText(String.valueOf(nb)));
   }
@@ -205,6 +209,6 @@ public class QrScannerFragment extends Fragment {
   }
 
   private void onResult(String data) {
-    viewModel.handleData(data, getScanningAction());
+    scanningViewModel.handleData(data);
   }
 }

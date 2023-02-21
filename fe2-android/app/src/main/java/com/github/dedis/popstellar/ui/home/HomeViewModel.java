@@ -14,8 +14,8 @@ import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.ui.PopViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
-import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -35,7 +35,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 @HiltViewModel
-public class HomeViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
+public class HomeViewModel extends AndroidViewModel
+    implements QRCodeScanningViewModel, PopViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
 
@@ -81,16 +82,18 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
 
   @Override
   public LiveData<Integer> getNbScanned() {
+    // This is useless for the HomeActivity and must be implemented for the scanner
     return new MutableLiveData<>(0);
   }
 
   @Override
-  public void setScannerTitle(int title) {
-    setPageTitle(title);
+  public String getLaoId() {
+    // This is useless for the HomeActivity and must be implemented for the scanner
+    return null;
   }
 
   @Override
-  public void handleData(String data, ScanningAction scanningAction) {
+  public void handleData(String data) {
     ConnectToLao laoData;
     try {
       laoData = ConnectToLao.extractFrom(gson, data);
@@ -175,6 +178,7 @@ public class HomeViewModel extends AndroidViewModel implements QRCodeScanningVie
     return mPageTitle;
   }
 
+  @Override
   public void setPageTitle(int titleId) {
     mPageTitle.postValue(titleId);
   }

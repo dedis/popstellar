@@ -6,11 +6,12 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallFragment;
-import com.github.dedis.popstellar.ui.detail.witness.WitnessingFragment;
+import com.github.dedis.popstellar.ui.PopViewModel;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeFragment;
+import com.github.dedis.popstellar.ui.lao.LaoActivity;
+import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment;
+import com.github.dedis.popstellar.ui.lao.witness.WitnessingFragment;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -26,9 +27,10 @@ public enum ScanningAction {
       R.string.add_witness_title,
       R.string.manual_witness_hint,
       R.string.add_witness_title,
-      LaoDetailActivity::obtainViewModel,
+      LaoActivity::obtainWitnessingViewModel,
+      LaoActivity::obtainViewModel,
       (manager, unused) ->
-          LaoDetailActivity.setCurrentFragment(
+          LaoActivity.setCurrentFragment(
               manager, R.id.fragment_witnessing, WitnessingFragment::new)),
   ADD_ROLL_CALL_ATTENDEE(
       R.string.qrcode_scanning_add_attendee,
@@ -36,9 +38,10 @@ public enum ScanningAction {
       R.string.add_attendee_title,
       R.string.rc_manual_hint,
       R.string.add_attendee_title,
-      LaoDetailActivity::obtainViewModel,
+      LaoActivity::obtainRollCallViewModel,
+      LaoActivity::obtainViewModel,
       (manager, stringArray) ->
-          LaoDetailActivity.setCurrentFragment(
+          LaoActivity.setCurrentFragment(
               manager,
               R.id.fragment_roll_call,
               () ->
@@ -50,6 +53,7 @@ public enum ScanningAction {
       R.string.join_lao_title,
       R.string.join_manual_hint,
       R.string.add_lao_participant_title,
+      (activity, unused) -> HomeActivity.obtainViewModel(activity),
       HomeActivity::obtainViewModel,
       (manager, unused) ->
           HomeActivity.setCurrentFragment(manager, R.id.fragment_home, HomeFragment::new));
@@ -59,7 +63,9 @@ public enum ScanningAction {
   @StringRes public final int pageTitle;
   @StringRes public final int hint;
   @StringRes public final int manualAddTitle;
-  private final Function<FragmentActivity, QRCodeScanningViewModel> viewModelProvider;
+  private final BiFunction<FragmentActivity, String, QRCodeScanningViewModel>
+      scannerViewModelProvider;
+  private final Function<FragmentActivity, PopViewModel> popViewModelProvider;
   private final BiConsumer<FragmentManager, String[]> onBackPressed;
 
   ScanningAction(
@@ -68,14 +74,16 @@ public enum ScanningAction {
       @StringRes int pageTitle,
       @StringRes int hint,
       int manualAddTitle,
-      Function<FragmentActivity, QRCodeScanningViewModel> viewModelProvider,
+      BiFunction<FragmentActivity, String, QRCodeScanningViewModel> scannerViewModelProvider,
+      Function<FragmentActivity, PopViewModel> popViewModelProvider,
       BiConsumer<FragmentManager, String[]> onBackPressed) {
     this.instruction = instruction;
     this.scanTitle = scanTitle;
     this.pageTitle = pageTitle;
     this.hint = hint;
     this.manualAddTitle = manualAddTitle;
-    this.viewModelProvider = viewModelProvider;
+    this.scannerViewModelProvider = scannerViewModelProvider;
+    this.popViewModelProvider = popViewModelProvider;
     this.onBackPressed = onBackPressed;
   }
 
@@ -86,8 +94,12 @@ public enum ScanningAction {
    * @param activity the activity of the caller
    * @return QRCodeScanningViewModel view model
    */
-  public QRCodeScanningViewModel obtainViewModel(FragmentActivity activity) {
-    return viewModelProvider.apply(activity);
+  public QRCodeScanningViewModel obtainScannerViewModel(FragmentActivity activity, String laoId) {
+    return scannerViewModelProvider.apply(activity, laoId);
+  }
+
+  public PopViewModel obtainPopViewModel(FragmentActivity activity) {
+    return popViewModelProvider.apply(activity);
   }
 
   /**
@@ -105,5 +117,10 @@ public enum ScanningAction {
         onBackPressed.accept(manager, data);
       }
     };
+  }
+
+  @FunctionalInterface
+  interface BiFunction<T, U, V> {
+    V apply(T t, U u);
   }
 }

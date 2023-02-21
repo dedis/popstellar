@@ -4,12 +4,13 @@ import androidx.annotation.IdRes;
 import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.ui.home.wallet.SeedWalletFragment;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 /**
- * Page object of {@link com.github.dedis.popstellar.ui.wallet.SeedWalletFragment}
+ * Page object of {@link SeedWalletFragment}
  *
  * <p>Creation : 26.03.2022
  */
