@@ -23,7 +23,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  */
 public class DigitalCashHomeFragment extends Fragment {
   private DigitalCashHomeFragmentBinding binding;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private DigitalCashViewModel digitalCashViewModel;
 
   public DigitalCashHomeFragment() {
