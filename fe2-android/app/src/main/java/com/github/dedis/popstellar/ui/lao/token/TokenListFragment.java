@@ -32,7 +32,7 @@ public class TokenListFragment extends Fragment {
   public static final String TAG = TokenListFragment.class.getSimpleName();
 
   private TokenListFragmentBinding binding;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private RollCallViewModel rollCallViewModel;
   private TokenListAdapter tokensAdapter;
 
@@ -49,8 +49,8 @@ public class TokenListFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.tokens);
-    viewModel.setIsTab(true);
+    laoViewModel.setPageTitle(R.string.tokens);
+    laoViewModel.setIsTab(true);
   }
 
   @Nullable
@@ -61,9 +61,9 @@ public class TokenListFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
 
     binding = TokenListFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     rollCallViewModel =
-        LaoActivity.obtainRollCallViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainRollCallViewModel(requireActivity(), laoViewModel.getLaoId());
 
     tokensAdapter = new TokenListAdapter(requireActivity());
     binding.tokensRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -75,13 +75,14 @@ public class TokenListFragment extends Fragment {
   }
 
   private void subscribeToAttendedRollCalls() {
-    viewModel.addDisposable(
+    laoViewModel.addDisposable(
         rollCallViewModel
             .getAttendedRollCalls()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 attendedRollCalls -> {
-                  RollCall lastRollCall = rollCallRepo.getLastClosedRollCall(viewModel.getLaoId());
+                  RollCall lastRollCall =
+                      rollCallRepo.getLastClosedRollCall(laoViewModel.getLaoId());
 
                   if (attendedRollCalls.contains(lastRollCall)) {
                     // We attended the last roll call

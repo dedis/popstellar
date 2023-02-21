@@ -42,7 +42,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   private EditText electionNameText;
   private Button submitButton;
   private ElectionSetupViewPagerAdapter viewPagerAdapter;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private ElectionViewModel electionViewModel;
 
   // For election version choice
@@ -100,9 +100,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     ElectionSetupFragmentBinding binding =
         ElectionSetupFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     electionViewModel =
-        LaoActivity.obtainElectionViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainElectionViewModel(requireActivity(), laoViewModel.getLaoId());
 
     // Set the view for the date and time
     setDateAndTimeView(binding.getRoot());
@@ -187,8 +187,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.election_setup_title);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.election_setup_title);
+    laoViewModel.setIsTab(false);
   }
 
   /** Setups the submit button that creates the new election */
@@ -239,7 +239,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   endTimeInSeconds,
                   filteredQuestions));
 
-          viewModel.addDisposable(
+          laoViewModel.addDisposable(
               electionViewModel
                   .createNewElection(
                       electionVersion,

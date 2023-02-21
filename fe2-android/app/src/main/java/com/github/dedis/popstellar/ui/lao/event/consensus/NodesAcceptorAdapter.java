@@ -22,7 +22,7 @@ public class NodesAcceptorAdapter extends BaseAdapter {
   private List<ConsensusNode> nodes = new ArrayList<>();
   private final ConsensusNode ownNode;
   private final String instanceId;
-  private final LaoViewModel viewModel;
+  private final LaoViewModel laoViewModel;
   private final ConsensusViewModel consensusViewModel;
   private final LifecycleOwner lifecycleOwner;
 
@@ -34,7 +34,7 @@ public class NodesAcceptorAdapter extends BaseAdapter {
       ConsensusViewModel consensusViewModel) {
     this.ownNode = ownNode;
     this.instanceId = instanceId;
-    this.viewModel = viewModel;
+    this.laoViewModel = viewModel;
     this.consensusViewModel = consensusViewModel;
     this.lifecycleOwner = lifecycleOwner;
   }
@@ -104,7 +104,7 @@ public class NodesAcceptorAdapter extends BaseAdapter {
         electInstance ->
             binding.nodeButton.setOnClickListener(
                 clicked ->
-                    viewModel.addDisposable(
+                    laoViewModel.addDisposable(
                         consensusViewModel
                             .sendConsensusElectAccept(electInstance, true)
                             .subscribe(

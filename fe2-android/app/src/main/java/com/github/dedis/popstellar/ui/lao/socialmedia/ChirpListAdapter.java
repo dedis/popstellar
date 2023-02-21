@@ -20,7 +20,7 @@ public class ChirpListAdapter extends BaseAdapter {
 
   private static final String TAG = ChirpListAdapter.class.getSimpleName();
 
-  private final LaoViewModel viewModel;
+  private final LaoViewModel laoViewModel;
   private final SocialMediaViewModel socialMediaViewModel;
   private final Context context;
   private final LayoutInflater layoutInflater;
@@ -30,7 +30,7 @@ public class ChirpListAdapter extends BaseAdapter {
       Context ctx, SocialMediaViewModel socialMediaViewModel, LaoViewModel viewModel) {
     this.context = ctx;
     this.socialMediaViewModel = socialMediaViewModel;
-    this.viewModel = viewModel;
+    this.laoViewModel = viewModel;
 
     layoutInflater = LayoutInflater.from(ctx);
     viewModel.addDisposable(
@@ -84,7 +84,7 @@ public class ChirpListAdapter extends BaseAdapter {
       deleteChirp.setVisibility(View.VISIBLE);
       deleteChirp.setOnClickListener(
           v ->
-              viewModel.addDisposable(
+              laoViewModel.addDisposable(
                   socialMediaViewModel
                       .deleteChirp(chirp.getId(), Instant.now().getEpochSecond())
                       .subscribe(

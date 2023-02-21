@@ -57,9 +57,9 @@ public class DigitalCashIssueFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     digitalCashViewModel =
-        LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainDigitalCashViewModel(requireActivity(), laoViewModel.getLaoId());
     binding = DigitalCashIssueFragmentBinding.inflate(inflater, container, false);
 
     selectOneMember = binding.radioButton.getId();
@@ -80,8 +80,8 @@ public class DigitalCashIssueFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.digital_cash_issue);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.digital_cash_issue);
+    laoViewModel.setIsTab(false);
   }
 
   /** Function which call the view model post transaction when a post transaction event occur */
@@ -189,7 +189,7 @@ public class DigitalCashIssueFragment extends Fragment {
    *     issue to
    */
   private void postTransaction(Map<String, String> publicKeyAmount) {
-    viewModel.addDisposable(
+    laoViewModel.addDisposable(
         digitalCashViewModel
             .postTransaction(publicKeyAmount, Instant.now().getEpochSecond(), true)
             .subscribe(

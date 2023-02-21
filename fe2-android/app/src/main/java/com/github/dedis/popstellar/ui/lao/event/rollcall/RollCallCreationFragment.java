@@ -32,7 +32,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   public static final String TAG = RollCallCreationFragment.class.getSimpleName();
 
   private RollCallCreateFragmentBinding binding;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private RollCallViewModel rollCallViewModel;
   private EditText rollCallTitleEditText;
   private Button confirmButton;
@@ -75,9 +75,9 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
 
     binding = RollCallCreateFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     rollCallViewModel =
-        LaoActivity.obtainRollCallViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainRollCallViewModel(requireActivity(), laoViewModel.getLaoId());
 
     setDateAndTimeView(binding.getRoot());
     addStartDateAndTimeListener(confirmTextWatcher);
@@ -104,8 +104,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.roll_call_setup_title);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.roll_call_setup_title);
+    laoViewModel.setIsTab(false);
   }
 
   private void setupConfirmButton() {
@@ -131,7 +131,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
             startTimeInSeconds,
             endTimeInSeconds);
 
-    viewModel.addDisposable(
+    laoViewModel.addDisposable(
         createRollCall.subscribe(
             id ->
                 LaoActivity.setCurrentFragment(

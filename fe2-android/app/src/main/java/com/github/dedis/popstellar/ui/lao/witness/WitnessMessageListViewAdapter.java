@@ -21,7 +21,7 @@ import java.util.List;
 public class WitnessMessageListViewAdapter extends BaseAdapter {
 
   private static final String TAG = WitnessMessageListViewAdapter.class.getSimpleName();
-  private final LaoViewModel viewModel;
+  private final LaoViewModel laoViewModel;
   private final WitnessingViewModel witnessingViewModel;
 
   private List<WitnessMessage> messages;
@@ -29,8 +29,8 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
   private final FragmentActivity activity;
 
   public WitnessMessageListViewAdapter(List<WitnessMessage> messages, FragmentActivity activity) {
-    viewModel = LaoActivity.obtainViewModel(activity);
-    witnessingViewModel = LaoActivity.obtainWitnessingViewModel(activity, viewModel.getLaoId());
+    laoViewModel = LaoActivity.obtainViewModel(activity);
+    witnessingViewModel = LaoActivity.obtainWitnessingViewModel(activity, laoViewModel.getLaoId());
     this.activity = activity;
     setList(messages);
   }
@@ -83,7 +83,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
         v -> {
           AlertDialog.Builder adb = new AlertDialog.Builder(context);
 
-          if (Boolean.TRUE.equals(viewModel.isWitness().getValue())) {
+          if (Boolean.TRUE.equals(laoViewModel.isWitness().getValue())) {
             adb.setTitle("Sign Message");
             adb.setMessage(
                 " Are you sure you want to sign message with ID : "
@@ -92,7 +92,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
             adb.setPositiveButton(
                 "Confirm",
                 (dialog, which) ->
-                    viewModel.addDisposable(
+                    laoViewModel.addDisposable(
                         witnessingViewModel
                             .signMessage(messages.get(position))
                             .subscribe(

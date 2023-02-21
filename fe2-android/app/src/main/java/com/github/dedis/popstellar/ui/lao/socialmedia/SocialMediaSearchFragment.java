@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SocialMediaSearchFragment extends Fragment {
 
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
 
   public static SocialMediaSearchFragment newInstance() {
     return new SocialMediaSearchFragment();
@@ -34,9 +34,9 @@ public class SocialMediaSearchFragment extends Fragment {
 
     binding = SocialMediaSearchFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     SocialMediaViewModel socialMediaViewModel =
-        LaoActivity.obtainSocialMediaViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainSocialMediaViewModel(requireActivity(), laoViewModel.getLaoId());
 
     binding.setViewModel(socialMediaViewModel);
     binding.setLifecycleOwner(getViewLifecycleOwner());
@@ -47,7 +47,7 @@ public class SocialMediaSearchFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.search);
-    viewModel.setIsTab(true);
+    laoViewModel.setPageTitle(R.string.search);
+    laoViewModel.setIsTab(true);
   }
 }

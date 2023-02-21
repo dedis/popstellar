@@ -47,7 +47,7 @@ public class CastVoteFragment extends Fragment {
 
   @Inject ElectionRepository electionRepository;
 
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private ElectionViewModel electionViewModel;
 
   private CastVoteFragmentBinding binding;
@@ -78,9 +78,9 @@ public class CastVoteFragment extends Fragment {
 
     // Inflate the layout for this fragment
     binding = CastVoteFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     electionViewModel =
-        LaoActivity.obtainElectionViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainElectionViewModel(requireActivity(), laoViewModel.getLaoId());
 
     // Setting the lao ad election name
     if (setLaoName()) {
@@ -92,7 +92,7 @@ public class CastVoteFragment extends Fragment {
     }
 
     try {
-      Election election = electionRepository.getElection(viewModel.getLaoId(), electionId);
+      Election election = electionRepository.getElection(laoViewModel.getLaoId(), electionId);
 
       // Setting the viewPager and its adapter
       ViewPager2 pager = binding.castVotePager;
@@ -117,7 +117,7 @@ public class CastVoteFragment extends Fragment {
 
   private boolean setLaoName() {
     try {
-      LaoView laoView = viewModel.getLao();
+      LaoView laoView = laoViewModel.getLao();
       binding.castVoteLaoName.setText(laoView.getName());
       return false;
     } catch (UnknownLaoException e) {
@@ -128,7 +128,7 @@ public class CastVoteFragment extends Fragment {
 
   private boolean setElectionName() {
     try {
-      Election election = electionRepository.getElection(viewModel.getLaoId(), electionId);
+      Election election = electionRepository.getElection(laoViewModel.getLaoId(), electionId);
       binding.castVoteElectionName.setText(election.getName());
       return false;
     } catch (UnknownElectionException e) {
@@ -142,7 +142,7 @@ public class CastVoteFragment extends Fragment {
     List<PlainVote> plainVotes = new ArrayList<>();
 
     try {
-      Election election = electionRepository.getElection(viewModel.getLaoId(), electionId);
+      Election election = electionRepository.getElection(laoViewModel.getLaoId(), electionId);
       List<ElectionQuestion> electionQuestions = election.getElectionQuestions();
 
       // Attendee should not be able to send cast vote if he didn't vote for all questions
@@ -162,7 +162,7 @@ public class CastVoteFragment extends Fragment {
         plainVotes.add(plainVote);
       }
 
-      viewModel.addDisposable(
+      laoViewModel.addDisposable(
           electionViewModel
               .sendVote(electionId, plainVotes)
               .subscribe(
@@ -186,8 +186,8 @@ public class CastVoteFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.vote);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.vote);
+    laoViewModel.setIsTab(false);
   }
 
   private void handleBackNav() {

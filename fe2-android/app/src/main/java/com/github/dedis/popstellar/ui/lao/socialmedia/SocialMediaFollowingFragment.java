@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SocialMediaFollowingFragment extends Fragment {
 
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
 
   public static SocialMediaFollowingFragment newInstance() {
     return new SocialMediaFollowingFragment();
@@ -34,9 +34,9 @@ public class SocialMediaFollowingFragment extends Fragment {
     SocialMediaFollowingFragmentBinding binding =
         SocialMediaFollowingFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     SocialMediaViewModel socialMediaViewModel =
-        LaoActivity.obtainSocialMediaViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainSocialMediaViewModel(requireActivity(), laoViewModel.getLaoId());
 
     binding.setViewModel(socialMediaViewModel);
     binding.setLifecycleOwner(getViewLifecycleOwner());
@@ -47,7 +47,7 @@ public class SocialMediaFollowingFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.following);
-    viewModel.setIsTab(true);
+    laoViewModel.setPageTitle(R.string.following);
+    laoViewModel.setIsTab(true);
   }
 }

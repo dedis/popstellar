@@ -28,9 +28,9 @@ public class DigitalCashHistoryFragment extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.digital_cash_history_fragment, container, false);
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     DigitalCashViewModel digitalCashViewModel =
-        LaoActivity.obtainDigitalCashViewModel(getActivity(), viewModel.getLaoId());
+        LaoActivity.obtainDigitalCashViewModel(getActivity(), laoViewModel.getLaoId());
 
     RecyclerView transactionList = view.findViewById(R.id.transaction_history_list);
     RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -44,7 +44,7 @@ public class DigitalCashHistoryFragment extends Fragment {
     transactionList.setAdapter(adapter);
 
     // Update dynamically the events in History
-    viewModel.addDisposable(
+    laoViewModel.addDisposable(
         digitalCashViewModel
             .getTransactionsObservable()
             .observeOn(AndroidSchedulers.mainThread())
@@ -58,8 +58,8 @@ public class DigitalCashHistoryFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.digital_cash_history);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.digital_cash_history);
+    laoViewModel.setIsTab(false);
   }
 
   private void handleBackNav() {

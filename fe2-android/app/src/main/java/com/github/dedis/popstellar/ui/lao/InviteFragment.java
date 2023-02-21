@@ -33,7 +33,7 @@ public class InviteFragment extends Fragment {
 
   private static final int QR_SIDE = 800;
 
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
 
   public static InviteFragment newInstance() {
     return new InviteFragment();
@@ -46,20 +46,20 @@ public class InviteFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     InviteFragmentBinding binding = InviteFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
 
-    binding.laoPropertiesIdentifierText.setText(viewModel.getPublicKey().getEncoded());
+    binding.laoPropertiesIdentifierText.setText(laoViewModel.getPublicKey().getEncoded());
     binding.laoPropertiesServerText.setText(networkManager.getCurrentUrl());
 
     try {
-      LaoView laoView = viewModel.getLao();
+      LaoView laoView = laoViewModel.getLao();
 
       ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), laoView.getId());
       Bitmap myBitmap = QRCode.from(gson.toJson(data)).withSize(QR_SIDE, QR_SIDE).bitmap();
       binding.channelQrCode.setImageBitmap(myBitmap);
       binding.laoPropertiesNameText.setText(laoView.getName());
 
-      viewModel
+      laoViewModel
           .getRole()
           .observe(
               getViewLifecycleOwner(),
@@ -75,7 +75,7 @@ public class InviteFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.invite);
-    viewModel.setIsTab(true);
+    laoViewModel.setPageTitle(R.string.invite);
+    laoViewModel.setIsTab(true);
   }
 }

@@ -20,7 +20,7 @@ import com.github.dedis.popstellar.ui.lao.event.eventlist.UpcomingEventsAdapter;
 public class UpcomingEventsFragment extends Fragment {
 
   private static final String TAG = UpcomingEventsFragment.class.getSimpleName();
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
 
   public static UpcomingEventsFragment newInstance() {
     return new UpcomingEventsFragment();
@@ -35,13 +35,14 @@ public class UpcomingEventsFragment extends Fragment {
 
     UpcomingEventsFragmentBinding binding =
         UpcomingEventsFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     EventsViewModel eventsViewModel =
-        LaoActivity.obtainEventsEventsViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainEventsEventsViewModel(requireActivity(), laoViewModel.getLaoId());
 
     binding.upcomingEventsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     binding.upcomingEventsRecyclerView.setAdapter(
-        new UpcomingEventsAdapter(eventsViewModel.getEvents(), viewModel, requireActivity(), TAG));
+        new UpcomingEventsAdapter(
+            eventsViewModel.getEvents(), laoViewModel, requireActivity(), TAG));
 
     handleBackNav();
     return binding.getRoot();
@@ -50,8 +51,8 @@ public class UpcomingEventsFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.future_header_title);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.future_header_title);
+    laoViewModel.setIsTab(false);
   }
 
   private void handleBackNav() {

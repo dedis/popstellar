@@ -22,7 +22,7 @@ public class ChirpListFragment extends Fragment {
   public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
 
   private ChirpListFragmentBinding binding;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private SocialMediaViewModel socialMediaViewModel;
 
   public static ChirpListFragment newInstance() {
@@ -37,9 +37,9 @@ public class ChirpListFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     binding = ChirpListFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     socialMediaViewModel =
-        LaoActivity.obtainSocialMediaViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainSocialMediaViewModel(requireActivity(), laoViewModel.getLaoId());
     binding.setLifecycleOwner(getViewLifecycleOwner());
 
     return binding.getRoot();
@@ -56,8 +56,8 @@ public class ChirpListFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.chirp_list);
-    viewModel.setIsTab(true);
+    laoViewModel.setPageTitle(R.string.chirp_list);
+    laoViewModel.setIsTab(true);
   }
 
   private void setupSendButton() {
@@ -72,7 +72,7 @@ public class ChirpListFragment extends Fragment {
   private void setupListViewAdapter() {
     ListView listView = binding.chirpsList;
     ChirpListAdapter mChirpListAdapter =
-        new ChirpListAdapter(requireActivity(), socialMediaViewModel, viewModel);
+        new ChirpListAdapter(requireActivity(), socialMediaViewModel, laoViewModel);
     listView.setAdapter(mChirpListAdapter);
   }
 

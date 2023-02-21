@@ -31,7 +31,7 @@ public class ElectionResultFragment extends Fragment {
   private static final String TAG = ElectionResultFragment.class.getSimpleName();
 
   private static final String ELECTION_ID = "election_id";
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
 
   @Inject ElectionRepository electionRepository;
 
@@ -55,11 +55,11 @@ public class ElectionResultFragment extends Fragment {
     // Inflate the layout for this fragment
     ElectionResultFragmentBinding binding =
         ElectionResultFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     String electionId = requireArguments().getString(ELECTION_ID);
     try {
-      LaoView laoView = viewModel.getLao();
-      Election election = electionRepository.getElection(viewModel.getLaoId(), electionId);
+      LaoView laoView = laoViewModel.getLao();
+      Election election = electionRepository.getElection(laoViewModel.getLaoId(), electionId);
 
       // Setting the Lao Name
       binding.electionResultLaoName.setText(laoView.getName());
@@ -67,7 +67,7 @@ public class ElectionResultFragment extends Fragment {
       binding.electionResultElectionTitle.setText(election.getName());
 
       ElectionResultPagerAdapter adapter =
-          new ElectionResultPagerAdapter(viewModel, electionRepository, election.getId());
+          new ElectionResultPagerAdapter(laoViewModel, electionRepository, election.getId());
       ViewPager2 viewPager2 = binding.electionResultPager;
       viewPager2.setAdapter(adapter);
 
@@ -91,8 +91,8 @@ public class ElectionResultFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.election_result_title);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.election_result_title);
+    laoViewModel.setIsTab(false);
   }
 
   private void handleBackNav() {

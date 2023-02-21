@@ -46,7 +46,7 @@ public class ElectionFragment extends Fragment {
 
   private final SimpleDateFormat dateFormat =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private View view;
 
   private Button managementButton;
@@ -89,9 +89,9 @@ public class ElectionFragment extends Fragment {
     actionButton = view.findViewById(R.id.election_action_button);
 
     this.electionId = requireArguments().getString(ELECTION_ID);
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     ElectionViewModel electionViewModel =
-        LaoActivity.obtainElectionViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainElectionViewModel(requireActivity(), laoViewModel.getLaoId());
 
     managementVisibilityMap = buildManagementVisibilityMap();
 
@@ -99,7 +99,7 @@ public class ElectionFragment extends Fragment {
         v -> {
           Election election;
           try {
-            election = electionRepository.getElection(viewModel.getLaoId(), electionId);
+            election = electionRepository.getElection(laoViewModel.getLaoId(), electionId);
           } catch (UnknownElectionException e) {
             ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
             return;
@@ -116,7 +116,7 @@ public class ElectionFragment extends Fragment {
                   .setPositiveButton(
                       R.string.yes,
                       (dialogInterface, i) ->
-                          viewModel.addDisposable(
+                          laoViewModel.addDisposable(
                               electionViewModel
                                   .openElection(election)
                                   .subscribe(
@@ -137,7 +137,7 @@ public class ElectionFragment extends Fragment {
                   .setPositiveButton(
                       R.string.yes,
                       (dialogInterface, i) ->
-                          viewModel.addDisposable(
+                          laoViewModel.addDisposable(
                               electionViewModel
                                   .endElection(election)
                                   .subscribe(
@@ -162,7 +162,7 @@ public class ElectionFragment extends Fragment {
         v -> {
           Election election;
           try {
-            election = electionRepository.getElection(viewModel.getLaoId(), electionId);
+            election = electionRepository.getElection(laoViewModel.getLaoId(), electionId);
           } catch (UnknownElectionException e) {
             ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
             return;
@@ -199,7 +199,7 @@ public class ElectionFragment extends Fragment {
     try {
       disposables.add(
           electionRepository
-              .getElectionObservable(viewModel.getLaoId(), electionId)
+              .getElectionObservable(laoViewModel.getLaoId(), electionId)
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
                   this::setupElectionContent,
@@ -213,8 +213,8 @@ public class ElectionFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.election_title);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.election_title);
+    laoViewModel.setIsTab(false);
   }
 
   @Override
@@ -358,7 +358,7 @@ public class ElectionFragment extends Fragment {
 
   private EnumMap<EventState, Integer> buildManagementVisibilityMap() {
     // Only the organizer may start or end an election
-    int organizerVisibility = viewModel.isOrganizer() ? View.VISIBLE : View.GONE;
+    int organizerVisibility = laoViewModel.isOrganizer() ? View.VISIBLE : View.GONE;
 
     EnumMap<EventState, Integer> map = new EnumMap<>(EventState.class);
     map.put(EventState.CREATED, organizerVisibility);

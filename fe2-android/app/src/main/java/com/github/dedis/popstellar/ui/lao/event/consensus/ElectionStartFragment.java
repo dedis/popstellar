@@ -81,15 +81,15 @@ public class ElectionStartFragment extends Fragment {
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     binding = ElectionStartFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     consensusViewModel =
-        LaoActivity.obtainConsensusViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainConsensusViewModel(requireActivity(), laoViewModel.getLaoId());
     String electionId = requireArguments().getString(ELECTION_ID);
 
     try {
       Observable<List<ConsensusNode>> nodes = consensusViewModel.getNodes().observeOn(mainThread());
       Observable<Election> election =
-          electionRepo.getElectionObservable(viewModel.getLaoId(), electionId);
+          electionRepo.getElectionObservable(laoViewModel.getLaoId(), electionId);
 
       Observable<ElectionNodesState> merged =
           Observable.combineLatest(nodes, election, ElectionNodesState::new);
@@ -105,12 +105,12 @@ public class ElectionStartFragment extends Fragment {
     setupButtonListeners(electionId);
 
     try {
-      LaoView laoView = viewModel.getLao();
-      ownNode = laoView.getNode(viewModel.getPublicKey());
+      LaoView laoView = laoViewModel.getLao();
+      ownNode = laoView.getNode(laoViewModel.getPublicKey());
 
       if (ownNode == null) {
         // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
-        Log.e(TAG, "Couldn't find the Node with public key : " + viewModel.getPublicKey());
+        Log.e(TAG, "Couldn't find the Node with public key : " + laoViewModel.getPublicKey());
         throw new IllegalStateException(
             "Only acceptors are allowed to access ElectionStartFragment");
       }
@@ -119,7 +119,7 @@ public class ElectionStartFragment extends Fragment {
           ElectInstance.generateConsensusId(CONSENSUS_TYPE, electionId, CONSENSUS_PROPERTY);
       adapter =
           new NodesAcceptorAdapter(
-              ownNode, instanceId, getViewLifecycleOwner(), viewModel, consensusViewModel);
+              ownNode, instanceId, getViewLifecycleOwner(), laoViewModel, consensusViewModel);
       GridView gridView = binding.nodesGrid;
       gridView.setAdapter(adapter);
     } catch (UnknownLaoException e) {
@@ -183,7 +183,7 @@ public class ElectionStartFragment extends Fragment {
   private void setupButtonListeners(String electionId) {
     binding.electionStart.setOnClickListener(
         clicked ->
-            viewModel.addDisposable(
+            laoViewModel.addDisposable(
                 consensusViewModel
                     .sendConsensusElect(
                         Instant.now().getEpochSecond(),

@@ -46,7 +46,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class LaoActivity extends AppCompatActivity {
   public static final String TAG = LaoActivity.class.getSimpleName();
 
-  LaoViewModel viewModel;
+  LaoViewModel laoViewModel;
   LaoActivityBinding binding;
 
   @Override
@@ -54,14 +54,14 @@ public class LaoActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     binding = LaoActivityBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
-    viewModel = obtainViewModel(this);
+    laoViewModel = obtainViewModel(this);
 
     String laoId =
         Objects.requireNonNull(getIntent().getExtras()).getString(Constants.LAO_ID_EXTRA);
-    viewModel.setLaoId(laoId);
+    laoViewModel.setLaoId(laoId);
 
-    viewModel.observeLao(laoId);
-    viewModel.observeRollCalls(laoId);
+    laoViewModel.observeLao(laoId);
+    laoViewModel.observeRollCalls(laoId);
 
     observeRoles();
     observeToolBar();
@@ -85,7 +85,7 @@ public class LaoActivity extends AppCompatActivity {
     super.onPause();
 
     try {
-      viewModel.savePersistentData();
+      laoViewModel.savePersistentData();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
       Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
@@ -95,18 +95,18 @@ public class LaoActivity extends AppCompatActivity {
 
   private void observeRoles() {
     // Observe any change in the following variable to update the role
-    viewModel.isWitness().observe(this, any -> viewModel.updateRole());
-    viewModel.isAttendee().observe(this, any -> viewModel.updateRole());
+    laoViewModel.isWitness().observe(this, any -> laoViewModel.updateRole());
+    laoViewModel.isAttendee().observe(this, any -> laoViewModel.updateRole());
 
     // Update the user's role in the drawer header when it changes
-    viewModel.getRole().observe(this, this::setupHeaderRole);
+    laoViewModel.getRole().observe(this, this::setupHeaderRole);
   }
 
   private void observeToolBar() {
     // Listen to click on left icon of toolbar
     binding.laoAppBar.setNavigationOnClickListener(
         view -> {
-          if (Boolean.TRUE.equals(viewModel.isTab().getValue())) {
+          if (Boolean.TRUE.equals(laoViewModel.isTab().getValue())) {
             // If it is a tab open menu
             binding.laoDrawerLayout.openDrawer(GravityCompat.START);
           } else {
@@ -116,7 +116,7 @@ public class LaoActivity extends AppCompatActivity {
         });
 
     // Observe whether the menu icon or back arrow should be displayed
-    viewModel
+    laoViewModel
         .isTab()
         .observe(
             this,
@@ -127,7 +127,7 @@ public class LaoActivity extends AppCompatActivity {
                         : R.drawable.back_arrow_icon));
 
     // Observe the toolbar title to display
-    viewModel
+    laoViewModel
         .getPageTitle()
         .observe(
             this,
@@ -153,12 +153,12 @@ public class LaoActivity extends AppCompatActivity {
 
   private void observeDrawer() {
     // Observe changes to the tab selected
-    viewModel
+    laoViewModel
         .getCurrentTab()
         .observe(
             this,
             tab -> {
-              viewModel.setIsTab(true);
+              laoViewModel.setIsTab(true);
               binding.laoNavigationDrawer.setCheckedItem(tab.getMenuId());
             });
 
@@ -169,7 +169,7 @@ public class LaoActivity extends AppCompatActivity {
           boolean selected = openTab(tab);
           if (selected) {
             Log.d(TAG, "The tab was successfully opened");
-            viewModel.setCurrentTab(tab);
+            laoViewModel.setCurrentTab(tab);
           } else {
             Log.d(TAG, "The tab wasn't opened");
           }
@@ -185,7 +185,7 @@ public class LaoActivity extends AppCompatActivity {
               .laoNavigationDrawer
               .getHeaderView(0) // We have only one header
               .findViewById(R.id.drawer_header_lao_title);
-      laoNameView.setText(viewModel.getLao().getName());
+      laoNameView.setText(laoViewModel.getLao().getName());
     } catch (UnknownLaoException e) {
       ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
       startActivity(HomeActivity.newIntent(this));

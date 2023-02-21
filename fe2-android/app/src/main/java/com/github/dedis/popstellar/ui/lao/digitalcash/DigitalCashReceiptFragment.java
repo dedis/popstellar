@@ -21,7 +21,7 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 public class DigitalCashReceiptFragment extends Fragment {
   public static final String TAG = DigitalCashReceiptFragment.class.getSimpleName();
   private DigitalCashReceiptFragmentBinding binding;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private DigitalCashViewModel digitalCashViewModel;
 
   /**
@@ -37,9 +37,9 @@ public class DigitalCashReceiptFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     digitalCashViewModel =
-        LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainDigitalCashViewModel(requireActivity(), laoViewModel.getLaoId());
     binding = DigitalCashReceiptFragmentBinding.inflate(inflater, container, false);
 
     handleBackNav();
@@ -75,8 +75,8 @@ public class DigitalCashReceiptFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.digital_cash_receipt);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.digital_cash_receipt);
+    laoViewModel.setIsTab(false);
   }
 
   private void handleBackNav() {

@@ -37,7 +37,7 @@ public class DigitalCashReceiveFragment extends Fragment {
   @Inject Gson gson;
 
   private DigitalCashReceiveFragmentBinding binding;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private DigitalCashViewModel digitalCashViewModel;
 
   public DigitalCashReceiveFragment() {
@@ -57,9 +57,9 @@ public class DigitalCashReceiveFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     digitalCashViewModel =
-        LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainDigitalCashViewModel(requireActivity(), laoViewModel.getLaoId());
     binding = DigitalCashReceiveFragmentBinding.inflate(inflater, container, false);
     setHomeInterface();
 
@@ -69,7 +69,7 @@ public class DigitalCashReceiveFragment extends Fragment {
 
   public void setHomeInterface() {
     // Subscribe to roll calls so that our own address is kept updated in case a new rc is closed
-    viewModel.addDisposable(
+    laoViewModel.addDisposable(
         digitalCashViewModel
             .getRollCallsObservable()
             .observeOn(AndroidSchedulers.mainThread())
@@ -90,8 +90,8 @@ public class DigitalCashReceiveFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.digital_cash_receive);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.digital_cash_receive);
+    laoViewModel.setIsTab(false);
   }
 
   private void handleBackNav() {

@@ -42,7 +42,7 @@ public class TokenFragment extends Fragment {
   @Inject RollCallRepository rollCallRepo;
   @Inject KeyManager keyManager;
 
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
 
   public TokenFragment() {
     // Required empty public constructor
@@ -59,23 +59,23 @@ public class TokenFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.token);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.token);
+    laoViewModel.setIsTab(false);
   }
 
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     TokenFragmentBinding binding = TokenFragmentBinding.inflate(inflater, container, false);
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
 
     try {
       RollCall rollCall =
           rollCallRepo.getRollCallWithPersistentId(
-              viewModel.getLaoId(), requireArguments().getString(Constants.ROLL_CALL_ID));
+              laoViewModel.getLaoId(), requireArguments().getString(Constants.ROLL_CALL_ID));
       Log.d(TAG, "token displayed from roll call: " + rollCall);
 
-      PoPToken poPToken = keyManager.getValidPoPToken(viewModel.getLaoId(), rollCall);
+      PoPToken poPToken = keyManager.getValidPoPToken(laoViewModel.getLaoId(), rollCall);
       PopTokenData data = new PopTokenData(poPToken.getPublicKey());
       Bitmap bitmap =
           QRCode.from(gson.toJson(data)).withSize(Constants.QR_SIDE, Constants.QR_SIDE).bitmap();

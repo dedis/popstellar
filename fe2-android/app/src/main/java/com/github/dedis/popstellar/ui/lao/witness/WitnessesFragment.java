@@ -16,7 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import static com.github.dedis.popstellar.ui.lao.LaoActivity.setCurrentFragment;
 
 public class WitnessesFragment extends Fragment {
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
 
   public WitnessesFragment() {
     // Required empty public constructor
@@ -31,9 +31,9 @@ public class WitnessesFragment extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.witnesses_fragment, container, false);
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     WitnessingViewModel witnessingViewModel =
-        LaoActivity.obtainWitnessingViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainWitnessingViewModel(requireActivity(), laoViewModel.getLaoId());
 
     FloatingActionButton fab = view.findViewById(R.id.add_witness_button);
     fab.setOnClickListener(v -> openAddWitness());
@@ -57,7 +57,7 @@ public class WitnessesFragment extends Fragment {
   }
 
   private void openAddWitness() {
-    viewModel.setIsTab(false);
+    laoViewModel.setIsTab(false);
     setCurrentFragment(
         getParentFragmentManager(),
         R.id.fragment_qr_scanner,

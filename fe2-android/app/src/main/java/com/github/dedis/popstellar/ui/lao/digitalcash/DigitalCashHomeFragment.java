@@ -43,10 +43,10 @@ public class DigitalCashHomeFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
 
     digitalCashViewModel =
-        LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainDigitalCashViewModel(requireActivity(), laoViewModel.getLaoId());
     binding = DigitalCashHomeFragmentBinding.inflate(inflater, container, false);
 
     subscribeToTransactions();
@@ -59,12 +59,12 @@ public class DigitalCashHomeFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.digital_cash_home);
-    viewModel.setIsTab(true);
+    laoViewModel.setPageTitle(R.string.digital_cash_home);
+    laoViewModel.setIsTab(true);
   }
 
   private void subscribeToTransactions() {
-    viewModel.addDisposable(
+    laoViewModel.addDisposable(
         digitalCashViewModel
             .getTransactionsObservable()
             .observeOn(AndroidSchedulers.mainThread())
@@ -104,7 +104,7 @@ public class DigitalCashHomeFragment extends Fragment {
   }
 
   private void subscribeToRole() {
-    viewModel
+    laoViewModel
         .getRole()
         .observe(
             getViewLifecycleOwner(),

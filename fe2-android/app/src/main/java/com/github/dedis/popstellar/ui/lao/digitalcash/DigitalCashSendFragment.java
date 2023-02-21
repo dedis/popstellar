@@ -34,7 +34,7 @@ import io.reactivex.Completable;
 public class DigitalCashSendFragment extends Fragment {
   private static final String TAG = DigitalCashSendFragment.class.getSimpleName();
   private DigitalCashSendFragmentBinding binding;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private DigitalCashViewModel digitalCashViewModel;
 
   public DigitalCashSendFragment() {
@@ -53,9 +53,9 @@ public class DigitalCashSendFragment extends Fragment {
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     digitalCashViewModel =
-        LaoActivity.obtainDigitalCashViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainDigitalCashViewModel(requireActivity(), laoViewModel.getLaoId());
     binding = DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
     handleBackNav();
@@ -84,7 +84,7 @@ public class DigitalCashSendFragment extends Fragment {
                   try {
                     PoPToken token = digitalCashViewModel.getValidToken();
                     if (canPostTransaction(token.getPublicKey(), Integer.parseInt(currentAmount))) {
-                      viewModel.addDisposable(
+                      laoViewModel.addDisposable(
                           postTransaction(
                                   Collections.singletonMap(currentPublicKeySelected, currentAmount))
                               .subscribe(
@@ -122,8 +122,8 @@ public class DigitalCashSendFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.digital_cash_send);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.digital_cash_send);
+    laoViewModel.setIsTab(false);
   }
 
   public boolean canPostTransaction(PublicKey publicKey, int amount) {

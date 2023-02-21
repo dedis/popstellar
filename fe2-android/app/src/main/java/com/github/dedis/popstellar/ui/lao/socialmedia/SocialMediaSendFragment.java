@@ -28,7 +28,7 @@ public class SocialMediaSendFragment extends Fragment {
   public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
 
   private SocialMediaSendFragmentBinding binding;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private SocialMediaViewModel socialMediaViewModel;
 
   public static SocialMediaSendFragment newInstance() {
@@ -43,9 +43,9 @@ public class SocialMediaSendFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     binding = SocialMediaSendFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     socialMediaViewModel =
-        LaoActivity.obtainSocialMediaViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainSocialMediaViewModel(requireActivity(), laoViewModel.getLaoId());
 
     binding.setViewModel(socialMediaViewModel);
     binding.setLifecycleOwner(getViewLifecycleOwner());
@@ -64,8 +64,8 @@ public class SocialMediaSendFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.send);
-    viewModel.setIsTab(false);
+    laoViewModel.setPageTitle(R.string.send);
+    laoViewModel.setIsTab(false);
   }
 
   private void setupSendChirpButton() {
@@ -75,10 +75,10 @@ public class SocialMediaSendFragment extends Fragment {
   private void sendNewChirp() {
     // Trying to send a chirp when no LAO has been chosen in the application will not send it, it
     // will make a toast appear and it will log the error
-    if (viewModel.getLaoId() == null) {
+    if (laoViewModel.getLaoId() == null) {
       ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
     } else {
-      viewModel.addDisposable(
+      laoViewModel.addDisposable(
           socialMediaViewModel
               .sendChirp(
                   binding.entryBoxChirp.getText().toString(), null, Instant.now().getEpochSecond())

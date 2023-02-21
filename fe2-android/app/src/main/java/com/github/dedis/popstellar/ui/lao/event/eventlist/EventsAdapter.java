@@ -29,7 +29,7 @@ import io.reactivex.Observable;
 
 public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private List<Event> events;
-  private final LaoViewModel viewModel;
+  private final LaoViewModel laoViewModel;
   private final FragmentActivity activity;
   private final String tag;
 
@@ -38,14 +38,14 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
       LaoViewModel viewModel,
       FragmentActivity activity,
       String tag) {
-    this.viewModel = viewModel;
+    this.laoViewModel = viewModel;
     this.activity = activity;
     this.tag = tag;
     subscribeToEventSet(observable);
   }
 
   private void subscribeToEventSet(Observable<Set<Event>> observable) {
-    this.viewModel.addDisposable(
+    this.laoViewModel.addDisposable(
         observable
             .map(eventList -> eventList.stream().sorted().collect(Collectors.toList()))
             .subscribe(this::updateEventSet, err -> Log.e(tag, "ERROR", err)));
@@ -64,8 +64,8 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     this.events = new ArrayList<>(events);
   }
 
-  public LaoViewModel getViewModel() {
-    return viewModel;
+  public LaoViewModel getLaoViewModel() {
+    return laoViewModel;
   }
 
   public FragmentActivity getActivity() {

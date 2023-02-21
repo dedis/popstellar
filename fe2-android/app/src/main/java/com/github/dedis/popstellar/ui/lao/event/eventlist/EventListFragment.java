@@ -40,7 +40,7 @@ public class EventListFragment extends Fragment {
   @Inject Gson gson;
 
   private EventListFragmentBinding binding;
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private EventsViewModel eventsViewModel;
   private boolean isRotated = false;
 
@@ -56,14 +56,14 @@ public class EventListFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     binding = EventListFragmentBinding.inflate(inflater, container, false);
 
-    viewModel = LaoActivity.obtainViewModel(requireActivity());
+    laoViewModel = LaoActivity.obtainViewModel(requireActivity());
     eventsViewModel =
-        LaoActivity.obtainEventsEventsViewModel(requireActivity(), viewModel.getLaoId());
+        LaoActivity.obtainEventsEventsViewModel(requireActivity(), laoViewModel.getLaoId());
     binding.setLifecycleOwner(requireActivity());
 
     FloatingActionButton addButton = binding.addEvent;
     addButton.setOnClickListener(fabListener);
-    viewModel
+    laoViewModel
         .getRole()
         .observe(
             requireActivity(),
@@ -77,7 +77,7 @@ public class EventListFragment extends Fragment {
 
     // Observing events so that we know when to display the upcoming events card and displaying the
     // Empty events text
-    viewModel.addDisposable(
+    laoViewModel.addDisposable(
         eventsViewModel
             .getEvents()
             .subscribe(
@@ -97,7 +97,7 @@ public class EventListFragment extends Fragment {
                 UpcomingEventsFragment::newInstance));
 
     // Observe role to match empty event text to it
-    viewModel
+    laoViewModel
         .getRole()
         .observe(
             getViewLifecycleOwner(),
@@ -159,15 +159,15 @@ public class EventListFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    viewModel.setPageTitle(R.string.event_list);
-    viewModel.setIsTab(true);
+    laoViewModel.setPageTitle(R.string.event_list);
+    laoViewModel.setIsTab(true);
   }
 
   private void setupEventListAdapter() {
     RecyclerView eventList = binding.eventList;
 
     EventListAdapter eventListAdapter =
-        new EventListAdapter(viewModel, eventsViewModel.getEvents(), requireActivity());
+        new EventListAdapter(laoViewModel, eventsViewModel.getEvents(), requireActivity());
     Log.d(TAG, "created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
