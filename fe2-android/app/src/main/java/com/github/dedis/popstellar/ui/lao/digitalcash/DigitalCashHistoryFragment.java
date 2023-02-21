@@ -17,7 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 public class DigitalCashHistoryFragment extends Fragment {
   private static final String TAG = DigitalCashHistoryFragment.class.getSimpleName();
 
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
 
   public static DigitalCashHistoryFragment newInstance() {
     return new DigitalCashHistoryFragment();
