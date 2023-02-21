@@ -51,7 +51,7 @@ public class ElectionStartFragment extends Fragment {
 
   private ConsensusNode ownNode;
 
-  private LaoViewModel viewModel;
+  private LaoViewModel laoViewModel;
   private ConsensusViewModel consensusViewModel;
 
   @Inject ElectionRepository electionRepo;
