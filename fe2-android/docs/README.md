@@ -113,7 +113,7 @@ While this basic persistence mostly works, it is very sub-optimal. A future, bet
 Below is the diagram of the application architecture :
 
 <div align="center">
-  <img src="images/architecture_diagram.png" alt="Architecture"/>
+  <img src="images/architecture_diagram.drawio.png" alt="Architecture"/>
 </div>
 
 ### Managing the application state
