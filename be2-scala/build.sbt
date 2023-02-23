@@ -67,7 +67,7 @@ copyProtocolTask := {
         val source = new File("../protocol")
         val dest   = new File("./src/main/resources/protocol")
         Try(IO.copyDirectory(source, dest, overwrite = true)) match {
-            case Success(_) => log.info("Copied !!")
+            case Success(_) => log.info("Copied protocol folder in ./src/main/resources")
             case Failure(exception) =>
                 log.error("Could not copy protocol to resource folder")
                 exception.printStackTrace()
@@ -76,7 +76,7 @@ copyProtocolTask := {
 }
 
 // Add the copyProtocolTask to compile and test scopes
-(Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
+Compile / compile := (Compile / compile).dependsOn(copyProtocolTask).value
 (Test/ test) := ((Test/ test) dependsOn copyProtocolTask).value
 
 // Setup resource directory for jar assembly
