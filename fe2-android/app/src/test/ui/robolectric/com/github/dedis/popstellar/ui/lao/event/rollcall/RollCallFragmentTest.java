@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.lao.event.pickers.rollcall;
+package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -19,7 +19,6 @@ import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
-import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;

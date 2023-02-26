@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.lao.event.pickers.rollcall;
+package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -7,7 +7,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
-import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallCreationFragment;
 
 import org.junit.Rule;
 import org.junit.Test;
