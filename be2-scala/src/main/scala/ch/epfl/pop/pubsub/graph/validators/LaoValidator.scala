@@ -1,11 +1,11 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, PublicKey}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, PublicKey, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -18,6 +18,7 @@ object LaoValidator extends MessageDataContentValidator {
   val laoValidator = new LaoValidator(DbActor.getInstance)
 
   def validateCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = laoValidator.validateCreateLao(rpcMessage)
+  def validateStateLao(rpcMessage: JsonRpcRequest): GraphMessage = laoValidator.validateStateLao(rpcMessage)
 
   sealed class LaoValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
 
@@ -72,6 +73,53 @@ object LaoValidator extends MessageDataContentValidator {
       }
 
     }
+    def validateStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+      def validationError(reason: String): PipelineError = super.validationError(reason, "StateLao", rpcMessage.id)
+
+      rpcMessage.getParamsMessage match {
+        case Some(message: Message) =>
+          val (stateLao, _, publicKey, _) = extractData[StateLao](rpcMessage)
+
+          val expectedHash: Hash = Hash.fromStrings(
+            publicKey.toString,
+            stateLao.creation.toString,
+            stateLao.name
+          )
+
+          runChecks(
+            checkTimestampStaleness(
+              rpcMessage,
+              stateLao.creation,
+              validationError(s"stale 'creation' timestamp (${stateLao.creation})")
+            ),
+            checkTimestampOrder(
+              rpcMessage,
+              stateLao.creation,
+              stateLao.last_modified,
+              validationError(s"'last_modified' (${stateLao.last_modified}) timestamp is smaller than 'creation' (${stateLao.creation})")
+            ),
+            checkWitnesses(
+              rpcMessage,
+              stateLao.witnesses,
+              validationError("duplicate witnesses keys")
+            ),
+            checkWitnessesSignatures(
+              rpcMessage,
+              stateLao.modification_signatures,
+              stateLao.modification_id,
+              validationError("witness key-signature pairs are not valid for the given modification_id")
+            ),
+            checkId(
+              rpcMessage,
+              expectedHash,
+              stateLao.id,
+              validationError("unexpected id")
+            )
+          )
+
+        case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      }
+    }
 
     /** Check if all witnesses are distinct
       *
@@ -84,7 +132,7 @@ object LaoValidator extends MessageDataContentValidator {
       * @return
       *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
       */
-    private def checkWitnesses(rpcMessage: JsonRpcMessage, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
+    private def checkWitnesses(rpcMessage: JsonRpcRequest, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
       if (validateWitnesses(witnesses))
         Left(rpcMessage)
       else
@@ -104,7 +152,7 @@ object LaoValidator extends MessageDataContentValidator {
       * @return
       *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
       */
-    private def checkMsgSenderKey(rpcMessage: JsonRpcMessage, expectedKey: PublicKey, msgSenderKey: PublicKey, error: PipelineError): GraphMessage = {
+    private def checkMsgSenderKey(rpcMessage: JsonRpcRequest, expectedKey: PublicKey, msgSenderKey: PublicKey, error: PipelineError): GraphMessage = {
       if (expectedKey == msgSenderKey)
         Left(rpcMessage)
       else
@@ -124,7 +172,7 @@ object LaoValidator extends MessageDataContentValidator {
       * @return
       *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
       */
-    private def checkChannel(rpcMessage: JsonRpcMessage, chan1: Channel, chan2: Channel, error: PipelineError): GraphMessage = {
+    private def checkChannel(rpcMessage: JsonRpcRequest, chan1: Channel, chan2: Channel, error: PipelineError): GraphMessage = {
       if (chan1 == chan2)
         Left(rpcMessage)
       else
@@ -142,40 +190,33 @@ object LaoValidator extends MessageDataContentValidator {
       * @return
       *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
       */
-    private def checkLAOName(rpcMessage: JsonRpcMessage, name: String, error: PipelineError): GraphMessage = {
+    private def checkLAOName(rpcMessage: JsonRpcRequest, name: String, error: PipelineError): GraphMessage = {
       if (name.nonEmpty)
         Left(rpcMessage)
       else
         Right(error)
     }
 
-  }
-
-  def validateStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "StateLao", rpcMessage.id)
-
-    rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
-        val data: StateLao = message.decodedData.get.asInstanceOf[StateLao]
-
-        val expectedHash: Hash = Hash.fromStrings(data.organizer.toString, data.creation.toString, data.name)
-
-        if (!validateTimestampStaleness(data.creation)) {
-          Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
-        } else if (!validateTimestampOrder(data.creation, data.last_modified)) {
-          Right(validationError(s"'last_modified' (${data.last_modified}) timestamp is smaller than 'creation' (${data.creation})"))
-        } else if (!validateWitnesses(data.witnesses)) {
-          Right(validationError("duplicate witnesses keys"))
-        } else if (!validateWitnessSignatures(data.modification_signatures, data.modification_id)) {
-          Right(validationError("witness key-signature pairs are not valid for the given modification_id"))
-        } else if (expectedHash != data.id) {
-          Right(validationError("unexpected id"))
-        } else {
-          Left(rpcMessage)
-        }
-
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+    /** Checks witnesses key signature pairs for given modification id
+      *
+      * @param rpcMessage
+      *   rpc message to validate
+      * @param witnessesKeyPairs
+      *   the witness key signature pairs
+      * @param id
+      *   modification id of the message
+      * @param error
+      *   the error to forward in case of invalid modifications
+      * @return
+      *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+      */
+    private def checkWitnessesSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], id: Hash, error: PipelineError): GraphMessage = {
+      if (validateWitnessSignatures(witnessesKeyPairs, id))
+        Left(rpcMessage)
+      else
+        Right(error)
     }
+
   }
 
   def validateGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = {
