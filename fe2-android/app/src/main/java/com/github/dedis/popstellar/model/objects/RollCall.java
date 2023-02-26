@@ -166,6 +166,13 @@ public class RollCall extends Event {
     return EventState.CLOSED.equals(state);
   }
 
+  /**
+   * @return true if the roll-call is currently open, false otherwise
+   */
+  public boolean isOpen() {
+    return EventState.OPENED.equals(state);
+  }
+
   @NonNull
   @Override
   public String toString() {

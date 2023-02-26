@@ -98,7 +98,6 @@
   <string name="attendee_scan_success">Attendee successfully scanned</string>
   <string name="witness_scan_success">Witness successfully scanned</string>
 
-
   <!--  Witnessing-->
   <string name="messages">Messages</string>
   <string name="witnesses">Witnesses</string>
@@ -294,5 +293,6 @@
   <string name="unknown_election_exception">Unknown election</string>
   <string name="unknown_chirp_exception">Unknown Chirp</string>
   <string name="unknown_roll_call_exception">Unknown Roll Call</string>
-    <string name="lao_coins">LAO coins</string>
+  <string name="already_open_roll_call_exception">Another Roll Call is already open</string>
+  <string name="lao_coins">LAO coins</string>
 </resources>

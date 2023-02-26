@@ -142,6 +142,12 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
+
+    if (!rollCallRepo.canOpenRollCall(laoId)) {
+      Log.d(TAG, "failed to open roll call with id " + id + "laoID: " + laoView.getId());
+      return Completable.error(new DoubleOpenedRollCallException(id));
+    }
+
     long openedAt = Instant.now().getEpochSecond();
 
     RollCall rollCall;
@@ -220,7 +226,6 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   public Observable<List<RollCall>> getAttendedRollCalls() {
     return attendedRollCalls;
   }
-
 
   private LaoView getLao() throws UnknownLaoException {
     return laoRepo.getLaoView(laoId);

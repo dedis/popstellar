@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.lao.event.rollcall;
+package com.github.dedis.popstellar.ui.lao.event.pickers.rollcall;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
