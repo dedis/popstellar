@@ -18,7 +18,12 @@ object LaoValidator extends MessageDataContentValidator {
   val laoValidator = new LaoValidator(DbActor.getInstance)
 
   def validateCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = laoValidator.validateCreateLao(rpcMessage)
+
   def validateStateLao(rpcMessage: JsonRpcRequest): GraphMessage = laoValidator.validateStateLao(rpcMessage)
+
+  def validateGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = laoValidator.validateGreetLao(rpcMessage)
+
+  def validateUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = laoValidator.validateUpdateLao(rpcMessage)
 
   sealed class LaoValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
 
@@ -73,6 +78,7 @@ object LaoValidator extends MessageDataContentValidator {
       }
 
     }
+
     def validateStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
       def validationError(reason: String): PipelineError = super.validationError(reason, "StateLao", rpcMessage.id)
 
@@ -121,170 +127,217 @@ object LaoValidator extends MessageDataContentValidator {
       }
     }
 
-    /** Check if all witnesses are distinct
-      *
-      * @param rpcMessage
-      *   rpc message to validate
-      * @param witnesses
-      *   witnesses to check
-      * @param error
-      *   the error to forward in case the witnesses are not all distinct
-      * @return
-      *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-      */
-    private def checkWitnesses(rpcMessage: JsonRpcRequest, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
-      if (validateWitnesses(witnesses))
-        Left(rpcMessage)
-      else
-        Right(error)
-    }
+    def validateGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+      def validationError(reason: String): PipelineError = super.validationError(reason, "GreetLao", rpcMessage.id)
 
-    /** Checks if the msg sender is the expected one
-      *
-      * @param rpcMessage
-      *   rpc message to validate
-      * @param expectedKey
-      *   the expected key
-      * @param msgSenderKey
-      *   the rpc message sender
-      * @param error
-      *   the error to forward in case the sender doesn't match the expected one
-      * @return
-      *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-      */
-    private def checkMsgSenderKey(rpcMessage: JsonRpcRequest, expectedKey: PublicKey, msgSenderKey: PublicKey, error: PipelineError): GraphMessage = {
-      if (expectedKey == msgSenderKey)
-        Left(rpcMessage)
-      else
-        Right(error)
-    }
+      rpcMessage.getParamsMessage match {
+        case Some(message: Message) =>
+          val (greetLao, hash, publicKey, channel) = extractData[GreetLao](rpcMessage)
+          val expectedHash = rpcMessage.extractLaoId
 
-    /** Check for chan1 and chan2 equality
-      *
-      * @param rpcMessage
-      *   rpc message to validate
-      * @param chan1
-      *   the first channel to compare
-      * @param chan2
-      *   the second channel to compare
-      * @param error
-      *   the error to forward in case the channels are not equals
-      * @return
-      *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-      */
-    private def checkChannel(rpcMessage: JsonRpcRequest, chan1: Channel, chan2: Channel, error: PipelineError): GraphMessage = {
-      if (chan1 == chan2)
-        Left(rpcMessage)
-      else
-        Right(error)
-    }
-
-    /** Check if the LAO's name is empty
-      *
-      * @param rpcMessage
-      *   rpc message to validate
-      * @param name
-      *   the name to check
-      * @param error
-      *   the error to forward in case the name si empty
-      * @return
-      *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-      */
-    private def checkLAOName(rpcMessage: JsonRpcRequest, name: String, error: PipelineError): GraphMessage = {
-      if (name.nonEmpty)
-        Left(rpcMessage)
-      else
-        Right(error)
-    }
-
-    /** Checks witnesses key signature pairs for given modification id
-      *
-      * @param rpcMessage
-      *   rpc message to validate
-      * @param witnessesKeyPairs
-      *   the witness key signature pairs
-      * @param id
-      *   modification id of the message
-      * @param error
-      *   the error to forward in case of invalid modifications
-      * @return
-      *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-      */
-    private def checkWitnessesSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], id: Hash, error: PipelineError): GraphMessage = {
-      if (validateWitnessSignatures(witnessesKeyPairs, id))
-        Left(rpcMessage)
-      else
-        Right(error)
-    }
-
-  }
-
-  def validateGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "GreetLao", rpcMessage.id)
-
-    rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
-        val data: GreetLao = message.decodedData.get.asInstanceOf[GreetLao]
-
-        val channel: Channel = rpcMessage.getParamsChannel
-
-        val expectedLaoId: Hash = rpcMessage.extractLaoId
-
-        if (expectedLaoId != data.lao) {
-          Right(validationError("unexpected id, was " + data.lao + " but expected " + expectedLaoId))
-        } else if (data.frontend != message.sender) {
-          Right(validationError("unexpected frontend"))
-        } else if (!data.address.startsWith("ws://")) {
-          Right(validationError("invalid address"))
-        } else if (channel != Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.lao}")) {
-          Right(validationError(s"trying to write an GreetLao message on wrong channel $channel"))
-        } else {
-          Left(rpcMessage)
-        }
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
-    }
-  }
-
-  def validateUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
-    def validationError(reason: String): PipelineError = super.validationError(reason, "UpdateLao", rpcMessage.id)
-
-    rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
-        val data: UpdateLao = message.decodedData.get.asInstanceOf[UpdateLao]
-
-        val channel: Channel = rpcMessage.getParamsChannel
-
-        // FIXME get lao creation message in order to calculate "SHA256(organizer||creation||name)"
-        val askLaoMessage = dbActor ? DbActor.Read(rpcMessage.getParamsChannel, ???)
-
-        Await.ready(askLaoMessage, duration).value match {
-          case Some(Success(DbActor.DbActorReadAck(None))) =>
-            Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "validateUpdateLao failed : no CreateLao message associated found", rpcMessage.id))
-          case Some(Success(DbActor.DbActorReadAck(Some(retrievedMessage)))) =>
-            val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
-            // Calculate expected hash
-            val expectedHash: Hash = Hash.fromStrings(
-              retrievedMessage.sender.toString,
-              laoCreationMessage.creation.toString,
-              laoCreationMessage.name
+          runChecks(
+            checkId(
+              rpcMessage,
+              expectedHash,
+              greetLao.lao,
+              validationError("unexpected id, was " + greetLao.lao + " but expected " + expectedHash)
+            ),
+            checkMsgSenderKey(
+              rpcMessage,
+              greetLao.frontend,
+              publicKey,
+              validationError("unexpected frontend")
+            ),
+            checkAddressStartWith(
+              rpcMessage,
+              greetLao.address,
+              "ws://",
+              validationError("invalid address")
+            ),
+            checkChannel(
+              rpcMessage,
+              channel,
+              Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${greetLao.lao}"),
+              validationError(s"trying to write an GreetLao message on wrong channel $channel")
             )
+          )
 
-            if (!validateTimestampStaleness(data.last_modified)) {
-              Right(validationError(s"stale 'last_modified' timestamp (${data.last_modified})"))
-            } else if (!validateWitnesses(data.witnesses)) {
-              Right(validationError("duplicate witnesses keys"))
-            } else if (expectedHash != data.id) {
-              Right(validationError("unexpected id"))
-            } else if (!validateChannelType(ObjectType.LAO, channel)) {
-              Right(validationError(s"trying to write an UpdateLao message on wrong type of channel $channel"))
-            } else {
-              Left(rpcMessage)
-            }
-          case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"validateUpdateLao failed : ${ex.message}", rpcMessage.getId))
-          case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
-        }
+        case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      }
 
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
+
+    def validateUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+      def validationError(reason: String): PipelineError = super.validationError(reason, "UpdateLao", rpcMessage.id)
+
+      rpcMessage.getParamsMessage match {
+        case Some(message: Message) =>
+          val (updateLao, hash, publicKey, channel) = extractData[UpdateLao](rpcMessage)
+
+          // FIXME get lao creation message in order to calculate "SHA256(organizer||creation||name)"
+          val askLaoMessage = dbActor ? DbActor.Read(channel, ???)
+
+          Await.ready(askLaoMessage, duration).value match {
+            case Some(Success(DbActor.DbActorReadAck(None))) =>
+              Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "validateUpdateLao failed : no CreateLao message associated found", rpcMessage.id))
+            case Some(Success(DbActor.DbActorReadAck(Some(retrievedMessage)))) =>
+              val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
+              // Calculate expected hash
+              val expectedHash: Hash = Hash.fromStrings(
+                retrievedMessage.sender.toString,
+                laoCreationMessage.creation.toString,
+                laoCreationMessage.name
+              )
+
+              runChecks(
+                checkTimestampStaleness(
+                  rpcMessage,
+                  updateLao.last_modified,
+                  validationError(s"stale 'last_modified' timestamp (${updateLao.last_modified})")
+                ),
+                checkWitnesses(
+                  rpcMessage,
+                  updateLao.witnesses,
+                  validationError("duplicate witnesses keys")
+                ),
+                checkId(
+                  rpcMessage,
+                  expectedHash,
+                  updateLao.id,
+                  validationError("unexpected id")
+                ),
+                checkChannelType(
+                  rpcMessage,
+                  ObjectType.LAO,
+                  channel,
+                  dbActorRef,
+                  validationError(s"trying to write an UpdateLao message on wrong type of channel $channel")
+                )
+              )
+
+            case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"validateUpdateLao failed : ${ex.message}", rpcMessage.getId))
+            case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+          }
+
+        case _ => Right(validationErrorNoMessage(rpcMessage.id))
+
+      }
+    }
+  }
+
+  /** Check if all witnesses are distinct
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param witnesses
+    *   witnesses to check
+    * @param error
+    *   the error to forward in case the witnesses are not all distinct
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def checkWitnesses(rpcMessage: JsonRpcRequest, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
+    if (validateWitnesses(witnesses))
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Checks if the msg sender is the expected one
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param expectedKey
+    *   the expected key
+    * @param msgSenderKey
+    *   the rpc message sender
+    * @param error
+    *   the error to forward in case the sender doesn't match the expected one
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def checkMsgSenderKey(rpcMessage: JsonRpcRequest, expectedKey: PublicKey, msgSenderKey: PublicKey, error: PipelineError): GraphMessage = {
+    if (expectedKey == msgSenderKey)
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Check for chan1 and chan2 equality
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param chan1
+    *   the first channel to compare
+    * @param chan2
+    *   the second channel to compare
+    * @param error
+    *   the error to forward in case the channels are not equals
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def checkChannel(rpcMessage: JsonRpcRequest, chan1: Channel, chan2: Channel, error: PipelineError): GraphMessage = {
+    if (chan1 == chan2)
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Check if the LAO's name is empty
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param name
+    *   the name to check
+    * @param error
+    *   the error to forward in case the name si empty
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def checkLAOName(rpcMessage: JsonRpcRequest, name: String, error: PipelineError): GraphMessage = {
+    if (name.nonEmpty)
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Checks witnesses key signature pairs for given modification id
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param witnessesKeyPairs
+    *   the witness key signature pairs
+    * @param id
+    *   modification id of the message
+    * @param error
+    *   the error to forward in case of invalid modifications
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def checkWitnessesSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], id: Hash, error: PipelineError): GraphMessage = {
+    if (validateWitnessSignatures(witnessesKeyPairs, id))
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Check if the address starts with the given string
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param address
+    *   the address to check
+    * @param startString
+    *   the string the address must start with
+    * @param error
+    *   the error to forward in case the address doesn't start with the expected string
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def checkAddressStartWith(rpcMessage: JsonRpcRequest, address: String, startString: String, error: PipelineError): GraphMessage = {
+    if (address.startsWith(startString))
+      Left(rpcMessage)
+    else
+      Right(error)
   }
 }
