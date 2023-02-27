@@ -247,7 +247,7 @@ public class RollCallFragmentTest {
 
   @Test
   public void blockOpenRollCallTest() {
-    rollCallRepo.updateRollCall(LAO_ID, RollCall.closeRollCall(ROLL_CALL_2));
+    rollCallRepo.updateRollCall(LAO_ID, RollCall.openRollCall(ROLL_CALL_2));
 
     managementButton().check(matches(withText("OPEN")));
     managementButton().perform(click());
@@ -255,6 +255,8 @@ public class RollCallFragmentTest {
     // before asserting their effect
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
+    // Assert state of roll call is unchanged
     assertNotEquals(ROLL_CALL.getState(), EventState.OPENED);
+    managementButton().check(matches(withText("OPEN")));
   }
 }
