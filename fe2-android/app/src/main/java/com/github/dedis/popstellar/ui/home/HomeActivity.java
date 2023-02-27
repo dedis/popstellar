@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -66,6 +67,8 @@ public class HomeActivity extends AppCompatActivity {
           .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
           .show();
     }
+
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
   }
 
   private void handleTopAppBar() {

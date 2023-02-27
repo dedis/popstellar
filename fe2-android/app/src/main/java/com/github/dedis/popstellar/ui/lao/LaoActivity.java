@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.*;
 import androidx.lifecycle.LifecycleOwner;
@@ -71,6 +72,8 @@ public class LaoActivity extends AppCompatActivity {
     // Open Event list on activity creation
     binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
     openEventsTab();
+
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
   }
 
   @Override
