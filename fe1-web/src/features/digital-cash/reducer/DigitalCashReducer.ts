@@ -215,7 +215,10 @@ export const makeTransactionsByHashSelector = (laoId: Hash) =>
  * @param laoId
  * @param rollCallTokens
  */
-export const makeTransactionsByRollCallTokenSelector = (laoId: Hash, rollCallTokens: RollCallToken[]) =>
+export const makeTransactionsByRollCallTokenSelector = (
+  laoId: Hash,
+  rollCallTokens: RollCallToken[],
+) =>
   createSelector(
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByPubHash,
