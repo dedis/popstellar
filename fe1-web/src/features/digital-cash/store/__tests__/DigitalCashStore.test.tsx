@@ -25,6 +25,9 @@ const filledState = {
       transactionsByHash: {
         [mockTransaction.transactionId!]: mockTransaction,
       },
+      transactionsByOutPubHash: {
+        [mockKPHash.valueOf()]: [mockTransaction.transactionId],
+      },
       transactionsByPubHash: {
         [mockKPHash.valueOf()]: [mockTransaction.transactionId],
       },
@@ -51,21 +54,24 @@ describe('Digital Cash Store', () => {
     expect(DigitalCashStore.getBalance(new Hash('mockId'), mockKeyPair.publicKey)).toEqual(0);
   });
 
-  it('should recover the transaction by public key correctly', () => {
-    expect(DigitalCashStore.getTransactionsByPublicKey(mockLaoId, mockKeyPair.publicKey)).toEqual([
-      mockTransaction,
-    ]);
+  it('should recover the transaction by txout public key correctly', () => {
+    expect(
+      DigitalCashStore.getTransactionsByOutPublicKey(mockLaoId, mockKeyPair.publicKey),
+    ).toEqual([mockTransaction]);
   });
 
   it('should recover an empty array if lao id is not found', () => {
     expect(
-      DigitalCashStore.getTransactionsByPublicKey(new Hash('mockId'), mockKeyPair.publicKey),
+      DigitalCashStore.getTransactionsByOutPublicKey(new Hash('mockId'), mockKeyPair.publicKey),
     ).toEqual([]);
   });
 
   it('should recover an empty array if public key is not found', () => {
     expect(
-      DigitalCashStore.getTransactionsByPublicKey(new Hash('mockId'), new PublicKey('publicKey')),
+      DigitalCashStore.getTransactionsByOutPublicKey(
+        new Hash('mockId'),
+        new PublicKey('publicKey'),
+      ),
     ).toEqual([]);
   });
 });

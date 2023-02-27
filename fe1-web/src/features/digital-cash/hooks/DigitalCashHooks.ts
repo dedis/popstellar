@@ -9,7 +9,7 @@ import { Transaction } from '../objects/transaction';
 import {
   makeBalancesSelector,
   makeTransactionsByHashSelector,
-  makeTransactionsByRollCallTokens,
+  makeTransactionsByRollCallTokenSelector,
   makeTransactionsSelector,
 } from '../reducer';
 
@@ -123,7 +123,7 @@ export namespace DigitalCashHooks {
    */
   export const useTransactionsByRollCallTokens = (laoId: Hash, rollCallTokens: RollCallToken[]) => {
     const transactionsByTokensSelector = useMemo(
-      () => makeTransactionsByRollCallTokens(laoId, rollCallTokens),
+      () => makeTransactionsByRollCallTokenSelector(laoId, rollCallTokens),
       [laoId, rollCallTokens],
     );
 

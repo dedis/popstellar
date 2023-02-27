@@ -22,7 +22,7 @@ export async function requestSendTransaction(
   amount: number,
   laoId: Hash,
 ): Promise<void> {
-  const transactionStates = DigitalCashStore.getTransactionsByPublicKey(laoId, from.publicKey);
+  const transactionStates = DigitalCashStore.getTransactionsByOutPublicKey(laoId, from.publicKey);
 
   if (transactionStates.length === 0) {
     throw new Error(makeErr('no transaction out were found for this public key'));

@@ -15,7 +15,7 @@ import {
 import { requestSendTransaction, requestCoinbaseTransaction } from '../DigitalCashMessageApi';
 
 jest.mock('features/digital-cash/store/DigitalCashStore');
-const getTransactionsByPublicKeyMock = DigitalCashStore.getTransactionsByPublicKey as jest.Mock;
+const getTransactionsByPublicKeyMock = DigitalCashStore.getTransactionsByOutPublicKey as jest.Mock;
 
 jest.mock('core/network/JsonRpcApi');
 const publishMock = publish as jest.Mock;
