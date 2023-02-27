@@ -133,7 +133,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
    * @param id the roll call id to open
    */
   public Completable openRollCall(String id) {
-    Log.d(TAG, "call openRollCall with id" + id);
+    Log.d(TAG, "call openRollCall with id " + id);
 
     LaoView laoView;
     try {
@@ -144,7 +144,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     }
 
     if (!rollCallRepo.canOpenRollCall(laoId)) {
-      Log.d(TAG, "failed to open roll call with id " + id + "laoID: " + laoView.getId());
+      Log.d(TAG, "failed to open roll call with id " + id + ", laoID: " + laoView.getId());
       return Completable.error(new DoubleOpenedRollCallException(id));
     }
 
@@ -152,7 +152,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
 
     RollCall rollCall;
     try {
-      Log.d(TAG, "failed to retrieve roll call with id " + id + "laoID: " + laoView.getId());
+      Log.d(TAG, "failed to retrieve roll call with id " + id + ", laoID: " + laoView.getId());
       rollCall = rollCallRepo.getRollCallWithId(laoId, id);
     } catch (UnknownRollCallException e) {
       return Completable.error(new UnknownRollCallException(id));

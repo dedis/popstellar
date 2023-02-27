@@ -9,7 +9,7 @@ import com.github.dedis.popstellar.R;
 public class DoubleOpenedRollCallException extends GenericException {
 
   public DoubleOpenedRollCallException(String id) {
-    super("Impossible to open roll call " + id + " as another roll call is still open");
+    super("Impossible to open roll call id " + id + " as another roll call is still open");
   }
 
   @Override

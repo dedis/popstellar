@@ -34,8 +34,7 @@ import io.reactivex.Completable;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 
@@ -148,6 +147,9 @@ public class RollCallHandlerTest {
   public void testHandleOpenRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
+    // Check if the Roll Call can be opened
+    assertTrue(rollCallRepo.canOpenRollCall(LAO.getId()));
+
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
@@ -161,6 +163,7 @@ public class RollCallHandlerTest {
     RollCall rollCallCheck =
         rollCallRepo.getRollCallWithId(LAO.getId(), openRollCall.getUpdateId());
     assertEquals(EventState.OPENED, rollCallCheck.getState());
+    assertTrue(rollCallCheck.isOpen());
     assertEquals(openRollCall.getUpdateId(), rollCallCheck.getId());
 
     // Check the WitnessMessage has been created
@@ -179,6 +182,17 @@ public class RollCallHandlerTest {
   public void testHandleCloseRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
+    // Create the open Roll Call message
+    OpenRollCall openRollCall =
+        new OpenRollCall(
+            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
+    // Call the message handler
+    messageHandler.handleMessage(
+        messageSender, LAO_CHANNEL, new MessageGeneral(SENDER_KEY, openRollCall, gson));
+
+    // Check that no new Roll Call can be opened
+    assertFalse(rollCallRepo.canOpenRollCall(LAO.getId()));
+
     // Create the close Roll Call message
     CloseRollCall closeRollCall =
         new CloseRollCall(
@@ -189,12 +203,14 @@ public class RollCallHandlerTest {
     messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state CLOSED and the correct ID
-
     RollCall rollCallCheck =
         rollCallRepo.getRollCallWithId(LAO.getId(), closeRollCall.getUpdateId());
     assertEquals(EventState.CLOSED, rollCallCheck.getState());
     assertTrue(rollCallCheck.isClosed());
     assertEquals(closeRollCall.getUpdateId(), rollCallCheck.getId());
+
+    // Check that now new Roll Calls can be opened
+    assertTrue(rollCallRepo.canOpenRollCall(LAO.getId()));
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
