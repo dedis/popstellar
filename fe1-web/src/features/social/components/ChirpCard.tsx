@@ -113,9 +113,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     '👎': !isConnected || !currentUserPopTokenPublicKey,
     '❤️': !isConnected || !currentUserPopTokenPublicKey,
   };
-
-  const showActionSheet = useActionSheet();
-
+  
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
       toast.show(`Could not add reaction, error: ${err}`, {
@@ -165,6 +163,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     });
   }
 
+  // @ts-ignore
   return (
     <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
       <PoPTouchableOpacity
@@ -258,9 +257,13 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
               {actionSheetOptions.length > 0 && (
                 <View style={styles.reactionView}>
                   <PoPIconButton
-                    name="options"
+                    name="delete"
                     testID="chirp_action_options"
-                    onPress={() => showActionSheet(actionSheetOptions)}
+                    onPress={() => {
+                      if (window.confirm('Are you sure you want to delete this chirp?')) {
+                        deleteChirp();
+                      }
+                    }}
                     size="small"
                     buttonStyle="secondary"
                     toolbar
