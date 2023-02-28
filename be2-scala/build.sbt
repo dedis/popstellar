@@ -42,13 +42,13 @@ Scapegoat/ scalacOptions -= "-Xfatal-warnings"
 Scapegoat/ scalacOptions += "-P:scapegoat:overrideLevels:all=Warning"
 
 // Reload changes automatically
-Global / onChangedBuildSource := ReloadOnSourceChanges
-Global / cancelable := true
+Global/ onChangedBuildSource := ReloadOnSourceChanges
+Global/ cancelable := true
 
 // Fork run task in compile scope
-Compile/ run / fork := true
-Compile/ run / connectInput := true
-Compile/ run / javaOptions += "-Dscala.config=src/main/scala/ch/epfl/pop/config"
+Compile/ run/ fork := true
+Compile/ run/ connectInput := true
+Compile/ run/ javaOptions += "-Dscala.config=src/main/scala/ch/epfl/pop/config"
 
 // Make test execution synchronized
 Test/ test/ parallelExecution := false
@@ -76,14 +76,14 @@ copyProtocolTask := {
 }
 
 // Add the copyProtocolTask to compile and test scopes
-Compile / compile := (Compile / compile).dependsOn(copyProtocolTask).value
+(Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
 (Test/ test) := ((Test/ test) dependsOn copyProtocolTask).value
 
 // Setup resource directory for jar assembly
-(Compile /packageBin / resourceDirectory) := file(".") / "./src/main/resources"
+(Compile/ packageBin/ resourceDirectory) := file(".") / "./src/main/resources"
 
 // Make resourceDirectory setting global to remove sbt warning
-(Global / excludeLintKeys) += resourceDirectory
+(Global/ excludeLintKeys) += resourceDirectory
 
 // Setup main class task context/configuration
 Compile/ run/ mainClass := Some("ch.epfl.pop.Server")
