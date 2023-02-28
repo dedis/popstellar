@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
+	"github.com/rs/zerolog/log"
 	"popstellar/channel"
 	"popstellar/channel/registry"
 	"popstellar/crypto"
@@ -831,6 +832,7 @@ func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQues
 		copy(ballotOpts, q.BallotOptions)
 		_, exists := qs[q.ID]
 		if exists {
+			log.Error().Msg("detected questions with same ID during election channel creation")
 			return nil
 		}
 		qs[q.ID] = &question{
