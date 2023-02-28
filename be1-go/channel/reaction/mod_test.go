@@ -445,6 +445,115 @@ func Test_DeleteReaction(t *testing.T) {
 	require.Equal(t, deleteReactionID, cha.inbox.GetSortedMessages()[1].MessageID)
 }
 
+// Tests that the channel works correctly when it receives a delete reaction request
+// before a send reaction request.
+func Test_DeleteReaction_Out_of_Order(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channel
+	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+
+	fakeHub.RegisterNewChannel(reactionChannelName, cha)
+	_, found := fakeHub.channelByID[reactionChannelName]
+	require.True(t, found)
+
+	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
+
+	// Sending the reaction to be deleted in a go routine, with some delay
+	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData")
+
+	file := filepath.Join(relativePath, "reaction_add", "reaction_add.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	addReactionID := m.MessageID
+
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var pub method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = reactionChannelName
+
+	// Publishing the reaction with some delay in a go routine
+	go func() {
+		time.Sleep(50 * time.Millisecond)
+		err = cha.Publish(pub, socket.ClientSocket{})
+		require.NoError(t, err)
+	}()
+
+	// we create a new Publish variable for the delete message, as the previous
+	// one has not yet been used for the add reaction
+	var pub2 method.Publish
+	// Create delete reaction message
+	file = filepath.Join(relativePath, "reaction_delete", "reaction_delete.json")
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	var del messagedata.ReactionDelete
+
+	err = json.Unmarshal(buf, &del)
+	require.NoError(t, err)
+
+	// We set the reactionId with the ID obtain above
+	del.ReactionID = addReactionID
+
+	buf, err = json.Marshal(del)
+	require.NoError(t, err)
+
+	buf64 = base64.URLEncoding.EncodeToString(buf)
+
+	m = message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	deleteReactionID := m.MessageID
+
+	err = json.Unmarshal(bufCreatePub, &pub2)
+	require.NoError(t, err)
+
+	pub2.Params.Message = m
+	pub2.Params.Channel = reactionChannelName
+
+	// Wait before storing a new message to be able to have a unique
+	// timestamp for each message
+	time.Sleep(time.Millisecond)
+
+	// If there is no error, the delete request has been properly received
+	require.NoError(t, cha.Publish(pub2, socket.ClientSocket{}))
+
+	// Check that the messages are stored in the inbox
+	require.Equal(t, addReactionID, cha.inbox.GetSortedMessages()[0].MessageID)
+	require.Equal(t, deleteReactionID, cha.inbox.GetSortedMessages()[1].MessageID)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
