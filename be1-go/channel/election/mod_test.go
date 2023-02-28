@@ -42,9 +42,8 @@ func Test_Creation_Fails_If_Identical_Questions(t *testing.T) {
 	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	var file string
 	//Use a bad election setup json file with two questions with the same ID
-	file = filepath.Join(relativeMsgDataExamplePath, "election_setup", "bad_election_setup_question_identical_id.json")
+	file := filepath.Join(relativeMsgDataExamplePath, "election_setup", "bad_election_setup_question_identical_id.json")
 
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)

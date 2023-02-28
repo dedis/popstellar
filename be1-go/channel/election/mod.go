@@ -67,9 +67,6 @@ type Channel struct {
 	// the key will be the string representation of the id of type byte[]
 	questions map[string]*question
 
-	//True if the questions are valid and false otherwise
-	valid bool
-
 	// attendees that took part in the roll call string of their PK
 	attendees *attendees
 
