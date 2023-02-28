@@ -33,6 +33,45 @@ const (
 	relativeMsgDataExamplePath string = "../../../protocol/examples/messageData"
 )
 
+// Tests that the channel creation fails if two questions are the same
+func Test_Creation_Fails_If_Identical_Questions(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+	_ = base64.URLEncoding.EncodeToString(keypair.publicBuf)
+
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	var file string
+	//Use a bad election setup json file with two questions with the same ID
+	file = filepath.Join(relativeMsgDataExamplePath, "election_setup", "bad_election_setup_question_identical_id.json")
+
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	// object and action
+	object, action := "election", "setup"
+
+	obj, act, err := messagedata.GetObjectAndAction(buf)
+	require.NoError(t, err)
+
+	require.Equal(t, object, obj)
+	require.Equal(t, action, act)
+
+	var electionSetup messagedata.ElectionSetup
+
+	err = json.Unmarshal(buf, &electionSetup)
+	require.NoError(t, err)
+
+	attendees := make(map[string]struct{})
+	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
+	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
+	// Creates channel with two identical questions
+	_, err = NewChannel(channelPath, message.Message{MessageID: "0"}, electionSetup, attendees, fakeHub, nolog, keypair.public)
+	//NewChannel returns an error if the questions are not valid
+	require.Error(t, err)
+}
+
 // Tests that the channel works correctly when it receives a subscribe
 func Test_Election_Channel_Subscribe(t *testing.T) {
 

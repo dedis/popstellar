@@ -67,6 +67,9 @@ type Channel struct {
 	// the key will be the string representation of the id of type byte[]
 	questions map[string]*question
 
+	//True if the questions are valid and false otherwise
+	valid bool
+
 	// attendees that took part in the roll call string of their PK
 	attendees *attendees
 
@@ -157,6 +160,10 @@ func NewChannel(channelPath string, msg message.Message, msgData messagedata.Ele
 	newChannel.registry = newChannel.newElectionRegistry()
 
 	newChannel.inbox.StoreMessage(msg)
+
+	if newChannel.questions == nil {
+		return newChannel, xerrors.Errorf("the election cannot have questions with the same ID")
+	}
 
 	if newChannel.electionType != messagedata.SecretBallot {
 		return newChannel, nil
@@ -819,12 +826,16 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote,
 	return nil
 }
 
+// Creates the questions for the election channel or returns nil if they are not valid
 func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQuestion) map[string]*question {
 	qs := make(map[string]*question)
 	for _, q := range questions {
 		ballotOpts := make([]string, len(q.BallotOptions))
 		copy(ballotOpts, q.BallotOptions)
-
+		_, exists := qs[q.ID]
+		if exists {
+			return nil
+		}
 		qs[q.ID] = &question{
 			ID:            []byte(q.ID),
 			ballotOptions: ballotOpts,
