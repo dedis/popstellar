@@ -144,7 +144,12 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     }
 
     if (!rollCallRepo.canOpenRollCall(laoId)) {
-      Log.d(TAG, "failed to open roll call with id " + id + ", laoID: " + laoView.getId());
+      Log.d(
+          TAG,
+          "failed to open roll call with id "
+              + id
+              + " because another roll call was already opened, laoID: "
+              + laoView.getId());
       return Completable.error(new DoubleOpenedRollCallException(id));
     }
 

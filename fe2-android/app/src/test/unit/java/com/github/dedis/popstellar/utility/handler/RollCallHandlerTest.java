@@ -147,9 +147,6 @@ public class RollCallHandlerTest {
   public void testHandleOpenRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-    // Check if the Roll Call can be opened
-    assertTrue(rollCallRepo.canOpenRollCall(LAO.getId()));
-
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
@@ -179,6 +176,38 @@ public class RollCallHandlerTest {
   }
 
   @Test
+  public void testBlockOpenRollCall()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException, NoRollCallException {
+    // Assert that a Roll Call can be opened
+    assertTrue(rollCallRepo.canOpenRollCall(LAO.getId()));
+
+    // Create the open Roll Call message
+    OpenRollCall openRollCall =
+        new OpenRollCall(
+            CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
+    MessageGeneral messageOpen = new MessageGeneral(SENDER_KEY, openRollCall, gson);
+
+    // Call the message handler
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL, messageOpen);
+
+    // Check that no new Roll Call can be opened
+    assertFalse(rollCallRepo.canOpenRollCall(LAO.getId()));
+
+    // Create the close Roll Call message
+    CloseRollCall closeRollCall =
+        new CloseRollCall(
+            CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
+    MessageGeneral messageClose = new MessageGeneral(SENDER_KEY, closeRollCall, gson);
+
+    // Call the message handler
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL, messageClose);
+
+    // Check that now new Roll Calls can be opened
+    assertTrue(rollCallRepo.canOpenRollCall(LAO.getId()));
+  }
+
+  @Test
   public void testHandleCloseRollCall()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
@@ -186,12 +215,10 @@ public class RollCallHandlerTest {
     OpenRollCall openRollCall =
         new OpenRollCall(
             CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
+
     // Call the message handler
     messageHandler.handleMessage(
         messageSender, LAO_CHANNEL, new MessageGeneral(SENDER_KEY, openRollCall, gson));
-
-    // Check that no new Roll Call can be opened
-    assertFalse(rollCallRepo.canOpenRollCall(LAO.getId()));
 
     // Create the close Roll Call message
     CloseRollCall closeRollCall =
@@ -208,9 +235,6 @@ public class RollCallHandlerTest {
     assertEquals(EventState.CLOSED, rollCallCheck.getState());
     assertTrue(rollCallCheck.isClosed());
     assertEquals(closeRollCall.getUpdateId(), rollCallCheck.getId());
-
-    // Check that now new Roll Calls can be opened
-    assertTrue(rollCallRepo.canOpenRollCall(LAO.getId()));
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
