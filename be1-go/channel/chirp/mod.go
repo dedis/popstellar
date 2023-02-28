@@ -16,7 +16,6 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
-	"time"
 
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
@@ -25,7 +24,6 @@ import (
 const (
 	msgID              = "msg id"
 	failedToDecodeData = "failed to decode message data: %v"
-	retryDelay         = time.Second
 )
 
 // Channel is used to handle chirp messages.
@@ -194,10 +192,6 @@ func (c *Channel) processAddChirp(msg message.Message, msgData interface{},
 func (c *Channel) processDeleteChirp(msg message.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	return c.helperProcessDeleteChirp(msg, msgData, true)
-}
-
-func (c *Channel) helperProcessDeleteChirp(msg message.Message, msgData interface{}, retry bool) error {
 	data, ok := msgData.(*messagedata.ChirpDelete)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#delete message", msgData)
@@ -210,16 +204,9 @@ func (c *Channel) helperProcessDeleteChirp(msg message.Message, msgData interfac
 
 	_, b := c.inbox.GetMessage(data.ChirpID)
 	if !b {
-		// we only allow one retry if for some reason the message to be deleted was not
-		// yet added.
-		if retry {
-			c.log.Info().Msg("message to be deleted was not found, retrying after some delay")
-			time.Sleep(retryDelay)
-			// process again, without retry
-			return c.helperProcessDeleteChirp(msg, msgData, false)
-		}
 		return xerrors.Errorf("the message to be deleted was not found")
 	}
+
 	return nil
 }
 
@@ -310,7 +297,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
 
-	timestamp, err := messagedata.GetTime(jsonData)
+	time, err := messagedata.GetTime(jsonData)
 	if err != nil {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
@@ -320,7 +307,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 		Action:    action,
 		ChirpID:   msg.MessageID,
 		Channel:   c.generalChannel.GetChannelPath(),
-		Timestamp: timestamp,
+		Timestamp: time,
 	}
 
 	dataBuf, err := json.Marshal(newData)
