@@ -411,6 +411,105 @@ func Test_Delete_Chirp(t *testing.T) {
 	require.Equal(t, checkData64Delete, msg[1].Data)
 }
 
+// Tests that the channel doesn't throw an error if it receives a delete before an add, but
+// rather retries to process it after a small delay to check out-of-order receiving.
+func Test_Out_Of_Order_Delete(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewFakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channels
+	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, generalCha, nolog)
+
+	fakeHub.RegisterNewChannel(generalName, generalCha)
+	fakeHub.RegisterNewChannel(chirpChannelName, cha)
+	_, found := fakeHub.channelByID[chirpChannelName]
+	require.True(t, found)
+	_, found = fakeHub.channelByID[generalName]
+	require.True(t, found)
+
+	time.Sleep(time.Millisecond)
+
+	// Create the add chirp message
+	file := filepath.Join(relativeMsgDataExamplePath, "chirp_add_publish",
+		"chirp_add_publish.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64add := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64add,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64add, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	addChirpID := m.MessageID
+
+	relativePathCreatePub := filepath.Join(relativeQueryExamplePath, "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var pub method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = chirpChannelName
+
+	// publish add chirp message, launched in a go routine
+	// to effectively arrive after the delete message.
+	go func() {
+		// delay for out-of-order testing
+		time.Sleep(50 * time.Millisecond)
+		err := cha.Publish(pub, socket.ClientSocket{})
+		require.NoError(t, err)
+	}()
+
+	// because of the go routine, we need another publish variable for the delete chirp
+	var pub2 method.Publish
+	// create delete chirp message
+	file = filepath.Join(relativeMsgDataExamplePath, "chirp_delete_publish",
+		"chirp_delete_publish.json")
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	var chirpDel messagedata.ChirpDelete
+
+	err = json.Unmarshal(buf, &chirpDel)
+	require.NoError(t, err)
+
+	chirpDel.ChirpID = addChirpID
+
+	buf, err = json.Marshal(chirpDel)
+	require.NoError(t, err)
+
+	buf64delete := base64.URLEncoding.EncodeToString(buf)
+
+	m = message.Message{
+		Data:              buf64delete,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64delete, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	pub2.Params.Message = m
+	pub2.Params.Channel = chirpChannelName
+
+	// publish delete chirp message, no error as the channel received the Add
+	// Chirp later and processed it before retrying to delete it.
+	require.NoError(t, cha.Publish(pub2, socket.ClientSocket{}))
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
