@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, PublicKey, WitnessSignaturePair}
+import ch.epfl.pop.model.objects.{Channel, ChannelData, DbActorNAckException, Hash, PublicKey, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -32,34 +32,34 @@ object LaoValidator extends MessageDataContentValidator {
 
       rpcMessage.getParamsMessage match {
         case Some(message: Message) =>
-          val (data, hash, sender, channel) = extractData[CreateLao](rpcMessage)
+          val (createLao, _, senderPK, channel) = extractData[CreateLao](rpcMessage)
           val expectedHash: Hash = Hash.fromStrings( // needs Checking in docs or protocol.
-            data.organizer.base64Data.toString,
-            data.creation.toString,
-            data.name
+            createLao.organizer.base64Data.toString,
+            createLao.creation.toString,
+            createLao.name
           )
 
           runChecks(
             checkTimestampStaleness(
               rpcMessage,
-              data.creation,
-              validationError(s"stale 'creation' timestamp (${data.creation})")
+              createLao.creation,
+              validationError(s"stale 'creation' timestamp (${createLao.creation})")
             ),
             checkWitnesses(
               rpcMessage,
-              data.witnesses,
+              createLao.witnesses,
               validationError("duplicate witnesses keys")
             ),
             checkId(
               rpcMessage,
               expectedHash,
-              data.id,
+              createLao.id,
               validationError("unexpected id")
             ),
             checkMsgSenderKey(
               rpcMessage,
-              data.organizer,
-              sender,
+              createLao.organizer,
+              senderPK,
               validationError("unexpected organizer public key")
             ),
             checkChannel(
@@ -70,7 +70,7 @@ object LaoValidator extends MessageDataContentValidator {
             ),
             checkLAOName(
               rpcMessage,
-              data.name,
+              createLao.name,
               validationError("LAO name must not be empty")
             )
           )
@@ -84,10 +84,10 @@ object LaoValidator extends MessageDataContentValidator {
 
       rpcMessage.getParamsMessage match {
         case Some(message: Message) =>
-          val (stateLao, _, publicKey, _) = extractData[StateLao](rpcMessage)
+          val (stateLao, _, senderPK, _) = extractData[StateLao](rpcMessage)
 
           val expectedHash: Hash = Hash.fromStrings(
-            publicKey.toString,
+            senderPK.toString,
             stateLao.creation.toString,
             stateLao.name
           )
@@ -132,7 +132,7 @@ object LaoValidator extends MessageDataContentValidator {
 
       rpcMessage.getParamsMessage match {
         case Some(message: Message) =>
-          val (greetLao, hash, publicKey, channel) = extractData[GreetLao](rpcMessage)
+          val (greetLao, _, senderPK, channel) = extractData[GreetLao](rpcMessage)
           val expectedHash = rpcMessage.extractLaoId
 
           runChecks(
@@ -145,7 +145,7 @@ object LaoValidator extends MessageDataContentValidator {
             checkMsgSenderKey(
               rpcMessage,
               greetLao.frontend,
-              publicKey,
+              senderPK,
               validationError("unexpected frontend")
             ),
             checkAddressStartWith(
@@ -172,7 +172,7 @@ object LaoValidator extends MessageDataContentValidator {
 
       rpcMessage.getParamsMessage match {
         case Some(message: Message) =>
-          val (updateLao, hash, publicKey, channel) = extractData[UpdateLao](rpcMessage)
+          val (updateLao, _, senderPK, channel) = extractData[UpdateLao](rpcMessage)
 
           // FIXME get lao creation message in order to calculate "SHA256(organizer||creation||name)"
           val askLaoMessage = dbActor ? DbActor.Read(channel, ???)
@@ -238,26 +238,6 @@ object LaoValidator extends MessageDataContentValidator {
     */
   private def checkWitnesses(rpcMessage: JsonRpcRequest, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
     if (validateWitnesses(witnesses))
-      Left(rpcMessage)
-    else
-      Right(error)
-  }
-
-  /** Checks if the msg sender is the expected one
-    *
-    * @param rpcMessage
-    *   rpc message to validate
-    * @param expectedKey
-    *   the expected key
-    * @param msgSenderKey
-    *   the rpc message sender
-    * @param error
-    *   the error to forward in case the sender doesn't match the expected one
-    * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-    */
-  private def checkMsgSenderKey(rpcMessage: JsonRpcRequest, expectedKey: PublicKey, msgSenderKey: PublicKey, error: PipelineError): GraphMessage = {
-    if (expectedKey == msgSenderKey)
       Left(rpcMessage)
     else
       Right(error)
