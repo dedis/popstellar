@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 	"popstellar/channel"
 	"popstellar/channel/registry"
 	"popstellar/crypto"
@@ -142,8 +141,6 @@ func NewChannel(channelPath string, msg message.Message, msgData messagedata.Ele
 		end:            msgData.EndTime,
 		started:        false,
 		terminated:     false,
-		questions:      getAllQuestionsForElectionChannel(msgData.Questions),
-
 		attendees: &attendees{
 			store: attendeesMap,
 		},
@@ -155,19 +152,23 @@ func NewChannel(channelPath string, msg message.Message, msgData messagedata.Ele
 		organiserPubKey: organizerPubKey,
 	}
 
+	questions, err := getAllQuestionsForElectionChannel(msgData.Questions)
+
+	if err != nil {
+		return newChannel, err
+	}
+
+	newChannel.questions = questions
+
 	newChannel.registry = newChannel.newElectionRegistry()
 
 	newChannel.inbox.StoreMessage(msg)
-
-	if newChannel.questions == nil {
-		return newChannel, xerrors.Errorf("the election cannot have questions with the same ID")
-	}
 
 	if newChannel.electionType != messagedata.SecretBallot {
 		return newChannel, nil
 	}
 
-	err := newChannel.createAndSendElectionKey()
+	err = newChannel.createAndSendElectionKey()
 	if err != nil {
 		err = xerrors.Errorf("failed to send the election key: %v", err)
 	}
@@ -825,15 +826,14 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote,
 }
 
 // Creates the questions for the election channel or returns nil if they are not valid
-func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQuestion) map[string]*question {
+func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQuestion) (map[string]*question, error) {
 	qs := make(map[string]*question)
 	for _, q := range questions {
 		ballotOpts := make([]string, len(q.BallotOptions))
 		copy(ballotOpts, q.BallotOptions)
 		_, exists := qs[q.ID]
 		if exists {
-			log.Error().Msg("detected questions with same ID during election channel creation")
-			return nil
+			return qs, xerrors.Errorf("the election cannot have questions with the same ID")
 		}
 		qs[q.ID] = &question{
 			ID:            []byte(q.ID),
@@ -844,5 +844,5 @@ func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQues
 		}
 	}
 
-	return qs
+	return qs, nil
 }
