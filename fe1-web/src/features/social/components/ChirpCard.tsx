@@ -188,6 +188,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
               Typography.small,
               Typography.inactive,
               Typography.centered,
+              Typography.code,
               styles.senderPrefix,
             ]}
             numberOfLines={1}

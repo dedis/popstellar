@@ -92,7 +92,7 @@ const DigitalCashWallet = () => {
                 <ListItem.Title style={Typography.base}>
                   {rollCallToken.rollCallName}
                 </ListItem.Title>
-                <ListItem.Subtitle style={Typography.small} numberOfLines={1}>
+                <ListItem.Subtitle style={[Typography.small, Typography.code]} numberOfLines={1}>
                   {rollCallToken.rollCallId.valueOf()}
                 </ListItem.Subtitle>
               </ListItem.Content>

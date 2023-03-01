@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, ListRenderItemInfo } from 'react-native';
+import { View, Text, StyleSheet, ListRenderItemInfo, TextStyle } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
 import { Border, Color, Spacing, Typography } from 'core/styles';
@@ -50,6 +50,7 @@ const AutocompleteInput = ({
   placeholder,
   enabled,
   testID,
+  customFont,
 }: IPropTypes) => {
   const lastSuggestionIndex = suggestions ? suggestions.length - 1 : 0;
 
@@ -62,12 +63,12 @@ const AutocompleteInput = ({
             ? [styles.suggestionContainer, styles.suggestionContainerLast]
             : styles.suggestionContainer
         }>
-        <Text style={Typography.base} numberOfLines={1}>
+        <Text style={[Typography.base, { fontFamily: customFont } as TextStyle]} numberOfLines={1}>
           {suggestion}
         </Text>
       </PoPTouchableOpacity>
     ),
-    [onChange, lastSuggestionIndex],
+    [lastSuggestionIndex, customFont, onChange],
   );
 
   return (
@@ -81,6 +82,7 @@ const AutocompleteInput = ({
           onBlur={onBlur}
           enabled={enabled}
           testID={testID}
+          customFont={customFont}
         />
       </View>
       {showResults && (
@@ -106,6 +108,7 @@ const propTypes = {
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
   testID: PropTypes.string,
+  customFont: PropTypes.string,
 };
 
 AutocompleteInput.propTypes = propTypes;
@@ -116,6 +119,7 @@ AutocompleteInput.defaultProps = {
   onFocus: undefined,
   onBlur: undefined,
   testID: undefined,
+  customFont: '',
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

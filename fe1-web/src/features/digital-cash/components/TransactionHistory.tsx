@@ -64,7 +64,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                     setShowModal(true);
                   }}>
                   <ListItem.Content>
-                    <ListItem.Title style={Typography.base} numberOfLines={1}>
+                    <ListItem.Title style={[Typography.base, Typography.code]} numberOfLines={1}>
                       {transaction.transactionId.valueOf()}
                     </ListItem.Title>
                     <ListItem.Subtitle style={Typography.small}>
@@ -106,7 +106,7 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
               style={List.accordionItem}
               content={
                 <ListItem.Content>
-                  <ListItem.Title style={[Typography.base, Typography.important]}>
+                  <ListItem.Title style={[Typography.base, Typography.important, Typography.code]}>
                     {STRINGS.digital_cash_wallet_transaction_inputs} (
                     {selectedTransaction?.inputs.length})
                   </ListItem.Title>
@@ -128,7 +128,9 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                       style={listStyle}
                       bottomDivider>
                       <ListItem.Content>
-                        <ListItem.Title style={Typography.base} numberOfLines={1}>
+                        <ListItem.Title
+                          style={[Typography.base, Typography.code]}
+                          numberOfLines={1}>
                           {input.script.publicKey.valueOf()}
                         </ListItem.Title>
                         <ListItem.Subtitle>
@@ -175,7 +177,9 @@ const TransactionHistory = ({ laoId }: IPropTypes) => {
                       style={listStyle}
                       bottomDivider>
                       <ListItem.Content>
-                        <ListItem.Title style={Typography.base} numberOfLines={1}>
+                        <ListItem.Title
+                          style={[Typography.base, Typography.code]}
+                          numberOfLines={1}>
                           {output.script.publicKeyHash.valueOf()}
                         </ListItem.Title>
                       </ListItem.Content>

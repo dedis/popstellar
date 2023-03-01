@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, TextStyle, View } from 'react-native';
 
 import { Border, Color, Spacing, Typography } from 'core/styles';
 
@@ -30,7 +30,8 @@ export const inputStyleSheet = StyleSheet.create({
 });
 
 const Input = (props: IPropTypes) => {
-  const { value, placeholder, onChange, onFocus, onBlur, enabled, negative, testID } = props;
+  const { value, placeholder, onChange, onFocus, onBlur, enabled, negative, testID, customFont } =
+    props;
 
   const inputStyles = [Typography.paragraph, inputStyleSheet.input];
 
@@ -45,7 +46,7 @@ const Input = (props: IPropTypes) => {
   return (
     <View style={inputStyleSheet.container}>
       <TextInput
-        style={inputStyles}
+        style={[{ fontFamily: customFont } as TextStyle, inputStyles]}
         placeholderTextColor={Color.inactive}
         editable={enabled || false}
         value={value}
@@ -68,6 +69,7 @@ const propTypes = {
   enabled: PropTypes.bool,
   negative: PropTypes.bool,
   testID: PropTypes.string,
+  customFont: PropTypes.string,
 };
 Input.propTypes = propTypes;
 Input.defaultProps = {
@@ -78,6 +80,7 @@ Input.defaultProps = {
   enabled: true,
   negative: false,
   testID: undefined,
+  customFont: '',
 };
 
 type IPropTypes = Omit<PropTypes.InferProps<typeof propTypes>, 'onChange'> & {
