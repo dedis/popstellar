@@ -250,7 +250,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <View style={styles.reactionView}>
                   <PoPIconButton
                     name="delete"
-                    testID="chirp_action_options"
+                    testID="delete"
                     onPress={() => setShowDeleteConfirmation(true)}
                     size="small"
                     buttonStyle="secondary"
