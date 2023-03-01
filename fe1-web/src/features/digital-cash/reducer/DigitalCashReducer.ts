@@ -51,7 +51,7 @@ const initialState: DigitalCashLaoReducerState = {
 /* Name of digital cash slice in storage */
 export const DIGITAL_CASH_REDUCER_PATH = 'digitalCash';
 
-const createEntryAndAddInvPubHash = (
+const createEntryAndAddPubHash = (
   laoState: DigitalCashReducerState,
   pubHash: string,
   transactionHash: string,
@@ -122,7 +122,7 @@ const digitalCashSlice = createSlice({
             laoState.transactionsByOutPubHash[pubHash] = [];
           }
 
-          createEntryAndAddInvPubHash(laoState, pubHash, transactionHash);
+          createEntryAndAddPubHash(laoState, pubHash, transactionHash);
         });
 
         transactionState.outputs.forEach((output) => {
@@ -138,7 +138,7 @@ const digitalCashSlice = createSlice({
           }
           laoState.transactionsByOutPubHash[pubKeyHash].push(transactionHash);
 
-          createEntryAndAddInvPubHash(laoState, pubKeyHash, transactionHash);
+          createEntryAndAddPubHash(laoState, pubKeyHash, transactionHash);
         });
       },
     },
@@ -224,14 +224,14 @@ export const makeTransactionsByRollCallTokenSelector = (
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByPubHash,
     (
       transactionsByHash: Record<string, TransactionState> | undefined,
-      transactionsByInvPubHash: Record<string, string[]> | undefined,
+      transactionsByPubHash: Record<string, string[]> | undefined,
     ) => {
-      if (transactionsByHash && transactionsByInvPubHash) {
+      if (transactionsByHash && transactionsByPubHash) {
         const transactions: TransactionState[] = [];
 
         for (const rollCallToken of rollCallTokens) {
           const { publicKey } = rollCallToken.token;
-          const transactionsOfToken = transactionsByInvPubHash[
+          const transactionsOfToken = transactionsByPubHash[
             Hash.fromPublicKey(publicKey).valueOf()
           ].map((hash) => transactionsByHash[hash]);
 
