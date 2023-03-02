@@ -46,6 +46,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.lao.event.rollcall.RollCallFragmentPageObject.*;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -84,6 +85,19 @@ public class RollCallFragmentTest {
           LOCATION,
           ROLL_CALL_DESC);
 
+  private final RollCall ROLL_CALL_2 =
+      new RollCall(
+          LAO.getId() + "2",
+          LAO.getId() + "2",
+          ROLL_CALL_TITLE,
+          CREATION,
+          ROLL_CALL_START,
+          ROLL_CALL_END,
+          EventState.CREATED,
+          new HashSet<>(),
+          LOCATION,
+          ROLL_CALL_DESC);
+
   @Inject RollCallRepository rollCallRepo;
 
   @BindValue @Mock LAORepository laoRepo;
@@ -110,6 +124,7 @@ public class RollCallFragmentTest {
           when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
 
           rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL);
+          rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL_2);
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
@@ -228,5 +243,20 @@ public class RollCallFragmentTest {
   public void managementButtonClosedTest() {
     rollCallRepo.updateRollCall(LAO_ID, RollCall.closeRollCall(ROLL_CALL));
     managementButton().check(matches(withText("REOPEN")));
+  }
+
+  @Test
+  public void blockOpenRollCallTest() {
+    rollCallRepo.updateRollCall(LAO_ID, RollCall.openRollCall(ROLL_CALL_2));
+
+    managementButton().check(matches(withText("OPEN")));
+    managementButton().perform(click());
+    // Wait for the main thread to finish executing the calls made above
+    // before asserting their effect
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    // Assert state of roll call is unchanged
+    assertNotEquals(ROLL_CALL.getState(), EventState.OPENED);
+    managementButton().check(matches(withText("OPEN")));
   }
 }

@@ -109,6 +109,17 @@ public class RollCallRepository {
     return rollCallsByLao.computeIfAbsent(laoId, lao -> new LaoRollCalls());
   }
 
+  /**
+   * Check if no other roll call is in open/reopen state
+   *
+   * @param laoId the id of the considered lao
+   * @return true if all roll calls in the given lao are not open yet, false otherwise
+   */
+  public boolean canOpenRollCall(String laoId) {
+    return getLaoRollCalls(laoId).rollCallByPersistentId.values().stream()
+        .noneMatch(RollCall::isOpen);
+  }
+
   private static final class LaoRollCalls {
     private final Map<String, RollCall> rollCallByPersistentId = new HashMap<>();
 
