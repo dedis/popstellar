@@ -26,6 +26,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"go.dedis.ch/kyber/v3"
 
@@ -54,6 +55,9 @@ const (
 
 	// Created represents the created roll call state.
 	Created rollCallState = "created"
+
+	// delay for retrying to delete a roll call
+	retryDelay = 500 * time.Millisecond
 )
 
 // Channel defines a LAO channel
@@ -252,8 +256,8 @@ func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 }
 
 // processLaoState processes a lao state action.
-func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{},
-	sender socket.Socket) error {
+func (c *Channel) processLaoState(_ message.Message, msgData interface{},
+	_ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.LaoState)
 	if !ok {
@@ -325,7 +329,7 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 }
 
 // processRollCallCreate processes a roll call creation object.
-func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{},
+func (c *Channel) processRollCallCreate(_ message.Message, msgData interface{},
 	_ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.RollCallCreate)
@@ -392,7 +396,10 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{},
 // processRollCallClose processes a close roll call message.
 func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	senderSocket socket.Socket) error {
+	return c.helperRollCallClose(msg, msgData, senderSocket, true)
+}
 
+func (c *Channel) helperRollCallClose(msg message.Message, msgData interface{}, senderSocket socket.Socket, retry bool) error {
 	data, ok := msgData.(*messagedata.RollCallClose)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a rollcall#close message", msgData)
@@ -405,6 +412,13 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	}
 
 	if c.rollCall.state != Open {
+		if retry {
+			// retry in case the roll call was opened temporarily, but the processing of the RollCallOpen
+			// was out-of-order.
+			c.log.Info().Msg("The Roll call is not open, trying again after some delay")
+			time.Sleep(retryDelay)
+			return c.helperRollCallClose(msg, msgData, senderSocket, false)
+		}
 		return answer.NewError(-1, "The roll call cannot be closed since it's not open")
 	}
 
@@ -423,7 +437,6 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 
 		c.reactions.AddAttendee(attendee)
 	}
-
 	return nil
 }
 
