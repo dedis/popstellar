@@ -49,6 +49,8 @@ public class ConnectingActivity extends AppCompatActivity {
     setupConnectingText();
     handleOpenConnection();
 
+    // Temporary fix to disable dark mode, addressing issue #1381 (UI elements not displaying
+    // correctly in dark mode)
     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
   }
 

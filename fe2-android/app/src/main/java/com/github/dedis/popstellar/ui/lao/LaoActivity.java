@@ -73,6 +73,8 @@ public class LaoActivity extends AppCompatActivity {
     binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
     openEventsTab();
 
+    // Temporary fix to disable dark mode, addressing issue #1381 (UI elements not displaying
+    // correctly in dark mode)
     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
   }
 
