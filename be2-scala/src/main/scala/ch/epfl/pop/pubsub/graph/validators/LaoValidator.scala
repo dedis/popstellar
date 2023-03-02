@@ -11,6 +11,7 @@ import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent._
+import scala.util.matching.Regex
 import scala.util.{Failure, Success}
 
 object LaoValidator extends MessageDataContentValidator {
@@ -24,6 +25,10 @@ object LaoValidator extends MessageDataContentValidator {
   def validateGreetLao(rpcMessage: JsonRpcRequest): GraphMessage = laoValidator.validateGreetLao(rpcMessage)
 
   def validateUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = laoValidator.validateUpdateLao(rpcMessage)
+
+  private val dupWitnessError = "duplicate witnesses keys"
+  private val unexpectedID = "unexpected id"
+  private val addressRegPat = "^.*:\\/\\/[a-zA-Z0-9.]+:?[0-9]*[a-zA-Z0-9\\/]*".r
 
   sealed class LaoValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
 
@@ -48,19 +53,19 @@ object LaoValidator extends MessageDataContentValidator {
             checkWitnesses(
               rpcMessage,
               createLao.witnesses,
-              validationError("duplicate witnesses keys")
+              validationError(dupWitnessError)
             ),
             checkId(
               rpcMessage,
               expectedHash,
               createLao.id,
-              validationError("unexpected id")
+              validationError(unexpectedID + " " + createLao.id.toString)
             ),
             checkMsgSenderKey(
               rpcMessage,
               createLao.organizer,
               senderPK,
-              validationError("unexpected organizer public key")
+              validationError(s"unexpected organizer public key $senderPK")
             ),
             checkChannel(
               rpcMessage,
@@ -107,7 +112,7 @@ object LaoValidator extends MessageDataContentValidator {
             checkWitnesses(
               rpcMessage,
               stateLao.witnesses,
-              validationError("duplicate witnesses keys")
+              validationError(dupWitnessError)
             ),
             checkWitnessesSignatures(
               rpcMessage,
@@ -119,7 +124,7 @@ object LaoValidator extends MessageDataContentValidator {
               rpcMessage,
               expectedHash,
               stateLao.id,
-              validationError("unexpected id")
+              validationError(unexpectedID + " " + stateLao.id.toString)
             )
           )
 
@@ -146,13 +151,13 @@ object LaoValidator extends MessageDataContentValidator {
               rpcMessage,
               greetLao.frontend,
               senderPK,
-              validationError("unexpected frontend")
+              validationError(s"unexpected frontend public key ${greetLao.frontend}")
             ),
-            checkAddressStartWith(
+            checkAddressPattern(
               rpcMessage,
               greetLao.address,
-              "ws://",
-              validationError("invalid address")
+              addressRegPat,
+              validationError(s"invalid address ${greetLao.address}")
             ),
             checkChannel(
               rpcMessage,
@@ -198,13 +203,13 @@ object LaoValidator extends MessageDataContentValidator {
                 checkWitnesses(
                   rpcMessage,
                   updateLao.witnesses,
-                  validationError("duplicate witnesses keys")
+                  validationError(dupWitnessError)
                 ),
                 checkId(
                   rpcMessage,
                   expectedHash,
                   updateLao.id,
-                  validationError("unexpected id")
+                  validationError(unexpectedID + " " + updateLao.id.toString)
                 ),
                 checkChannelType(
                   rpcMessage,
@@ -307,15 +312,15 @@ object LaoValidator extends MessageDataContentValidator {
     *   rpc message to validate
     * @param address
     *   the address to check
-    * @param startString
-    *   the string the address must start with
+    * @param pattern
+    *   the pattern the address must match
     * @param error
     *   the error to forward in case the address doesn't start with the expected string
     * @return
     *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
     */
-  private def checkAddressStartWith(rpcMessage: JsonRpcRequest, address: String, startString: String, error: PipelineError): GraphMessage = {
-    if (address.startsWith(startString))
+  private def checkAddressPattern(rpcMessage: JsonRpcRequest, address: String, pattern: Regex, error: PipelineError): GraphMessage = {
+    if (pattern.matches(address))
       Left(rpcMessage)
     else
       Right(error)
