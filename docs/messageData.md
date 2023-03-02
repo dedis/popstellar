@@ -1299,11 +1299,11 @@ In the future elections may allow write-in or support different voting methods b
                     "id": {
                         "type": "string",
                         "contentEncoding": "base64",
-                        "$comment": "Question ID: Hash : HashLen('Question', election_id, question)"
+                        "$comment": "Question ID: Hash : HashLen('Question', election_id, question)",
                     },
                     "question": {
                         "type": "string",
-                        "$comment": "voting topic"
+                        "$comment": "Voting topic. Has to be be unique."
                     },
                     "voting_method": {
                         "type": "string",

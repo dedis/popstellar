@@ -236,8 +236,9 @@ test("message data: election", () => {
     failure = require("../examples/messageData/election_setup/bad_election_setup_start_time_negative.json");
     expect(failure).not.toBeValid(messageDataSchema);
 
-    failure = require("../examples/messageData/election_setup/bad_election_setup_question_identical_id.json");
-    expect(failure).not.toBeValid(messageDataSchema);
+    //this is something that cannot be checked using json schemas
+    //failure = require("../examples/messageData/election_setup/bad_election_setup_question_identical_id.json");
+    //expect(failure).not.toBeValid(messageDataSchema);
 });
 
 test("message data: message", () => {
