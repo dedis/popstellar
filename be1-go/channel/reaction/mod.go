@@ -17,6 +17,7 @@ import (
 	"popstellar/validation"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
@@ -25,6 +26,7 @@ import (
 const (
 	msgID              = "msg id"
 	failedToDecodeData = "failed to decode message data: %v"
+	retryDelay         = 100 * time.Millisecond
 )
 
 // Channel is used to handle reaction messages.
@@ -183,7 +185,7 @@ func (c *Channel) processReactionAdd(msg message.Message, msgData interface{},
 func (c *Channel) processReactionDelete(msg message.Message, msgData interface{},
 	_ socket.Socket) error {
 
-	err := c.verifyDeleteReactionMessage(msg)
+	err := c.verifyDeleteReactionMessage(msg, true)
 	if err != nil {
 		return xerrors.Errorf("failed to verify delete reaction message: %v", err)
 	}
@@ -244,7 +246,7 @@ func (c *Channel) verifyAddReactionMessage(msg message.Message) error {
 	return nil
 }
 
-func (c *Channel) verifyDeleteReactionMessage(msg message.Message) error {
+func (c *Channel) verifyDeleteReactionMessage(msg message.Message, retry bool) error {
 	var delReactMsg messagedata.ReactionDelete
 
 	err := msg.UnmarshalData(&delReactMsg)
@@ -264,6 +266,10 @@ func (c *Channel) verifyDeleteReactionMessage(msg message.Message) error {
 
 	react, b := c.inbox.GetMessage(delReactMsg.ReactionID)
 	if !b {
+		if retry {
+			time.Sleep(retryDelay)
+			return c.verifyDeleteReactionMessage(msg, false)
+		}
 		return xerrors.Errorf("the message to be deleted was not found")
 	}
 
