@@ -58,7 +58,7 @@
                     },
                     "question": {
                         "type": "string",
-                        "$comment": "voting topic"
+                        "$comment": "Voting topic. Has to be be unique."
                     },
                     "voting_method": {
                         "type": "string",
