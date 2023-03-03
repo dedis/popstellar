@@ -2,13 +2,14 @@ import { useContext, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import FeatureContext from 'core/contexts/FeatureContext';
-import { Hash } from 'core/objects';
+import { Hash, RollCallToken } from 'core/objects';
 
 import { DigitalCashReactContext, DIGITAL_CASH_FEATURE_IDENTIFIER } from '../interface';
 import { Transaction } from '../objects/transaction';
 import {
   makeBalancesSelector,
   makeTransactionsByHashSelector,
+  makeTransactionsByRollCallTokenSelector,
   makeTransactionsSelector,
 } from '../reducer';
 
@@ -111,6 +112,26 @@ export namespace DigitalCashHooks {
           0,
         ),
       [rollCallTokens, balances],
+    );
+  };
+
+  /**
+   * Gets the list of all transactions where a list of roll call tokens are involved.
+   * To use only in a React component.
+   * @param laoId
+   * @param rollCallTokens
+   */
+  export const useTransactionsByRollCallTokens = (laoId: Hash, rollCallTokens: RollCallToken[]) => {
+    const transactionsByTokensSelector = useMemo(
+      () => makeTransactionsByRollCallTokenSelector(laoId, rollCallTokens),
+      [laoId, rollCallTokens],
+    );
+
+    const transactionStates = useSelector(transactionsByTokensSelector);
+
+    return useMemo(
+      () => transactionStates.map((state) => Transaction.fromState(state)),
+      [transactionStates],
     );
   };
 }

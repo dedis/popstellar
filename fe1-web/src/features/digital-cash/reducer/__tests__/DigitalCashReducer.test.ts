@@ -35,6 +35,9 @@ const filledState = {
       transactionsByHash: {
         [mockTransaction.transactionId.valueOf()]: mockTransaction.toState(),
       },
+      transactionsByOutPubHash: {
+        [mockKPHash.valueOf()]: [mockTransaction.transactionId.toState()],
+      },
       transactionsByPubHash: {
         [mockKPHash.valueOf()]: [mockTransaction.transactionId.toState()],
       },

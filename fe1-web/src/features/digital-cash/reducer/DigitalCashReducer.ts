@@ -5,7 +5,7 @@
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Hash, PublicKey } from 'core/objects';
+import { Hash, PublicKey, RollCallToken } from 'core/objects';
 import { COINBASE_HASH } from 'resources/const';
 
 import { Transaction, TransactionState } from '../objects/transaction';
@@ -28,7 +28,13 @@ export interface DigitalCashReducerState {
 
   /**
    * A mapping between public key hashes and an array of hash of transactions which contains
-   * this public key hash in one or more of their TxOuts
+   * this public key hash in one or more of their TxOuts.
+   */
+  transactionsByOutPubHash: Record<string, string[]>;
+
+  /**
+   * A mapping between public key hashes and an array of hash of transactions in which the public
+   * key is involved, as input or output.
    */
   transactionsByPubHash: Record<string, string[]>;
 }
@@ -44,6 +50,20 @@ const initialState: DigitalCashLaoReducerState = {
 
 /* Name of digital cash slice in storage */
 export const DIGITAL_CASH_REDUCER_PATH = 'digitalCash';
+
+const createEntryAndAddPubHash = (
+  laoState: DigitalCashReducerState,
+  pubHash: string,
+  transactionHash: string,
+) => {
+  if (!(pubHash in laoState.transactionsByPubHash)) {
+    laoState.transactionsByPubHash[pubHash] = [];
+  }
+
+  if (!laoState.transactionsByPubHash[pubHash].includes(transactionHash)) {
+    laoState.transactionsByPubHash[pubHash].push(transactionHash);
+  }
+};
 
 const digitalCashSlice = createSlice({
   name: DIGITAL_CASH_REDUCER_PATH,
@@ -79,6 +99,7 @@ const digitalCashSlice = createSlice({
             balances: {},
             allTransactionsHash: [],
             transactionsByHash: {},
+            transactionsByOutPubHash: {},
             transactionsByPubHash: {},
           };
         }
@@ -98,8 +119,10 @@ const digitalCashSlice = createSlice({
           // If this is not a coinbase transaction, then as we are sure that all inputs are used
           if (input.txOutHash !== COINBASE_HASH) {
             laoState.balances[pubHash] = 0;
-            laoState.transactionsByPubHash[pubHash] = [];
+            laoState.transactionsByOutPubHash[pubHash] = [];
           }
+
+          createEntryAndAddPubHash(laoState, pubHash, transactionHash);
         });
 
         transactionState.outputs.forEach((output) => {
@@ -110,10 +133,12 @@ const digitalCashSlice = createSlice({
           }
           laoState.balances[pubKeyHash] += output.value;
 
-          if (!(pubKeyHash in laoState.transactionsByPubHash)) {
-            laoState.transactionsByPubHash[pubKeyHash] = [];
+          if (!(pubKeyHash in laoState.transactionsByOutPubHash)) {
+            laoState.transactionsByOutPubHash[pubKeyHash] = [];
           }
-          laoState.transactionsByPubHash[pubKeyHash].push(transactionHash);
+          laoState.transactionsByOutPubHash[pubKeyHash].push(transactionHash);
+
+          createEntryAndAddPubHash(laoState, pubKeyHash, transactionHash);
         });
       },
     },
@@ -182,5 +207,39 @@ export const makeTransactionsByHashSelector = (laoId: Hash) =>
     (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
     (transactionsByHash: Record<string, TransactionState> | undefined) => {
       return transactionsByHash || {};
+    },
+  );
+
+/**
+ * Selector for the transactions that involve given roll call tokens.
+ * @param laoId
+ * @param rollCallTokens
+ */
+export const makeTransactionsByRollCallTokenSelector = (
+  laoId: Hash,
+  rollCallTokens: RollCallToken[],
+) =>
+  createSelector(
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByHash,
+    (state: any) => getDigitalCashState(state).byLaoId[laoId.valueOf()]?.transactionsByPubHash,
+    (
+      transactionsByHash: Record<string, TransactionState> | undefined,
+      transactionsByPubHash: Record<string, string[]> | undefined,
+    ) => {
+      if (transactionsByHash && transactionsByPubHash) {
+        const transactions: TransactionState[] = [];
+
+        for (const rollCallToken of rollCallTokens) {
+          const { publicKey } = rollCallToken.token;
+          const transactionsOfToken = transactionsByPubHash[
+            Hash.fromPublicKey(publicKey).valueOf()
+          ].map((hash) => transactionsByHash[hash]);
+
+          transactions.push(...transactionsOfToken);
+        }
+
+        return transactions;
+      }
+      return [];
     },
   );

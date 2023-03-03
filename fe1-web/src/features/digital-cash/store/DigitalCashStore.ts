@@ -22,9 +22,9 @@ export namespace DigitalCashStore {
   }
 
   /**
-   * Gets all transactions available for this public key in this lao
+   * Gets all transactions available for this public key as TxOut in this lao
    */
-  export function getTransactionsByPublicKey(laoId: Hash, pk: PublicKey): TransactionState[] {
+  export function getTransactionsByOutPublicKey(laoId: Hash, pk: PublicKey): TransactionState[] {
     const serializedLaoId = laoId.valueOf();
 
     const laoState = getDigitalCashState(getStore().getState()).byLaoId[serializedLaoId];
@@ -33,7 +33,9 @@ export namespace DigitalCashStore {
     }
     const pkHash = Hash.fromPublicKey(pk);
     const transactionsById = getTransactionsById(laoId);
-    return laoState.transactionsByPubHash[pkHash.valueOf()]?.map((hash) => transactionsById[hash]);
+    return laoState.transactionsByOutPubHash[pkHash.valueOf()]?.map(
+      (hash) => transactionsById[hash],
+    );
   }
 
   /**
