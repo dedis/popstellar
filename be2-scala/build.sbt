@@ -42,13 +42,13 @@ Scapegoat/ scalacOptions -= "-Xfatal-warnings"
 Scapegoat/ scalacOptions += "-P:scapegoat:overrideLevels:all=Warning"
 
 // Reload changes automatically
-Global / onChangedBuildSource := ReloadOnSourceChanges
-Global / cancelable := true
+Global/ onChangedBuildSource := ReloadOnSourceChanges
+Global/ cancelable := true
 
 // Fork run task in compile scope
-Compile/ run / fork := true
-Compile/ run / connectInput := true
-Compile/ run / javaOptions += "-Dscala.config=src/main/scala/ch/epfl/pop/config"
+Compile/ run/ fork := true
+Compile/ run/ connectInput := true
+Compile/ run/ javaOptions += "-Dscala.config=src/main/scala/ch/epfl/pop/config"
 
 // Make test execution synchronized
 Test/ test/ parallelExecution := false
@@ -67,7 +67,7 @@ copyProtocolTask := {
         val source = new File("../protocol")
         val dest   = new File("./src/main/resources/protocol")
         Try(IO.copyDirectory(source, dest, overwrite = true)) match {
-            case Success(_) => log.info("Copied !!")
+            case Success(_) => log.info("Copied protocol folder in ./src/main/resources")
             case Failure(exception) =>
                 log.error("Could not copy protocol to resource folder")
                 exception.printStackTrace()
@@ -80,10 +80,10 @@ copyProtocolTask := {
 (Test/ test) := ((Test/ test) dependsOn copyProtocolTask).value
 
 // Setup resource directory for jar assembly
-(Compile /packageBin / resourceDirectory) := file(".") / "./src/main/resources"
+(Compile/ packageBin/ resourceDirectory) := file(".") / "./src/main/resources"
 
 // Make resourceDirectory setting global to remove sbt warning
-(Global / excludeLintKeys) += resourceDirectory
+(Global/ excludeLintKeys) += resourceDirectory
 
 // Setup main class task context/configuration
 Compile/ run/ mainClass := Some("ch.epfl.pop.Server")

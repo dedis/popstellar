@@ -15,10 +15,21 @@ There are two main possible ways of running the project :
 ### Option 1: Intellij / VSCode
 
 1. Import the project using your editor
-2. Modify the default  Run configuration 'Server', to include the following __VM option__: <br>
-__```-Dscala.config=src/main/scala/ch/epfl/pop/config```__
+2. Modify the default  Run configuration 'Server', to include the following __VM option__:
+
+__```-Dscala.config=src/main/scala/ch/epfl/pop/config```__ (click on **Modify options** and tick **Add VM options** if VM options box does not appear initially)
 
 ![](docs/images/intellij-vm.png)
+
+3. Due to [IntelliJ not executing sbt tasks on project compilation](https://intellij-support.jetbrains.com/hc/en-us/community/posts/205454630-SBT-What-actually-happens-when-I-click-on-Build-module-), our custom sbt tasks are not being run. Head to **IntelliJ IDEA** $\implies$ **Preferences** $\implies$ **Build, Execution, Deployment** $\implies$ **Build Tools** $\implies$ **sbt** and tick the option to use sbt shell for builds. Click on **Build** $\implies$ **Rebuild Project** to execute our sbt task.
+
+#### Troubleshooting (IntelliJ)
+
+Here are a few points that students often forget when setting up IntelliJ:
+
+- make sure you have the [Scala plugin](https://plugins.jetbrains.com/plugin/1347-scala) installed on your IDE. You may install it directly from IntelliJ's settings (**IntelliJ IDEA** $\implies$ **Preferences** $\implies$ **Plugins**)
+- make sure you actually have sbt on your machine
+- if IntelliJ displays a banner stating "No Scala SDK in module", then make sure you actually have a version of the SDK on your machine (**File** $\implies$ **Project Structure...** $\implies$  **Global Libraries**). If not, simply install it using the `+` sign. We recommand SDK version `2.13.x`
 
 ### Option 2: SBT
 
