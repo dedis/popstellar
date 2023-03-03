@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -66,6 +67,10 @@ public class HomeActivity extends AppCompatActivity {
           .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
           .show();
     }
+
+    // Temporary fix to disable dark mode, addressing issue #1381 (UI elements not displaying
+    // correctly in dark mode)
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
   }
 
   private void handleTopAppBar() {

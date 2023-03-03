@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ConnectingActivityBinding;
@@ -47,6 +48,10 @@ public class ConnectingActivity extends AppCompatActivity {
     setupCancelButton();
     setupConnectingText();
     handleOpenConnection();
+
+    // Temporary fix to disable dark mode, addressing issue #1381 (UI elements not displaying
+    // correctly in dark mode)
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
   }
 
   @Override
