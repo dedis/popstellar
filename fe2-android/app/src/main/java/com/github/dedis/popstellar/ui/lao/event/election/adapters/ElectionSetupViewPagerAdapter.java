@@ -85,12 +85,17 @@ public class ElectionSetupViewPagerAdapter
             // On each text change we edit the list of questions
             // and we add or remove the question from the list of filled question
             String questionText = s.toString();
+            // Prevents the user from creating two different questions with the same name
+            if (questions.contains(questionText)) {
+              electionQuestionText.setError("Two different questions can't have the same name");
+            }
             if (!electionQuestionText.getText().toString().trim().isEmpty()) {
               questions.set(holder.getAdapterPosition(), questionText);
               listOfValidQuestions.add(holder.getAdapterPosition());
             } else {
               listOfValidQuestions.remove(holder.getAdapterPosition());
             }
+
             checkIfAnInputIsValid();
           }
         });
@@ -162,6 +167,12 @@ public class ElectionSetupViewPagerAdapter
       }
     }
 
+    // Check if there's a duplicate question, if true invalidate the input
+    if (hasDuplicate(questions)) {
+      isAnInputValid.setValue(false);
+      return;
+    }
+
     for (Integer i : listOfValidQuestions) {
       if (listOfValidBallots.contains(i)) {
         isAnInputValid.setValue(true);
@@ -182,6 +193,11 @@ public class ElectionSetupViewPagerAdapter
       }
     }
     return listOfValidInputs;
+  }
+
+  private boolean hasDuplicate(List<String> strings) {
+    Set<String> uniqueStrings = new HashSet<>();
+    return strings.stream().map(String::toLowerCase).anyMatch(s -> !uniqueStrings.add(s));
   }
 
   /** Adds a view of ballot option to the layout when user clicks the button */
