@@ -85,6 +85,7 @@ public class ElectionSetupViewPagerAdapter
             // On each text change we edit the list of questions
             // and we add or remove the question from the list of filled question
             String questionText = s.toString();
+
             // Prevents the user from creating two different questions with the same name
             if (questions.contains(questionText)) {
               electionQuestionText.setError("Two different questions can't have the same name");
@@ -195,7 +196,14 @@ public class ElectionSetupViewPagerAdapter
     return listOfValidInputs;
   }
 
-  private boolean hasDuplicate(List<String> strings) {
+  /**
+   * This function checks if a given list of strings has at least a duplicate. The comparison is
+   * performed case-insensitive.
+   *
+   * @param strings List of Strings
+   * @return true if the list of strings has at least a duplicate, false otherwise
+   */
+  public static boolean hasDuplicate(List<String> strings) {
     Set<String> uniqueStrings = new HashSet<>();
     return strings.stream().map(String::toLowerCase).anyMatch(s -> !uniqueStrings.add(s));
   }
