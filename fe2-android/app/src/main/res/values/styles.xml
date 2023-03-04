@@ -1,7 +1,7 @@
 <resources>
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+  <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
     <item name="materialButtonStyle">@style/Widget.App.Button</item>
     <!-- Customize your theme here. -->
     <item name="colorPrimary">@color/colorPrimary</item>
@@ -110,6 +110,20 @@
     <item name="android:textColor">@color/black</item>
     <item name="android:alpha">0.60</item>
     <item name="android:textStyle">normal</item>
+  </style>
+
+  <style name="toolbar_style" parent="Widget.MaterialComponents.Toolbar">
+    <item name="android:textColorPrimary">@color/white</item>
+    <item name="android:background">@color/colorPrimary</item>
+    <item name="android:textColorSecondary">@color/white</item>
+    <item name="android:gravity">center_vertical</item>
+    <item name="titleTextAppearance">@color/white</item>
+    <item name="popupTheme">@style/popupmenu_style</item>
+  </style>
+
+  <style name="popupmenu_style" parent="Widget.MaterialComponents.PopupMenu">
+    <item name="android:textColor">?attr/colorOnSurface</item>
+    <item name="android:background">?attr/colorSurface</item>
   </style>
 
 </resources>
