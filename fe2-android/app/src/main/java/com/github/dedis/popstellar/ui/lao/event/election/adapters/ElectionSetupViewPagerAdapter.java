@@ -87,15 +87,15 @@ public class ElectionSetupViewPagerAdapter
             String questionText = s.toString();
 
             // Prevents the user from creating two different questions with the same name
-            if (questions.contains(questionText)) {
+            if (!questionText.isEmpty() && questions.contains(questionText)) {
               electionQuestionText.setError("Two different questions can't have the same name");
             }
             if (!electionQuestionText.getText().toString().trim().isEmpty()) {
-              questions.set(holder.getAdapterPosition(), questionText);
               listOfValidQuestions.add(holder.getAdapterPosition());
             } else {
               listOfValidQuestions.remove(holder.getAdapterPosition());
             }
+            questions.set(holder.getAdapterPosition(), questionText);
 
             checkIfAnInputIsValid();
           }
@@ -197,15 +197,15 @@ public class ElectionSetupViewPagerAdapter
   }
 
   /**
-   * This function checks if a given list of strings has at least a duplicate. The comparison is
-   * performed case-insensitive.
+   * This function checks if a given list of strings has at least a duplicate. The comparison
+   * performed is case-sensitive.
    *
    * @param strings List of Strings
    * @return true if the list of strings has at least a duplicate, false otherwise
    */
   public static boolean hasDuplicate(List<String> strings) {
     Set<String> uniqueStrings = new HashSet<>();
-    return strings.stream().map(String::toLowerCase).anyMatch(s -> !uniqueStrings.add(s));
+    return strings.stream().anyMatch(s -> !uniqueStrings.add(s));
   }
 
   /** Adds a view of ballot option to the layout when user clicks the button */

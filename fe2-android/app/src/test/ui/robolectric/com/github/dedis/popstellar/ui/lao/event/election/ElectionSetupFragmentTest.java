@@ -540,9 +540,9 @@ public class ElectionSetupFragmentTest {
   @Test
   public void detectDuplicates() {
     List<String> questionsDuplicated =
-        new ArrayList<>(Arrays.asList("QuesTion 1", "Question 2", "QuestiON 1", "question 4"));
+        new ArrayList<>(Arrays.asList("Question 1", "Question 2", "Question 2", "Question 4"));
     List<String> questionsNotDuplicated =
-        new ArrayList<>(Arrays.asList("QuesTion 1", "Question 2", "QuestiON 3", "question 4"));
+        new ArrayList<>(Arrays.asList("Question 1", "Question 2", "Question 3", "Question 4"));
 
     assertTrue(hasDuplicate(questionsDuplicated));
     assertFalse(hasDuplicate(questionsNotDuplicated));
