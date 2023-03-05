@@ -887,9 +887,9 @@ func Test_Handle_Answer(t *testing.T) {
 	require.Error(t, sock.err, "no query sent with id %v", serverAnswerBis.ID)
 }
 
-// Check that if the server receives a publish message, it will call the
+// Check that if the server receives a publish message from an end user, it will call the
 // publish function on the appropriate channel.
-func Test_Handle_Publish(t *testing.T) {
+func Test_Handle_Publish_From_Client(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	c := &fakeChannel{}
@@ -940,6 +940,7 @@ func Test_Handle_Publish(t *testing.T) {
 
 	sock := &fakeSocket{}
 
+	// check that there is no errors with messages from client
 	hub.handleMessageFromClient(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
@@ -951,8 +952,62 @@ func Test_Handle_Publish(t *testing.T) {
 
 	// check that the channel has been called with the publish message
 	require.Equal(t, publish, c.publish)
+}
 
-	// check that there is no errors with messages from witness too
+// Check that if the server receives a publish message from an end user, it will call the
+// publish function on the appropriate channel.
+func Test_Handle_Publish_From_Server(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	c := &fakeChannel{}
+
+	hub, err := NewHub(keypair.public, "", nolog, nil)
+	require.NoError(t, err)
+
+	laoID := "XXX"
+
+	hub.channelByID[rootPrefix+laoID] = c
+
+	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: rootPrefix + laoID,
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	// check that there is no errors with messages from witness
 	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
@@ -964,6 +1019,82 @@ func Test_Handle_Publish(t *testing.T) {
 
 	// check that the channel has been called with the publish message
 	require.Equal(t, publish, c.publish)
+}
+
+// Check that if the server receives a message twice, it will
+// return an error
+func Test_Receive_Publish_Twice(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	c := &fakeChannel{}
+
+	hub, err := NewHub(keypair.public, "", nolog, nil)
+	require.NoError(t, err)
+
+	laoID := "XXX"
+
+	hub.channelByID[rootPrefix+laoID] = c
+
+	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: rootPrefix + laoID,
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	// Receive message from a server
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, publish.ID, sock.resultID)
+
+	// check that the channel has been called with the publish message
+	require.Equal(t, publish, c.publish)
+
+	// Receive the same message again
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// check the socket
+	require.Error(t, sock.err, "message %s was already received", publish.Params.Message.MessageID)
 }
 
 // Check that if the server receives a broadcast message, it will call the
