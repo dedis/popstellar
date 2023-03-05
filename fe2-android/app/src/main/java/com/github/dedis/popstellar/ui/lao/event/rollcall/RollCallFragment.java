@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -36,6 +37,7 @@ import net.glxn.qrgen.android.QRCode;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -59,6 +61,8 @@ public class RollCallFragment extends Fragment {
 
   private LaoViewModel laoViewModel;
   private RollCall rollCall;
+
+  private RollCallViewModel rollCallViewModel;
 
   private final EnumMap<EventState, Integer> managementTextMap = buildManagementTextMap();
   private final EnumMap<EventState, Integer> statusTextMap = buildStatusTextMap();
@@ -84,7 +88,7 @@ public class RollCallFragment extends Fragment {
     // Inflate the layout for this fragment
     binding = RollCallFragmentBinding.inflate(inflater, container, false);
     laoViewModel = LaoActivity.obtainViewModel(requireActivity());
-    RollCallViewModel rollCallViewModel =
+    rollCallViewModel =
         LaoActivity.obtainRollCallViewModel(requireActivity(), laoViewModel.getLaoId());
 
     try {
@@ -156,8 +160,6 @@ public class RollCallFragment extends Fragment {
                     ErrorUtils.logAndShow(
                         requireContext(), TAG, error, R.string.unknown_roll_call_exception)));
 
-    retrieveAndDisplayPublicKey();
-
     handleBackNav();
     return binding.getRoot();
   }
@@ -219,6 +221,39 @@ public class RollCallFragment extends Fragment {
     } else {
       binding.rollCallScanningButton.setVisibility(View.GONE);
     }
+
+    ArrayAdapter<String> adapter;
+    // Show the list of scanned attendees if the roll call is open and the user is the organizer
+    if (isOrganizer && !rollCall.isClosed()) {
+      binding.rollCallAttendeesText.setText(R.string.roll_call_scanned);
+      adapter =
+          new ArrayAdapter<>(
+              requireContext(),
+              android.R.layout.simple_list_item_1,
+              rollCallViewModel.getScanned());
+      rollCallViewModel.setAdapter(adapter::notifyDataSetChanged);
+    } else { // Show the list of attendees if the roll call has ended
+      binding.rollCallAttendeesText.setText(R.string.roll_call_attendees);
+      adapter =
+          new ArrayAdapter<>(
+              requireContext(),
+              android.R.layout.simple_list_item_1,
+              rollCall.getAttendees().stream()
+                  .map(PublicKey::getEncoded)
+                  .collect(Collectors.toList()));
+    }
+    binding.listViewAttendees.setAdapter(adapter);
+
+    // Set the visibility for the previous computed list
+    int visibility = View.VISIBLE;
+    if ((!isOrganizer && !rollCall.isClosed())
+        || (isOrganizer && rollCall.getState().equals(EventState.CREATED))) {
+      visibility = View.INVISIBLE;
+    }
+    binding.rollCallAttendeesText.setVisibility(visibility);
+    binding.listViewAttendees.setVisibility(visibility);
+
+    retrieveAndDisplayPublicKey();
   }
 
   private void setupTime() {
@@ -252,8 +287,9 @@ public class RollCallFragment extends Fragment {
     PopTokenData data = new PopTokenData(new PublicKey(pk));
     Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
+    // Set the QR visible only if the rollcall is open and the user isn't the organizer
     binding.rollCallPkQrCode.setVisibility(
-        laoViewModel.isOrganizer() ? View.INVISIBLE : View.VISIBLE);
+        laoViewModel.isOrganizer() || !rollCall.isOpen() ? View.INVISIBLE : View.VISIBLE);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {
