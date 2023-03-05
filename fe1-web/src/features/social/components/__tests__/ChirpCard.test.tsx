@@ -9,7 +9,6 @@ import { OpenedLaoStore } from 'features/lao/store';
 import { mockReaction1 } from 'features/social/__tests__/utils';
 import { SocialMediaContext } from 'features/social/context';
 
-import { ConfirmModal } from '../../../../core/components';
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
 import {
   requestAddReaction as mockRequestAddReaction,
