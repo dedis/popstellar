@@ -1,5 +1,236 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ChirpCard for deletion delete shows confirmation windows 1`] = `
+<Modal
+  hardwareAccelerated={false}
+  onRequestClose={[Function]}
+  transparent={true}
+  visible={true}
+>
+  <RNGestureHandlerButton
+    collapsable={false}
+    delayLongPress={600}
+    enabled={true}
+    exclusive={true}
+    handlerTag={11}
+    handlerType="NativeViewGestureHandler"
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+    style={
+      {
+        "backgroundColor": "rgba(0,0,0,0.25)",
+        "bottom": 0,
+        "flex": 1,
+        "left": 0,
+        "padding": 32,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+    touchSoundDisabled={false}
+  >
+    <View
+      accessible={true}
+      collapsable={false}
+      style={{}}
+    />
+  </RNGestureHandlerButton>
+  <RCTScrollView
+    collapsable={false}
+    handlerTag={12}
+    handlerType="NativeViewGestureHandler"
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    style={
+      {
+        "backgroundColor": "rgb(242, 242, 242)",
+        "borderRadius": 8,
+        "margin": 32,
+        "padding": 32,
+      }
+    }
+    waitFor={
+      [
+        {
+          "current": null,
+        },
+      ]
+    }
+  >
+    <View>
+      <View
+        style={
+          {
+            "alignItems": "center",
+            "flexDirection": "row",
+            "justifyContent": "space-between",
+            "marginBottom": 16,
+            "width": "100%",
+          }
+        }
+      >
+        <View />
+        <Text
+          numberOfLines={1}
+          style={
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "fontWeight": "500",
+              "lineHeight": 26,
+              "textAlign": "left",
+            }
+          }
+        >
+          Are you sure you want to delete this chirp?
+        </Text>
+        <View
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          testID="modal-header-close"
+        >
+          <RNGestureHandlerButton
+            collapsable={false}
+            delayLongPress={600}
+            enabled={true}
+            exclusive={true}
+            handlerTag={13}
+            handlerType="NativeViewGestureHandler"
+            onGestureEvent={[Function]}
+            onGestureHandlerEvent={[Function]}
+            onGestureHandlerStateChange={[Function]}
+            onHandlerStateChange={[Function]}
+            rippleColor={0}
+            touchSoundDisabled={false}
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              style={
+                {
+                  "opacity": 1,
+                }
+              }
+            >
+              <View>
+                {"name":"ios-close","size":25,"color":"#000"}
+              </View>
+            </View>
+          </RNGestureHandlerButton>
+        </View>
+      </View>
+      <Text
+        style={
+          {
+            "color": "#000",
+            "fontSize": 20,
+            "lineHeight": 26,
+            "marginBottom": 16,
+            "textAlign": "left",
+          }
+        }
+      >
+        Confirm Deletion
+      </Text>
+      <View
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          {
+            "marginBottom": 16,
+          }
+        }
+        testID="confirm-modal-confirm"
+      >
+        <RNGestureHandlerButton
+          collapsable={false}
+          delayLongPress={600}
+          enabled={true}
+          exclusive={true}
+          handlerTag={14}
+          handlerType="NativeViewGestureHandler"
+          onGestureEvent={[Function]}
+          onGestureHandlerEvent={[Function]}
+          onGestureHandlerStateChange={[Function]}
+          onHandlerStateChange={[Function]}
+          rippleColor={0}
+          touchSoundDisabled={false}
+        >
+          <View
+            accessible={true}
+            collapsable={false}
+            style={
+              {
+                "opacity": 1,
+              }
+            }
+          >
+            <View
+              style={
+                [
+                  {
+                    "backgroundColor": "#3742fa",
+                    "borderColor": "#3742fa",
+                    "borderRadius": 8,
+                    "borderWidth": 1,
+                    "padding": 8,
+                  },
+                ]
+              }
+            >
+              <Text
+                style={
+                  [
+                    {
+                      "color": "#000",
+                      "fontSize": 20,
+                      "lineHeight": 26,
+                      "textAlign": "left",
+                    },
+                    {
+                      "textAlign": "center",
+                    },
+                    {
+                      "color": "#fff",
+                    },
+                  ]
+                }
+              >
+                Confirm
+              </Text>
+            </View>
+          </View>
+        </RNGestureHandlerButton>
+      </View>
+    </View>
+  </RCTScrollView>
+</Modal>
+`;
+
 exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
 <View
   style={
@@ -276,7 +507,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={18}
+                handlerTag={12}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -368,7 +599,7 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                               delayLongPress={600}
                               enabled={true}
                               exclusive={true}
-                              handlerTag={19}
+                              handlerTag={13}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
@@ -2360,7 +2591,7 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
                                   style={{}}
-                                  testID="chirp_action_options"
+                                  testID="delete"
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
@@ -2402,12 +2633,18 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                         }
                                       >
                                         <View>
-                                          {"name":"ios-ellipsis-horizontal","size":16,"color":"#3742fa"}
+                                          {"name":"ios-trash","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
                                   </RNGestureHandlerButton>
                                 </View>
+                                <Modal
+                                  hardwareAccelerated={false}
+                                  onRequestClose={[Function]}
+                                  transparent={true}
+                                  visible={false}
+                                />
                               </View>
                               <View
                                 style={
@@ -2742,7 +2979,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={20}
+                handlerTag={24}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -2834,7 +3071,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                               delayLongPress={600}
                               enabled={true}
                               exclusive={true}
-                              handlerTag={21}
+                              handlerTag={25}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
@@ -3050,7 +3287,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                     delayLongPress={600}
                                     enabled={true}
                                     exclusive={true}
-                                    handlerTag={22}
+                                    handlerTag={26}
                                     handlerType="NativeViewGestureHandler"
                                     onGestureEvent={[Function]}
                                     onGestureHandlerEvent={[Function]}
@@ -3141,7 +3378,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                     delayLongPress={600}
                                     enabled={true}
                                     exclusive={true}
-                                    handlerTag={23}
+                                    handlerTag={27}
                                     handlerType="NativeViewGestureHandler"
                                     onGestureEvent={[Function]}
                                     onGestureHandlerEvent={[Function]}
@@ -3235,7 +3472,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                     delayLongPress={600}
                                     enabled={true}
                                     exclusive={true}
-                                    handlerTag={24}
+                                    handlerTag={28}
                                     handlerType="NativeViewGestureHandler"
                                     onGestureEvent={[Function]}
                                     onGestureHandlerEvent={[Function]}
@@ -3322,14 +3559,14 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                   onResponderTerminationRequest={[Function]}
                                   onStartShouldSetResponder={[Function]}
                                   style={{}}
-                                  testID="chirp_action_options"
+                                  testID="delete"
                                 >
                                   <RNGestureHandlerButton
                                     collapsable={false}
                                     delayLongPress={600}
                                     enabled={true}
                                     exclusive={true}
-                                    handlerTag={25}
+                                    handlerTag={29}
                                     handlerType="NativeViewGestureHandler"
                                     onGestureEvent={[Function]}
                                     onGestureHandlerEvent={[Function]}
@@ -3364,12 +3601,18 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                         }
                                       >
                                         <View>
-                                          {"name":"ios-ellipsis-horizontal","size":16,"color":"#3742fa"}
+                                          {"name":"ios-trash","size":16,"color":"#3742fa"}
                                         </View>
                                       </View>
                                     </View>
                                   </RNGestureHandlerButton>
                                 </View>
+                                <Modal
+                                  hardwareAccelerated={false}
+                                  onRequestClose={[Function]}
+                                  transparent={true}
+                                  visible={false}
+                                />
                               </View>
                               <View
                                 style={
@@ -3704,7 +3947,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={26}
+                handlerTag={30}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -3796,7 +4039,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                               delayLongPress={600}
                               enabled={true}
                               exclusive={true}
-                              handlerTag={27}
+                              handlerTag={31}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
@@ -4012,7 +4255,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                     delayLongPress={600}
                                     enabled={true}
                                     exclusive={true}
-                                    handlerTag={28}
+                                    handlerTag={32}
                                     handlerType="NativeViewGestureHandler"
                                     onGestureEvent={[Function]}
                                     onGestureHandlerEvent={[Function]}
@@ -4103,7 +4346,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                     delayLongPress={600}
                                     enabled={true}
                                     exclusive={true}
-                                    handlerTag={29}
+                                    handlerTag={33}
                                     handlerType="NativeViewGestureHandler"
                                     onGestureEvent={[Function]}
                                     onGestureHandlerEvent={[Function]}
@@ -4197,7 +4440,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                     delayLongPress={600}
                                     enabled={true}
                                     exclusive={true}
-                                    handlerTag={30}
+                                    handlerTag={34}
                                     handlerType="NativeViewGestureHandler"
                                     onGestureEvent={[Function]}
                                     onGestureHandlerEvent={[Function]}

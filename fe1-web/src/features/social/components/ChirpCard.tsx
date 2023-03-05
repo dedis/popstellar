@@ -155,7 +155,6 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-  // @ts-ignore
   return (
     <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
       <PoPTouchableOpacity
