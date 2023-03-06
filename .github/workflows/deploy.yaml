@@ -10,7 +10,7 @@ jobs:
   deploy_fe1:
     name: Release and deploy fe1-web
 
-    if:  ${{ startsWith(github.event.release.tag_name, 'fe1-') }}
+    if:  ${{ startsWith(github.event.release.tag_name, 'fe1-') || startsWith(github.event.release.tag_name, 'all-') }}
     runs-on: ubuntu-latest
 
     env:
@@ -75,7 +75,7 @@ jobs:
   deploy_be1:
     name: Release and deploy be1-go
 
-    if:  ${{ startsWith(github.event.release.tag_name, 'be1-') }}
+    if:  ${{ startsWith(github.event.release.tag_name, 'be1-') || startsWith(github.event.release.tag_name, 'all-') }}
     runs-on: ubuntu-latest
 
     env:
@@ -117,7 +117,7 @@ jobs:
   deploy_be2:
     name: Release and deploy be2-scala
 
-    if:  ${{ startsWith(github.event.release.tag_name, 'be2-') }}
+    if:  ${{ startsWith(github.event.release.tag_name, 'be2-') || startsWith(github.event.release.tag_name, 'all-') }}
     runs-on: ubuntu-latest
 
     env:
