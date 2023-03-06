@@ -28,7 +28,7 @@ object LaoValidator extends MessageDataContentValidator {
 
   private val dupWitnessError = "duplicate witnesses keys"
   private val unexpectedID = "unexpected id"
-  private val addressRegPat = "^.*:\\/\\/[a-zA-Z0-9.]+:?[0-9]*[a-zA-Z0-9\\/]*".r
+  private val addressRegPat = "^.*:\\/\\/[a-zA-Z0-9.\\-_]+:?[0-9]*[a-zA-Z0-9\\/\\-_]*".r
 
   sealed class LaoValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
 
