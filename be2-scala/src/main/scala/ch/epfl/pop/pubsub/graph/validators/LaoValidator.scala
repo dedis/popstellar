@@ -5,13 +5,12 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, GreetLao, StateLao, UpdateLao}
-import ch.epfl.pop.model.objects.{Channel, ChannelData, DbActorNAckException, Hash, PublicKey, WitnessSignaturePair}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent._
-import scala.util.matching.Regex
 import scala.util.{Failure, Success}
 
 object LaoValidator extends MessageDataContentValidator {
@@ -39,7 +38,7 @@ object LaoValidator extends MessageDataContentValidator {
       rpcMessage.getParamsMessage match {
         case Some(message: Message) =>
           val (createLao, _, senderPK, channel) = extractData[CreateLao](rpcMessage)
-          val expectedHash: Hash = Hash.fromStrings( // needs Checking in docs or protocol.
+          val expectedHash: Hash = Hash.fromStrings(
             createLao.organizer.base64Data.toString,
             createLao.creation.toString,
             createLao.name
