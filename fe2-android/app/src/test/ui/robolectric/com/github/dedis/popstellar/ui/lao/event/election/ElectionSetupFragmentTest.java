@@ -50,6 +50,7 @@ import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObj
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
 import static com.github.dedis.popstellar.testutils.pages.lao.event.EventCreationPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.lao.event.election.ElectionSetupPageObject.*;
+import static com.github.dedis.popstellar.ui.lao.event.election.adapters.ElectionSetupViewPagerAdapter.hasDuplicate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
@@ -508,5 +509,42 @@ public class ElectionSetupFragmentTest {
             matches(
                 withSpinnerText(
                     containsString(ElectionVersion.SECRET_BALLOT.getStringBallotVersion()))));
+  }
+
+  @Test
+  public void cannotSubmitWithIdenticalQuestionName() {
+    electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
+    pickValidDateAndTime();
+
+    // Add Question 1, with 3 ballots options, no write in
+    questionText().perform(click(), typeText("Question 1"), closeSoftKeyboard());
+    addBallot().perform(click());
+
+    for (int i = 0; i < 3; ++i) {
+      ballotOptionAtPosition(i).perform(click(), typeText("answer 1." + i), closeSoftKeyboard());
+    }
+
+    // Add Question 2, with 2 ballots options, with write in, with same name as Question 1
+    addQuestion().perform(click());
+    questionText().perform(click(), typeText("Question 1"), closeSoftKeyboard());
+    writeIn().perform(click());
+
+    for (int i = 0; i < 2; ++i) {
+      ballotOptionAtPosition(i).perform(click(), typeText("answer 2." + i), closeSoftKeyboard());
+    }
+
+    // Ensure that the submit button is not enabled
+    submit().check(matches(isNotEnabled()));
+  }
+
+  @Test
+  public void detectDuplicates() {
+    List<String> questionsDuplicated =
+        new ArrayList<>(Arrays.asList("Question 1", "Question 2", "Question 2", "Question 4"));
+    List<String> questionsNotDuplicated =
+        new ArrayList<>(Arrays.asList("Question 1", "Question 2", "Question 3", "Question 4"));
+
+    assertTrue(hasDuplicate(questionsDuplicated));
+    assertFalse(hasDuplicate(questionsNotDuplicated));
   }
 }
