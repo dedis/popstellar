@@ -428,7 +428,7 @@ namespace STRINGS {
   export const wallet_home_rollcall_current_pop_tokens = 'Current tokens';
   export const wallet_home_rollcall_previous_pop_tokens = 'Previous tokens';
   export const wallet_home_rollcall_pop_token_valid = 'Current';
-  export const wallet_home_rollcall_QRcode_text = 'Scan to get token';
+  export const wallet_home_rollcall_QRcode_text = 'Scan to get\nuser token';
 
   export const wallet_home_rollcall_no_pop_tokens = 'No PoP tokens';
   export const wallet_home_rollcall_no_pop_tokens_description =
