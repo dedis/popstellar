@@ -327,7 +327,10 @@ export const SendReceiveHeaderRight = () => {
           </ModalHeader>
 
           <View>
-            <QRCode value={ScannablePopToken.encodePopToken({ pop_token: popToken })} />
+            <QRCode
+              value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
+              overlayText={STRINGS.digital_cash_wallet_QRcode_text}
+            />
           </View>
 
           <Text style={[Typography.small, styles.publicKey]} selectable>

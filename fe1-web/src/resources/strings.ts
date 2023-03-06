@@ -291,6 +291,7 @@ namespace STRINGS {
     'The Roll Call is currently open and you as the organizer should start adding attendees by scanning their PoP tokens.';
   export const roll_call_open_attendee =
     'The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.';
+  export const roll_call_QRcode_text = 'To be scanned';
 
   export const roll_call_error_open_roll_call = 'Unable to send roll call open request';
   export const roll_call_error_scanning_no_alias =
@@ -427,6 +428,7 @@ namespace STRINGS {
   export const wallet_home_rollcall_current_pop_tokens = 'Current tokens';
   export const wallet_home_rollcall_previous_pop_tokens = 'Previous tokens';
   export const wallet_home_rollcall_pop_token_valid = 'Current';
+  export const wallet_home_rollcall_QRcode_text = 'Scan to get token';
 
   export const wallet_home_rollcall_no_pop_tokens = 'No PoP tokens';
   export const wallet_home_rollcall_no_pop_tokens_description =
@@ -448,6 +450,7 @@ namespace STRINGS {
     'Your balance for this lao is the sum of the balances of each roll call token you own in this lao. ' +
     'The distribution of your total balance is visible in the list below. ' +
     'To send cash from one of the accounts, simply tap on it.';
+  export const digital_cash_wallet_QRcode_text = 'Scan to set\nas recipient';
 
   export const digital_cash_coin_issuance = 'Coin Issuance';
   export const digital_cash_coin_issuance_description =
