@@ -39,7 +39,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   private String laoId;
 
   private final Set<PublicKey> attendees = new HashSet<>();
-  private Runnable adapterUpdate;
+  private Runnable adapterUpdate = null;
 
   private final MutableLiveData<Integer> nbScanned = new MutableLiveData<>();
   private Observable<List<RollCall>> attendedRollCalls;
@@ -189,7 +189,9 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
 
     // this to display the initial number of attendees
     nbScanned.postValue(attendees.size());
-    adapterUpdate.run();
+    if (adapterUpdate != null) {
+      adapterUpdate.run();
+    }
   }
 
   /**
@@ -285,7 +287,9 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     Log.d(TAG, "Attendee " + publicKey + " successfully added");
     Toast.makeText(getApplication(), R.string.attendee_scan_success, Toast.LENGTH_SHORT).show();
     nbScanned.postValue(attendees.size());
-    adapterUpdate.run();
+    if (adapterUpdate != null) {
+      adapterUpdate.run();
+    }
   }
 
   @Override
