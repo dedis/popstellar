@@ -8,6 +8,7 @@ import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { mockReaction1 } from 'features/social/__tests__/utils';
 import { SocialMediaContext } from 'features/social/context';
+import STRINGS from 'resources/strings';
 
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
 import {
@@ -127,7 +128,7 @@ describe('ChirpCard', () => {
       const { getByText, getByTestId } = renderChirp(chirp, true);
       fireEvent.press(getByTestId('delete'));
 
-      expect(getByText('Are you sure you want to delete this chirp?')).toBeTruthy();
+      expect(getByText(STRINGS.social_media_ask_confirm_delete_chirp)).toBeTruthy();
     });
   });
 

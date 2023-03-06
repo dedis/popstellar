@@ -147,7 +147,9 @@ namespace STRINGS {
   export const button_publish = 'Publish';
   export const your_chirp = 'Your chirp';
   export const deleted_chirp = 'This chirp was deleted';
-  export const social_media_delete_chirp = 'Delete Chirp';
+  export const social_media_ask_confirm_delete_chirp =
+    'Are you sure you want to delete this chirp?';
+  export const social_media_confirm_delete_chirp = 'Confirm deletion';
   export const social_media_create_chirps_yet =
     'So far nobody has published a chirp and you could be the first one to do so!';
   export const social_media_create_chirp_no_pop_token =

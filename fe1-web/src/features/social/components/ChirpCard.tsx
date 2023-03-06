@@ -258,8 +258,8 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   <ConfirmModal
                     onConfirmPress={deleteChirp}
                     visibility={showDeleteConfirmation}
-                    description="Are you sure you want to delete this chirp?"
-                    title="Confirm Deletion"
+                    description={STRINGS.social_media_ask_confirm_delete_chirp}
+                    title={STRINGS.social_media_confirm_delete_chirp}
                     setVisibility={setShowDeleteConfirmation}
                   />
                 </View>
