@@ -79,16 +79,16 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
   }
 
   /** Check if all witnesses are distinct
-   *
-   * @param rpcMessage
-   * rpc message to validate
-   * @param witnesses
-   * witnesses to check
-   * @param error
-   * the error to forward in case the witnesses are not all distinct
-   * @return
-   * GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-   */
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param witnesses
+    *   witnesses to check
+    * @param error
+    *   the error to forward in case the witnesses are not all distinct
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
   def checkWitnesses(rpcMessage: JsonRpcRequest, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
     if (validateWitnesses(witnesses))
       Left(rpcMessage)
@@ -97,18 +97,18 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
   }
 
   /** Check if some String match the pattern
-   *
-   * @param rpcMessage
-   * rpc message to validate
-   * @param str
-   * the string to check
-   * @param pattern
-   * the pattern the name must match
-   * @param error
-   * the error to forward in case the name doesn't match the pattern
-   * @return
-   * GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-   */
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param str
+    *   the string to check
+    * @param pattern
+    *   the pattern the name must match
+    * @param error
+    *   the error to forward in case the name doesn't match the pattern
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
   def checkStringPattern(rpcMessage: JsonRpcRequest, str: String, pattern: Regex, error: PipelineError): GraphMessage = {
     if (pattern.matches(str))
       Left(rpcMessage)
@@ -117,18 +117,18 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
   }
 
   /** Checks witnesses key signature pairs for given modification id
-   *
-   * @param rpcMessage
-   * rpc message to validate
-   * @param witnessesKeyPairs
-   * the witness key signature pairs
-   * @param id
-   * modification id of the message
-   * @param error
-   * the error to forward in case of invalid modifications
-   * @return
-   * GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-   */
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param witnessesKeyPairs
+    *   the witness key signature pairs
+    * @param id
+    *   modification id of the message
+    * @param error
+    *   the error to forward in case of invalid modifications
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
   def checkWitnessesSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], id: Hash, error: PipelineError): GraphMessage = {
     if (validateWitnessSignatures(witnessesKeyPairs, id))
       Left(rpcMessage)
