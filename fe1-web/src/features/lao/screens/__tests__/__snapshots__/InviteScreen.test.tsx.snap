@@ -504,6 +504,11 @@ Connect"
 
                                 <Text
                                   selectable={true}
+                                  style={
+                                    {
+                                      "fontFamily": "Courier New",
+                                    }
+                                  }
                                 >
                                   -
                                   M
