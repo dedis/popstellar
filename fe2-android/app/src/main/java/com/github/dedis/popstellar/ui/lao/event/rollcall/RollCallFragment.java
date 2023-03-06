@@ -289,7 +289,7 @@ public class RollCallFragment extends Fragment {
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
     // Set the QR visible only if the rollcall is open and the user isn't the organizer
     binding.rollCallPkQrCode.setVisibility(
-        laoViewModel.isOrganizer() || !rollCall.isOpen() ? View.INVISIBLE : View.VISIBLE);
+        (laoViewModel.isOrganizer() || !rollCall.isOpen()) ? View.INVISIBLE : View.VISIBLE);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {
