@@ -29,6 +29,7 @@ object LaoValidator extends MessageDataContentValidator {
   private val dupWitnessError = "duplicate witnesses keys"
   private val unexpectedID = "unexpected id"
   private val addressRegPat = "^.*:\\/\\/[a-zA-Z0-9.\\-_]+:?[0-9]*[a-zA-Z0-9\\/\\-_]*".r
+  private val notEmptyStringPat = ".+".r
 
   sealed class LaoValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
 
@@ -73,9 +74,10 @@ object LaoValidator extends MessageDataContentValidator {
               Channel.ROOT_CHANNEL,
               validationError(s"trying to send a CreateLao message on a channel $channel other than ${Channel.ROOT_CHANNEL}")
             ),
-            checkLAOName(
+            checkStringPattern(
               rpcMessage,
               createLao.name,
+              notEmptyStringPat,
               validationError("LAO name must not be empty")
             )
           )
@@ -153,7 +155,7 @@ object LaoValidator extends MessageDataContentValidator {
               senderPK,
               validationError(s"unexpected frontend public key ${greetLao.frontend}")
             ),
-            checkAddressPattern(
+            checkStringPattern(
               rpcMessage,
               greetLao.address,
               addressRegPat,
@@ -250,24 +252,6 @@ object LaoValidator extends MessageDataContentValidator {
       Right(error)
   }
 
-  /** Check if the LAO's name is empty
-    *
-    * @param rpcMessage
-    *   rpc message to validate
-    * @param name
-    *   the name to check
-    * @param error
-    *   the error to forward in case the name si empty
-    * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-    */
-  private def checkLAOName(rpcMessage: JsonRpcRequest, name: String, error: PipelineError): GraphMessage = {
-    if (name.nonEmpty)
-      Left(rpcMessage)
-    else
-      Right(error)
-  }
-
   /** Checks witnesses key signature pairs for given modification id
     *
     * @param rpcMessage
@@ -283,26 +267,6 @@ object LaoValidator extends MessageDataContentValidator {
     */
   private def checkWitnessesSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], id: Hash, error: PipelineError): GraphMessage = {
     if (validateWitnessSignatures(witnessesKeyPairs, id))
-      Left(rpcMessage)
-    else
-      Right(error)
-  }
-
-  /** Check if the address starts with the given string
-    *
-    * @param rpcMessage
-    *   rpc message to validate
-    * @param address
-    *   the address to check
-    * @param pattern
-    *   the pattern the address must match
-    * @param error
-    *   the error to forward in case the address doesn't start with the expected string
-    * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-    */
-  private def checkAddressPattern(rpcMessage: JsonRpcRequest, address: String, pattern: Regex, error: PipelineError): GraphMessage = {
-    if (pattern.matches(address))
       Left(rpcMessage)
     else
       Right(error)

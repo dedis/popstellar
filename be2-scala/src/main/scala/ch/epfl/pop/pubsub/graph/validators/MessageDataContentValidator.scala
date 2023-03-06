@@ -1,11 +1,13 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.{JsonRpcRequest}
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+
+import scala.util.matching.Regex
 
 trait MessageDataContentValidator extends ContentValidator with AskPatternConstants {
   implicit lazy val dbActor: AskableActorRef = DbActor.getInstance
@@ -89,6 +91,26 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
    */
   def checkWitnesses(rpcMessage: JsonRpcRequest, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
     if (validateWitnesses(witnesses))
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Check if some String match the pattern
+   *
+   * @param rpcMessage
+   * rpc message to validate
+   * @param str
+   * the string to check
+   * @param pattern
+   * the pattern the name must match
+   * @param error
+   * the error to forward in case the name doesn't match the pattern
+   * @return
+   * GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+   */
+  def checkStringPattern(rpcMessage: JsonRpcRequest, str: String, pattern: Regex, error: PipelineError): GraphMessage = {
+    if (pattern.matches(str))
       Left(rpcMessage)
     else
       Right(error)
