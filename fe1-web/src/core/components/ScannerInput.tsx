@@ -32,7 +32,7 @@ const ScannerInput = ({
   onBlur,
   enabled,
   testID,
-  customFont,
+  isMonospaced,
 }: IPropTypes) => {
   return (
     <View style={styles.container}>
@@ -51,7 +51,7 @@ const ScannerInput = ({
           placeholder={placeholder || undefined}
           onChange={onChange}
           testID={testID || undefined}
-          customFont={customFont}
+          isMonospaced={isMonospaced}
         />
       </View>
       <View style={styles.button}>
@@ -73,7 +73,7 @@ const propTypes = {
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
   testID: PropTypes.string,
-  customFont: PropTypes.string,
+  isMonospaced: PropTypes.bool,
 };
 ScannerInput.propTypes = propTypes;
 ScannerInput.defaultProps = {
@@ -83,7 +83,7 @@ ScannerInput.defaultProps = {
   onFocus: undefined,
   onBlur: undefined,
   testID: undefined,
-  customFont: '',
+  isMonospaced: false,
 };
 
 type IPropTypes = Omit<PropTypes.InferProps<typeof propTypes>, 'onChange'> & {

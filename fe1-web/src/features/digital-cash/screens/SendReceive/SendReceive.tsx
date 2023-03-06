@@ -258,7 +258,7 @@ const SendReceive = () => {
             }}
             onFocus={() => setBeneficiaryFocused(true)}
             placeholder={STRINGS.digital_cash_wallet_beneficiary_placeholder}
-            customFont="monospace"
+            isMonospaced
           />
         )}
         <Text style={[Typography.paragraph, Typography.important]}>
