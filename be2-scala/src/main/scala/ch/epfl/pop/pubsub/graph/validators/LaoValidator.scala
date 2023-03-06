@@ -230,24 +230,6 @@ object LaoValidator extends MessageDataContentValidator {
     }
   }
 
-  /** Check if all witnesses are distinct
-    *
-    * @param rpcMessage
-    *   rpc message to validate
-    * @param witnesses
-    *   witnesses to check
-    * @param error
-    *   the error to forward in case the witnesses are not all distinct
-    * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-    */
-  private def checkWitnesses(rpcMessage: JsonRpcRequest, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
-    if (validateWitnesses(witnesses))
-      Left(rpcMessage)
-    else
-      Right(error)
-  }
-
   /** Check for chan1 and chan2 equality
     *
     * @param rpcMessage

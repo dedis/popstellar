@@ -76,6 +76,24 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Right(error)
   }
 
+  /** Check if all witnesses are distinct
+   *
+   * @param rpcMessage
+   * rpc message to validate
+   * @param witnesses
+   * witnesses to check
+   * @param error
+   * the error to forward in case the witnesses are not all distinct
+   * @return
+   * GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+   */
+  def checkWitnesses(rpcMessage: JsonRpcRequest, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
+    if (validateWitnesses(witnesses))
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
   /** Check whether a list of <witnesses> public keys are valid or not
     *
     * @param witnesses
