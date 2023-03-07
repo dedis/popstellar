@@ -468,6 +468,9 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                   "textAlign": "center",
                                                 },
                                                 {
+                                                  "fontFamily": "Courier New",
+                                                },
+                                                {
                                                   "marginTop": 8,
                                                 },
                                               ]
@@ -1024,6 +1027,9 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                 },
                                                 {
                                                   "textAlign": "center",
+                                                },
+                                                {
+                                                  "fontFamily": "Courier New",
                                                 },
                                                 {
                                                   "marginTop": 8,
@@ -1588,6 +1594,9 @@ exports[`SocialTopChirps renders correctly 1`] = `
                                                 },
                                                 {
                                                   "textAlign": "center",
+                                                },
+                                                {
+                                                  "fontFamily": "Courier New",
                                                 },
                                                 {
                                                   "marginTop": 8,

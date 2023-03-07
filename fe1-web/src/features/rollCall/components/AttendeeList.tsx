@@ -29,7 +29,10 @@ const AttendeeList = ({ popTokens }: IPropTypes) => {
                 <PoPIcon name="qrCode" color={Color.primary} size={Icon.size} />
               </View>
               <ListItem.Content>
-                <ListItem.Title style={Typography.base} numberOfLines={1} selectable>
+                <ListItem.Title
+                  style={[Typography.base, Typography.code]}
+                  numberOfLines={1}
+                  selectable>
                   {token.valueOf()}
                 </ListItem.Title>
               </ListItem.Content>

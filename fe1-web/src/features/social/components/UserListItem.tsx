@@ -67,7 +67,7 @@ const UserListItem = ({ publicKey, isFirstItem, isLastItem }: IPropTypes) => {
         <ProfileIcon publicKey={publicKey} />
       </View>
       <ListItem.Content>
-        <ListItem.Title style={Typography.base} numberOfLines={1}>
+        <ListItem.Title style={[Typography.base, Typography.code]} numberOfLines={1}>
           {publicKey.valueOf()}
         </ListItem.Title>
       </ListItem.Content>

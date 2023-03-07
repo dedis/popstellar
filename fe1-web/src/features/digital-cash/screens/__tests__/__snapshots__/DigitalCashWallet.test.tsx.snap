@@ -544,6 +544,7 @@ exports[`DigitalCashWallet renders correctly for non-organizers 1`] = `
                                         {
                                           "backgroundColor": "transparent",
                                           "color": "#242424",
+                                          "fontFamily": "Courier New",
                                           "fontSize": 16,
                                           "lineHeight": 20,
                                         }
@@ -1492,6 +1493,7 @@ exports[`DigitalCashWallet renders correctly for organizers 1`] = `
                                         {
                                           "backgroundColor": "transparent",
                                           "color": "#242424",
+                                          "fontFamily": "Courier New",
                                           "fontSize": 16,
                                           "lineHeight": 20,
                                         }

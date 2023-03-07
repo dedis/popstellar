@@ -30,9 +30,14 @@ export const inputStyleSheet = StyleSheet.create({
 });
 
 const Input = (props: IPropTypes) => {
-  const { value, placeholder, onChange, onFocus, onBlur, enabled, negative, testID } = props;
+  const { value, placeholder, onChange, onFocus, onBlur, enabled, negative, testID, isMonospaced } =
+    props;
 
   const inputStyles = [Typography.paragraph, inputStyleSheet.input];
+
+  if (isMonospaced) {
+    inputStyles.push(Typography.code);
+  }
 
   if (!enabled) {
     inputStyles.push(inputStyleSheet.disabled);
@@ -68,6 +73,7 @@ const propTypes = {
   enabled: PropTypes.bool,
   negative: PropTypes.bool,
   testID: PropTypes.string,
+  isMonospaced: PropTypes.bool,
 };
 Input.propTypes = propTypes;
 Input.defaultProps = {
@@ -78,6 +84,7 @@ Input.defaultProps = {
   enabled: true,
   negative: false,
   testID: undefined,
+  isMonospaced: false,
 };
 
 type IPropTypes = Omit<PropTypes.InferProps<typeof propTypes>, 'onChange'> & {

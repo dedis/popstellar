@@ -421,6 +421,9 @@ exports[`ChirpCard for deletion render correct for a deleted chirp 1`] = `
                                           "textAlign": "center",
                                         },
                                         {
+                                          "fontFamily": "Courier New",
+                                        },
+                                        {
                                           "marginTop": 8,
                                         },
                                       ]
@@ -1034,6 +1037,9 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
                                         },
                                         {
                                           "textAlign": "center",
+                                        },
+                                        {
+                                          "fontFamily": "Courier New",
                                         },
                                         {
                                           "marginTop": 8,
@@ -1923,6 +1929,9 @@ exports[`ChirpCard for deletion renders correctly for sender 1`] = `
                                         },
                                         {
                                           "textAlign": "center",
+                                        },
+                                        {
+                                          "fontFamily": "Courier New",
                                         },
                                         {
                                           "marginTop": 8,
@@ -2887,6 +2896,9 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
                                           "textAlign": "center",
                                         },
                                         {
+                                          "fontFamily": "Courier New",
+                                        },
+                                        {
                                           "marginTop": 8,
                                         },
                                       ]
@@ -3847,6 +3859,9 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
                                         },
                                         {
                                           "textAlign": "center",
+                                        },
+                                        {
+                                          "fontFamily": "Courier New",
                                         },
                                         {
                                           "marginTop": 8,
