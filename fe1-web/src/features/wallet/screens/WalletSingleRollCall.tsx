@@ -37,7 +37,7 @@ const WalletSingleRollCall = () => {
       <View>
         <QRCode
           value={ScannablePopToken.encodePopToken({ pop_token: rollCallTokenPublicKey })}
-          overlayText={STRINGS.wallet_home_rollcall_QRcode_text}
+          overlayText={STRINGS.wallet_home_rollcall_qrcode_text}
         />
       </View>
 

@@ -1720,7 +1720,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                               The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.
                             </Text>
                             <qrcode
-                              overlayText="To be scanned"
+                              overlayText="To be scanned to connect"
                               value="{"pop_token":""}"
                             />
                             <View
@@ -2607,7 +2607,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                               The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.
                             </Text>
                             <qrcode
-                              overlayText="To be scanned"
+                              overlayText="To be scanned to connect"
                               value="{"pop_token":""}"
                             />
                             <View

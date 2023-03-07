@@ -173,7 +173,7 @@ const RollCallOpen = ({
           <Text style={Typography.paragraph}>{STRINGS.roll_call_open_attendee}</Text>
           <QRCode
             value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
-            overlayText={STRINGS.roll_call_QRcode_text}
+            overlayText={STRINGS.roll_call_qrcode_text}
           />
         </>
       )}

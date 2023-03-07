@@ -329,7 +329,7 @@ export const SendReceiveHeaderRight = () => {
           <View>
             <QRCode
               value={ScannablePopToken.encodePopToken({ pop_token: popToken })}
-              overlayText={STRINGS.digital_cash_wallet_QRcode_text}
+              overlayText={STRINGS.digital_cash_wallet_qrcode_text}
             />
           </View>
 
