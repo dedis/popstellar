@@ -20,7 +20,7 @@ object Hash {
     * @return
     *   resulting hash
     */
-  def fromStrings(data: String*): Hash = Hash.sha256Hash(data.foldLeft("")((acc, s) => acc + s.length + s))
+  def fromStrings(data: String*): Hash = Hash.sha256Hash(data.foldLeft("")((acc, s) => acc + s.getBytes(StandardCharsets.UTF_8).length + s))
 
   /** Create a hash of a string
     *
