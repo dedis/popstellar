@@ -132,7 +132,11 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     * @param dbActor
     *   the DbActor we use (by default the main one, obtained through getInstance)
     */
-  def validateChannelType(channelObjectType: ObjectType.ObjectType, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
+  def validateChannelType(
+      channelObjectType: ObjectType.ObjectType,
+      channel: Channel,
+      dbActor: AskableActorRef = DbActor.getInstance
+  ): Boolean = {
     val ask = dbActor ? DbActor.ReadChannelData(channel)
     Await.ready(ask, duration).value.get match {
       case Success(DbActor.DbActorReadChannelDataAck(channelData)) => channelData.channelType == channelObjectType
@@ -167,7 +171,12 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     * @return
     *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
     */
-  def checkMsgSenderKey(rpcMessage: JsonRpcRequest, expectedKey: PublicKey, msgSenderKey: PublicKey, error: PipelineError): GraphMessage = {
+  def checkMsgSenderKey(
+      rpcMessage: JsonRpcRequest,
+      expectedKey: PublicKey,
+      msgSenderKey: PublicKey,
+      error: PipelineError
+  ): GraphMessage = {
     if (expectedKey == msgSenderKey)
       Left(rpcMessage)
     else

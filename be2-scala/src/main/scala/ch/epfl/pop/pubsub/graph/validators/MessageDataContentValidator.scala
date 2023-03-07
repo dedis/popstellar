@@ -129,7 +129,12 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     * @return
     *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
     */
-  def checkWitnessesSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], id: Hash, error: PipelineError): GraphMessage = {
+  def checkWitnessesSignatures(
+      rpcMessage: JsonRpcRequest,
+      witnessesKeyPairs: List[WitnessSignaturePair],
+      id: Hash,
+      error: PipelineError
+  ): GraphMessage = {
     if (validateWitnessSignatures(witnessesKeyPairs, id))
       Left(rpcMessage)
     else
