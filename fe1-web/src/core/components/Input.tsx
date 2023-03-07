@@ -27,9 +27,6 @@ export const inputStyleSheet = StyleSheet.create({
   disabled: {
     color: Color.gray,
   },
-  monospaced: {
-    ...Typography.code,
-  },
 });
 
 const Input = (props: IPropTypes) => {
@@ -39,7 +36,7 @@ const Input = (props: IPropTypes) => {
   const inputStyles = [Typography.paragraph, inputStyleSheet.input];
 
   if (isMonospaced) {
-    inputStyles.push(inputStyleSheet.monospaced);
+    inputStyles.push(Typography.code);
   }
 
   if (!enabled) {
