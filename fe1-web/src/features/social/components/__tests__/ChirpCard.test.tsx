@@ -4,11 +4,11 @@ import React from 'react';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { useActionSheet } from 'core/hooks/ActionSheet';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { mockReaction1 } from 'features/social/__tests__/utils';
 import { SocialMediaContext } from 'features/social/context';
+import STRINGS from 'resources/strings';
 
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
 import {
@@ -22,9 +22,6 @@ jest.mock('core/hooks/ActionSheet.ts', () => {
   const showActionSheet = jest.fn();
   return { useActionSheet: () => showActionSheet };
 });
-
-// eslint-disable-next-line react-hooks/rules-of-hooks
-const showActionSheet = useActionSheet();
 
 // region test data
 const TIMESTAMP = 1609455600; // 31 December 2020
@@ -122,16 +119,16 @@ describe('ChirpCard', () => {
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
-    it('options shown correctly', async () => {
-      const { getByTestId } = renderChirp(chirp, true);
-      fireEvent.press(getByTestId(`chirp_action_options`));
-
-      expect(showActionSheet).toHaveBeenCalledTimes(1);
-    });
-
     it('render correct for a deleted chirp', () => {
       const obj = renderChirp(deletedChirp, true);
       expect(obj.toJSON()).toMatchSnapshot();
+    });
+
+    it('delete shows confirmation windows', () => {
+      const { getByText, getByTestId } = renderChirp(chirp, true);
+      fireEvent.press(getByTestId('delete'));
+
+      expect(getByText(STRINGS.social_media_ask_confirm_delete_chirp)).toBeTruthy();
     });
   });
 
