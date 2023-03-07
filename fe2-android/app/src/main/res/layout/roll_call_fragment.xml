@@ -148,7 +148,7 @@
       android:scrollbarStyle="outsideOverlay"
       android:layout_width="@dimen/qr_rollcall_img"
       android:layout_height="@dimen/qr_rollcall_img"
-      android:layout_marginEnd="10dp"
+      android:layout_marginEnd="@dimen/roll_call_attendees_end_margin"
       android:fadeScrollbars="true"
       android:scrollbarSize="@dimen/event_layout_arrow_end_margin"
       android:scrollbars="vertical"

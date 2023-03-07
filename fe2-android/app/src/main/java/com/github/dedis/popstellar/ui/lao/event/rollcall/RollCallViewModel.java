@@ -39,7 +39,6 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   private String laoId;
 
   private final Set<PublicKey> attendees = new HashSet<>();
-  private Runnable adapterUpdate = null;
 
   private final MutableLiveData<Integer> nbScanned = new MutableLiveData<>();
   private Observable<List<RollCall>> attendedRollCalls;
@@ -51,8 +50,6 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   private final SchedulerProvider schedulerProvider;
   private final Wallet wallet;
   private final Gson gson;
-
-  private PublicKey key = null;
 
   @Inject
   public RollCallViewModel(
@@ -181,17 +178,13 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     attendees.addAll(rollCall.getAttendees());
 
     try {
-      key = keyManager.getPoPToken(laoView, rollCall).getPublicKey();
-      attendees.add(new PublicKey(key.getData()));
+      attendees.add(keyManager.getPoPToken(laoView, rollCall).getPublicKey());
     } catch (KeyException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
 
     // this to display the initial number of attendees
     nbScanned.postValue(attendees.size());
-    if (adapterUpdate != null) {
-      adapterUpdate.run();
-    }
   }
 
   /**
@@ -287,9 +280,6 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     Log.d(TAG, "Attendee " + publicKey + " successfully added");
     Toast.makeText(getApplication(), R.string.attendee_scan_success, Toast.LENGTH_SHORT).show();
     nbScanned.postValue(attendees.size());
-    if (adapterUpdate != null) {
-      adapterUpdate.run();
-    }
   }
 
   @Override
@@ -297,20 +287,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     return nbScanned;
   }
 
-  public void setAdapter(Runnable adapterUpdate) {
-    this.adapterUpdate = adapterUpdate;
-  }
-
-  /**
-   * This function is used to have on-fly updates of the scanned attendees for the organizer. The
-   * token of the organizer is filtered out from the list as it's not scanned.
-   *
-   * @return a list of string representing the tokens of the scanned participants so far
-   */
-  public List<String> getScanned() {
-    return attendees.stream()
-        .filter(x -> !x.equals(key))
-        .map(PublicKey::getEncoded)
-        .collect(Collectors.toList());
+  public Set<PublicKey> getAttendees() {
+    return attendees;
   }
 }
