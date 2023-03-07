@@ -306,8 +306,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 
 	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
 	if alreadyReceived {
-		h.log.Info().Msg("message was already received")
-		return publish.ID, nil
+		return publish.ID, xerrors.Errorf("message %s was already received", publish.Params.Message.MessageID)
 	}
 
 	if err != nil {
