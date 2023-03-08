@@ -74,7 +74,9 @@ const isQuestionInvalid = (question: NewQuestion): boolean =>
  * @param questions The list of questions
  */
 const haveQuestionsSameTitle = (questions: NewQuestion[]): boolean => {
-  const questionTitles = questions.map((q: NewQuestion) => q.question);
+  const questionTitles = questions
+    .map((q: NewQuestion) => q.question.trim())
+    .filter((string) => string !== '');
   return questionTitles.length === new Set(questionTitles).size;
 };
 
@@ -151,7 +153,7 @@ const CreateElection = () => {
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const confirmButtonEnabled: boolean =
     isConnected === true &&
-    electionName !== '' &&
+    electionName.trim() !== '' &&
     !questions.some(isQuestionInvalid) &&
     haveQuestionsSameTitle(questions);
 
@@ -255,15 +257,15 @@ const CreateElection = () => {
             {STRINGS.election_create_question} {idx + 1}
           </Text>
           <Input
-            value={questions[idx].question}
+            value={value.question}
             testID={`question_selector_${idx}`}
             onChange={(text: string) =>
               setQuestions((prev) =>
                 prev.map((item, id) =>
-                  id === idx
+                  id === idx && text.trim() !== ''
                     ? {
                         ...item,
-                        question: text,
+                        question: text.trim(),
                       }
                     : item,
                 ),
@@ -282,7 +284,7 @@ const CreateElection = () => {
                   id === idx
                     ? {
                         ...item,
-                        ballot_options: ballot_options,
+                        ballot_options: ballot_options.filter((option) => option.trim() !== ''),
                       }
                     : item,
                 ),
@@ -302,7 +304,7 @@ const CreateElection = () => {
           {STRINGS.event_creation_must_be_connected}
         </Text>
       )}
-      {electionName === '' && (
+      {electionName.trim() === '' && (
         <Text style={[Typography.paragraph, Typography.error]}>
           {STRINGS.event_creation_name_not_empty}
         </Text>
