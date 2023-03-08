@@ -161,3 +161,80 @@ jobs:
             rsync -chav --delete \
               -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
               ./pop-scala.jar ${{env.dest}}
+
+  deploy_fe2:
+    name: Release and deploy fe2-android
+
+    if:  ${{ startsWith(github.event.release.tag_name, 'fe2-') || startsWith(github.event.release.tag_name, 'all-') }}
+    runs-on: ubuntu-latest
+
+    env:
+      base_folder: fe2-android
+      main_project_module: app
+      playstore_name: ${{ github.repository }}
+
+    defaults:
+      run:
+        working-directory: ./${{ env.base_folder }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      # Save some build information to inject into the APP
+      - name: Get the version
+        id: get_version
+        run: |
+          echo ::set-output name=version::$(echo ${GITHUB_REF/refs\/tags\//})
+          echo ::set-output name=version_file::$(echo ${GITHUB_REF/refs\/tags\//} | tr . _)
+          echo "::set-output name=shortsha::$(git rev-parse --short ${GITHUB_SHA})"
+          echo "::set-output name=buildurl::${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+          echo "::set-output name=date::$(date +'%d/%m/%y %H:%M')"
+
+      # Run Build Project
+      - name: Build gradle project
+        run: ./gradlew build
+
+      # Create APK Debug
+      - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
+        run: ./gradlew assembleDebug
+
+      # Create APK Release
+      - name: Build apk release project (APK) - ${{ env.main_project_module }} module
+        run: ./gradlew assemble
+
+      # Create Bundle AAB Release
+      - name: Build app bundle release (AAB) - ${{ env.main_project_module }} module
+        run: ./gradlew ${{ env.main_project_module }}:bundleRelease
+
+      # Upload Artifact Build
+      - name: Upload APK Debug - ${{ steps.get_version.outputs.version }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.get_version.outputs.version }} - ${{ env.playstore_name }} - ${{ steps.get_version.outputs.date }} - APK(s) debug generated
+          path: ${{ env.main_project_module }}/build/outputs/apk/debug/
+
+      - name: Upload APK Release - ${{ steps.get_version.outputs.version }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.get_version.outputs.version }} - ${{ env.playstore_name }} - ${{ steps.get_version.outputs.date }} - APK(s) release generated
+          path: ${{ env.main_project_module }}/build/outputs/apk/release/
+
+      - name: Upload AAB (App Bundle) Release - ${{ steps.get_version.outputs.version }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.get_version.outputs.version }} - ${{ env.playstore_name }} - ${{ steps.get_version.outputs.date }} - App bundle(s) AAB release generated
+          path: ${{ env.main_project_module }}/build/outputs/bundle/release/
+
+      # Upload release
+      # TODO
+
+      # Use rsync to deploy the apk on the website
+      # TODO
