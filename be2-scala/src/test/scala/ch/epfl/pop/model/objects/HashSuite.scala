@@ -66,4 +66,12 @@ class HashSuite extends FunSuite with Matchers {
 
     hash should equal(expected)
   }
+
+  test("Hash 'fromStrings' works with more mix-emojis strings") {
+    val hash: Hash = Hash.fromStrings("text 🥰", "🏉", "more text🎃️", "♠️")
+    val expected: Hash = Hash(Base64Data("wANKJFj9q_ncRKalYmK4yozUpet33JaFXVQEpMcHdfU="))
+
+    hash should equal(expected)
+  }
+
 }
