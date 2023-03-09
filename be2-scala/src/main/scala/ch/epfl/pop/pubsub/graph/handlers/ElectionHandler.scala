@@ -3,7 +3,6 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol.{KeyElectionFormat, resultElectionFormat}
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.VersionType._
 import ch.epfl.pop.model.network.method.message.data.election._
@@ -41,25 +40,25 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
   /** Overrides default DbActor with provided parameter
     */
   override final val dbActor: AskableActorRef = dbRef
+  private val serverUnexpectedAnswer: String = "The server is doing something unexpected"
 
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     // FIXME: add election info to election channel/electionData
-    val message: Message = rpcMessage.getParamsMessage.get
-    val data: SetupElection = message.decodedData.get.asInstanceOf[SetupElection]
-    val electionId: Hash = data.id
-    val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
-    val keyPair = KeyPair()
 
     // need to write and propagate the election message
     val combined = for {
+      (_, message, Some(data)) <- extractParameters[SetupElection](rpcMessage, serverUnexpectedAnswer)
+      electionId: Hash = data.id
+      electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
+      keyPair = KeyPair()
       _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
       _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
       _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
-    } yield ()
+    } yield (data, electionId, keyPair, electionChannel)
 
     Await.ready(combined, duration).value match {
-      case Some(Success(_)) =>
+      case Some(Success((data, electionId, keyPair, electionChannel))) =>
         // generating a key pair in case the version is secret-ballot, to send then the public key to the frontend
         data.version match {
           case OPEN_BALLOT => Left(rpcMessage)
