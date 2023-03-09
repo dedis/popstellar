@@ -4,12 +4,11 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, WitnessSignaturePair}
-import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkOwner, _}
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.storage.DbActor
-import ch.epfl.pop.storage.DbActor.DbActorReadRollCallDataAck
 
 object MeetingValidator extends MessageDataContentValidator with EventValidator {
 
@@ -38,10 +37,9 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
 
         val sender: PublicKey = message.sender
         val channel: Channel = rpcMessage.getParamsChannel
-        if (!data.end.isDefined)
-          Right(validationError("data.end is not defined"))
 
         runChecks(
+          checkDataEndIsDefined(rpcMessage, data.end, validationError("data.end is not defined")),
           checkTimestampStaleness(
             rpcMessage,
             data.creation,
@@ -84,13 +82,11 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: StateMeeting = message.decodedData.get.asInstanceOf[StateMeeting]
-
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
-        if (!data.end.isDefined)
-          Right(validationError("data.end is not defined"))
 
         runChecks(
+          checkDataEndIsDefined(rpcMessage, data.end, validationError("data.end is not defined")),
           checkTimestampStaleness(
             rpcMessage,
             data.creation,
@@ -131,11 +127,4 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
     }
   }
 
-  private def checkWitnessSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], data: Hash, error: PipelineError): GraphMessage = {
-    if(validateWitnessSignatures(witnessesKeyPairs, data)){
-      Left(rpcMessage)
-    }
-    else
-      Right(error)
-  }
 }
