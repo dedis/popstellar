@@ -4,8 +4,8 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
-import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, WitnessSignaturePair}
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator.{checkOwner, _}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.storage.DbActor
@@ -38,24 +38,42 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
 
         val sender: PublicKey = message.sender
         val channel: Channel = rpcMessage.getParamsChannel
+        if (!data.end.isDefined)
+          Right(validationError("data.end is not defined"))
 
-        if (!validateTimestampStaleness(data.creation)) {
-          Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
-        } else if (!validateTimestampStaleness(data.start)) {
-          Right(validationError(s"stale 'start' timestamp (${data.start})"))
-        } else if (data.end.isDefined && !validateTimestampOrder(data.creation, data.end.get)) {
-          Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})"))
-        } else if (data.end.isDefined && !validateTimestampOrder(data.start, data.end.get)) {
-          Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'start' (${data.start})"))
-        } else if (expectedHash != data.id) {
-          Right(validationError("unexpected id"))
-        } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"invalid sender $sender"))
-        } else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
-          Right(validationError(s"trying to send an CreateMeeting message on a wrong type of channel $channel"))
-        } else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            data.creation,
+            validationError(s"stale 'creation' timestamp (${data.creation})")
+          ),
+          checkTimestampStaleness(
+            rpcMessage,
+            data.start,
+            validationError(s"stale 'start' timestamp (${data.start})")
+          ),
+          checkTimestampOrder(
+            rpcMessage,
+            data.creation,
+            data.end.get,
+            validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})")
+          ),
+          checkTimestampOrder(
+            rpcMessage,
+            data.start,
+            data.end.get,
+            validationError(s"'end' (${data.end.get}) timestamp is smaller than 'start' (${data.start})")
+          ),
+          checkId(rpcMessage, expectedHash, data.id, validationError(s"unexpected id")),
+          checkOwner(rpcMessage, sender, channel, dbActorRef, validationError(s"invalid sender $sender")),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.LAO,
+            channel,
+            dbActorRef,
+            validationError(s"trying to send an CreateMeeting message on a wrong type of channel $channel")
+          )
+        )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
@@ -69,25 +87,55 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
 
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
+        if (!data.end.isDefined)
+          Right(validationError("data.end is not defined"))
 
-        if (!validateTimestampStaleness(data.creation)) {
-          Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
-        } else if (!validateTimestampOrder(data.creation, data.last_modified)) {
-          Right(validationError(s"'last_modified' (${data.last_modified}) timestamp is smaller than 'creation' (${data.creation})"))
-        } else if (!validateTimestampStaleness(data.start)) {
-          Right(validationError(s"stale 'start' timestamp (${data.start})"))
-        } else if (data.end.isDefined && !validateTimestampOrder(data.creation, data.end.get)) {
-          Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})"))
-        } else if (data.end.isDefined && !validateTimestampOrder(data.start, data.end.get)) {
-          Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'start' (${data.start})"))
-        } else if (!validateWitnessSignatures(data.modification_signatures, data.modification_id)) {
-          Right(validationError("witness key-signature pairs are not valid for the given modification_id"))
-        } else if (expectedHash != data.id) {
-          Right(validationError("unexpected id"))
-        } else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            data.creation,
+            validationError(s"stale 'creation' timestamp (${data.creation})")
+          ),
+          checkTimestampOrder(
+            rpcMessage,
+            data.creation,
+            data.last_modified,
+            validationError(s"'last_modified' (${data.last_modified}) timestamp is smaller than 'creation' (${data.creation})")
+          ),
+          checkTimestampStaleness(
+            rpcMessage,
+            data.start,
+            validationError(s"stale 'start' timestamp (${data.start})")
+          ),
+          checkTimestampOrder(
+            rpcMessage,
+            data.creation,
+            data.end.get,
+            validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})")
+          ),
+          checkTimestampOrder(
+            rpcMessage,
+            data.start,
+            data.end.get,
+            validationError(s"'end' (${data.end.get}) timestamp is smaller than 'start' (${data.start})")
+          ),
+          checkId(rpcMessage, expectedHash, data.id, validationError(s"unexpected id")),
+          checkWitnessSignatures(
+            rpcMessage,
+            data.modification_signatures,
+            data.modification_id,
+            validationError("witness key-signature pairs are not valid for the given modification_id")
+          )
+        )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
+  }
+
+  private def checkWitnessSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], data: Hash, error: PipelineError): GraphMessage = {
+    if(validateWitnessSignatures(witnessesKeyPairs, data)){
+      Left(rpcMessage)
+    }
+    else
+      Right(error)
   }
 }
