@@ -4,7 +4,7 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, Signature}
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, Signature, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -24,20 +24,15 @@ sealed class WitnessValidator(dbActorRef: => AskableActorRef) extends MessageDat
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: WitnessMessage = message.decodedData.get.asInstanceOf[WitnessMessage]
-        val signature: Signature = data.signature
-        val messageId: Hash = data.message_id
-        val sender: PublicKey = message.sender
-
         val channel: Channel = rpcMessage.getParamsChannel
+        val sender: PublicKey = message.sender
+        val witnessSignaturePair = WitnessSignaturePair(sender, data.signature)
+        val messageId: Hash = data.message_id
 
-        // check if the signature in the message received is valid
-        if (!signature.verify(sender, messageId.base64Data)) {
-          Right(validationError("verification of the signature over the message id failed"))
-        } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"invalid sender $sender"))
-        } else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkWitnessesSignatures(rpcMessage, List(witnessSignaturePair), data.message_id, validationError("verification of the signature over the message id failed")),
+          checkOwner(rpcMessage, sender, channel, dbActorRef, validationError(s"invalid sender $sender"))
+        )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
