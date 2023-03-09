@@ -4,7 +4,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.coin.PostTransaction
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.objects.{Channel, Hash, Transaction}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
@@ -17,18 +17,36 @@ case object CoinValidator extends MessageDataContentValidator {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: PostTransaction = message.decodedData.get.asInstanceOf[PostTransaction]
-        if (data.transactionId != data.transaction.transactionId) {
-          Right(validationError("incorrect transaction id"))
-        } else if (!data.transaction.checkSignatures()) {
-          Right(validationError("bad signature"))
-        } else {
-          data.transaction.sumOutputs() match {
-            case Left(err) => Right(validationError(err.getMessage()))
-            case Right(_)  => Left(rpcMessage)
-          }
-        }
+
+        runChecks(
+          checkTransactionId(rpcMessage, data.transactionId, data.transaction.transactionId, validationError("incorrect transaction id")),
+          checkTransactionSignatures(rpcMessage, data.transaction, validationError("bad signature")),
+          checkSumOutputs(rpcMessage, data.transaction)
+        )
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
+  private def checkTransactionId(rpcMessage: JsonRpcRequest, transactionId: Hash, expectedTransactionId: Hash, error: PipelineError): GraphMessage = {
+    if (transactionId == expectedTransactionId)
+      Left(rpcMessage)
+    else {
+      Right(error)
+    }
+  }
+  private def checkTransactionSignatures(rpcMessage: JsonRpcRequest, transaction: Transaction, error: PipelineError): GraphMessage = {
+    if (transaction.checkSignatures())
+      Left(rpcMessage)
+    else {
+      Right(error)
+    }
+  }
+  private def checkSumOutputs(rpcMessage: JsonRpcRequest, transaction: Transaction): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "PostTransaction", rpcMessage.id)
+    transaction.sumOutputs() match {
+      case Left(err) => Right(validationError(err.getMessage()))
+      case Right(_)  => Left(rpcMessage)
+    }
+  }
+
 }
