@@ -162,11 +162,40 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
   final def validateWitnessSignatures(witnessesKeyPairs: List[WitnessSignaturePair], data: Hash): Boolean =
     witnessesKeyPairs.forall(wsp => wsp.verify(data))
 
-  final def checkWitnessSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], data: Hash, error: PipelineError): GraphMessage = {
-    if (validateWitnessSignatures(witnessesKeyPairs, data)) {
+  /** Checks whether a list of <WitnessSignaturePair> are valid
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param witnessesKeyPairs
+    *   the witness key signature pairs
+    * @param data
+    *
+    * @param error
+    *   the error to forward in case of invalid modifications
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful, else, right with pipeline error.
+    */
+  final def checkWitnessSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], dataEnd: Hash, error: PipelineError): GraphMessage = {
+    if (validateWitnessSignatures(witnessesKeyPairs, dataEnd)) {
       Left(rpcMessage)
-    }
-    else
+    } else
       Right(error)
+  }
+
+  /** @param rpcMessage
+    *   rpc message to validate.
+    * @param dataEnd
+    *   the data.end to check if it is defined.
+    * @param error
+    *   the error to forward in case of invalid modifications
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful, else, right with pipeline error.
+    */
+  final def checkDataEndIsDefined[T](rpcMessage: JsonRpcRequest, data: Option[Timestamp], error: PipelineError): GraphMessage = {
+    if (data.isDefined) {
+      Left(rpcMessage)
+    } else {
+      Right(error)
+    }
   }
 }
