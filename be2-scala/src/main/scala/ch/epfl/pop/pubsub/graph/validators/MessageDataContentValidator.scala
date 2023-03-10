@@ -171,24 +171,6 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
   final def validateWitnessSignatures(witnessesKeyPairs: List[WitnessSignaturePair], data: Hash): Boolean =
     witnessesKeyPairs.forall(wsp => wsp.verify(data))
 
-  /** Checks whether a list of <WitnessSignaturePair> are valid
-    *
-    * @param rpcMessage
-    *   rpc message to validate
-    * @param witnessesKeyPairs
-    *   the witness key signature pairs
-    * @param data
-    *
-    * @param error
-    *   the error to forward in case of invalid modifications
-    * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful, else, right with pipeline error.
-    */
-  final def checkWitnessSignatures(rpcMessage: JsonRpcRequest, witnessesKeyPairs: List[WitnessSignaturePair], dataEnd: Hash, error: PipelineError): GraphMessage = {
-    if (validateWitnessSignatures(witnessesKeyPairs, dataEnd)) {
-      Left(rpcMessage)
-    } else
-      Right(error)
-  }
+  
 
 }
