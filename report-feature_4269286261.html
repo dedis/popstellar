@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/rollCall/closeRollCall.feature</title>
+<title>Cucumber Reports  - Feature: be/digitalCash/transaction.feature</title>
 
 </head>
 <body>
@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>09 Mar 2023, 04:38</td>
+      <td>10 Mar 2023, 04:39</td>
     </tr>
   </tbody>
 </table>
@@ -126,19 +126,19 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/rollCall/closeRollCall.feature</td>
-          <td      class="passed"    >4</td>
-          <td      class="failed"    >8</td>
-          <td     class="skipped"   >37</td>
+          <td class="tagname">be/digitalCash/transaction.feature</td>
+          <td      class="passed"    >5</td>
+          <td      class="failed"    >10</td>
+          <td     class="skipped"   >50</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">49</td>
+          <td class="total">65</td>
 
           <td >0</td>
-          <td  class="failed"    >4</td>
-          <td class="total">4</td>
+          <td  class="failed"    >5</td>
+          <td class="total">5</td>
 
-          <td class="duration" data-value="306385675237">5:6.385</td>
+          <td class="duration" data-value="383338651324">6:23.338</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -175,12 +175,12 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/rollCall/closeRollCall.feature</span>
+  <span class="name">be/digitalCash/transaction.feature</span>
 
 
 </div>
 
-        <div class="description indention">Close a Roll Call</div>
+        <div class="description indention">Simple Transactions for digital cash</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">1:16.599</span>
+  <span class="lead-duration duration">1:16.688</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.303</span>
+  <span class="lead-duration duration">38.358</span>
 
 </div>
 
@@ -251,7 +251,7 @@ $(document).ready(function() {
       <div id="msg-3" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14</pre>
+classpath:be/digitalCash/transaction.feature:16</pre>
       </div>
     </div>
   </div>
@@ -265,11 +265,11 @@ classpath:be/rollCall/closeRollCall.feature:14</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:28:10.201 classpath:be/rollCall/closeRollCall.feature:14
+        <pre>04:11:41.384 classpath:be/digitalCash/transaction.feature:16
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14
+classpath:be/digitalCash/transaction.feature:16
 </pre>
       </div>
     </div>
@@ -316,7 +316,7 @@ classpath:be/rollCall/closeRollCall.feature:14
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.296</span>
+  <span class="lead-duration duration">38.330</span>
 
 </div>
 
@@ -407,7 +407,34 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -456,7 +483,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Close a valid roll should succeed</span>
+  <span class="name">Valid transaction: issue 32 mini-Laos to an attendee</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -490,7 +517,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -517,7 +544,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def validTransaction =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -538,12 +565,23 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-8" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseValidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: '#(getTrxHashForCoinIssuance)',
+        &quot;tx_out_index&quot;: 0,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: &quot;Wsu3pJj7CpBzw4v__21k4pVtSKBeouz1vd0sXFiLQX9iaEERDDwwMuBFwRKk6E6nwxejH-lrsiprLJSojOvPCQ==&quot;
+        }
+      }],
+      &quot;outputs&quot;: '#(getValidOutputs)',
+      &quot;lock_time&quot;: 0
+    }
 }</pre>
       </div>
     </div>
@@ -561,7 +599,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -588,7 +626,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -682,7 +720,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.596</span>
+  <span class="lead-duration duration">1:16.658</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
@@ -725,7 +763,7 @@ classpath:be/utils/server.feature:82</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.301</span>
+  <span class="lead-duration duration">38.333</span>
 
 </div>
 
@@ -742,7 +780,7 @@ classpath:be/utils/server.feature:82</pre>
       <div id="msg-11" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14</pre>
+classpath:be/digitalCash/transaction.feature:16</pre>
       </div>
     </div>
   </div>
@@ -756,11 +794,11 @@ classpath:be/rollCall/closeRollCall.feature:14</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-12" class="collapse collapsable-details">
-        <pre>04:28:48.507 classpath:be/rollCall/closeRollCall.feature:14
+        <pre>04:12:19.723 classpath:be/digitalCash/transaction.feature:16
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14
+classpath:be/digitalCash/transaction.feature:16
 </pre>
       </div>
     </div>
@@ -807,7 +845,7 @@ classpath:be/rollCall/closeRollCall.feature:14
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.295</span>
+  <span class="lead-duration duration">38.324</span>
 
 </div>
 
@@ -898,7 +936,34 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -947,7 +1012,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Non-organizer closing a roll call should fail</span>
+  <span class="name">Transfer valid amount should work</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -981,7 +1046,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_coin_issuance')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1008,7 +1073,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def validTransfer =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1029,12 +1094,29 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-16" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseValidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;X6dMVyy-4YZ3jyePMlqyo53-eYBkO-gVgy7TybVgd78=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
+        &quot;tx_out_index&quot;: 1,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: &quot;uTrQk9yt-pmG7eWA0dQ50Q4_aloIAwkY_smQml1lswjHp8ckUXAF3Th6xxJY_3-7uLNxpRtTzwBcAixPGjThDg==&quot;
+        }
+      }],
+      &quot;outputs&quot;: [{
+        &quot;value&quot;: 20,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey_hash&quot;: &quot;-_qR4IHwsiq50raa8jURNArds54=&quot;
+        }
+      }],
+      &quot;lock_time&quot;: 0
+    }
 }</pre>
       </div>
     </div>
@@ -1050,36 +1132,9 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validTransfer), cashChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1106,7 +1161,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransfer))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1133,7 +1188,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1200,7 +1255,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.591</span>
+  <span class="lead-duration duration">1:16.665</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
@@ -1243,7 +1298,7 @@ classpath:be/utils/server.feature:82</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.298</span>
+  <span class="lead-duration duration">38.343</span>
 
 </div>
 
@@ -1260,7 +1315,7 @@ classpath:be/utils/server.feature:82</pre>
       <div id="msg-19" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14</pre>
+classpath:be/digitalCash/transaction.feature:16</pre>
       </div>
     </div>
   </div>
@@ -1274,11 +1329,11 @@ classpath:be/rollCall/closeRollCall.feature:14</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:29:26.807 classpath:be/rollCall/closeRollCall.feature:14
+        <pre>04:12:58.074 classpath:be/digitalCash/transaction.feature:16
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14
+classpath:be/digitalCash/transaction.feature:16
 </pre>
       </div>
     </div>
@@ -1325,7 +1380,7 @@ classpath:be/rollCall/closeRollCall.feature:14
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.293</span>
+  <span class="lead-duration duration">38.322</span>
 
 </div>
 
@@ -1416,7 +1471,34 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1465,7 +1547,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Close a valid roll call with wrong update_id should return an error message</span>
+  <span class="name">Post transaction with invalid transaction id should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1499,7 +1581,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1526,7 +1608,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def validTransaction =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1547,12 +1629,23 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-24" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseInvalidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;yVMgw2E9IMX7JtNfizTqTOR1scMVSHfEe8WBbiAgsA8=&quot;,
+        &quot;tx_out_index&quot;: 1,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+        }
+      }],
+      &quot;outputs&quot;: '#(getValidOutputs)',
+      &quot;lock_time&quot;: 0
+    }
 }</pre>
       </div>
     </div>
@@ -1570,7 +1663,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validTransaction), cashChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1597,7 +1690,536 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validTransaction))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains VALID_MESSAGE</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">1:16.669</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
+
+<div class="brief failed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-25" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-26">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-26" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-* failed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/utils/server.feature')</span>
+
+  <span class="lead-duration duration">38.347</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
+          <a>Failed</a>
+      </div>
+      <div id="msg-27" class="collapse collapsable-details  in ">
+        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
+classpath:be/utils/server.feature:82
+classpath:be/digitalCash/transaction.feature:16</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-28" class="collapse collapsable-details">
+        <pre>04:13:36.426 classpath:be/digitalCash/transaction.feature:16
+* call read('classpath:be/utils/server.feature')
+Failed waiting for ws://127.0.0.1:9000/organizer/client
+classpath:be/utils/server.feature:82
+classpath:be/digitalCash/transaction.feature:16
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/server.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-&amp;gt; * failed">
+  <span class="keyword indention">&gt; *</span>
+  <span class="name">call waitForPort</span>
+
+  <span class="lead-duration duration">38.321</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
+          <a>Failed</a>
+      </div>
+      <div id="msg-29" class="collapse collapsable-details  in ">
+        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
+classpath:be/utils/server.feature:82</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/constants.feature')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-30">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Post transaction with invalid tx_out_hash should fail</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-30" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-31">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-31" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def invalidTransaction =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-32">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-32" class="collapse collapsable-details">
+        <pre>{
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;fcDVZofQwuSUs5jz_LXGRtSz-xAV8ss4axY4GsHWnVM=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;_6BPyKnSBFUdMdUxZivzC2BLzM7j5d667BdQ4perTvc=&quot;,
+        &quot;tx_out_index&quot;: 0,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+        }
+      }],
+      &quot;outputs&quot;: '#(getValidOutputs)',
+      &quot;lock_time&quot;: 0
+    }
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidTransaction), cashChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1691,10 +2313,10 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.598</span>
+  <span class="lead-duration duration">1:16.656</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-33">
 
 <div class="brief failed">
   <span class="keyword indention">Background</span>
@@ -1707,14 +2329,14 @@ classpath:be/utils/server.feature:82</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-25" class="collapse collapsable-details  in ">
+  <div id="element-33" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-26">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-34">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1726,7 +2348,7 @@ classpath:be/utils/server.feature:82</pre>
 
   </div>
 
-  <div id="steps-26" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-34" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
@@ -1734,7 +2356,7 @@ classpath:be/utils/server.feature:82</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.301</span>
+  <span class="lead-duration duration">38.336</span>
 
 </div>
 
@@ -1745,13 +2367,13 @@ classpath:be/utils/server.feature:82</pre>
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-27">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-35">
           <a>Failed</a>
       </div>
-      <div id="msg-27" class="collapse collapsable-details  in ">
+      <div id="msg-35" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14</pre>
+classpath:be/digitalCash/transaction.feature:16</pre>
       </div>
     </div>
   </div>
@@ -1761,15 +2383,15 @@ classpath:be/rollCall/closeRollCall.feature:14</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-28">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
           <a>Doc string</a>
       </div>
-      <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:30:05.111 classpath:be/rollCall/closeRollCall.feature:14
+      <div id="msg-36" class="collapse collapsable-details">
+        <pre>04:14:14.770 classpath:be/digitalCash/transaction.feature:16
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14
+classpath:be/digitalCash/transaction.feature:16
 </pre>
       </div>
     </div>
@@ -1816,7 +2438,7 @@ classpath:be/rollCall/closeRollCall.feature:14
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.296</span>
+  <span class="lead-duration duration">38.320</span>
 
 </div>
 
@@ -1827,10 +2449,10 @@ classpath:be/rollCall/closeRollCall.feature:14
 
   <div class="inner-level">
     <div class="message indention">
-      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-29">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-37">
           <a>Failed</a>
       </div>
-      <div id="msg-29" class="collapse collapsable-details  in ">
+      <div id="msg-37" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82</pre>
       </div>
@@ -1907,7 +2529,34 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
-  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+  <span class="name">string laoChannel =  &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string cashChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/coin&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1952,11 +2601,11 @@ classpath:be/utils/server.feature:82</pre>
   <span class="lead-duration duration">0.000</span>
 
 
-  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-30">
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-38">
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Close a valid roll call that was never opened should return an error</span>
+  <span class="name">Post transaction with invalid output pubKey should fail</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1965,14 +2614,14 @@ classpath:be/utils/server.feature:82</pre>
   </span>
   <div class="description indention"></div>
 
-  <div id="element-30" class="collapse collapsable-details  in ">
+  <div id="element-38" class="collapse collapsable-details  in ">
 
 
 
 
 
 <div class="steps inner-level">
-  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-31">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-39">
 
 <div class="brief failed">
   <span class="keyword indention">Steps</span>
@@ -1984,13 +2633,13 @@ classpath:be/utils/server.feature:82</pre>
 
   </div>
 
-  <div id="steps-31" class="inner-level collapse collapsable-details  in ">
+  <div id="steps-39" class="inner-level collapse collapsable-details  in ">
       <div class="step">
 
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=setup_coin_channel')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2017,7 +2666,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def invalidTransaction =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2033,17 +2682,28 @@ classpath:be/utils/server.feature:82</pre>
 
   <div class="inner-level">
     <div class="docstring indention">
-      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-32">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-40">
           <a>Doc string</a>
       </div>
-      <div id="msg-32" class="collapse collapsable-details">
+      <div id="msg-40" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseValidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+    &quot;object&quot;: &quot;coin&quot;,
+    &quot;action&quot;: &quot;post_transaction&quot;,
+    &quot;transaction_id&quot;: &quot;S-UTUqrPfUVw8Ywv6AOb7Qv0M01s7-BcYCSa4SIl9bQ=&quot;,
+    &quot;transaction&quot;: {
+      &quot;version&quot;: 1,
+      &quot;inputs&quot;: [{
+        &quot;tx_out_hash&quot;: &quot;47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=&quot;,
+        &quot;tx_out_index&quot;: 0,
+        &quot;script&quot;: {
+          &quot;type&quot;: &quot;P2PKH&quot;,
+          &quot;pubkey&quot;: '#(getCoinIssuancePubKey)',
+          &quot;sig&quot;: '#(getCreateSignatureForCoinIssuance)'
+        }
+      }],
+      &quot;outputs&quot;: '#(getInvalidOutputs)',
+      &quot;lock_time&quot;: 0
+    }
 }</pre>
       </div>
     </div>
@@ -2061,7 +2721,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidTransaction), cashChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2088,7 +2748,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidTransaction))</span>
 
   <span class="lead-duration duration">0.000</span>
 
