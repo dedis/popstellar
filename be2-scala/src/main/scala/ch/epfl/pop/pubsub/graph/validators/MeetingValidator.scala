@@ -114,7 +114,7 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
             validationError(s"'end' (${data.end.get}) timestamp is smaller than 'start' (${data.start})")
           ),
           checkId(rpcMessage, expectedHash, data.id, validationError(s"unexpected id")),
-          checkWitnessSignatures(
+          checkWitnessesSignatures(
             rpcMessage,
             data.modification_signatures,
             data.modification_id,
