@@ -39,7 +39,6 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
         val channel: Channel = rpcMessage.getParamsChannel
 
         runChecks(
-          checkDataEndIsDefined(rpcMessage, data.end, validationError("data.end is not defined")),
           checkTimestampStaleness(
             rpcMessage,
             data.creation,
@@ -86,7 +85,6 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
         val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
 
         runChecks(
-          checkDataEndIsDefined(rpcMessage, data.end, validationError("data.end is not defined")),
           checkTimestampStaleness(
             rpcMessage,
             data.creation,
@@ -103,16 +101,16 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
             data.start,
             validationError(s"stale 'start' timestamp (${data.start})")
           ),
-          checkTimestampOrder(
+          checkOptionalTimestampOrder(
             rpcMessage,
             data.creation,
-            data.end.get,
+            data.end,
             validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})")
           ),
-          checkTimestampOrder(
+          checkOptionalTimestampOrder(
             rpcMessage,
             data.start,
-            data.end.get,
+            data.end,
             validationError(s"'end' (${data.end.get}) timestamp is smaller than 'start' (${data.start})")
           ),
           checkId(rpcMessage, expectedHash, data.id, validationError(s"unexpected id")),
