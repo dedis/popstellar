@@ -19,7 +19,7 @@ case object CoinValidator extends MessageDataContentValidator {
         val data: PostTransaction = message.decodedData.get.asInstanceOf[PostTransaction]
 
         runChecks(
-          checkTransactionId(rpcMessage, data.transactionId, data.transaction.transactionId, validationError("incorrect transaction id")),
+          checkId(rpcMessage, data.transactionId, data.transaction.transactionId, validationError("incorrect transaction id")),
           checkTransactionSignatures(rpcMessage, data.transaction, validationError("bad signature")),
           checkSumOutputs(rpcMessage, data.transaction)
         )
@@ -27,13 +27,18 @@ case object CoinValidator extends MessageDataContentValidator {
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
-  private def checkTransactionId(rpcMessage: JsonRpcRequest, transactionId: Hash, expectedTransactionId: Hash, error: PipelineError): GraphMessage = {
-    if (transactionId == expectedTransactionId)
-      Left(rpcMessage)
-    else {
-      Right(error)
-    }
-  }
+
+  /**
+   *
+   * @param rpcMessage
+   *  rpc message to validate
+   * @param transaction
+   *  The transaction to be checked
+   * @param error
+   *  the error to forward in case the transaction signatures are not valid.
+   * @return : GraphMessage
+   *         passes the rpcMessages to Left if successful, else right with pipeline error
+   */
   private def checkTransactionSignatures(rpcMessage: JsonRpcRequest, transaction: Transaction, error: PipelineError): GraphMessage = {
     if (transaction.checkSignatures())
       Left(rpcMessage)
@@ -41,12 +46,26 @@ case object CoinValidator extends MessageDataContentValidator {
       Right(error)
     }
   }
+
+  /**
+   *
+   * @param rpcMessage
+   * rpc message to validate
+   * @param transaction
+   * The transaction to be checked
+   * @param error
+   * the error to forward in case the transaction's sum is not valid.
+   * @return GraphMessage
+   *         passes the rpcMessages to Left if successful, else right with pipeline error
+   */
   private def checkSumOutputs(rpcMessage: JsonRpcRequest, transaction: Transaction): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "PostTransaction", rpcMessage.id)
-    transaction.sumOutputs() match {
-      case Left(err) => Right(validationError(err.getMessage()))
-      case Right(_)  => Left(rpcMessage)
-    }
+    val sumOutput = transaction.sumOutputs()
+    if (sumOutput.isLeft)
+      Right(validationError(sumOutput.left.get.getMessage))
+    else
+      Left(rpcMessage)
   }
+
 
 }
