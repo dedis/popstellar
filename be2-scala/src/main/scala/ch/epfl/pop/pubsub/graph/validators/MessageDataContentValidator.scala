@@ -171,6 +171,4 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
   final def validateWitnessSignatures(witnessesKeyPairs: List[WitnessSignaturePair], data: Hash): Boolean =
     witnessesKeyPairs.forall(wsp => wsp.verify(data))
 
-  
-
 }
