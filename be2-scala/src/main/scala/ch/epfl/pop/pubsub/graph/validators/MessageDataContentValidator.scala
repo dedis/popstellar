@@ -58,6 +58,15 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Right(error)
   }
 
+  /** This method behaves the same as checkTimestampOrder, except that the param <second> is not necessarily defined. (The protocol states that <data.en> is not necessarily defined for certain type of messages as CreateMeeting)
+    */
+  def checkOptionalTimestampOrder(rpcMessage: JsonRpcRequest, first: Timestamp, second: Option[Timestamp], error: PipelineError): GraphMessage = {
+    if (!second.isDefined)
+      Left(rpcMessage)
+    else
+      checkTimestampOrder(rpcMessage, first, second.get, error)
+  }
+
   /** Checks if the id corresponds to the expected id
     *
     * @param rpcMessage
@@ -182,20 +191,4 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Right(error)
   }
 
-  /** @param rpcMessage
-    *   rpc message to validate.
-    * @param dataEnd
-    *   the data.end to check if it is defined.
-    * @param error
-    *   the error to forward in case of invalid modifications
-    * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful, else, right with pipeline error.
-    */
-  final def checkDataEndIsDefined[T](rpcMessage: JsonRpcRequest, data: Option[Timestamp], error: PipelineError): GraphMessage = {
-    if (data.isDefined) {
-      Left(rpcMessage)
-    } else {
-      Right(error)
-    }
-  }
 }
