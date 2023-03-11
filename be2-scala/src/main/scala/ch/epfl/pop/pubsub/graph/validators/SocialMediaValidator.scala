@@ -98,24 +98,44 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
 
     rpcMessage.getParamsMessage match {
 
-      // TODO need more checks
       case Some(message) =>
-        val data: DeleteChirp = message.decodedData.get.asInstanceOf[DeleteChirp]
+        val (deleteChirp, _, senderPK, channel) = extractData[DeleteChirp](rpcMessage)
 
-        val sender: PublicKey = message.sender // sender's PK
-        val channel: Channel = rpcMessage.getParamsChannel
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            deleteChirp.timestamp,
+            validationError(s"stale timestamp (${deleteChirp.timestamp})")
+          ),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.CHIRP,
+            channel,
+            dbActorRef,
+            validationError(s"trying to delete a Chirp on a wrong type of channel $channel")
+          ),
+          checkIdExistence(
+            rpcMessage,
+            Option(deleteChirp.chirp_id),
+            channel,
+            dbActorRef,
+            validationError("trying to delete a chirp that do not exist")
+          ),
+          checkAttendee(
+            rpcMessage,
+            senderPK,
+            channel,
+            dbActorRef,
+            validationError(s"Sender $senderPK has an invalid PoP token.")
+          ),
+          checkBase64Equality(
+            rpcMessage,
+            channel.extractChildChannel.base64Data,
+            senderPK.base64Data,
+            validationError(s"Sender $senderPK has an invalid PoP token - doesn't own the channel.")
+          )
+        )
 
-        if (!validateTimestampStaleness(data.timestamp)) {
-          Right(validationError(s"stale timestamp (${data.timestamp})"))
-        } else if (!validateChannelType(ObjectType.CHIRP, channel, dbActorRef)) {
-          Right(validationError(s"trying to delete a Chirp on a wrong type of channel $channel"))
-        } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
-        } else if (channel.extractChildChannel.base64Data != sender.base64Data) {
-          Right(validationError(s"Sender $sender has an invalid PoP token - doesn't own the channel."))
-        } else {
-          Left(rpcMessage)
-        }
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
