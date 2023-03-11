@@ -171,7 +171,7 @@ jobs:
     env:
       base_folder: fe2-android
       main_project_module: app
-      playstore_name: ${{ github.repository }}
+      app_name: pop
 
     defaults:
       run:
@@ -188,15 +188,11 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
-      # Save some build information to inject into the APP
+      # Get version tag
       - name: Get the version
         id: get_version
         run: |
           echo ::set-output name=version::$(echo ${GITHUB_REF/refs\/tags\//})
-          echo ::set-output name=version_file::$(echo ${GITHUB_REF/refs\/tags\//} | tr . _)
-          echo "::set-output name=shortsha::$(git rev-parse --short ${GITHUB_SHA})"
-          echo "::set-output name=buildurl::${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
-          echo "::set-output name=date::$(date +'%d/%m/%y %H:%M')"
 
       # Run Build Project
       - name: Build gradle project
@@ -210,31 +206,27 @@ jobs:
       - name: Build apk release project (APK) - ${{ env.main_project_module }} module
         run: ./gradlew assemble
 
-      # Create Bundle AAB Release
-      - name: Build app bundle release (AAB) - ${{ env.main_project_module }} module
-        run: ./gradlew ${{ env.main_project_module }}:bundleRelease
-
-      # Upload Artifact Build
-      - name: Upload APK Debug - ${{ steps.get_version.outputs.version }}
-        uses: actions/upload-artifact@v2
+      - name: APK Debug - ${{ steps.get_version.outputs.version }}
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: ${{ steps.get_version.outputs.version }} - ${{ env.playstore_name }} - ${{ steps.get_version.outputs.date }} - APK(s) debug generated
-          path: ${{ env.main_project_module }}/build/outputs/apk/debug/
+          files: ${{ env.main_project_module }}/build/outputs/apk/debug/*.apk
+          body: Debug for version ${{ steps.get_version.outputs.version }}
 
-      - name: Upload APK Release - ${{ steps.get_version.outputs.version }}
-        uses: actions/upload-artifact@v2
+      - name: APK Release - ${{ steps.get_version.outputs.version }}
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: ${{ steps.get_version.outputs.version }} - ${{ env.playstore_name }} - ${{ steps.get_version.outputs.date }} - APK(s) release generated
-          path: ${{ env.main_project_module }}/build/outputs/apk/release/
+          files: ${{ env.main_project_module }}/build/outputs/apk/release/*.apk
+          body: Release for version ${{ steps.get_version.outputs.version }}
 
-      - name: Upload AAB (App Bundle) Release - ${{ steps.get_version.outputs.version }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ steps.get_version.outputs.version }} - ${{ env.playstore_name }} - ${{ steps.get_version.outputs.date }} - App bundle(s) AAB release generated
-          path: ${{ env.main_project_module }}/build/outputs/bundle/release/
-
-      # Upload release
-      # TODO
-
-      # Use rsync to deploy the apk on the website
-      # TODO
+      # Use rsync to deploy the release apk on the website
+      - name: Sync
+        env:
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:fe2-android/"
+        run: |
+            echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
+            chmod 600 ./deploy_key
+            rsync -chav --delete \
+              -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
+              ./${{env.main_project_module}}/build/apk/release/*.apk ${{env.dest}}
