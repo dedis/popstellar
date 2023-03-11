@@ -58,6 +58,15 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Right(error)
   }
 
+  /** This method behaves the same as checkTimestampOrder, except that the param <second> is not necessarily defined. (Wrt to the protocol, some fields are not necessarily defined for certain type of messages, such as CreateMeeting)
+    */
+  def checkOptionalTimestampOrder(rpcMessage: JsonRpcRequest, first: Timestamp, second: Option[Timestamp], error: PipelineError): GraphMessage = {
+    if (!second.isDefined)
+      Left(rpcMessage)
+    else
+      checkTimestampOrder(rpcMessage, first, second.get, error)
+  }
+
   /** Checks if the id corresponds to the expected id
     *
     * @param rpcMessage
@@ -161,4 +170,5 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     */
   final def validateWitnessSignatures(witnessesKeyPairs: List[WitnessSignaturePair], data: Hash): Boolean =
     witnessesKeyPairs.forall(wsp => wsp.verify(data))
+
 }
