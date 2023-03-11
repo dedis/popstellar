@@ -54,7 +54,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
       _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
-      _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
+      _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair, rpcMessage.extractLaoId)
     } yield (data, electionId, keyPair, electionChannel)
 
     Await.ready(combined, duration).value match {
