@@ -192,19 +192,37 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
     rpcMessage.getParamsMessage match {
 
       case Some(message) =>
-        val data: DeleteReaction = message.decodedData.get.asInstanceOf[DeleteReaction]
-        val sender: PublicKey = message.sender // sender's PK
-        val channel: Channel = rpcMessage.getParamsChannel
+        val (deleteReaction, _, senderPK, channel) = extractData[DeleteReaction](rpcMessage)
 
-        if (!validateTimestampStaleness(data.timestamp)) {
-          Right(validationError(s"stale timestamp (${data.timestamp})"))
-        } else if (!validateChannelType(ObjectType.REACTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to delete a reaction on a wrong type of channel $channel"))
-        } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
-        } else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            deleteReaction.timestamp,
+            validationError(s"stale timestamp (${deleteReaction.timestamp})")
+          ),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.REACTION,
+            channel,
+            dbActorRef,
+            validationError(s"trying to delete a reaction on a wrong type of channel $channel")
+          ),
+          checkIdExistence(
+            rpcMessage,
+            Option(deleteReaction.reaction_id),
+            channel,
+            dbActorRef,
+            validationError("trying to delete a reaction that do not exist")
+          ),
+          checkAttendee(
+            rpcMessage,
+            senderPK,
+            channel,
+            dbActorRef,
+            validationError(s"Sender $senderPK has an invalid PoP token.")
+          )
+        )
+
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
