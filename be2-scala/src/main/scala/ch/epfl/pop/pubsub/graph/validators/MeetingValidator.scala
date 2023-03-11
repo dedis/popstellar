@@ -4,7 +4,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
+import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import akka.pattern.AskableActorRef
@@ -28,16 +28,11 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
   def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateMeeting", rpcMessage.id)
 
+
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CreateMeeting = message.decodedData.get.asInstanceOf[CreateMeeting]
-
-        val laoId: Hash = rpcMessage.extractLaoId
+        val (data, laoId, sender, channel) = extractData[CreateMeeting](rpcMessage)
         val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
-
-        val sender: PublicKey = message.sender
-        val channel: Channel = rpcMessage.getParamsChannel
-
         runChecks(
           checkTimestampStaleness(
             rpcMessage,
@@ -80,8 +75,7 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: StateMeeting = message.decodedData.get.asInstanceOf[StateMeeting]
-        val laoId: Hash = rpcMessage.extractLaoId
+        val (data, laoId, _, _) = extractData[StateMeeting](rpcMessage)
         val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
 
         runChecks(
