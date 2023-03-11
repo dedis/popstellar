@@ -21,7 +21,7 @@ case object CoinValidator extends MessageDataContentValidator {
         runChecks(
           checkId(rpcMessage, data.transactionId, data.transaction.transactionId, validationError("incorrect transaction id")),
           checkTransactionSignatures(rpcMessage, data.transaction, validationError("bad signature")),
-          checkSumOutputs(rpcMessage, data.transaction)
+          checkSumOutputs(rpcMessage, data.transaction, validationError("bad sumOutput"))
         )
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
@@ -54,11 +54,11 @@ case object CoinValidator extends MessageDataContentValidator {
     * @return
     *   GraphMessage passes the rpcMessages to Left if successful, else right with pipeline error
     */
-  private def checkSumOutputs(rpcMessage: JsonRpcRequest, transaction: Transaction): GraphMessage = {
+  private def checkSumOutputs(rpcMessage: JsonRpcRequest, transaction: Transaction, error: PipelineError): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "PostTransaction", rpcMessage.id)
     val sumOutput = transaction.sumOutputs()
     if (sumOutput.isLeft) {
-      val err = sumOutput.swap.getOrElse(validationError("bad sumOutput"))
+      val err = sumOutput.swap.getOrElse(error)
       Right(validationError(err.asInstanceOf[Error].getMessage))
     } else
       Left(rpcMessage)
