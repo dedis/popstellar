@@ -74,8 +74,8 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def readElectionData(electionId: Hash): ElectionData = {
-    Try(storage.read(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")) match {
+  private def readElectionData(electionId: Hash, laoId : Hash): ElectionData = {
+    Try(storage.read(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")) match {
       case Success(Some(json)) => ElectionData.buildFromJson(json)
       case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
       case Failure(ex)         => throw ex
@@ -251,9 +251,9 @@ final case class DbActor(
         case failure              => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case ReadElectionData(electionId) =>
+    case ReadElectionData(electionId, laoId) =>
       log.info(s"Actor $self (db) received a ReadElectionData request for election '$electionId'")
-      Try(readElectionData(electionId)) match {
+      Try(readElectionData(electionId, laoId)) match {
         case Success(electionData) => sender() ! DbActorReadElectionDataAck(electionData)
         case failure               => sender() ! failure.recover(Status.Failure(_))
       }
@@ -391,7 +391,7 @@ object DbActor {
     * @param electionId
     *   the election unique id
     */
-  final case class ReadElectionData(electionId: Hash) extends Event
+  final case class ReadElectionData(electionId: Hash, laoId : Hash) extends Event
 
   /** Request to read the laoData of the LAO, with key laoId
     *
