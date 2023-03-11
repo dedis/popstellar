@@ -5,12 +5,12 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
-import ch.epfl.pop.model.objects.Timestamp
+import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
 final case class AddChirp(
     text: String,
-    parent_id: Option[String],
+    parent_id: Option[Hash],
     timestamp: Timestamp
 ) extends MessageData {
   override val _object: ObjectType = ObjectType.CHIRP
@@ -20,7 +20,7 @@ final case class AddChirp(
 object AddChirp extends Parsable {
   def apply(
       text: String,
-      parent_id: Option[String],
+      parent_id: Option[Hash],
       timestamp: Timestamp
   ): AddChirp = new AddChirp(text, parent_id, timestamp)
 
