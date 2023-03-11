@@ -129,7 +129,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     * @return
     *   the list of ElectionQuestionResult wrapped in a [[scala.concurrent.Future]]
     */
-  private def createElectionQuestionResults(electionChannel: Channel, laoId : Hash): Future[List[ElectionQuestionResult]] = {
+  private def createElectionQuestionResults(electionChannel: Channel, laoId: Hash): Future[List[ElectionQuestionResult]] = {
     for {
       // get the last votes of the CastVotes messages
       castsVotesElections <- electionChannel.getLastVotes(dbActor)
