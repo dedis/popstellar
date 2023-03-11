@@ -108,7 +108,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
     val electionChannel: Channel = rpcMessage.getParamsChannel
     val combined = for {
-      electionQuestionResults <- createElectionQuestionResults(electionChannel)
+      electionQuestionResults <- createElectionQuestionResults(electionChannel, rpcMessage.extractLaoId)
       // propagate the endElection message
       _ <- dbAskWritePropagate(rpcMessage)
       // data to be broadcast
@@ -129,7 +129,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     * @return
     *   the list of ElectionQuestionResult wrapped in a [[scala.concurrent.Future]]
     */
-  private def createElectionQuestionResults(electionChannel: Channel): Future[List[ElectionQuestionResult]] = {
+  private def createElectionQuestionResults(electionChannel: Channel, laoId : Hash): Future[List[ElectionQuestionResult]] = {
     for {
       // get the last votes of the CastVotes messages
       castsVotesElections <- electionChannel.getLastVotes(dbActor)
@@ -137,7 +137,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       setupMessage <- electionChannel.getSetupMessage(dbActor)
       // associate the questions ids to their ballots
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
-      DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
+      DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id, laoId)
     } yield {
       // set up the table of results
       val resultsTable = mutable.HashMap.from(for {

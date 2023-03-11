@@ -27,6 +27,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
   val ELECTION_NAME: String = s"/root/private/${ELECTION_ID.toString}"
   val KEYPAIR: KeyPair = KeyPair()
+  val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
 
   override def afterAll(): Unit = {
     // Stops the test actor system
@@ -446,7 +447,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
-    val ask = dbActor ? DbActor.ReadElectionData(ELECTION_ID)
+    val ask = dbActor ? DbActor.ReadElectionData(ELECTION_ID, LAO_ID)
     val answer = Await.result(ask, duration)
 
     // assert
