@@ -163,5 +163,13 @@ describe('ChirpCard', () => {
       fireEvent.press(heartButton);
       expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID, mockLaoId);
     });
+
+    it('adds thumps up to thumbs down chirp removes thumbs down', () => {
+      const { getByTestId } = renderChirp(chirp, true);
+      const thumbsDownButton = getByTestId('thumbs-down');
+      fireEvent.press(thumbsDownButton);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoId);
+      expect(mockRequestDeleteReaction).toHaveBeenCalledWith(mockReaction1.id, mockLaoId);
+    });
   });
 });

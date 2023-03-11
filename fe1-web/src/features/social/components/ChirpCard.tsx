@@ -155,6 +155,30 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
+  function thumbsUpPressed() {
+    if (reacted['👍']) {
+      deleteReaction(reacted['👍'].id);
+    } else {
+      // If the user has already reacted with a thumbs down, remove it
+      if (reacted['👎']) {
+        deleteReaction(reacted['👎'].id);
+      }
+      addReaction('👍');
+    }
+  }
+
+  function thumbsDownPressed() {
+    if (reacted['👎']) {
+      deleteReaction(reacted['👎'].id);
+    } else {
+      // If the user has already reacted with a thumbs up, remove it
+      if (reacted['👍']) {
+        deleteReaction(reacted['👍'].id);
+      }
+      addReaction('👎');
+    }
+  }
+
   return (
     <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
       <PoPTouchableOpacity
@@ -202,9 +226,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="thumbsUp"
                   testID="thumbs-up"
-                  onPress={() =>
-                    reacted['👍'] ? deleteReaction(reacted['👍'].id) : addReaction('👍')
-                  }
+                  onPress={() => thumbsUpPressed()}
                   disabled={reactionsDisabled['👍']}
                   size="small"
                   buttonStyle={reacted['👍'] ? 'primary' : 'secondary'}
@@ -218,9 +240,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="thumbsDown"
                   testID="thumbs-down"
-                  onPress={() =>
-                    reacted['👎'] ? deleteReaction(reacted['👎'].id) : addReaction('👎')
-                  }
+                  onPress={() => thumbsDownPressed()}
                   disabled={reactionsDisabled['👎']}
                   size="small"
                   buttonStyle={reacted['👎'] ? 'primary' : 'secondary'}
