@@ -1,19 +1,30 @@
 <resources>
 
+
   <!-- Base application theme. -->
   <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-    <item name="materialButtonStyle">@style/Widget.App.Button</item>
+    <item name="materialButtonStyle">@style/button_style</item>
     <!-- Customize your theme here. -->
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccent</item>
   </style>
 
-  <style name="button_style">
-    <item name="android:backgroundTint">@color/colorPrimary</item>
+
+  <!-- Button styles -->
+  <style name="button_style" parent="Widget.MaterialComponents.Button">
+    <item name="android:padding">@dimen/padding_standard</item>
+    <item name="android:textSize">@dimen/standard_button_text_size</item>
     <item name="android:textColor">@color/white</item>
   </style>
 
+  <style name="button_style_outlined" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon">
+    <item name="android:padding">@dimen/padding_standard</item>
+    <item name="android:textSize">@dimen/standard_button_text_size</item>
+  </style>
+
+
+  <!-- Text styles -->
   <style name="title_style">
     <item name="android:textSize">@dimen/size_title</item>
     <item name="android:layout_margin">@dimen/margin_text</item>
@@ -35,6 +46,15 @@
     <item name="android:layout_marginHorizontal">@dimen/margin_text</item>
     <item name="android:textStyle">bold</item>
     <item name="android:textColor">@color/black</item>
+    <item name="android:gravity">center</item>
+  </style>
+
+  <style name="seed_text_style">
+    <item name="android:textSize">@dimen/size_body</item>
+    <item name="android:layout_marginHorizontal">@dimen/margin_text_small</item>
+    <item name="android:layout_marginTop">@dimen/margin_text_small</item>
+    <item name="android:textStyle">italic</item>
+    <item name="android:textColor">@color/colorPrimary</item>
     <item name="android:gravity">center</item>
   </style>
 
@@ -88,17 +108,7 @@
     <item name="android:textStyle">bold</item>
   </style>
 
-  <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
-    <item name="android:paddingLeft">8dp</item>
-    <item name="android:paddingRight">8dp</item>
-    <item name="android:paddingTop">8dp</item>
-    <item name="android:paddingBottom">8dp</item>
-    <item name="android:insetTop">5dp</item>
-    <item name="android:insetBottom">0dp</item>
-    <item name="android:minWidth">80dp</item>
-    <item name="android:minHeight">0dp</item>
-    <item name="android:textSize">16sp</item>
-  </style>
+
 
   <style name="text_high_emphasis">
     <item name="android:textColor">@color/black</item>
@@ -112,18 +122,26 @@
     <item name="android:textStyle">normal</item>
   </style>
 
+  <!-- Toolbar styles -->
   <style name="toolbar_style" parent="Widget.MaterialComponents.Toolbar">
-    <item name="android:textColorPrimary">@color/white</item>
     <item name="android:background">@color/colorPrimary</item>
+    <item name="android:textColorPrimary">@color/white</item>
     <item name="android:textColorSecondary">@color/white</item>
     <item name="android:gravity">center_vertical</item>
-    <item name="titleTextAppearance">@color/white</item>
     <item name="popupTheme">@style/popupmenu_style</item>
   </style>
 
   <style name="popupmenu_style" parent="Widget.MaterialComponents.PopupMenu">
     <item name="android:textColor">?attr/colorOnSurface</item>
-    <item name="android:background">?attr/colorSurface</item>
+    <item name="android:background">?attr/colorBackgroundFloating</item>
+  </style>
+
+  <!-- CardView styles -->
+  <style name="cardView_style" parent="Widget.MaterialComponents.CardView">
+    <item name="strokeColor">@color/gray</item>
+    <item name="strokeWidth">1dp</item>
+    <item name="cardCornerRadius">@dimen/corner_radius_standard</item>
+    <item name="android:padding">@dimen/padding_standard</item>
   </style>
 
 </resources>

@@ -36,6 +36,8 @@
   <!-- Button -->
   <dimen name="standard_button_height">55dp</dimen>
   <dimen name="standard_button_width">105dp</dimen>
+  <dimen name="standard_button_text_size">16dp</dimen>
+  <dimen name="big_button_text_size">22dp</dimen>
 
   <!--  Lao Detail -->
   <dimen name="properties_section_margin">16dp</dimen>
