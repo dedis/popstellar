@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.ui.lao;
 
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.*;
 
@@ -55,7 +57,17 @@ public class InviteFragment extends Fragment {
       LaoView laoView = laoViewModel.getLao();
 
       ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), laoView.getId());
-      Bitmap myBitmap = QRCode.from(gson.toJson(data)).withSize(QR_SIDE, QR_SIDE).bitmap();
+
+      int qrColor = Color.BLACK;
+
+      // Check if night mode is currently enabled. If yes, generate a white QR code.
+      Configuration configuration = getResources().getConfiguration();
+      int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+      if(nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
+          qrColor = Color.WHITE;
+      }
+
+      Bitmap myBitmap = QRCode.from(gson.toJson(data)).withSize(QR_SIDE, QR_SIDE).withColor(qrColor, Color.TRANSPARENT).bitmap();
       binding.channelQrCode.setImageBitmap(myBitmap);
       binding.laoPropertiesNameText.setText(laoView.getName());
 
