@@ -24,10 +24,11 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   final val CHANNEL_NAME: String = "/root/wex"
   final val MESSAGE: Message = MessageExample.MESSAGE_CREATELAO_WORKING
-  val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
-  val ELECTION_NAME: String = s"/root/private/${ELECTION_ID.toString}"
-  val KEYPAIR: KeyPair = KeyPair()
   val LAO_ID: Hash = Hash(Base64Data.encode("laoId"))
+  val ELECTION_ID: Hash = Hash(Base64Data.encode("electionId"))
+  val ELECTION_NAME: String = s"${ROOT_CHANNEL_PREFIX}${LAO_ID.toString}/private/${ELECTION_ID.toString}"
+  val KEYPAIR: KeyPair = KeyPair()
+
 
   override def afterAll(): Unit = {
     // Stops the test actor system
@@ -543,7 +544,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
     val laoId: Hash = Hash(Base64Data.encode("laoId"))
-    val rollcallKey: String = s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}"
+    val rollcallKey: String = s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
 
     val messageRollcall: Message = CreateRollCallExamples.MESSAGE_CREATE_ROLL_CALL_WORKING
 
@@ -581,7 +582,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     // arrange
     val laoId: Hash = Hash(Base64Data.encode("laoId"))
     val updateId: Hash = Hash(Base64Data.encode("updateId"))
-    val rollcallKey: String = s"${ROOT_CHANNEL_PREFIX}rollcall/${laoId.toString}"
+    val rollcallKey: String = s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
     val rollcallData: RollCallData = RollCallData(updateId, ActionType.CREATE)
     val initialStorage: InMemoryStorage = InMemoryStorage()
     initialStorage.write((rollcallKey, rollcallData.toJsonString))

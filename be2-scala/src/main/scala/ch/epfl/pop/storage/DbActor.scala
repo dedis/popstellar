@@ -74,7 +74,7 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def readElectionData(electionId: Hash, laoId : Hash): ElectionData = {
+  private def readElectionData(electionId: Hash, laoId: Hash): ElectionData = {
     Try(storage.read(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")) match {
       case Success(Some(json)) => ElectionData.buildFromJson(json)
       case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
@@ -139,7 +139,7 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def createElectionData(electionId: Hash, keyPair: KeyPair, laoId : Hash): Unit = {
+  private def createElectionData(electionId: Hash, keyPair: KeyPair, laoId: Hash): Unit = {
     val channel = Channel(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")
     if (!checkChannelExistence(channel)) {
       val pair = channel.toString -> ElectionData(electionId, keyPair).toJsonString
@@ -205,7 +205,7 @@ final case class DbActor(
 
   // generates the key of the RollCallData to store in the database
   private def generateRollCallDataKey(laoId: Hash): String = {
-    s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}"
+    s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
   }
 
   @throws[DbActorNAckException]
@@ -391,7 +391,7 @@ object DbActor {
     * @param electionId
     *   the election unique id
     */
-  final case class ReadElectionData(electionId: Hash, laoId : Hash) extends Event
+  final case class ReadElectionData(electionId: Hash, laoId: Hash) extends Event
 
   /** Request to read the laoData of the LAO, with key laoId
     *
@@ -441,7 +441,7 @@ object DbActor {
     * @param keyPair
     *   the keypair of the election
     */
-  final case class CreateElectionData(id: Hash, keyPair: KeyPair, laoId : Hash) extends Event
+  final case class CreateElectionData(id: Hash, keyPair: KeyPair, laoId: Hash) extends Event
 
   /** Request to create List of channels in the db with given types
     *
