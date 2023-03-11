@@ -21,7 +21,7 @@
 
     <com.google.android.material.card.MaterialCardView
       android:id="@+id/wallet_seed_initialize_card_view"
-      style="@style/cardView_style"
+      style="@style/wallet_setup_cardView"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/margin_top_title"
@@ -63,7 +63,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-      style="@style/cardView_style"
+      style="@style/wallet_setup_cardView"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/margin_text"
@@ -75,16 +75,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
           android:id="@+id/import_seed_entry"
-          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+          style="@style/text_field_standard"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginHorizontal="@dimen/margin_text_horizontal"
           android:hint="@string/stored_seed"
           app:endIconMode="clear_text"
-          app:boxCornerRadiusBottomEnd="@dimen/corner_radius_standard"
-          app:boxCornerRadiusBottomStart="@dimen/corner_radius_standard"
-          app:boxCornerRadiusTopEnd="@dimen/corner_radius_standard"
-          app:boxCornerRadiusTopStart="@dimen/corner_radius_standard"
           android:layout_marginTop="@dimen/margin_text_small"
           app:layout_constraintTop_toTopOf="parent">
 
