@@ -151,19 +151,37 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
     rpcMessage.getParamsMessage match {
 
       case Some(message) =>
-        val data: AddReaction = message.decodedData.get.asInstanceOf[AddReaction]
-        val sender: PublicKey = message.sender // sender's PK
-        val channel: Channel = rpcMessage.getParamsChannel
+        val (addReaction, _, senderPK, channel) = extractData[AddReaction](rpcMessage)
 
-        if (!validateTimestampStaleness(data.timestamp)) {
-          Right(validationError(s"stale timestamp (${data.timestamp})"))
-        } else if (!validateChannelType(ObjectType.REACTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to delete a reaction on a wrong type of channel $channel"))
-        } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
-        } else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            addReaction.timestamp,
+            validationError(s"stale timestamp (${addReaction.timestamp})")
+          ),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.REACTION,
+            channel,
+            dbActorRef,
+            validationError(s"trying to add a reaction on a wrong type of channel $channel")
+          ),
+          checkIdExistence(
+            rpcMessage,
+            Option(addReaction.chirp_id),
+            channel,
+            dbActorRef,
+            validationError("trying to add a reaction to a chirp that do not exist")
+          ),
+          checkAttendee(
+            rpcMessage,
+            senderPK,
+            channel,
+            dbActorRef,
+            validationError(s"Sender $senderPK has an invalid PoP token.")
+          )
+        )
+
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
