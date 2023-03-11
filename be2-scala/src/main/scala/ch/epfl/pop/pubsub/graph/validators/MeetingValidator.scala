@@ -28,7 +28,6 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
   def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateMeeting", rpcMessage.id)
 
-
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val (data, laoId, sender, channel) = extractData[CreateMeeting](rpcMessage)
