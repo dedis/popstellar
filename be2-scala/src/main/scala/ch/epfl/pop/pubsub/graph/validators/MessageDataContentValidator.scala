@@ -2,11 +2,14 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey, Timestamp, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.Read
 
+import scala.concurrent.Await
+import scala.util.Success
 import scala.util.matching.Regex
 
 trait MessageDataContentValidator extends ContentValidator with AskPatternConstants {
@@ -123,6 +126,55 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Left(rpcMessage)
     else
       Right(error)
+  }
+
+  /** Check if some base64 data are equal
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param b1
+    *   first base64 data piece
+    * @param b2
+    *   second base64 data piece
+    * @param error
+    *   the error to forward in case the equality fails
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  def checkBase64Equality(rpcMessage: JsonRpcRequest, b1: Base64Data, b2: Base64Data, error: PipelineError): GraphMessage = {
+    if (b1 == b2)
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Check if some message id exist in the db, if option id is empty the check is successful
+    *
+    * @param rpcMessage
+    *   the rpc message to validate
+    * @param id
+    *   the Option message id to check existence for
+    * @param channel
+    *   the channel on which the message might exist
+    * @param dbActor
+    *   the dbActor to ask
+    * @param error
+    *   the error to throw if the chirp do not exist
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  def checkIdExistence(rpcMessage: JsonRpcRequest, id: Option[Hash], channel: Channel, dbActor: AskableActorRef, error: PipelineError): GraphMessage = {
+    id match {
+      case Some(id) =>
+        val ask = dbActor ? Read(channel, id)
+        Await.ready(ask, duration).value.get match {
+          // just care about the message id existence
+          case Success(_) => Left(rpcMessage)
+          case _          => Right(error)
+        }
+
+      case None => Left(rpcMessage)
+    }
   }
 
   /** Checks witnesses key signature pairs for given modification id
