@@ -4,7 +4,7 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
-import ch.epfl.pop.model.objects.{Channel, PublicKey}
+import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -34,35 +34,56 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
 
   override val EVENT_HASH_PREFIX: String = s"${Channel.CHANNEL_SEPARATOR}posts"
 
-  private val CHIRP_TEXT_LENGTH = 300
+  private val MAX_CHIRP_TEXT_SIZE_REGEX = ".{0,300}$".r
 
   def validateAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "AddChirp", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
 
-      // TODO need more checks
       case Some(message) =>
-        val data: AddChirp = message.decodedData.get.asInstanceOf[AddChirp]
+        val (addChirp, _, senderPK, channel) = extractData[AddChirp](rpcMessage)
 
-        val sender: PublicKey = message.sender // sender's PK
-        val channel: Channel = rpcMessage.getParamsChannel
-
-        if (!validateTimestampStaleness(data.timestamp)) {
-          Right(validationError(s"stale timestamp (${data.timestamp})"))
-        } else if (!validateChannelType(ObjectType.CHIRP, channel, dbActorRef)) {
-          Right(validationError(s"trying to add a Chirp on a wrong type of channel $channel"))
-        } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
-        } else if (channel.extractChildChannel.base64Data != sender.base64Data) {
-          Right(validationError(s"Sender $sender has an invalid PoP token - doesn't own the channel."))
-        } else if (data.text.length > CHIRP_TEXT_LENGTH) {
-          Right(validationError(s"Text is too long (over 300 characters)."))
-        }
-        // FIXME: validate parent ID: check with ChannelData object
-        else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            addChirp.timestamp,
+            validationError(s"stale timestamp (${addChirp.timestamp})")
+          ),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.CHIRP,
+            channel,
+            dbActorRef,
+            validationError(s"trying to add a Chirp on a wrong type of channel $channel")
+          ),
+          checkAttendee(
+            rpcMessage,
+            senderPK,
+            channel,
+            dbActorRef,
+            validationError(s"Sender $senderPK has an invalid PoP token.")
+          ),
+          checkBase64Equality(
+            rpcMessage,
+            channel.extractChildChannel.base64Data,
+            senderPK.base64Data,
+            validationError(s"Sender $senderPK has an invalid PoP token - doesn't own the channel.")
+          ),
+          checkStringPattern(
+            rpcMessage,
+            addChirp.text,
+            MAX_CHIRP_TEXT_SIZE_REGEX,
+            validationError(s"Text is too long (over 300 characters).")
+          ),
+          checkIdExistence(
+            rpcMessage,
+            addChirp.parent_id,
+            channel,
+            dbActorRef,
+            validationError(s"Parent chirp id doesn't exist")
+          )
+        )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
