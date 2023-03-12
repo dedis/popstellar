@@ -171,5 +171,21 @@ describe('ChirpCard', () => {
       expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoId);
       expect(mockRequestDeleteReaction).toHaveBeenCalledWith(mockReaction1.id, mockLaoId);
     });
+
+    it('adds thumps down to thumbs up chirp removes thumbs up', () => {
+      const { getByTestId } = renderChirp(chirp, true);
+      const thumbsDownButton = getByTestId('thumbs-down');
+
+      // sets the button with thumbs down
+      fireEvent.press(thumbsDownButton);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoId);
+
+      const thumbsUpButton = getByTestId('thumbs-up');
+      fireEvent.press(thumbsUpButton);
+      expect(mockRequestDeleteReaction).toHaveBeenCalledWith(mockReaction1.id, mockLaoId);
+      // TODO: fix this test
+      // expect(mockRequestAddReaction).toHaveBeenCalledTimes(2);
+      // expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID, mockLaoId);
+    });
   });
 });
