@@ -29,7 +29,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   val ELECTION_NAME: String = s"${ROOT_CHANNEL_PREFIX}${LAO_ID.toString}/private/${ELECTION_ID.toString}"
   val KEYPAIR: KeyPair = KeyPair()
 
-
   override def afterAll(): Unit = {
     // Stops the test actor system
     TestKit.shutdownActorSystem(system)
@@ -175,7 +174,8 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR, LAO_ID); sleep()
+    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR, LAO_ID);
+    sleep()
 
     expectMsg(DbActor.DbActorAck())
     storage.size should equal(1)
@@ -188,13 +188,15 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR, LAO_ID); sleep()
+    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR, LAO_ID);
+    sleep()
 
     expectMsg(DbActor.DbActorAck())
     storage.size should equal(1)
     storage.elements(ELECTION_NAME) should equal(ElectionData(ELECTION_ID, KEYPAIR).toJsonString)
 
-    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR, LAO_ID); sleep()
+    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR, LAO_ID);
+    sleep()
 
     storage.size should equal(1)
     storage.elements(ELECTION_NAME) should equal(ElectionData(ELECTION_ID, KEYPAIR).toJsonString)
@@ -498,9 +500,11 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     storage.size should equal(0)
 
     // act
-    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.LAO); sleep()
+    dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.LAO);
+    sleep()
     // writing to the previously created channel
-    dbActor ! DbActor.Write(Channel(CHANNEL_NAME), MESSAGE); sleep()
+    dbActor ! DbActor.Write(Channel(CHANNEL_NAME), MESSAGE);
+    sleep()
     dbActor ! DbActor.AddWitnessSignature(Channel(CHANNEL_NAME), messageId, signature)
 
     message.addWitnessSignature(WitnessSignaturePair(message.sender, signature))
