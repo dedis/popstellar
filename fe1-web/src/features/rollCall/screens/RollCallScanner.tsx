@@ -178,10 +178,16 @@ const RollCallOpened = () => {
               <PoPTouchableOpacity
                 testID="roll_call_open_add_manually"
                 onPress={() => setInputModalIsVisible(true)}>
-                <Text style={[Typography.base, Typography.accent]}>
+                <Text style={[Typography.base, Typography.accent, Typography.centered]}>
                   {STRINGS.general_enter_manually}
                 </Text>
               </PoPTouchableOpacity>
+            </View>
+            <View style={[QrCodeScannerUIElementContainer, { marginTop: 10 }]}>
+              <Text style={[Typography.base, Typography.accent]}>
+                {/* -1 because we don't count the organizer */}
+                Number of scanned attendees: {attendeePopTokens.current.length - 1}
+              </Text>
             </View>
           </View>
         </View>
