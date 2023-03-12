@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey, Timestamp, WitnessSignaturePair}
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, Timestamp, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
