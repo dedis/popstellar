@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
@@ -79,7 +81,7 @@ public class DigitalCashReceiveFragment extends Fragment {
                   PublicKey publicKey = token.getPublicKey();
                   binding.digitalCashReceiveAddress.setText(publicKey.getEncoded());
                   PopTokenData tokenData = new PopTokenData(token.getPublicKey());
-                  Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
+                  Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).withColor(getQRCodeColor(), Color.TRANSPARENT).bitmap();
                   binding.digitalCashReceiveQr.setImageBitmap(myBitmap);
                 },
                 error ->
@@ -110,4 +112,15 @@ public class DigitalCashReceiveFragment extends Fragment {
               }
             });
   }
+    // Returns color white if dark mode is active and black if light mode is active.
+    private int getQRCodeColor() {
+        Configuration configuration = getResources().getConfiguration();
+        int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        if(nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
+            return Color.WHITE;
+        }
+        return Color.BLACK;
+    }
+
+
 }

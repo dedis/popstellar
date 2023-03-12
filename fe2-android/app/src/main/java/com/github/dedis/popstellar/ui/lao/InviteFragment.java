@@ -58,16 +58,7 @@ public class InviteFragment extends Fragment {
 
       ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), laoView.getId());
 
-      int qrColor = Color.BLACK;
-
-      // Check if night mode is currently enabled. If yes, generate a white QR code.
-      Configuration configuration = getResources().getConfiguration();
-      int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
-      if(nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
-          qrColor = Color.WHITE;
-      }
-
-      Bitmap myBitmap = QRCode.from(gson.toJson(data)).withSize(QR_SIDE, QR_SIDE).withColor(qrColor, Color.TRANSPARENT).bitmap();
+      Bitmap myBitmap = QRCode.from(gson.toJson(data)).withSize(QR_SIDE, QR_SIDE).withColor(getQRCodeColor(), Color.TRANSPARENT).bitmap();
       binding.channelQrCode.setImageBitmap(myBitmap);
       binding.laoPropertiesNameText.setText(laoView.getName());
 
@@ -90,4 +81,17 @@ public class InviteFragment extends Fragment {
     laoViewModel.setPageTitle(R.string.invite);
     laoViewModel.setIsTab(true);
   }
+
+  // Returns color white if dark mode is active and black if light mode is active.
+  private int getQRCodeColor() {
+    Configuration configuration = getResources().getConfiguration();
+    int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+    if(nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
+        return Color.WHITE;
+    }
+    return Color.BLACK;
+  }
+
 }
+
+

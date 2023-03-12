@@ -10,7 +10,7 @@
     android:layout_height="@dimen/home_card_view_height"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    android:backgroundTint="@color/background_gray"
+    android:backgroundTint="?attr/colorBackgroundFloating"
     app:cardElevation="@dimen/card_view_elevation"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintTop_toTopOf="parent">

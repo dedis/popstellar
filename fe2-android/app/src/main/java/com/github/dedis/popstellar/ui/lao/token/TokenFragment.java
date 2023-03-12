@@ -1,7 +1,9 @@
 package com.github.dedis.popstellar.ui.lao.token;
 
 import android.content.*;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
@@ -78,7 +80,7 @@ public class TokenFragment extends Fragment {
       PoPToken poPToken = keyManager.getValidPoPToken(laoViewModel.getLaoId(), rollCall);
       PopTokenData data = new PopTokenData(poPToken.getPublicKey());
       Bitmap bitmap =
-          QRCode.from(gson.toJson(data)).withSize(Constants.QR_SIDE, Constants.QR_SIDE).bitmap();
+          QRCode.from(gson.toJson(data)).withSize(Constants.QR_SIDE, Constants.QR_SIDE).withColor(getQRCodeColor(), Color.TRANSPARENT).bitmap();
       binding.tokenQrCode.setImageBitmap(bitmap);
       binding.tokenTextView.setText(poPToken.getPublicKey().getEncoded());
 
@@ -118,4 +120,15 @@ public class TokenFragment extends Fragment {
           }
         });
   }
+
+    // Returns color white if dark mode is active and black if light mode is active.
+    private int getQRCodeColor() {
+        Configuration configuration = getResources().getConfiguration();
+        int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        if(nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
+            return Color.WHITE;
+        }
+        return Color.BLACK;
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -250,7 +252,9 @@ public class RollCallFragment extends Fragment {
     Log.d(TAG, "key displayed is " + pk);
 
     PopTokenData data = new PopTokenData(new PublicKey(pk));
-    Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
+
+
+    Bitmap myBitmap = QRCode.from(gson.toJson(data)).withColor(getQRCodeColor(), Color.TRANSPARENT).bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
     binding.rollCallPkQrCode.setVisibility(
         laoViewModel.isOrganizer() ? View.INVISIBLE : View.VISIBLE);
@@ -324,4 +328,15 @@ public class RollCallFragment extends Fragment {
   public RollCallFragment(RollCall rollCall) {
     this.rollCall = rollCall;
   }
+
+    // Returns color white if dark mode is active and black if light mode is active.
+    private int getQRCodeColor() {
+        Configuration configuration = getResources().getConfiguration();
+        int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        if(nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
+            return Color.WHITE;
+        }
+        return Color.BLACK;
+    }
+
 }
