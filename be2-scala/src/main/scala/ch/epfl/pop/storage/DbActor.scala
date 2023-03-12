@@ -293,7 +293,7 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case CreateElectionData(laoId,id, keyPair) =>
+    case CreateElectionData(laoId, id, keyPair) =>
       log.info(s"Actor $self (db) received an CreateElection request for election '$id'" +
         s"\n\tprivate key = ${keyPair.privateKey.toString}" +
         s"\n\tpublic key = ${keyPair.publicKey.toString}")
@@ -441,7 +441,7 @@ object DbActor {
     * @param keyPair
     *   the keypair of the election
     */
-  final case class CreateElectionData(laoId: Hash,id: Hash, keyPair: KeyPair) extends Event
+  final case class CreateElectionData(laoId: Hash, id: Hash, keyPair: KeyPair) extends Event
 
   /** Request to create List of channels in the db with given types
     *

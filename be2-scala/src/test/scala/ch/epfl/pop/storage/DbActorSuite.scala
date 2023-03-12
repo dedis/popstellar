@@ -174,7 +174,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateElectionData(LAO_ID,ELECTION_ID, KEYPAIR);
+    dbActor ! DbActor.CreateElectionData(LAO_ID, ELECTION_ID, KEYPAIR);
     sleep()
 
     expectMsg(DbActor.DbActorAck())

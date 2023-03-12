@@ -54,7 +54,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
       _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
-      _ <- dbActor ? DbActor.CreateElectionData(rpcMessage.extractLaoId,electionId, keyPair)
+      _ <- dbActor ? DbActor.CreateElectionData(rpcMessage.extractLaoId, electionId, keyPair)
     } yield (data, electionId, keyPair, electionChannel)
 
     Await.ready(combined, duration).value match {
@@ -108,7 +108,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
     val electionChannel: Channel = rpcMessage.getParamsChannel
     val combined = for {
-      electionQuestionResults <- createElectionQuestionResults(electionChannel, rpcMessage.extractLaoId)
+      electionQuestionResults <- createElectionQuestionResults(electionChannel, electionChannel.decodeChannelLaoId.get)
       // propagate the endElection message
       _ <- dbAskWritePropagate(rpcMessage)
       // data to be broadcast
