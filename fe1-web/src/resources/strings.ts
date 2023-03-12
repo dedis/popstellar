@@ -291,7 +291,7 @@ namespace STRINGS {
     'The Roll Call is currently open and you as the organizer should start adding attendees by scanning their PoP tokens.';
   export const roll_call_open_attendee =
     'The Roll Call is currently open and you as an attendee should let the organizer scan your PoP token encoded in the QR Code below.';
-  export const roll_call_qrcode_text = 'To be scanned to connect';
+  export const roll_call_qrcode_text = 'Scan to add attendee';
 
   export const roll_call_error_open_roll_call = 'Unable to send roll call open request';
   export const roll_call_error_scanning_no_alias =
