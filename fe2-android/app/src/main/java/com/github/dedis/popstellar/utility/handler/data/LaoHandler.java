@@ -245,5 +245,6 @@ public final class LaoHandler {
 
     // In the future, implement automatic connection to all the peers contained in the peers
     // message
+    serverRepo.addPeers(greetLao.getId(), greetLao.getPeers());
   }
 }

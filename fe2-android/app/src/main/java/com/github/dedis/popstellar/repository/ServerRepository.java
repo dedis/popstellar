@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.repository;
 
+import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.Server;
 
 import java.util.*;
@@ -15,15 +16,22 @@ import javax.inject.Singleton;
 public class ServerRepository {
 
   private final Map<String, Server> serverByLaoId;
+  private final Map<String, List<PeerAddress>> peersByLaoId;
 
   @Inject
   public ServerRepository() {
     serverByLaoId = new HashMap<>();
+    peersByLaoId = new HashMap<>();
   }
 
   /** Add a server to the repository */
   public void addServer(String laoId, Server server) {
     serverByLaoId.put(laoId, server);
+  }
+
+  /** Add the list of peers for a given lao */
+  public void addPeers(String laoId, List<PeerAddress> peers) {
+    peersByLaoId.put(laoId, peers);
   }
 
   /** Get the corresponding server to the given Lao Id (if present) */

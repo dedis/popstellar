@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.Immutable;
 import com.google.gson.annotations.SerializedName;
 
-/** Represents an peer address */
+/** Represents a peer address */
 @Immutable
 public class PeerAddress {
 
