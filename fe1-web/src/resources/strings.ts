@@ -330,6 +330,7 @@ namespace STRINGS {
   export const roll_call_scan_participant_twice = 'Participant already scanned';
   export const roll_call_scan_close = 'Close Roll-Call';
   export const roll_call_scan_close_confirmation = 'Do you confirm to close the roll-call ?';
+  export const roll_call_scan_counter = 'Number of scanned attendees';
 
   /* --- Roll-call manually add attendee manually Strings --- */
   export const roll_call_add_attendee_manually = 'Add an attendee manually';
