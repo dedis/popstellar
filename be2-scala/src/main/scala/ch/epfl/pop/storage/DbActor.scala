@@ -6,7 +6,7 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROLL_CALL_DATA_PREFIX, ROOT_CHANNEL_PREFIX}
+import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
