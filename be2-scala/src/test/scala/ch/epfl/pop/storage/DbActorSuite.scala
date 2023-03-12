@@ -174,7 +174,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR, LAO_ID);
+    dbActor ! DbActor.CreateElectionData(LAO_ID,ELECTION_ID, KEYPAIR);
     sleep()
 
     expectMsg(DbActor.DbActorAck())
@@ -188,14 +188,14 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     storage.size should equal(0)
 
-    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR, LAO_ID);
+    dbActor ! DbActor.CreateElectionData(LAO_ID, ELECTION_ID, KEYPAIR);
     sleep()
 
     expectMsg(DbActor.DbActorAck())
     storage.size should equal(1)
     storage.elements(ELECTION_NAME) should equal(ElectionData(ELECTION_ID, KEYPAIR).toJsonString)
 
-    dbActor ! DbActor.CreateElectionData(ELECTION_ID, KEYPAIR, LAO_ID);
+    dbActor ! DbActor.CreateElectionData(LAO_ID, ELECTION_ID, KEYPAIR);
     sleep()
 
     storage.size should equal(1)

@@ -139,7 +139,7 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def createElectionData(electionId: Hash, keyPair: KeyPair, laoId: Hash): Unit = {
+  private def createElectionData(laoId: Hash, electionId: Hash, keyPair: KeyPair): Unit = {
     val channel = Channel(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")
     if (!checkChannelExistence(channel)) {
       val pair = channel.toString -> ElectionData(electionId, keyPair).toJsonString
@@ -293,11 +293,11 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case CreateElectionData(id, keyPair, laoId) =>
+    case CreateElectionData(laoId,id, keyPair) =>
       log.info(s"Actor $self (db) received an CreateElection request for election '$id'" +
         s"\n\tprivate key = ${keyPair.privateKey.toString}" +
         s"\n\tpublic key = ${keyPair.publicKey.toString}")
-      Try(createElectionData(id, keyPair, laoId)) match {
+      Try(createElectionData(laoId, id, keyPair)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
@@ -441,7 +441,7 @@ object DbActor {
     * @param keyPair
     *   the keypair of the election
     */
-  final case class CreateElectionData(id: Hash, keyPair: KeyPair, laoId: Hash) extends Event
+  final case class CreateElectionData(laoId: Hash,id: Hash, keyPair: KeyPair) extends Event
 
   /** Request to create List of channels in the db with given types
     *
