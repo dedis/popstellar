@@ -4,7 +4,7 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.objects.{Channel, Hash}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -64,10 +64,10 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
             dbActorRef,
             validationError(s"Sender $senderPK has an invalid PoP token.")
           ),
-          checkBase64Equality(
+          checkId(
             rpcMessage,
-            channel.extractChildChannel.base64Data,
-            senderPK.base64Data,
+            channel.extractChildChannel,
+            Hash(senderPK.base64Data),
             validationError(s"Sender $senderPK has an invalid PoP token - doesn't own the channel.")
           ),
           checkStringPattern(
@@ -128,10 +128,10 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
             dbActorRef,
             validationError(s"Sender $senderPK has an invalid PoP token.")
           ),
-          checkBase64Equality(
+          checkId(
             rpcMessage,
-            channel.extractChildChannel.base64Data,
-            senderPK.base64Data,
+            channel.extractChildChannel,
+            Hash(senderPK.base64Data),
             validationError(s"Sender $senderPK has an invalid PoP token - doesn't own the channel.")
           )
         )
