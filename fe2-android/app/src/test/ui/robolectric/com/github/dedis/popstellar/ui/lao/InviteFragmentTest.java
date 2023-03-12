@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.testing.*;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.testutils.pages.lao.InviteFragmentPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
@@ -82,5 +83,10 @@ public class InviteFragmentTest {
     roleText().check(matches(withText("Organizer")));
     laoNameText().check(matches(withText(LAO_NAME)));
     identifierText().check(matches(withText(PK.getEncoded())));
+  }
+
+  @Test
+  public void qrCodeIsDisplayed() {
+    channelQRCode().check(matches(isDisplayed()));
   }
 }

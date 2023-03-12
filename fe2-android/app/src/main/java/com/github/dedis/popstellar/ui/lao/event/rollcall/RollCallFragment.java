@@ -253,8 +253,8 @@ public class RollCallFragment extends Fragment {
 
     PopTokenData data = new PopTokenData(new PublicKey(pk));
 
-
-    Bitmap myBitmap = QRCode.from(gson.toJson(data)).withColor(getQRCodeColor(), Color.TRANSPARENT).bitmap();
+    Bitmap myBitmap =
+        QRCode.from(gson.toJson(data)).withColor(getQRCodeColor(), Color.TRANSPARENT).bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
     binding.rollCallPkQrCode.setVisibility(
         laoViewModel.isOrganizer() ? View.INVISIBLE : View.VISIBLE);
@@ -315,6 +315,16 @@ public class RollCallFragment extends Fragment {
             });
   }
 
+  // Returns color white if dark mode is active and black if light mode is active.
+  private int getQRCodeColor() {
+    Configuration configuration = getResources().getConfiguration();
+    int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+      return Color.WHITE;
+    }
+    return Color.BLACK;
+  }
+
   /**
    * The following is only for testing purposes. Production should never pass arguments to a
    * fragment instantiation but should rather use arguments
@@ -328,15 +338,4 @@ public class RollCallFragment extends Fragment {
   public RollCallFragment(RollCall rollCall) {
     this.rollCall = rollCall;
   }
-
-    // Returns color white if dark mode is active and black if light mode is active.
-    private int getQRCodeColor() {
-        Configuration configuration = getResources().getConfiguration();
-        int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        if(nightModeFlags == Configuration.UI_MODE_NIGHT_YES){
-            return Color.WHITE;
-        }
-        return Color.BLACK;
-    }
-
 }
