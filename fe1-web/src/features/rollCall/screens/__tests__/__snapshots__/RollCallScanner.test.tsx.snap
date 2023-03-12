@@ -535,6 +535,9 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                               {
                                                 "color": "#3742fa",
                                               },
+                                              {
+                                                "textAlign": "center",
+                                              },
                                             ]
                                           }
                                         >
@@ -543,6 +546,39 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                       </View>
                                     </RNGestureHandlerButton>
                                   </View>
+                                </View>
+                                <View
+                                  style={
+                                    [
+                                      {
+                                        "backgroundColor": "#fff",
+                                        "borderRadius": 8,
+                                        "padding": 8,
+                                      },
+                                      {
+                                        "marginTop": 10,
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      [
+                                        {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        {
+                                          "color": "#3742fa",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Number of scanned attendees: 
+                                    -1
+                                  </Text>
                                 </View>
                               </View>
                             </View>
@@ -1167,6 +1203,9 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                               {
                                                 "color": "#3742fa",
                                               },
+                                              {
+                                                "textAlign": "center",
+                                              },
                                             ]
                                           }
                                         >
@@ -1175,6 +1214,39 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                       </View>
                                     </RNGestureHandlerButton>
                                   </View>
+                                </View>
+                                <View
+                                  style={
+                                    [
+                                      {
+                                        "backgroundColor": "#fff",
+                                        "borderRadius": 8,
+                                        "padding": 8,
+                                      },
+                                      {
+                                        "marginTop": 10,
+                                      },
+                                    ]
+                                  }
+                                >
+                                  <Text
+                                    style={
+                                      [
+                                        {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "textAlign": "left",
+                                        },
+                                        {
+                                          "color": "#3742fa",
+                                        },
+                                      ]
+                                    }
+                                  >
+                                    Number of scanned attendees: 
+                                    -1
+                                  </Text>
                                 </View>
                               </View>
                             </View>
