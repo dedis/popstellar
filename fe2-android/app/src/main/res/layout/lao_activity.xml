@@ -23,12 +23,12 @@
 
         <com.google.android.material.appbar.MaterialToolbar
           android:id="@+id/lao_app_bar"
+          android:theme="@style/toolbar_style"
           android:layout_width="match_parent"
           android:layout_height="?attr/actionBarSize"
           app:navigationContentDescription="Open Menu"
           app:menu="@menu/digital_cash_menu"
-          app:navigationIcon="@drawable/menu_icon"
-          app:titleTextColor="@color/white" />
+          app:navigationIcon="@drawable/menu_icon" />
       </com.google.android.material.appbar.AppBarLayout>
 
       <FrameLayout
