@@ -37,7 +37,7 @@
   <dimen name="standard_button_height">55dp</dimen>
   <dimen name="standard_button_width">105dp</dimen>
   <dimen name="standard_button_text_size">16dp</dimen>
-  <dimen name="big_button_text_size">22dp</dimen>
+  <dimen name="big_button_text_size">22sp</dimen>
 
   <!--  Lao Detail -->
   <dimen name="properties_section_margin">16dp</dimen>
@@ -137,7 +137,6 @@
   <dimen name="padding_bigger">20dp</dimen>
   <dimen name="corner_radius_standard">12dp</dimen>
   <dimen name="corner_radius_small">5dp</dimen>
-  <dimen name="stroke_width">1dp</dimen>
   <dimen name="overlay_cv_horizontal_margin">24dp</dimen>
   <dimen name="overlay_cv_vertical_margin">24dp</dimen>
 
