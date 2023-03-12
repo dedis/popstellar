@@ -61,6 +61,10 @@ const (
 
 	CoinObject                = "coin"
 	CoinActionPostTransaction = "post_transaction"
+
+	AuthenticationRequestObject = "authentication_request"
+	AuthRequestValidate         = "validate"
+
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
 	RootPrefix = "/root/"
