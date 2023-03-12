@@ -231,4 +231,21 @@ describe('RollCallOpened', () => {
       ],
     });
   });
+
+  it('shows the correct number of attendees', async () => {
+    const mockAttendeePopTokens = [mockPopToken.publicKey.valueOf()];
+
+    const { getByText } = renderRollCallOpened(mockAttendeePopTokens);
+
+    // assert that there exists a text element with "0" in it
+    expect(getByText(/Number of scanned attendees: 0/)).toBeTruthy();
+
+    await waitFor(() => {
+      expect(mockGenerateToken).toHaveBeenCalled();
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
+      fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
+    });
+
+    expect(getByText(/Number of scanned attendees: 0/)).toBeTruthy();
+  });
 });
