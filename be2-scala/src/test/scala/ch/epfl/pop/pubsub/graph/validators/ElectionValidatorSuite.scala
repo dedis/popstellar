@@ -150,7 +150,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
-        case DbActor.ReadElectionData(_,_) =>
+        case DbActor.ReadElectionData(_, _) =>
           sender() ! DbActor.DbActorReadElectionDataAck(electionData)
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
@@ -172,7 +172,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
-        case DbActor.ReadElectionData(_,_) =>
+        case DbActor.ReadElectionData(_, _) =>
           sender() ! DbActor.DbActorReadElectionDataAck(electionData)
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
@@ -194,7 +194,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongChannelCastVote)
-        case DbActor.ReadElectionData(_,_) =>
+        case DbActor.ReadElectionData(_, _) =>
           sender() ! DbActor.DbActorReadElectionDataAck(electionData)
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
@@ -216,7 +216,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndCastMessage)
-        case DbActor.ReadElectionData(_,_) =>
+        case DbActor.ReadElectionData(_, _) =>
           sender() ! DbActor.DbActorReadElectionDataAck(electionData)
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
@@ -238,7 +238,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithEndElectionMessage)
-        case DbActor.ReadElectionData(_,_) =>
+        case DbActor.ReadElectionData(_, _) =>
           sender() ! DbActor.DbActorReadElectionDataAck(electionData)
         case DbActor.Read(_, DATA_CAST_VOTE_MESSAGE) =>
           sender() ! DbActor.DbActorReadAck(Some(MESSAGE_CAST_VOTE_ELECTION_WORKING))
