@@ -205,7 +205,8 @@ jobs:
 
       # Rename the Debug APK 
       - name: Rename APK debug
-        run: mv ${{ env.main_project_module }}/build/outputs/apk/debug/app-debug.apk ${{ env.main_project_module }}/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
+        run: mv ${{ env.main_project_module }}/build/outputs/apk/debug/app-debug.apk \ 
+             ${{ env.main_project_module }}/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
 
       # Create APK Release
       - name: Build apk release project (APK) - ${{ env.main_project_module }} module
@@ -213,7 +214,8 @@ jobs:
 
       # Rename the Release APK
       - name: Rename APK release
-        run: mv ${{ env.main_project_module }}/build/outputs/apk/release/app-release-unsigned.apk ${{ env.main_project_module }}/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
+        run: mv ${{ env.main_project_module }}/build/outputs/apk/release/app-release-unsigned.apk \
+             ${{ env.main_project_module }}/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
 
 
       - name: APK Debug - ${{ steps.get_version.outputs.version }}
