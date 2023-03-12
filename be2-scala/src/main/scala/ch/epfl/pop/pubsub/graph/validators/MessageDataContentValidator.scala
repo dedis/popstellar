@@ -128,26 +128,6 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Right(error)
   }
 
-  /** Check if some base64 data are equal
-    *
-    * @param rpcMessage
-    *   rpc message to validate
-    * @param b1
-    *   first base64 data piece
-    * @param b2
-    *   second base64 data piece
-    * @param error
-    *   the error to forward in case the equality fails
-    * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
-    */
-  def checkBase64Equality(rpcMessage: JsonRpcRequest, b1: Base64Data, b2: Base64Data, error: PipelineError): GraphMessage = {
-    if (b1 == b2)
-      Left(rpcMessage)
-    else
-      Right(error)
-  }
-
   /** Check if some message id exist in the db, if option id is empty the check is successful
     *
     * @param rpcMessage
