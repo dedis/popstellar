@@ -576,7 +576,8 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                       ]
                                     }
                                   >
-                                    Number of scanned attendees: 
+                                    Number of scanned attendees
+                                    : 
                                     -1
                                   </Text>
                                 </View>
@@ -1244,7 +1245,8 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                       ]
                                     }
                                   >
-                                    Number of scanned attendees: 
+                                    Number of scanned attendees
+                                    : 
                                     -1
                                   </Text>
                                 </View>

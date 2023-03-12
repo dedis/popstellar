@@ -23,6 +23,7 @@ import { ROLLCALL_FEATURE_IDENTIFIER, RollCallReactContext } from 'features/roll
 import { RollCall } from 'features/rollCall/objects';
 import { addRollCall, rollCallReducer } from 'features/rollCall/reducer';
 import { getWalletState, walletReducer } from 'features/wallet/reducer';
+import STRINGS from 'resources/strings';
 
 import { requestCloseRollCall as mockRequestCloseRollCall } from '../../network/RollCallMessageApi';
 import RollCallScanner, { RollCallOpenedHeaderLeft } from '../RollCallScanner';
@@ -237,8 +238,7 @@ describe('RollCallOpened', () => {
 
     const { getByText } = renderRollCallOpened(mockAttendeePopTokens);
 
-    // assert that there exists a text element with "0" in it
-    expect(getByText(/Number of scanned attendees: 0/)).toBeTruthy();
+    expect(getByText(`${STRINGS.roll_call_scan_counter}: 0`)).toBeTruthy();
 
     await waitFor(() => {
       expect(mockGenerateToken).toHaveBeenCalled();
@@ -246,6 +246,7 @@ describe('RollCallOpened', () => {
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
     });
 
-    expect(getByText(/Number of scanned attendees: 0/)).toBeTruthy();
+    // TODO: fix this test (why still 0?)
+    expect(getByText(`${STRINGS.roll_call_scan_counter}: 0`)).toBeTruthy();
   });
 });

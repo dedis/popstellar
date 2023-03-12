@@ -186,7 +186,7 @@ const RollCallOpened = () => {
             <View style={[QrCodeScannerUIElementContainer, { marginTop: 10 }]}>
               <Text style={[Typography.base, Typography.accent]}>
                 {/* -1 because we don't count the organizer */}
-                Number of scanned attendees: {attendeePopTokens.current.length - 1}
+                {STRINGS.roll_call_scan_counter}: {attendeePopTokens.current.length - 1}
               </Text>
             </View>
           </View>
