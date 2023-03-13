@@ -37,6 +37,9 @@ const styles = StyleSheet.create({
   qrCode: {
     opacity: 0.5,
   } as ViewStyle,
+  counter: {
+    marginTop: Spacing.x1,
+  } as ViewStyle,
   enterManually: {} as ViewStyle,
 });
 
@@ -68,6 +71,8 @@ const RollCallOpened = () => {
   // is never changed, i.e. the bound variables stay the same during the scanner's lifetime
   // this is due to a react-camera bug and is hopefully fixed at some point in the future
   const attendeePopTokens = useRef(navigationAttendeePopTokens);
+  const [, updateState] = React.useState<unknown>();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
 
   // re-enable scanner on focus events
   useEffect(() => {
@@ -119,6 +124,9 @@ const RollCallOpened = () => {
 
       // update mutable reference that allows us to check for duplicates the next time this function is called
       attendeePopTokens.current = newTokens;
+      // trigger a state change to re-render the component
+      forceUpdate();
+      // setShowScanner(false);
       // also change the navigation parameters so that when pressing the back button, the right parameters are passed
       navigation.setParams({
         attendeePopTokens: newTokens,
@@ -126,7 +134,7 @@ const RollCallOpened = () => {
 
       return true;
     },
-    [navigation, attendeePopTokens],
+    [navigation, attendeePopTokens, forceUpdate],
   );
 
   const addAttendeePopTokenAndShowToast = (popToken: string) => {
@@ -163,6 +171,8 @@ const RollCallOpened = () => {
       .catch(handleError);
   }, [laoId, generateToken, rollCall, addAttendeePopToken, handleError]);
 
+  console.error('attendeePopTokens', attendeePopTokens.current.length);
+
   return (
     <>
       <QrCodeScanner
@@ -183,7 +193,7 @@ const RollCallOpened = () => {
                 </Text>
               </PoPTouchableOpacity>
             </View>
-            <View style={[QrCodeScannerUIElementContainer, { marginTop: 10 }]}>
+            <View style={[QrCodeScannerUIElementContainer, styles.counter]}>
               <Text style={[Typography.base, Typography.accent]}>
                 {/* -1 because we don't count the organizer */}
                 {STRINGS.roll_call_scan_counter}: {attendeePopTokens.current.length - 1}

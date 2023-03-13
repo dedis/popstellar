@@ -556,7 +556,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                         "padding": 8,
                                       },
                                       {
-                                        "marginTop": 10,
+                                        "marginTop": 16,
                                       },
                                     ]
                                   }
@@ -1225,7 +1225,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                         "padding": 8,
                                       },
                                       {
-                                        "marginTop": 10,
+                                        "marginTop": 16,
                                       },
                                     ]
                                   }
@@ -1247,7 +1247,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                   >
                                     Number of scanned attendees
                                     : 
-                                    -1
+                                    2
                                   </Text>
                                 </View>
                               </View>
