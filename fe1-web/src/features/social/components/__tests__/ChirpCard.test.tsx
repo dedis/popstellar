@@ -1,13 +1,18 @@
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
+import { Provider } from 'react-redux';
+import { Store } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { Hash, PublicKey, Timestamp } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
+import { setCurrentLao, laoReducer } from 'features/lao/reducer';
 import { OpenedLaoStore } from 'features/lao/store';
-import { mockReaction1 } from 'features/social/__tests__/utils';
+import { mockChirp0, mockChirp0Deleted, mockChirpTimestamp } from 'features/social/__tests__/utils';
 import { SocialMediaContext } from 'features/social/context';
+import { addChirp, addReaction, socialReducer } from 'features/social/reducer';
 import STRINGS from 'resources/strings';
 
 import { SocialReactContext, SOCIAL_FEATURE_IDENTIFIER } from '../../interface';
@@ -15,7 +20,7 @@ import {
   requestAddReaction as mockRequestAddReaction,
   requestDeleteReaction as mockRequestDeleteReaction,
 } from '../../network/SocialMessageApi';
-import { Chirp } from '../../objects';
+import { Chirp, Reaction } from '../../objects';
 import ChirpCard from '../ChirpCard';
 
 jest.mock('core/hooks/ActionSheet.ts', () => {
@@ -23,56 +28,7 @@ jest.mock('core/hooks/ActionSheet.ts', () => {
   return { useActionSheet: () => showActionSheet };
 });
 
-// region test data
-const TIMESTAMP = 1609455600; // 31 December 2020
-const sender = mockPopToken.publicKey;
-const ID = new Hash('1234');
-
-const chirp = new Chirp({
-  id: ID,
-  text: "Don't panic.",
-  sender: sender,
-  time: new Timestamp(TIMESTAMP),
-  isDeleted: false,
-});
-
-const deletedChirp = new Chirp({
-  id: new Hash('1234'),
-  text: '',
-  sender: sender,
-  time: new Timestamp(TIMESTAMP),
-  isDeleted: true,
-});
-
-const chirp1 = new Chirp({
-  id: new Hash('5678'),
-  text: 'Ignore me',
-  sender: new PublicKey('Anonymous'),
-  time: new Timestamp(TIMESTAMP),
-});
-// endregion
-
 jest.mock('features/social/network/SocialMessageApi');
-jest.mock('react-redux', () => {
-  // use this to return the same values on the first and second call in each render
-  let x = 1;
-
-  return {
-    ...jest.requireActual('react-redux'),
-    useSelector: jest.fn(() => {
-      x = (x + 1) % 2;
-
-      if (x === 0) {
-        return { '👍': 1, '👎': 0, '❤️': 0 };
-      }
-
-      return {
-        '👍': mockReaction1,
-      };
-    }),
-  };
-});
-
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
 
 const contextValue = {
@@ -88,20 +44,55 @@ const contextValue = {
   } as SocialReactContext,
 };
 
-const senderContext = { currentUserPopTokenPublicKey: sender };
-const nonSenderContext = { currentUserPopTokenPublicKey: new PublicKey('IAmNotTheSender') };
+const { sender } = mockChirp0;
+const nonSender = new PublicKey('IAmNotTheSender');
+const reactionSender = new PublicKey('IAmTheOneReacting');
+
+const thumbsUpReaction = new Reaction({
+  id: new Hash('1111'),
+  sender: reactionSender,
+  codepoint: '👍',
+  chirpId: mockChirp0.id,
+  time: mockChirpTimestamp,
+});
+
+const thumbsDownReaction = new Reaction({
+  id: new Hash('2222'),
+  sender: reactionSender,
+  codepoint: '👎',
+  chirpId: mockChirp0.id,
+  time: mockChirpTimestamp,
+});
+
+const getMockStore = () => {
+  const mockStore = configureStore({
+    reducer: combineReducers({ ...socialReducer, ...laoReducer }),
+  });
+  mockStore.dispatch(setCurrentLao(mockLao));
+
+  return mockStore;
+};
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 
 // FIXME: useSelector mock doesn't seem to work correctly
 describe('ChirpCard', () => {
-  const renderChirp = (c: Chirp, isSender: boolean) => {
+  const renderChirp = (mockStore: Store, c: Chirp, user: PublicKey) => {
     return render(
-      <FeatureContext.Provider value={contextValue}>
-        <SocialMediaContext.Provider value={isSender ? senderContext : nonSenderContext}>
-          <MockNavigator
-            component={() => <ChirpCard chirp={c} isFirstItem={false} isLastItem={false} />}
-          />
-        </SocialMediaContext.Provider>
-      </FeatureContext.Provider>,
+      // render chirp using <Provider> to make ChirpCard use mockStore
+      <Provider store={mockStore}>
+        {/* each feature requires its feature context due to how the dependency injection is set up */}
+        <FeatureContext.Provider value={contextValue}>
+          <SocialMediaContext.Provider value={{ currentUserPopTokenPublicKey: user }}>
+            {/* components using 'useNavigation' or 'useRoute' need a MockNavigator wrapped around them */}
+            <MockNavigator
+              component={() => <ChirpCard chirp={c} isFirstItem={false} isLastItem={false} />}
+            />
+          </SocialMediaContext.Provider>
+        </FeatureContext.Provider>
+      </Provider>,
     );
   };
 
@@ -110,23 +101,35 @@ describe('ChirpCard', () => {
     getMockLao.mockImplementation(() => mockLao);
 
     it('renders correctly for sender', () => {
-      const obj = renderChirp(chirp, true);
+      const mockStore = getMockStore();
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0));
+
+      const obj = renderChirp(mockStore, mockChirp0, sender);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('renders correctly for non-sender', () => {
-      const obj = renderChirp(chirp, false);
+      const mockStore = getMockStore();
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0));
+
+      const obj = renderChirp(mockStore, mockChirp0, nonSender);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('render correct for a deleted chirp', () => {
-      const obj = renderChirp(deletedChirp, true);
+      const mockStore = getMockStore();
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0Deleted));
+
+      const obj = renderChirp(mockStore, mockChirp0Deleted, nonSender);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('delete shows confirmation windows', () => {
-      const { getByText, getByTestId } = renderChirp(chirp, true);
-      fireEvent.press(getByTestId('delete'));
+      const mockStore = getMockStore();
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0Deleted));
+
+      const { getByText, getByTestId } = renderChirp(mockStore, mockChirp0, sender);
+      fireEvent.press(getByTestId('delete_chirp'));
 
       expect(getByText(STRINGS.social_media_ask_confirm_delete_chirp)).toBeTruthy();
     });
@@ -134,58 +137,81 @@ describe('ChirpCard', () => {
 
   describe('for reaction', () => {
     it('renders correctly with reaction', () => {
-      const obj = renderChirp(chirp, true);
+      const mockStore = getMockStore();
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0));
+      mockStore.dispatch(addReaction(mockLaoId, thumbsUpReaction));
+
+      const obj = renderChirp(mockStore, mockChirp0, nonSender);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('renders correctly without reaction', () => {
-      const obj = renderChirp(chirp1, true);
+      const mockStore = getMockStore();
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0));
+
+      const obj = renderChirp(mockStore, mockChirp0, nonSender);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('removes thumbs up correctly', () => {
-      const { getByTestId } = renderChirp(chirp, true);
+      const mockStore = getMockStore();
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0));
+      mockStore.dispatch(addReaction(mockLaoId, thumbsUpReaction));
+
+      const { getByTestId } = renderChirp(mockStore, mockChirp0, reactionSender);
       const thumbsUpButton = getByTestId('thumbs-up');
       fireEvent.press(thumbsUpButton);
-      expect(mockRequestDeleteReaction).toHaveBeenCalledWith(mockReaction1.id, mockLaoId);
+      expect(mockRequestDeleteReaction).toHaveBeenCalledWith(thumbsUpReaction.id, mockLaoId);
     });
 
     it('adds thumbs down correctly', () => {
-      const { getByTestId } = renderChirp(chirp, true);
+      const mockStore = getMockStore();
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0));
+
+      const { getByTestId } = renderChirp(mockStore, mockChirp0, reactionSender);
       const thumbsDownButton = getByTestId('thumbs-down');
       fireEvent.press(thumbsDownButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoId);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', mockChirp0.id, mockLaoId);
     });
 
     it('adds heart correctly', () => {
-      const { getByTestId } = renderChirp(chirp, true);
+      const mockStore = getMockStore();
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0));
+
+      const { getByTestId } = renderChirp(mockStore, mockChirp0, reactionSender);
       const heartButton = getByTestId('heart');
       fireEvent.press(heartButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID, mockLaoId);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', mockChirp0.id, mockLaoId);
     });
 
-    it('adds thumps up to thumbs down chirp removes thumbs down', () => {
-      const { getByTestId } = renderChirp(chirp, true);
+    it('removes thumbs up when reacting with thumbs down', () => {
+      const mockStore = getMockStore();
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0));
+      mockStore.dispatch(addReaction(mockLaoId, thumbsUpReaction));
+
+      const { getByTestId } = renderChirp(mockStore, mockChirp0, reactionSender);
       const thumbsDownButton = getByTestId('thumbs-down');
+
       fireEvent.press(thumbsDownButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoId);
-      expect(mockRequestDeleteReaction).toHaveBeenCalledWith(mockReaction1.id, mockLaoId);
+      expect(mockRequestDeleteReaction).toHaveBeenCalledWith(thumbsUpReaction.id, mockLaoId);
     });
 
-    it('adds thumps down to thumbs up chirp removes thumbs up', () => {
-      const { getByTestId } = renderChirp(chirp, true);
-      const thumbsDownButton = getByTestId('thumbs-down');
+    it('removes thumbs down when reacting with thumbs up', () => {
+      // prepare the redux store with a chirp where 'sender' has previously reacted
+      // with a thumbs up
+      const mockStore = getMockStore();
+      // add a chirp to the redux store
+      mockStore.dispatch(addChirp(mockLaoId, mockChirp0));
+      // add the thumbs down reaction to the redux store
+      mockStore.dispatch(addReaction(mockLaoId, thumbsDownReaction));
 
-      // sets the button with thumbs down
-      fireEvent.press(thumbsDownButton);
-      expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID, mockLaoId);
-
+      const { getByTestId } = renderChirp(mockStore, mockChirp0, reactionSender);
       const thumbsUpButton = getByTestId('thumbs-up');
       fireEvent.press(thumbsUpButton);
-      expect(mockRequestDeleteReaction).toHaveBeenCalledWith(mockReaction1.id, mockLaoId);
-      // TODO: fix this test
-      // expect(mockRequestAddReaction).toHaveBeenCalledTimes(2);
-      // expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID, mockLaoId);
+
+      expect(mockRequestDeleteReaction).toHaveBeenCalledWith(thumbsDownReaction.id, mockLaoId);
+      expect(mockRequestAddReaction).toHaveBeenCalledTimes(1);
+      expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', mockChirp0.id, mockLaoId);
     });
   });
 });

@@ -7,7 +7,7 @@ import { AnyAction } from 'redux';
 import { serializedMockLaoId, mockLaoId } from '__tests__/utils/TestUtils';
 import {
   mockChirp0,
-  mockChirp0DeletedFake,
+  mockChirp0Deleted,
   mockChirp1,
   mockChirp1Deleted,
   mockChirp1DeletedFake,
@@ -52,7 +52,7 @@ const chirpFilledState0Deleted: SocialLaoReducerState = {
   byLaoId: {
     [serializedMockLaoId]: {
       allIdsInOrder: [],
-      byId: { [mockChirpId0.toState()]: mockChirp0DeletedFake.toState() },
+      byId: { [mockChirpId0.toState()]: mockChirp0Deleted.toState() },
       byUser: {},
       scoreByChirpId: {},
       reactionsByChirpId: {},
@@ -457,7 +457,7 @@ describe('SocialReducer', () => {
     });
 
     it('delete a non-stored chirp should store it in byId as deleted', () => {
-      expect(socialReduce(emptyState, deleteChirp(mockLaoId, mockChirp0DeletedFake))).toEqual(
+      expect(socialReduce(emptyState, deleteChirp(mockLaoId, mockChirp0Deleted))).toEqual(
         chirpFilledState0Deleted,
       );
     });

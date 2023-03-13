@@ -155,19 +155,21 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-  function thumbsUpPressed() {
+  const thumbsUpPressed = () => {
     if (reacted['👍']) {
       deleteReaction(reacted['👍'].id);
-    } else {
-      // If the user has already reacted with a thumbs down, remove it
-      if (reacted['👎']) {
-        deleteReaction(reacted['👎'].id);
-      }
-      addReaction('👍');
+      return;
     }
-  }
 
-  function thumbsDownPressed() {
+    // If the user has already reacted with a thumbs down, remove it
+    if (reacted['👎']) {
+      deleteReaction(reacted['👎'].id);
+    }
+
+    addReaction('👍');
+  };
+
+  const thumbsDownPressed = () => {
     if (reacted['👎']) {
       deleteReaction(reacted['👎'].id);
     } else {
@@ -177,7 +179,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
       }
       addReaction('👎');
     }
-  }
+  };
 
   return (
     <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
@@ -226,7 +228,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="thumbsUp"
                   testID="thumbs-up"
-                  onPress={() => thumbsUpPressed()}
+                  onPress={thumbsUpPressed}
                   disabled={reactionsDisabled['👍']}
                   size="small"
                   buttonStyle={reacted['👍'] ? 'primary' : 'secondary'}
@@ -240,7 +242,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="thumbsDown"
                   testID="thumbs-down"
-                  onPress={() => thumbsDownPressed()}
+                  onPress={thumbsDownPressed}
                   disabled={reactionsDisabled['👎']}
                   size="small"
                   buttonStyle={reacted['👎'] ? 'primary' : 'secondary'}
@@ -270,7 +272,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <View style={styles.reactionView}>
                   <PoPIconButton
                     name="delete"
-                    testID="delete"
+                    testID="delete_chirp"
                     onPress={() => setShowDeleteConfirmation(true)}
                     size="small"
                     buttonStyle="secondary"
