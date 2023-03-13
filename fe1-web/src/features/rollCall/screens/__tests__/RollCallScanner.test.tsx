@@ -241,12 +241,12 @@ describe('RollCallOpened', () => {
     expect(getByText(`${STRINGS.roll_call_scan_counter}: 0`)).toBeTruthy();
 
     await waitFor(() => {
-      expect(mockGenerateToken).toHaveBeenCalled();
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey2.valueOf() }));
       fakeQrReaderScan(ScannablePopToken.encodePopToken({ pop_token: mockPublicKey3.valueOf() }));
+      expect(mockGenerateToken).toHaveBeenCalled();
     });
 
     // TODO: fix this test (why still 0?)
-    expect(getByText(`${STRINGS.roll_call_scan_counter}: 0`)).toBeTruthy();
+    expect(getByText(`${STRINGS.roll_call_scan_counter}: 2`)).toBeTruthy();
   });
 });
