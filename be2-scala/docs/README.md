@@ -206,8 +206,8 @@ Summary of the keys used to retrieve data:
 - for a message: `channel#message_id`
 - for ChannelData: `channel`
 - for LaoData: `root/lao_id#laodata`
-- for RollCallData: `root/rollcall/lao_id`
-- for ElectionData: `root/private/election_id`
+- for RollCallData: `root/lao_id/rollcall`
+- for ElectionData: `root/lao_id/private/election_id`
 
 We use `/` as a separator for parts of a channel and `#` as a separator for data objects when needed.
 
