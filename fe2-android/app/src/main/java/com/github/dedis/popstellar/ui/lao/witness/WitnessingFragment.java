@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.ui.lao.witness;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -13,6 +15,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class WitnessingFragment extends Fragment {
+
+  public static final String TAG = WitnessingFragment.class.getSimpleName();
 
   public WitnessingFragment() {
     // Required empty public constructor
@@ -39,6 +43,7 @@ public class WitnessingFragment extends Fragment {
             ((tab, position) ->
                 tab.setText(position == 0 ? R.string.witnesses : R.string.messages)))
         .attach();
+    handleBackNav();
     return view;
   }
 
@@ -48,5 +53,18 @@ public class WitnessingFragment extends Fragment {
     LaoViewModel viewModel = LaoActivity.obtainViewModel(requireActivity());
     viewModel.setPageTitle(R.string.witnessing);
     viewModel.setIsTab(true);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to event list");
+            ((LaoActivity) requireActivity()).setEventsTab();
+          }
+        });
   }
 }

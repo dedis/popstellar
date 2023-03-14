@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -53,6 +54,7 @@ public class DigitalCashHomeFragment extends Fragment {
     subscribeToRole();
     setupReceiveButton();
     setupSendButton();
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -126,5 +128,18 @@ public class DigitalCashHomeFragment extends Fragment {
   public static void openFragment(FragmentManager manager) {
     LaoActivity.setCurrentFragment(
         manager, R.id.fragment_digital_cash_home, DigitalCashHomeFragment::new);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to event list");
+            ((LaoActivity) requireActivity()).setEventsTab();
+          }
+        });
   }
 }
