@@ -43,8 +43,10 @@
       android:id="@+id/lao_navigation_drawer"
       android:layout_width="wrap_content"
       android:layout_height="match_parent"
-      app:headerLayout="@layout/header_navigation_drawer"
       android:layout_gravity="start"
+      app:headerLayout="@layout/header_navigation_drawer"
+      app:itemTextColor="@drawable/menu_items"
+      app:itemIconTint="@drawable/menu_items"
       app:menu="@menu/main_menu" />
 
   </androidx.drawerlayout.widget.DrawerLayout>

@@ -4,6 +4,9 @@
   <color name="colorPrimaryDark">#000000</color>
   <color name="colorAccent">#185ADB</color>
   <color name="categoryTab">#185ADB</color>
+  <color name="textOnBackground">#FFFFFF</color>
+  <color name="textMenuItem">#FFFFFF</color>
+  <color name="textMenuItemSelected">#FFFFFF</color>
   <color name="white">#FFFFFF</color>
   <color name="lao">#E6E6E6</color>
   <color name="red">#EE1010</color>
