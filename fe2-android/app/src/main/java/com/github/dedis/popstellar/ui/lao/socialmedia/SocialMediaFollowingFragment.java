@@ -1,8 +1,10 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -18,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SocialMediaFollowingFragment extends Fragment {
 
+  public static final String TAG = SocialMediaFollowingFragment.class.getSimpleName();
   private LaoViewModel laoViewModel;
 
   public static SocialMediaFollowingFragment newInstance() {
@@ -40,7 +43,7 @@ public class SocialMediaFollowingFragment extends Fragment {
 
     binding.setViewModel(socialMediaViewModel);
     binding.setLifecycleOwner(getViewLifecycleOwner());
-
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -49,5 +52,18 @@ public class SocialMediaFollowingFragment extends Fragment {
     super.onResume();
     laoViewModel.setPageTitle(R.string.following);
     laoViewModel.setIsTab(true);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            Log.d(TAG, "Back pressed, going to social media home");
+            SocialMediaHomeFragment.openFragment(getParentFragmentManager());
+          }
+        });
   }
 }

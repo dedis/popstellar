@@ -50,6 +50,8 @@ public class LaoActivity extends AppCompatActivity {
   LaoViewModel laoViewModel;
   LaoActivityBinding binding;
 
+  private boolean historyFlag = false;
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -69,9 +71,7 @@ public class LaoActivity extends AppCompatActivity {
     observeDrawer();
     setupDrawerHeader();
 
-    // Open Event list on activity creation
-    binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
-    openEventsTab();
+    setEventsTab();
 
     // Temporary fix to disable dark mode, addressing issue #1381 (UI elements not displaying
     // correctly in dark mode)
@@ -145,11 +145,18 @@ public class LaoActivity extends AppCompatActivity {
     binding.laoAppBar.setOnMenuItemClickListener(
         menuItem -> {
           if (menuItem.getItemId() == R.id.history_menu_toolbar) {
-            setCurrentFragment(
-                getSupportFragmentManager(),
-                R.id.fragment_digital_cash_history,
-                DigitalCashHistoryFragment::newInstance);
             binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.DIGITAL_CASH.getMenuId());
+            // If the user clicks on the button when the transaction history is
+            // already displayed, then consider it as a back button pressed
+            if (!historyFlag) {
+              setCurrentFragment(
+                  getSupportFragmentManager(),
+                  R.id.fragment_digital_cash_history,
+                  DigitalCashHistoryFragment::newInstance);
+            } else {
+              openDigitalCashTab();
+            }
+            historyFlag = !historyFlag;
             return true;
           }
           return false;
@@ -263,6 +270,12 @@ public class LaoActivity extends AppCompatActivity {
   private void openSocialMediaTab() {
     setCurrentFragment(
         getSupportFragmentManager(), R.id.fragment_social_media_home, SocialMediaHomeFragment::new);
+  }
+
+  /** Open Event list on activity creation */
+  public void setEventsTab() {
+    binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
+    openEventsTab();
   }
 
   public static LaoViewModel obtainViewModel(FragmentActivity activity) {
