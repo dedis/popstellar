@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.ui.lao.token;
 
+import android.graphics.Color;
+
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -39,6 +42,7 @@ import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPT
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
 import static com.github.dedis.popstellar.testutils.pages.lao.token.TokenPageObject.tokenTextView;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -117,5 +121,19 @@ public class TokenFragmentTest {
   @Test
   public void tokenIsDisplayed() {
     tokenTextView().check(matches(withText(USER_TOKEN.getPublicKey().getEncoded())));
+  }
+
+  @Test
+  public void testQRCodeColorChangesWithNightMode() {
+    activityScenarioRule
+        .getScenario()
+        .onFragment(
+            fragment -> {
+              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+              assertEquals(fragment.getQRCodeColor(), Color.WHITE);
+
+              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+              assertEquals(fragment.getQRCodeColor(), Color.BLACK);
+            });
   }
 }

@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.ui.lao;
 
+import android.graphics.Color;
+
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -31,6 +34,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.testutils.pages.lao.InviteFragmentPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 @SmallTest
@@ -88,5 +92,19 @@ public class InviteFragmentTest {
   @Test
   public void qrCodeIsDisplayed() {
     channelQRCode().check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testQRCodeColorChangesWithNightMode() {
+    activityScenarioRule
+        .getScenario()
+        .onFragment(
+            fragment -> {
+              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+              assertEquals(fragment.getQRCodeColor(), Color.WHITE);
+
+              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+              assertEquals(fragment.getQRCodeColor(), Color.BLACK);
+            });
   }
 }

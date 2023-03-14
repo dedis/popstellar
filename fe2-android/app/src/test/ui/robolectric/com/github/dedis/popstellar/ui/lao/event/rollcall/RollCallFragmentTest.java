@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
+import android.graphics.Color;
+
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -46,6 +49,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.lao.event.rollcall.RollCallFragmentPageObject.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
@@ -258,5 +262,19 @@ public class RollCallFragmentTest {
     // Assert state of roll call is unchanged
     assertNotEquals(ROLL_CALL.getState(), EventState.OPENED);
     managementButton().check(matches(withText("OPEN")));
+  }
+
+  @Test
+  public void testQRCodeColorChangesWithNightMode() {
+    activityScenarioRule
+        .getScenario()
+        .onFragment(
+            fragment -> {
+              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+              assertEquals(fragment.getQRCodeColor(), Color.WHITE);
+
+              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+              assertEquals(fragment.getQRCodeColor(), Color.BLACK);
+            });
   }
 }
