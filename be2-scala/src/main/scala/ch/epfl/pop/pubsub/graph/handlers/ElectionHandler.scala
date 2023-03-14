@@ -107,7 +107,15 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case _        => Nil
     }
     val electionChannel: Channel = rpcMessage.getParamsChannel
+    val laoId = electionChannel.decodeChannelLaoId match {
+      case Some(id) => id
+      case _ => Nil
+    }
+    if(laoId == Nil){
+      Right(PipelineError(ErrorCodes.INVALID_DATA.id, "laoId does not exist", rpcMessage.id))
+    }
     val combined = for {
+
       electionQuestionResults <- createElectionQuestionResults(electionChannel, electionChannel.decodeChannelLaoId.get)
       // propagate the endElection message
       _ <- dbAskWritePropagate(rpcMessage)
