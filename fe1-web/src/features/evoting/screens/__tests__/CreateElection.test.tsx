@@ -51,4 +51,28 @@ describe('CreateElection', () => {
     ).toJSON();
     expect(component).toMatchSnapshot();
   });
+
+  it('renders correctly when name and questions are whitespace string', () => {
+    const { getByTestId, toJSON } = render(
+      <FeatureContext.Provider value={contextValue}>
+        <MockNavigator component={CreateElection} />
+      </FeatureContext.Provider>,
+    );
+    const question = getByTestId('election_name_selector');
+    fireEvent.changeText(question, '     ');
+    expect(toJSON()).toMatchSnapshot();
+  });
+
+  it('renders correctly trimmed question and election name', () => {
+    const { getByTestId, toJSON } = render(
+      <FeatureContext.Provider value={contextValue}>
+        <MockNavigator component={CreateElection} />
+      </FeatureContext.Provider>,
+    );
+    const electionName = getByTestId('election_name_selector');
+    const question = getByTestId('question_selector_0');
+    fireEvent.changeText(question, '    Trimmed question ');
+    fireEvent.changeText(electionName, '    Trimmed election name    ');
+    expect(toJSON()).toMatchSnapshot();
+  });
 });

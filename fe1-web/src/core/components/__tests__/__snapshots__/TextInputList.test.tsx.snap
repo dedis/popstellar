@@ -1,0 +1,403 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TextInputList renders correctly with a small left trimmed text 1`] = `
+<View>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "flexDirection": "row",
+      }
+    }
+    testID="x_option_0"
+  >
+    <View
+      style={
+        {
+          "flex": 1,
+          "flexDirection": "row",
+        }
+      }
+    >
+      <TextInput
+        editable={true}
+        onChangeText={[Function]}
+        placeholder=""
+        placeholderTextColor="#8E8E8E"
+        style={
+          [
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+            {
+              "backgroundColor": "#fff",
+              "borderColor": "#fff",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "flex": 1,
+              "padding": 8,
+              "width": 50,
+            },
+          ]
+        }
+        testID="x_option_0_input"
+        value="trimmed list   option   "
+      />
+    </View>
+    <View
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "marginBottom": 16,
+          "marginLeft": 16,
+        }
+      }
+      testID="x_option_0_remove"
+    >
+      <RNGestureHandlerButton
+        collapsable={false}
+        delayLongPress={600}
+        enabled={true}
+        exclusive={true}
+        handlerTag={1}
+        handlerType="NativeViewGestureHandler"
+        onGestureEvent={[Function]}
+        onGestureHandlerEvent={[Function]}
+        onGestureHandlerStateChange={[Function]}
+        onHandlerStateChange={[Function]}
+        rippleColor={0}
+        touchSoundDisabled={false}
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View>
+            {"name":"ios-trash","size":25,"color":"#000"}
+          </View>
+        </View>
+      </RNGestureHandlerButton>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "flexDirection": "row",
+      }
+    }
+    testID="x_option_1"
+  >
+    <View
+      style={
+        {
+          "flex": 1,
+          "flexDirection": "row",
+        }
+      }
+    >
+      <TextInput
+        editable={true}
+        onChangeText={[Function]}
+        placeholder=""
+        placeholderTextColor="#8E8E8E"
+        style={
+          [
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+            {
+              "backgroundColor": "#fff",
+              "borderColor": "#fff",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "flex": 1,
+              "padding": 8,
+              "width": 50,
+            },
+          ]
+        }
+        testID="x_option_1_input"
+        value=""
+      />
+    </View>
+    <View
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "marginBottom": 16,
+          "marginLeft": 16,
+        }
+      }
+      testID="x_option_1_remove"
+    >
+      <RNGestureHandlerButton
+        collapsable={false}
+        delayLongPress={600}
+        enabled={true}
+        exclusive={true}
+        handlerTag={2}
+        handlerType="NativeViewGestureHandler"
+        onGestureEvent={[Function]}
+        onGestureHandlerEvent={[Function]}
+        onGestureHandlerStateChange={[Function]}
+        onHandlerStateChange={[Function]}
+        rippleColor={0}
+        touchSoundDisabled={false}
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View>
+            {"name":"ios-trash","size":25,"color":"#000"}
+          </View>
+        </View>
+      </RNGestureHandlerButton>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`TextInputList renders correctly with a small trimed text 1`] = `
+<View>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "flexDirection": "row",
+      }
+    }
+    testID="x_option_0"
+  >
+    <View
+      style={
+        {
+          "flex": 1,
+          "flexDirection": "row",
+        }
+      }
+    >
+      <TextInput
+        editable={true}
+        onChangeText={[Function]}
+        placeholder=""
+        placeholderTextColor="#8E8E8E"
+        style={
+          [
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+            {
+              "backgroundColor": "#fff",
+              "borderColor": "#fff",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "flex": 1,
+              "padding": 8,
+              "width": 50,
+            },
+          ]
+        }
+        testID="x_option_0_input"
+        value="trimmed list   option   "
+      />
+    </View>
+    <View
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "marginBottom": 16,
+          "marginLeft": 16,
+        }
+      }
+      testID="x_option_0_remove"
+    >
+      <RNGestureHandlerButton
+        collapsable={false}
+        delayLongPress={600}
+        enabled={true}
+        exclusive={true}
+        handlerTag={1}
+        handlerType="NativeViewGestureHandler"
+        onGestureEvent={[Function]}
+        onGestureHandlerEvent={[Function]}
+        onGestureHandlerStateChange={[Function]}
+        onHandlerStateChange={[Function]}
+        rippleColor={0}
+        touchSoundDisabled={false}
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View>
+            {"name":"ios-trash","size":25,"color":"#000"}
+          </View>
+        </View>
+      </RNGestureHandlerButton>
+    </View>
+  </View>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "flex": 1,
+        "flexDirection": "row",
+      }
+    }
+    testID="x_option_1"
+  >
+    <View
+      style={
+        {
+          "flex": 1,
+          "flexDirection": "row",
+        }
+      }
+    >
+      <TextInput
+        editable={true}
+        onChangeText={[Function]}
+        placeholder=""
+        placeholderTextColor="#8E8E8E"
+        style={
+          [
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            },
+            {
+              "backgroundColor": "#fff",
+              "borderColor": "#fff",
+              "borderRadius": 8,
+              "borderWidth": 1,
+              "flex": 1,
+              "padding": 8,
+              "width": 50,
+            },
+          ]
+        }
+        testID="x_option_1_input"
+        value=""
+      />
+    </View>
+    <View
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "marginBottom": 16,
+          "marginLeft": 16,
+        }
+      }
+      testID="x_option_1_remove"
+    >
+      <RNGestureHandlerButton
+        collapsable={false}
+        delayLongPress={600}
+        enabled={true}
+        exclusive={true}
+        handlerTag={2}
+        handlerType="NativeViewGestureHandler"
+        onGestureEvent={[Function]}
+        onGestureHandlerEvent={[Function]}
+        onGestureHandlerStateChange={[Function]}
+        onHandlerStateChange={[Function]}
+        rippleColor={0}
+        touchSoundDisabled={false}
+      >
+        <View
+          accessible={true}
+          collapsable={false}
+          style={
+            {
+              "opacity": 1,
+            }
+          }
+        >
+          <View>
+            {"name":"ios-trash","size":25,"color":"#000"}
+          </View>
+        </View>
+      </RNGestureHandlerButton>
+    </View>
+  </View>
+</View>
+`;

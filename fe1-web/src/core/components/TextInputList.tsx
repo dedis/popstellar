@@ -20,7 +20,7 @@ const TextInputList = (props: IPropTypes) => {
   const updateParent = (options: { id: number; value: string }[]) => {
     // Gets the distinct options which are not empty ('')
     const distinctValues = [...new Set(options.map((option) => option.value))].filter(
-      (value) => value !== '',
+      (value) => value.trim() !== '',
     );
     // Updates the values in the parent component
     onChange(distinctValues);
@@ -35,8 +35,11 @@ const TextInputList = (props: IPropTypes) => {
   };
 
   const updateInput = (id: number, value: string) => {
+    if (value.trim() === '') {
+      return;
+    }
     const optionIndex = userInputs.findIndex((option) => option.id === id);
-    userInputs[optionIndex] = { id: id, value: value };
+    userInputs[optionIndex] = { id: id, value: value.trimLeft() };
     setUserInputs(userInputs);
     updateParent(userInputs);
     // If the currently modified text field is the last in the list

@@ -107,9 +107,9 @@ const createElection = (
   // compute the id for all questions and add the write_in property
   const questionsWithId = questions.map((item) =>
     Question.fromState({
-      id: Hash.fromArray(EventTags.QUESTION, electionId, item.question).toString(),
-      question: item.question,
-      ballot_options: item.ballot_options,
+      id: Hash.fromArray(EventTags.QUESTION, electionId, item.question.trim()).toString(),
+      question: item.question.trim(),
+      ballot_options: item.ballot_options.map((s) => s.trim()),
       voting_method: item.voting_method,
       // for now the write_in feature is disabled (2022-03-16, Tyratox)
       write_in: false,
@@ -222,7 +222,7 @@ const CreateElection = () => {
       </Text>
       <Input
         value={electionName}
-        onChange={setElectionName}
+        onChange={(s) => setElectionName(s.trimLeft())}
         placeholder={STRINGS.election_create_name_placeholder}
         testID="election_name_selector"
       />
@@ -262,10 +262,10 @@ const CreateElection = () => {
             onChange={(text: string) =>
               setQuestions((prev) =>
                 prev.map((item, id) =>
-                  id === idx && text.trim() !== ''
+                  id === idx && text.trimLeft() !== ''
                     ? {
                         ...item,
-                        question: text.trim(),
+                        question: text.trimLeft(),
                       }
                     : item,
                 ),
