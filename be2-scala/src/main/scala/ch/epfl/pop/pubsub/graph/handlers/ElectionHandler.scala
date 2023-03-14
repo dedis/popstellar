@@ -112,7 +112,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case _        => Nil
     }
     if (laoId == Nil) {
-      Right(PipelineError(ErrorCodes.INVALID_DATA.id, "laoId does not exist", rpcMessage.id))
+      Right(PipelineError(ErrorCodes.INVALID_DATA.id, "could not get laoId", rpcMessage.id))
     }
     val combined = for {
 
