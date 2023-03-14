@@ -1,10 +1,9 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
-import ch.epfl.pop.model.objects.WitnessSignaturePair
+import ch.epfl.pop.model.network.{JsonRpcMessage, JsonRpcRequest}
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -17,18 +16,57 @@ object WitnessValidator {
 }
 
 sealed class WitnessValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator {
+  type TestChange = Either[PipelineError, JsonRpcMessage]
+
+  def bindToPipe[T](rpcMessage: JsonRpcMessage, opt: Option[T], pipelineError: PipelineError): TestChange = {
+    if (opt.isEmpty) Left(pipelineError) else Right(rpcMessage)
+  }
+
+  def revert(graphMessage: GraphMessage): TestChange = {
+    graphMessage match {
+      case Left(message) => Right(message)
+      case Right(err)    => Left(err)
+    }
+  }
+
+  def undoRevert(testChange: TestChange): GraphMessage = {
+    testChange match {
+      case Left(err) => Right(err)
+      case Right(x)  => Left(x)
+    }
+  }
+
+  def checkWitnessesSignaturesTest(
+      rpcMessage: JsonRpcRequest,
+      witnessesKeyPairs: List[WitnessSignaturePair],
+      id: Hash,
+      error: PipelineError
+  ): TestChange = {
+    revert(checkWitnessesSignatures(rpcMessage, witnessesKeyPairs, id, error))
+  }
+
+  def checkOwnerTest(
+      rpcMessage: JsonRpcRequest,
+      sender: PublicKey,
+      channel: Channel,
+      dbActor: AskableActorRef = DbActor.getInstance,
+      error: PipelineError
+  ): TestChange = {
+    revert(checkOwner(rpcMessage, sender, channel, dbActor, error))
+  }
   def validateWitnessMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
+    undoRevert(validateWitnessMessageTest(rpcMessage))
+  }
+
+  def validateWitnessMessageTest(rpcMessage: JsonRpcRequest): TestChange = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "WitnessMessage", rpcMessage.id)
 
-    rpcMessage.getParamsMessage match {
-      case Some(_: Message) =>
-        val (data, _, sender, channel) = extractData[WitnessMessage](rpcMessage)
-        val witnessSignaturePair = WitnessSignaturePair(sender, data.signature)
-        runChecks(
-          checkWitnessesSignatures(rpcMessage, List(witnessSignaturePair), data.message_id, validationError("verification of the signature over the message id failed")),
-          checkOwner(rpcMessage, sender, channel, dbActorRef, validationError(s"invalid sender $sender"))
-        )
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
-    }
+    for {
+      _ <- bindToPipe(rpcMessage, rpcMessage.getParamsMessage, validationErrorNoMessage(rpcMessage.id))
+      (data, _, sender, channel) = extractData[WitnessMessage](rpcMessage)
+      witnessSignaturePair = WitnessSignaturePair(sender, data.signature)
+      _ <- checkWitnessesSignaturesTest(rpcMessage, List(witnessSignaturePair), data.message_id, validationError("verification of the signature over the message id failed"))
+      result <- checkOwnerTest(rpcMessage, sender, channel, dbActorRef, validationError(s"invalid sender $sender"))
+    } yield result
   }
 }
