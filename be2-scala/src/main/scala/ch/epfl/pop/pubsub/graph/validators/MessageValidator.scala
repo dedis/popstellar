@@ -6,7 +6,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError, bindToPipe}
 import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.Await
@@ -50,15 +50,17 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     val message: Message = rpcMessage.getParamsMessage.get
     val expectedId: Hash = Hash.fromStrings(message.data.toString, message.signature.toString)
 
-    if (message.message_id != expectedId) {
-      Right(validationError("Invalid message_id", "MessageValidator", rpcMessage.id))
-    } else if (!message.signature.verify(message.sender, message.data)) {
-      Right(validationError("Invalid sender signature", "MessageValidator", rpcMessage.id))
-    } else if (!message.witness_signatures.forall(ws => ws.verify(message.message_id))) {
-      Right(validationError("Invalid witness signature", "MessageValidator", rpcMessage.id))
-    } else {
-      Left(rpcMessage)
-    }
+    val result = runChecks(
+      bindToPipe(rpcMessage, message.message_id == expectedId,
+        validationError("Invalid message_id", "MessageValidator", rpcMessage.id)),
+      bindToPipe(rpcMessage, message.signature.verify(message.sender, message.data),
+        validationError("Invalid sender signature", "MessageValidator", rpcMessage.id)),
+    )
+    if (result.isLeft)
+      bindToPipe(rpcMessage, message.witness_signatures.forall(ws => ws.verify(message.message_id)),
+        validationError("Invalid witness signature", "MessageValidator", rpcMessage.id))
+    else
+      result
   }
 
   /** checks whether the sender of the JsonRpcRequest is in the attendee list inside the LAO's data
@@ -86,10 +88,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       dbActor: AskableActorRef = DbActor.getInstance,
       error: PipelineError
   ): GraphMessage = {
-    if (validateAttendee(sender, channel, dbActor))
-      Left(rpcMessage)
-    else
-      Right(error)
+    bindToPipe(rpcMessage, validateAttendee(sender, channel, dbActor), error)
   }
 
   /** checks whether the sender of the JsonRpcRequest is the LAO owner
@@ -117,10 +116,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       dbActor: AskableActorRef = DbActor.getInstance,
       error: PipelineError
   ): GraphMessage = {
-    if (validateOwner(sender, channel, dbActor))
-      Left(rpcMessage)
-    else
-      Right(error)
+    bindToPipe(rpcMessage, validateOwner(sender, channel, dbActor), error)
   }
 
   /** checks whether the channel of the JsonRpcRequest is of the given type
@@ -152,10 +148,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       dbActor: AskableActorRef = DbActor.getInstance,
       error: PipelineError
   ): GraphMessage = {
-    if (validateChannelType(channelObjectType, channel, dbActor))
-      Left(rpcMessage)
-    else
-      Right(error)
+    bindToPipe(rpcMessage, validateChannelType(channelObjectType, channel, dbActor), error)
   }
 
   /** Checks if the msg senderPK is the expected one
@@ -177,10 +170,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       msgSenderKey: PublicKey,
       error: PipelineError
   ): GraphMessage = {
-    if (expectedKey == msgSenderKey)
-      Left(rpcMessage)
-    else
-      Right(error)
+    bindToPipe(rpcMessage, expectedKey == msgSenderKey, error)
   }
 
 }
