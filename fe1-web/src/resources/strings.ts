@@ -121,7 +121,7 @@ namespace STRINGS {
 
   /* --- Lao Strings --- */
   export const lao_properties_modal_heading = 'Lao Properties';
-  export const lao_qr_code_overlay = 'Scan to\nConnect';
+  export const lao_qr_code_overlay = 'Scan to connect';
   export const lao_properties_name = 'Name';
   export const lao_properties_id = 'Identifier';
   export const lao_properties_your_role = 'Your role';
@@ -428,7 +428,7 @@ namespace STRINGS {
   export const wallet_home_rollcall_current_pop_tokens = 'Current tokens';
   export const wallet_home_rollcall_previous_pop_tokens = 'Previous tokens';
   export const wallet_home_rollcall_pop_token_valid = 'Current';
-  export const wallet_home_rollcall_qrcode_text = 'Scan to get\nuser token';
+  export const wallet_home_rollcall_qrcode_text = 'Scan to get user token';
 
   export const wallet_home_rollcall_no_pop_tokens = 'No PoP tokens';
   export const wallet_home_rollcall_no_pop_tokens_description =
@@ -450,7 +450,7 @@ namespace STRINGS {
     'Your balance for this lao is the sum of the balances of each roll call token you own in this lao. ' +
     'The distribution of your total balance is visible in the list below. ' +
     'To send cash from one of the accounts, simply tap on it.';
-  export const digital_cash_wallet_qrcode_text = 'Scan to set\nas recipient';
+  export const digital_cash_wallet_qrcode_text = 'Scan to set as recipient';
 
   export const digital_cash_coin_issuance = 'Coin Issuance';
   export const digital_cash_coin_issuance_description =

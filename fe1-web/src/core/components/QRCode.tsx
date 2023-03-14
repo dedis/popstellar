@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
       and a height of 50%. centering this gives us 25% margin on every side
     */
     position: 'absolute',
+    padding: '1%',
     top: '25%',
     left: '25%',
     right: '25%',

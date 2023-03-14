@@ -830,8 +830,7 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                           <View>
                             <View>
                               <qrcode
-                                overlayText="Scan to get
-user token"
+                                overlayText="Scan to get user token"
                                 value="{"pop_token":"oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms="}"
                               />
                             </View>
