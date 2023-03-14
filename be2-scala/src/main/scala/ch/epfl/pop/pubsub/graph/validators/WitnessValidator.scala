@@ -25,7 +25,14 @@ sealed class WitnessValidator(dbActorRef: => AskableActorRef) extends MessageDat
         val (data, _, sender, channel) = extractData[WitnessMessage](rpcMessage)
         val witnessSignaturePair = WitnessSignaturePair(sender, data.signature)
         runChecks(
-          checkWitnessesSignatures(rpcMessage, List(witnessSignaturePair), data.message_id, validationError("verification of the signature over the message id failed")),
+          checkWitnessesSignatures(
+            rpcMessage,
+            List(witnessSignaturePair),
+            data.message_id,
+            validationError(
+              "verification of the signature over the message id failed"
+            )
+          ),
           checkOwner(rpcMessage, sender, channel, dbActorRef, validationError(s"invalid sender $sender"))
         )
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
