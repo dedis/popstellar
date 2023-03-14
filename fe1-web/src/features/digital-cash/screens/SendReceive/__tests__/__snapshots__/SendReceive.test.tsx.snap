@@ -468,6 +468,9 @@ exports[`SendReceive renders correctly 1`] = `
                                                 "padding": 8,
                                                 "width": 50,
                                               },
+                                              {
+                                                "fontFamily": "Courier New",
+                                              },
                                             ]
                                           }
                                           value=""
@@ -1168,6 +1171,9 @@ exports[`SendReceive renders correctly with passed scanned pop token 1`] = `
                                                 "flex": 1,
                                                 "padding": 8,
                                                 "width": 50,
+                                              },
+                                              {
+                                                "fontFamily": "Courier New",
                                               },
                                             ]
                                           }

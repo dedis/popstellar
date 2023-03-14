@@ -696,6 +696,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -842,6 +843,7 @@ exports[`EventRollCall render correctly non organizers closed roll calls 1`] = `
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -2008,6 +2010,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -2154,6 +2157,7 @@ exports[`EventRollCall render correctly non organizers opened roll calls 1`] = `
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -2894,6 +2898,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -3040,6 +3045,7 @@ exports[`EventRollCall render correctly non organizers re-opened roll calls 1`] 
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -3766,6 +3772,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -3912,6 +3919,7 @@ exports[`EventRollCall render correctly organizers closed roll calls 1`] = `
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -5242,6 +5250,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -5388,6 +5397,7 @@ exports[`EventRollCall render correctly organizers opened roll calls 1`] = `
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -6283,6 +6293,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",
@@ -6429,6 +6440,7 @@ exports[`EventRollCall render correctly organizers re-opened roll calls 1`] = `
                                           {
                                             "backgroundColor": "transparent",
                                             "color": "#000",
+                                            "fontFamily": "Courier New",
                                             "fontSize": 20,
                                             "lineHeight": 26,
                                             "textAlign": "left",

@@ -36,4 +36,12 @@ public class RollCallFragmentPageObject {
   public static ViewInteraction rollCallScanButton() {
     return onView(withId(R.id.roll_call_scanning_button));
   }
+
+  public static ViewInteraction rollCallAttendeesText() {
+    return onView(withId(R.id.roll_call_attendees_text));
+  }
+
+  public static ViewInteraction rollCallListAttendees() {
+    return onView(withId(R.id.list_view_attendees));
+  }
 }

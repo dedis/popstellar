@@ -30,6 +30,9 @@ exports[`Profile renders correctly 1`] = `
             {
               "fontWeight": "bold",
             },
+            {
+              "fontFamily": "Courier New",
+            },
           ]
         }
       >

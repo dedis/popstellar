@@ -286,4 +286,8 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   public LiveData<Integer> getNbScanned() {
     return nbScanned;
   }
+
+  public Set<PublicKey> getAttendees() {
+    return attendees;
+  }
 }

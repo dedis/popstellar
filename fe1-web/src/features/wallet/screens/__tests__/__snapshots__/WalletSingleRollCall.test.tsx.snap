@@ -372,6 +372,9 @@ exports[`ViewSingleRollCallScreenHeader renders correctly 1`] = `
                                     "marginVertical": 32,
                                     "textAlign": "center",
                                   },
+                                  {
+                                    "fontFamily": "Courier New",
+                                  },
                                 ]
                               }
                             >
@@ -843,6 +846,9 @@ exports[`WalletSingleRollCall renders correctly 1`] = `
                                     "color": "#8E8E8E",
                                     "marginVertical": 32,
                                     "textAlign": "center",
+                                  },
+                                  {
+                                    "fontFamily": "Courier New",
                                   },
                                 ]
                               }

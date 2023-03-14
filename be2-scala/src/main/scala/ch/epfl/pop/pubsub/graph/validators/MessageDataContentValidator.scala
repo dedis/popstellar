@@ -1,11 +1,16 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.{JsonRpcRequest}
-import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
+import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, Timestamp, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.Read
+
+import scala.concurrent.Await
+import scala.util.Success
+import scala.util.matching.Regex
 
 trait MessageDataContentValidator extends ContentValidator with AskPatternConstants {
   implicit lazy val dbActor: AskableActorRef = DbActor.getInstance
@@ -56,6 +61,15 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Right(error)
   }
 
+  /** This method behaves the same as checkTimestampOrder, except that the param <second> is not necessarily defined. (Wrt to the protocol, some fields are not necessarily defined for certain type of messages, such as CreateMeeting)
+    */
+  def checkOptionalTimestampOrder(rpcMessage: JsonRpcRequest, first: Timestamp, second: Option[Timestamp], error: PipelineError): GraphMessage = {
+    if (!second.isDefined)
+      Left(rpcMessage)
+    else
+      checkTimestampOrder(rpcMessage, first, second.get, error)
+  }
+
   /** Checks if the id corresponds to the expected id
     *
     * @param rpcMessage
@@ -71,6 +85,98 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     */
   def checkId(rpcMessage: JsonRpcRequest, expectedId: Hash, id: Hash, error: PipelineError): GraphMessage = {
     if (expectedId == id)
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Check if all witnesses are distinct
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param witnesses
+    *   witnesses to check
+    * @param error
+    *   the error to forward in case the witnesses are not all distinct
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  def checkWitnesses(rpcMessage: JsonRpcRequest, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
+    if (validateWitnesses(witnesses))
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Check if some String match the pattern
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param str
+    *   the string to check
+    * @param pattern
+    *   the pattern the name must match
+    * @param error
+    *   the error to forward in case the name doesn't match the pattern
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  def checkStringPattern(rpcMessage: JsonRpcRequest, str: String, pattern: Regex, error: PipelineError): GraphMessage = {
+    if (pattern.matches(str))
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
+  /** Check if some message id exist in the db, if option id is empty the check is successful
+    *
+    * @param rpcMessage
+    *   the rpc message to validate
+    * @param id
+    *   the Option message id to check existence for
+    * @param channel
+    *   the channel on which the message might exist
+    * @param dbActor
+    *   the dbActor to ask
+    * @param error
+    *   the error to throw if the chirp do not exist
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  def checkIdExistence(rpcMessage: JsonRpcRequest, id: Option[Hash], channel: Channel, dbActor: AskableActorRef, error: PipelineError): GraphMessage = {
+    id match {
+      case Some(id) =>
+        val ask = dbActor ? Read(channel, id)
+        Await.ready(ask, duration).value.get match {
+          // just care about the message id existence
+          case Success(_) => Left(rpcMessage)
+          case _          => Right(error)
+        }
+
+      case None => Left(rpcMessage)
+    }
+  }
+
+  /** Checks witnesses key signature pairs for given modification id
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param witnessesKeyPairs
+    *   the witness key signature pairs
+    * @param id
+    *   modification id of the message
+    * @param error
+    *   the error to forward in case of invalid modifications
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  def checkWitnessesSignatures(
+      rpcMessage: JsonRpcRequest,
+      witnessesKeyPairs: List[WitnessSignaturePair],
+      id: Hash,
+      error: PipelineError
+  ): GraphMessage = {
+    if (validateWitnessSignatures(witnessesKeyPairs, id))
       Left(rpcMessage)
     else
       Right(error)
@@ -96,4 +202,5 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     */
   final def validateWitnessSignatures(witnessesKeyPairs: List[WitnessSignaturePair], data: Hash): Boolean =
     witnessesKeyPairs.forall(wsp => wsp.verify(data))
+
 }

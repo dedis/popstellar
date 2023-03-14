@@ -1303,7 +1303,7 @@ In the future elections may allow write-in or support different voting methods b
                     },
                     "question": {
                         "type": "string",
-                        "$comment": "voting topic"
+                        "$comment": "Voting topic. Has to be be unique."
                     },
                     "voting_method": {
                         "type": "string",

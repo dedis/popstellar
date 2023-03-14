@@ -68,7 +68,9 @@ const LaoProperties = () => {
       <Text style={Typography.paragraph}>
         <Text style={[Typography.base, Typography.important]}>{STRINGS.lao_properties_id}</Text>
         {'\n'}
-        <Text selectable>{lao.id}</Text>
+        <Text style={Typography.code} selectable>
+          {lao.id}
+        </Text>
       </Text>
     </View>
   );

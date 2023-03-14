@@ -21,16 +21,16 @@
 
     <com.google.android.material.button.MaterialButton
       android:id="@+id/roll_call_scanning_button"
+      style="@style/Widget.MaterialComponents.Button"
       android:layout_width="wrap_content"
       android:layout_height="@dimen/standard_button_height"
-      style="@style/Widget.MaterialComponents.Button"
       android:layout_margin="@dimen/event_button_margin"
+      android:contentDescription="@string/scan"
       android:scaleType="center"
       android:text="@string/add_attendees"
       android:textAllCaps="false"
-      android:tintMode="@color/white"
-      android:contentDescription="@string/scan"
       android:textColor="@color/white"
+      android:tintMode="@color/white"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintStart_toStartOf="parent" />
 
@@ -132,6 +132,32 @@
       app:layout_constraintBottom_toBottomOf="@id/end_time_icon"
       app:layout_constraintStart_toStartOf="@id/roll_call_start_time"
       app:layout_constraintTop_toTopOf="@id/end_time_icon" />
+
+    <TextView
+      android:id="@+id/roll_call_attendees_text"
+      style="@style/explication_text_style"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/roll_call_attendees"
+      app:layout_constraintBottom_toTopOf="@+id/list_view_attendees"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/roll_call_fragment_end_time_title" />
+    <ListView
+      android:id="@+id/list_view_attendees"
+      android:scrollbarStyle="outsideOverlay"
+      android:layout_width="@dimen/qr_rollcall_img"
+      android:layout_height="@dimen/qr_rollcall_img"
+      android:layout_marginEnd="@dimen/roll_call_attendees_end_margin"
+      android:fadeScrollbars="true"
+      android:scrollbarSize="@dimen/event_layout_arrow_end_margin"
+      android:scrollbars="vertical"
+      android:scrollingCache="true"
+      android:smoothScrollbar="true"
+      app:layout_constraintBottom_toTopOf="@+id/roll_call_management_button"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/roll_call_pk_qr_code" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

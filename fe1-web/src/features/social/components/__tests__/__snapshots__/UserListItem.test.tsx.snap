@@ -472,6 +472,7 @@ exports[`UserListItem renders correctly 1`] = `
                                 {
                                   "backgroundColor": "transparent",
                                   "color": "#000",
+                                  "fontFamily": "Courier New",
                                   "fontSize": 20,
                                   "lineHeight": 26,
                                   "textAlign": "left",

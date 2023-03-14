@@ -79,8 +79,8 @@ jobs:
         if: ${{ always() }} # execute even if previous steps failed
         run: npm run test -- --runInBand --ci
 
-      - name: Run code analysis
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '18.x' }} # execute even if previous steps failed
+      - name: Run SonarCloud analysis
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '18.x' && !startsWith(github.head_ref, 'dependabot/') }} # execute even if previous steps failed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
         run: |
@@ -166,8 +166,8 @@ jobs:
         run: |
           make build
 
-      - name: Run code analysis
-        if: ${{ matrix.platform == 'ubuntu-latest' }} # execute even if previous steps failed
+      - name: Run SonarCloud analysis
+        if: ${{ matrix.platform == 'ubuntu-latest' && !startsWith(github.head_ref, 'dependabot/') }} # execute even if previous steps failed
         uses: SonarSource/sonarcloud-github-action@master
         with:
           projectBaseDir: be1-go
@@ -234,7 +234,8 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: SonarCloud Analysis
+      - name: Run SonarCloud analysis
+        if: ${{ !startsWith(github.head_ref, 'dependabot/') }} # execute even if previous steps failed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FE2 }}
@@ -274,7 +275,8 @@ jobs:
       - name: Run static analysis (ScapeGoat)
         run: sbt scapegoat
 
-      - name: Run Sonar scanner
+      - name: Run SonarCloud analysis
+        if: ${{ !startsWith(github.head_ref, 'dependabot/') }} # execute even if previous steps failed
         env:
           SONAR_HOST_URL: https://sonarcloud.io
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -38,7 +38,7 @@ const WalletSingleRollCall = () => {
         <QRCode value={ScannablePopToken.encodePopToken({ pop_token: rollCallTokenPublicKey })} />
       </View>
 
-      <Text style={[Typography.small, styles.publicKey]} selectable>
+      <Text style={[Typography.small, styles.publicKey, Typography.code]} selectable>
         {rollCallTokenPublicKey}
       </Text>
 

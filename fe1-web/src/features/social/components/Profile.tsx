@@ -50,7 +50,7 @@ const Profile = ({ publicKey }: IPropTypes) => {
       <View>
         <ProfileIcon publicKey={publicKey} size={8} scale={10} />
         <View style={styles.textView}>
-          <Text style={[Typography.base, Typography.important]} numberOfLines={1}>
+          <Text style={[Typography.base, Typography.important, Typography.code]} numberOfLines={1}>
             {publicKey.toString()}
           </Text>
           <Text>{`${userChirpList.length} ${

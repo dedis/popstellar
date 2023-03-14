@@ -276,5 +276,35 @@ public class RollCallFragmentTest {
               AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
               assertEquals(fragment.getQRCodeColor(), Color.BLACK);
             });
+
+  public void attendeesTextTest() {
+    // Assert that when the roll call is not opened, the organizer has no attendees view
+    rollCallAttendeesText().check(matches(withEffectiveVisibility(Visibility.INVISIBLE)));
+
+    // Open the roll call
+    rollCallRepo.updateRollCall(LAO_ID, RollCall.openRollCall(ROLL_CALL));
+
+    rollCallAttendeesText().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+    rollCallAttendeesText().check(matches(withText("Scanned tokens")));
+
+    // Close the roll call
+    rollCallRepo.updateRollCall(LAO_ID, RollCall.closeRollCall(ROLL_CALL));
+
+    // Check that it has switched from scanned tokens to attendees
+    rollCallAttendeesText().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+    rollCallAttendeesText().check(matches(withText("Attendees")));
+  }
+
+  @Test
+  public void attendeesListTest() {
+    // Assert that when the roll call is not opened, the organizer has no attendees view
+    rollCallListAttendees().check(matches(withEffectiveVisibility(Visibility.INVISIBLE)));
+
+    // Open the roll call
+    rollCallRepo.updateRollCall(LAO_ID, RollCall.openRollCall(ROLL_CALL));
+
+    rollCallListAttendees().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+    // Assert that no scanned participant is present
+    rollCallListAttendees().check(matches(hasChildCount(0)));
   }
 }

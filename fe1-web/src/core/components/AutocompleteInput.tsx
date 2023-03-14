@@ -50,6 +50,7 @@ const AutocompleteInput = ({
   placeholder,
   enabled,
   testID,
+  isMonospaced,
 }: IPropTypes) => {
   const lastSuggestionIndex = suggestions ? suggestions.length - 1 : 0;
 
@@ -62,12 +63,14 @@ const AutocompleteInput = ({
             ? [styles.suggestionContainer, styles.suggestionContainerLast]
             : styles.suggestionContainer
         }>
-        <Text style={Typography.base} numberOfLines={1}>
+        <Text
+          style={isMonospaced ? [Typography.base, Typography.code] : Typography.base}
+          numberOfLines={1}>
           {suggestion}
         </Text>
       </PoPTouchableOpacity>
     ),
-    [onChange, lastSuggestionIndex],
+    [lastSuggestionIndex, isMonospaced, onChange],
   );
 
   return (
@@ -81,6 +84,7 @@ const AutocompleteInput = ({
           onBlur={onBlur}
           enabled={enabled}
           testID={testID}
+          isMonospaced={isMonospaced}
         />
       </View>
       {showResults && (
@@ -106,6 +110,7 @@ const propTypes = {
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
   testID: PropTypes.string,
+  isMonospaced: PropTypes.bool,
 };
 
 AutocompleteInput.propTypes = propTypes;
@@ -116,6 +121,7 @@ AutocompleteInput.defaultProps = {
   onFocus: undefined,
   onBlur: undefined,
   testID: undefined,
+  isMonospaced: false,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

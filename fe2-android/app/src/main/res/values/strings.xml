@@ -112,6 +112,8 @@
   <string name="roll_call_setup_title">Roll Call Setup</string>
   <string name="roll_call_title">Roll Call</string>
   <string name="add_attendee_title">Add Attendee</string>
+  <string name="roll_call_attendees">Attendees</string>
+  <string name="roll_call_scanned">Scanned tokens</string>
 
   <!-- Election Event -->
   <string name="election_title">Election</string>
@@ -295,4 +297,5 @@
   <string name="unknown_roll_call_exception">Unknown Roll Call</string>
   <string name="already_open_roll_call_exception">Another Roll Call is already open</string>
   <string name="lao_coins">LAO coins</string>
+
 </resources>

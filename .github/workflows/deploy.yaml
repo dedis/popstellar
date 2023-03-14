@@ -10,7 +10,7 @@ jobs:
   deploy_fe1:
     name: Release and deploy fe1-web
 
-    if:  ${{ startsWith(github.event.release.tag_name, 'fe1-') }}
+    if:  ${{ startsWith(github.event.release.tag_name, 'fe1-') || startsWith(github.event.release.tag_name, 'all-') }}
     runs-on: ubuntu-latest
 
     env:
@@ -75,7 +75,7 @@ jobs:
   deploy_be1:
     name: Release and deploy be1-go
 
-    if:  ${{ startsWith(github.event.release.tag_name, 'be1-') }}
+    if:  ${{ startsWith(github.event.release.tag_name, 'be1-') || startsWith(github.event.release.tag_name, 'all-') }}
     runs-on: ubuntu-latest
 
     env:
@@ -117,7 +117,7 @@ jobs:
   deploy_be2:
     name: Release and deploy be2-scala
 
-    if:  ${{ startsWith(github.event.release.tag_name, 'be2-') }}
+    if:  ${{ startsWith(github.event.release.tag_name, 'be2-') || startsWith(github.event.release.tag_name, 'all-') }}
     runs-on: ubuntu-latest
 
     env:
@@ -161,3 +161,84 @@ jobs:
             rsync -chav --delete \
               -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
               ./pop-scala.jar ${{env.dest}}
+
+  deploy_fe2:
+    name: Release and deploy fe2-android
+
+    if:  ${{ startsWith(github.event.release.tag_name, 'fe2-') || startsWith(github.event.release.tag_name, 'all-') }}
+    runs-on: ubuntu-latest
+
+    env:
+      base_folder: fe2-android
+      main_project_module: app
+      app_name: pop
+
+    defaults:
+      run:
+        working-directory: ./${{ env.base_folder }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      # Get version tag
+      - name: Get the version
+        id: get_version
+        run: |
+          echo ::set-output name=version::$(echo ${GITHUB_REF/refs\/tags\//})
+
+      # Run Build Project
+      - name: Build gradle project
+        run: ./gradlew build
+
+      # Create APK Debug
+      - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
+        run: ./gradlew assembleDebug
+
+      # Rename the Debug APK 
+      - name: Rename APK debug
+        run: mv ${{ env.main_project_module }}/build/outputs/apk/debug/app-debug.apk \ 
+             ${{ env.main_project_module }}/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
+
+      # Create APK Release
+      - name: Build apk release project (APK) - ${{ env.main_project_module }} module
+        run: ./gradlew assemble
+
+      # Rename the Release APK
+      - name: Rename APK release
+        run: mv ${{ env.main_project_module }}/build/outputs/apk/release/app-release-unsigned.apk \
+             ${{ env.main_project_module }}/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
+
+
+      - name: APK Debug - ${{ steps.get_version.outputs.version }}
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ env.main_project_module }}/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
+          body: Debug for version ${{ steps.get_version.outputs.version }}
+
+      - name: APK Release - ${{ steps.get_version.outputs.version }}
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ env.main_project_module }}/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
+          body: Release for version ${{ steps.get_version.outputs.version }}
+
+      # Use rsync to deploy the release apk on the website
+      - name: Sync
+        env:
+            dest: "popdemo@${{secrets.POPDEMO_DEPLOY_ADDR}}:fe2-android/"
+        run: |
+            echo "${{secrets.POPDEMO_DEPLOY_KEY}}" > deploy_key
+            chmod 600 ./deploy_key
+            rsync -chav --delete \
+              -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
+              ./${{ env.main_project_module }}/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk ${{env.dest}}

@@ -58,6 +58,8 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
+        case DbActor.Read(_, _) =>
+          sender() ! DbActor.DbActorReadAck
       }
     })
     system.actorOf(dbActorMock)
@@ -70,6 +72,8 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataReaction)
+        case DbActor.Read(_, _) =>
+          sender() ! DbActor.DbActorReadAck
       }
     })
     system.actorOf(dbActorMock)
@@ -82,6 +86,8 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataReaction)
+        case DbActor.Read(_, _) =>
+          sender() ! DbActor.DbActorReadAck
       }
     })
     system.actorOf(dbActorMock)
@@ -94,6 +100,8 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
+        case DbActor.Read(_, _) =>
+          sender() ! DbActor.DbActorReadAck
       }
     })
     system.actorOf(dbActorMock)
@@ -106,6 +114,8 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
+        case DbActor.Read(_, _) =>
+          sender() ! DbActor.DbActorReadAck
       }
     })
     system.actorOf(dbActorMock)

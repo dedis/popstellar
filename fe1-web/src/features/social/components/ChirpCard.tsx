@@ -2,16 +2,15 @@ import { CompositeScreenProps, useNavigation } from '@react-navigation/core';
 import { StackScreenProps } from '@react-navigation/stack';
 import { ListItem } from '@rneui/themed';
 import PropTypes from 'prop-types';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import { ProfileIcon } from 'core/components';
+import { ProfileIcon, ConfirmModal } from 'core/components';
 import PoPIconButton from 'core/components/PoPIconButton';
 import PoPTouchableOpacity from 'core/components/PoPTouchableOpacity';
-import { ActionSheetOption, useActionSheet } from 'core/hooks/ActionSheet';
 import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { SocialParamList } from 'core/navigation/typing/social';
@@ -113,9 +112,6 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
     '👎': !isConnected || !currentUserPopTokenPublicKey,
     '❤️': !isConnected || !currentUserPopTokenPublicKey,
   };
-
-  const showActionSheet = useActionSheet();
-
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id, laoId).catch((err) => {
       toast.show(`Could not add reaction, error: ${err}`, {
@@ -157,13 +153,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
 
   const listStyle = List.getListItemStyles(isFirstItem, isLastItem);
 
-  const actionSheetOptions: ActionSheetOption[] = [];
-  if (isSender && !chirp.isDeleted && isConnected) {
-    actionSheetOptions.push({
-      displayName: STRINGS.social_media_delete_chirp,
-      action: deleteChirp,
-    });
-  }
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   return (
     <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
@@ -188,6 +178,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
               Typography.small,
               Typography.inactive,
               Typography.centered,
+              Typography.code,
               styles.senderPrefix,
             ]}
             numberOfLines={1}
@@ -255,15 +246,22 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                   {heart}
                 </Text>
               </View>
-              {actionSheetOptions.length > 0 && (
+              {isSender && (
                 <View style={styles.reactionView}>
                   <PoPIconButton
-                    name="options"
-                    testID="chirp_action_options"
-                    onPress={() => showActionSheet(actionSheetOptions)}
+                    name="delete"
+                    testID="delete"
+                    onPress={() => setShowDeleteConfirmation(true)}
                     size="small"
                     buttonStyle="secondary"
                     toolbar
+                  />
+                  <ConfirmModal
+                    onConfirmPress={deleteChirp}
+                    visibility={showDeleteConfirmation}
+                    description={STRINGS.social_media_ask_confirm_delete_chirp}
+                    title={STRINGS.social_media_confirm_delete_chirp}
+                    setVisibility={setShowDeleteConfirmation}
                   />
                 </View>
               )}

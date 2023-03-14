@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-import ch.epfl.pop.model.network.{JsonRpcRequest}
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
@@ -132,7 +132,11 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     * @param dbActor
     *   the DbActor we use (by default the main one, obtained through getInstance)
     */
-  def validateChannelType(channelObjectType: ObjectType.ObjectType, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
+  def validateChannelType(
+      channelObjectType: ObjectType.ObjectType,
+      channel: Channel,
+      dbActor: AskableActorRef = DbActor.getInstance
+  ): Boolean = {
     val ask = dbActor ? DbActor.ReadChannelData(channel)
     Await.ready(ask, duration).value.get match {
       case Success(DbActor.DbActorReadChannelDataAck(channelData)) => channelData.channelType == channelObjectType
@@ -153,4 +157,30 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     else
       Right(error)
   }
+
+  /** Checks if the msg senderPK is the expected one
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param expectedKey
+    *   the expected key
+    * @param msgSenderKey
+    *   the rpc message senderPK
+    * @param error
+    *   the error to forward in case the senderPK doesn't match the expected one
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  def checkMsgSenderKey(
+      rpcMessage: JsonRpcRequest,
+      expectedKey: PublicKey,
+      msgSenderKey: PublicKey,
+      error: PipelineError
+  ): GraphMessage = {
+    if (expectedKey == msgSenderKey)
+      Left(rpcMessage)
+    else
+      Right(error)
+  }
+
 }
