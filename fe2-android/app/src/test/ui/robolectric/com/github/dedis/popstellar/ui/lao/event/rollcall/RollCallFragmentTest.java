@@ -265,18 +265,6 @@ public class RollCallFragmentTest {
   }
 
   @Test
-  public void testQRCodeColorChangesWithNightMode() {
-    activityScenarioRule
-        .getScenario()
-        .onFragment(
-            fragment -> {
-              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-              assertEquals(fragment.getQRCodeColor(), Color.WHITE);
-
-              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-              assertEquals(fragment.getQRCodeColor(), Color.BLACK);
-            });
-
   public void attendeesTextTest() {
     // Assert that when the roll call is not opened, the organizer has no attendees view
     rollCallAttendeesText().check(matches(withEffectiveVisibility(Visibility.INVISIBLE)));
@@ -306,5 +294,19 @@ public class RollCallFragmentTest {
     rollCallListAttendees().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
     // Assert that no scanned participant is present
     rollCallListAttendees().check(matches(hasChildCount(0)));
+  }
+
+  @Test
+  public void testQRCodeColorChangesWithNightMode() {
+    activityScenarioRule
+        .getScenario()
+        .onFragment(
+            fragment -> {
+              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+              assertEquals(fragment.getQRCodeColor(), Color.WHITE);
+
+              AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+              assertEquals(fragment.getQRCodeColor(), Color.BLACK);
+            });
   }
 }
