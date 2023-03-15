@@ -336,8 +336,7 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                           }
                         >
                           <qrcode
-                            overlayText="Scan to
-Connect"
+                            overlayText="Scan to connect"
                             value="{"lao":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE="}"
                           />
                         </View>
@@ -1411,8 +1410,7 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                           }
                         >
                           <qrcode
-                            overlayText="Scan to
-Connect"
+                            overlayText="Scan to connect"
                             value="{"lao":"-M259c5JlakLVlXBRa893pcE-4s7ssO8Jv5gXOvtreE="}"
                           />
                         </View>
