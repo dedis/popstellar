@@ -15,16 +15,22 @@ case object CoinValidator extends MessageDataContentValidator {
         val data: PostTransaction = message.decodedData.get.asInstanceOf[PostTransaction]
 
         runChecks(
-          checkId(rpcMessage,
+          checkId(
+            rpcMessage,
             data.transactionId,
             data.transaction.transactionId,
-            validationError("incorrect transaction id")),
-          checkTransactionSignatures(rpcMessage,
+            validationError("incorrect transaction id")
+          ),
+          checkTransactionSignatures(
+            rpcMessage,
             data.transaction,
-            validationError("bad signature")),
-          checkSumOutputs(rpcMessage,
+            validationError("bad signature")
+          ),
+          checkSumOutputs(
+            rpcMessage,
             data.transaction,
-            s => validationError(s))
+            s => validationError(s)
+          )
         )
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
