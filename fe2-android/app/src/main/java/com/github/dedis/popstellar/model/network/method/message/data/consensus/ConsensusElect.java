@@ -1,10 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import androidx.annotation.*;
+import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.network.method.message.data.*;
-import com.github.dedis.popstellar.model.objects.*;
-import com.google.gson.annotations.*;
+import com.github.dedis.popstellar.model.objects.ElectInstance;
+import com.google.gson.annotations.SerializedName;
 
 public final class ConsensusElect extends Data {
 

@@ -2,10 +2,9 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
-
 import com.github.dedis.popstellar.model.Immutable;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;

@@ -14,8 +14,8 @@ public class ScriptOutputObjectTest {
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
   private static final String TYPE = "P2PKH";
 
-  private String pubKeyHash = SENDER.computeHash();
-  private ScriptOutputObject scriptTxOut = new ScriptOutputObject(TYPE, pubKeyHash);
+  private final String pubKeyHash = SENDER.computeHash();
+  private final ScriptOutputObject scriptTxOut = new ScriptOutputObject(TYPE, pubKeyHash);
 
   @Test
   public void getTypeTest() {

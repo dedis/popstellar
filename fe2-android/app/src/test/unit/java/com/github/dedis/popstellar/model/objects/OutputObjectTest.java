@@ -15,7 +15,7 @@ public class OutputObjectTest {
 
   public static final String TYPE = "P2PKH";
   public static String PUBKEYHASH = SENDER.computeHash();
-  private static ScriptOutputObject SCRIPTTXOUT = new ScriptOutputObject(TYPE, PUBKEYHASH);
+  private static final ScriptOutputObject SCRIPTTXOUT = new ScriptOutputObject(TYPE, PUBKEYHASH);
 
   private static final int VALUE = 32;
   private static final OutputObject OUTPUT = new OutputObject(VALUE, SCRIPTTXOUT);
