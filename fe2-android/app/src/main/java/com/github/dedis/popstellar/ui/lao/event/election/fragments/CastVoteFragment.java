@@ -1,11 +1,9 @@
 package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
@@ -23,6 +21,7 @@ import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.lao.event.election.adapters.CastVoteViewPagerAdapter;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
@@ -194,13 +193,11 @@ public class CastVoteFragment extends Fragment {
     LaoActivity.addBackNavigationCallback(
         requireActivity(),
         getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            Log.d(TAG, "Back pressed, going to election");
-            ElectionFragment.openFragment(
-                getParentFragmentManager(), getArguments().getString(ELECTION_ID));
-          }
-        });
+        ActivityUtils.buildBackButtonCallback(
+            TAG,
+            "election",
+            () ->
+                ElectionFragment.openFragment(
+                    getParentFragmentManager(), getArguments().getString(ELECTION_ID))));
   }
 }

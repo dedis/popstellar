@@ -2,10 +2,8 @@ package com.github.dedis.popstellar.ui.lao;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -71,6 +69,7 @@ public class InviteFragment extends Fragment {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
       return null;
     }
+
     handleBackNav();
     return binding.getRoot();
   }
@@ -83,15 +82,6 @@ public class InviteFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallback(
-        requireActivity(),
-        getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            Log.d(TAG, "Back pressed, going to event list");
-            ((LaoActivity) requireActivity()).setEventsTab();
-          }
-        });
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

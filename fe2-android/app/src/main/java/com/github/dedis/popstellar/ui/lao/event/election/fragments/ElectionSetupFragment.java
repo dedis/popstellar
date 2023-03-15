@@ -8,7 +8,6 @@ import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
@@ -297,15 +296,6 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallback(
-        requireActivity(),
-        getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            Log.d(TAG, "Back pressed, going to event list");
-            EventListFragment.openFragment(getParentFragmentManager());
-          }
-        });
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

@@ -1,11 +1,9 @@
 package com.github.dedis.popstellar.ui.lao.token;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.TextView;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -128,15 +126,6 @@ public class TokenListFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallback(
-        requireActivity(),
-        getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            Log.d(TAG, "Back pressed, going to event list");
-            ((LaoActivity) requireActivity()).setEventsTab();
-          }
-        });
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

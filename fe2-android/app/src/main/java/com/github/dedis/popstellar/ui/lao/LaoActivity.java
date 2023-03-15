@@ -273,7 +273,7 @@ public class LaoActivity extends AppCompatActivity {
   }
 
   /** Open Event list on activity creation */
-  public void setEventsTab() {
+  private void setEventsTab() {
     binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
     openEventsTab();
   }
@@ -358,5 +358,15 @@ public class LaoActivity extends AppCompatActivity {
   public static void addBackNavigationCallback(
       FragmentActivity activity, LifecycleOwner lifecycleOwner, OnBackPressedCallback callback) {
     activity.getOnBackPressedDispatcher().addCallback(lifecycleOwner, callback);
+  }
+
+  /** Adds a specific callback for the back button that opens the events tab */
+  public static void addBackNavigationCallbackToEvents(
+      FragmentActivity activity, LifecycleOwner lifecycleOwner, String tag) {
+    addBackNavigationCallback(
+        activity,
+        lifecycleOwner,
+        ActivityUtils.buildBackButtonCallback(
+            tag, "event list", () -> ((LaoActivity) activity).setEventsTab()));
   }
 }
