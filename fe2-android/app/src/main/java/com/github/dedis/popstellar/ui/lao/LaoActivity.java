@@ -367,6 +367,6 @@ public class LaoActivity extends AppCompatActivity {
         activity,
         lifecycleOwner,
         ActivityUtils.buildBackButtonCallback(
-            tag, "event list", () -> ((LaoActivity) activity).setEventsTab()));
+            tag, "event list", ((LaoActivity) activity)::setEventsTab));
   }
 }
