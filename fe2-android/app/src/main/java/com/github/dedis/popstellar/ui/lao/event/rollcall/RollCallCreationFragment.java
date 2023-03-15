@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.AbstractEventCreationFragment;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
 import java.util.Objects;
@@ -142,6 +143,10 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
+    LaoActivity.addBackNavigationCallback(
+        requireActivity(),
+        getViewLifecycleOwner(),
+        ActivityUtils.buildBackButtonCallback(
+            TAG, "event list", () -> EventListFragment.openFragment(getParentFragmentManager())));
   }
 }
