@@ -306,7 +306,7 @@ final case class DbActorReadLaoDataAck(laoData: LaoData) extends DbActorMessage
 For the Social Media functionality, each user has their own channel with the identifier `root/lao_id/own_pop_token` and each broadcast containing the message_id of a post will be written to `root/lao_id/posts`.
 
 For the Election functionality, we need to have a key pair stored safely somewhere so that we can encrypt/decrypt messages. That is why we use a `ElectionData` object to store the key pairs for the corresponding election.
-The path root is `root/private/election_id` as stated above.
+The path root is `root/lao_id/private/election_id` as stated above.
 The key pair can be stored and retrieved by the following functions.
 
 ```scala
