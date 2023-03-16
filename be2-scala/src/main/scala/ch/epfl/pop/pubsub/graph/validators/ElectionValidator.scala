@@ -110,21 +110,32 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: KeyElection = message.decodedData.get.asInstanceOf[KeyElection]
+        val (keyElection, laoId, senderPK, channel) = extractData[KeyElection](rpcMessage)
 
-        val channel: Channel = rpcMessage.getParamsChannel
-        val electionId: Hash = channel.extractChildChannel
-        val sender: PublicKey = message.sender
+        val electionId = channel.extractChildChannel
 
-        if (electionId != data.election) {
-          Right(validationError("Unexpected election id"))
-        } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a KeyElection message on a wrong type of channel $channel"))
-        } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
-        } else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkChannelType(
+            rpcMessage,
+            ObjectType.ELECTION,
+            channel,
+            dbActorRef,
+            validationError(s"trying to send a KeyElection message on a wrong type of channel $channel")
+          ),
+          checkId(
+            rpcMessage,
+            electionId,
+            keyElection.election,
+            validationError("Unexpected election id")
+          ),
+          checkOwner(
+            rpcMessage,
+            senderPK,
+            channel,
+            dbActorRef,
+            validationError(s"Sender $senderPK has an invalid PoP token.")
+          )
+        )
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
