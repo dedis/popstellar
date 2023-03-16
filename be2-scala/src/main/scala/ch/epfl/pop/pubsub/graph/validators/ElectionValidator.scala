@@ -257,29 +257,70 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     }
   }
 
-  // checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
-  private def validateVoteElection(electionId: Hash, votes: List[VoteElection], questions: List[ElectionQuestion]): Boolean = {
-    val q2Ballots: Map[Hash, List[String]] = questions.map(question => question.id -> question.ballot_options).toMap
-    val questionsId: List[Hash] = questions.map(_.id)
-
-    votes.forall(vote =>
-      vote.vote match {
-        case Some(Left(index)) =>
-          questionsId.contains(vote.question) &&
-            index < q2Ballots(vote.question).size &&
-            vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, index.toString)
-        case Some(Right(encryptedVote)) =>
-          questionsId.contains(vote.question) && vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, encryptedVote.toString)
-        case _ => false
-      }
-    )
+  // not implemented since the back end does not receive a ResultElection message coming from the front end
+  def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionValidator cannot handle ResultElection messages yet", rpcMessage.id))
   }
 
-  private def getOpenMessage(electionChannel: Channel): Option[OpenElection] =
-    Await.result(electionChannel.extractMessages[OpenElection](dbActorRef), duration) match {
-      case h :: _ => Some(h._2)
-      case _      => None
+  def validateEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "EndElection", rpcMessage.id)
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val (endElection, laoId, senderPK, channel) = extractData[EndElection](rpcMessage)
+
+        val electionId = channel.extractChildChannel
+
+        val firstCheck = runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            endElection.created_at,
+            validationError(s"stale 'created_at' timestamp (${endElection.created_at})")
+          ),
+          checkId(
+            rpcMessage,
+            electionId,
+            endElection.election,
+            validationError("unexpected election id")
+          ),
+          checkId(
+            rpcMessage,
+            laoId,
+            endElection.lao,
+            validationError("unexpected lao id")
+          ),
+          checkOwner(
+            rpcMessage,
+            senderPK,
+            channel,
+            dbActorRef,
+            validationError(s"invalid sender $senderPK")
+          ),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.ELECTION,
+            channel,
+            dbActorRef,
+            validationError(s"trying to send a EndElection message on a wrong type of channel $channel")
+          )
+        )
+
+        // Until runChecks() can be set to be call-by-name this two part check is required to pass the unit tests
+        lazy val secondCheck = checkVoteResults(
+          rpcMessage,
+          channel,
+          endElection.registered_votes,
+          validationError(s"Incorrect verification hash")
+        )
+
+        if (firstCheck.isLeft)
+          secondCheck
+        else
+          firstCheck
+
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
+  }
 
   /** checks if the election has not ended
     *
@@ -403,17 +444,28 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       Right(error)
   }
 
-  /** @param castVotes
-    *   List of pairs of messages and castVote data
-    * @param checkHash
+  /** checks if castVotes hash computation match the expected hash
+    *
+    * @param rpcMessage
+    *   the rpc message to validate
+    * @param channel
+    *   the channel to pull the votes from
+    * @param expectedHash
     *   The hash of the concatenated votes (i.e. registered_votes)
+    * @param error
+    *   the error to forward in case of incoherence between expectedHash and the computed hash from castVotes
     * @return
-    *   True if the hashes are the same, false otherwise
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
     */
-  private def compareResults(castVotes: List[CastVoteElection], checkHash: Hash): Boolean = {
+  private def checkVoteResults(rpcMessage: JsonRpcRequest, channel: Channel, expectedHash: Hash, error: PipelineError): GraphMessage = {
+    val castVotes = Await.result(channel.getLastVotes(dbActorRef), duration)
     val votes: List[VoteElection] = castVotes.flatMap(_.votes)
     val sortedVotes: List[VoteElection] = votes.sortBy(_.id.toString)
     val computedHash = Hash.fromStrings(sortedVotes.map(_.id.toString): _*)
-    computedHash == checkHash
+
+    if (computedHash == expectedHash)
+      Left(rpcMessage)
+    else
+      Right(error)
   }
 }
