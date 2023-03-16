@@ -146,28 +146,45 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: OpenElection = message.decodedData.get.asInstanceOf[OpenElection]
+        val (openElection, laoId, senderPK, channel) = extractData[OpenElection](rpcMessage)
 
-        val channel: Channel = rpcMessage.getParamsChannel
+        val electionId = channel.extractChildChannel
 
-        val electionId: Hash = channel.extractChildChannel
-        val sender: PublicKey = message.sender
-
-        val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
-
-        if (!validateTimestampStaleness(data.opened_at)) {
-          Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
-        } else if (electionId != data.election) {
-          Right(validationError("Unexpected election id"))
-        } else if (laoId != data.lao) {
-          Right(validationError("Unexpected lao id"))
-        } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
-        } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a OpenElection message on a wrong type of channel $channel"))
-        } else {
-          Left(rpcMessage)
-        }
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            openElection.opened_at,
+            validationError(s"stale 'opened_at' timestamp (${openElection.opened_at})")
+          ),
+          checkId(
+            rpcMessage,
+            laoId,
+            openElection.lao,
+            validationError("Unexpected lao id")
+          ),
+          checkId(
+            rpcMessage,
+            electionId,
+            openElection.election,
+            validationError("Unexpected election id")
+          ),
+          checkOwner(
+            rpcMessage,
+            senderPK,
+            channel,
+            dbActorRef,
+            validationError(s"Sender $senderPK has an invalid PoP token.")
+          ),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.ELECTION,
+            channel,
+            dbActorRef,
+            validationError(
+              s"trying to send a OpenElection message on a wrong type of channel $channel"
+            )
+          )
+        )
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
