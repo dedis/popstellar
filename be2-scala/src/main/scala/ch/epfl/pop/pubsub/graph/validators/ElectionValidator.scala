@@ -195,32 +195,64 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        val data: CastVoteElection = message.decodedData.get.asInstanceOf[CastVoteElection]
+        val (casteVote, laoId, senderPK, channel) = extractData[CastVoteElection](rpcMessage)
 
-        val channel: Channel = rpcMessage.getParamsChannel
-        val questions = Await.result(channel.getSetupMessage(dbActorRef), duration).questions
-        val sender: PublicKey = message.sender
+        val electionId = channel.extractChildChannel
 
-        if (!validateTimestampStaleness(data.created_at)) {
-          Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
-        } else if (channel.extractChildChannel != data.election) {
-          Right(validationError("unexpected election id"))
-        } else if (channel.decodeChannelLaoId.getOrElse(HASH_ERROR) != data.lao) {
-          Right(validationError("unexpected lao id"))
-        } else if (!validateVoteElection(data.election, data.votes, questions)) {
-          Right(validationError(s"invalid votes"))
+        runChecks(
+          checkTimestampStaleness(
+            rpcMessage,
+            casteVote.created_at,
+            validationError(s"stale 'created_at' timestamp (${casteVote.created_at})")
+          ),
+          checkId(
+            rpcMessage,
+            laoId,
+            casteVote.lao,
+            validationError("unexpected lao id")
+          ),
+          checkId(
+            rpcMessage,
+            electionId,
+            casteVote.election,
+            validationError("unexpected election id")
+          ),
+          checkValidateVoteElection(
+            rpcMessage,
+            casteVote.election,
+            casteVote.votes,
+            Await.result(channel.getSetupMessage(dbActorRef), duration).questions,
+            validationError(s"invalid votes")
+          ),
           // check open and end constraints
-        } else if (getOpenMessage(channel).isEmpty) {
-          Right(validationError(s"This election has not started yet"))
-        } else if (getEndMessage(channel).isDefined) {
-          Right(validationError(s"This election has already ended"))
-        } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender ${sender} has an invalid PoP token."))
-        } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
-        } else {
-          Left(rpcMessage)
-        }
+          checkElectionStarted(
+            rpcMessage,
+            channel,
+            dbActorRef,
+            validationError(s"This election has not started yet")
+          ),
+          checkElectionNotEnded(
+            rpcMessage,
+            channel,
+            dbActorRef,
+            validationError(s"This election has already ended")
+          ),
+          checkAttendee(
+            rpcMessage,
+            senderPK,
+            channel,
+            dbActorRef,
+            validationError(s"Sender $senderPK has an invalid PoP token.")
+          ),
+          checkChannelType(
+            rpcMessage,
+            ObjectType.ELECTION,
+            channel,
+            dbActorRef,
+            validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel")
+          )
+        )
+
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }
   }
@@ -249,16 +281,97 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       case _      => None
     }
 
-  private def getEndMessage(electionChannel: Channel): Option[EndElection] =
+  /** checks if the election has not ended
+    *
+    * @param rpcMessage
+    *   the rpc message to validate
+    * @param electionChannel
+    *   the election channel
+    * @param dbActorRef
+    *   the dbActor to ask for end election message
+    * @param error
+    *   the error to forward in case the election has ended
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def checkElectionNotEnded(
+      rpcMessage: JsonRpcRequest,
+      electionChannel: Channel,
+      dbActorRef: AskableActorRef,
+      error: PipelineError
+  ): GraphMessage =
     Await.result(electionChannel.extractMessages[EndElection](dbActorRef), duration) match {
-      case h :: _ => Some(h._2)
-      case _      => None
+      case h :: _ => Right(error)
+      case _      => Left(rpcMessage)
     }
 
-  // not implemented since the back end does not receive a ResultElection message coming from the front end
-  def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionValidator cannot handle ResultElection messages yet", rpcMessage.id))
+  /** checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
+    *
+    * @param rpcMessage
+    *   rpc message to validate
+    * @param electionId
+    *   the election id needed to compute votes ids
+    * @param votes
+    *   the votes to validate
+    * @param questions
+    *   the questions asked to the voters
+    * @param error
+    *   the error to forward in case of invalid vote(s)
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def checkValidateVoteElection(
+      rpcMessage: JsonRpcRequest,
+      electionId: Hash,
+      votes: List[VoteElection],
+      questions: List[ElectionQuestion],
+      error: PipelineError
+  ): GraphMessage = {
+
+    val q2Ballots: Map[Hash, List[String]] = questions.map(question => question.id -> question.ballot_options).toMap
+    val questionsId: List[Hash] = questions.map(_.id)
+
+    val areVotesValid = votes.forall(vote =>
+      vote.vote match {
+        case Some(Left(index)) =>
+          questionsId.contains(vote.question) &&
+            index < q2Ballots(vote.question).size &&
+            vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, index.toString)
+        case Some(Right(encryptedVote)) =>
+          questionsId.contains(vote.question) && vote.id == Hash.fromStrings("Vote", electionId.toString, vote.question.toString, encryptedVote.toString)
+        case _ => false
+      }
+    )
+
+    if (areVotesValid)
+      Left(rpcMessage)
+    else
+      Right(error)
   }
+
+  /** checks if the election has started
+    *
+    * @param rpcMessage
+    *   the rpc message to validate
+    * @param electionChannel
+    *   the election channel
+    * @param dbActorRef
+    *   the dbActor to ask for open election messages
+    * @param error
+    *   the error to forward in case the election hasn't started
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  private def checkElectionStarted(
+      rpcMessage: JsonRpcRequest,
+      electionChannel: Channel,
+      dbActorRef: AskableActorRef,
+      error: PipelineError
+  ): GraphMessage =
+    Await.result(electionChannel.extractMessages[OpenElection](dbActorRef), duration) match {
+      case h :: _ => Left(rpcMessage)
+      case _      => Right(error)
+    }
 
   /** checks if the question ids are valid wrt protocol
     *
