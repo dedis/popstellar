@@ -39,7 +39,7 @@ const TextInputList = (props: IPropTypes) => {
       return;
     }
     const optionIndex = userInputs.findIndex((option) => option.id === id);
-    userInputs[optionIndex] = { id: id, value: value.trimLeft() };
+    userInputs[optionIndex] = { id: id, value: value.trimStart() };
     setUserInputs(userInputs);
     updateParent(userInputs);
     // If the currently modified text field is the last in the list

@@ -222,7 +222,7 @@ const CreateElection = () => {
       </Text>
       <Input
         value={electionName}
-        onChange={(s) => setElectionName(s.trimLeft())}
+        onChange={(s) => setElectionName(s.trimStart())}
         placeholder={STRINGS.election_create_name_placeholder}
         testID="election_name_selector"
       />
@@ -262,10 +262,10 @@ const CreateElection = () => {
             onChange={(text: string) =>
               setQuestions((prev) =>
                 prev.map((item, id) =>
-                  id === idx && text.trimLeft() !== ''
+                  id === idx && text.trimStart() !== ''
                     ? {
                         ...item,
-                        question: text.trimLeft(),
+                        question: text.trimStart(),
                       }
                     : item,
                 ),
