@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.lao;
 
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,6 +14,7 @@ import com.github.dedis.popstellar.databinding.InviteFragmentBinding;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.google.gson.Gson;
@@ -61,7 +61,7 @@ public class InviteFragment extends Fragment {
       Bitmap myBitmap =
           QRCode.from(gson.toJson(data))
               .withSize(QR_SIDE, QR_SIDE)
-              .withColor(getQRCodeColor(), Color.TRANSPARENT)
+              .withColor(ActivityUtils.getQRCodeColor(getActivity()), Color.TRANSPARENT)
               .bitmap();
       binding.channelQrCode.setImageBitmap(myBitmap);
       binding.laoPropertiesNameText.setText(laoView.getName());
@@ -84,19 +84,5 @@ public class InviteFragment extends Fragment {
     super.onResume();
     laoViewModel.setPageTitle(R.string.invite);
     laoViewModel.setIsTab(true);
-  }
-
-  /**
-   * Gets the color of the QR code based on the current night mode configuration.
-   *
-   * @return the color of the QR code (either Color.WHITE or Color.BLACK)
-   */
-  public int getQRCodeColor() {
-    Configuration configuration = getResources().getConfiguration();
-    int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
-    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-      return Color.WHITE;
-    }
-    return Color.BLACK;
   }
 }

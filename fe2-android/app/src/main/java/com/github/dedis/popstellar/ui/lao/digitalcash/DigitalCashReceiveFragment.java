@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.qrcode.PopTokenData;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.gson.Gson;
 
@@ -83,7 +83,7 @@ public class DigitalCashReceiveFragment extends Fragment {
                   PopTokenData tokenData = new PopTokenData(token.getPublicKey());
                   Bitmap myBitmap =
                       QRCode.from(gson.toJson(tokenData))
-                          .withColor(getQRCodeColor(), Color.TRANSPARENT)
+                          .withColor(ActivityUtils.getQRCodeColor(getActivity()), Color.TRANSPARENT)
                           .bitmap();
                   binding.digitalCashReceiveQr.setImageBitmap(myBitmap);
                 },
@@ -114,19 +114,5 @@ public class DigitalCashReceiveFragment extends Fragment {
                     DigitalCashHomeFragment::new);
               }
             });
-  }
-
-  /**
-   * Gets the color of the QR code based on the current night mode configuration.
-   *
-   * @return the color of the QR code (either Color.WHITE or Color.BLACK)
-   */
-  public int getQRCodeColor() {
-    Configuration configuration = getResources().getConfiguration();
-    int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
-    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-      return Color.WHITE;
-    }
-    return Color.BLACK;
   }
 }
