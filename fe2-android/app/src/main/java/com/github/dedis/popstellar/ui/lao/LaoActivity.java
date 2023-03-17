@@ -50,8 +50,6 @@ public class LaoActivity extends AppCompatActivity {
   LaoViewModel laoViewModel;
   LaoActivityBinding binding;
 
-  private boolean historyFlag = false;
-
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -148,7 +146,9 @@ public class LaoActivity extends AppCompatActivity {
             binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.DIGITAL_CASH.getMenuId());
             // If the user clicks on the button when the transaction history is
             // already displayed, then consider it as a back button pressed
-            if (!historyFlag) {
+            Fragment fragment =
+                getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao);
+            if (!(fragment instanceof DigitalCashHistoryFragment)) {
               setCurrentFragment(
                   getSupportFragmentManager(),
                   R.id.fragment_digital_cash_history,
@@ -156,7 +156,6 @@ public class LaoActivity extends AppCompatActivity {
             } else {
               openDigitalCashTab();
             }
-            historyFlag = !historyFlag;
             return true;
           }
           return false;
