@@ -21,6 +21,45 @@
                     },
                     "minItems": 0,
                     "$comment": "Return value for a `catchup` request"
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "maps": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "channel": {
+                                        "description": "[String] name of the channel",
+                                        "type": "string",
+                                        "pattern": "^/root(/[^/]+)*$"
+                                    },
+                                    "messages": {
+                                        "description": "[Array] of messages corresponding to that channel",
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "../query/method/message/message.json"
+                                        }
+                                    }
+                                },
+                                "required": ["channel", "messages"]
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "serverId": {
+                            "description": "[Base64String] server public key",
+                            "type": "string",
+                            "contentEncoding": "base64"
+                        }
+                    }
                 }
             ],
             "$comment": "Note: this field is absent if there is an error"

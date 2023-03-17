@@ -32,6 +32,12 @@
         },
         {
             "$ref": "method/catchup.json"
+        },
+        {
+            "$ref": "method/heartbeat.json"
+        },
+        {
+            "$ref": "method/getMessagesById.json"
         }
     ],
 

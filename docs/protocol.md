@@ -16,6 +16,9 @@
     - [Publishing a message on a channel](#publishing-a-message-on-a-channel)
     - [Propagating a message on a channel](#propagating-a-message-on-a-channel)
     - [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel)
+    - [Sending a heartbeat message to servers](#sending-a-heartbeat-message-to-servers)
+    - [Retrieving messages from server using ids](#retrieving-messages-from-server-using-ids)
+
   - [Answer](#answer)
     - [RPC answer error](#rpc-answer-error)
 - [Mid-level (message) communication](#mid-level-message-communication)
@@ -175,6 +178,12 @@ and its arguments (`params`).
         },
         {
             "$ref": "method/catchup.json"
+        },
+        {
+          "$ref": "method/heartbeat.json"
+        },
+        {
+          "$ref": "method/getMessagesById.json"
         }
     ],
 
@@ -192,6 +201,8 @@ Here are the different methods that can be called:
 * Catchup
 * Broadcast
 * Publish
+* Heartbeat
+* GetMessagesById
 
 ### Subscribing to a channel
 
@@ -662,7 +673,233 @@ Response (in case of success)
 ```
 
 </details>
+
+## Sending a heartbeat message to servers
+
+🧭 **RPC Message** > **Query** > **Heartbeat**
+
+A server sends a heartbeat to its peers in order to attest that: 
+
+- it is alive
+- it received a certain set of messages
+
+Heartbeat are to be sent based on channel activity and time intervals.  
+
+RPC 
+
+```json5
+// ../protocol/examples/query/heartbeat/heartbeat.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 5,
+    "method": "heartbeat",
+    "params": {
+        "maps": [
+            {
+                "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=",
+                "ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
+            },
+            {
+                "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=",
+                "ids": [
+                    "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+                    "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
+                ]
+            }
+        ]
+    }
+}
+
+```
+
+The heartbeat can then trigger the internal logic of a server: when it receives messages ids that it has not already delivered it will execute a getMessagesById RPC. However, that is just a consequence of that specific condition, normally the heartbeat is just a way to communicate to others that the sender is alive, thus it doesn't expect any answer back.
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
   
+```json5
+// ../protocol/query/method/heartbeat.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/heartbeat.json",
+    "description": "Heartbeat message",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "heartbeat"
+        },
+        "params": {
+            "description": "[Array] of objects containing each a channel and the list of ids from that channel",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "maps": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "channel": {
+                                "description": "[String] name of the channel",
+                                "type": "string",
+                                "pattern": "^/root(/[^/]+)*$"
+                            },
+                            "ids": {
+                                "description": "[Array] of message_ids corresponding to that channel",
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": ["channel", "ids"]
+                    }
+                }
+            },
+            "required": ["maps"]
+        },
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "id": {
+            "type": "integer"
+        }
+    },
+    "required": ["method", "params", "id", "jsonrpc"]
+}
+
+```
+</details>
+
+## Retrieving messages from server using ids 
+
+🧭 **RPC Message** > **Query** > **getMessagesById**
+  
+This call is generally triggered upon the reception of a hearbeat message, in case the server hasn't already delivered some of the messages contained in such heartbeat but it could also used in other contexts. The purpose is to request missed messages so far.
+
+RPC 
+
+```json5
+// ../protocol/examples/query/getMessagesById/getMessagesById.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 6,
+    "method": "getMessagesById",
+    "params": {
+        "maps": [
+            {
+                "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=",
+                "ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
+            },
+            {
+                "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=",
+                "ids": [
+                    "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+                    "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
+                ]
+            }
+        ]
+    }
+}
+
+```
+
+Response (in case of success)
+
+```json5
+// ../protocol/examples/answer/getMessagesById_ans.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 6,
+    "result": {
+        "maps": [
+            {
+                "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=",
+                "messages": []
+            },
+            {
+                "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=",
+                "messages": []
+            }
+        ]
+    }
+}
+
+```
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
+  
+```json5
+// ../protocol/query/method/getMessagesById.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/getMessagesById.json",
+    "description": "GetMessagesById message",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "getMessagesById"
+        },
+        "params": {
+            "description": "[Array] of objects containing each a channel and the list of ids from that channel",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "maps": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "channel": {
+                                "description": "[String] name of the channel",
+                                "type": "string",
+                                "pattern": "^/root(/[^/]+)*$"
+                            },
+                            "ids": {
+                                "description": "[Array] of message_ids corresponding to that channel",
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": ["channel", "ids"]
+                    }
+                }
+            },
+            "required": ["maps"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "id": {
+            "type": "integer"
+        }
+    },
+    "required": ["method", "params", "id", "jsonrpc"]
+}
+
+```
+</details>
+
 ## Answer
 
 🧭 **RPC Message** > **Answer**
@@ -673,6 +910,7 @@ valid messages:
 
 * `0`-valued answers (i.e., no error, no return value)
 * catchup answers, which contain a list of messages
+* getMessagesById answers which contain the mapping: channel_id -> list of messages, empty mapping to ack a Heartbeat
 * error-valued answers, further detailed in the next section.
   
 <details>

@@ -1,0 +1,17 @@
+{
+    "jsonrpc": "2.0",
+    "method": "heartbeat",
+    "params": {
+        "maps": [
+            {
+                "ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
+            },
+            {
+                "ids": [
+                    "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+                    "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
+                ]
+            }
+        ]
+    }
+}

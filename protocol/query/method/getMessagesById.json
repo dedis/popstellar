@@ -1,13 +1,13 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/heartbeat.json",
-    "description": "Heartbeat message",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/getMessagesById.json",
+    "description": "GetMessagesById message",
     "type": "object",
     "additionalProperties": false,
     "properties": {
         "method": {
             "description": "[String] operation to be performed by the query",
-            "const": "heartbeat"
+            "const": "getMessagesById"
         },
         "params": {
             "description": "[Array] of objects containing each a channel and the list of ids from that channel",
@@ -39,6 +39,7 @@
             },
             "required": ["maps"]
         },
+
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"
         },
