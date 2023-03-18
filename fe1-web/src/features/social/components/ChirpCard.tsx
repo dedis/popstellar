@@ -155,31 +155,25 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-  const thumbsUpPressed = () => {
-    if (reacted['👍']) {
-      deleteReaction(reacted['👍'].id);
+  const thumbsPressed = (isThumbsUp: boolean) => {
+    const reactionToAdd = isThumbsUp ? '👍' : '👎';
+    const reactionToRemove = isThumbsUp ? '👎' : '👍';
+
+    if (reacted[reactionToAdd]) {
+      deleteReaction(reacted[reactionToAdd].id);
       return;
     }
 
-    // If the user has already reacted with a thumbs down, remove it
-    if (reacted['👎']) {
-      deleteReaction(reacted['👎'].id);
+    // If the user has already reacted with the other reaction, remove it
+    if (reacted[reactionToRemove]) {
+      deleteReaction(reacted[reactionToRemove].id);
     }
 
-    addReaction('👍');
+    addReaction(reactionToAdd);
   };
 
-  const thumbsDownPressed = () => {
-    if (reacted['👎']) {
-      deleteReaction(reacted['👎'].id);
-    } else {
-      // If the user has already reacted with a thumbs up, remove it
-      if (reacted['👍']) {
-        deleteReaction(reacted['👍'].id);
-      }
-      addReaction('👎');
-    }
-  };
+  const thumbsUpPressed = () => thumbsPressed(true);
+  const thumbsDownPressed = () => thumbsPressed(false);
 
   return (
     <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
