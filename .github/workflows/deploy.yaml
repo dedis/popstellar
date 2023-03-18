@@ -170,7 +170,6 @@ jobs:
 
     env:
       base_folder: fe2-android
-      main_project_module: app
       app_name: pop
 
     defaults:
@@ -200,37 +199,35 @@ jobs:
         run: ./gradlew build
 
       # Create APK Debug
-      - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
+      - name: Build apk debug project (APK)
         run: ./gradlew assembleDebug
 
       # Rename the Debug APK 
       - name: Rename APK debug
-        run: mv ${{ env.main_project_module }}/build/outputs/apk/debug/app-debug.apk \ 
-             ${{ env.main_project_module }}/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
+        run: mv $(pwd)/app/build/outputs/apk/debug/app-debug.apk \ 
+          $(pwd)/app/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
 
       # Create APK Release
-      - name: Build apk release project (APK) - ${{ env.main_project_module }} module
+      - name: Build apk release project (APK)
         run: ./gradlew assemble
 
       # Rename the Release APK
       - name: Rename APK release
-        run: mv ${{ env.main_project_module }}/build/outputs/apk/release/app-release-unsigned.apk \
-             ${{ env.main_project_module }}/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
+        run: mv $(pwd)/app/build/outputs/apk/release/app-release-unsigned.apk \
+          $(pwd)/app/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
 
-
-      - name: APK Debug - ${{ steps.get_version.outputs.version }}
+      # Upload the APKs
+      - name: APK Debug
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ env.main_project_module }}/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
-          body: Debug for version ${{ steps.get_version.outputs.version }}
+          files: ${{ env.base_folder }}/app/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
 
-      - name: APK Release - ${{ steps.get_version.outputs.version }}
+      - name: APK Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ env.main_project_module }}/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
-          body: Release for version ${{ steps.get_version.outputs.version }}
+          files: ${{ env.base_folder }}/app/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
 
       # Use rsync to deploy the release apk on the website
       - name: Sync
@@ -241,4 +238,4 @@ jobs:
             chmod 600 ./deploy_key
             rsync -chav --delete \
               -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
-              ./${{ env.main_project_module }}/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk ${{env.dest}}
+              $(pwd)/app/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk ${{env.dest}}
