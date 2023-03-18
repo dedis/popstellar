@@ -23,6 +23,21 @@ test('Hash works against expected data - test vector 2 (roll call)', () => {
   expect(hash.toString()).toEqual('axL39-AXOH9nJnLEueyNI6Q-zbmZNSfOq5WOJSB8nyc=');
 });
 
+test('Hash works against expected data - test vector 3 (emoji)', () => {
+  const hash: Hash = Hash.fromArray('test 😀');
+  expect(hash.toString()).toEqual('8BMmJjQMPhtD0QwVor1uVB3B_PyMMyIbIvaDHcOQnTg=');
+});
+
+test('Hash works again expected data - test vector 4 (pure emoji)', () => {
+  const hash: Hash = Hash.fromArray('🫡');
+  expect(hash.toString()).toEqual('ht7cQAkPdd6o-ZFVW6gTbt0gEIEUcr5FTDgOaeW8BOU=');
+});
+
+test('Hash works again expected data - test vector 4 (emoji mix)', () => {
+  const hash: Hash = Hash.fromArray('text 🥰', '🏉', 'more text🎃️', '♠️');
+  expect(hash.toString()).toEqual('wANKJFj9q_ncRKalYmK4yozUpet33JaFXVQEpMcHdfU=');
+});
+
 test('Hash equals work properly', () => {
   const hash1: Hash = Hash.fromArray('sameHash');
   const hash2: Hash = Hash.fromArray('sameHash');
