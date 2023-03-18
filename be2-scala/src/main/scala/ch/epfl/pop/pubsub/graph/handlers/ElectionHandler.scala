@@ -108,7 +108,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
     val electionChannel: Channel = rpcMessage.getParamsChannel
     val combined = for {
-      (_, Some(laoId)) <- extractLaoChannel(rpcMessage, "could not get laoId")
+      (_, Some(laoId)) <- extractLaoChannel(rpcMessage, "There is an issue with the id of the LAO")
 
       electionQuestionResults <- createElectionQuestionResults(electionChannel, laoId)
       // propagate the endElection message

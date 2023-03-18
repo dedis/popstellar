@@ -391,7 +391,7 @@ object DbActor {
     * @param electionId
     *   the election unique id
     */
-  final case class ReadElectionData(electionId: Hash, laoId: Hash) extends Event
+  final case class ReadElectionData(laoId: Hash, electionId: Hash) extends Event
 
   /** Request to read the laoData of the LAO, with key laoId
     *
