@@ -69,6 +69,7 @@ public class LaoActivity extends AppCompatActivity {
     observeDrawer();
     setupDrawerHeader();
 
+    // Open Event list on activity creation
     setEventsTab();
 
     // Temporary fix to disable dark mode, addressing issue #1381 (UI elements not displaying
@@ -271,7 +272,7 @@ public class LaoActivity extends AppCompatActivity {
         getSupportFragmentManager(), R.id.fragment_social_media_home, SocialMediaHomeFragment::new);
   }
 
-  /** Open Event list on activity creation */
+  /** Open Event list and select item in drawer menu */
   private void setEventsTab() {
     binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
     openEventsTab();
