@@ -49,27 +49,27 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
         val channel: Channel = rpcMessage.getParamsChannel
 
         if (!validateTimestampStaleness(data.timestamp)) {
-          Right(validationError(s"stale timestamp (${data.timestamp})"))
+          Left(validationError(s"stale timestamp (${data.timestamp})"))
         } else if (!validateChannelType(ObjectType.CHIRP, channel, dbActorRef)) {
-          Right(validationError(s"trying to add a Chirp on a wrong type of channel $channel"))
+          Left(validationError(s"trying to add a Chirp on a wrong type of channel $channel"))
         } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
+          Left(validationError(s"Sender $sender has an invalid PoP token."))
         } else if (channel.extractChildChannel.base64Data != sender.base64Data) {
-          Right(validationError(s"Sender $sender has an invalid PoP token - doesn't own the channel."))
+          Left(validationError(s"Sender $sender has an invalid PoP token - doesn't own the channel."))
         } else if (data.text.length > CHIRP_TEXT_LENGTH) {
-          Right(validationError(s"Text is too long (over 300 characters)."))
+          Left(validationError(s"Text is too long (over 300 characters)."))
         }
         // FIXME: validate parent ID: check with ChannelData object
         else {
-          Left(rpcMessage)
+          Right(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   // no need for validation for now, as the server is not supposed to receive the broadcasts
   def validateNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Left(rpcMessage)
+    Right(rpcMessage)
   }
 
   def validateDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -85,23 +85,23 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
         val channel: Channel = rpcMessage.getParamsChannel
 
         if (!validateTimestampStaleness(data.timestamp)) {
-          Right(validationError(s"stale timestamp (${data.timestamp})"))
+          Left(validationError(s"stale timestamp (${data.timestamp})"))
         } else if (!validateChannelType(ObjectType.CHIRP, channel, dbActorRef)) {
-          Right(validationError(s"trying to delete a Chirp on a wrong type of channel $channel"))
+          Left(validationError(s"trying to delete a Chirp on a wrong type of channel $channel"))
         } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
+          Left(validationError(s"Sender $sender has an invalid PoP token."))
         } else if (channel.extractChildChannel.base64Data != sender.base64Data) {
-          Right(validationError(s"Sender $sender has an invalid PoP token - doesn't own the channel."))
+          Left(validationError(s"Sender $sender has an invalid PoP token - doesn't own the channel."))
         } else {
-          Left(rpcMessage)
+          Right(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   // no need for validation for now, as the server is not supposed to receive the broadcasts
   def validateNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Left(rpcMessage)
+    Right(rpcMessage)
   }
 
   def validateAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -115,15 +115,15 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
         val channel: Channel = rpcMessage.getParamsChannel
 
         if (!validateTimestampStaleness(data.timestamp)) {
-          Right(validationError(s"stale timestamp (${data.timestamp})"))
+          Left(validationError(s"stale timestamp (${data.timestamp})"))
         } else if (!validateChannelType(ObjectType.REACTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to delete a reaction on a wrong type of channel $channel"))
+          Left(validationError(s"trying to delete a reaction on a wrong type of channel $channel"))
         } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
+          Left(validationError(s"Sender $sender has an invalid PoP token."))
         } else {
-          Left(rpcMessage)
+          Right(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -138,15 +138,15 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
         val channel: Channel = rpcMessage.getParamsChannel
 
         if (!validateTimestampStaleness(data.timestamp)) {
-          Right(validationError(s"stale timestamp (${data.timestamp})"))
+          Left(validationError(s"stale timestamp (${data.timestamp})"))
         } else if (!validateChannelType(ObjectType.REACTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to delete a reaction on a wrong type of channel $channel"))
+          Left(validationError(s"trying to delete a reaction on a wrong type of channel $channel"))
         } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
+          Left(validationError(s"Sender $sender has an invalid PoP token."))
         } else {
-          Left(rpcMessage)
+          Right(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 }

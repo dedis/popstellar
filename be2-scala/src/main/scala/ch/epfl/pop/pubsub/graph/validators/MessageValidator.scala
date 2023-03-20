@@ -36,10 +36,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     * @param checks
     *   checks which return a GraphMessage
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
     */
   def runChecks(checks: GraphMessage*): GraphMessage = {
-    if (checks.head.isLeft && !checks.tail.isEmpty)
+    if (checks.head.isRight && !checks.tail.isEmpty)
       runChecks(checks.tail: _*)
     else
       checks.head
@@ -51,13 +51,13 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     val expectedId: Hash = Hash.fromStrings(message.data.toString, message.signature.toString)
 
     if (message.message_id != expectedId) {
-      Right(validationError("Invalid message_id", "MessageValidator", rpcMessage.id))
+      Left(validationError("Invalid message_id", "MessageValidator", rpcMessage.id))
     } else if (!message.signature.verify(message.sender, message.data)) {
-      Right(validationError("Invalid sender signature", "MessageValidator", rpcMessage.id))
+      Left(validationError("Invalid sender signature", "MessageValidator", rpcMessage.id))
     } else if (!message.witness_signatures.forall(ws => ws.verify(message.message_id))) {
-      Right(validationError("Invalid witness signature", "MessageValidator", rpcMessage.id))
+      Left(validationError("Invalid witness signature", "MessageValidator", rpcMessage.id))
     } else {
-      Left(rpcMessage)
+      Right(rpcMessage)
     }
   }
 
@@ -87,9 +87,9 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       error: PipelineError
   ): GraphMessage = {
     if (validateAttendee(sender, channel, dbActor))
-      Left(rpcMessage)
+      Right(rpcMessage)
     else
-      Right(error)
+      Left(error)
   }
 
   /** checks whether the sender of the JsonRpcRequest is the LAO owner
@@ -118,9 +118,9 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       error: PipelineError
   ): GraphMessage = {
     if (validateOwner(sender, channel, dbActor))
-      Left(rpcMessage)
+      Right(rpcMessage)
     else
-      Right(error)
+      Left(error)
   }
 
   /** checks whether the channel of the JsonRpcRequest is of the given type
@@ -153,9 +153,9 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       error: PipelineError
   ): GraphMessage = {
     if (validateChannelType(channelObjectType, channel, dbActor))
-      Left(rpcMessage)
+      Right(rpcMessage)
     else
-      Right(error)
+      Left(error)
   }
 
   /** Checks if the msg senderPK is the expected one
@@ -169,7 +169,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     * @param error
     *   the error to forward in case the senderPK doesn't match the expected one
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
     */
   def checkMsgSenderKey(
       rpcMessage: JsonRpcRequest,
@@ -178,9 +178,9 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       error: PipelineError
   ): GraphMessage = {
     if (expectedKey == msgSenderKey)
-      Left(rpcMessage)
+      Right(rpcMessage)
     else
-      Right(error)
+      Left(error)
   }
 
 }

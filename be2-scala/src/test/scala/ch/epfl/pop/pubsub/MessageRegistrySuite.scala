@@ -21,7 +21,7 @@ class MessageRegistrySuite extends FunSuite with Matchers {
 
   def unitSchemaVerifier(s: JsonString): Try[Unit] = Success((): Unit)
   def unitBuilder(s: JsonString): MessageData = MessageDataInstance()
-  def unitValidator(r: JsonRpcRequest): GraphMessage = Left(r)
+  def unitValidator(r: JsonRpcRequest): GraphMessage = Right(r)
   def unitHandler(r: JsonRpcRequest): GraphMessage = unitValidator(r)
 
   val register: Map[(ObjectType, ActionType), RegisterEntry] = Map(
@@ -32,15 +32,15 @@ class MessageRegistrySuite extends FunSuite with Matchers {
   val registry: MessageRegistry = new MessageRegistry(register)
 
   test("A custom MessageRegistry may be injected in the graph") {
-    val gm = Left(JsonRpcRequest.buildFromJson("""{"jsonrpc":"2.0","method":"publish","params":{"message":{"message_id":"f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE=","sender":"to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=","signature":"2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA==","data":"eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ==","witness_signatures":[]},"channel":"/root"},"id":1}"""))
+    val gm = Right(JsonRpcRequest.buildFromJson("""{"jsonrpc":"2.0","method":"publish","params":{"message":{"message_id":"f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE=","sender":"to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=","signature":"2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA==","data":"eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ==","witness_signatures":[]},"channel":"/root"},"id":1}"""))
 
     val res = MessageDecoder.parseData(gm, registry)
 
     res shouldBe a[GraphMessage]
-    res.isLeft should be(true)
+    res.isRight should be(true)
 
     res match {
-      case Left(rpcMessage) =>
+      case Right(rpcMessage) =>
         rpcMessage shouldBe a[JsonRpcRequest]
 
         // takes the "left" of the either
@@ -50,7 +50,7 @@ class MessageRegistrySuite extends FunSuite with Matchers {
         val messageData = rpc.getDecodedData.get
         messageData._object should equal(MessageDataInstance()._object)
         messageData.action should equal(MessageDataInstance().action)
-      case _ => fail("resulting graph message is not 'Left'")
+      case _ => fail("resulting graph message is not 'Right'")
     }
   }
 }

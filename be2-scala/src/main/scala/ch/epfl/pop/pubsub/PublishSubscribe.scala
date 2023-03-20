@@ -42,8 +42,8 @@ object PublishSubscribe {
         val methodPartitioner = builder.add(Partition[GraphMessage](
           totalPorts,
           {
-            case Left(m: JsonRpcRequest) if m.hasParamsMessage => portParamsWithMessage // Publish and Broadcast messages
-            case Left(_)                                       => portParams
+            case Right(m: JsonRpcRequest) if m.hasParamsMessage => portParamsWithMessage // Publish and Broadcast messages
+            case Right(_)                                       => portParams
             case _                                             => portPipelineError // Pipeline error goes directly in merger
           }
         ))

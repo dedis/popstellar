@@ -18,24 +18,24 @@ object Validator {
   )
 
   private def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
-    case Left(jsonRpcMessage) => jsonRpcMessage match {
+    case Right(jsonRpcMessage) => jsonRpcMessage match {
         case message @ (_: JsonRpcRequest)  => validateRpcRequest(message)
         case message @ (_: JsonRpcResponse) => validateRpcResponse(message)
-        case _                              => Right(validationError(None)) // should never happen
+        case _                              => Left(validationError(None)) // should never happen
       }
     case graphMessage @ _ => graphMessage
   }
 
   private def validateMethodContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
-    case Left(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
+    case Right(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
         case _: Broadcast   => validateBroadcast(jsonRpcRequest)
         case _: Catchup     => validateCatchup(jsonRpcRequest)
         case _: Publish     => validatePublish(jsonRpcRequest)
         case _: Subscribe   => validateSubscribe(jsonRpcRequest)
         case _: Unsubscribe => validateUnsubscribe(jsonRpcRequest)
-        case _              => Right(validationError(jsonRpcRequest.id))
+        case _              => Left(validationError(jsonRpcRequest.id))
       }
-    case Left(jsonRpcResponse: JsonRpcResponse) => Right(PipelineError(
+    case Right(jsonRpcResponse: JsonRpcResponse) => Left(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         "Unsupported action: MethodValidator was given a response message",
         jsonRpcResponse.id
@@ -44,22 +44,22 @@ object Validator {
   }
 
   private def validateMessageContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
-    case Left(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
+    case Right(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getParams match {
         case _: Broadcast   => validateMessage(jsonRpcRequest)
         case _: Catchup     => graphMessage
         case _: Publish     => validateMessage(jsonRpcRequest)
         case _: Subscribe   => graphMessage
         case _: Unsubscribe => graphMessage
-        case _              => Right(validationError(jsonRpcRequest.id))
+        case _              => Left(validationError(jsonRpcRequest.id))
       }
     case graphMessage @ _ => graphMessage
   }
 
   def validateHighLevelMessage(graphMessage: GraphMessage): GraphMessage = graphMessage match {
-    case Left(_) => validateJsonRpcContent(graphMessage) match {
-        case Left(_) => validateMethodContent(graphMessage) match {
-            case Left(_) => validateMessageContent(graphMessage) match {
-                case Left(_)          => graphMessage
+    case Right(_) => validateJsonRpcContent(graphMessage) match {
+        case Right(_) => validateMethodContent(graphMessage) match {
+            case Right(_) => validateMessageContent(graphMessage) match {
+                case Right(_)          => graphMessage
                 case graphMessage @ _ => graphMessage
               }
             case graphMessage @ _ => graphMessage
@@ -73,7 +73,7 @@ object Validator {
     val (_object, action) = rpcRequest.getDecodedDataHeader
     registry.getValidator(_object, action) match {
       case Some(validator) => validator(rpcRequest)
-      case _ => Right(PipelineError(
+      case _ => Left(PipelineError(
           ErrorCodes.SERVER_ERROR.id,
           s"MessageRegistry could not find any data validator for JsonRpcRequest : $rpcRequest'",
           rpcRequest.getId
@@ -86,8 +86,8 @@ object Validator {
 
   // validation from Message layer
   def messageContentValidator(messageRegistry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(rpcRequest: JsonRpcRequest) => validateMessageDataContent(rpcRequest, messageRegistry)
-    case Left(rpcResponse: JsonRpcResponse) => Right(PipelineError(
+    case Right(rpcRequest: JsonRpcRequest) => validateMessageDataContent(rpcRequest, messageRegistry)
+    case Right(rpcResponse: JsonRpcResponse) => Left(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         "'messageContentValidator' was called on a JsonRpcResponse, which by definition, does not contain any Message layer'",
         rpcResponse.getId

@@ -58,25 +58,25 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           questions.forall(q => q.id == Hash.fromStrings("Question", election_id.toString, q.question))
 
         if (!validateTimestampStaleness(data.created_at)) {
-          Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
+          Left(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (!validateTimestampOrder(data.created_at, data.start_time)) {
-          Right(validationError(s"'start_time' (${data.start_time}) timestamp is smaller than 'created_at' (${data.created_at})"))
+          Left(validationError(s"'start_time' (${data.start_time}) timestamp is smaller than 'created_at' (${data.created_at})"))
         } else if (!validateTimestampOrder(data.start_time, data.end_time)) {
-          Right(validationError(s"'end_time' (${data.end_time}) timestamp is smaller than 'start_time' (${data.start_time})"))
+          Left(validationError(s"'end_time' (${data.end_time}) timestamp is smaller than 'start_time' (${data.start_time})"))
         } else if (expectedHash != data.id) {
-          Right(validationError("unexpected id"))
+          Left(validationError("unexpected id"))
         } else if (!validateQuestionId(data.questions, data.id)) {
-          Right(validationError("unexpected question ids"))
+          Left(validationError("unexpected question ids"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"invalid sender $sender"))
+          Left(validationError(s"invalid sender $sender"))
         } // note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
         else if (!validateChannelType(ObjectType.LAO, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a SetupElection message on a wrong type of channel $channel"))
+          Left(validationError(s"trying to send a SetupElection message on a wrong type of channel $channel"))
         } else {
-          Left(rpcMessage)
+          Right(rpcMessage)
         }
 
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -92,16 +92,16 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val sender: PublicKey = message.sender
 
         if (electionId != data.election) {
-          Right(validationError("Unexpected election id"))
+          Left(validationError("Unexpected election id"))
         } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a KeyElection message on a wrong type of channel $channel"))
+          Left(validationError(s"trying to send a KeyElection message on a wrong type of channel $channel"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
+          Left(validationError(s"Sender $sender has an invalid PoP token."))
         } else {
-          Left(rpcMessage)
+          Right(rpcMessage)
         }
 
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -120,20 +120,20 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
         if (!validateTimestampStaleness(data.opened_at)) {
-          Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
+          Left(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
         } else if (electionId != data.election) {
-          Right(validationError("Unexpected election id"))
+          Left(validationError("Unexpected election id"))
         } else if (laoId != data.lao) {
-          Right(validationError("Unexpected lao id"))
+          Left(validationError("Unexpected lao id"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender $sender has an invalid PoP token."))
+          Left(validationError(s"Sender $sender has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a OpenElection message on a wrong type of channel $channel"))
+          Left(validationError(s"trying to send a OpenElection message on a wrong type of channel $channel"))
         } else {
-          Left(rpcMessage)
+          Right(rpcMessage)
         }
 
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -149,26 +149,26 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val sender: PublicKey = message.sender
 
         if (!validateTimestampStaleness(data.created_at)) {
-          Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
+          Left(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (channel.extractChildChannel != data.election) {
-          Right(validationError("unexpected election id"))
+          Left(validationError("unexpected election id"))
         } else if (channel.decodeChannelLaoId.getOrElse(HASH_ERROR) != data.lao) {
-          Right(validationError("unexpected lao id"))
+          Left(validationError("unexpected lao id"))
         } else if (!validateVoteElection(data.election, data.votes, questions)) {
-          Right(validationError(s"invalid votes"))
+          Left(validationError(s"invalid votes"))
           // check open and end constraints
         } else if (getOpenMessage(channel).isEmpty) {
-          Right(validationError(s"This election has not started yet"))
+          Left(validationError(s"This election has not started yet"))
         } else if (getEndMessage(channel).isDefined) {
-          Right(validationError(s"This election has already ended"))
+          Left(validationError(s"This election has already ended"))
         } else if (!validateAttendee(sender, channel, dbActorRef)) {
-          Right(validationError(s"Sender ${sender} has an invalid PoP token."))
+          Left(validationError(s"Sender ${sender} has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
+          Left(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
         } else {
-          Left(rpcMessage)
+          Right(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -204,7 +204,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
 
   // not implemented since the back end does not receive a ResultElection message coming from the front end
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionValidator cannot handle ResultElection messages yet", rpcMessage.id))
+    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionValidator cannot handle ResultElection messages yet", rpcMessage.id))
   }
 
   def validateEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -221,21 +221,21 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val laoId: Hash = channel.decodeChannelLaoId.getOrElse(HASH_ERROR)
 
         if (!validateTimestampStaleness(data.created_at)) {
-          Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
+          Left(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (channel.extractChildChannel != data.election) {
-          Right(validationError("unexpected election id"))
+          Left(validationError("unexpected election id"))
         } else if (laoId != data.lao) {
-          Right(validationError("unexpected lao id"))
+          Left(validationError("unexpected lao id"))
         } else if (!validateOwner(sender, channel, dbActorRef)) {
-          Right(validationError(s"invalid sender $sender"))
+          Left(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.ELECTION, channel, dbActorRef)) {
-          Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
+          Left(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
         } else if (!compareResults(Await.result(channel.getLastVotes(dbActorRef), duration), data.registered_votes)) {
-          Right(validationError(s"Incorrect verification hash"))
+          Left(validationError(s"Incorrect verification hash"))
         } else {
-          Left(rpcMessage)
+          Right(rpcMessage)
         }
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 

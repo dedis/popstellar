@@ -15,15 +15,15 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
   /** Decodes data before passing it to the test * */
   def withCreateLaoFixture(createLaoData: Message)(testCode: GraphMessage => Any): Unit = {
     // Raw encoded data data
-    val message = Left(CreateLaoExamples.getJsonRequestFromMessage(createLaoData))
+    val message = Right(CreateLaoExamples.getJsonRequestFromMessage(createLaoData))
     // Decode data
     val decoded = MessageDecoder.parseData(message, MessageRegistry.apply())
     decoded match {
-      case Left(r: JsonRpcRequest) =>
+      case Right(r: JsonRpcRequest) =>
         r.getDecodedDataHeader should equal((ObjectType.LAO, ActionType.CREATE))
         testCode(decoded)
-      case Left(m) => fail(f"Decoder decoded to bad type: <$m> expected type is JsonRpcRequestCreateLao")
-      case Right(_) =>
+      case Right(m) => fail(f"Decoder decoded to bad type: <$m> expected type is JsonRpcRequestCreateLao")
+      case Left(_) =>
         fail("Message could not be decoded/parsed")
     }
   }
@@ -34,14 +34,14 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
     (message) => {
       When("validated")
       inside(message) {
-        case Left(rpcRequest: JsonRpcRequest) =>
+        case Right(rpcRequest: JsonRpcRequest) =>
           val registry: MessageRegistry = MessageRegistry.apply()
           val validationResult = Validator.validateMessageDataContent(rpcRequest, registry)
           inside(validationResult) {
-            case Left(msg) =>
+            case Right(msg) =>
               Then("the validation succeeds")
               msg shouldBe a[JsonRpcRequest]
-            case _ @Right(_) => fail("fails to validate CreateLao data content")
+            case _ @Left(_) => fail("fails to validate CreateLao data content")
             case _           => fail(s"validated message <$validationResult> is of unexpected type")
           }
           And("the message has the same content after validation")

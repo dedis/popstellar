@@ -132,19 +132,19 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
   }
 
   test("validateMessage accepts valid Message example") {
-    MessageValidator.validateMessage(VALID_RPC) should be(Left(VALID_RPC))
+    MessageValidator.validateMessage(VALID_RPC) should be(Right(VALID_RPC))
   }
 
   test("validateMessage rejects request with invalid id") {
-    MessageValidator.validateMessage(INVALID_ID_RPC) shouldBe a[Right[_, PipelineError]]
+    MessageValidator.validateMessage(INVALID_ID_RPC) shouldBe a[Left[_, PipelineError]]
   }
 
   test("validateMessage rejects request with invalid WS pair") {
-    MessageValidator.validateMessage(INVALID_WS_PAIR_RPC) shouldBe a[Right[_, PipelineError]]
+    MessageValidator.validateMessage(INVALID_WS_PAIR_RPC) shouldBe a[Left[_, PipelineError]]
   }
 
   test("validateMessage rejects request with invalid signature") {
-    MessageValidator.validateMessage(INVALID_SIGNATURE_RPC) shouldBe a[Right[_, PipelineError]]
+    MessageValidator.validateMessage(INVALID_SIGNATURE_RPC) shouldBe a[Left[_, PipelineError]]
   }
 
 }

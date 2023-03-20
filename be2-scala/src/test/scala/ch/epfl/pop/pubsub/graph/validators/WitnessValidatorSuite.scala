@@ -43,14 +43,14 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   private final val PUBLIC_KEY: PublicKey = WitnessMessageExamples.SENDER
   private final val PRIVATE_KEY: PrivateKey = WitnessMessageExamples.privateKey
   private final val PK_WRONG_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
-  private final val laoDataRight: LaoData = LaoData(PUBLIC_KEY, List(PUBLIC_KEY), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val laoDataLeft: LaoData = LaoData(PUBLIC_KEY, List(PUBLIC_KEY), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val laoDataWrong: LaoData = LaoData(PK_WRONG_OWNER, List(PK_WRONG_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
 
   private def mockDbWorking: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
         case x =>
           system.log.info(s"Received - error $x")
       }
@@ -74,7 +74,7 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   test("Witnessing a message works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_RPC)
-    message should equal(Left(WITNESS_MESSAGE_RPC))
+    message should equal(Right(WITNESS_MESSAGE_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
@@ -82,8 +82,8 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
     val dbActorRef = mockDbWrongToken
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_RPC)
     val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    standardActorMessage shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    standardActorMessage shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -91,8 +91,8 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_WRONG_SIGNATURE_RPC)
     val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_WRONG_SIGNATURE_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    standardActorMessage shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    standardActorMessage shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -100,8 +100,8 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(RPC_NO_PARAMS)
     val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(RPC_NO_PARAMS)
-    message shouldBe a[Right[_, PipelineError]]
-    standardActorMessage shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    standardActorMessage shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 }

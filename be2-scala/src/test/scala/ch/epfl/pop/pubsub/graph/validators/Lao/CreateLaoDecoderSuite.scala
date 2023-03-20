@@ -15,7 +15,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
 
   def withCreateLaoFixiture(msg: Message)(testCode: (GraphMessage, Message) => Any): Unit = {
     val jsonReq = CreateLaoExamples.getJsonRequestFromMessage(msg)
-    testCode(Left(jsonReq), msg)
+    testCode(Right(jsonReq), msg)
   }
 
   def testGoodFormat: (GraphMessage, Message) => Assertion =
@@ -29,7 +29,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
 
       Then("it should be of type JsonRpcRequest")
       inside(parsed) {
-        case Left(createJsonRpc: JsonRpcRequest) =>
+        case Right(createJsonRpc: JsonRpcRequest) =>
           And("it should be of type create lao")
           createJsonRpc.getDecodedDataHeader should equal((ObjectType.LAO, ActionType.CREATE))
 
@@ -62,7 +62,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
           And("the id is not null")
           laoData.id shouldNot be(null)
           noException shouldBe thrownBy(laoData.id.base64Data.decodeToString())
-        case Right(_) => fail(s"The message data format should succeed with a Left[JsonRpcRequestCreateLao] but was <$parsed>")
+        case Left(_) => fail(s"The message data format should succeed with a Right[JsonRpcRequestCreateLao] but was <$parsed>")
         case _        => fail(s"The message data format format yielded an unexpected result <$parsed>")
       }
     }
@@ -74,13 +74,13 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
       When("the request is parsed")
       val parsed = MessageDecoder.parseData(gm, MessageRegistry.apply())
 
-      Then("it should fail with the correct type Right[PipelineError]")
+      Then("it should fail with the correct type Left[PipelineError]")
       inside(parsed) {
-        case Right(e) =>
+        case Left(e) =>
           e shouldBe a[PipelineError]
           And("report a correct error code")
           e.code should equal(ErrorCodes.INVALID_DATA.id)
-        case Left(_) => fail(s"parsed message should fail with Right[PipelineError] but was a Left: <$parsed>")
+        case Right(_) => fail(s"parsed message should fail with Left[PipelineError] but was a Right: <$parsed>")
         case _       => fail(s"parsed message <$parsed> resulted with an unexpected type")
       }
     }
