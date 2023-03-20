@@ -157,8 +157,8 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
       optId
     )
     val gm = AnswerGenerator.generateAnswer(Left(error))
-    gm shouldBe a[Right[JsonRpcResponse, _]]
-    val msg = gm.swap.toOption
+    gm shouldBe a[Right[_, JsonRpcResponse]]
+    val msg = gm.toOption
     msg.isDefined should be(true)
     msg.get.asInstanceOf[JsonRpcResponse].jsonrpc should be(RpcValidator.JSON_RPC_VERSION)
     msg.get.asInstanceOf[JsonRpcResponse].id should be(optId)
