@@ -2,11 +2,14 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey, Timestamp, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
+import ch.epfl.pop.storage.DbActor.Read
 
+import scala.concurrent.Await
+import scala.util.Success
 import scala.util.matching.Regex
 
 trait MessageDataContentValidator extends ContentValidator with AskPatternConstants {
@@ -56,6 +59,15 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Right(rpcMessage)
     else
       Left(error)
+  }
+
+  /** This method behaves the same as checkTimestampOrder, except that the param <second> is not necessarily defined. (Wrt to the protocol, some fields are not necessarily defined for certain type of messages, such as CreateMeeting)
+    */
+  def checkOptionalTimestampOrder(rpcMessage: JsonRpcRequest, first: Timestamp, second: Option[Timestamp], error: PipelineError): GraphMessage = {
+    if (!second.isDefined)
+      Right(rpcMessage)
+    else
+      checkTimestampOrder(rpcMessage, first, second.get, error)
   }
 
   /** Checks if the id corresponds to the expected id
@@ -116,6 +128,35 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
       Left(error)
   }
 
+  /** Check if some message id exist in the db, if option id is empty the check is successful
+    *
+    * @param rpcMessage
+    *   the rpc message to validate
+    * @param id
+    *   the Option message id to check existence for
+    * @param channel
+    *   the channel on which the message might exist
+    * @param dbActor
+    *   the dbActor to ask
+    * @param error
+    *   the error to throw if the chirp do not exist
+    * @return
+    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    */
+  def checkIdExistence(rpcMessage: JsonRpcRequest, id: Option[Hash], channel: Channel, dbActor: AskableActorRef, error: PipelineError): GraphMessage = {
+    id match {
+      case Some(id) =>
+        val ask = dbActor ? Read(channel, id)
+        Await.ready(ask, duration).value.get match {
+          // just care about the message id existence
+          case Success(_) => Right(rpcMessage)
+          case _          => Left(error)
+        }
+
+      case None => Right(rpcMessage)
+    }
+  }
+
   /** Checks witnesses key signature pairs for given modification id
     *
     * @param rpcMessage
@@ -161,4 +202,5 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     */
   final def validateWitnessSignatures(witnessesKeyPairs: List[WitnessSignaturePair], data: Hash): Boolean =
     witnessesKeyPairs.forall(wsp => wsp.verify(data))
+
 }

@@ -24,7 +24,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import scala.reflect.io.Directory
 
-class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestActorSystem"))
+class MeetingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestActorSystem"))
     with FunSuiteLike
     with ImplicitSender
     with Matchers with BeforeAndAfterAll with AskPatternConstants {
