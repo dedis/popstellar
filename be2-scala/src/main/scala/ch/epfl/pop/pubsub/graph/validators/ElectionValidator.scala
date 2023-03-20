@@ -42,7 +42,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     def validationError(reason: String): PipelineError = super.validationError(reason, "SetupElection", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
+      case Some(_: Message) =>
         val (setupElection, _, senderPK, channel) = extractData[SetupElection](rpcMessage)
 
         val electionId = channel.extractChildChannel
@@ -107,8 +107,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     def validationError(reason: String): PipelineError = super.validationError(reason, "KeyElection", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
-        val (keyElection, laoId, senderPK, channel) = extractData[KeyElection](rpcMessage)
+      case Some(_: Message) =>
+        val (keyElection, _, senderPK, channel) = extractData[KeyElection](rpcMessage)
 
         val electionId = channel.extractChildChannel
 
@@ -143,7 +143,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     def validationError(reason: String): PipelineError = super.validationError(reason, "OpenElection", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
+      case Some(_: Message) =>
         val (openElection, laoId, senderPK, channel) = extractData[OpenElection](rpcMessage)
 
         val electionId = channel.extractChildChannel
@@ -192,7 +192,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     def validationError(reason: String): PipelineError = super.validationError(reason, "CastVoteElection", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
+      case Some(_: Message) =>
         val (casteVote, laoId, senderPK, channel) = extractData[CastVoteElection](rpcMessage)
 
         val electionId = channel.extractChildChannel
@@ -264,7 +264,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     def validationError(reason: String): PipelineError = super.validationError(reason, "EndElection", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
+      case Some(_: Message) =>
         val (endElection, laoId, senderPK, channel) = extractData[EndElection](rpcMessage)
 
         val electionId = channel.extractChildChannel
