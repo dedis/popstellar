@@ -59,7 +59,7 @@ object Validator {
     case Right(_) => validateJsonRpcContent(graphMessage) match {
         case Right(_) => validateMethodContent(graphMessage) match {
             case Right(_) => validateMessageContent(graphMessage) match {
-                case Right(_)          => graphMessage
+                case Right(_)         => graphMessage
                 case graphMessage @ _ => graphMessage
               }
             case graphMessage @ _ => graphMessage

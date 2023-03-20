@@ -63,7 +63,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
           laoData.id shouldNot be(null)
           noException shouldBe thrownBy(laoData.id.base64Data.decodeToString())
         case Left(_) => fail(s"The message data format should succeed with a Right[JsonRpcRequestCreateLao] but was <$parsed>")
-        case _        => fail(s"The message data format format yielded an unexpected result <$parsed>")
+        case _       => fail(s"The message data format format yielded an unexpected result <$parsed>")
       }
     }
 
@@ -81,7 +81,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
           And("report a correct error code")
           e.code should equal(ErrorCodes.INVALID_DATA.id)
         case Right(_) => fail(s"parsed message should fail with Left[PipelineError] but was a Right: <$parsed>")
-        case _       => fail(s"parsed message <$parsed> resulted with an unexpected type")
+        case _        => fail(s"parsed message <$parsed> resulted with an unexpected type")
       }
     }
 

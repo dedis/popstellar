@@ -42,7 +42,7 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
               Then("the validation succeeds")
               msg shouldBe a[JsonRpcRequest]
             case _ @Left(_) => fail("fails to validate CreateLao data content")
-            case _           => fail(s"validated message <$validationResult> is of unexpected type")
+            case _          => fail(s"validated message <$validationResult> is of unexpected type")
           }
           And("the message has the same content after validation")
           validationResult should equal(message)

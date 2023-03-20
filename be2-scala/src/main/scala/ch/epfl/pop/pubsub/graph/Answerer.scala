@@ -30,8 +30,8 @@ object Answerer {
     */
   private def sendAnswer(graphMessage: GraphMessage): TextMessage = graphMessage match {
     // Note: The encoding of the answer is done here as the ClientActor must always receive a GraphMessage
-    case Right(rpcAnswer: JsonRpcResponse)    => TextMessage.Strict(rpcAnswer.toJson.toString)
-    case Right(rpcRequest: JsonRpcRequest)    => TextMessage.Strict(rpcRequest.toJson.toString) // propagate server
+    case Right(rpcAnswer: JsonRpcResponse)  => TextMessage.Strict(rpcAnswer.toJson.toString)
+    case Right(rpcRequest: JsonRpcRequest)  => TextMessage.Strict(rpcRequest.toJson.toString) // propagate server
     case Left(pipelineError: PipelineError) =>
       // Convert AnswerGenerator's PipelineErrors into negative JsonRpcResponses and send them back to the client
       TextMessage.Strict(errorResponseString(pipelineError.code, pipelineError.description, pipelineError.rpcId))
