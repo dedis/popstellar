@@ -196,6 +196,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
         val (casteVote, laoId, senderPK, channel) = extractData[CastVoteElection](rpcMessage)
 
         val electionId = channel.extractChildChannel
+        val questions = Await.result(channel.getSetupMessage(dbActorRef), duration).questions
 
         runChecks(
           checkTimestampStaleness(
@@ -219,7 +220,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
             rpcMessage,
             casteVote.election,
             casteVote.votes,
-            Await.result(channel.getSetupMessage(dbActorRef), duration).questions,
+            questions,
             validationError(s"invalid votes")
           ),
           // check open and end constraints
