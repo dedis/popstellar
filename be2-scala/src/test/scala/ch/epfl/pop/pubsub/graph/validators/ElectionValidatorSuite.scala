@@ -51,12 +51,12 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
   private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
   private final val PK_WRONG: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
-  private final val laoDataLeft: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val laoDataWrong: LaoData = LaoData(PK_WRONG, List(PK_WRONG), PRIVATE_KEY, PUBLIC_KEY, List.empty)
-  private final val channelDataLeftSetup: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+  private final val channelDataRightSetup: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val channelDataWrongSetup: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
 
-  private final val channelDataLeftElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
+  private final val channelDataRightElection: ChannelData = ChannelData(ObjectType.ELECTION, List.empty)
   private final val channelDataWrongElection: ChannelData = ChannelData(ObjectType.LAO, List.empty)
 
   private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE))
@@ -73,9 +73,9 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataLeftSetup)
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
       }
     })
     system.actorOf(dbActorMock)
@@ -87,7 +87,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataLeftSetup)
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightSetup)
       }
     })
     system.actorOf(dbActorMock)
@@ -97,7 +97,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongSetup)
       }
@@ -109,9 +109,9 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataLeftElection)
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightElection)
         case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorCatchupAck(messages)
       }
@@ -125,7 +125,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataLeftElection)
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRightElection)
       }
     })
     system.actorOf(dbActorMock)
@@ -135,7 +135,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongElection)
       }
@@ -147,7 +147,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndOpenAndCastMessage)
         case DbActor.ReadElectionData(_) =>
@@ -191,7 +191,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrongChannelCastVote)
         case DbActor.ReadElectionData(_) =>
@@ -213,7 +213,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithSetupAndCastMessage)
         case DbActor.ReadElectionData(_) =>
@@ -235,7 +235,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWithEndElectionMessage)
         case DbActor.ReadElectionData(_) =>

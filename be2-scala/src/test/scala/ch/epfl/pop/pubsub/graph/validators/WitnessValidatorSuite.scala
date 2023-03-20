@@ -43,14 +43,14 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   private final val PUBLIC_KEY: PublicKey = WitnessMessageExamples.SENDER
   private final val PRIVATE_KEY: PrivateKey = WitnessMessageExamples.privateKey
   private final val PK_WRONG_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
-  private final val laoDataLeft: LaoData = LaoData(PUBLIC_KEY, List(PUBLIC_KEY), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val laoDataRight: LaoData = LaoData(PUBLIC_KEY, List(PUBLIC_KEY), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val laoDataWrong: LaoData = LaoData(PK_WRONG_OWNER, List(PK_WRONG_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
 
   private def mockDbWorking: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case x =>
           system.log.info(s"Received - error $x")
       }

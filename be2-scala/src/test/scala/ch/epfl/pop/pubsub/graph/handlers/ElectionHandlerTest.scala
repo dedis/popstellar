@@ -40,7 +40,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
   private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
   private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
   private final val PK_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
-  private final val laoDataLeft: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
 
   private final val channelDataWithSetupAndOpenAndCastMessage: ChannelData = ChannelData(ObjectType.ELECTION, List(DATA_CAST_VOTE_MESSAGE, DATA_SET_UP_OPEN_BALLOT, DATA_OPEN_MESSAGE))
   private final val messages: List[Message] = List(MESSAGE_CAST_VOTE_ELECTION_WORKING, MESSAGE_SETUPELECTION_OPEN_BALLOT_WORKING, MESSAGE_OPEN_ELECTION_WORKING, MESSAGE_END_ELECTION_WORKING)
@@ -137,7 +137,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
 
         case DbActor.ReadLaoData(_) =>
           system.log.info("Responding with a Ack")
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
 
         case DbActor.ReadElectionData(_) =>
           system.log.info("Responding with a Ack")

@@ -51,10 +51,10 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
   private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
   private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
   private final val PK_OWNER: PublicKey = PublicKey(Base64Data.encode("wrongOwner"))
-  private final val laoDataLeft: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val laoDataRight: LaoData = LaoData(sender, List(sender), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val laoDataWrong: LaoData = LaoData(sender, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val channelDataWrong: ChannelData = ChannelData(ObjectType.INVALID, List.empty)
-  private final val channelDataLeft: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+  private final val channelDataRight: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val rollcallDataCreate: RollCallData = RollCallData(CreateRollCallExamples.R_ID, ActionType.CREATE)
   private final val rollcallDataOpen: RollCallData = RollCallData(OpenRollCallExamples.UPDATE_ID, ActionType.OPEN)
   private final val rollcallDataClose: RollCallData = RollCallData(CloseRollCallExamples.UPDATE_ID, ActionType.CLOSE)
@@ -63,7 +63,7 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
         case DbActor.ReadRollCallData(_) =>
@@ -79,7 +79,7 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataLeft)
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
         case DbActor.ReadRollCallData(_) =>
           sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataOpen)
       }
@@ -91,7 +91,7 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
           sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
         case DbActor.ReadRollCallData(_) =>
@@ -105,9 +105,9 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataLeft)
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
         case DbActor.ReadRollCallData(_) =>
           sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataCreate)
       }
@@ -119,9 +119,9 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataLeft)
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
         case DbActor.ReadRollCallData(_) =>
           sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataOpen)
       }
@@ -133,9 +133,9 @@ class RollCallValidatorSuite extends TestKit(ActorSystem("rollcallValidatorTestA
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(laoDataLeft)
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(channelDataLeft)
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
         case DbActor.ReadRollCallData(_) =>
           sender() ! DbActor.DbActorReadRollCallDataAck(rollcallDataClose)
       }

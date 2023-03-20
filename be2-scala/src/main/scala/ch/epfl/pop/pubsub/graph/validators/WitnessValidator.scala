@@ -27,7 +27,14 @@ sealed class WitnessValidator(dbActorRef: => AskableActorRef) extends MessageDat
       _ <- bindToPipe(rpcMessage, rpcMessage.getParamsMessage, validationErrorNoMessage(rpcMessage.id))
       (data, _, sender, channel) = extractData[WitnessMessage](rpcMessage)
       witnessSignaturePair = WitnessSignaturePair(sender, data.signature)
-      _ <- checkWitnessesSignatures(rpcMessage, List(witnessSignaturePair), data.message_id, validationError("verification of the signature over the message id failed"))
+      _ <- checkWitnessesSignatures(
+        rpcMessage,
+        List(witnessSignaturePair),
+        data.message_id,
+        validationError(
+          "verification of the signature over the message id failed"
+        )
+      )
       result <- checkOwner(rpcMessage, sender, channel, dbActorRef, validationError(s"invalid sender $sender"))
     } yield result
   }
