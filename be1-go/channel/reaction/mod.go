@@ -26,7 +26,7 @@ import (
 const (
 	msgID              = "msg id"
 	failedToDecodeData = "failed to decode message data: %v"
-	retryDelay         = 100 * time.Millisecond
+	retryDelay         = 500 * time.Millisecond
 )
 
 // Channel is used to handle reaction messages.
@@ -272,7 +272,6 @@ func (c *Channel) verifyDeleteReactionMessage(msg message.Message, retry bool) e
 		}
 		return xerrors.Errorf("the message to be deleted was not found")
 	}
-
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {

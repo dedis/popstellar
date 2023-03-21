@@ -500,7 +500,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 
 	// Publishing the reaction with some delay in a go routine
 	go func() {
-		time.Sleep(50 * time.Millisecond)
+		time.Sleep(time.Millisecond * 10)
 		err = cha.Publish(pub, socket.ClientSocket{})
 		require.NoError(t, err)
 	}()
@@ -544,11 +544,10 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 
 	// Wait before storing a new message to be able to have a unique
 	// timestamp for each message
-	time.Sleep(time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 
 	// If there is no error, the delete request has been properly received
 	require.NoError(t, cha.Publish(pub2, socket.ClientSocket{}))
-
 	// Check that the messages are stored in the inbox
 	require.Equal(t, addReactionID, cha.inbox.GetSortedMessages()[0].MessageID)
 	require.Equal(t, deleteReactionID, cha.inbox.GetSortedMessages()[1].MessageID)
