@@ -122,7 +122,7 @@ public class HomeActivity extends AppCompatActivity {
     if (!(fragment instanceof SeedWalletFragment)) {
       setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new);
     }
-    // Exits the application if back is pressed on home
+    // Move the application to background if back button is pressed on home
     if (fragment instanceof HomeFragment) {
       moveTaskToBack(true);
     }
