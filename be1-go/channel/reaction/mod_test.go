@@ -501,15 +501,12 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 	// Publishing the reaction with some delay in a go routine
 	go func() {
 		time.Sleep(time.Millisecond * 10)
-		err = cha.Publish(pub, socket.ClientSocket{})
+		err := cha.Publish(pub, socket.ClientSocket{})
 		require.NoError(t, err)
 	}()
 
 	// we create a new Publish variable for the delete message, as the previous
 	// one has not yet been used for the add reaction
-	bufCreatePub2, err := os.ReadFile(fileCreatePub)
-	require.NoError(t, err)
-
 	var pub2 method.Publish
 	// Create delete reaction message
 	file = filepath.Join(relativePath, "reaction_delete", "reaction_delete.json")
@@ -540,7 +537,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 	deleteReactionID := m.MessageID
 
 	time.Sleep(1 * time.Millisecond)
-	err = json.Unmarshal(bufCreatePub2, &pub2)
+	err = json.Unmarshal(bufCreatePub, &pub2)
 	require.NoError(t, err)
 
 	pub2.Params.Message = m
