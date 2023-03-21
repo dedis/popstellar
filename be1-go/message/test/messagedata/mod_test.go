@@ -51,12 +51,16 @@ func Test_GetTime(t *testing.T) {
 	t.Run("json is invalid", testWrongExamples("wrong_message_invalid_json.json"))
 }
 
+// tests the correctness of the hash function with examples
 func Test_Hash(t *testing.T) {
+
+	//examples have been taken from unit tests from the Scala system
 	data1 := []string{"abcd", "1234"}
 	data2 := "test 😀"
 	data3 := "🫡"
 	data4 := []string{"text 🥰", "🏉", "more text🎃️", "♠️"}
 
+	// the expected hash has been taken from the Scala system
 	require.Equal(t, messagedata.Hash(data1...), "61I7DQkiMtdHFM5VygjbFqrVmn4NAl0wSVxkj6Q5iDw=")
 	require.Equal(t, messagedata.Hash(), "47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")
 	require.Equal(t, messagedata.Hash(data2), "8BMmJjQMPhtD0QwVor1uVB3B_PyMMyIbIvaDHcOQnTg=")
