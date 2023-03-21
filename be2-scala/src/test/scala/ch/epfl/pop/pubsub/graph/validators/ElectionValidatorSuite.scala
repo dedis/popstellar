@@ -561,8 +561,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_TIMESTAMP_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_WRONG_TIMESTAMP_RPC)
-    message shouldBe a[Left[_, PipelineError]]
-    messageStandardActor shouldBe a[Left[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -570,8 +570,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWrongTokenCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_RPC)
-    message shouldBe a[Left[_, PipelineError]]
-    messageStandardActor shouldBe a[Left[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -579,8 +579,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWrongChannelCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_RPC)
-    message shouldBe a[Left[_, PipelineError]]
-    messageStandardActor shouldBe a[Left[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -588,8 +588,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_ID_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_WRONG_ID_RPC)
-    message shouldBe a[Left[_, PipelineError]]
-    messageStandardActor shouldBe a[Left[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -597,8 +597,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_LAO_ID_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_WRONG_LAO_ID_RPC)
-    message shouldBe a[Left[_, PipelineError]]
-    messageStandardActor shouldBe a[Left[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -606,8 +606,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_OWNER_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_WRONG_OWNER_RPC)
-    message shouldBe a[Left[_, PipelineError]]
-    messageStandardActor shouldBe a[Left[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -615,8 +615,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(RPC_NO_PARAMS)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(RPC_NO_PARAMS)
-    message shouldBe a[Left[_, PipelineError]]
-    messageStandardActor shouldBe a[Left[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 }
