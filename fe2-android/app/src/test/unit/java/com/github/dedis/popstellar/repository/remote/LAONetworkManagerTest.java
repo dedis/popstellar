@@ -80,7 +80,8 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>());
+            new HashSet<>(),
+            null);
 
     Answer<?> answer =
         args -> {
@@ -116,7 +117,8 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>());
+            new HashSet<>(),
+            null);
 
     Answer<?> answer =
         args -> {
@@ -151,7 +153,8 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>());
+            new HashSet<>(),
+            null);
 
     Answer<?> answer =
         args -> {
@@ -188,7 +191,8 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>());
+            new HashSet<>(),
+            null);
 
     ErrorCode error = new ErrorCode(3, "error");
 
@@ -231,7 +235,8 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>());
+            new HashSet<>(),
+            null);
 
     networkManager.subscribe(CHANNEL).subscribe(); // First subscribe
     testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
@@ -273,7 +278,8 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>());
+            new HashSet<>(),
+            null);
 
     // Set a response that stores requested ids
     Set<Integer> requests = new HashSet<>();

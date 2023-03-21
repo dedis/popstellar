@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.network.method.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -20,6 +21,7 @@ import com.tinder.scarlet.WebSocket;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import io.reactivex.Observable;
 import io.reactivex.*;
@@ -34,6 +36,7 @@ public class LAONetworkManager implements MessageSender {
 
   private final MessageHandler messageHandler;
   private final Connection connection;
+  private final Map<String, Connection> peersConnection;
   public final AtomicInteger requestCounter = new AtomicInteger();
   private final SchedulerProvider schedulerProvider;
   private final Gson gson;
@@ -42,19 +45,23 @@ public class LAONetworkManager implements MessageSender {
   private final Subject<GenericMessage> unprocessed = PublishSubject.create();
   private final Set<Channel> subscribedChannels;
   private final CompositeDisposable disposables = new CompositeDisposable();
+  private final Function<String, Connection> connectionFactorySupplier;
 
   public LAONetworkManager(
       MessageHandler messageHandler,
       Connection connection,
       Gson gson,
       SchedulerProvider schedulerProvider,
-      Set<Channel> subscribedChannels) {
+      Set<Channel> subscribedChannels,
+      Function<String, Connection> connectionFactory) {
 
     this.messageHandler = messageHandler;
     this.connection = connection;
+    this.peersConnection = new HashMap<>();
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;
     this.subscribedChannels = new HashSet<>(subscribedChannels);
+    this.connectionFactorySupplier = connectionFactory;
 
     // Start the incoming message processing
     processIncomingMessages();
@@ -175,6 +182,12 @@ public class LAONetworkManager implements MessageSender {
   @Override
   public Set<Channel> getSubscriptions() {
     return new HashSet<>(subscribedChannels);
+  }
+
+  @Override
+  public void connectToPeers(List<PeerAddress> peers) {
+    peers.forEach(
+        p -> peersConnection.put(p.getAddress(), connectionFactorySupplier.apply(p.getAddress())));
   }
 
   private void handleBroadcast(Broadcast broadcast) {
