@@ -62,8 +62,8 @@ class JsonRpcRequest(
     case None => None
   }
 
-  def extractLaoId: Hash = this.getParamsChannel.decodeChannelLaoId.getOrElse(Hash(Base64Data("")))
-
+  def extractLaoId: Hash = this.getParamsChannel.extractChildChannel
+  
   /** Returns a typed request (model/network/requests) that can be instantiated with <typedConstructor>
     *
     * @param typedConstructor
