@@ -23,7 +23,7 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
   private final val rpcReq2: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithMessage, id)
   private final val paramsWithMessageAndDecoded: ParamsWithMessage = new ParamsWithMessage(channelEx, messageLao)
   private final val rpcReq3: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithMessageAndDecoded, id)
-  
+
   test("Constructor works for regular Params and ParamsWithMessage") {
 
     rpcReq.jsonrpc should equal(rpc)
