@@ -126,7 +126,6 @@ const RollCallOpened = () => {
       attendeePopTokens.current = newTokens;
       // trigger a state change to re-render the component
       forceUpdate();
-      // setShowScanner(false);
       // also change the navigation parameters so that when pressing the back button, the right parameters are passed
       navigation.setParams({
         attendeePopTokens: newTokens,
@@ -170,8 +169,6 @@ const RollCallOpened = () => {
       .then((popToken) => addAttendeePopToken(popToken.publicKey.valueOf()))
       .catch(handleError);
   }, [laoId, generateToken, rollCall, addAttendeePopToken, handleError]);
-
-  console.error('attendeePopTokens', attendeePopTokens.current.length);
 
   return (
     <>
