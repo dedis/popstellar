@@ -155,7 +155,8 @@ public class ActivityUtils {
         callback.run();
       }
     };
-    
+  }
+
   /**
    * Gets the color of the QR code based on the night mode configuration of the current activity.
    *
