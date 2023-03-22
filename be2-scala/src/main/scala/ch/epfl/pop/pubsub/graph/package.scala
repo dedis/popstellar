@@ -4,7 +4,8 @@ import ch.epfl.pop.model.network.JsonRpcMessage
 
 package object graph {
   type JsonString = String
-  type GraphMessage = Either[JsonRpcMessage, PipelineError] // FIXME convention states that Right(_) is the success value
+
+  type GraphMessage = Either[PipelineError, JsonRpcMessage]
 
   def bindToPipe(rpcMessage: JsonRpcMessage, success: Boolean, error: PipelineError) = {
     if (success) Left(rpcMessage) else Right(error)

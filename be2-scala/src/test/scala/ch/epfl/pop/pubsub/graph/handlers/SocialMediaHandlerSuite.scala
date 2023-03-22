@@ -133,7 +133,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = AddReactionMessages.addReaction
 
-    rc.handleAddReaction(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleAddReaction(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -143,7 +143,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = AddReactionMessages.addReaction
 
-    rc.handleAddReaction(request) should equal(Left(request))
+    rc.handleAddReaction(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
@@ -153,7 +153,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = DeleteReactionMessages.deleteReaction
 
-    rc.handleDeleteReaction(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleDeleteReaction(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -163,7 +163,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = DeleteReactionMessages.deleteReaction
 
-    rc.handleDeleteReaction(request) should equal(Left(request))
+    rc.handleDeleteReaction(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
@@ -173,7 +173,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = AddChirpMessages.addChirp
 
-    rc.handleAddChirp(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleAddChirp(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -183,7 +183,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = AddChirpMessages.addChirp
 
-    rc.handleAddChirp(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleAddChirp(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -193,7 +193,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = AddChirpMessages.addChirp
 
-    rc.handleAddChirp(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleAddChirp(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -203,7 +203,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = AddChirpMessages.addChirp
 
-    rc.handleAddChirp(request) should equal(Left(request))
+    rc.handleAddChirp(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
@@ -213,7 +213,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = AddChirpMessages.addChirp
 
-    rc.handleAddChirp(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleAddChirp(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -223,7 +223,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = DeleteChirpMessages.deleteChirp
 
-    rc.handleDeleteChirp(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleDeleteChirp(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -233,7 +233,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = DeleteChirpMessages.deleteChirp
 
-    rc.handleDeleteChirp(request) should equal(Left(request))
+    rc.handleDeleteChirp(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
@@ -243,7 +243,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = DeleteChirpMessages.deleteChirp
 
-    rc.handleDeleteChirp(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleDeleteChirp(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -253,7 +253,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = DeleteChirpMessages.deleteChirp
 
-    rc.handleDeleteChirp(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleDeleteChirp(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -263,7 +263,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val rc = new SocialMediaHandler(mockedDB)
     val request = DeleteChirpMessages.deleteChirp
 
-    rc.handleDeleteChirp(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleDeleteChirp(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }

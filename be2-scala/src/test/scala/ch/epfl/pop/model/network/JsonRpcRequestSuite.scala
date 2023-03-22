@@ -13,9 +13,12 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
   final val messageEx: Message = MessageExample.MESSAGE
   final val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
   private final val laoId: String = "abcd"
+  private final val electionId: String = "defg"
   private final val channelEx: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId)
+  private final val channelElectionEx: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId + Channel.CHANNEL_SEPARATOR + electionId)
   private final val params: Params = new Params(channelEx)
   private final val paramsWithMessage: ParamsWithMessage = new ParamsWithMessage(channelEx, messageEx)
+  private final val paramsWithMessage2: ParamsWithMessage = new ParamsWithMessage(channelElectionEx, messageEx)
   private final val rpc: String = "rpc"
   private final val id: Option[Int] = Some(0)
   private final val methodType: MethodType.MethodType = MethodType.BROADCAST
@@ -23,6 +26,7 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
   private final val rpcReq2: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithMessage, id)
   private final val paramsWithMessageAndDecoded: ParamsWithMessage = new ParamsWithMessage(channelEx, messageLao)
   private final val rpcReq3: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithMessageAndDecoded, id)
+  private final val rpcReq4: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithMessage2, id)
 
   test("Constructor works for regular Params and ParamsWithMessage") {
 
@@ -108,6 +112,10 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
 
   test("extractLaoId returns the correct lao id") {
     rpcReq.extractLaoId should equal(Hash(Base64Data(laoId)))
+  }
+
+  test("extractLaoId returns the correct lao id on an election channel") {
+    rpcReq4.extractLaoId should equal(Hash(Base64Data(laoId)))
   }
 
   test("getId returns the correct rpc id") {

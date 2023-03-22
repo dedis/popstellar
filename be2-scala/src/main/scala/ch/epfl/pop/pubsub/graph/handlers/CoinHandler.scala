@@ -19,9 +19,9 @@ case object CoinHandler extends MessageHandler {
     }
 
     Await.ready(ask, duration).value match {
-      case Some(Success(_))                        => Left(rpcMessage)
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handlePostTransaction failed : ${ex.message}", rpcMessage.getId))
-      case reply => Right(PipelineError(
+      case Some(Success(_))                        => Right(rpcMessage)
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"handlePostTransaction failed : ${ex.message}", rpcMessage.getId))
+      case reply => Left(PipelineError(
           ErrorCodes.SERVER_ERROR.id,
           s"handlePostTransaction failed : unexpected DbActor reply '$reply'",
           rpcMessage.getId

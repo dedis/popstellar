@@ -74,7 +74,7 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
   test("Witnessing a message works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_RPC)
-    message should equal(Left(WITNESS_MESSAGE_RPC))
+    message should equal(Right(WITNESS_MESSAGE_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
@@ -82,8 +82,8 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
     val dbActorRef = mockDbWrongToken
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_RPC)
     val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    standardActorMessage shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    standardActorMessage shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -91,8 +91,8 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(WITNESS_MESSAGE_WRONG_SIGNATURE_RPC)
     val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(WITNESS_MESSAGE_WRONG_SIGNATURE_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    standardActorMessage shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    standardActorMessage shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -100,8 +100,8 @@ class WitnessValidatorSuite extends TestKit(ActorSystem("witnessValidatorTestAct
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new WitnessValidator(dbActorRef).validateWitnessMessage(RPC_NO_PARAMS)
     val standardActorMessage: GraphMessage = WitnessValidator.validateWitnessMessage(RPC_NO_PARAMS)
-    message shouldBe a[Right[_, PipelineError]]
-    standardActorMessage shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    standardActorMessage shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 }

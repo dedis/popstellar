@@ -24,7 +24,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import scala.reflect.io.Directory
 
-class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestActorSystem"))
+class MeetingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestActorSystem"))
     with FunSuiteLike
     with ImplicitSender
     with Matchers with BeforeAndAfterAll with AskPatternConstants {
@@ -99,7 +99,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   test("Creating a valid meeting works as intended") {
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_RPC)
-    message should equal(Left(CREATE_MEETING_RPC))
+    message should equal(Right(CREATE_MEETING_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
@@ -110,8 +110,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWrongSetupBadChannel
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_WRONG_CHANNEL_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateCreateMeeting(CREATE_MEETING_WRONG_CHANNEL_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -120,8 +120,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbInvalidSetupWrongOwner
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateCreateMeeting(CREATE_MEETING_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
   // invalid data hash
@@ -129,8 +129,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_INVALID_DATA_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateCreateMeeting(CREATE_MEETING_INVALID_DATA_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -139,8 +139,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_INVALID_CREATION_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateCreateMeeting(CREATE_MEETING_INVALID_CREATION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -149,8 +149,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_INVALID_START_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateCreateMeeting(CREATE_MEETING_INVALID_START_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -159,8 +159,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_INVALID_STARTEND_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateCreateMeeting(CREATE_MEETING_INVALID_STARTEND_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -169,8 +169,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateCreateMeeting(CREATE_MEETING_INVALID_END_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateCreateMeeting(CREATE_MEETING_INVALID_END_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -178,7 +178,7 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
   test("Creating a valid meeting state works as intended") {
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_RPC)
-    message should equal(Left(STATE_MEETING_RPC))
+    message should equal(Right(STATE_MEETING_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
@@ -189,8 +189,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_INVALID_DATA_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_INVALID_DATA_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -199,8 +199,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_INVALID_CREATION_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_INVALID_CREATION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -209,8 +209,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_INVALID_START_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_INVALID_START_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -220,8 +220,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     println(dbActorRef)
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_SMALL_END_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_SMALL_END_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -230,8 +230,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_BIG_START_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_BIG_START_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -240,8 +240,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_WRONGWITNESS_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_WRONGWITNESS_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -250,8 +250,8 @@ class MertingValidatorSuite extends TestKit(ActorSystem("meetingValidatorTestAct
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new MeetingValidator(dbActorRef).validateStateMeeting(STATE_MEETING_SMALLMODIFICATION_RPC)
     val messageStandardActor: GraphMessage = MeetingValidator.validateStateMeeting(STATE_MEETING_SMALLMODIFICATION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 }

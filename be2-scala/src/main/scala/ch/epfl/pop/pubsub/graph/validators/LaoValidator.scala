@@ -80,7 +80,7 @@ object LaoValidator extends MessageDataContentValidator {
               validationError("LAO name must not be empty")
             )
           )
-        case _ => Right(validationErrorNoMessage(rpcMessage.id))
+        case _ => Left(validationErrorNoMessage(rpcMessage.id))
       }
 
     }
@@ -129,7 +129,7 @@ object LaoValidator extends MessageDataContentValidator {
             )
           )
 
-        case _ => Right(validationErrorNoMessage(rpcMessage.id))
+        case _ => Left(validationErrorNoMessage(rpcMessage.id))
       }
     }
 
@@ -168,7 +168,7 @@ object LaoValidator extends MessageDataContentValidator {
             )
           )
 
-        case _ => Right(validationErrorNoMessage(rpcMessage.id))
+        case _ => Left(validationErrorNoMessage(rpcMessage.id))
       }
 
     }
@@ -185,7 +185,7 @@ object LaoValidator extends MessageDataContentValidator {
 
           Await.ready(askLaoMessage, duration).value match {
             case Some(Success(DbActor.DbActorReadAck(None))) =>
-              Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "validateUpdateLao failed : no CreateLao message associated found", rpcMessage.id))
+              Left(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "validateUpdateLao failed : no CreateLao message associated found", rpcMessage.id))
             case Some(Success(DbActor.DbActorReadAck(Some(retrievedMessage)))) =>
               val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
               // Calculate expected hash
@@ -221,11 +221,11 @@ object LaoValidator extends MessageDataContentValidator {
                 )
               )
 
-            case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"validateUpdateLao failed : ${ex.message}", rpcMessage.getId))
-            case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+            case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"validateUpdateLao failed : ${ex.message}", rpcMessage.getId))
+            case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
           }
 
-        case _ => Right(validationErrorNoMessage(rpcMessage.id))
+        case _ => Left(validationErrorNoMessage(rpcMessage.id))
 
       }
     }
@@ -242,12 +242,12 @@ object LaoValidator extends MessageDataContentValidator {
     * @param error
     *   the error to forward in case the channels are not equals
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
     */
   private def checkChannel(rpcMessage: JsonRpcRequest, chan1: Channel, chan2: Channel, error: PipelineError): GraphMessage = {
     if (chan1 == chan2)
-      Left(rpcMessage)
+      Right(rpcMessage)
     else
-      Right(error)
+      Left(error)
   }
 }

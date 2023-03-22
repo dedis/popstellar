@@ -58,13 +58,13 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
           duration
         )
 
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(
           ex.code,
           s"handleAddChirp failed : ${ex.message}",
           rpcMessage.getId
         ))
 
-      case _ => Right(PipelineError(
+      case _ => Left(PipelineError(
           ErrorCodes.SERVER_ERROR.id,
           unknownAnswerDatabase,
           rpcMessage.getId
@@ -90,13 +90,13 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
           duration
         )
 
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(
           ex.code,
           s"handleDeleteChirp failed : ${ex.message}",
           rpcMessage.getId
         ))
 
-      case _ => Right(PipelineError(
+      case _ => Left(PipelineError(
           ErrorCodes.SERVER_ERROR.id,
           unknownAnswerDatabase,
           rpcMessage.getId
@@ -106,11 +106,11 @@ class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   // no need for a case handleNotifyAddChirp or handleNotifyDeleteChirp for now, since the server never receives any in theory, but could be needed later
   def handleNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle NotifyAddChirp messages", rpcMessage.id))
+    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle NotifyAddChirp messages", rpcMessage.id))
   }
 
   def handleNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle NotifyDeleteChirp messages", rpcMessage.id))
+    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle NotifyDeleteChirp messages", rpcMessage.id))
   }
 
   def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
