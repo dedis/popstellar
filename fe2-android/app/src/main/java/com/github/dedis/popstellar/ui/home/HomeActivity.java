@@ -117,6 +117,10 @@ public class HomeActivity extends AppCompatActivity {
     if (!(fragment instanceof SeedWalletFragment)) {
       setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new);
     }
+    // Move the application to background if back button is pressed on home
+    if (fragment instanceof HomeFragment) {
+      moveTaskToBack(true);
+    }
   }
 
   private void handleWalletSettings() {

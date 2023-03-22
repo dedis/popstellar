@@ -3,11 +3,9 @@ package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 import android.app.AlertDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -22,7 +20,6 @@ import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
-import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
@@ -383,18 +380,7 @@ public class ElectionFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    requireActivity()
-        .getOnBackPressedDispatcher()
-        .addCallback(
-            getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-              @Override
-              public void handleOnBackPressed() {
-                Log.d(TAG, "Back pressed, going to event list");
-                LaoActivity.setCurrentFragment(
-                    getParentFragmentManager(), R.id.fragment_event_list, EventListFragment::new);
-              }
-            });
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 
   public static void openFragment(FragmentManager manager, String electionId) {

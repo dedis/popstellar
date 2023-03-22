@@ -9,7 +9,6 @@ import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -344,18 +343,7 @@ public class RollCallFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    requireActivity()
-        .getOnBackPressedDispatcher()
-        .addCallback(
-            getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-              @Override
-              public void handleOnBackPressed() {
-                Log.d(TAG, "Back pressed, going to event list");
-                LaoActivity.setCurrentFragment(
-                    getParentFragmentManager(), R.id.fragment_event_list, EventListFragment::new);
-              }
-            });
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 
   /**

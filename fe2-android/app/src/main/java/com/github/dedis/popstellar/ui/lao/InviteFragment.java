@@ -76,6 +76,8 @@ public class InviteFragment extends Fragment {
       ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
       return null;
     }
+
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -84,5 +86,9 @@ public class InviteFragment extends Fragment {
     super.onResume();
     laoViewModel.setPageTitle(R.string.invite);
     laoViewModel.setIsTab(true);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

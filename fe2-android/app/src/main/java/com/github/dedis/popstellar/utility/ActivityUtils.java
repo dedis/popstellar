@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.util.Log;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.*;
 
@@ -134,6 +135,26 @@ public class ActivityUtils {
             + " subscriptions "
             + subscriptions);
     return storePersistentData(context, new PersistentData(seed, serverAddress, subscriptions));
+  }
+
+  /**
+   * The following function creates an object of type OnBackPressedCallback given a specific
+   * callback function. This avoids code repetitions.
+   *
+   * @param tag String tag for the log
+   * @param message String message for the log
+   * @param callback Runnable function to use * as callback
+   * @return the callback object
+   */
+  public static OnBackPressedCallback buildBackButtonCallback(
+      String tag, String message, Runnable callback) {
+    return new OnBackPressedCallback(true) {
+      @Override
+      public void handleOnBackPressed() {
+        Log.d(tag, "Back pressed, going to " + message);
+        callback.run();
+      }
+    };
   }
 
   /**

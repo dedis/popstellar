@@ -3,10 +3,8 @@ package com.github.dedis.popstellar.ui.lao.digitalcash;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -104,15 +102,13 @@ public class DigitalCashReceiveFragment extends Fragment {
         .getOnBackPressedDispatcher()
         .addCallback(
             getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-              @Override
-              public void handleOnBackPressed() {
-                Log.d(TAG, "Back pressed, going to digital cash home");
-                LaoActivity.setCurrentFragment(
-                    getParentFragmentManager(),
-                    R.id.fragment_digital_cash_home,
-                    DigitalCashHomeFragment::new);
-              }
-            });
+            ActivityUtils.buildBackButtonCallback(
+                TAG,
+                "digital cash home",
+                () ->
+                    LaoActivity.setCurrentFragment(
+                        getParentFragmentManager(),
+                        R.id.fragment_digital_cash_home,
+                        DigitalCashHomeFragment::new)));
   }
 }

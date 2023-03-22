@@ -4,13 +4,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.*;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -66,12 +66,9 @@ public class DigitalCashHistoryFragment extends Fragment {
     LaoActivity.addBackNavigationCallback(
         requireActivity(),
         getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            Log.d(TAG, "Back pressed, going to digital cash home");
-            DigitalCashHomeFragment.openFragment(getParentFragmentManager());
-          }
-        });
+        ActivityUtils.buildBackButtonCallback(
+            TAG,
+            "digital cash home",
+            () -> DigitalCashHomeFragment.openFragment(getParentFragmentManager())));
   }
 }

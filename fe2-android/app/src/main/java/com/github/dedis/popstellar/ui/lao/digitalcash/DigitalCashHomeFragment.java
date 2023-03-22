@@ -53,6 +53,7 @@ public class DigitalCashHomeFragment extends Fragment {
     subscribeToRole();
     setupReceiveButton();
     setupSendButton();
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -126,5 +127,9 @@ public class DigitalCashHomeFragment extends Fragment {
   public static void openFragment(FragmentManager manager) {
     LaoActivity.setCurrentFragment(
         manager, R.id.fragment_digital_cash_home, DigitalCashHomeFragment::new);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }
