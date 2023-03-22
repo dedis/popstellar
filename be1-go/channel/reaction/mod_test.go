@@ -500,7 +500,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 
 	// Publishing the reaction with some delay in a go routine
 	go func() {
-		time.Sleep(time.Millisecond * 10)
+		time.Sleep(time.Millisecond * 50)
 		err := cha.Publish(pub, socket.ClientSocket{})
 		require.NoError(t, err)
 	}()
@@ -536,7 +536,6 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 
 	deleteReactionID := m.MessageID
 
-	time.Sleep(1 * time.Millisecond)
 	err = json.Unmarshal(bufCreatePub, &pub2)
 	require.NoError(t, err)
 
@@ -545,7 +544,7 @@ func Test_DeleteReaction_Out_of_Order(t *testing.T) {
 
 	// Wait before storing a new message to be able to have a unique
 	// timestamp for each message
-	time.Sleep(9 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 
 	// If there is no error, the delete request has been properly received
 	require.NoError(t, cha.Publish(pub2, socket.ClientSocket{}))
