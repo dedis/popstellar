@@ -155,9 +155,8 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-  const thumbsPressed = (isThumbsUp: boolean) => {
-    const reactionToAdd = isThumbsUp ? '👍' : '👎';
-    const reactionToRemove = isThumbsUp ? '👎' : '👍';
+  const thumbsPressed = (reactionToAdd: '👍' | '👎') => {
+    const reactionToRemove = reactionToAdd === '👍' ? '👎' : '👍';
 
     if (reacted[reactionToAdd]) {
       deleteReaction(reacted[reactionToAdd].id);
@@ -171,9 +170,6 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
 
     addReaction(reactionToAdd);
   };
-
-  const thumbsUpPressed = () => thumbsPressed(true);
-  const thumbsDownPressed = () => thumbsPressed(false);
 
   return (
     <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
@@ -222,7 +218,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="thumbsUp"
                   testID="thumbs-up"
-                  onPress={thumbsUpPressed}
+                  onPress={() => thumbsPressed('👍')}
                   disabled={reactionsDisabled['👍']}
                   size="small"
                   buttonStyle={reacted['👍'] ? 'primary' : 'secondary'}
@@ -236,7 +232,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="thumbsDown"
                   testID="thumbs-down"
-                  onPress={thumbsDownPressed}
+                  onPress={() => thumbsPressed('👎')}
                   disabled={reactionsDisabled['👎']}
                   size="small"
                   buttonStyle={reacted['👎'] ? 'primary' : 'secondary'}
