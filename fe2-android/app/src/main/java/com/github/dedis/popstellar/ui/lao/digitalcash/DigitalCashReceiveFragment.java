@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.*;
 
@@ -78,7 +79,10 @@ public class DigitalCashReceiveFragment extends Fragment {
                   PublicKey publicKey = token.getPublicKey();
                   binding.digitalCashReceiveAddress.setText(publicKey.getEncoded());
                   PopTokenData tokenData = new PopTokenData(token.getPublicKey());
-                  Bitmap myBitmap = QRCode.from(gson.toJson(tokenData)).bitmap();
+                  Bitmap myBitmap =
+                      QRCode.from(gson.toJson(tokenData))
+                          .withColor(ActivityUtils.getQRCodeColor(getActivity()), Color.TRANSPARENT)
+                          .bitmap();
                   binding.digitalCashReceiveQr.setImageBitmap(myBitmap);
                 },
                 error ->

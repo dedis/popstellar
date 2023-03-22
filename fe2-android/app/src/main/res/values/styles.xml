@@ -1,19 +1,28 @@
 <resources>
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-    <item name="materialButtonStyle">@style/Widget.App.Button</item>
+  <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <item name="materialButtonStyle">@style/button_style</item>
     <!-- Customize your theme here. -->
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccent</item>
   </style>
 
-  <style name="button_style">
-    <item name="android:backgroundTint">@color/colorPrimary</item>
+  <!-- Button styles -->
+  <style name="button_style" parent="Widget.MaterialComponents.Button">
+    <item name="android:padding">@dimen/padding_standard</item>
+    <item name="android:textSize">@dimen/standard_button_text_size</item>
     <item name="android:textColor">@color/white</item>
   </style>
 
+  <style name="button_style_outlined" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon">
+    <item name="android:padding">@dimen/padding_standard</item>
+    <item name="android:textSize">@dimen/standard_button_text_size</item>
+    <item name="strokeColor">@color/colorPrimary</item>
+  </style>
+
+  <!-- Text styles -->
   <style name="title_style">
     <item name="android:textSize">@dimen/size_title</item>
     <item name="android:layout_margin">@dimen/margin_text</item>
@@ -26,7 +35,7 @@
     <item name="android:textSize">@dimen/size_section_title</item>
     <item name="android:layout_marginHorizontal">@dimen/margin_text</item>
     <item name="android:textStyle">bold</item>
-    <item name="android:textColor">@color/gray</item>
+    <item name="android:textColor">@color/textOnBackground</item>
     <item name="android:gravity">center</item>
   </style>
 
@@ -38,11 +47,26 @@
     <item name="android:gravity">center</item>
   </style>
 
+  <style name="seed_text_style">
+    <item name="android:textSize">@dimen/size_body</item>
+    <item name="android:layout_marginHorizontal">@dimen/margin_text_small</item>
+    <item name="android:layout_marginTop">@dimen/margin_text_small</item>
+    <item name="android:textStyle">italic</item>
+    <item name="android:textColor">@color/colorPrimary</item>
+    <item name="android:gravity">center</item>
+  </style>
+
+  <style name="clickable_text_style">
+    <item name="android:textSize">@dimen/qr_scanner_manual_texts_size</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textColor">@color/colorPrimary</item>
+    <item name="android:clickable">true</item>
+  </style>
+
   <style name="card_view_title">
     <item name="android:textSize">@dimen/size_section_title</item>
     <item name="android:layout_marginHorizontal">22dp</item>
     <item name="android:textStyle">bold</item>
-    <item name="android:textColor">@color/black</item>
     <item name="android:gravity">center</item>
   </style>
 
@@ -76,7 +100,7 @@
   <style name="element_title">
     <item name="android:textSize">@dimen/history_card_title</item>
     <item name="android:layout_marginStart">16dp</item>
-    <item name="android:textColor">@color/black</item>
+    <item name="android:textColor">@color/textOnBackground</item>
     <item name="android:alpha">0.6</item>
     <item name="android:textStyle">bold</item>
   </style>
@@ -88,18 +112,6 @@
     <item name="android:textStyle">bold</item>
   </style>
 
-  <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
-    <item name="android:paddingLeft">8dp</item>
-    <item name="android:paddingRight">8dp</item>
-    <item name="android:paddingTop">8dp</item>
-    <item name="android:paddingBottom">8dp</item>
-    <item name="android:insetTop">5dp</item>
-    <item name="android:insetBottom">0dp</item>
-    <item name="android:minWidth">80dp</item>
-    <item name="android:minHeight">0dp</item>
-    <item name="android:textSize">16sp</item>
-  </style>
-
   <style name="text_high_emphasis">
     <item name="android:textColor">@color/black</item>
     <item name="android:alpha">0.87</item>
@@ -107,9 +119,45 @@
   </style>
 
   <style name="text_medium_emphasis">
-    <item name="android:textColor">@color/black</item>
-    <item name="android:alpha">0.60</item>
+    <item name="android:textColor">@color/textOnBackground</item>
     <item name="android:textStyle">normal</item>
+  </style>
+
+  <!-- Toolbar styles -->
+  <style name="toolbar_style" parent="Widget.MaterialComponents.Toolbar">
+    <item name="android:textColorPrimary">@color/white</item>
+    <item name="android:background">@color/colorPrimary</item>
+    <item name="android:textColorSecondary">@color/white</item>
+    <item name="android:gravity">center_vertical</item>
+    <item name="titleTextAppearance">@color/white</item>
+    <item name="popupTheme">@style/popupmenu_style</item>
+    <item name="android:textColor">@drawable/menu_items</item>
+  </style>
+
+  <style name="popupmenu_style" parent="Widget.MaterialComponents.PopupMenu">
+    <item name="android:textColor">?attr/colorOnSurface</item>
+    <item name="android:background">?attr/colorBackgroundFloating</item>
+  </style>
+
+  <!-- CardView styles -->
+  <style name="wallet_setup_cardView" parent="Widget.MaterialComponents.CardView">
+    <item name="strokeColor">@color/gray</item>
+    <item name="strokeWidth">1dp</item>
+    <item name="cardCornerRadius">@dimen/corner_radius_standard</item>
+    <item name="android:padding">@dimen/padding_standard</item>
+  </style>
+
+  <style name="add_lao_participant_cardView" parent="Widget.MaterialComponents.CardView">
+    <item name="android:backgroundTint">@color/background_gray</item>
+    <item name="cardCornerRadius">@dimen/corner_radius_standard</item>
+  </style>
+
+  <!-- Text field styles -->
+  <style name="text_field_standard" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    <item name="boxCornerRadiusBottomEnd">@dimen/corner_radius_standard</item>
+    <item name="boxCornerRadiusBottomStart">@dimen/corner_radius_standard</item>
+    <item name="boxCornerRadiusTopEnd">@dimen/corner_radius_standard</item>
+    <item name="boxCornerRadiusTopStart">@dimen/corner_radius_standard</item>
   </style>
 
 </resources>

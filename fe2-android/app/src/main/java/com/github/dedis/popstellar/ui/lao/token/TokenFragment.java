@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.ui.lao.token;
 
 import android.content.*;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
@@ -20,6 +21,7 @@ import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.ui.home.LaoCreateFragment;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
@@ -78,7 +80,10 @@ public class TokenFragment extends Fragment {
       PoPToken poPToken = keyManager.getValidPoPToken(laoViewModel.getLaoId(), rollCall);
       PopTokenData data = new PopTokenData(poPToken.getPublicKey());
       Bitmap bitmap =
-          QRCode.from(gson.toJson(data)).withSize(Constants.QR_SIDE, Constants.QR_SIDE).bitmap();
+          QRCode.from(gson.toJson(data))
+              .withSize(Constants.QR_SIDE, Constants.QR_SIDE)
+              .withColor(ActivityUtils.getQRCodeColor(getActivity()), Color.TRANSPARENT)
+              .bitmap();
       binding.tokenQrCode.setImageBitmap(bitmap);
       binding.tokenTextView.setText(poPToken.getPublicKey().getEncoded());
 

@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.utility;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.util.Log;
 
 import androidx.activity.OnBackPressedCallback;
@@ -153,5 +155,18 @@ public class ActivityUtils {
         callback.run();
       }
     };
+    
+  /**
+   * Gets the color of the QR code based on the night mode configuration of the current activity.
+   *
+   * @return the color of the QR code (either Color.WHITE or Color.BLACK)
+   */
+  public static int getQRCodeColor(Context context) {
+    Configuration configuration = context.getResources().getConfiguration();
+    int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+      return Color.WHITE;
+    }
+    return Color.BLACK;
   }
 }
