@@ -1,7 +1,7 @@
 import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
@@ -12,6 +12,7 @@ import {
   DropdownSelector,
   Input,
   PoPTextButton,
+  RemovableTextInput,
   TextInputList,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
@@ -22,7 +23,7 @@ import { AppParamList } from 'core/navigation/typing/AppParamList';
 import { LaoEventsParamList } from 'core/navigation/typing/LaoEventsParamList';
 import { LaoParamList } from 'core/navigation/typing/LaoParamList';
 import { EventTags, Hash, Timestamp } from 'core/objects';
-import { Typography } from 'core/styles';
+import { Spacing, Typography } from 'core/styles';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -53,7 +54,7 @@ type NewQuestion = Omit<QuestionState, 'id' | 'write_in'>;
 const EMPTY_QUESTION: NewQuestion = {
   question: '',
   voting_method: VOTING_METHOD,
-  ballot_options: [''],
+  ballot_options: [],
 };
 
 const MIN_BALLOT_OPTIONS = 2;
@@ -63,14 +64,29 @@ const MIN_BALLOT_OPTIONS = 2;
  */
 
 /**
- * Checks whether a given newly created question is invalid
+ * Checks whether a question with some ballots options is invalid
  * @param question The question to check
  */
-const isQuestionInvalid = (question: NewQuestion): boolean =>
-  question.question === '' || question.ballot_options.length < MIN_BALLOT_OPTIONS;
+const isNonEmptyQuestionInvalid = (question: NewQuestion): boolean =>
+  question.question === '' && question.ballot_options.length !== 0;
 
 /**
- * Checks whether a question title is not unique within a list of questions
+ * Checks whether the question list is invalid
+ * @param questions The question list to check
+ */
+const areQuestionsValid = (questions: NewQuestion[]): boolean => questions.length > 0;
+
+/**
+ * Checks whether the ballot options of the question are invalid
+ * @param question the question that contains the ballot options to check
+ */
+const areBallotOptionsInvalid = (question: NewQuestion): boolean =>
+  question.question !== '' &&
+  (new Set(question.ballot_options).size !== question.ballot_options.length ||
+    question.ballot_options.length < MIN_BALLOT_OPTIONS);
+
+/**
+ * Checks whether a question title is not unique withcreateEin a list of questions
  * @param questions The list of questions
  */
 const haveQuestionsSameTitle = (questions: NewQuestion[]): boolean => {
@@ -83,7 +99,7 @@ const haveQuestionsSameTitle = (questions: NewQuestion[]): boolean => {
 /**
  * Creates a new election based on the given values and returns the related request promise
  * @param laoId The id of the lao in which the new election should be created
- * @param version The version of the lection that should be created
+ * @param version The version of the election that should be created
  * @param electionName The name of the election
  * @param questions The questions created in the UI
  * @param startTime The start time of the election
@@ -107,9 +123,9 @@ const createElection = (
   // compute the id for all questions and add the write_in property
   const questionsWithId = questions.map((item) =>
     Question.fromState({
-      id: Hash.fromArray(EventTags.QUESTION, electionId, item.question.trim()).toString(),
-      question: item.question.trim(),
-      ballot_options: item.ballot_options.map((s) => s.trim()),
+      id: Hash.fromArray(EventTags.QUESTION, electionId, item.question).toString(),
+      question: item.question,
+      ballot_options: item.ballot_options,
       voting_method: item.voting_method,
       // for now the write_in feature is disabled (2022-03-16, Tyratox)
       write_in: false,
@@ -150,15 +166,39 @@ const CreateElection = () => {
   const [modalEndIsVisible, setModalEndIsVisible] = useState<boolean>(false);
   const [modalStartIsVisible, setModalStartIsVisible] = useState<boolean>(false);
 
+  // Automatically compute the trimmed questions
+  const trimmedQuestions = useMemo(() => {
+    return questions
+      .map((item) => {
+        return {
+          ...item,
+          question: item.question.trim(),
+          ballot_options: item.ballot_options
+            .map((val) => val.trim())
+            .filter((value) => value !== ''),
+        };
+      })
+      .filter((question) => question.question !== '');
+  }, [questions]);
+
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const confirmButtonEnabled: boolean =
     isConnected === true &&
     electionName.trim() !== '' &&
-    !questions.some(isQuestionInvalid) &&
-    haveQuestionsSameTitle(questions);
+    areQuestionsValid(trimmedQuestions) && // Checks there are enough valid questions to open an election
+    !questions.some(isNonEmptyQuestionInvalid) && // Checks that there are no questions that will be silently removed
+    !trimmedQuestions.some(areBallotOptionsInvalid) &&
+    haveQuestionsSameTitle(trimmedQuestions);
 
   const onCreateElection = () => {
-    createElection(currentLao.id, version, electionName, questions, startTime, endTime)
+    createElection(
+      currentLao.id,
+      version,
+      electionName.trim(),
+      trimmedQuestions,
+      startTime,
+      endTime,
+    )
       .then(() => {
         navigation.navigate(STRINGS.navigation_lao_events_home);
       })
@@ -222,7 +262,7 @@ const CreateElection = () => {
       </Text>
       <Input
         value={electionName}
-        onChange={(s) => setElectionName(s.trimStart())}
+        onChange={(s) => setElectionName(s)}
         placeholder={STRINGS.election_create_name_placeholder}
         testID="election_name_selector"
       />
@@ -252,31 +292,34 @@ const CreateElection = () => {
       {questions.map((value, idx) => (
         // FIXME: Do not use index in key
         // eslint-disable-next-line react/no-array-index-key
-        <View key={idx.toString()}>
+        <View key={idx.toString()} style={{ marginBottom: Spacing.x2 }}>
           <Text style={[Typography.paragraph, Typography.important]}>
             {STRINGS.election_create_question} {idx + 1}
           </Text>
-          <Input
+          <RemovableTextInput
             value={value.question}
             testID={`question_selector_${idx}`}
             onChange={(text: string) =>
               setQuestions((prev) =>
                 prev.map((item, id) =>
-                  id === idx && text.trimStart() !== ''
+                  id === idx
                     ? {
                         ...item,
-                        question: text.trimStart(),
+                        question: text,
                       }
                     : item,
                 ),
               )
             }
+            onRemove={() => setQuestions((prev) => prev.filter((_, id) => id !== idx))}
+            isRemovable={questions.length > 1}
             placeholder={STRINGS.election_create_question_placeholder}
           />
           <Text style={[Typography.paragraph, Typography.important]}>
             {STRINGS.election_create_ballot_options}
           </Text>
           <TextInputList
+            values={value.ballot_options}
             placeholder={STRINGS.election_create_option_placeholder}
             onChange={(ballot_options: string[]) =>
               setQuestions((prev) =>
@@ -284,7 +327,7 @@ const CreateElection = () => {
                   id === idx
                     ? {
                         ...item,
-                        ballot_options: ballot_options.filter((option) => option.trim() !== ''),
+                        ballot_options: ballot_options.filter((option) => option !== ''),
                       }
                     : item,
                 ),
@@ -292,6 +335,19 @@ const CreateElection = () => {
             }
             testID={`question_${idx}_ballots`}
           />
+          {isNonEmptyQuestionInvalid(value) && (
+            <Text style={[Typography.paragraph, Typography.error]}>
+              {STRINGS.election_create_empty_question_with_ballot}
+            </Text>
+          )}
+          {areBallotOptionsInvalid(value) && (
+            <Text style={[Typography.paragraph, Typography.error]}>
+              {STRINGS.election_create_invalid_questions.replace(
+                '{}',
+                MIN_BALLOT_OPTIONS.toString(),
+              )}
+            </Text>
+          )}
         </View>
       ))}
 
@@ -309,11 +365,13 @@ const CreateElection = () => {
           {STRINGS.event_creation_name_not_empty}
         </Text>
       )}
-      {questions.some(isQuestionInvalid) && (
+
+      {!areQuestionsValid(trimmedQuestions) && (
         <Text style={[Typography.paragraph, Typography.error]}>
-          {STRINGS.election_create_invalid_questions.replace('{}', MIN_BALLOT_OPTIONS.toString())}
+          {STRINGS.election_create_min_one_question}
         </Text>
       )}
+
       {!haveQuestionsSameTitle(questions) && (
         <Text style={[Typography.paragraph, Typography.error]}>
           {STRINGS.election_create_same_questions}
