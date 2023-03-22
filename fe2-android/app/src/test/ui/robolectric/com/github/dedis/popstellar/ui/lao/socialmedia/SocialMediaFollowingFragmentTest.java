@@ -1,10 +1,8 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -24,10 +22,12 @@ import org.mockito.junit.MockitoTestRule;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
-import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
+import static com.github.dedis.popstellar.testutils.pages.lao.socialmedia.SocialMediaFollowingPageObject.getRootView;
+import static com.github.dedis.popstellar.testutils.pages.lao.socialmedia.SocialMediaFollowingPageObject.getSocialMediaHomeFragment;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -70,8 +70,8 @@ public class SocialMediaFollowingFragmentTest {
 
   @Test
   public void testBackButtonBehaviour() {
-    onView(isRoot()).perform(ViewActions.pressBack());
+    getRootView().perform(pressBack());
     // Check current fragment displayed is home fragment
-    onView(withId(R.id.fragment_social_media_home)).check(matches(isDisplayed()));
+    getSocialMediaHomeFragment().check(matches(isDisplayed()));
   }
 }
