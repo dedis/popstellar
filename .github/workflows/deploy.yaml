@@ -227,7 +227,12 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: ${{ env.base_folder }}/app/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
-                 ${{ env.base_folder }}/app/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
+
+      - name: APK Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ env.base_folder }}/app/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
 
       # Use rsync to deploy the release apk on the website
       - name: Sync
