@@ -14,34 +14,28 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginHorizontal="@dimen/margin_text"
-      android:layout_marginTop="50dp"
+      android:layout_marginTop="@dimen/margin_top_title"
       android:text="@string/text_seed_wallet"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
       android:id="@+id/wallet_seed_initialize_card_view"
-      app:cardBackgroundColor="@color/white"
+      style="@style/wallet_setup_cardView"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      app:cardCornerRadius="@dimen/corner_radius_standard"
-      app:strokeColor="@color/gray"
-      app:strokeWidth="@dimen/stroke_width"
       android:layout_marginTop="@dimen/margin_top_title"
-      android:padding="@dimen/padding_standard"
       app:layout_constraintTop_toBottomOf="@id/wallet_seed_warning_text">
 
       <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:backgroundTint="@color/white">
+        android:layout_height="match_parent">
 
         <TextView
           android:id="@+id/wallet_seed_title"
           style="@style/element_title"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:backgroundTint="@color/white"
           android:layout_marginTop="@dimen/margin_text_small"
           android:text="@string/wallet_seed_title"
           app:layout_constraintStart_toStartOf="parent"
@@ -49,24 +43,18 @@
 
         <TextView
           android:id="@+id/seed_wallet_text"
+          style="@style/seed_text_style"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginHorizontal="@dimen/margin_text_horizontal"
-          android:gravity="center"
-          android:textColor="@color/colorPrimary"
-          android:textSize="@dimen/size_body"
-          android:textStyle="italic"
-
+          android:layout_height="match_parent"
           app:layout_constraintTop_toBottomOf="@id/wallet_seed_title" />
 
         <Button
           android:id="@+id/button_confirm_seed"
           android:layout_width="wrap_content"
           android:layout_height="@dimen/standard_button_height"
-          android:backgroundTint="@color/colorPrimary"
           android:text="@string/initialize"
-          app:layout_constraintBottom_toBottomOf="parent"
           android:layout_marginVertical="16dp"
+          app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/seed_wallet_text" />
@@ -75,32 +63,24 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
+      style="@style/wallet_setup_cardView"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/margin_text"
-      app:strokeColor="@color/gray"
-      app:strokeWidth="1dp"
-      app:cardCornerRadius="@dimen/corner_radius_standard"
-      android:padding="@dimen/padding_standard"
       app:layout_constraintTop_toBottomOf="@id/wallet_seed_initialize_card_view">
 
       <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:backgroundTint="@color/white">
+        android:layout_height="match_parent">
 
         <com.google.android.material.textfield.TextInputLayout
           android:id="@+id/import_seed_entry"
-          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+          style="@style/text_field_standard"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginHorizontal="@dimen/margin_text_horizontal"
           android:hint="@string/stored_seed"
           app:endIconMode="clear_text"
-          app:boxCornerRadiusBottomEnd="@dimen/corner_radius_standard"
-          app:boxCornerRadiusBottomStart="@dimen/corner_radius_standard"
-          app:boxCornerRadiusTopEnd="@dimen/corner_radius_standard"
-          app:boxCornerRadiusTopStart="@dimen/corner_radius_standard"
           android:layout_marginTop="@dimen/margin_text_small"
           app:layout_constraintTop_toTopOf="parent">
 
@@ -114,13 +94,13 @@
 
         <Button
           android:id="@+id/import_seed_button"
+          android:enabled="false"
           android:layout_width="@dimen/standard_button_width"
           android:layout_height="@dimen/standard_button_height"
           android:layout_marginVertical="@dimen/margin_button"
           android:text="@string/import_seed"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
-          android:enabled="false"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@id/import_seed_entry" />
 

@@ -11,8 +11,6 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
 
-
-
       <include
         android:id="@+id/election_setup_date"
         layout="@layout/event_enter_date_layout"
@@ -27,7 +25,7 @@
         android:id="@+id/add_question"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Theme.AppCompat"
+        android:textAllCaps="false"
         android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
         android:text="@string/add_question_button_text"
         app:layout_constraintEnd_toEndOf="parent"

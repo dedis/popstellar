@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +29,7 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -290,7 +292,11 @@ public class RollCallFragment extends Fragment {
     Log.d(TAG, "key displayed is " + pk);
 
     PopTokenData data = new PopTokenData(new PublicKey(pk));
-    Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
+
+    Bitmap myBitmap =
+        QRCode.from(gson.toJson(data))
+            .withColor(ActivityUtils.getQRCodeColor(getActivity()), Color.TRANSPARENT)
+            .bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
     binding.rollCallPkQrCode.setVisibility(

@@ -10,6 +10,7 @@
     android:layout_height="@dimen/home_card_view_height"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
+    android:backgroundTint="?attr/colorBackgroundFloating"
     app:cardElevation="@dimen/card_view_elevation"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintTop_toTopOf="parent">
@@ -23,9 +24,9 @@
         style="@style/card_view_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="?attr/colorOnSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:textColor="@color/colorPrimaryDark"
         app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
