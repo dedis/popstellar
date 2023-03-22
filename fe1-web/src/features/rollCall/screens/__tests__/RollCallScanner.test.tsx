@@ -246,7 +246,6 @@ describe('RollCallOpened', () => {
       expect(mockGenerateToken).toHaveBeenCalled();
     });
 
-    // TODO: fix this test (why still 0?)
     expect(getByText(`${STRINGS.roll_call_scan_counter}: 2`)).toBeTruthy();
   });
 });
