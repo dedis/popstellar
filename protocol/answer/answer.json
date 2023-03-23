@@ -49,7 +49,7 @@
                             }
                         }
                     },
-                    "required" : ["messages_by_channel_id"]
+                    "required": ["messages_by_channel_id"]
                 },
                 {
                     "type": "object",
