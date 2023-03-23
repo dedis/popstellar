@@ -1,8 +1,9 @@
 {
     "jsonrpc": "2.0",
-    "method": "getMessagesById",
+    "id": 999,
+    "method": "heartbeat",
     "params": {
-        "maps": [
+        "message_ids_by_channel_id": [
             {
                 "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw="
             },

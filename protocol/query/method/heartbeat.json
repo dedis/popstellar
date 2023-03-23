@@ -14,7 +14,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "maps": {
+                "message_ids_by_channel_id": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -25,7 +25,7 @@
                                 "type": "string",
                                 "pattern": "^/root(/[^/]+)*$"
                             },
-                            "ids": {
+                            "message_ids": {
                                 "description": "[Array] of message_ids corresponding to that channel",
                                 "type": "array",
                                 "items": {
@@ -33,11 +33,11 @@
                                 }
                             }
                         },
-                        "required": ["channel", "ids"]
+                        "required": ["channel", "message_ids"]
                     }
                 }
             },
-            "required": ["maps"]
+            "required": ["message_ids_by_channel_id"]
         },
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"

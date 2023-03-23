@@ -13,7 +13,7 @@ const method_publish_schema = require("../query/method/publish.json");
 const method_catchup_schema = require("../query/method/catchup.json");
 
 const method_heartbeat_schema = require("../query/method/heartbeat.json");
-const method_getMessagesById_schema = require("../query/method/getMessagesById.json");
+const method_getMessagesById_schema = require("../query/method/get_messages_by_id.json");
 
 
 const message_data_schema = require("../query/method/message/data/data.json");
@@ -68,7 +68,7 @@ ajv.addSchema([
     method_catchup_schema,
 
     method_heartbeat_schema,
-    method_getMessagesById_schema,
+    method_get_messages_by_id_schema,
 
 
     message_data_schema,

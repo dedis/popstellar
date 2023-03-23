@@ -1,13 +1,14 @@
 {
     "jsonrpc": "2.0",
-    "method": "getMessagesById",
+    "id": 999,
+    "method": "get_messages_by_id",
     "params": {
-        "maps": [
+        "message_ids_by_channel_id": [
             {
-                "ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
+                "message_ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
             },
             {
-                "ids": [
+                "message_ids": [
                     "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
                     "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
                 ]

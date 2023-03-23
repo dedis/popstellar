@@ -695,14 +695,14 @@ RPC
     "id": 5,
     "method": "heartbeat",
     "params": {
-        "maps": [
+        "message_ids_by_channel_id": [
             {
                 "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=",
-                "ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
+                "message_ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
             },
             {
                 "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=",
-                "ids": [
+                "message_ids": [
                     "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
                     "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
                 ]
@@ -713,7 +713,7 @@ RPC
 
 ```
 
-The heartbeat can then trigger the internal logic of a server: when it receives messages ids that it has not already delivered it will execute a getMessagesById RPC. However, that is just a consequence of that specific condition, normally the heartbeat is just a way to communicate to others that the sender is alive, thus it doesn't expect any answer back.
+The heartbeat can then trigger the internal logic of a server: when it receives message ids that it has not already delivered it will execute a `get_messages_by_id` RPC. However, this is just a consequence of that specific condition, normally the heartbeat is just a way to communicate to others that the sender is alive, thus it doesn't expect any answer back.
 
 <details>
 <summary>
@@ -739,7 +739,7 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "maps": {
+                "message_ids_by_channel_id": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -750,7 +750,7 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
                                 "type": "string",
                                 "pattern": "^/root(/[^/]+)*$"
                             },
-                            "ids": {
+                            "message_ids": {
                                 "description": "[Array] of message_ids corresponding to that channel",
                                 "type": "array",
                                 "items": {
@@ -758,11 +758,11 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
                                 }
                             }
                         },
-                        "required": ["channel", "ids"]
+                        "required": ["channel", "message_ids"]
                     }
                 }
             },
-            "required": ["maps"]
+            "required": ["message_ids_by_channel_id"]
         },
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"
@@ -780,28 +780,30 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
 
 ## Retrieving messages from server using ids 
 
-🧭 **RPC Message** > **Query** > **getMessagesById**
+🧭 **RPC Message** > **Query** > **Get messages by their ids**
   
-This call is generally triggered upon the reception of a hearbeat message, in case the server hasn't already delivered some of the messages contained in such heartbeat but it could also used in other contexts. The purpose is to request missed messages so far.
+The purpose of this RPC is to request missed messages so far.
+
+This call is generally triggered upon the reception of a hearbeat message, in case the server hasn't already received some of the messages contained in such heartbeat but it could also used in other contexts. 
 
 RPC 
 
 ```json5
-// ../protocol/examples/query/getMessagesById/getMessagesById.json
+// ../protocol/examples/query/get_messages_by_id/get_messages_by_id.json
 
 {
     "jsonrpc": "2.0",
     "id": 6,
-    "method": "getMessagesById",
+    "method": "get_messages_by_id",
     "params": {
-        "maps": [
+        "message_ids_by_channel_id": [
             {
                 "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=",
-                "ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
+                "message_ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
             },
             {
                 "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=",
-                "ids": [
+                "message_ids": [
                     "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
                     "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
                 ]
@@ -815,13 +817,13 @@ RPC
 Response (in case of success)
 
 ```json5
-// ../protocol/examples/answer/getMessagesById_ans.json
+// ../protocol/examples/answer/get_messages_by_id_ans.json
 
 {
     "jsonrpc": "2.0",
     "id": 6,
     "result": {
-        "maps": [
+        "messages_by_channel_id": [
             {
                 "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=",
                 "messages": []
@@ -842,25 +844,25 @@ Response (in case of success)
 </summary>
   
 ```json5
-// ../protocol/query/method/getMessagesById.json
+// ../protocol/query/method/get_messages_by_id.json
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/getMessagesById.json",
-    "description": "GetMessagesById message",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/get_messages_by_id.json",
+    "description": "Request messages by their ids",
     "type": "object",
     "additionalProperties": false,
     "properties": {
         "method": {
             "description": "[String] operation to be performed by the query",
-            "const": "getMessagesById"
+            "const": "get_messages_by_id"
         },
         "params": {
             "description": "[Array] of objects containing each a channel and the list of ids from that channel",
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "maps": {
+                "message_ids_by_channel_id": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -871,7 +873,7 @@ Response (in case of success)
                                 "type": "string",
                                 "pattern": "^/root(/[^/]+)*$"
                             },
-                            "ids": {
+                            "message_ids": {
                                 "description": "[Array] of message_ids corresponding to that channel",
                                 "type": "array",
                                 "items": {
@@ -879,11 +881,11 @@ Response (in case of success)
                                 }
                             }
                         },
-                        "required": ["channel", "ids"]
+                        "required": ["channel", "message_ids"]
                     }
                 }
             },
-            "required": ["maps"]
+            "required": ["message_ids_by_channel_id"]
         },
 
         "jsonrpc": {
