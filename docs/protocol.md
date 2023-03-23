@@ -183,7 +183,7 @@ and its arguments (`params`).
           "$ref": "method/heartbeat.json"
         },
         {
-          "$ref": "method/getMessagesById.json"
+          "$ref": "method/get_messages_by_id.json"
         }
     ],
 
@@ -912,7 +912,7 @@ valid messages:
 
 * `0`-valued answers (i.e., no error, no return value)
 * catchup answers, which contain a list of messages
-* getMessagesById answers which contain the mapping: channel_id -> list of messages, empty mapping to ack a Heartbeat
+* get_messages_by_id answers which contain the mapping: channel_id -> list of messages
 * error-valued answers, further detailed in the next section.
   
 <details>
