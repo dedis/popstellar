@@ -745,7 +745,7 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
             "$comment": "Defined by the parent, but needed here for the validation"
         }
     },
-    "required": ["method", "params", "id", "jsonrpc"]
+    "required": ["method", "params", "jsonrpc"]
 }
 
 ```
