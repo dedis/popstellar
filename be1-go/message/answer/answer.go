@@ -2,9 +2,8 @@ package answer
 
 import (
 	"encoding/json"
-	message "popstellar/message"
-
 	"golang.org/x/xerrors"
+	message "popstellar/message"
 )
 
 // Answer defines the JSON RPC answer message
@@ -16,10 +15,14 @@ type Answer struct {
 	Error  *Error  `json:"error,omitempty"`
 }
 
-// Result can be either a 0 int or a slice of messages
+// Result can be either a 0 int, a slice of messages or an array of MessageIdsByChannelId objects
 type Result struct {
-	isEmpty bool
-	data    []json.RawMessage
+	isEmpty           bool
+	data              []json.RawMessage
+	MessagesByChannel []struct {
+		Channel  string            `json:"channel"`
+		Messages []json.RawMessage `json:"messages"`
+	}
 }
 
 // UnmarshalJSON implements json.Unmarshaler
@@ -48,3 +51,5 @@ func (r Result) IsEmpty() bool {
 func (r *Result) GetData() []json.RawMessage {
 	return r.data
 }
+
+//@TODO add new get functions

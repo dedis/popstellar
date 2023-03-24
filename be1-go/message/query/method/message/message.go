@@ -38,3 +38,9 @@ type WitnessSignature struct {
 	Witness   string `json:"witness"`
 	Signature string `json:"signature"`
 }
+
+// MessageIdsByChannelId defines a JSON RPC MessageIdsByChannelId object
+type MessageIdsByChannelId struct {
+	Channel string  `json:"channel"`
+	Ids     *string `json:"ids"`
+}
