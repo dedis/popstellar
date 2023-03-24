@@ -756,7 +756,7 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
 
 🧭 **RPC Message** > **Query** > **Get messages by their ids**
   
-The purpose of this RPC is to request missed messages so far.
+The purpose of this RPC is to selectively retrieve multiple messages by their ID. This allows the caller to only retrieve the messages it doesn't already have.
 
 A server will typically make this call upon the reception of a hearbeat message, in case the server hasn't already received some of the messages contained in such heartbeat but it could also be used in other contexts. 
 
