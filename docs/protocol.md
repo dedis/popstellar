@@ -683,7 +683,7 @@ A server sends a heartbeat to its peers in order to attest that:
 - it is alive
 - it received a certain set of messages
 
-Heartbeat are to be sent based on channel activity and time intervals.  
+Heartbeat are to be sent based on channel activity and time intervals. The initial implementation will only rely on fixed time intervals.
 
 RPC 
 
@@ -692,7 +692,6 @@ RPC
 
 {
     "jsonrpc": "2.0",
-    "id": 5,
     "method": "heartbeat",
     "params": {
         "message_ids_by_channel_id": [
@@ -767,10 +766,6 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"
         },
-
-        "id": {
-            "type": "integer"
-        }
     },
     "required": ["method", "params", "id", "jsonrpc"]
 }
