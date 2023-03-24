@@ -9,7 +9,7 @@ const (
 	MethodCatchUp         = "catchup"
 	MethodBroadcast       = "broadcast"
 	MethodHeartbeat       = "heartbeat"
-	MethodGetMessagesById = "getMessagesById"
+	MethodGetMessagesById = "get_messages_by_id"
 )
 
 // Base defines all the common attributes for a Query RPC message
