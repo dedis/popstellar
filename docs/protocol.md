@@ -737,7 +737,8 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "minItems": 1
                 }
             }
         },
