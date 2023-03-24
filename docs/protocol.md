@@ -694,18 +694,12 @@ RPC
     "jsonrpc": "2.0",
     "method": "heartbeat",
     "params": {
-        "message_ids_by_channel_id": [
-            {
-                "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=",
-                "message_ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
-            },
-            {
-                "channel": "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=",
-                "message_ids": [
-                    "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
-                    "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
-                ]
-            }
+        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
+            "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="
+        ],
+        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=": [
+            "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+            "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
         ]
     }
 }
@@ -734,38 +728,22 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
             "const": "heartbeat"
         },
         "params": {
-            "description": "[Array] of objects containing each a channel and the list of ids from that channel",
+            "description": "[Object] containing key-value pairs where each key is a channel and the value is a list of message_ids from that channel",
             "type": "object",
             "additionalProperties": false,
-            "properties": {
-                "message_ids_by_channel_id": {
+            "patternProperties": {
+                "^/root(/[^/]+)*$": {
+                    "description": "[Array] of message_ids corresponding to the channel",
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                            "channel": {
-                                "description": "[String] name of the channel",
-                                "type": "string",
-                                "pattern": "^/root(/[^/]+)*$"
-                            },
-                            "message_ids": {
-                                "description": "[Array] of message_ids corresponding to that channel",
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "required": ["channel", "message_ids"]
+                        "type": "string"
                     }
                 }
-            },
-            "required": ["message_ids_by_channel_id"]
+            }
         },
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"
-        },
+        }
     },
     "required": ["method", "params", "id", "jsonrpc"]
 }

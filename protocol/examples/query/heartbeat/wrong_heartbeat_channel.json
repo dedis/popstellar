@@ -1,20 +1,14 @@
 {
     "jsonrpc": "2.0",
-    "id": 999,
     "method": "heartbeat",
     "params": {
-        "message_ids_by_channel_id": [
-            {
-                "channel": "/XXX",
-                "message_ids": ["DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="]
-            },
-            {
-                "channel": "/XXX",
-                "message_ids": [
-                    "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
-                    "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
-                ]
-            }
+        "/XXX": [
+            "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="
+        ],
+        "/XXX": [
+            "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+            "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
         ]
     }
 }
+
