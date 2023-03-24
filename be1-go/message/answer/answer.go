@@ -19,10 +19,12 @@ type Answer struct {
 type Result struct {
 	isEmpty           bool
 	data              []json.RawMessage
-	MessagesByChannel []struct {
-		Channel  string            `json:"channel"`
-		Messages []json.RawMessage `json:"messages"`
-	}
+	MessagesByChannel []MessagesFromChannel
+}
+
+type MessagesFromChannel struct {
+	Channel  string            `json:"channel"`
+	Messages []json.RawMessage `json:"messages"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler
@@ -52,4 +54,7 @@ func (r *Result) GetData() []json.RawMessage {
 	return r.data
 }
 
-//@TODO add new get functions
+// GetMessagesByChannel returns the array of objects mapping a channel with its messages.
+func (r *Result) GetMessagesByChannel() []MessagesFromChannel {
+	return r.MessagesByChannel
+}
