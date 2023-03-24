@@ -681,9 +681,9 @@ Response (in case of success)
 A server sends a heartbeat to its peers in order to attest that: 
 
 - it is alive
-- it received a certain set of messages
+- it received and sent a certain set of messages
 
-Heartbeat are to be sent based on channel activity and time intervals. The initial implementation will only rely on fixed time intervals.
+Heartbeat messages are to be sent based on channel activity and time intervals. The initial implementation will only rely on fixed time intervals. The set of messages represents the internal state of the server (messages that the server has received and sent).
 
 RPC 
 
