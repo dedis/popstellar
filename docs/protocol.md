@@ -758,7 +758,7 @@ The heartbeat can then trigger the internal logic of a server: when it receives 
   
 The purpose of this RPC is to request missed messages so far.
 
-This call is generally triggered upon the reception of a hearbeat message, in case the server hasn't already received some of the messages contained in such heartbeat but it could also used in other contexts. 
+A server will typically make this call upon the reception of a hearbeat message, in case the server hasn't already received some of the messages contained in such heartbeat but it could also be used in other contexts. 
 
 RPC 
 
