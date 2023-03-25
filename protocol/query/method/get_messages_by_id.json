@@ -10,40 +10,23 @@
             "const": "get_messages_by_id"
         },
         "params": {
-            "description": "[Array] of objects containing each a channel and the list of ids from that channel",
+            "description": "[Object] containing key-value pairs where each key is a channel and the value is a list of requested message_ids from that channel",
             "type": "object",
             "additionalProperties": false,
-            "properties": {
-                "message_ids_by_channel_id": {
+            "patternProperties": {
+                "^/root(/[^/]+)*$": {
+                    "description": "[Array] of requested message_ids from that channel",
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                            "channel": {
-                                "description": "[String] name of the channel",
-                                "type": "string",
-                                "pattern": "^/root(/[^/]+)*$"
-                            },
-                            "message_ids": {
-                                "description": "[Array] of message_ids corresponding to that channel",
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "required": ["channel", "message_ids"]
-                    }
+                        "type": "string"
+                    },
+                    "minItems": 1
                 }
-            },
-            "required": ["message_ids_by_channel_id"]
+            }
         },
-
         "jsonrpc": {
             "$comment": "Defined by the parent, but needed here for the validation"
         },
-
         "id": {
             "type": "integer"
         }
