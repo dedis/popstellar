@@ -242,7 +242,7 @@ object LaoValidator extends MessageDataContentValidator {
     * @param error
     *   the error to forward in case the channels are not equals
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   private def checkChannel(rpcMessage: JsonRpcRequest, chan1: Channel, chan2: Channel, error: PipelineError): GraphMessage = {
     if (chan1 == chan2)
