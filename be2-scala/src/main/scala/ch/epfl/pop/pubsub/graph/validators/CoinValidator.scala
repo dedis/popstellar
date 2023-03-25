@@ -42,7 +42,7 @@ case object CoinValidator extends MessageDataContentValidator {
     * @param error
     *   the error to forward in case the transaction signatures are not valid.
     * @return
-    *   : GraphMessage passes the rpcMessages to Left if successful, else right with pipeline error
+    *   : GraphMessage passes the rpcMessages to Right if successful, else Left with pipeline error
     */
   private def checkTransactionSignatures(rpcMessage: JsonRpcRequest, transaction: Transaction, error: PipelineError): GraphMessage = {
     if (transaction.checkSignatures())
@@ -59,7 +59,7 @@ case object CoinValidator extends MessageDataContentValidator {
     * @param validationError
     *   the error to forward in case the transaction's sum is not valid.
     * @return
-    *   GraphMessage passes the rpcMessages to Left if successful, else right with pipeline error
+    *   GraphMessage passes the rpcMessages to Right if successful, else Left with pipeline error
     */
   private def checkSumOutputs(rpcMessage: JsonRpcRequest, transaction: Transaction, validationError: String => PipelineError): GraphMessage = {
     transaction.sumOutputs() match {

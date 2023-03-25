@@ -330,7 +330,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case the election has ended
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful else Right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
   private def checkElectionNotEnded(
       rpcMessage: JsonRpcRequest,
@@ -356,7 +356,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case of invalid vote(s)
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful else Right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
   private def checkValidateVoteElection(
       rpcMessage: JsonRpcRequest,
@@ -398,7 +398,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case the election hasn't started
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful else Right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
   private def checkElectionStarted(
       rpcMessage: JsonRpcRequest,
@@ -422,7 +422,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case of invalid id
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful else Right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
   private def checkQuestionId(
       rpcMessage: JsonRpcRequest,
@@ -452,7 +452,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case of incoherence between expectedHash and the computed hash from castVotes
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful else Right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
   private def checkVoteResults(rpcMessage: JsonRpcRequest, channel: Channel, expectedHash: Hash, error: PipelineError): GraphMessage = {
     val castVotes = Await.result(channel.getLastVotes(dbActorRef), duration)

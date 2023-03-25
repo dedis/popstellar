@@ -36,7 +36,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     * @param checks
     *   checks which return a GraphMessage
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   def runChecks(checks: GraphMessage*): GraphMessage = {
     if (checks.head.isRight && !checks.tail.isEmpty)
@@ -169,7 +169,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     * @param error
     *   the error to forward in case the senderPK doesn't match the expected one
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   def checkMsgSenderKey(
       rpcMessage: JsonRpcRequest,

@@ -103,7 +103,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param rpcMessage
     *   rpc message to validate
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   def validateOpenRollCall(rpcMessage: JsonRpcRequest, validatorName: String = "OpenRollCall"): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, validatorName, rpcMessage.id)
@@ -150,7 +150,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case the opens id does not correspond to the expected id
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   private def validateOpens(rpcMessage: JsonRpcRequest, laoId: Hash, opens: Hash, error: PipelineError): GraphMessage = {
     val rollCallData: Option[RollCallData] = getRollCallData(laoId)
@@ -169,7 +169,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param rpcMessage
     *   rpc message to validate
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     validateOpenRollCall(rpcMessage, "ReopenRollCall")
@@ -227,7 +227,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case the closes id does not correspond to the expected id
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   private def validateCloses(rpcMessage: JsonRpcRequest, laoId: Hash, closes: Hash, error: PipelineError): GraphMessage = {
     val rollCallData: Option[RollCallData] = getRollCallData(laoId)
@@ -252,7 +252,7 @@ sealed class RollCallValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case the size is not as expected
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   private def checkAttendeeSize(rpcMessage: JsonRpcRequest, size: Int, expectedSize: Int, error: PipelineError): GraphMessage = {
     if (size == expectedSize)

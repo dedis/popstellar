@@ -81,7 +81,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     * @param error
     *   the error to forward in case the id is not the same as the expected id
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   def checkId(rpcMessage: JsonRpcRequest, expectedId: Hash, id: Hash, error: PipelineError): GraphMessage = {
     if (expectedId == id)
@@ -99,7 +99,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     * @param error
     *   the error to forward in case the witnesses are not all distinct
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   def checkWitnesses(rpcMessage: JsonRpcRequest, witnesses: List[PublicKey], error: PipelineError): GraphMessage = {
     if (validateWitnesses(witnesses))
@@ -119,7 +119,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     * @param error
     *   the error to forward in case the name doesn't match the pattern
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   def checkStringPattern(rpcMessage: JsonRpcRequest, str: String, pattern: Regex, error: PipelineError): GraphMessage = {
     if (pattern.matches(str))
@@ -141,7 +141,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     * @param error
     *   the error to throw if the chirp do not exist
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Left if successful Left with pipeline error
     */
   def checkIdExistence(rpcMessage: JsonRpcRequest, id: Option[Hash], channel: Channel, dbActor: AskableActorRef, error: PipelineError): GraphMessage = {
     id match {
@@ -168,7 +168,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     * @param error
     *   the error to forward in case of invalid modifications
     * @return
-    *   GraphMessage: passes the rpcMessages to Right if successful right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   def checkWitnessesSignatures(
       rpcMessage: JsonRpcRequest,
