@@ -23,33 +23,8 @@
                     "$comment": "Return value for a `catchup` request"
                 },
                 {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                        "messages_by_channel_id": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": false,
-                                "properties": {
-                                    "channel": {
-                                        "description": "[String] name of the channel",
-                                        "type": "string",
-                                        "pattern": "^/root(/[^/]+)*$"
-                                    },
-                                    "messages": {
-                                        "description": "[Array] of messages corresponding to that channel",
-                                        "type": "array",
-                                        "items": {
-                                            "$ref": "../query/method/message/message.json"
-                                        }
-                                    }
-                                },
-                                "required": ["channel", "messages"]
-                            }
-                        }
-                    },
-                    "required": ["messages_by_channel_id"]
+                    "$ref": "messages_by_channel.json",
+                    "$comment": "Return value for a `get_messages_by_id` request"
                 },
                 {
                     "type": "object",

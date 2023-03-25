@@ -2,6 +2,7 @@ const Ajv = require("ajv");
 const main_schema = require("../jsonRPC.json");
 const answer_schema = require("../answer/answer.json");
 const error_schema = require("../answer/error.json");
+const result_messages_by_channel_schema = require("../answer/result/messages_by_channel.json");
 
 const query_schema = require("../query/query.json");
 const query_message_schema = require("../query/method/message/message.json");
@@ -58,6 +59,7 @@ ajv.addSchema([
     main_schema,
     answer_schema,
     error_schema,
+    result_messages_by_channel_schema,
     query_schema,
     query_message_schema,
     method_subscribe_schema,
