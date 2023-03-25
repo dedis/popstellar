@@ -141,7 +141,7 @@ trait MessageDataContentValidator extends ContentValidator with AskPatternConsta
     * @param error
     *   the error to throw if the chirp do not exist
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful Left with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful Left with pipeline error
     */
   def checkIdExistence(rpcMessage: JsonRpcRequest, id: Option[Hash], channel: Channel, dbActor: AskableActorRef, error: PipelineError): GraphMessage = {
     id match {
