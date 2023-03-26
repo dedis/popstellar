@@ -958,7 +958,7 @@ See the full specification
                     "$comment": "Return value for a `catchup` request"
                 },
                 {
-                    "$ref": "../answer/result/messages_by_channel.json",
+                    "$ref": "messages_by_channel.json",
                     "$comment": "Return value for a `get_messages_by_id` request"
                 },
                 {
