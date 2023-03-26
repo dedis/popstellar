@@ -161,6 +161,7 @@ public class DigitalCashSendFragment extends Fragment {
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
+    // Display by default the first item in the list of tokens
     if (myArray != null && myArray.size() > 0) {
       Objects.requireNonNull(binding.digitalCashSendSpinner.getEditText()).setText(myArray.get(0));
     }
@@ -175,7 +176,8 @@ public class DigitalCashSendFragment extends Fragment {
   private void filterMembers(List<String> members) {
     try {
       members.remove(digitalCashViewModel.getValidToken().getPublicKey().getEncoded());
-    } catch (KeyException ignored) {
+    } catch (KeyException e) {
+      Log.e(TAG, getResources().getString(R.string.error_retrieve_own_token));
     }
   }
 

@@ -170,17 +170,13 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, openRollCall)
-        .doOnComplete(
-            () ->
-                openRollCall(
-                    openRollCall.getUpdateId(), laoView, rollCall, rollCall.getAttendees()));
+        .doOnComplete(() -> openRollCall(openRollCall.getUpdateId(), laoView, rollCall));
   }
 
-  private void openRollCall(
-      String currentId, LaoView laoView, RollCall rollCall, Set<PublicKey> oldAttendees) {
+  private void openRollCall(String currentId, LaoView laoView, RollCall rollCall) {
     Log.d(TAG, "opening rollcall with id " + currentId);
     attendees.addAll(rollCall.getAttendees());
-    attendees.addAll(oldAttendees);
+
     try {
       attendees.add(keyManager.getPoPToken(laoView, rollCall).getPublicKey());
     } catch (KeyException e) {

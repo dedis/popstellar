@@ -135,8 +135,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
         .show();
   }
 
-  private void printError(String errorMsg) {
-    Toast.makeText(getApplication().getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
+  private void printError(String error) {
+    Toast.makeText(getApplication().getApplicationContext(), error, Toast.LENGTH_LONG).show();
   }
 
   /*
@@ -284,25 +284,26 @@ public class DigitalCashViewModel extends AndroidViewModel {
   public boolean canPerformTransaction(
       String currentAmount, String currentPublicKeySelected, int radioGroup) {
     if (currentAmount.isEmpty()) {
+      // ask the user to fill the amount box
       requireToPutAnAmount();
     }
     int parsedAmount = 0;
     try {
       parsedAmount = Integer.parseInt(currentAmount);
     } catch (NumberFormatException e) {
+      // Overflow in the amount (no characters or negative numbers can be inserted)
       printError("Amount inserted is too large");
       return false;
     }
     if (parsedAmount <= MIN_LAO_COIN) {
-      printError("Please enter a strictly positive amount");
+      printError("Please enter an amount greater than 0");
       return false;
     } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
       // create in View Model a function that toast : please enter key
       requireToPutLAOMember();
       return false;
-    } else {
-      return true;
     }
+    return true;
   }
 
   private void processNotCoinbaseTransaction(

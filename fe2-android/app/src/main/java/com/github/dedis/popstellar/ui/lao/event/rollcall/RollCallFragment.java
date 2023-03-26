@@ -238,7 +238,7 @@ public class RollCallFragment extends Fragment {
    */
   private void setupListOfAttendees() {
     boolean isOrganizer = laoViewModel.isOrganizer();
-    // Set the visibility of the list
+    // Set the visibility of the list:
     // It is set to visible only if the roll call is closed
     // Or also if the user is the organizer and roll call is opened
     // Otherwise do not display the list
@@ -249,7 +249,8 @@ public class RollCallFragment extends Fragment {
 
     List<String> attendeesList = null;
     if (isOrganizer && rollCall.isOpen()) {
-      // Show the list of scanned attendees if the roll call is opened and the user is the organizer
+      // Show the list of all time scanned attendees if the roll call is opened
+      // and the user is the organizer
       attendeesList =
           rollCallViewModel.getAttendees().stream()
               .map(PublicKey::getEncoded)
@@ -267,6 +268,7 @@ public class RollCallFragment extends Fragment {
       attendeesList =
           rollCall.getAttendees().stream().map(PublicKey::getEncoded).collect(Collectors.toList());
     }
+
     if (attendeesList != null) {
       binding.listViewAttendees.setAdapter(
           new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, attendeesList));
@@ -304,12 +306,12 @@ public class RollCallFragment extends Fragment {
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
     binding.rollCallPkQrCode.setVisibility((rollCall.isOpen()) ? View.VISIBLE : View.INVISIBLE);
 
+    // Don't lose time generating the QR code if it's not visible
     if (laoViewModel.isOrganizer() || rollCall.isClosed()) {
       return;
     }
 
     PopTokenData data = new PopTokenData(new PublicKey(pk));
-
     Bitmap myBitmap =
         QRCode.from(gson.toJson(data))
             .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
