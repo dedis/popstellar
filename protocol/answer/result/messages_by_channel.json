@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/answer/messages_by_channel.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/answer/result/messages_by_channel.json",
     "title": "Messages by channel",
     "description": "An object containing key-value pairs where each key is a channel, and the value is a list of messages corresponding to that channel",
     "type": "object",
@@ -10,7 +10,7 @@
             "description": "[Array] of messages corresponding to that channel",
             "type": "array",
             "items": {
-                "$ref": "../query/method/message/message.json"
+                "$ref": "../../query/method/message/message.json"
             },
             "minItems": 1
         }
