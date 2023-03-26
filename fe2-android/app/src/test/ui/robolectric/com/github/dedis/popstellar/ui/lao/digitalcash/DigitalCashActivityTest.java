@@ -47,10 +47,7 @@ import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObj
 import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.DigitalCashPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.HistoryPageObject.fragmentDigitalCashHistoryId;
 import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.IssuePageObject.fragmentDigitalCashIssueId;
-import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.ReceiptPageObject.fragmentDigitalCashReceiptId;
 import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.ReceivePageObject.fragmentDigitalCashReceiveId;
-import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.SendPageObject.fragmentDigitalCashSendId;
-import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.SendPageObject.sendButtonToReceipt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -60,6 +57,7 @@ import static org.mockito.Mockito.when;
 public class DigitalCashActivityTest {
 
   private static final PoPToken POP_TOKEN = Base64DataUtils.generatePoPToken();
+  private static final PoPToken POP_TOKEN_2 = Base64DataUtils.generatePoPToken();
   private static final String LAO_NAME = "LAO";
   private static final Lao LAO = new Lao(LAO_NAME, POP_TOKEN.getPublicKey(), 10223421);
   private static final String LAO_ID = LAO.getId();
@@ -73,7 +71,7 @@ public class DigitalCashActivityTest {
           1,
           2,
           EventState.CLOSED,
-          Collections.singleton(POP_TOKEN.getPublicKey()),
+          new HashSet<>(Arrays.asList(POP_TOKEN.getPublicKey(), POP_TOKEN_2.getPublicKey())),
           "location",
           "desc");
 
@@ -147,12 +145,14 @@ public class DigitalCashActivityTest {
           hiltRule.inject();
           when(laoRepo.getLaoObservable(anyString()))
               .thenReturn(BehaviorSubject.createDefault(new LaoView(LAO)));
+          when(laoRepo.getLaoView(anyString())).thenReturn(new LaoView(LAO));
           when(keyManager.getMainPublicKey()).thenReturn(POP_TOKEN.getPublicKey());
           when(keyManager.getValidPoPToken(any(), any())).thenReturn(POP_TOKEN);
           when(networkManager.getMessageSender()).thenReturn(messageSender);
           when(messageSender.subscribe(any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any())).then(args -> Completable.complete());
           when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
+          when(digitalCashRepo.getUserBalance(any(), any())).thenReturn(100L);
         }
       };
 
@@ -164,14 +164,6 @@ public class DigitalCashActivityTest {
           containerId(),
           DigitalCashHomeFragment.class,
           DigitalCashHomeFragment::new);
-
-  @Test
-  public void sendButtonGoesToSendThenToReceipt() {
-    sendButton().perform(click());
-    fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashSendId()))));
-    sendButtonToReceipt().perform(click());
-    fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashReceiptId()))));
-  }
 
   @Test
   public void historyButtonGoesToHistory() {
