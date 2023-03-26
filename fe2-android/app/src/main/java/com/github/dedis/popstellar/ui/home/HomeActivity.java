@@ -3,12 +3,14 @@ package com.github.dedis.popstellar.ui.home;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.*;
 import androidx.lifecycle.ViewModelProvider;
@@ -66,6 +68,12 @@ public class HomeActivity extends AppCompatActivity {
           .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
           .show();
     }
+  }
+
+  @Override
+  public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    ActivityUtils.handleRotation(newConfig, getSupportFragmentManager());
   }
 
   private void handleTopAppBar() {

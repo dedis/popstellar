@@ -2,14 +2,14 @@ package com.github.dedis.popstellar.ui.lao;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
+import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.*;
@@ -90,6 +90,12 @@ public class LaoActivity extends AppCompatActivity {
       Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
     }
+  }
+
+  @Override
+  public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    ActivityUtils.handleRotation(newConfig, getSupportFragmentManager());
   }
 
   private void observeRoles() {
