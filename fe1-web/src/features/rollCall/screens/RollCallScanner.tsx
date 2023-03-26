@@ -30,17 +30,23 @@ import { makeRollCallSelector } from '../reducer';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'space-between',
     marginVertical: Spacing.contentSpacing,
   } as ViewStyle,
   qrCode: {
+    alignItems: 'center',
     opacity: 0.5,
   } as ViewStyle,
   counter: {
+    alignItems: 'flex-start',
+    alignSelf: 'flex-start',
     marginTop: Spacing.x1,
+    backgroundColor: Color.contrast,
+    padding: Spacing.x05,
   } as ViewStyle,
-  enterManually: {} as ViewStyle,
+  enterManually: {
+    alignItems: 'center',
+  } as ViewStyle,
 });
 
 type NavigationProps = CompositeScreenProps<
@@ -190,7 +196,7 @@ const RollCallOpened = () => {
                 </Text>
               </PoPTouchableOpacity>
             </View>
-            <View style={[QrCodeScannerUIElementContainer, styles.counter]}>
+            <View style={styles.counter}>
               <Text style={[Typography.base, Typography.accent]}>
                 {/* -1 because we don't count the organizer */}
                 {STRINGS.roll_call_scan_counter}: {attendeePopTokens.current.length - 1}
