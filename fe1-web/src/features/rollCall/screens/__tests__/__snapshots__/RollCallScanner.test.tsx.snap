@@ -414,7 +414,6 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                             <View
                               style={
                                 {
-                                  "alignItems": "center",
                                   "flex": 1,
                                   "justifyContent": "space-between",
                                   "marginVertical": 16,
@@ -425,6 +424,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                               <View
                                 style={
                                   {
+                                    "alignItems": "center",
                                     "opacity": 0.5,
                                   }
                                 }
@@ -474,7 +474,11 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                 </RNSVGSvgView>
                               </View>
                               <View
-                                style={{}}
+                                style={
+                                  {
+                                    "alignItems": "center",
+                                  }
+                                }
                               >
                                 <View
                                   style={
@@ -549,16 +553,13 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                 </View>
                                 <View
                                   style={
-                                    [
-                                      {
-                                        "backgroundColor": "#fff",
-                                        "borderRadius": 8,
-                                        "padding": 8,
-                                      },
-                                      {
-                                        "marginTop": 16,
-                                      },
-                                    ]
+                                    {
+                                      "alignItems": "flex-start",
+                                      "alignSelf": "flex-start",
+                                      "backgroundColor": "#fff",
+                                      "marginTop": 16,
+                                      "padding": 8,
+                                    }
                                   }
                                 >
                                   <Text
@@ -1083,7 +1084,6 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                             <View
                               style={
                                 {
-                                  "alignItems": "center",
                                   "flex": 1,
                                   "justifyContent": "space-between",
                                   "marginVertical": 16,
@@ -1094,6 +1094,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                               <View
                                 style={
                                   {
+                                    "alignItems": "center",
                                     "opacity": 0.5,
                                   }
                                 }
@@ -1143,7 +1144,11 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                 </RNSVGSvgView>
                               </View>
                               <View
-                                style={{}}
+                                style={
+                                  {
+                                    "alignItems": "center",
+                                  }
+                                }
                               >
                                 <View
                                   style={
@@ -1218,16 +1223,13 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                 </View>
                                 <View
                                   style={
-                                    [
-                                      {
-                                        "backgroundColor": "#fff",
-                                        "borderRadius": 8,
-                                        "padding": 8,
-                                      },
-                                      {
-                                        "marginTop": 16,
-                                      },
-                                    ]
+                                    {
+                                      "alignItems": "flex-start",
+                                      "alignSelf": "flex-start",
+                                      "backgroundColor": "#fff",
+                                      "marginTop": 16,
+                                      "padding": 8,
+                                    }
                                   }
                                 >
                                   <Text
