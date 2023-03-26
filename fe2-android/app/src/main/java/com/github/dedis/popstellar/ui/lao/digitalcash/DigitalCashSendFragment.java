@@ -145,6 +145,10 @@ public class DigitalCashSendFragment extends Fragment {
     List<String> myArray;
     try {
       myArray = digitalCashViewModel.getAttendeesFromTheRollCallList();
+      // Filter my pop token out: sending money to myself has no sense
+      if (myArray != null) {
+        filterMembers(myArray);
+      }
     } catch (NoRollCallException e) {
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
@@ -157,9 +161,22 @@ public class DigitalCashSendFragment extends Fragment {
     }
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-    Objects.requireNonNull(binding.digitalCashSendSpinner.getEditText())
-        .setText(digitalCashViewModel.getValidToken().getPublicKey().getEncoded());
+    if (myArray != null && myArray.size() > 0) {
+      Objects.requireNonNull(binding.digitalCashSendSpinner.getEditText()).setText(myArray.get(0));
+    }
     binding.digitalCashSendSpinnerTv.setAdapter(adapter);
+  }
+
+  /**
+   * Removes from the list of LAO members my pop token
+   *
+   * @param members list of tokens of the lao members
+   */
+  private void filterMembers(List<String> members) {
+    try {
+      members.remove(digitalCashViewModel.getValidToken().getPublicKey().getEncoded());
+    } catch (KeyException ignored) {
+    }
   }
 
   /** Function that setup the Button */

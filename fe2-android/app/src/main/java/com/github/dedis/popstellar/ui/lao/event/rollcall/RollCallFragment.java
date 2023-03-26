@@ -301,7 +301,10 @@ public class RollCallFragment extends Fragment {
     String pk = popToken.getPublicKey().getEncoded();
     Log.d(TAG, "key displayed is " + pk);
 
-    if (laoViewModel.isOrganizer()) {
+    // Set the QR visible only if the rollcall is opened and the user isn't the organizer
+    binding.rollCallPkQrCode.setVisibility((rollCall.isOpen()) ? View.VISIBLE : View.INVISIBLE);
+
+    if (laoViewModel.isOrganizer() || rollCall.isClosed()) {
       return;
     }
 
@@ -309,11 +312,9 @@ public class RollCallFragment extends Fragment {
 
     Bitmap myBitmap =
         QRCode.from(gson.toJson(data))
-            .withColor(ActivityUtils.getQRCodeColor(requireActivity()), Color.TRANSPARENT)
+            .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
             .bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
-    // Set the QR visible only if the rollcall is opened and the user isn't the organizer
-    binding.rollCallPkQrCode.setVisibility((rollCall.isOpen()) ? View.VISIBLE : View.INVISIBLE);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {

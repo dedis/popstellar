@@ -63,7 +63,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<String>> updateReceiptAmountEvent =
       new MutableLiveData<>();
 
-
   /*
    * Dependencies for this class
    */
@@ -134,6 +133,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
             "Please select a LAOMember",
             Toast.LENGTH_LONG)
         .show();
+  }
+
+  private void printError(String errorMsg) {
+    Toast.makeText(getApplication().getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
   }
 
   /*
@@ -280,9 +283,18 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public boolean canPerformTransaction(
       String currentAmount, String currentPublicKeySelected, int radioGroup) {
-    if ((currentAmount.isEmpty()) || (Integer.parseInt(currentAmount) < MIN_LAO_COIN)) {
-      // create in View Model a function that toast : please enter amount
+    if (currentAmount.isEmpty()) {
       requireToPutAnAmount();
+    }
+    int parsedAmount = 0;
+    try {
+      parsedAmount = Integer.parseInt(currentAmount);
+    } catch (NumberFormatException e) {
+      printError("Amount inserted is too large");
+      return false;
+    }
+    if (parsedAmount <= MIN_LAO_COIN) {
+      printError("Please enter a strictly positive amount");
       return false;
     } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
       // create in View Model a function that toast : please enter key

@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -115,12 +114,7 @@ public class TokenFragment extends Fragment {
     LaoActivity.addBackNavigationCallback(
         requireActivity(),
         getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            Log.d(TAG, "Back pressed, going to token list");
-            TokenListFragment.openFragment(getParentFragmentManager());
-          }
-        });
+        ActivityUtils.buildBackButtonCallback(
+            TAG, "token list", () -> TokenListFragment.openFragment(getParentFragmentManager())));
   }
 }
