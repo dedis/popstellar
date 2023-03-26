@@ -113,7 +113,11 @@ public class RollCallFragment extends Fragment {
                   rollCallViewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
-                          () -> {},
+                          () ->
+                              LaoActivity.setCurrentFragment(
+                                  getParentFragmentManager(),
+                                  R.id.fragment_roll_call,
+                                  () -> RollCallFragment.newInstance(rollCall.getPersistentId())),
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_open_rollcall)));
@@ -246,11 +250,14 @@ public class RollCallFragment extends Fragment {
     List<String> attendeesList = null;
     if (isOrganizer && rollCall.isOpen()) {
       // Show the list of scanned attendees if the roll call is opened and the user is the organizer
-      Set<PublicKey> scanned = new HashSet<>(rollCallViewModel.getAttendees());
-      scanned.addAll(rollCall.getAttendees());
-      attendeesList = scanned.stream().map(PublicKey::getEncoded).collect(Collectors.toList());
+      attendeesList =
+          rollCallViewModel.getAttendees().stream()
+              .map(PublicKey::getEncoded)
+              .collect(Collectors.toList());
       binding.rollCallAttendeesText.setText(
-          String.format(getResources().getString(R.string.roll_call_scanned), scanned.size()));
+          String.format(
+              getResources().getString(R.string.roll_call_scanned),
+              rollCallViewModel.getAttendees().size()));
     } else if (rollCall.isClosed()) {
       // Show the list of attendees if the roll call has ended
       binding.rollCallAttendeesText.setText(
