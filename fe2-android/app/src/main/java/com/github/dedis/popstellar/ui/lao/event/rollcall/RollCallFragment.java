@@ -244,15 +244,19 @@ public class RollCallFragment extends Fragment {
     binding.listViewAttendees.setVisibility(visibility);
 
     List<String> attendeesList = null;
-    // Show the list of scanned attendees if the roll call is opened and the user is the organizer
     if (isOrganizer && rollCall.isOpen()) {
-      binding.rollCallAttendeesText.setText(R.string.roll_call_scanned);
-      attendeesList =
-          rollCallViewModel.getAttendees().stream()
-              .map(PublicKey::getEncoded)
-              .collect(Collectors.toList());
-    } else if (rollCall.isClosed()) { // Show the list of attendees if the roll call has ended
-      binding.rollCallAttendeesText.setText(R.string.roll_call_attendees);
+      // Show the list of scanned attendees if the roll call is opened and the user is the organizer
+      Set<PublicKey> scanned = new HashSet<>(rollCallViewModel.getAttendees());
+      scanned.addAll(rollCall.getAttendees());
+      attendeesList = scanned.stream().map(PublicKey::getEncoded).collect(Collectors.toList());
+      binding.rollCallAttendeesText.setText(
+          String.format(getResources().getString(R.string.roll_call_scanned), scanned.size()));
+    } else if (rollCall.isClosed()) {
+      // Show the list of attendees if the roll call has ended
+      binding.rollCallAttendeesText.setText(
+          String.format(
+              getResources().getString(R.string.roll_call_attendees),
+              rollCall.getAttendees().size()));
       attendeesList =
           rollCall.getAttendees().stream().map(PublicKey::getEncoded).collect(Collectors.toList());
     }
@@ -290,16 +294,19 @@ public class RollCallFragment extends Fragment {
     String pk = popToken.getPublicKey().getEncoded();
     Log.d(TAG, "key displayed is " + pk);
 
+    if (laoViewModel.isOrganizer()) {
+      return;
+    }
+
     PopTokenData data = new PopTokenData(new PublicKey(pk));
 
     Bitmap myBitmap =
         QRCode.from(gson.toJson(data))
-            .withColor(ActivityUtils.getQRCodeColor(getActivity()), Color.TRANSPARENT)
+            .withColor(ActivityUtils.getQRCodeColor(requireActivity()), Color.TRANSPARENT)
             .bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
-    binding.rollCallPkQrCode.setVisibility(
-        (!laoViewModel.isOrganizer() && rollCall.isOpen()) ? View.VISIBLE : View.INVISIBLE);
+    binding.rollCallPkQrCode.setVisibility((rollCall.isOpen()) ? View.VISIBLE : View.INVISIBLE);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {

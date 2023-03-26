@@ -112,8 +112,8 @@
   <string name="roll_call_setup_title">Roll Call Setup</string>
   <string name="roll_call_title">Roll Call</string>
   <string name="add_attendee_title">Add Attendee</string>
-  <string name="roll_call_attendees">Attendees</string>
-  <string name="roll_call_scanned">Scanned tokens</string>
+  <string name="roll_call_attendees">Attendees : %1$d</string>
+  <string name="roll_call_scanned">Scanned tokens : %1$d</string>
 
   <!-- Election Event -->
   <string name="election_title">Election</string>

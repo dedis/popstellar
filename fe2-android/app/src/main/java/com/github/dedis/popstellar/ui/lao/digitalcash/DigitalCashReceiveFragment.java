@@ -81,7 +81,8 @@ public class DigitalCashReceiveFragment extends Fragment {
                   PopTokenData tokenData = new PopTokenData(token.getPublicKey());
                   Bitmap myBitmap =
                       QRCode.from(gson.toJson(tokenData))
-                          .withColor(ActivityUtils.getQRCodeColor(getActivity()), Color.TRANSPARENT)
+                          .withColor(
+                              ActivityUtils.getQRCodeColor(requireActivity()), Color.TRANSPARENT)
                           .bitmap();
                   binding.digitalCashReceiveQr.setImageBitmap(myBitmap);
                 },
