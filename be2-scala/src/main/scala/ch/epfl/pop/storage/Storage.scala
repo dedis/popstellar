@@ -28,4 +28,10 @@ trait Storage {
   /** Cleanup after use
     */
   def close(): Unit
+
+  /**
+   *
+   * @return the set of all channel keys in the DB.
+   */
+  def getAllKeys(): Set[String]
 }

@@ -4,12 +4,13 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import ch.epfl.pop.decentralized.HbActor._
 import ch.epfl.pop.model.objects.{Base64Data, Hash}
+import ch.epfl.pop.pubsub.AskPatternConstants
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 
 import scala.collection.mutable.HashMap
-class HbActorSuite extends TestKit(ActorSystem("HbActorSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll{
+class HbActorSuite extends TestKit(ActorSystem("HbActorSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll with AskPatternConstants{
 
   final val CHANNEL1_NAME: String = "/root/wex/lao1Id"
   final val CHANNEL2_NAME: String = "/root/wex/lao2Id"

@@ -12,7 +12,6 @@ import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor._
-
 import scala.util.{Failure, Success, Try}
 
 final case class DbActor(
@@ -346,6 +345,11 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case GetSetOfChannels() =>
+      log.info(s"Actor $self (db) received a GetSetOfChannels request")
+      val setOfChannels = storage.getAllKeys()
+      sender() ! DbActorGetSetOfChannelsAck((setOfChannels))
+
     case m =>
       log.info(s"Actor $self (db) received an unknown message")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
@@ -506,6 +510,11 @@ object DbActor {
     */
   final case class CreateRollCallData(laoId: Hash, updateId: Hash, state: ActionType) extends Event
 
+  /**
+   * Request to get the set of channels in the DB.
+   */
+  final case class GetSetOfChannels() extends Event
+
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
@@ -557,6 +566,15 @@ object DbActor {
     *   requested channel data
     */
   final case class DbActorReadRollCallDataAck(rollcallData: RollCallData) extends DbActorMessage
+
+
+  /**
+   * Response for a [[GetSetOfChannels]] db request.
+   * Receiving [[DbActorGetSetOfChannelsAck]] works as an acknowledgement that the retrieving of the set of channels was successfull.
+   * @param channels
+   *  the set of channels in the DB.
+   */
+  final case class DbActorGetSetOfChannelsAck(channels : Set[String]) extends DbActorMessage
 
   /** Response for a general db actor ACK
     */

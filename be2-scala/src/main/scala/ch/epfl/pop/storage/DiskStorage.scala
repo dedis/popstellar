@@ -2,19 +2,19 @@ package ch.epfl.pop.storage
 
 import java.io.{File, IOException}
 import java.nio.charset.StandardCharsets
-
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.ErrorCodes
-import org.iq80.leveldb.impl.Iq80DBFactory.factory
+import org.iq80.leveldb.impl.Iq80DBFactory.{asString, factory}
 import org.iq80.leveldb.{DB, Options, WriteBatch}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.util.{Failure, Success, Try}
 
-class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) extends Storage {
+class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) extends Storage { // ajouter une liste de channels
 
   // create a logger for the database system
   private val logger: Logger = LoggerFactory.getLogger("DbLogger")
+  private final val CHANNELS_KEY: String = "channels_key"
 
   private val options: Options = new Options()
   options.createIfMissing(true)
@@ -63,6 +63,20 @@ class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) exte
     } finally {
       batch.close()
     }
+  }
+
+  def getAllKeys(): Set[String] = {
+
+    var set: Set[String] = Set()
+    val iterator = db.iterator()
+    iterator.seekToFirst()
+
+    while (iterator.hasNext) {
+      val str = asString(iterator.next().getKey)
+      if (str.length == 50)
+        set += str
+    }
+    set
   }
 
   @throws[DbActorNAckException]
