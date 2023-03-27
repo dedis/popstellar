@@ -80,7 +80,7 @@ object HbActor {
   sealed trait HbActorMessage
 
   /**
-   * Response for a [[RetrieveHeartbeat]] request.
+   * Response for a [[RetrieveHeartBeat]] request.
    * Receiving a [[HbActorRetrieveHeartBeatAck]] means that the retrieving of the HeartbeatContent was successfull.
    * @param heartbeatContent the content of the Heartbeat the server should send.
    */
