@@ -185,6 +185,15 @@ jobs:
           distribution: "zulu"
           java-version: "11"
 
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+
+
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
@@ -196,25 +205,21 @@ jobs:
 
       # Run Build Project
       - name: Build gradle project
-        run: ./gradlew build
+        run: ./gradlew build --build-cache --parallel
 
       # Create APK Debug
       - name: Build apk debug project (APK)
         run: ./gradlew assembleDebug
-
-      # Rename the Debug APK 
-      - name: Rename APK debug
-        run: mv $(pwd)/app/build/outputs/apk/debug/app-debug.apk \ 
-          $(pwd)/app/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
-
+      
       # Create APK Release
       - name: Build apk release project (APK)
         run: ./gradlew assemble
 
-      # Rename the Release APK
+      - name: Rename APK debug
+        run: mv $(pwd)/app/build/outputs/apk/debug/app-debug.apk $(pwd)/app/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
+
       - name: Rename APK release
-        run: mv $(pwd)/app/build/outputs/apk/release/app-release-unsigned.apk \
-          $(pwd)/app/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
+        run: mv $(pwd)/app/build/outputs/apk/release/app-release-unsigned.apk $(pwd)/app/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
 
       # Upload the APKs
       - name: APK Debug
