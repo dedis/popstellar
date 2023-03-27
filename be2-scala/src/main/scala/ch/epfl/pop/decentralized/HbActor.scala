@@ -23,14 +23,12 @@ import scala.concurrent.Await
 
 final case class HbActor(
     private val dbRef : AskableActorRef
-) extends Actor {
+) extends Actor with AskPatternConstants {
 
   implicit val timeout: Timeout = 3.seconds
-  val duration : Duration = 3.seconds
-
 
   override def receive: Receive = {
-    case RetrieveHeartBeat() =>
+    case RetrieveHeartbeat() =>
       val ask = dbRef ? DbActor.GetSetOfChannels()
       val answer = Await.result(ask, duration)
       val setOfChannels: Set[String] = answer.asInstanceOf[DbActor.DbActorGetSetOfChannelsAck].channels
@@ -41,7 +39,19 @@ final case class HbActor(
         val listOfIds : List[Hash] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages.map(message => message.message_id)
         res += (channel,listOfIds)
       })
-      sender() ! HbActorRetrieveHeartBeatAck(res)
+      sender() ! HbActorRetrieveHeartbeatAck(res)
+    case CompareHeartbeat(receivedHeartbeat) =>
+      val ask = self ? RetrieveHeartbeat()
+      val answer = Await.result(ask, duration)
+      val selfHeartbeat = answer.asInstanceOf[HbActorRetrieveHeartbeatAck].heartbeatContent
+      val res : Map[String, List[Hash]] = Map()
+      receivedHeartbeat.keys.foreach(channel => {
+        if (selfHeartbeat.contains(channel)){
+           res += (channel, receivedHeartbeat.get(channel).get.filter(id => !selfHeartbeat.get(channel).get.contains(id)))
+        }
+      })
+      sender() ! HbActorCompareHeartBeatAck(res)
+
 
 
 
@@ -56,15 +66,25 @@ object HbActor {
   /**
    * Request to retrieve the Map of channels and message ids associated to these channels.
    */
-  final case class RetrieveHeartBeat() extends Event
+  final case class RetrieveHeartbeat() extends Event
+
+  /**
+   * Request to compare the received Heartbeat with the set of message ids stored in the server's DB
+   * @param receivedHeartbeat
+   *  The received Heartbeat's content.
+   */
+
+  final case class CompareHeartbeat(receivedHeartbeat : Map[String, List[Hash]]) extends Event
 
   // HbActor HbActorMessage correspond to messages the actor may emit
   sealed trait HbActorMessage
 
   /**
-   * Response for a [[RetrieveHeartBeat]] request.
-   * Receiving a [[HbActorRetrieveHeartBeatAck]] means that the retrieving of the HeartBeatContent was successfull.
-   * @param heartBeatContent the content of the HeartBeat the server should send.
+   * Response for a [[RetrieveHeartbeat]] request.
+   * Receiving a [[HbActorRetrieveHeartBeatAck]] means that the retrieving of the HeartbeatContent was successfull.
+   * @param heartbeatContent the content of the Heartbeat the server should send.
    */
-  final case class HbActorRetrieveHeartBeatAck(heartBeatContent : Map[String, List[Hash]])
+  final case class HbActorRetrieveHeartbeatAck(heartbeatContent : Map[String, List[Hash]]) extends HbActorMessage
+
+  final case class HbActorCompareHeartBeatAck(missingIds : Map[String,List[Hash]]) extends HbActorMessage
 }
