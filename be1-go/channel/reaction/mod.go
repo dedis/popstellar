@@ -272,6 +272,7 @@ func (c *Channel) verifyDeleteReactionMessage(msg message.Message, retry bool) e
 		}
 		return xerrors.Errorf("the message to be deleted was not found")
 	}
+
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
