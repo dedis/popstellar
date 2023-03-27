@@ -960,17 +960,6 @@ See the full specification
                 {
                     "$ref": "result/messages_by_channel.json",
                     "$comment": "Return value for a `get_messages_by_id` request"
-                },
-                {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                        "serverId": {
-                            "description": "[Base64String] server public key",
-                            "type": "string",
-                            "contentEncoding": "base64"
-                        }
-                    }
                 }
             ],
             "$comment": "Note: this field is absent if there is an error"
