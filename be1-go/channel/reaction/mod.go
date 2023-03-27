@@ -26,7 +26,7 @@ import (
 const (
 	msgID              = "msg id"
 	failedToDecodeData = "failed to decode message data: %v"
-	retryDelay         = 100 * time.Millisecond
+	retryDelay         = 500 * time.Millisecond
 )
 
 // Channel is used to handle reaction messages.
