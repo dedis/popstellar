@@ -74,7 +74,7 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def readElectionData(laoId : Hash, electionId: Hash): ElectionData = {
+  private def readElectionData(laoId: Hash, electionId: Hash): ElectionData = {
     Try(storage.read(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")) match {
       case Success(Some(json)) => ElectionData.buildFromJson(json)
       case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
