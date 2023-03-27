@@ -17,6 +17,7 @@ import (
 	"popstellar/validation"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
@@ -40,6 +41,10 @@ const (
 	// numWorkers denote the number of worker go-routines
 	// allowed to process requests concurrently.
 	numWorkers = 10
+
+	// heartbeatDelay represents the number of seconds
+	// between heartbeat messages
+	heartbeatDelay = 5
 )
 
 var suite = crypto.Suite
@@ -79,6 +84,10 @@ type Hub struct {
 	// rootInbox and queries are used to help servers catchup to each other
 	rootInbox inbox.Inbox
 	queries   queries
+
+	// messageIdsByChannel stores all the message ids and the corresponding channel ids
+	// to help servers
+	messageIdsByChannel map[string][]string
 }
 
 // newQueries creates a new queries struct
@@ -169,6 +178,25 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 
 // Start implements hub.Hub
 func (h *Hub) Start() {
+	go func() {
+		ticker := time.NewTicker(time.Second * heartbeatDelay)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				h.log.Info().Msg("Sending heartbeat")
+				err := h.sendHeartbeatToServers()
+				h.log.Info().Msg("Heartbeat sent")
+				if err != nil {
+					h.log.Err(err).Msg("problem sending heartbeat to servers")
+				}
+			case <-h.stop:
+				h.log.Info().Msg("stopping the hub")
+				return
+			}
+		}
+	}()
 	go func() {
 		for {
 			select {
@@ -416,6 +444,10 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	case query.MethodBroadcast:
 		handlerErr = h.handleBroadcast(socket, byteMessage)
+		//@TODO add heartbeat and getmessagesbyid
+	case query.MethodHeartbeat:
+		handlerErr = h.handleHeartbeat(socket, byteMessage)
+
 	default:
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
@@ -456,6 +488,30 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 
 }
 
+// sendHeartbeatToServers send a heartbeat message to all servers
+func (h *Hub) sendHeartbeatToServers() error {
+	h.Lock()
+	defer h.Unlock()
+
+	heartbeatMessage := method.Heartbeat{
+		Base: query.Base{},
+		Params: struct {
+			IdsByChannel map[string][]string
+		}{
+			h.messageIdsByChannel,
+		},
+	}
+
+	buf, err := json.Marshal(heartbeatMessage)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal heartbeat query: %v", err)
+	}
+
+	h.serverSockets.SendToAll(buf)
+
+	return nil
+}
+
 // broadcastToServers broadcast a message to all other known servers
 func (h *Hub) broadcastToServers(msg message.Message, channel string) (bool, error) {
 	h.Lock()
@@ -489,6 +545,8 @@ func (h *Hub) broadcastToServers(msg message.Message, channel string) (bool, err
 
 	h.serverSockets.SendToAll(buf)
 	h.hubInbox.StoreMessage(msg)
+
+	h.messageIdsByChannel[channel] = append(h.messageIdsByChannel[channel], msg.MessageID)
 
 	return false, nil
 }
