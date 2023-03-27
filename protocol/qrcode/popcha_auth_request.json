@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/qrcode/popcha_auth_request.json",
+  "title": "QRCode data for the POPcha authentication challenge",
+  "description": "Match a data contained in a qrcode encoding the popcha challenge",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "web_url": {
+      "type": "string",
+      "format": "uri-reference",
+      "pattern": "^(http|ws)s?://.*",
+      "description": "The Auth Server's URL"
+    },
+    "lao": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "description": "The id of the LAO"
+    },
+    "client_id": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "description": "The id of the client"
+    },
+    "nonce": {
+      "type": "string",
+      "contentEncoding": "base64",
+      "description": "secret nonce"
+    }
+  },
+  "required": ["web_url","lao","client_id","nonce"]
+}
