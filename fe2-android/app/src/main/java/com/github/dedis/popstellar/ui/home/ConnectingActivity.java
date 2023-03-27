@@ -17,7 +17,6 @@ import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
-import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -61,7 +60,6 @@ public class ConnectingActivity extends AppCompatActivity {
   @Override
   public void onConfigurationChanged(@NonNull Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    ActivityUtils.handleRotation(newConfig, getSupportFragmentManager());
   }
 
   private void setupConnectingText() {

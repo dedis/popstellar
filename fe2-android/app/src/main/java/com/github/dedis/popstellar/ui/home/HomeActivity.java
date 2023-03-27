@@ -73,7 +73,6 @@ public class HomeActivity extends AppCompatActivity {
   @Override
   public void onConfigurationChanged(@NonNull Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    ActivityUtils.handleRotation(newConfig, getSupportFragmentManager());
   }
 
   private void handleTopAppBar() {
