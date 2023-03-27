@@ -16,6 +16,9 @@
     - [Publishing a message on a channel](#publishing-a-message-on-a-channel)
     - [Propagating a message on a channel](#propagating-a-message-on-a-channel)
     - [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel)
+    - [Sending a heartbeat message to servers](#sending-a-heartbeat-message-to-servers)
+    - [Retrieving messages from server using ids](#retrieving-messages-from-server-using-ids)
+
   - [Answer](#answer)
     - [RPC answer error](#rpc-answer-error)
 - [Mid-level (message) communication](#mid-level-message-communication)
@@ -175,6 +178,12 @@ and its arguments (`params`).
         },
         {
             "$ref": "method/catchup.json"
+        },
+        {
+          "$ref": "method/heartbeat.json"
+        },
+        {
+          "$ref": "method/get_messages_by_id.json"
         }
     ],
 
@@ -192,6 +201,8 @@ Here are the different methods that can be called:
 * Catchup
 * Broadcast
 * Publish
+* Heartbeat
+* GetMessagesById
 
 ### Subscribing to a channel
 
@@ -662,7 +673,201 @@ Response (in case of success)
 ```
 
 </details>
+
+## Sending a heartbeat message to servers
+
+🧭 **RPC Message** > **Query** > **Heartbeat**
+
+A server sends a heartbeat to its peers in order to attest that: 
+
+- it is alive
+- it received and sent a certain set of messages
+
+Heartbeat messages are to be sent based on channel activity and time intervals. The initial implementation will only rely on fixed time intervals. The set of messages represents the internal state of the server (messages that the server has received and sent).
+
+RPC 
+
+```json5
+// ../protocol/examples/query/heartbeat/heartbeat.json
+
+{
+    "jsonrpc": "2.0",
+    "method": "heartbeat",
+    "params": {
+        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
+            "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="
+        ],
+        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=": [
+            "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+            "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
+        ]
+    }
+}
+
+```
+
+The heartbeat can then trigger the internal logic of a server: when it receives message ids that it has not already delivered it will execute a `get_messages_by_id` RPC. However, this is just a consequence of that specific condition, normally the heartbeat is just a way to communicate to others that the sender is alive, thus it doesn't expect any answer back.
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
   
+```json5
+// ../protocol/query/method/heartbeat.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/heartbeat.json",
+    "description": "Heartbeat message",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "heartbeat"
+        },
+        "params": {
+            "description": "[Object] containing key-value pairs where each key is a channel and the value is a list of message_ids from that channel",
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^/root(/[^/]+)*$": {
+                    "description": "[Array] of message_ids corresponding to the channel",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 1
+                }
+            }
+        },
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        }
+    },
+    "required": ["method", "params", "jsonrpc"]
+}
+
+```
+</details>
+
+## Retrieving messages from server using ids 
+
+🧭 **RPC Message** > **Query** > **Get messages by their ids**
+  
+The purpose of this RPC is to selectively retrieve multiple messages by their ID. This allows the caller to only retrieve the messages it doesn't already have.
+
+A server will typically make this call upon the reception of a hearbeat message, in case the server hasn't already received some of the messages contained in such heartbeat but it could also be used in other contexts. 
+
+RPC 
+
+```json5
+// ../protocol/examples/query/get_messages_by_id/get_messages_by_id.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 6,
+    "method": "get_messages_by_id",
+    "params": {
+        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
+            "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="
+        ],
+        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=": [
+            "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+            "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="
+        ]
+    }
+}
+
+```
+
+Response (in case of success)
+
+```json5
+// ../protocol/examples/answer/get_messages_by_id_ans.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 6,
+    "result": {
+        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=": [
+            {
+                "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+                "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+                "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+                "message_id": "DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI=",
+                "witness_signatures": []
+            }
+        ],
+        "/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=": [
+            {
+                "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+                "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+                "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+                "message_id": "z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=",
+                "witness_signatures": []
+            },
+            {
+                "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+                "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+                "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+                "message_id": "txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg=",
+                "witness_signatures": []
+            }
+        ]
+    }
+}
+
+```
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
+  
+```json5
+// ../protocol/query/method/get_messages_by_id.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/get_messages_by_id.json",
+    "description": "Request messages by their ids",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "get_messages_by_id"
+        },
+        "params": {
+            "description": "[Object] containing key-value pairs where each key is a channel and the value is a list of requested message_ids from that channel",
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+                "^/root(/[^/]+)*$": {
+                    "description": "[Array] of requested message_ids from that channel",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "minItems": 1
+                }
+            }
+        },
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+        "id": {
+            "type": "integer"
+        }
+    },
+    "required": ["method", "params", "id", "jsonrpc"]
+}
+
+```
+</details>
+
 ## Answer
 
 🧭 **RPC Message** > **Answer**
@@ -673,6 +878,7 @@ valid messages:
 
 * `0`-valued answers (i.e., no error, no return value)
 * catchup answers, which contain a list of messages
+* get_messages_by_id answers which contain the mapping: channel_id -> list of messages
 * error-valued answers, further detailed in the next section.
   
 <details>
@@ -750,6 +956,10 @@ See the full specification
                     },
                     "minItems": 0,
                     "$comment": "Return value for a `catchup` request"
+                },
+                {
+                    "$ref": "result/messages_by_channel.json",
+                    "$comment": "Return value for a `get_messages_by_id` request"
                 }
             ],
             "$comment": "Note: this field is absent if there is an error"

@@ -2,6 +2,7 @@ const Ajv = require("ajv");
 const main_schema = require("../jsonRPC.json");
 const answer_schema = require("../answer/answer.json");
 const error_schema = require("../answer/error.json");
+const result_messages_by_channel_schema = require("../answer/result/messages_by_channel.json");
 
 const query_schema = require("../query/query.json");
 const query_message_schema = require("../query/method/message/message.json");
@@ -11,6 +12,9 @@ const method_unsubscribe_schema = require("../query/method/unsubscribe.json");
 const method_broadcast_schema = require("../query/method/broadcast.json");
 const method_publish_schema = require("../query/method/publish.json");
 const method_catchup_schema = require("../query/method/catchup.json");
+
+const method_heartbeat_schema = require("../query/method/heartbeat.json");
+const method_get_messages_by_id_schema = require("../query/method/get_messages_by_id.json");
 
 const message_data_schema = require("../query/method/message/data/data.json");
 const message_data_roll_call_close_schema = require("../query/method/message/data/dataCloseRollCall.json");
@@ -55,6 +59,7 @@ ajv.addSchema([
     main_schema,
     answer_schema,
     error_schema,
+    result_messages_by_channel_schema,
     query_schema,
     query_message_schema,
     method_subscribe_schema,
@@ -62,6 +67,9 @@ ajv.addSchema([
     method_broadcast_schema,
     method_publish_schema,
     method_catchup_schema,
+
+    method_heartbeat_schema,
+    method_get_messages_by_id_schema,
 
     message_data_schema,
 
