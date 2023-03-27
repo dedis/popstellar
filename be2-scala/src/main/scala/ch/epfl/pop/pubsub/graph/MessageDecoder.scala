@@ -17,8 +17,8 @@ object MessageDecoder {
 
   /** Graph component: takes a string as input and parses it into a JsonRpcMessage (stored into a GraphMessage)
     */
-  val jsonRpcParser: Flow[Either[JsonString, PipelineError], GraphMessage, NotUsed] = Flow[Either[JsonString, PipelineError]].map {
-    case Left(jsonString) => Try(jsonString.parseJson.asJsObject) match {
+  val jsonRpcParser: Flow[Either[PipelineError, JsonString], GraphMessage, NotUsed] = Flow[Either[PipelineError, JsonString]].map {
+    case Right(jsonString) => Try(jsonString.parseJson.asJsObject) match {
         case Success(obj) =>
           val fields: Set[String] = obj.fields.keySet
 
@@ -34,7 +34,7 @@ object MessageDecoder {
           ))
       }
 
-    case Right(pipelineError) => Left(pipelineError) // implicit typecasting
+    case Left(pipelineError) => Left(pipelineError) // implicit typecasting
   }
 
   /** Graph component: takes a GraphMessage and parses the 'data' field of any JsonRpcRequest query containing a message. The result is stored in the input JsonRpcRequest's Message's decodedData field
