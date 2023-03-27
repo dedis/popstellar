@@ -1,8 +1,11 @@
 package com.github.dedis.popstellar.ui.lao.token;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -32,15 +35,15 @@ import javax.inject.Inject;
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 
-import static androidx.test.espresso.action.ViewActions.pressBack;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.testutils.pages.lao.token.TokenPageObject.*;
+import static com.github.dedis.popstellar.testutils.pages.lao.token.TokenPageObject.tokenTextView;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -121,9 +124,18 @@ public class TokenFragmentTest {
     tokenTextView().check(matches(withText(USER_TOKEN.getPublicKey().getEncoded())));
   }
 
+  @Test
   public void testBackButtonBehaviour() {
-    getRootView().perform(pressBack());
-    // Check current fragment displayed is events fragment
-    getEventListFragment().check(matches(isDisplayed()));
+    activityScenarioRule
+        .getScenario()
+        .onActivity(
+            activity -> {
+              pressBack();
+              // Check that we are now in the expected fragment
+              FragmentManager fragmentManager = activity.getSupportFragmentManager();
+              Fragment currentFragment =
+                  fragmentManager.findFragmentById(R.id.fragment_container_lao);
+              assertTrue(currentFragment instanceof TokenListFragment);
+            });
   }
 }

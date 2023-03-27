@@ -2,12 +2,10 @@ package com.github.dedis.popstellar.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.dedis.popstellar.R;
@@ -55,11 +53,6 @@ public class ConnectingActivity extends AppCompatActivity {
   public void onPause() {
     super.onPause();
     disposables.dispose();
-  }
-
-  @Override
-  public void onConfigurationChanged(@NonNull Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
   }
 
   private void setupConnectingText() {

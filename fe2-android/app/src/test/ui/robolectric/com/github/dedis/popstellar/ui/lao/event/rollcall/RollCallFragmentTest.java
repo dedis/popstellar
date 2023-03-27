@@ -9,18 +9,17 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Op
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.RollCallRepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
-import com.github.dedis.popstellar.testutils.BundleBuilder;
-import com.github.dedis.popstellar.testutils.MessageSenderHelper;
+import com.github.dedis.popstellar.testutils.*;
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.junit.Rule;
@@ -58,8 +57,11 @@ public class RollCallFragmentTest {
   private static final String LAO_NAME = "lao";
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PublicKey SENDER_2 = generateKeyPair().getPublicKey();
   private static final Lao LAO = new Lao(LAO_NAME, SENDER, 10223421);
+  private static final Lao LAO_2 = new Lao(LAO_NAME + "2", SENDER_2, 10223422);
   private static final String LAO_ID = LAO.getId();
+  private static final String LAO_ID2 = LAO_2.getId();
   private static final String ROLL_CALL_TITLE = "RC title";
   private static final long CREATION = 10323411;
   private static final long ROLL_CALL_START = 10323421;
@@ -68,6 +70,8 @@ public class RollCallFragmentTest {
   private static final String LOCATION = "EPFL";
   private static final BehaviorSubject<LaoView> laoSubject =
       BehaviorSubject.createDefault(new LaoView(LAO));
+  private static final BehaviorSubject<LaoView> laoSubject2 =
+      BehaviorSubject.createDefault(new LaoView(LAO_2));
 
   private static final DateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm z", Locale.ENGLISH);
@@ -98,6 +102,8 @@ public class RollCallFragmentTest {
           LOCATION,
           ROLL_CALL_DESC);
 
+  private static final PoPToken POP_TOKEN = Base64DataUtils.generatePoPToken();
+
   @Inject RollCallRepository rollCallRepo;
 
   @BindValue @Mock LAORepository laoRepo;
@@ -118,7 +124,7 @@ public class RollCallFragmentTest {
   public final ExternalResource setupRule =
       new ExternalResource() {
         @Override
-        protected void before() throws UnknownLaoException {
+        protected void before() throws UnknownLaoException, KeyException {
           hiltRule.inject();
           when(laoRepo.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
@@ -130,6 +136,8 @@ public class RollCallFragmentTest {
 
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
           messageSenderHelper.setupMock();
+
+          when(keyManager.getPoPToken(any(), any())).thenReturn(POP_TOKEN);
         }
       };
 
@@ -290,5 +298,22 @@ public class RollCallFragmentTest {
     rollCallListAttendees().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
     // Assert that no scanned participant is present
     rollCallListAttendees().check(matches(hasChildCount(0)));
+  }
+
+  private void fakeClientLao() throws UnknownLaoException {
+    when(laoRepo.getLaoObservable(anyString())).thenReturn(laoSubject2);
+    when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO_2));
+    rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL);
+    rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL_2);
+    when(keyManager.getMainPublicKey()).thenReturn(SENDER_2);
+  }
+
+  @Test
+  public void qrCodeVisibilityTest() throws UnknownLaoException {
+    // Fake to be a client
+    fakeClientLao();
+    // Check visibility as client
+    rollCallRepo.updateRollCall(LAO_ID, RollCall.openRollCall(ROLL_CALL));
+    rollCallQRCode().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
   }
 }
