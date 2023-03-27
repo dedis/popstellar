@@ -32,13 +32,15 @@ import javax.inject.Inject;
 import dagger.hilt.android.testing.*;
 import io.reactivex.subjects.BehaviorSubject;
 
+import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPToken;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
-import static com.github.dedis.popstellar.testutils.pages.lao.token.TokenPageObject.tokenTextView;
+import static com.github.dedis.popstellar.testutils.pages.lao.token.TokenPageObject.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -117,5 +119,11 @@ public class TokenFragmentTest {
   @Test
   public void tokenIsDisplayed() {
     tokenTextView().check(matches(withText(USER_TOKEN.getPublicKey().getEncoded())));
+  }
+
+  public void testBackButtonBehaviour() {
+    getRootView().perform(pressBack());
+    // Check current fragment displayed is events fragment
+    getEventListFragment().check(matches(isDisplayed()));
   }
 }

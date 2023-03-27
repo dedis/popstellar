@@ -141,14 +141,10 @@ public class DigitalCashSendFragment extends Fragment {
 
   /** Function that set up the Adapter for the dropdown selector menu (with the public key list) */
   private void setUpTheAdapter() throws KeyException {
-    /* Roll Call attendees to which we can send*/
+    /* Roll Call attendees to which we can send */
     List<String> myArray;
     try {
       myArray = digitalCashViewModel.getAttendeesFromTheRollCallList();
-      // Filter my pop token out: sending money to myself has no sense
-      if (myArray != null) {
-        filterMembers(myArray);
-      }
     } catch (NoRollCallException e) {
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
@@ -159,12 +155,21 @@ public class DigitalCashSendFragment extends Fragment {
           R.id.fragment_digital_cash_home,
           DigitalCashHomeFragment::newInstance);
     }
+
+    if (myArray == null) {
+      return;
+    }
+
+    // Filter my pop token out: sending money to myself has no sense
+    filterMembers(myArray);
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
+
     // Display by default the first item in the list of tokens
-    if (myArray != null && myArray.size() > 0) {
+    if (!myArray.isEmpty()) {
       Objects.requireNonNull(binding.digitalCashSendSpinner.getEditText()).setText(myArray.get(0));
     }
+
     binding.digitalCashSendSpinnerTv.setAdapter(adapter);
   }
 
