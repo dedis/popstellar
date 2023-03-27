@@ -61,7 +61,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       case Some(Success((data, electionId, keyPair, electionChannel))) =>
         // generating a key pair in case the version is secret-ballot, to send then the public key to the frontend
         data.version match {
-          case OPEN_BALLOT => Left(rpcMessage)
+          case OPEN_BALLOT => Right(rpcMessage)
           case SECRET_BALLOT =>
             val keyElection: KeyElection = KeyElection(electionId, keyPair.publicKey)
             Await.result(
@@ -69,8 +69,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
               duration
             )
         }
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
-      case reply                                   => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
+      case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }
   }
 
@@ -86,9 +86,9 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       _ <- dbAskWritePropagate(rpcMessage)
     } yield ()
     Await.ready(combined, duration).value.get match {
-      case Success(_)                        => Left(rpcMessage)
-      case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleOpenElection failed : ${ex.message}", rpcMessage.getId))
-      case reply                             => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenElection failed : unknown DbActor reply $reply", rpcMessage.getId))
+      case Success(_)                        => Right(rpcMessage)
+      case Failure(ex: DbActorNAckException) => Left(PipelineError(ex.code, s"handleOpenElection failed : ${ex.message}", rpcMessage.getId))
+      case reply                             => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleOpenElection failed : unknown DbActor reply $reply", rpcMessage.getId))
     }
   }
 
@@ -97,7 +97,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     Await.result(ask, duration)
   }
 
-  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
+  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Left(
     PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
   )
 
@@ -117,8 +117,8 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       _ <- dbBroadcast(rpcMessage, electionChannel, resultElectionFormat.write(resultElection), electionChannel)
     } yield ()
     Await.ready(combined, duration).value match {
-      case Some(Success(_)) => Left(rpcMessage)
-      case _                => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleEndElection unknown error", rpcMessage.getId))
+      case Some(Success(_)) => Right(rpcMessage)
+      case _                => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleEndElection unknown error", rpcMessage.getId))
     }
   }
 

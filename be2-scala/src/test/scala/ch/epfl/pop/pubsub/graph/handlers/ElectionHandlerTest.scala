@@ -205,7 +205,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = SetupElectionMessages.setupElection
 
-    rc.handleSetupElection(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleSetupElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -215,7 +215,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = SetupElectionMessages.setupElection
 
-    rc.handleSetupElection(request) should equal(Left(request))
+    rc.handleSetupElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
@@ -225,7 +225,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = SetupElectionMessages.setupElectionSecretBallot
 
-    rc.handleSetupElection(request) should equal(Left(request))
+    rc.handleSetupElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
@@ -235,7 +235,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = SetupElectionMessages.setupElectionSecretBallot
 
-    rc.handleSetupElection(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleSetupElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -245,7 +245,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = OpenElectionMessages.openElection
 
-    rc.handleOpenElection(request) should equal(Left(request))
+    rc.handleOpenElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
@@ -255,7 +255,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = OpenElectionMessages.openElection
 
-    rc.handleOpenElection(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleOpenElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -265,7 +265,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = OpenElectionMessages.openElection
 
-    rc.handleOpenElection(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleOpenElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -275,7 +275,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = CastVoteElectionMessages.castVoteElection
 
-    rc.handleCastVoteElection(request) should equal(Left(request))
+    rc.handleCastVoteElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
@@ -285,7 +285,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = CastVoteElectionMessages.castVoteElection
 
-    rc.handleCastVoteElection(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleCastVoteElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -295,7 +295,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = EndElectionMessages.endElection
 
-    rc.handleEndElection(request) should equal(Left(request))
+    rc.handleEndElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }*/
@@ -305,7 +305,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = EndElectionMessages.endElection
 
-    rc.handleOpenElection(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleOpenElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -315,7 +315,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = EndElectionMessages.endElection
 
-    rc.handleEndElection(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleEndElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -325,7 +325,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = KeyElectionMessages.keyElection
 
-    rc.handleKeyElection(request) should equal(Left(request))
+    rc.handleKeyElection(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
@@ -335,7 +335,7 @@ class ElectionHandlerTest extends TestKit(ActorSystem("Election-DB-System")) wit
     val rc = new ElectionHandler(mockedDB)
     val request = KeyElectionMessages.keyElection
 
-    rc.handleKeyElection(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleKeyElection(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }

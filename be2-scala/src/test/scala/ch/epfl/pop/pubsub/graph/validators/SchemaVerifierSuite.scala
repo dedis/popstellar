@@ -27,7 +27,7 @@ class SchemaVerifierSuite extends FunSuite with Matchers {
   test("Invalid jsonString - string instead of JSON object") {
     val invalidJSON = "wrond JSON string"
 
-    verifyRpcSchema(invalidJSON) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(invalidJSON) shouldBe a[Left[_, PipelineError]]
   }
 
   /* ----------------------------- High-level (JSON-rpc) tests ----------------------------- */
@@ -35,21 +35,21 @@ class SchemaVerifierSuite extends FunSuite with Matchers {
     val subscribePath = "../protocol/examples/query/subscribe/subscribe.json"
     val subscribeJson = getJsonStringFromFile(subscribePath)
 
-    verifyRpcSchema(subscribeJson) should be(Left(subscribeJson))
+    verifyRpcSchema(subscribeJson) should be(Right(subscribeJson))
   }
 
   test("Incorrect subscribe query: additional params") {
     val subscribePath = "../protocol/examples/query/subscribe/wrong_subscribe__additional_params.json"
     val subscribeJson = getJsonStringFromFile(subscribePath)
 
-    verifyRpcSchema(subscribeJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(subscribeJson) shouldBe a[Left[_, PipelineError]]
   }
 
   test("Incorrect subscribe query: missing channel") {
     val subscribePath = "../protocol/examples/query/subscribe/wrong_subscribe_missing_channel.json"
     val subscribeJson = getJsonStringFromFile(subscribePath)
 
-    verifyRpcSchema(subscribeJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(subscribeJson) shouldBe a[Left[_, PipelineError]]
   }
 
   /* Test broadcast query with message format */
@@ -57,49 +57,49 @@ class SchemaVerifierSuite extends FunSuite with Matchers {
     val broadcastPath = "../protocol/examples/query/broadcast/broadcast.json"
     val broadcastJson = getJsonStringFromFile(broadcastPath)
 
-    verifyRpcSchema(broadcastJson) should be(Left(broadcastJson))
+    verifyRpcSchema(broadcastJson) should be(Right(broadcastJson))
   }
 
   test("Incorrect broadcast query: additional params") {
     val broadcastPath = "../protocol/examples/query/broadcast/wrong_broadcast_additional_params.json"
     val broadcastJson = getJsonStringFromFile(broadcastPath)
 
-    verifyRpcSchema(broadcastJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(broadcastJson) shouldBe a[Left[_, PipelineError]]
   }
 
   test("Incorrect broadcast query: missing message") {
     val broadcastPath = "../protocol/examples/query/broadcast/wrong_broadcast_missing_message.json"
     val broadcastJson = getJsonStringFromFile(broadcastPath)
 
-    verifyRpcSchema(broadcastJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(broadcastJson) shouldBe a[Left[_, PipelineError]]
   }
 
   test("Correct unsubscribe JSON-RPC query") {
     val unsubscribePath = "../protocol/examples/query/unsubscribe/unsubscribe.json"
     val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
 
-    verifyRpcSchema(unsubscribeJson) should be(Left(unsubscribeJson))
+    verifyRpcSchema(unsubscribeJson) should be(Right(unsubscribeJson))
   }
 
   test("Incorrect unsubscribe query: additional params") {
     val unsubscribePath = "../protocol/examples/query/unsubscribe/wrong_unsubscribe__additional_params.json"
     val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
 
-    verifyRpcSchema(unsubscribeJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(unsubscribeJson) shouldBe a[Left[_, PipelineError]]
   }
 
   test("Incorrect unsubscribe query: missing channel") {
     val unsubscribePath = "../protocol/examples/query/unsubscribe/wrong_unsubscribe_missing_channel.json"
     val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
 
-    verifyRpcSchema(unsubscribeJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(unsubscribeJson) shouldBe a[Left[_, PipelineError]]
   }
 
   test("Incorrect unsubscribe query: wrong channel") {
     val unsubscribePath = "../protocol/examples/query/unsubscribe/wrong_unsubscribe_channel.json"
     val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
 
-    verifyRpcSchema(unsubscribeJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(unsubscribeJson) shouldBe a[Left[_, PipelineError]]
   }
 
   /* ----------------------------- Low-level (data) tests ----------------------------- */

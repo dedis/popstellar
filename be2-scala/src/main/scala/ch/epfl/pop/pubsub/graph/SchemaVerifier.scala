@@ -72,15 +72,15 @@ object SchemaVerifier {
     * @return
     *   a [[GraphMessage]] containing the input if successful, or a [[PipelineError]] otherwise
     */
-  def verifyRpcSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
+  def verifyRpcSchema(jsonString: JsonString): Either[PipelineError, JsonString] = {
     verifySchema(querySchema, jsonString) match {
-      case Success(_) => Left(jsonString)
+      case Success(_) => Right(jsonString)
       case Failure(ex) =>
         val rpcId = Try(jsonString.parseJson.asJsObject.getFields("id")) match {
           case Success(Seq(JsNumber(id))) => Some(id.toInt)
           case _                          => None
         }
-        Right(PipelineError(ErrorCodes.INVALID_DATA.id, ex.getMessage, rpcId))
+        Left(PipelineError(ErrorCodes.INVALID_DATA.id, ex.getMessage, rpcId))
     }
   }
 
@@ -111,5 +111,5 @@ object SchemaVerifier {
   )
 
   // takes a string (json) input and compares it with the JsonSchema
-  val rpcSchemaVerifier: Flow[JsonString, Either[JsonString, PipelineError], NotUsed] = Flow[JsonString].map(verifyRpcSchema)
+  val rpcSchemaVerifier: Flow[JsonString, Either[PipelineError, JsonString], NotUsed] = Flow[JsonString].map(verifyRpcSchema)
 }

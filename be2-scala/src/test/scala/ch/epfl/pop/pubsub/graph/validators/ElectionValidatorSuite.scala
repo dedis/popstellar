@@ -260,7 +260,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorkingSetup
     println(dbActorRef)
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_RPC)
-    message should equal(Left(SETUP_ELECTION_RPC))
+    message should equal(Right(SETUP_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
@@ -268,8 +268,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_WRONG_TIMESTAMP_RPC)
     val messageStandardActor = ElectionValidator.validateSetupElection(SETUP_ELECTION_WRONG_TIMESTAMP_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -277,8 +277,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_WRONG_TIMESTAMP_ORDER_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateSetupElection(SETUP_ELECTION_WRONG_TIMESTAMP_ORDER_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -286,8 +286,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorkingSetup
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_WRONG_TIMESTAMP_ORDER_RPC2)
     val messageStandardActor: GraphMessage = ElectionValidator.validateSetupElection(SETUP_ELECTION_WRONG_TIMESTAMP_ORDER_RPC2)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -295,8 +295,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWrongTokenSetup
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateSetupElection(SETUP_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -304,8 +304,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWrongChannelSetup
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateSetupElection(SETUP_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -313,15 +313,15 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_WRONG_ID_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateSetupElection(SETUP_ELECTION_WRONG_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Setting up an election with invalid question id fails") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_WRONG_QUESTION_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -329,8 +329,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(SETUP_ELECTION_WRONG_OWNER_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateSetupElection(SETUP_ELECTION_WRONG_OWNER_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -338,8 +338,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateSetupElection(RPC_NO_PARAMS)
     val messageStandardActor: GraphMessage = ElectionValidator.validateSetupElection(RPC_NO_PARAMS)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -347,42 +347,42 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   test("KeyElection works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_RPC)
-    message should equal(Left(KEY_ELECTION_RPC))
+    message should equal(Right(KEY_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("KeyElection fails with invalid election id") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_WRONG_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("KeyElection fails with wrong sender") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_WRONG_OWNER_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("KeyElection fails with invalid PoP token") {
     val dbActorRef = mockDbWrongTokenSetup
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("KeyElection fails with wrong channel") {
     val dbActorRef = mockDbWrongChannel
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(KEY_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("KeyElection without Params does not work in validateKeyElection") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateKeyElection(RPC_NO_PARAMS)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -390,7 +390,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   test("Open up an election works as intended") {
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_RPC)
-    message should equal(Left(OPEN_ELECTION_RPC))
+    message should equal(Right(OPEN_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
@@ -398,7 +398,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_WRONG_TIMESTAMP_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateOpenElection(OPEN_ELECTION_WRONG_TIMESTAMP_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -406,8 +406,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWrongToken
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateOpenElection(OPEN_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -415,8 +415,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWrongChannel
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateOpenElection(OPEN_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -424,8 +424,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_WRONG_ID_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateOpenElection(OPEN_ELECTION_WRONG_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -433,8 +433,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_WRONG_LAO_ID_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateOpenElection(OPEN_ELECTION_WRONG_LAO_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -442,8 +442,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(OPEN_ELECTION_WRONG_OWNER_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateOpenElection(OPEN_ELECTION_WRONG_OWNER_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -451,8 +451,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateOpenElection(RPC_NO_PARAMS)
     val messageStandardActor: GraphMessage = ElectionValidator.validateOpenElection(RPC_NO_PARAMS)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
+    messageStandardActor shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -460,91 +460,91 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
   test("Casting a vote works as intended") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
-    message should equal(Left(CAST_VOTE_ELECTION_RPC))
+    message should equal(Right(CAST_VOTE_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote with invalid Timestamp fails") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_TIMESTAMP_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote without valid PoP token fails") {
     val dbActorRef = mockDbWrongTokenCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote on wrong type of channel fails") {
     val dbActorRef = mockDbWrongChannelCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote with invalid id fails") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote with invalid lao id fails") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_LAO_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote with wrong sender fails") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_WRONG_OWNER_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote without Params does not work in validateCastVoteElection") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(RPC_NO_PARAMS)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting an invalid vote should fail") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_INVALID_VOTE_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting an invalid ballot should fail") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_INVALID_BALLOT_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting an invalid vote id should fail") {
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_INVALID_VOTE_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote if election is not open should fail") {
     val dbActorRef = mockDbMissingOpenElectionMessage
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Casting a vote in an election that was ended should fail") {
     val dbActorRef = mockDbWithEndElectionMessage
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateCastVoteElection(CAST_VOTE_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -553,7 +553,7 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_RPC)
     system.log.info("Responding with a Ack")
-    message should equal(Left(END_ELECTION_RPC))
+    message should equal(Right(END_ELECTION_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
@@ -561,8 +561,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_TIMESTAMP_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_WRONG_TIMESTAMP_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -570,8 +570,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWrongTokenCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -579,8 +579,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWrongChannelCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -588,8 +588,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_ID_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_WRONG_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -597,8 +597,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_LAO_ID_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_WRONG_LAO_ID_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -606,8 +606,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbCastVote
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(END_ELECTION_WRONG_OWNER_RPC)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(END_ELECTION_WRONG_OWNER_RPC)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 
@@ -615,8 +615,8 @@ class ElectionValidatorSuite extends TestKit(ActorSystem("electionValidatorTestA
     val dbActorRef = mockDbWorking
     val message: GraphMessage = new ElectionValidator(dbActorRef).validateEndElection(RPC_NO_PARAMS)
     val messageStandardActor: GraphMessage = ElectionValidator.validateEndElection(RPC_NO_PARAMS)
-    message shouldBe a[Right[_, PipelineError]]
-    messageStandardActor shouldBe a[Right[_, PipelineError]]
+    message shouldBe a[Left[PipelineError, _]]
+    messageStandardActor shouldBe a[Left[PipelineError, _]]
     system.stop(dbActorRef.actorRef)
   }
 }

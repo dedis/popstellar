@@ -98,8 +98,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
             validationError(s"trying to send a SetupElection message on a wrong type of channel $channel")
           )
         )
-
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -135,7 +134,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           )
         )
 
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -183,8 +182,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
             )
           )
         )
-
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -252,13 +250,13 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           )
         )
 
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   // not implemented since the back end does not receive a ResultElection message coming from the front end
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionValidator cannot handle ResultElection messages yet", rpcMessage.id))
+    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionValidator cannot handle ResultElection messages yet", rpcMessage.id))
   }
 
   def validateEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -312,12 +310,12 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
           validationError(s"Incorrect verification hash")
         )
 
-        if (firstCheck.isLeft)
+        if (firstCheck.isRight)
           secondCheck
         else
           firstCheck
 
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -332,7 +330,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case the election has ended
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful else Right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
   private def checkElectionNotEnded(
       rpcMessage: JsonRpcRequest,
@@ -341,8 +339,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       error: PipelineError
   ): GraphMessage =
     Await.result(electionChannel.extractMessages[EndElection](dbActorRef), duration) match {
-      case h :: _ => Right(error)
-      case _      => Left(rpcMessage)
+      case h :: _ => Left(error)
+      case _      => Right(rpcMessage)
     }
 
   /** checks if the votes are valid: valid question ids, valid ballot options and valid vote ids
@@ -358,7 +356,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case of invalid vote(s)
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful else Right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
   private def checkValidateVoteElection(
       rpcMessage: JsonRpcRequest,
@@ -384,9 +382,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     )
 
     if (areVotesValid)
-      Left(rpcMessage)
+      Right(rpcMessage)
     else
-      Right(error)
+      Left(error)
   }
 
   /** checks if the election has started
@@ -400,7 +398,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case the election hasn't started
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful else Right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
   private def checkElectionStarted(
       rpcMessage: JsonRpcRequest,
@@ -409,8 +407,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       error: PipelineError
   ): GraphMessage =
     Await.result(electionChannel.extractMessages[OpenElection](dbActorRef), duration) match {
-      case h :: _ => Left(rpcMessage)
-      case _      => Right(error)
+      case h :: _ => Right(rpcMessage)
+      case _      => Left(error)
     }
 
   /** checks if the question ids are valid wrt protocol
@@ -424,7 +422,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case of invalid id
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful else Right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
   private def checkQuestionId(
       rpcMessage: JsonRpcRequest,
@@ -438,9 +436,9 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
       )
 
     if (isQuestionIdValid)
-      Left(rpcMessage)
+      Right(rpcMessage)
     else
-      Right(error)
+      Left(error)
   }
 
   /** checks if castVotes hash computation match the expected hash
@@ -454,7 +452,7 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     * @param error
     *   the error to forward in case of incoherence between expectedHash and the computed hash from castVotes
     * @return
-    *   GraphMessage: passes the rpcMessages to Left if successful else Right with pipeline error
+    *   GraphMessage: passes the rpcMessages to Right if successful else Left with pipeline error
     */
   private def checkVoteResults(rpcMessage: JsonRpcRequest, channel: Channel, expectedHash: Hash, error: PipelineError): GraphMessage = {
     val castVotes = Await.result(channel.getLastVotes(dbActorRef), duration)
@@ -463,8 +461,8 @@ sealed class ElectionValidator(dbActorRef: => AskableActorRef) extends MessageDa
     val computedHash = Hash.fromStrings(sortedVotes.map(_.id.toString): _*)
 
     if (computedHash == expectedHash)
-      Left(rpcMessage)
+      Right(rpcMessage)
     else
-      Right(error)
+      Left(error)
   }
 }

@@ -8,9 +8,9 @@ object RpcValidator extends ContentValidator {
 
   private def validateGeneralRpc(rpcMessage: JsonRpcMessage, validationErrorFunction: String => PipelineError): GraphMessage = {
     if (rpcMessage.jsonrpc != JSON_RPC_VERSION) {
-      Right(validationErrorFunction(s"json-rpc version should be '$JSON_RPC_VERSION' but is ${rpcMessage.jsonrpc}"))
+      Left(validationErrorFunction(s"json-rpc version should be '$JSON_RPC_VERSION' but is ${rpcMessage.jsonrpc}"))
     } else {
-      Left(rpcMessage)
+      Right(rpcMessage)
     }
   }
 
