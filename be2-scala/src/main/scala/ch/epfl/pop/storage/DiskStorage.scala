@@ -65,6 +65,10 @@ class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) exte
     }
   }
 
+  /**
+   *
+   *  @return the set of all channel keys in the DB.
+   */
   def getAllKeys(): Set[String] = {
 
     var set: Set[String] = Set()

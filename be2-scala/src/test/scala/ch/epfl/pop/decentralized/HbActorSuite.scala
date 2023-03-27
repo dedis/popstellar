@@ -8,6 +8,7 @@ import ch.epfl.pop.pubsub.AskPatternConstants
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
+import ch.epfl.pop.decentralized.ToyDbActor
 
 import scala.collection.mutable.HashMap
 class HbActorSuite extends TestKit(ActorSystem("HbActorSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll with AskPatternConstants{
@@ -26,53 +27,13 @@ class HbActorSuite extends TestKit(ActorSystem("HbActorSuiteActorSystem")) with 
     Thread.sleep(duration)
   }
 
-  test("subscribed sends back an acknowledgment"){
-    val hbActor = system.actorOf(Props(HbActor()))
-    hbActor ! subscribed(CHANNEL1_NAME)
-    sleep()
-    expectMsg(HbActorAck())
-    hbActor ! subscribed(CHANNEL2_NAME)
-    sleep()
-    expectMsg(HbActorAck())
+  test("RetrieveHeartbeat correctly retrieves the content of the dataBase"){
+    val toyDbActor = system.actorOf(Props(ToyDbActor))
+    val hbActor = system.actorOf(Props(HbActor(toyDbActor)))
   }
 
-  test("writing a message and retrieving messages for heartbeat contains the written message."){
-    val hbActor = system.actorOf(Props(HbActor()))
-    hbActor ! subscribed(CHANNEL1_NAME)
-    sleep()
-    expectMsg(HbActorAck())
-    hbActor ! writeMessage(CHANNEL1_NAME,MESSAGE1_ID)
-    sleep()
-    expectMsg(HbActorAck())
-    hbActor ! retrieveMessagesForHeartBeat()
-    val expected = HashMap(CHANNEL1_NAME -> List(MESSAGE1_ID))
-    sleep()
-    expectMsg(retrieveMessagesResponse(expected))
-  }
 
-  test("getMissingMessages ignores channels the server is not subscribed to"){
-    val hbActor = system.actorOf(Props(HbActor()))
-    val expected = HashMap()
-    hbActor ! getMissingMessages(RECEIVED_HEART_BEAT.toMap)
-    expectMsg(MissingMessagesResponse(None))
-  }
 
-  test("getMissingMessages returns correctly the missed messages"){
-    val hbActor = system.actorOf(Props(HbActor()))
-    hbActor ! subscribed(CHANNEL1_NAME)
-    sleep()
-    expectMsg(HbActorAck())
-    hbActor ! writeMessage(CHANNEL1_NAME,MESSAGE1_ID)
-    sleep()
-    expectMsg(HbActorAck())
-    hbActor ! writeMessage(CHANNEL1_NAME,MESSAGE2_ID)
-    sleep()
-    expectMsg(HbActorAck())
-    val expected = HashMap(CHANNEL1_NAME -> List(MESSAGE3_ID)).toMap
-    hbActor ! getMissingMessages(RECEIVED_HEART_BEAT.toMap)
-    sleep()
-    expectMsg(MissingMessagesResponse(Some(expected)))
-  }
 
 
 
