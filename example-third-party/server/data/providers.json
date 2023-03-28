@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://example1.server.example:8000",
+    "laoId": "pseudoRandomString1"
+  },
+  {
+    "url": "https://example2.server.example:8000",
+    "laoId": "pseudoRandomString2"
+  },
+  {
+    "url": "https://example3.server.example:8000",
+    "laoId": "pseudoRandomString3"
+  }
+]
