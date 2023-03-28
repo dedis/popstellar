@@ -243,8 +243,6 @@ public final class LaoHandler {
     Log.d(TAG, "Adding the server to the repository for lao id : " + laoView.getId());
     serverRepo.addServer(greetLao.getId(), server);
 
-    // Add the peers list to the server repo
-    serverRepo.addPeers(greetLao.getId(), greetLao.getPeers());
     // Open connection to all peers
     context.getMessageSender().connectToPeers(greetLao.getPeers());
   }

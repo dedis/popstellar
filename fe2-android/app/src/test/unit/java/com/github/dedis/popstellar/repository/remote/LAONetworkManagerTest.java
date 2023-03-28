@@ -53,7 +53,7 @@ public class LAONetworkManagerTest {
   @Before
   public void setup() {
     when(connection.observeMessage()).thenReturn(messages);
-    when(connection.observeConnectionEvents()).thenReturn(events);
+    when(connection.observeWebsocket()).thenReturn(events);
 
     // Default behavior : success
     Answer<?> answer =
@@ -80,8 +80,7 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>(),
-            null);
+            new HashSet<>());
 
     Answer<?> answer =
         args -> {
@@ -102,7 +101,7 @@ public class LAONetworkManagerTest {
     verify(connection).sendMessage(any(Subscribe.class));
     verify(connection).sendMessage(any(Catchup.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeConnectionEvents();
+    verify(connection).observeWebsocket();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
@@ -117,8 +116,7 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>(),
-            null);
+            new HashSet<>());
 
     Answer<?> answer =
         args -> {
@@ -138,7 +136,7 @@ public class LAONetworkManagerTest {
 
     verify(connection).sendMessage(any(Unsubscribe.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeConnectionEvents();
+    verify(connection).observeWebsocket();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
@@ -153,8 +151,7 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>(),
-            null);
+            new HashSet<>());
 
     Answer<?> answer =
         args -> {
@@ -176,7 +173,7 @@ public class LAONetworkManagerTest {
 
     verify(connection).sendMessage(any(Publish.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeConnectionEvents();
+    verify(connection).observeWebsocket();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
@@ -191,8 +188,7 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>(),
-            null);
+            new HashSet<>());
 
     ErrorCode error = new ErrorCode(3, "error");
 
@@ -220,7 +216,7 @@ public class LAONetworkManagerTest {
 
     verify(connection).sendMessage(any(Subscribe.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeConnectionEvents();
+    verify(connection).observeWebsocket();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
@@ -235,8 +231,7 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>(),
-            null);
+            new HashSet<>());
 
     networkManager.subscribe(CHANNEL).subscribe(); // First subscribe
     testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
@@ -263,7 +258,7 @@ public class LAONetworkManagerTest {
     verify(connection, times(2)).sendMessage(any(Subscribe.class));
     verify(connection, times(2)).sendMessage(any(Catchup.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeConnectionEvents();
+    verify(connection).observeWebsocket();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
@@ -278,8 +273,7 @@ public class LAONetworkManagerTest {
             connection,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
-            new HashSet<>(),
-            null);
+            new HashSet<>());
 
     // Set a response that stores requested ids
     Set<Integer> requests = new HashSet<>();
@@ -327,7 +321,7 @@ public class LAONetworkManagerTest {
     verify(connection, times(2)).sendMessage(any(Subscribe.class));
     verify(connection, times(2)).sendMessage(any(Catchup.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeConnectionEvents();
+    verify(connection).observeWebsocket();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }

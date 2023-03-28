@@ -12,7 +12,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.BehaviorSubject;
 
 /** Represents a single websocket connection that can be closed */
-public class Connection {
+public class Connection implements LAOService {
 
   public static final String TAG = Connection.class.getSimpleName();
 
@@ -60,15 +60,18 @@ public class Connection {
     }
   }
 
+  @Override
   public void sendMessage(Message msg) {
     laoService.sendMessage(msg);
   }
 
+  @Override
   public Observable<GenericMessage> observeMessage() {
     return messagesSubject;
   }
 
-  public Observable<WebSocket.Event> observeConnectionEvents() {
+  @Override
+  public Observable<WebSocket.Event> observeWebsocket() {
     return laoService.observeWebsocket();
   }
 

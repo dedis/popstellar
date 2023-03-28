@@ -75,7 +75,7 @@ public class ConnectionTest {
 
     // Create connection and retrieve events
     Connection connection = new Connection("url", service, manualState);
-    Observable<WebSocket.Event> connectionEvents = connection.observeConnectionEvents();
+    Observable<WebSocket.Event> connectionEvents = connection.observeWebsocket();
     // Publish event to the pipeline
     WebSocket.Event event = new WebSocket.Event.OnConnectionOpened<>("Fake WebSocket");
     events.onNext(event);

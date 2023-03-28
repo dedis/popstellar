@@ -21,7 +21,6 @@ import com.tinder.scarlet.WebSocket;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import io.reactivex.Observable;
 import io.reactivex.*;
@@ -35,8 +34,7 @@ public class LAONetworkManager implements MessageSender {
   private static final String TAG = LAONetworkManager.class.getSimpleName();
 
   private final MessageHandler messageHandler;
-  private final Connection connection;
-  private final Map<String, Connection> peersConnection;
+  private final MultiConnection connection;
   public final AtomicInteger requestCounter = new AtomicInteger();
   private final SchedulerProvider schedulerProvider;
   private final Gson gson;
@@ -45,23 +43,19 @@ public class LAONetworkManager implements MessageSender {
   private final Subject<GenericMessage> unprocessed = PublishSubject.create();
   private final Set<Channel> subscribedChannels;
   private final CompositeDisposable disposables = new CompositeDisposable();
-  private final Function<String, Connection> connectionFactorySupplier;
 
   public LAONetworkManager(
       MessageHandler messageHandler,
       Connection connection,
       Gson gson,
       SchedulerProvider schedulerProvider,
-      Set<Channel> subscribedChannels,
-      Function<String, Connection> connectionFactory) {
+      Set<Channel> subscribedChannels) {
 
     this.messageHandler = messageHandler;
-    this.connection = connection;
-    this.peersConnection = new HashMap<>();
+    this.connection = new MultiConnection(connection);
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;
     this.subscribedChannels = new HashSet<>(subscribedChannels);
-    this.connectionFactorySupplier = connectionFactory;
 
     // Start the incoming message processing
     processIncomingMessages();
@@ -72,7 +66,7 @@ public class LAONetworkManager implements MessageSender {
   private void resubscribeToChannelOnReconnection() {
     disposables.add(
         connection
-            .observeConnectionEvents() // Observe the events of a connection
+            .observeWebsocket() // Observe the events of a connection
             .subscribeOn(schedulerProvider.io())
             // Filter out events that are not related to a reconnection
             .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
@@ -176,7 +170,7 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public Observable<WebSocket.Event> getConnectEvents() {
-    return connection.observeConnectionEvents();
+    return connection.observeWebsocket();
   }
 
   @Override
@@ -186,8 +180,7 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public void connectToPeers(List<PeerAddress> peers) {
-    peers.forEach(
-        p -> peersConnection.put(p.getAddress(), connectionFactorySupplier.apply(p.getAddress())));
+    connection.extendConnections(peers);
   }
 
   private void handleBroadcast(Broadcast broadcast) {
