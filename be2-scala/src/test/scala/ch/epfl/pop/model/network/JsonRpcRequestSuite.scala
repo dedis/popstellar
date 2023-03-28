@@ -3,7 +3,7 @@ package ch.epfl.pop.model.network
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
-import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
+import ch.epfl.pop.model.network.method.{ParamsWithChannel, ParamsWithMessage}
 import ch.epfl.pop.model.objects._
 import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
 import org.scalatest.matchers.should.Matchers
@@ -16,7 +16,7 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
   private final val electionId: String = "defg"
   private final val channelEx: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId)
   private final val channelElectionEx: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId + Channel.CHANNEL_SEPARATOR + electionId)
-  private final val params: Params = new Params(channelEx)
+  private final val params: ParamsWithChannel = new ParamsWithChannel(channelEx)
   private final val paramsWithMessage: ParamsWithMessage = new ParamsWithMessage(channelEx, messageEx)
   private final val paramsWithMessage2: ParamsWithMessage = new ParamsWithMessage(channelElectionEx, messageEx)
   private final val rpc: String = "rpc"

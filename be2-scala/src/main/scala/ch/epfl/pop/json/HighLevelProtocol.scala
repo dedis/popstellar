@@ -52,20 +52,19 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     )
   }
 
-  implicit object ParamsFormat extends RootJsonFormat[Params] {
-    final private val PARAM_CHANNEL: String = "channel"
+  implicit object ParamsWithChannelFormat extends RootJsonFormat[ParamsWithChannel] {
     final private val OPTIONAL_PARAM_MESSAGE: String = "message"
 
-    override def read(json: JsValue): Params = json.asJsObject.getFields(PARAM_CHANNEL) match {
+    override def read(json: JsValue): ParamsWithChannel = json.asJsObject.getFields(PARAM_CHANNEL) match {
       case Seq(channel @ JsString(_)) => json.asJsObject.getFields(OPTIONAL_PARAM_MESSAGE) match {
           case Seq(message @ JsObject(_)) => new ParamsWithMessage(channel.convertTo[Channel], message.convertTo[Message])
           case Seq(_)                     => throw new IllegalArgumentException(s"Unrecognizable '$OPTIONAL_PARAM_MESSAGE' value in $json")
-          case _                          => new Params(channel.convertTo[Channel])
+          case _                          => new ParamsWithChannel(channel.convertTo[Channel])
         }
       case _ => throw new IllegalArgumentException(s"Unrecognizable '$PARAM_CHANNEL' value in $json")
     }
 
-    override def write(obj: Params): JsValue = {
+    override def write(obj: ParamsWithChannel): JsValue = {
       var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](PARAM_CHANNEL -> obj.channel.toJson)
 
       obj match {
@@ -79,7 +78,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
   implicit object BroadcastFormat extends RootJsonFormat[Broadcast] {
     override def read(json: JsValue): Broadcast = {
-      val params: ParamsWithMessage = json.convertTo[Params].asInstanceOf[ParamsWithMessage]
+      val params: ParamsWithMessage = json.convertTo[ParamsWithChannel].asInstanceOf[ParamsWithMessage]
       Broadcast(params.channel, params.message)
     }
 
@@ -87,14 +86,14 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   }
 
   implicit object CatchupFormat extends RootJsonFormat[Catchup] {
-    override def read(json: JsValue): Catchup = Catchup(json.convertTo[Params].channel)
+    override def read(json: JsValue): Catchup = Catchup(json.convertTo[ParamsWithChannel].channel)
 
     override def write(obj: Catchup): JsValue = obj.toJson(ParamsFormat.write)
   }
 
   implicit object PublishFormat extends RootJsonFormat[Publish] {
     override def read(json: JsValue): Publish = {
-      val params: ParamsWithMessage = json.convertTo[Params].asInstanceOf[ParamsWithMessage]
+      val params: ParamsWithMessage = json.convertTo[ParamsWithChannel].asInstanceOf[ParamsWithMessage]
       Publish(params.channel, params.message)
     }
 
@@ -102,13 +101,13 @@ object HighLevelProtocol extends DefaultJsonProtocol {
   }
 
   implicit object SubscribeFormat extends RootJsonFormat[Subscribe] {
-    override def read(json: JsValue): Subscribe = Subscribe(json.convertTo[Params].channel)
+    override def read(json: JsValue): Subscribe = Subscribe(json.convertTo[ParamsWithChannel].channel)
 
     override def write(obj: Subscribe): JsValue = obj.toJson(ParamsFormat.write)
   }
 
   implicit object UnsubscribeFormat extends RootJsonFormat[Unsubscribe] {
-    override def read(json: JsValue): Unsubscribe = Unsubscribe(json.convertTo[Params].channel)
+    override def read(json: JsValue): Unsubscribe = Unsubscribe(json.convertTo[ParamsWithChannel].channel)
 
     override def write(obj: Unsubscribe): JsValue = obj.toJson(ParamsFormat.write)
   }
@@ -140,7 +139,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): JsonRpcRequest = json.asJsObject.getFields(PARAM_JSON_RPC, PARAM_METHOD, PARAM_PARAMS, PARAM_ID) match {
       case Seq(JsString(version), methodJsString @ JsString(_), paramsJsObject @ JsObject(_), optId) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
-        val params: Params = method match {
+        val params: ParamsWithChannel = method match {
           case MethodType.PUBLISH     => paramsJsObject.convertTo[Publish]
           case MethodType.SUBSCRIBE   => paramsJsObject.convertTo[Subscribe]
           case MethodType.UNSUBSCRIBE => paramsJsObject.convertTo[Unsubscribe]

@@ -1,6 +1,6 @@
 package util.examples
 
-import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
+import ch.epfl.pop.model.network.method.{ParamsWithChannel, ParamsWithMessage}
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects.{Base64Data, Channel}
 import util.examples.Election.CastVoteElectionExamples._
@@ -25,7 +25,7 @@ object JsonRpcRequestExample {
   private final val id: Option[Int] = Some(0)
   private final val methodType: MethodType.MethodType = MethodType.PUBLISH
   private final val channel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "channel")
-  private final val paramsWithoutMessage: Params = new Params(channel)
+  private final val paramsWithoutMessage: ParamsWithChannel = new ParamsWithChannel(channel)
   private final val paramsWithMessage: ParamsWithMessage = new ParamsWithMessage(channel, MESSAGE_WORKING_WS_PAIR)
   private final val paramsWithFaultyIdMessage: ParamsWithMessage = new ParamsWithMessage(channel, MESSAGE_FAULTY_ID)
   private final val paramsWithFaultyWSMessage: ParamsWithMessage = new ParamsWithMessage(channel, MESSAGE_FAULTY_WS_PAIR)
