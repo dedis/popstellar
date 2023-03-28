@@ -229,7 +229,7 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	// Compute the catchup method
 	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
 
-	// Change the greeting message id to make it easier to check
+	// Change the ing message id to make it easier to check
 	catchupAnswer[1] = message.Message{MessageID: "1"}
 
 	// Check that the order of the messages is the same in `messages` and in

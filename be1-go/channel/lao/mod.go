@@ -665,13 +665,18 @@ func (c *Channel) createAndSendLAOGreet() error {
 		return xerrors.Errorf("failed to marshal the organizer key: %v", err)
 	}
 
+	// TESTING: Add the hardcoded address to the peers list
+	peerAddress := "ws://10.0.2.2:8000"
+	peer := messagedata.Peer{Address: peerAddress}
+	peers := []messagedata.Peer{peer}
+
 	msgData := messagedata.LaoGreet{
 		Object:   messagedata.LAOObject,
 		Action:   messagedata.LAOActionGreet,
 		LaoID:    c.extractLaoID(),
 		Frontend: base64.URLEncoding.EncodeToString(orgPkBuf),
 		Address:  fmt.Sprintf("wss://%s/client", c.hub.GetServerAddress()),
-		Peers:    []messagedata.Peer{},
+		Peers:    peers,
 	}
 
 	// Marshalls the message data
