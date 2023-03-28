@@ -161,7 +161,7 @@ public class DigitalCashSendFragment extends Fragment {
     }
 
     // Filter my pop token out: sending money to myself has no sense
-    filterMembers(myArray);
+    removeOwnToken(myArray);
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
 
@@ -178,7 +178,7 @@ public class DigitalCashSendFragment extends Fragment {
    *
    * @param members list of tokens of the lao members
    */
-  private void filterMembers(List<String> members) {
+  private void removeOwnToken(List<String> members) {
     try {
       members.remove(digitalCashViewModel.getValidToken().getPublicKey().getEncoded());
     } catch (KeyException e) {
