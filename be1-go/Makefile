@@ -7,6 +7,7 @@ shaFlag="popstellar.ShortSHA=$(shortsha)"
 
 .PHONY: test
 
+build: export CGO_ENABLED=0
 build: protocol
 	go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop ./cli
 	GOOS=linux GOARCH=amd64 go build -ldflags="-X $(versionFlag) -X $(timeFlag) -X $(shaFlag)" -o pop-linux-amd64-$(versionFile) ./cli
