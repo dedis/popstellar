@@ -3,7 +3,6 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -458,6 +457,14 @@ func (h *Hub) handleCatchup(socket socket.Socket,
 
 func (h *Hub) handleHeartbeat(socket socket.Socket,
 	byteMessage []byte) error {
-	log.Info().Msg("Handling heartbeat")
+	h.log.Info().Msg("Handling heartbeat")
+	//@TODO implement heartbeat handling
 	return nil
+}
+
+func (h *Hub) handleGetMessagesById(socket socket.Socket,
+	byteMessage []byte) (map[string][]message.Message, int, error) {
+	h.log.Info().Msg("Handling getMessagesById")
+	//@TODO implement getMessagesById handling
+	return nil, 0, nil
 }

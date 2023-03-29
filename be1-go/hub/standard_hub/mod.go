@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog/log"
 	"popstellar/channel"
 	"popstellar/crypto"
 	"popstellar/inbox"
@@ -44,7 +45,7 @@ const (
 
 	// heartbeatDelay represents the number of seconds
 	// between heartbeat messages
-	heartbeatDelay = 5
+	heartbeatDelay = 2
 )
 
 var suite = crypto.Suite
@@ -178,16 +179,23 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 
 // Start implements hub.Hub
 func (h *Hub) Start() {
+	print("Start function")
 	go func() {
+		h.log.Info().Msg("Start check ticker")
+		print("start check ticker")
 		ticker := time.NewTicker(time.Second * heartbeatDelay)
 		defer ticker.Stop()
 
 		for {
+			log.Printf("checking heartbeat")
 			select {
 			case <-ticker.C:
+				log.Printf("Sending heartbeat")
 				h.log.Info().Msg("Sending heartbeat")
 				err := h.sendHeartbeatToServers()
 				h.log.Info().Msg("Heartbeat sent")
+				log.Info().Msg("sent heartbeat no hub ")
+
 				if err != nil {
 					h.log.Err(err).Msg("problem sending heartbeat to servers")
 				}
@@ -198,6 +206,7 @@ func (h *Hub) Start() {
 		}
 	}()
 	go func() {
+		h.log.Info().Msg("Start check messages")
 		for {
 			select {
 			case incomingMessage := <-h.messageChan:
@@ -431,6 +440,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 
 	var id int
 	var msgs []message.Message
+	var msgsByChannel map[string][]message.Message
 	var handlerErr error
 
 	switch queryBase.Method {
@@ -444,9 +454,10 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	case query.MethodBroadcast:
 		handlerErr = h.handleBroadcast(socket, byteMessage)
-		//@TODO add heartbeat and getmessagesbyid
 	case query.MethodHeartbeat:
 		handlerErr = h.handleHeartbeat(socket, byteMessage)
+	case query.MethodGetMessagesById:
+		msgsByChannel, id, handlerErr = h.handleGetMessagesById(socket, byteMessage)
 
 	default:
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
@@ -461,6 +472,11 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
+		socket.SendResult(id, msgs)
+		return nil
+	}
+
+	if queryBase.Method == query.MethodGetMessagesById {
 		socket.SendResult(id, msgs)
 		return nil
 	}
@@ -492,14 +508,11 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 func (h *Hub) sendHeartbeatToServers() error {
 	h.Lock()
 	defer h.Unlock()
+	h.log.Info().Msg("Entering heartbeat")
 
 	heartbeatMessage := method.Heartbeat{
-		Base: query.Base{},
-		Params: struct {
-			IdsByChannel map[string][]string
-		}{
-			h.messageIdsByChannel,
-		},
+		Base:   query.Base{},
+		Params: h.messageIdsByChannel,
 	}
 
 	buf, err := json.Marshal(heartbeatMessage)
