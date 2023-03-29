@@ -450,7 +450,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
-    val ask = dbActor ? DbActor.ReadElectionData(ELECTION_ID, LAO_ID)
+    val ask = dbActor ? DbActor.ReadElectionData(LAO_ID, ELECTION_ID)
     val answer = Await.result(ask, duration)
 
     // assert

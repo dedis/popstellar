@@ -251,7 +251,7 @@ final case class DbActor(
         case failure              => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case ReadElectionData(electionId, laoId) =>
+    case ReadElectionData(laoId, electionId) =>
       log.info(s"Actor $self (db) received a ReadElectionData request for election '$electionId'")
       Try(readElectionData(laoId, electionId)) match {
         case Success(electionData) => sender() ! DbActorReadElectionDataAck(electionData)
