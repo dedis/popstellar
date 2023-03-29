@@ -19,4 +19,10 @@ case class InMemoryStorage(initial: Map[String, String] = Map.empty) extends Sto
   override def close(): Unit = ()
 
   def dump(): Unit = for ((k, v) <- elements) println(s"  > $k | $v")
+
+  /**
+   *
+   * @return the set of all channel keys in the DB.
+   */
+  override def getAllKeys(): Set[String] = ???
 }
