@@ -55,8 +55,6 @@ object Channel {
 
   final val LAO_DATA_LOCATION: String = s"${DATA_SEPARATOR}laodata"
 
-  final val ROLL_CALL_DATA_PREFIX: String = s"${ROOT_CHANNEL_PREFIX}rollcall$CHANNEL_SEPARATOR"
-
   final val COIN_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}coin"
 
   final val SOCIAL_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}social$CHANNEL_SEPARATOR"
