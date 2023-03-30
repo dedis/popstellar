@@ -5,6 +5,7 @@ import ch.epfl.pop.model.objects.Channel
 abstract class Params {
   // Default channel
   val channel: Channel = Channel.ROOT_CHANNEL
-  def hasMessage: Boolean
 
+  def hasChannel: Boolean
+  def hasMessage: Boolean
 }
