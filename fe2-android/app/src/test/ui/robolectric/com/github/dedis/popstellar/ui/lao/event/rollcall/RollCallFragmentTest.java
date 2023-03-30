@@ -300,14 +300,6 @@ public class RollCallFragmentTest {
     rollCallListAttendees().check(matches(hasChildCount(0)));
   }
 
-  private void fakeClientLao() throws UnknownLaoException {
-    when(laoRepo.getLaoObservable(anyString())).thenReturn(laoSubject2);
-    when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO_2));
-    rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL);
-    rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL_2);
-    when(keyManager.getMainPublicKey()).thenReturn(SENDER_2);
-  }
-
   @Test
   public void qrCodeVisibilityTest() throws UnknownLaoException {
     // Fake to be a client
@@ -315,5 +307,14 @@ public class RollCallFragmentTest {
     // Check visibility as client
     rollCallRepo.updateRollCall(LAO_ID, RollCall.openRollCall(ROLL_CALL));
     rollCallQRCode().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+  }
+
+  /** Utility function to create a LAO when the user is not the organizer */
+  private void fakeClientLao() throws UnknownLaoException {
+    when(laoRepo.getLaoObservable(anyString())).thenReturn(laoSubject2);
+    when(laoRepo.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO_2));
+    rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL);
+    rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL_2);
+    when(keyManager.getMainPublicKey()).thenReturn(SENDER_2);
   }
 }

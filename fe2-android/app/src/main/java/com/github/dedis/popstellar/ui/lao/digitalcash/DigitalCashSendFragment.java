@@ -145,6 +145,7 @@ public class DigitalCashSendFragment extends Fragment {
     List<String> myArray;
     try {
       myArray = digitalCashViewModel.getAttendeesFromTheRollCallList();
+      assert myArray != null;
     } catch (NoRollCallException e) {
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
@@ -154,10 +155,6 @@ public class DigitalCashSendFragment extends Fragment {
           getParentFragmentManager(),
           R.id.fragment_digital_cash_home,
           DigitalCashHomeFragment::newInstance);
-    }
-
-    if (myArray == null) {
-      return;
     }
 
     // Filter my pop token out: sending money to myself has no sense

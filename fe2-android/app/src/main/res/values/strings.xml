@@ -212,6 +212,8 @@
   <string name="digital_cash_no_witness">"There are no witnesses !"</string>
   <string name="digital_cash_warning_not_enough_money">"Can't send more money than you have !"</string>
   <string name="digital_cash_send_initial_amount">0</string>
+  <string name="digital_cash_amount_inserted_error">Amount inserted is too large</string>
+  <string name="digital_cash_amount_min_indication">Please enter an amount greater than 0</string>
 
   <!-- Social Media -->
   <string name="home">Home</string>

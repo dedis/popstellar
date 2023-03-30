@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.*;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
@@ -18,6 +19,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -133,10 +135,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
             "Please select a LAOMember",
             Toast.LENGTH_LONG)
         .show();
-  }
-
-  private void printError(String error) {
-    Toast.makeText(getApplication().getApplicationContext(), error, Toast.LENGTH_LONG).show();
   }
 
   /*
@@ -292,11 +290,17 @@ public class DigitalCashViewModel extends AndroidViewModel {
       parsedAmount = Integer.parseInt(currentAmount);
     } catch (NumberFormatException e) {
       // Overflow in the amount (no characters or negative numbers can be inserted)
-      printError("Amount inserted is too large");
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(),
+          TAG,
+          R.string.digital_cash_amount_inserted_error);
       return false;
     }
     if (parsedAmount <= MIN_LAO_COIN) {
-      printError("Please enter an amount greater than 0");
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(),
+          TAG,
+          R.string.digital_cash_amount_min_indication);
       return false;
     } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
       // create in View Model a function that toast : please enter key
