@@ -1,10 +1,14 @@
 package ch.epfl.pop.json
 
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
+import ch.epfl.pop.model.network.method.ParamsWithMap
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects._
 import org.scalatest.Inspectors.forEvery
 import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
 import org.scalatest.matchers.should.Matchers
+
+import scala.collection.immutable.{HashMap, Set}
 
 class HighLevelProtocolSuite extends FunSuite with Matchers {
 
@@ -125,6 +129,48 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
         val source: String = getFormattedString(p, t)
         an[IllegalArgumentException] should be thrownBy Message.buildFromJson(source)
     }
+  }
+
+  test("parse correctly heartbeat") {
+    val heartbeat = "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"heartbeat\",\n    \"params\": {\n        \"/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=\": [\n            \"DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI=\"\n        ],\n        \"/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=\": [\n            \"z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=\",\n            \"txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg=\"\n        ]\n    }\n}"
+    val rpcBuilt = JsonRpcRequest.buildFromJson(heartbeat)
+
+    val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
+    val id1 = Hash(Base64Data("DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="))
+
+    val chan2 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=")
+    val id2 = Hash(Base64Data("z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc="))
+    val id3 = Hash(Base64Data("txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="))
+    val map = HashMap(
+      chan1 -> Set(id1),
+      chan2 -> Set(id2, id3)
+    )
+
+    val contructedRpc = JsonRpcRequest("\"jsonrpc\": \"2.0\"", MethodType.HEARTBEAT, new ParamsWithMap(map), None)
+
+    contructedRpc.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
+    rpcBuilt.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
+  }
+
+  test("parse correctly get_messages_by_id") {
+    val getMgs = "{\n    \"jsonrpc\": \"2.0\",\n    \"id\": 6,\n    \"method\": \"get_messages_by_id\",\n    \"params\": {\n        \"/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=\": [\n            \"DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI=\"\n        ],\n        \"/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=\": [\n            \"z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=\",\n            \"txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg=\"\n        ]\n    }\n}"
+    val rpcBuilt = JsonRpcRequest.buildFromJson(getMgs)
+
+    val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
+    val id1 = Hash(Base64Data("DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="))
+
+    val chan2 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=")
+    val id2 = Hash(Base64Data("z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc="))
+    val id3 = Hash(Base64Data("txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg="))
+    val map = HashMap(
+      chan1 -> Set(id1),
+      chan2 -> Set(id2, id3)
+    )
+
+    val contructedRpc = JsonRpcRequest("\"jsonrpc\": \"2.0\"", MethodType.GET_MESSAGES_BY_ID, new ParamsWithMap(map), None)
+
+    contructedRpc.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
+    rpcBuilt.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
   }
 }
 
