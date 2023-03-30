@@ -196,12 +196,13 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): JsonRpcRequest = json.asJsObject.getFields(PARAM_JSON_RPC, PARAM_METHOD, PARAM_PARAMS, PARAM_ID) match {
       case Seq(JsString(version), methodJsString @ JsString(_), paramsJsObject @ JsObject(_), optId) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
-        val params: ParamsWithChannel = method match {
-          case MethodType.PUBLISH     => paramsJsObject.convertTo[Publish]
-          case MethodType.SUBSCRIBE   => paramsJsObject.convertTo[Subscribe]
-          case MethodType.UNSUBSCRIBE => paramsJsObject.convertTo[Unsubscribe]
-          case MethodType.CATCHUP     => paramsJsObject.convertTo[Catchup]
-          case _                      => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+        val params = method match {
+          case MethodType.PUBLISH            => paramsJsObject.convertTo[Publish]
+          case MethodType.SUBSCRIBE          => paramsJsObject.convertTo[Subscribe]
+          case MethodType.UNSUBSCRIBE        => paramsJsObject.convertTo[Unsubscribe]
+          case MethodType.CATCHUP            => paramsJsObject.convertTo[Catchup]
+          case MethodType.GET_MESSAGES_BY_ID => paramsJsObject.convertTo[GetMessagesById]
+          case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
 
         val id: Option[Int] = optId match {
@@ -212,14 +213,13 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
         JsonRpcRequest(version, method, params, id)
 
-      // Heartbeat, GetMessagesById and Broadcast do not have an Id and should be treated separately
+      // Heartbeat and Broadcast do not have an Id and should be treated separately
       case Seq(JsString(version), methodJsString @ JsString(_), paramsJsObject @ JsObject(_)) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params = method match {
-          case MethodType.HEARTBEAT          => paramsJsObject.convertTo[Heartbeat]
-          case MethodType.GET_MESSAGES_BY_ID => paramsJsObject.convertTo[GetMessagesById]
-          case MethodType.BROADCAST          => paramsJsObject.convertTo[Broadcast]
-          case _                             => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
+          case MethodType.HEARTBEAT => paramsJsObject.convertTo[Heartbeat]
+          case MethodType.BROADCAST => paramsJsObject.convertTo[Broadcast]
+          case _                    => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
         JsonRpcRequest(version, method, params, None)
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a JsonRpcRequest object")
