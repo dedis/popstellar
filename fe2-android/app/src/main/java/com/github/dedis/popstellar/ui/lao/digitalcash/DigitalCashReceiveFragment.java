@@ -82,7 +82,7 @@ public class DigitalCashReceiveFragment extends Fragment {
                   Bitmap myBitmap =
                       QRCode.from(gson.toJson(tokenData))
                           .withColor(
-                              ActivityUtils.getQRCodeColor(requireActivity()), Color.TRANSPARENT)
+                              ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
                           .bitmap();
                   binding.digitalCashReceiveQr.setImageBitmap(myBitmap);
                 },
