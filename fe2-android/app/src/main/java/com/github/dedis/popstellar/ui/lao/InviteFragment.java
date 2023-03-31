@@ -61,7 +61,7 @@ public class InviteFragment extends Fragment {
       Bitmap myBitmap =
           QRCode.from(gson.toJson(data))
               .withSize(QR_SIDE, QR_SIDE)
-              .withColor(ActivityUtils.getQRCodeColor(requireActivity()), Color.TRANSPARENT)
+              .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
               .bitmap();
       binding.channelQrCode.setImageBitmap(myBitmap);
       binding.laoPropertiesNameText.setText(laoView.getName());

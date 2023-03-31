@@ -81,7 +81,7 @@ public class TokenFragment extends Fragment {
       Bitmap bitmap =
           QRCode.from(gson.toJson(data))
               .withSize(Constants.QR_SIDE, Constants.QR_SIDE)
-              .withColor(ActivityUtils.getQRCodeColor(requireActivity()), Color.TRANSPARENT)
+              .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
               .bitmap();
       binding.tokenQrCode.setImageBitmap(bitmap);
       binding.tokenTextView.setText(poPToken.getPublicKey().getEncoded());

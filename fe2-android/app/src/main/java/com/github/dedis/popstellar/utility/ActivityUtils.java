@@ -158,14 +158,11 @@ public class ActivityUtils {
   }
 
   /**
-   * Gets the color of the QR code based on the night mode configuration of the current activity.
+   * Gets the color of the QR code based on the night mode configuration of the current context.
    *
    * @return the color of the QR code (either Color.WHITE or Color.BLACK)
    */
   public static int getQRCodeColor(Context context) {
-    if (context == null) {
-      return Color.WHITE;
-    }
     Configuration configuration = context.getResources().getConfiguration();
     int nightModeFlags = configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK;
     if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
