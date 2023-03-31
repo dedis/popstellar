@@ -3,13 +3,14 @@ package ch.epfl.pop.decentralized
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
-import ch.epfl.pop.model.objects.{Base64Data, Hash}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import akka.pattern.ask
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.storage.DbActor
 
 import scala.collection.mutable
 import scala.concurrent.Await
@@ -32,6 +33,28 @@ class HbActorSuite extends TestKit(ActorSystem("HbActorSuiteActorSystem")) with 
     Thread.sleep(duration)
   }
 
+  test("toyDbActor sends the correct set of channels"){ // needed for debugging
+    val ask = toyDbActorRef ? DbActor.GetSetOfChannels()
+    val answer = Await.result(ask, duration)
+    val res = answer.asInstanceOf[DbActor.DbActorGetSetOfChannelsAck].channels
+    val expected : Set[String] = Set(CHANNEL1_NAME, CHANNEL2_NAME)
+    res should equal(expected)
+  }
+  test("toyDbActor catchs up correctly the first channel"){ // needed for debugging
+    val ask = toyDbActorRef ? DbActor.ReadChannelData(Channel(CHANNEL1_NAME))
+    val answer = Await.result(ask, duration)
+    val res = answer.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData.messages
+    val expected = List(MESSAGE1_ID)
+    res should equal(expected)
+  }
+  test("toyDbActor catchs up correctly the second channel") { // needed for debugging
+    val ask = toyDbActorRef ? DbActor.ReadChannelData(Channel(CHANNEL2_NAME))
+    val answer = Await.result(ask, duration)
+    val res = answer.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData.messages
+    val expected = List(MESSAGE4_ID)
+    res should equal(expected)
+  }
+
   test("RetrieveHeartbeat correctly retrieves the content of the dataBase") {
     val hbActor: AskableActorRef = system.actorOf(Props(HbActor(toyDbActorRef)))
     val ask = hbActor ? HbActor.RetrieveHeartbeat()
@@ -49,5 +72,6 @@ class HbActorSuite extends TestKit(ActorSystem("HbActorSuiteActorSystem")) with 
     val expected = mutable.HashMap(CHANNEL1_NAME -> List(MESSAGE2_ID,MESSAGE3_ID), CHANNEL2_NAME -> List(MESSAGE5_ID))
     res should equal(expected)
   }
+
 
 }

@@ -2,7 +2,8 @@ package ch.epfl.pop.decentralized
 
 import akka.actor.{Actor, ActorLogging}
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Base64Data, Hash}
+import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.objects.{Base64Data, ChannelData, Hash}
 import ch.epfl.pop.storage.DbActor
 final case class ToyDbActor() extends Actor {
 
@@ -17,11 +18,11 @@ final case class ToyDbActor() extends Actor {
   final val MESSAGE4: Message = Message(null, null, null, MESSAGE4_ID, null, null)
   override def receive: Receive = {
     case DbActor.GetSetOfChannels() => sender() ! DbActor.DbActorGetSetOfChannelsAck(Set(CHANNEL1_NAME, CHANNEL2_NAME))
-    case DbActor.Catchup(channel) =>
-      if (channel.equals(CHANNEL1_NAME)) {
-        sender() ! DbActor.DbActorCatchupAck(List(MESSAGE1))
+    case DbActor.ReadChannelData(channel) =>
+      if (channel.channel.equals(CHANNEL1_NAME)) {
+        sender() ! DbActor.DbActorReadChannelDataAck(ChannelData(ObjectType.LAO,List(MESSAGE1_ID)))
       } else {
-        sender() ! DbActor.DbActorCatchupAck(List(MESSAGE4))
+        sender() ! DbActor.DbActorReadChannelDataAck(ChannelData(ObjectType.LAO,List(MESSAGE4_ID)))
       }
   }
 }
