@@ -114,6 +114,10 @@ public class RollCallFragment extends Fragment {
                       .openRollCall(rollCall.getId())
                       .subscribe(
                           () ->
+                              /* Here the fragment is reopened as we want to have continuity between
+                               * the list of attendees and the list of scanned tokens for the organizer.
+                               * By reopening the fragment, the roll call attendees will be immediately
+                               * displayed also in the list of scanned tokens. */
                               LaoActivity.setCurrentFragment(
                                   getParentFragmentManager(),
                                   R.id.fragment_roll_call,

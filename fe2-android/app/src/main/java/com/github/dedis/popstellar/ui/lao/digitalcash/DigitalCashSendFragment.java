@@ -145,7 +145,6 @@ public class DigitalCashSendFragment extends Fragment {
     List<String> myArray;
     try {
       myArray = digitalCashViewModel.getAttendeesFromTheRollCallList();
-      assert myArray != null;
     } catch (NoRollCallException e) {
       Toast.makeText(
               requireContext(), R.string.digital_cash_please_enter_roll_call, Toast.LENGTH_SHORT)
