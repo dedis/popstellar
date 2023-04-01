@@ -18,17 +18,22 @@
     android:supportsRtl="true"
     android:theme="@style/AppTheme"
     android:usesCleartextTraffic="false">
-    <activity android:name=".ui.home.ConnectingActivity" />
+    <activity
+      android:name=".ui.home.ConnectingActivity"
+      android:configChanges="orientation|screenSize" />
     <activity
       android:name=".ui.home.HomeActivity"
-      android:exported="true">
+      android:exported="true"
+      android:configChanges="orientation|screenSize">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    <activity android:name=".ui.lao.LaoActivity" />
+    <activity
+      android:name=".ui.lao.LaoActivity"
+      android:configChanges="orientation|screenSize" />
 
     <uses-library
       android:name="android.test.runner"

@@ -141,7 +141,7 @@ public class DigitalCashSendFragment extends Fragment {
 
   /** Function that set up the Adapter for the dropdown selector menu (with the public key list) */
   private void setUpTheAdapter() throws KeyException {
-    /* Roll Call attendees to which we can send*/
+    /* Roll Call attendees to which we can send */
     List<String> myArray;
     try {
       myArray = digitalCashViewModel.getAttendeesFromTheRollCallList();
@@ -155,11 +155,31 @@ public class DigitalCashSendFragment extends Fragment {
           R.id.fragment_digital_cash_home,
           DigitalCashHomeFragment::newInstance);
     }
+
+    // Filter my pop token out: sending money to myself has no sense
+    removeOwnToken(myArray);
     ArrayAdapter<String> adapter =
         new ArrayAdapter<>(requireContext(), R.layout.list_item, myArray);
-    Objects.requireNonNull(binding.digitalCashSendSpinner.getEditText())
-        .setText(digitalCashViewModel.getValidToken().getPublicKey().getEncoded());
+
+    // Display by default the first item in the list of tokens
+    if (!myArray.isEmpty()) {
+      Objects.requireNonNull(binding.digitalCashSendSpinner.getEditText()).setText(myArray.get(0));
+    }
+
     binding.digitalCashSendSpinnerTv.setAdapter(adapter);
+  }
+
+  /**
+   * Removes from the list of LAO members my pop token
+   *
+   * @param members list of tokens of the lao members
+   */
+  private void removeOwnToken(List<String> members) {
+    try {
+      members.remove(digitalCashViewModel.getValidToken().getPublicKey().getEncoded());
+    } catch (KeyException e) {
+      Log.e(TAG, getResources().getString(R.string.error_retrieve_own_token));
+    }
   }
 
   /** Function that setup the Button */
