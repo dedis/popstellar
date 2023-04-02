@@ -5,34 +5,25 @@
     <title>PoPCHA Authorization</title>
     <style>
         body {
-            background: linear-gradient(135deg, #FFD700, #FF6347, #00BFFF, #7FFF00);
+            background: rgb(229,229,229);
             background-size: 400% 400%;
             animation: gradient 15s ease infinite;
         }
-        @keyframes gradient {
-            0% {
-                background-position: 0 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0 50%;
-            }
-        }
         .frame {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             width: 100vh;
             height: 100vh;
             padding: 20px;
             background-color: transparent;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.21);
             border-radius: 10px;
             margin: 0 auto;
             position: relative;
         }
+
         .frame h1 {
             position: absolute;
             top: 0;
@@ -41,7 +32,7 @@
             padding: 20px;
             margin: 0;
             color: white;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6);
             font-size: 24px;
             font-family: Arial, sans-serif;
             text-align: center;
@@ -51,9 +42,14 @@
     </style>
 </head>
 <body>
-<div class="frame">
-    <h1>Scan me with your PoP App!</h1>
+<div style="text-align:center;" class="frame">
+    <h1>Scan using your PoP App</h1>
         {{.SVGImage}}
-</div>
+</div>.container {
+display: flex;
+justify-content: center;
+}
+
+
 </body>
 </html>

@@ -24,8 +24,6 @@ const (
 
 	// ServerSocketType denotes a server.
 	ServerSocketType SocketType = "server"
-
-	AuthServerSocketType SocketType = "authorize"
 )
 
 // baseSocket represents a socket connected to the server.
@@ -287,20 +285,6 @@ func NewServerSocket(receiver chan<- IncomingMessage,
 
 	return &ServerSocket{
 		baseSocket: newBaseSocket(ServerSocketType, receiver, closedSockets,
-			conn, wg, done, log),
-	}
-}
-
-type AuthServerSocket struct {
-	*baseSocket
-}
-
-func NewAuthServerSocket(receiver chan<- IncomingMessage, closedSockets chan<- string,
-	conn *websocket.Conn, wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) *AuthServerSocket {
-	log = log.With().Str("role", "auth-server socket").Logger()
-
-	return &AuthServerSocket{
-		baseSocket: newBaseSocket(AuthServerSocketType, receiver, closedSockets,
 			conn, wg, done, log),
 	}
 }
