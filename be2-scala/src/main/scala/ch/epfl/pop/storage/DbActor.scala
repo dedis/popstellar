@@ -6,8 +6,8 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.objects.Channel.ROOT_CHANNEL_PREFIX
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
@@ -39,15 +39,15 @@ final case class DbActor(
     this.synchronized {
       val channelData: ChannelData = readChannelData(channel)
       storage.write(
-        (channel.toString, channelData.addMessage(message.message_id).toJsonString),
-        (s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
+        (storage.CHANNEL_DATA_KEY + channel.toString, channelData.addMessage(message.message_id).toJsonString),
+        (storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
       )
     }
   }
 
   @throws[DbActorNAckException]
   private def read(channel: Channel, messageId: Hash): Option[Message] = {
-    Try(storage.read(s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
+    Try(storage.read(storage.DATA_KEY + s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
       case Success(Some(json)) =>
         val msg = Message.buildFromJson(json)
         val data: JsonString = msg.data.decodeToString()
@@ -66,7 +66,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def readChannelData(channel: Channel): ChannelData = {
-    Try(storage.read(channel.toString)) match {
+    Try(storage.read(storage.CHANNEL_DATA_KEY + channel.toString)) match {
       case Success(Some(json)) => ChannelData.buildFromJson(json)
       case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ChannelData for channel $channel not in the database")
       case Failure(ex)         => throw ex
@@ -75,7 +75,7 @@ final case class DbActor(
 
   @throws[DbActorNAckException]
   private def readElectionData(laoId: Hash, electionId: Hash): ElectionData = {
-    Try(storage.read(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")) match {
+    Try(storage.read(storage.DATA_KEY + s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")) match {
       case Success(Some(json)) => ElectionData.buildFromJson(json)
       case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
       case Failure(ex)         => throw ex
@@ -133,7 +133,7 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def createChannel(channel: Channel, objectType: ObjectType.ObjectType): Unit = {
     if (!checkChannelExistence(channel)) {
-      val pair = channel.toString -> ChannelData(objectType, List.empty).toJsonString
+      val pair = (storage.CHANNEL_DATA_KEY + channel.toString) -> ChannelData(objectType, List.empty).toJsonString
       storage.write(pair)
     }
   }
@@ -142,7 +142,7 @@ final case class DbActor(
   private def createElectionData(laoId: Hash, electionId: Hash, keyPair: KeyPair): Unit = {
     val channel = Channel(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")
     if (!checkChannelExistence(channel)) {
-      val pair = channel.toString -> ElectionData(electionId, keyPair).toJsonString
+      val pair = (storage.DATA_KEY + channel.toString) -> ElectionData(electionId, keyPair).toJsonString
       storage.write(pair)
     }
   }
@@ -169,13 +169,13 @@ final case class DbActor(
     // removing channels already present in the db from the list
     val filtered: List[(Channel, ObjectType.ObjectType)] = filterExistingChannels(channels, Nil)
     // creating ChannelData from the filtered input
-    val mapped: List[(String, String)] = filtered.map { case (c, o) => (c.toString, ChannelData(o, List.empty).toJsonString) }
+    val mapped: List[(String, String)] = filtered.map { case (c, o) => (storage.CHANNEL_DATA_KEY + c.toString, ChannelData(o, List.empty).toJsonString) }
 
     Try(storage.write(mapped: _*))
   }
 
   private def checkChannelExistence(channel: Channel): Boolean = {
-    Try(storage.read(channel.toString)) match {
+    Try(storage.read(storage.CHANNEL_DATA_KEY + channel.toString)) match {
       case Success(option) => option.isDefined
       case _               => false
     }
@@ -196,7 +196,7 @@ final case class DbActor(
   @throws[DbActorNAckException]
   private def generateLaoDataKey(channel: Channel): String = {
     channel.decodeChannelLaoId match {
-      case Some(data) => s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
+      case Some(data) => storage.DATA_KEY + s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
       case None =>
         log.error(s"Actor $self (db) encountered a problem while decoding LAO channel from '$channel'")
         throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not extract the LAO id for channel $channel")
@@ -205,7 +205,7 @@ final case class DbActor(
 
   // generates the key of the RollCallData to store in the database
   private def generateRollCallDataKey(laoId: Hash): String = {
-    s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
+    storage.DATA_KEY + s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
   }
 
   @throws[DbActorNAckException]
