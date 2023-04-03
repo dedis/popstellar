@@ -23,6 +23,8 @@ trait Storage {
     */
   def write(keyValues: (String, String)*): Unit
 
+  def filterKeysByPrefix(prefix: String): Set[String]
+
   /** Removes a single element from the storage
     *
     * @param key
