@@ -1,14 +1,14 @@
 [
   {
-    "url": "https://example1.server.example:8000",
-    "laoId": "pseudoRandomString1"
+    "domain": "example1.server.example:8000",
+    "lao_id": "FirstLaoID"
   },
   {
-    "url": "https://example2.server.example:8000",
-    "laoId": "pseudoRandomString2"
+    "domain": "example2.server.example:8000",
+    "lao_id": "SecondLaoID"
   },
   {
-    "url": "https://example3.server.example:8000",
-    "laoId": "pseudoRandomString3"
+    "domain": "example3.server.example:8000",
+    "lao_id": "ThirdLaoID"
   }
 ]
