@@ -42,17 +42,17 @@ const (
 
 // constant parameter names
 const (
-	ClientID     string = "client_id"
-	Nonce               = "nonce"
-	Scope               = "scope"
-	LaoID               = "lao_id"
-	RedirectURI         = "redirect_uri"
-	ResponseType        = "response_type"
-	State               = "state"
-	ResTypeMulti        = "id_token token"
-	ResTypeId           = "id_token"
-	OpenID              = "openid"
-	Profile             = "profile"
+	ClientID     = "client_id"
+	Nonce        = "nonce"
+	Scope        = "scope"
+	LaoID        = "lao_id"
+	RedirectURI  = "redirect_uri"
+	ResponseType = "response_type"
+	State        = "state"
+	ResTypeMulti = "id_token token"
+	ResTypeId    = "id_token"
+	OpenID       = "openid"
+	Profile      = "profile"
 )
 
 // clientParams implements op.Client
@@ -382,9 +382,9 @@ func verifyParamsAndCreateRequest(req *http.Request) (map[string]string, *oidc.A
 	//optional parameters
 	state := req.URL.Query().Get(State)
 	if state != "" {
-	}
-	params[State] = state
+		params[State] = state
 
+	}
 	//build auth request
 	oidcReq := createOIDCRequestFromParams(params)
 
