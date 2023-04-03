@@ -44,6 +44,7 @@ public class SocialMediaHomeFragment extends Fragment {
 
     setupBottomNavBar();
     openChirpList();
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -119,5 +120,14 @@ public class SocialMediaHomeFragment extends Fragment {
       FragmentManager manager, @IdRes int id, Supplier<Fragment> fragmentSupplier) {
     ActivityUtils.setFragmentInContainer(
         manager, R.id.fragment_container_social_media, id, fragmentSupplier);
+  }
+
+  public static void openFragment(FragmentManager manager) {
+    LaoActivity.setCurrentFragment(
+        manager, R.id.fragment_social_media_home, SocialMediaHomeFragment::new);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

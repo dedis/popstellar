@@ -43,7 +43,6 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
 
       case Some(message) =>
         val (addChirp, _, senderPK, channel) = extractData[AddChirp](rpcMessage)
-
         runChecks(
           checkTimestampStaleness(
             rpcMessage,
@@ -84,13 +83,13 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
             validationError(s"Parent chirp id doesn't exist")
           )
         )
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   // no need for validation for now, as the server is not supposed to receive the broadcasts
   def validateNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Left(rpcMessage)
+    Right(rpcMessage)
   }
 
   def validateDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -136,13 +135,13 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
           )
         )
 
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
   // no need for validation for now, as the server is not supposed to receive the broadcasts
   def validateNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Left(rpcMessage)
+    Right(rpcMessage)
   }
 
   def validateAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -181,8 +180,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
             validationError(s"Sender $senderPK has an invalid PoP token.")
           )
         )
-
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -222,8 +220,7 @@ sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends Messag
             validationError(s"Sender $senderPK has an invalid PoP token.")
           )
         )
-
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 }

@@ -70,7 +70,7 @@ public class TokenListFragment extends Fragment {
     binding.tokensRecyclerView.setAdapter(tokensAdapter);
 
     subscribeToAttendedRollCalls();
-
+    handleBackNav();
     return binding.getRoot();
   }
 
@@ -123,5 +123,9 @@ public class TokenListFragment extends Fragment {
 
   public static void openFragment(FragmentManager manager) {
     LaoActivity.setCurrentFragment(manager, R.id.fragment_tokens, TokenListFragment::new);
+  }
+
+  private void handleBackNav() {
+    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
   }
 }

@@ -35,7 +35,10 @@ const WalletSingleRollCall = () => {
   return (
     <ScreenWrapper>
       <View>
-        <QRCode value={ScannablePopToken.encodePopToken({ pop_token: rollCallTokenPublicKey })} />
+        <QRCode
+          value={ScannablePopToken.encodePopToken({ pop_token: rollCallTokenPublicKey })}
+          overlayText={STRINGS.wallet_home_rollcall_qrcode_text}
+        />
       </View>
 
       <Text style={[Typography.small, styles.publicKey, Typography.code]} selectable>

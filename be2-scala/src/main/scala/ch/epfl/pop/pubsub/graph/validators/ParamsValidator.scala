@@ -9,9 +9,9 @@ object ParamsValidator extends MethodContentValidator {
 
   private def validateGeneralParams(rpcMessage: JsonRpcRequest): GraphMessage = {
     if (!validateChannel(rpcMessage.getParamsChannel)) {
-      Right(ParamsValidator.validationError("Channel validation failed", rpcMessage.id))
+      Left(ParamsValidator.validationError("Channel validation failed", rpcMessage.id))
     } else {
-      Left(rpcMessage)
+      Right(rpcMessage)
     }
   }
 

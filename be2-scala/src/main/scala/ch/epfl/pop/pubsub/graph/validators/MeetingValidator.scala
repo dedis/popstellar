@@ -65,7 +65,7 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
             validationError(s"trying to send an CreateMeeting message on a wrong type of channel $channel")
           )
         )
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -114,7 +114,7 @@ sealed class MeetingValidator(dbActorRef: => AskableActorRef) extends MessageDat
             validationError("witness key-signature pairs are not valid for the given modification_id")
           )
         )
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 

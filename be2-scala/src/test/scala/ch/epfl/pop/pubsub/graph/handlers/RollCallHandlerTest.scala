@@ -93,7 +93,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbWithNack
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-    rc.handleCreateRollCall(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleCreateRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
@@ -101,7 +101,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbRollCallNotCreated
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-    rc.handleCreateRollCall(request) should matchPattern { case Left(_) => }
+    rc.handleCreateRollCall(request) should matchPattern { case Right(_) => }
     system.stop(mockedDB.actorRef)
   }
 
@@ -109,7 +109,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbRollCallAlreadyCreated
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
-    rc.handleCreateRollCall(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleCreateRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
@@ -117,7 +117,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbRollCallNotCreated
     val rc = new RollCallHandler(mockedDB)
     val request = OpenRollCallMessages.openRollCall
-    rc.handleOpenRollCall(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleOpenRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
@@ -125,7 +125,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbRollCallAlreadyCreated
     val rc = new RollCallHandler(mockedDB)
     val request = OpenRollCallMessages.openRollCall
-    rc.handleOpenRollCall(request) should matchPattern { case Left(_) => }
+    rc.handleOpenRollCall(request) should matchPattern { case Right(_) => }
     system.stop(mockedDB.actorRef)
   }
 
@@ -133,7 +133,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbWithNack
     val rc = new RollCallHandler(mockedDB)
     val request = OpenRollCallMessages.openRollCall
-    rc.handleOpenRollCall(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleOpenRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
@@ -141,7 +141,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbRollCallAlreadyCreated
     val rc = new RollCallHandler(mockedDB)
     val request = ReopenRollCallMessages.reopenRollCall
-    rc.handleReopenRollCall(request) should matchPattern { case Left(_) => }
+    rc.handleReopenRollCall(request) should matchPattern { case Right(_) => }
     system.stop(mockedDB.actorRef)
   }
 
@@ -149,7 +149,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbWithNack
     val rc = new RollCallHandler(mockedDB)
     val request = ReopenRollCallMessages.reopenRollCall
-    rc.handleReopenRollCall(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleReopenRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 
@@ -157,7 +157,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val mockedDB = mockDbWithNack
     val rc = new RollCallHandler(mockedDB)
     val request = CloseRollCallMessages.closeRollCall
-    rc.handleCloseRollCall(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleCloseRollCall(request) shouldBe an[Left[PipelineError, _]]
     system.stop(mockedDB.actorRef)
   }
 

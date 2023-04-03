@@ -155,6 +155,22 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
+  const thumbsPressed = (reactionToAdd: '👍' | '👎') => {
+    const reactionToRemove = reactionToAdd === '👍' ? '👎' : '👍';
+
+    if (reacted[reactionToAdd]) {
+      deleteReaction(reacted[reactionToAdd].id);
+      return;
+    }
+
+    // If the user has already reacted with the other reaction, remove it
+    if (reacted[reactionToRemove]) {
+      deleteReaction(reacted[reactionToRemove].id);
+    }
+
+    addReaction(reactionToAdd);
+  };
+
   return (
     <ListItem containerStyle={listStyle} style={listStyle} bottomDivider>
       <PoPTouchableOpacity
@@ -202,9 +218,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="thumbsUp"
                   testID="thumbs-up"
-                  onPress={() =>
-                    reacted['👍'] ? deleteReaction(reacted['👍'].id) : addReaction('👍')
-                  }
+                  onPress={() => thumbsPressed('👍')}
                   disabled={reactionsDisabled['👍']}
                   size="small"
                   buttonStyle={reacted['👍'] ? 'primary' : 'secondary'}
@@ -218,9 +232,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <PoPIconButton
                   name="thumbsDown"
                   testID="thumbs-down"
-                  onPress={() =>
-                    reacted['👎'] ? deleteReaction(reacted['👎'].id) : addReaction('👎')
-                  }
+                  onPress={() => thumbsPressed('👎')}
                   disabled={reactionsDisabled['👎']}
                   size="small"
                   buttonStyle={reacted['👎'] ? 'primary' : 'secondary'}
@@ -250,7 +262,7 @@ const ChirpCard = ({ chirp, isFirstItem, isLastItem }: IPropTypes) => {
                 <View style={styles.reactionView}>
                   <PoPIconButton
                     name="delete"
-                    testID="delete"
+                    testID="delete_chirp"
                     onPress={() => setShowDeleteConfirmation(true)}
                     size="small"
                     buttonStyle="secondary"

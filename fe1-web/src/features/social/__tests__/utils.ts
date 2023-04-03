@@ -48,7 +48,7 @@ export const mockChirp4 = new Chirp({
   time: new Timestamp(1608888800),
 });
 
-export const mockChirp0DeletedFake = new Chirp({
+export const mockChirp0Deleted = new Chirp({
   id: mockChirpId0,
   sender: new PublicKey('Joker'),
   text: '',

@@ -98,7 +98,7 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
     val rc = new WitnessHandler(mockedDB)
     val request = WitnessMessages.witnessMessage
 
-    rc.handleWitnessMessage(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleWitnessMessage(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
@@ -108,7 +108,7 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
     val rc = new WitnessHandler(mockedDB)
     val request = WitnessMessages.witnessMessage
 
-    rc.handleWitnessMessage(request) should equal(Left(request))
+    rc.handleWitnessMessage(request) should equal(Right(request))
 
     system.stop(mockedDB.actorRef)
   }
@@ -118,7 +118,7 @@ class WitnessHandlerTest extends TestKit(ActorSystem("Witness-DB-System")) with 
     val rc = new WitnessHandler(mockedDB)
     val request = WitnessMessages.witnessMessage
 
-    rc.handleWitnessMessage(request) shouldBe an[Right[PipelineError, _]]
+    rc.handleWitnessMessage(request) shouldBe an[Left[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }

@@ -50,9 +50,9 @@ case object LaoHandler extends MessageHandler {
       } yield ()
 
     Await.ready(ask, duration).value.get match {
-      case Success(_)                        => Left(rpcMessage)
-      case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateLao failed : ${ex.message}", rpcMessage.getId))
-      case reply                             => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+      case Success(_)                        => Right(rpcMessage)
+      case Failure(ex: DbActorNAckException) => Left(PipelineError(ex.code, s"handleCreateLao failed : ${ex.message}", rpcMessage.getId))
+      case reply                             => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }
   }
 
@@ -63,7 +63,7 @@ case object LaoHandler extends MessageHandler {
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateLao].modification_id
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateLao is not implemented", rpcMessage.id))
+    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateLao is not implemented", rpcMessage.id))
   }
 
   def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {

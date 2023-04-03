@@ -6,7 +6,6 @@ import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,6 +15,7 @@ import com.github.dedis.popstellar.databinding.DigitalCashIssueFragmentBinding;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
+import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
@@ -220,15 +220,13 @@ public class DigitalCashIssueFragment extends Fragment {
         .getOnBackPressedDispatcher()
         .addCallback(
             getViewLifecycleOwner(),
-            new OnBackPressedCallback(true) {
-              @Override
-              public void handleOnBackPressed() {
-                Log.d(TAG, "Back pressed, going to digital cash home");
-                LaoActivity.setCurrentFragment(
-                    getParentFragmentManager(),
-                    R.id.fragment_digital_cash_home,
-                    DigitalCashHomeFragment::new);
-              }
-            });
+            ActivityUtils.buildBackButtonCallback(
+                TAG,
+                "digital cash home",
+                () ->
+                    LaoActivity.setCurrentFragment(
+                        getParentFragmentManager(),
+                        R.id.fragment_digital_cash_home,
+                        DigitalCashHomeFragment::new)));
   }
 }

@@ -44,4 +44,8 @@ public class RollCallFragmentPageObject {
   public static ViewInteraction rollCallListAttendees() {
     return onView(withId(R.id.list_view_attendees));
   }
+
+  public static ViewInteraction rollCallQRCode() {
+    return onView(withId(R.id.roll_call_pk_qr_code));
+  }
 }

@@ -25,15 +25,15 @@ trait MessageHandler extends AskPatternConstants {
       case Some(_) =>
         val message: Message = rpcRequest.getParamsMessage.get
         val data: T = message.decodedData.get.asInstanceOf[T]
-        Future((Left(rpcRequest), message, Some(data)))
-      case _ => Future((Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), null, None))
+        Future((Right(rpcRequest), message, Some(data)))
+      case _ => Future((Left(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), null, None))
     }
   }
 
   def extractLaoChannel(rpcRequest: JsonRpcRequest, errorMsg: String): Future[(GraphMessage, Option[Hash])] = {
     rpcRequest.getParamsChannel.decodeChannelLaoId match {
-      case optId @ Some(_) => Future((Left(rpcRequest), optId))
-      case _               => Future((Right(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), None))
+      case optId @ Some(_) => Future((Right(rpcRequest), optId))
+      case _               => Future((Left(PipelineError(ErrorCodes.SERVER_ERROR.id, errorMsg, rpcRequest.id)), None))
     }
   }
 
@@ -47,14 +47,14 @@ trait MessageHandler extends AskPatternConstants {
   def dbAskWrite(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
     val m: Message = rpcRequest.getParamsMessage.getOrElse(
       return Future {
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : retrieve empty rpcRequest message", rpcRequest.id))
+        Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : retrieve empty rpcRequest message", rpcRequest.id))
       }
     )
 
     val askWrite = dbActor ? DbActor.Write(rpcRequest.getParamsChannel, m)
     askWrite.transformWith {
-      case Success(_) => Future(Left(rpcRequest))
-      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
+      case Success(_) => Future(Right(rpcRequest))
+      case _          => Future(Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
     }
   }
 
@@ -68,14 +68,14 @@ trait MessageHandler extends AskPatternConstants {
   def dbAskWritePropagate(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
     val m: Message = rpcRequest.getParamsMessage.getOrElse(
       return Future {
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcRequest.id))
+        Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcRequest.id))
       }
     )
 
     val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcRequest.getParamsChannel, m)
     askWritePropagate.transformWith {
-      case Success(_) => Future(Left(rpcRequest))
-      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
+      case Success(_) => Future(Right(rpcRequest))
+      case _          => Future(Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
     }
   }
 
@@ -95,7 +95,7 @@ trait MessageHandler extends AskPatternConstants {
   def dbBroadcast(rpcMessage: JsonRpcRequest, channel: Channel, broadcastData: JsValue, broadcastChannel: Channel): Future[GraphMessage] = {
     val m: Message = rpcMessage.getParamsMessage.getOrElse(
       return Future {
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcMessage.id))
+        Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcMessage.id))
       }
     )
 
@@ -109,8 +109,8 @@ trait MessageHandler extends AskPatternConstants {
     } yield ()
 
     combined.transformWith {
-      case Success(_) => Future(Left(rpcMessage))
-      case _          => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbBroadcast failed : could not read and broadcast message $m", rpcMessage.id)))
+      case Success(_) => Future(Right(rpcMessage))
+      case _          => Future(Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbBroadcast failed : could not read and broadcast message $m", rpcMessage.id)))
     }
   }
 }

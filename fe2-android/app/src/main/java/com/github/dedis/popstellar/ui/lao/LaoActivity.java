@@ -11,7 +11,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.*;
 import androidx.lifecycle.LifecycleOwner;
@@ -70,12 +69,7 @@ public class LaoActivity extends AppCompatActivity {
     setupDrawerHeader();
 
     // Open Event list on activity creation
-    binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
-    openEventsTab();
-
-    // Temporary fix to disable dark mode, addressing issue #1381 (UI elements not displaying
-    // correctly in dark mode)
-    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+    setEventsTab();
   }
 
   @Override
@@ -145,11 +139,19 @@ public class LaoActivity extends AppCompatActivity {
     binding.laoAppBar.setOnMenuItemClickListener(
         menuItem -> {
           if (menuItem.getItemId() == R.id.history_menu_toolbar) {
-            setCurrentFragment(
-                getSupportFragmentManager(),
-                R.id.fragment_digital_cash_history,
-                DigitalCashHistoryFragment::newInstance);
             binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.DIGITAL_CASH.getMenuId());
+            // If the user clicks on the button when the transaction history is
+            // already displayed, then consider it as a back button pressed
+            Fragment fragment =
+                getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao);
+            if (!(fragment instanceof DigitalCashHistoryFragment)) {
+              setCurrentFragment(
+                  getSupportFragmentManager(),
+                  R.id.fragment_digital_cash_history,
+                  DigitalCashHistoryFragment::newInstance);
+            } else {
+              openDigitalCashTab();
+            }
             return true;
           }
           return false;
@@ -265,6 +267,12 @@ public class LaoActivity extends AppCompatActivity {
         getSupportFragmentManager(), R.id.fragment_social_media_home, SocialMediaHomeFragment::new);
   }
 
+  /** Open Event list and select item in drawer menu */
+  private void setEventsTab() {
+    binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
+    openEventsTab();
+  }
+
   public static LaoViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(LaoViewModel.class);
   }
@@ -345,5 +353,15 @@ public class LaoActivity extends AppCompatActivity {
   public static void addBackNavigationCallback(
       FragmentActivity activity, LifecycleOwner lifecycleOwner, OnBackPressedCallback callback) {
     activity.getOnBackPressedDispatcher().addCallback(lifecycleOwner, callback);
+  }
+
+  /** Adds a specific callback for the back button that opens the events tab */
+  public static void addBackNavigationCallbackToEvents(
+      FragmentActivity activity, LifecycleOwner lifecycleOwner, String tag) {
+    addBackNavigationCallback(
+        activity,
+        lifecycleOwner,
+        ActivityUtils.buildBackButtonCallback(
+            tag, "event list", ((LaoActivity) activity)::setEventsTab));
   }
 }
