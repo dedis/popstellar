@@ -13,6 +13,7 @@ import com.google.gson.JsonParseException;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
+import java.time.Instant;
 import java.util.*;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
@@ -52,6 +53,23 @@ public class StateLaoTest {
                 "wrong id",
                 name,
                 creation,
+                lastModified,
+                organizer,
+                modificationId,
+                witnesses,
+                modificationSignatures));
+  }
+
+  @Test
+  public void futureCreationTimeTest() {
+    long futureCreation = Instant.now().getEpochSecond() + 1000;
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new StateLao(
+                id,
+                name,
+                futureCreation,
                 lastModified,
                 organizer,
                 modificationId,
@@ -208,7 +226,23 @@ public class StateLaoTest {
     String jsonInvalid1 =
         JsonTestUtils.loadFile(pathDir + "wrong_lao_state_additional_params.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_state_missing_params.json");
+
+    String jsonInvalid3 = JsonTestUtils.loadFile(pathDir + "bad_lao_state_creation_negative.json");
+    String jsonInvalid4 = JsonTestUtils.loadFile(pathDir + "bad_lao_state_id_not_base64.json");
+    String jsonInvalid5 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_state_last_modified_negative.json");
+    String jsonInvalid6 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_state_organizer_not_base64.json");
+    String jsonInvalid7 = JsonTestUtils.loadFile(pathDir + "bad_lao_state_witness_not_base64.json");
+    String jsonInvalid8 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_state_creation_after_last_modified.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
+    // assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid5));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid6));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid7));
+    assertThrows(IllegalArgumentException.class, () -> JsonTestUtils.parse(jsonInvalid8));
   }
 }

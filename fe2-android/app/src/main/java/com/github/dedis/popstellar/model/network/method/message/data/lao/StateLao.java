@@ -57,6 +57,12 @@ public class StateLao extends Data {
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");
     }
+    /*if (creation > Instant.now().getEpochSecond()) {
+      throw new IllegalArgumentException("Creation time cannot be in the future");
+    }
+    if (lastModified < creation) {
+      throw new IllegalArgumentException("LastModified cannot be before creation time");
+    }*/
     this.id = id;
     this.name = name;
     this.creation = creation;

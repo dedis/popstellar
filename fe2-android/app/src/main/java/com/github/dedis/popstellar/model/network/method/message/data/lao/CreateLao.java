@@ -36,6 +36,9 @@ public class CreateLao extends Data {
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("CreateLao id must be Hash(organizer||creation||name)");
     }
+    if (creation > Instant.now().getEpochSecond()) {
+      throw new IllegalArgumentException("Creation time cannot be in the future");
+    }
     this.id = id;
     this.name = name;
     this.creation = creation;

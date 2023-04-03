@@ -142,6 +142,31 @@ public class LaoHandlerTest {
         stateLao.getModificationId(), laoRepo.getLaoByChannel(LAO_CHANNEL).getModificationId());
   }
 
+  @Test
+  public void testHandleStateLaos()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException, NoRollCallException {
+    // Create the state LAO message
+    long time = CREATE_LAO.getCreation();
+    StateLao stateLao =
+        new StateLao(
+            CREATE_LAO.getId(),
+            CREATE_LAO.getName(),
+            time,
+            time - 1000,
+            CREATE_LAO.getOrganizer(),
+            createLaoMessage.getMessageId(),
+            new HashSet<>(),
+            new ArrayList<>());
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, stateLao, gson);
+
+    // Call the message handler
+
+    assertThrows(
+        DataHandlingException.class,
+        () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL, message));
+  }
+
   @Test()
   public void testGreetLao()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,

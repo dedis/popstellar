@@ -11,6 +11,7 @@ import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +35,14 @@ public class CreateLaoTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> new CreateLao("wrong Id", name, creation, organizer, witnesses));
+  }
+
+  @Test
+  public void futureCreationTimeTest() {
+    long futureCreation = Instant.now().getEpochSecond() + 1000;
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new CreateLao(id, name, futureCreation, organizer, witnesses));
   }
 
   @Test
@@ -100,7 +109,9 @@ public class CreateLaoTest {
     String jsonInvalid1 =
         JsonTestUtils.loadFile(pathDir + "wrong_lao_create_additional_params.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_create_missing_params.json");
+    String jsonInvalid3 = JsonTestUtils.loadFile(pathDir + "bad_lao_create_creation_negative.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
   }
 }

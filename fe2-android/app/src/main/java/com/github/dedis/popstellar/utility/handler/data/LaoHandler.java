@@ -154,6 +154,10 @@ public final class LaoHandler {
       }
     }
 
+    if (stateLao.getLastModified() < stateLao.getCreation()) {
+      throw new DataHandlingException(stateLao, "smth");
+    }
+
     Log.d(TAG, "Success to verify state lao signatures");
 
     // TODO: verify if lao/state_lao is consistent with the lao/update message
