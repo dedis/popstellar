@@ -493,6 +493,37 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     list should contain(message2)
   }
 
+  test("GetAllChannels returns all locally available channels") {
+
+    // arrange
+    val channelName1 = CHANNEL_NAME
+    val channelName2 = s"${CHANNEL_NAME}2"
+
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val messageId: Hash = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu"))
+    val listIds: List[Hash] = MESSAGE.message_id :: messageId :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.LAO, listIds)
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName1, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName1${Channel.DATA_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString)
+    )
+    initialStorage.write(
+      (initialStorage.CHANNEL_DATA_KEY + channelName2, channelData.toJsonString),
+      (initialStorage.DATA_KEY + s"$channelName2${Channel.DATA_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString)
+    )
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
+
+    // act
+    val ask = dbActor ? GetAllChannels
+    val answer = Await.result(ask, duration)
+
+    // assert
+    answer shouldBe a[DbActor.DbActorGetAllChannelsAck]
+    val set = answer.asInstanceOf[DbActor.DbActorGetAllChannelsAck].setOfChannels
+
+    set should equal(Set(Channel(channelName1), Channel(channelName2)))
+  }
+
   test("addWitnessSignature should not fail if the messageId is valid") {
     // arrange
     val storage: InMemoryStorage = InMemoryStorage()

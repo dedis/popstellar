@@ -125,6 +125,12 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
+  private def getAllChannels: Set[Channel] = {
+    storage.filterKeysByPrefix(storage.CHANNEL_DATA_KEY)
+      .map(key => Channel(key.replaceFirst(storage.CHANNEL_DATA_KEY, "")))
+  }
+
+  @throws[DbActorNAckException]
   private def writeAndPropagate(channel: Channel, message: Message): Unit = {
     write(channel, message)
     mediatorRef ! PubSubMediator.Propagate(channel, message)
@@ -279,6 +285,13 @@ final case class DbActor(
         case failure           => sender() ! failure.recover(Status.Failure(_))
       }
 
+    case GetAllChannels =>
+      log.info(s"Actor $self (db) receveid a GetAllChannels request")
+      Try(getAllChannels) match {
+        case Success(setOfChannels) => sender() ! DbActorGetAllChannelsAck(setOfChannels)
+        case failure                => sender() ! failure.recover(Status.Failure(_))
+      }
+
     case WriteAndPropagate(channel, message) =>
       log.info(s"Actor $self (db) received a WriteAndPropagate request on channel '$channel'")
       Try(writeAndPropagate(channel, message)) match {
@@ -416,6 +429,10 @@ object DbActor {
     */
   final case class Catchup(channel: Channel) extends Event
 
+  /** Request to get all locally stored channels
+    */
+  final case class GetAllChannels() extends Event
+
   /** Request to write a <message> in the database and propagate said message to clients subscribed to the <channel>
     *
     * @param channel
@@ -551,7 +568,14 @@ object DbActor {
     */
   final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
 
-  /** Response for a [[ReadRollcallData]] db request Receiving [[DbActorReadRollcallDataAck]] works as an acknowledgement that the request was successful
+  /** Response for [[GetAllChannels]] db request Receiving [[DbActorGetAllChannelsAck]] works as an acknowledgement that the getAllChannels request was successful
+    *
+    * @param setOfChannels
+    *   requested channels
+    */
+  final case class DbActorGetAllChannelsAck(setOfChannels: Set[Channel]) extends DbActorMessage
+
+  /** Response for a [[ReadRollCallData]] db request Receiving [[DbActorReadRollCallDataAck]] works as an acknowledgement that the request was successful
     *
     * @param rollcallData
     *   requested channel data
