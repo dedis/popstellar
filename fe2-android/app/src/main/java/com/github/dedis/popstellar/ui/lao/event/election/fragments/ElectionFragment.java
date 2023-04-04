@@ -92,6 +92,10 @@ public class ElectionFragment extends Fragment {
 
     managementVisibilityMap = buildManagementVisibilityMap();
 
+    if (!electionViewModel.canVote()) {
+      resetEnablingMap();
+    }
+
     managementButton.setOnClickListener(
         v -> {
           Election election;
@@ -168,14 +172,10 @@ public class ElectionFragment extends Fragment {
           EventState state = election.getState();
           switch (state) {
             case OPENED:
-              if (!electionViewModel.canVote()) {
-                ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_vote_missing_token);
-              } else {
-                LaoActivity.setCurrentFragment(
-                    getParentFragmentManager(),
-                    R.id.fragment_cast_vote,
-                    () -> CastVoteFragment.newInstance(electionId));
-              }
+              LaoActivity.setCurrentFragment(
+                  getParentFragmentManager(),
+                  R.id.fragment_cast_vote,
+                  () -> CastVoteFragment.newInstance(electionId));
               break;
             case RESULTS_READY:
               LaoActivity.setCurrentFragment(
@@ -191,6 +191,10 @@ public class ElectionFragment extends Fragment {
 
     handleBackNav();
     return view;
+  }
+
+  private void resetEnablingMap() {
+    actionEnablingMap.keySet().forEach(k -> actionEnablingMap.put(k, false));
   }
 
   @Override
