@@ -240,14 +240,9 @@ public class ElectionFragmentTest {
               };
             })
         .when(keyManager)
-        .getPoPToken(any(), any());
-
-    electionManagementButton().check(matches(withText("OPEN")));
-    electionManagementButton().perform(click());
-    dialogPositiveButton().performClick();
-    // Wait for the main thread to finish executing the calls made above
-    // before asserting their effect
-    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        .getValidPoPToken(any(), any());
+    activityScenarioRule.getScenario().recreate();
+    openElection();
 
     electionActionButton().check(matches(withText("VOTE")));
     electionActionButton().check(matches(isNotEnabled()));
