@@ -264,7 +264,6 @@
   <string name="error_retrieve_own_token">Could not retrieve your own PoP Token\n%1$s</string>
   <string name="error_end_election">Could not complete the election\n%1$s</string>
   <string name="error_send_vote">Could not send the vote\n%1$s</string>
-  <string name="error_vote_missing_token">You don\'t have a valid token to cast a vote</string>
   <string name="error_create_election">Could not create the election\n%1$s</string>
   <string name="error_create_rollcall">Could not create the rollcall\n%1$s</string>
   <string name="error_start_election">Could not start the election\n%1$s</string>
