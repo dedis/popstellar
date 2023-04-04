@@ -169,7 +169,7 @@ public class ElectionFragment extends Fragment {
           switch (state) {
             case OPENED:
               if (!electionViewModel.canVote()) {
-                ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_retrieve_own_token);
+                ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_vote_missing_token);
               } else {
                 LaoActivity.setCurrentFragment(
                     getParentFragmentManager(),
