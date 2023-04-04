@@ -11,12 +11,14 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
+import static com.github.dedis.popstellar.utility.DataCheckUtils.isBase64;
+
 @Immutable
 public class GreetLao extends Data {
 
   @NonNull
   @SerializedName("lao")
-  private final String id;
+  private final String lao_id;
 
   // Backend sender address
   @NonNull
@@ -35,26 +37,32 @@ public class GreetLao extends Data {
   /**
    * Constructor for a Greeting Message
    *
-   * @throws IllegalArgumentException if channel is null
+   * @throws IllegalArgumentException if arguments are invalid
    */
   public GreetLao(
-      @NonNull String lao,
+      @NonNull String lao_id,
       @NonNull String frontend,
       @NonNull String address,
-      List<PeerAddress> peers) {
-    // Peers can be empty and address can be the same
-    this.peers = new ArrayList<>(peers);
-    this.address = address;
+      @NonNull List<PeerAddress> peers) {
 
-    // Check the validity of the public key should is done via the Public Key class
+    if (!isBase64(lao_id)) {
+      throw new IllegalArgumentException("Lao id must be a base64 encoded string");
+    }
+    // Correctness of the id will be checked via the handler
+    this.lao_id = lao_id;
+
+    // Checking the validity of the public key is done via the Public Key class
     try {
       this.frontendKey = new PublicKey(frontend);
     } catch (Exception e) {
       throw new IllegalArgumentException("Please provide a valid public key");
     }
 
-    // Assume the id of the LAO will be checked via the handler
-    this.id = lao;
+    // Validity of the address is checked at deserialization
+    this.address = address;
+
+    // Peers can be empty
+    this.peers = new ArrayList<>(peers);
   }
 
   // Set of getters for t
@@ -74,7 +82,7 @@ public class GreetLao extends Data {
 
   @NonNull
   public String getId() {
-    return id;
+    return lao_id;
   }
 
   @Override

@@ -49,14 +49,14 @@ public class StateLao extends Data {
    */
   @Immutable
   public StateLao(
-      String id,
-      String name,
+      @NonNull String id,
+      @NonNull String name,
       long creation,
       long lastModified,
-      PublicKey organizer,
-      MessageID modificationId,
-      Set<PublicKey> witnesses,
-      List<PublicKeySignaturePair> modificationSignatures) {
+      @NonNull PublicKey organizer,
+      @NonNull MessageID modificationId,
+      @NonNull Set<PublicKey> witnesses,
+      @NonNull List<PublicKeySignaturePair> modificationSignatures) {
     if (!isBase64(id)) {
       throw new IllegalArgumentException("StateLao id must be a base64 encoded string");
     }

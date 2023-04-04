@@ -35,7 +35,11 @@ public class CreateLao extends Data {
    * @throws IllegalArgumentException if the id is not valid
    */
   public CreateLao(
-      String id, String name, long creation, PublicKey organizer, List<PublicKey> witnesses) {
+      @NonNull String id,
+      @NonNull String name,
+      long creation,
+      @NonNull PublicKey organizer,
+      @NonNull List<PublicKey> witnesses) {
     if (!isBase64(id)) {
       throw new IllegalArgumentException("CreateLao id must be a base64 encoded string");
     }
