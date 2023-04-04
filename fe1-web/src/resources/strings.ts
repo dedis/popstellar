@@ -284,6 +284,10 @@ namespace STRINGS {
   export const cast_vote = 'Cast Vote';
   export const cast_vote_success = 'Successfully casted vote';
 
+  /* --- Roll-Call default screen Strings --- */
+
+  export const roll_call_attendees = 'Attendees';
+
   /* --- Roll-Call Feature Strings --- */
   export const roll_call_event_name = 'Roll-Call';
 

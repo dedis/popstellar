@@ -41,13 +41,18 @@ const ViewSingleRollCall = () => {
   const isConnected = RollCallHooks.useConnectedToLao();
   const rollCall = useSelector(selectRollCall);
 
-  const attendeePopTokens = useMemo(
-    () => [
+  const attendeePopTokens = useMemo(() => {
+    const tokens = [
       ...(attendeePopTokensStrings?.map((k) => new PublicKey(k)) || []),
       ...(rollCall?.attendees || []),
-    ],
-    [attendeePopTokensStrings, rollCall?.attendees],
-  );
+    ];
+    // remove duplicates (not using Set because it doesn't work with PublicKey)
+    const seenTokens = new Set<String>();
+    const uniqueTokens = tokens.filter((publicKey) => {
+      return !seenTokens.has(publicKey.toString()) && seenTokens.add(publicKey.toString());
+    });
+    return Array.from(uniqueTokens);
+  }, [attendeePopTokensStrings, rollCall?.attendees]);
 
   if (!rollCall) {
     throw new Error(`Could not find a roll call with id ${rollCallId}`);
