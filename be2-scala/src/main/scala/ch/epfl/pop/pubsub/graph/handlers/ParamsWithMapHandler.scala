@@ -15,6 +15,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import scala.collection.mutable
 import akka.stream.FlowShape
 import ch.epfl.pop.model.network.JsonRpcResponse
+import ch.epfl.pop.model.network.ResultObject
 import scala.concurrent.{Await, Future}
 
 object ParamsWithMapHandler extends AskPatternConstants {
@@ -43,14 +44,14 @@ object ParamsWithMapHandler extends AskPatternConstants {
           }
         ))
 
-        val heartbeatHandler = builder.add(ParamsWithMapHandler.heartBeatHandler(dbActorRef))
+        val heartbeatHandler = builder.add(ParamsWithMapHandler.heartbeatHandler(dbActorRef))
         val getMessagesByIdHandler = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
 
         val handlerMerger = builder.add(Merge[GraphMessage](totalPorts))
 
         /* glue the components together */
         handlerPartitioner.out(portPipelineError) ~> handlerMerger
-        handlerPartitioner.out(portHeartBeatHandler) ~> heartBeatHandler ~> handlerMerger
+        handlerPartitioner.out(portHeartBeatHandler) ~> heartbeatHandler ~> handlerMerger
         handlerPartitioner.out(portGetMsgsByIdHandler) ~> getMessagesByIdHandler ~> handlerMerger
 
         /* close the shape */
@@ -60,7 +61,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
       }
   })
 
-  def heartBeatHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
+  def heartbeatHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       val receivedHeartBeat: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[Heartbeat].channelsToMessageIds // pas sûr
       val ask = dbActorRef ? DbActor.GetSetOfChannels()
@@ -71,7 +72,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
         val ask = dbActorRef ? DbActor.ReadChannelData(channel)
         val answer = Await.result(ask, duration)
         val setOfIds = answer.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData.messages.to(collection.mutable.Set)
-        localHeartBeat += (channel -> setOfIds)
+        localHeartBeat += (channel -> setOfIds.toList)
       })
       var missingIds: mutable.HashMap[Channel, Set[Hash]] = mutable.HashMap()
       receivedHeartBeat.keys.foreach(channel => {
@@ -89,21 +90,22 @@ object ParamsWithMapHandler extends AskPatternConstants {
   })
 
   def getMessagesByIdHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
-    case Right(jsonRpcMessage: JsonRpcRequest) => {
+    case Right(jsonRpcMessage: JsonRpcRequest) =>
       val receivedRequest: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[GetMessagesById].channelsToMessageIds
-      val ask = dbActorRef ? DbActor.GetSetOfChannels()
-      val answer = Await.result(ask, duration)
-      val setOfChannels: Set[Channel] = answer.asInstanceOf[DbActor.DbActorGetSetOfChannelsAck].channels.map(s => Channel(s))
       var response: mutable.HashMap[Channel, Set[Message]] = mutable.HashMap()
       receivedRequest.keys.foreach(channel => {
         val ask = dbActorRef ? DbActor.Catchup(channel)
         val answer = Await.result(ask, duration)
-        val missingIds = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages.filter(message => receivedRequest.get(channel).contains(message.message_id)).to(collection.mutable.Set) // je retrieve tous les messages pour ne garder que ceux qui m'intéresse :((
+        val missingIds = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages.filter(message => receivedRequest.get(channel).contains(message.message_id)).to(collection.immutable.Set) // je retrieve tous les messages pour ne garder que ceux qui m'intéresse :((
         response += (channel -> missingIds)
       })
-      Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(response), None, None))
+      Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(Map[Channel, Set[Message]]()), None, None))
 
-    }
+
+
+    case Right(jsonRpcMessage: JsonRpcResponse) =>
+      Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "getMessagesByIdHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
+    case graphMessage@_ => graphMessage
   })
 
 }
