@@ -13,6 +13,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
+import static com.github.dedis.popstellar.utility.DataCheckUtils.isBase64;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.isInFuture;
+
 /** Data received to track the state of a lao */
 public class StateLao extends Data {
 
@@ -54,15 +57,22 @@ public class StateLao extends Data {
       MessageID modificationId,
       Set<PublicKey> witnesses,
       List<PublicKeySignaturePair> modificationSignatures) {
+    if (!isBase64(id)) {
+      throw new IllegalArgumentException("StateLao id must be a base64 encoded string");
+    }
+    // organizer, modificationId and witnesses are checked to be base64 at deserialization
+
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");
     }
-    /*if (creation > Instant.now().getEpochSecond()) {
+    if (isInFuture(creation)) {
       throw new IllegalArgumentException("Creation time cannot be in the future");
     }
     if (lastModified < creation) {
-      throw new IllegalArgumentException("LastModified cannot be before creation time");
-    }*/
+      throw new IllegalArgumentException("Last modified time cannot be before creation time");
+    }
+    // times are checked to be non-negative at deserialization
+
     this.id = id;
     this.name = name;
     this.creation = creation;

@@ -31,10 +31,25 @@ public class CreateLaoTest {
   private final CreateLao createLao = new CreateLao(id, name, creation, organizer, witnesses);
 
   @Test
-  public void wrongIdTest() {
+  public void idNotBase64Test() {
     assertThrows(
         IllegalArgumentException.class,
         () -> new CreateLao("wrong Id", name, creation, organizer, witnesses));
+  }
+
+  @Test
+  public void invalidIdHashTest() {
+    String wrongId = "A" + id.substring(1);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new CreateLao(wrongId, name, creation, organizer, witnesses));
+  }
+
+  @Test
+  public void emptyNameTest() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new CreateLao(id, "", creation, organizer, witnesses));
   }
 
   @Test
@@ -110,8 +125,14 @@ public class CreateLaoTest {
         JsonTestUtils.loadFile(pathDir + "wrong_lao_create_additional_params.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_create_missing_params.json");
     String jsonInvalid3 = JsonTestUtils.loadFile(pathDir + "bad_lao_create_creation_negative.json");
+    String jsonInvalid4 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_create_organizer_not_base64.json");
+    String jsonInvalid5 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_create_witness_not_base64.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid5));
   }
 }

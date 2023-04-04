@@ -45,13 +45,46 @@ public class StateLaoTest {
           modificationSignatures);
 
   @Test
-  public void wrongIdTest() {
+  public void idNotBase64Test() {
     assertThrows(
         IllegalArgumentException.class,
         () ->
             new StateLao(
                 "wrong id",
                 name,
+                creation,
+                lastModified,
+                organizer,
+                modificationId,
+                witnesses,
+                modificationSignatures));
+  }
+
+  @Test
+  public void invalidIdHashTest() {
+    String wrongId = "A" + id.substring(1);
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new StateLao(
+                wrongId,
+                name,
+                creation,
+                lastModified,
+                organizer,
+                modificationId,
+                witnesses,
+                modificationSignatures));
+  }
+
+  @Test
+  public void emptyNameTest() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new StateLao(
+                id,
+                "",
                 creation,
                 lastModified,
                 organizer,
@@ -228,21 +261,17 @@ public class StateLaoTest {
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_state_missing_params.json");
 
     String jsonInvalid3 = JsonTestUtils.loadFile(pathDir + "bad_lao_state_creation_negative.json");
-    String jsonInvalid4 = JsonTestUtils.loadFile(pathDir + "bad_lao_state_id_not_base64.json");
-    String jsonInvalid5 =
+    String jsonInvalid4 =
         JsonTestUtils.loadFile(pathDir + "bad_lao_state_last_modified_negative.json");
-    String jsonInvalid6 =
+    String jsonInvalid5 =
         JsonTestUtils.loadFile(pathDir + "bad_lao_state_organizer_not_base64.json");
-    String jsonInvalid7 = JsonTestUtils.loadFile(pathDir + "bad_lao_state_witness_not_base64.json");
-    String jsonInvalid8 =
-        JsonTestUtils.loadFile(pathDir + "bad_lao_state_creation_after_last_modified.json");
+    String jsonInvalid6 = JsonTestUtils.loadFile(pathDir + "bad_lao_state_witness_not_base64.json");
+
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
-    // assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid5));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid6));
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid7));
-    assertThrows(IllegalArgumentException.class, () -> JsonTestUtils.parse(jsonInvalid8));
   }
 }
