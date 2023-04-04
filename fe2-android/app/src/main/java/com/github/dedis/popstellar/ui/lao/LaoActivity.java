@@ -37,8 +37,7 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.security.GeneralSecurityException;
-import java.util.Objects;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -49,7 +48,7 @@ public class LaoActivity extends AppCompatActivity {
 
   LaoViewModel laoViewModel;
   LaoActivityBinding binding;
-  private final Stack<Fragment> fragmentStack = new Stack<>();
+  private final Deque<Fragment> fragmentStack = new LinkedList<>();
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
