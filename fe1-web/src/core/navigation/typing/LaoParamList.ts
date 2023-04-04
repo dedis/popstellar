@@ -6,7 +6,7 @@ import { DigitalCashParamList } from './DigitalCashParamList';
 import { LaoEventsParamList } from './LaoEventsParamList';
 import { NotificationParamList } from './NotificationParamList';
 import { PoPchaParamList } from './PoPchaParamList';
-import { SocialParamList } from './social/SocialParamList';
+import { SocialParamList } from './social';
 import { WalletParamList } from './WalletParamList';
 
 export type LaoParamList = {
