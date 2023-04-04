@@ -193,8 +193,10 @@ public class ElectionFragment extends Fragment {
     return view;
   }
 
+  /** Set to not enabled the button "Vote" */
   private void resetEnablingMap() {
-    actionEnablingMap.keySet().forEach(k -> actionEnablingMap.put(k, false));
+    actionEnablingMap.put(EventState.CREATED, false);
+    actionEnablingMap.put(EventState.OPENED, false);
   }
 
   @Override

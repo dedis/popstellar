@@ -5,13 +5,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.*;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
-import com.github.dedis.popstellar.repository.ElectionRepository;
-import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.MessageSenderHelper;
@@ -68,6 +67,20 @@ public class ElectionFragmentTest {
   private static final long CREATION = 10323411;
   private static final long START = 10323421;
   private static final long END = 10323431;
+  private static final String ROLL_CALL_DESC = "";
+  private static final String LOCATION = "EPFL";
+  private final RollCall ROLL_CALL =
+      new RollCall(
+          LAO.getId(),
+          LAO.getId(),
+          TITLE,
+          CREATION,
+          START,
+          END,
+          EventState.CLOSED,
+          new HashSet<>(),
+          LOCATION,
+          ROLL_CALL_DESC);
 
   private static final String ELECTION_ID = generateElectionSetupId(LAO_ID, CREATION, TITLE);
   private static final ElectionQuestion ELECTION_QUESTION_1 =
@@ -98,6 +111,7 @@ public class ElectionFragmentTest {
 
   @Inject ElectionRepository electionRepository;
 
+  @Inject RollCallRepository rollCallRepo;
   @BindValue @Mock LAORepository repository;
   @BindValue @Mock GlobalNetworkManager networkManager;
   @BindValue @Mock KeyManager keyManager;
@@ -123,6 +137,8 @@ public class ElectionFragmentTest {
 
           when(repository.getLaoObservable(anyString())).thenReturn(laoSubject);
           when(repository.getLaoView(any())).thenAnswer(invocation -> new LaoView(LAO));
+
+          rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL);
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
           when(networkManager.getMessageSender()).thenReturn(messageSenderHelper.getMockedSender());
@@ -207,7 +223,7 @@ public class ElectionFragmentTest {
   }
 
   @Test
-  public void actionButtonOpenTest() {
+  public void actionButtonEnabledOpenTest() {
     openElection();
 
     electionActionButton().check(matches(withText("VOTE")));
