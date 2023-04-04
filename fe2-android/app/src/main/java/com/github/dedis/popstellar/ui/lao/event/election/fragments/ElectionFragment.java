@@ -168,10 +168,14 @@ public class ElectionFragment extends Fragment {
           EventState state = election.getState();
           switch (state) {
             case OPENED:
-              LaoActivity.setCurrentFragment(
-                  getParentFragmentManager(),
-                  R.id.fragment_cast_vote,
-                  () -> CastVoteFragment.newInstance(electionId));
+              if (!electionViewModel.canVote()) {
+                ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_retrieve_own_token);
+              } else {
+                LaoActivity.setCurrentFragment(
+                    getParentFragmentManager(),
+                    R.id.fragment_cast_vote,
+                    () -> CastVoteFragment.newInstance(electionId));
+              }
               break;
             case RESULTS_READY:
               LaoActivity.setCurrentFragment(
