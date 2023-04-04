@@ -38,6 +38,7 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.security.GeneralSecurityException;
 import java.util.Objects;
+import java.util.Stack;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -48,6 +49,7 @@ public class LaoActivity extends AppCompatActivity {
 
   LaoViewModel laoViewModel;
   LaoActivityBinding binding;
+  private final Stack<Fragment> fragmentStack = new Stack<>();
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -136,21 +138,23 @@ public class LaoActivity extends AppCompatActivity {
               }
             });
 
+    // Listener for the transaction button
     binding.laoAppBar.setOnMenuItemClickListener(
         menuItem -> {
           if (menuItem.getItemId() == R.id.history_menu_toolbar) {
-            binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.DIGITAL_CASH.getMenuId());
             // If the user clicks on the button when the transaction history is
             // already displayed, then consider it as a back button pressed
             Fragment fragment =
                 getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao);
             if (!(fragment instanceof DigitalCashHistoryFragment)) {
+              // Push onto the stack the current fragment to restore it upon exit
+              fragmentStack.push(fragment);
               setCurrentFragment(
                   getSupportFragmentManager(),
                   R.id.fragment_digital_cash_history,
                   DigitalCashHistoryFragment::newInstance);
             } else {
-              openDigitalCashTab();
+              resetLastFragment();
             }
             return true;
           }
@@ -271,6 +275,14 @@ public class LaoActivity extends AppCompatActivity {
   private void setEventsTab() {
     binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
     openEventsTab();
+  }
+
+  public void resetLastFragment() {
+    Fragment fragment = fragmentStack.pop();
+    getSupportFragmentManager()
+        .beginTransaction()
+        .replace(R.id.fragment_container_lao, fragment)
+        .commit();
   }
 
   public static LaoViewModel obtainViewModel(FragmentActivity activity) {
