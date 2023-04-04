@@ -17,7 +17,7 @@ public class DataCheckUtils {
    * @throws IllegalArgumentException if the string is empty or null
    */
   public static void checkStringNotEmpty(String input, String field) {
-    if (input == null || field.isEmpty()) {
+    if (input == null || input.isEmpty()) {
       throw new IllegalArgumentException(field + " cannot be empty");
     }
   }
