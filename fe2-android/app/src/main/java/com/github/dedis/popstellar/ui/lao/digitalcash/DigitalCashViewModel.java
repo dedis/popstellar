@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.*;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
@@ -18,6 +19,7 @@ import com.github.dedis.popstellar.model.objects.security.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -62,7 +64,6 @@ public class DigitalCashViewModel extends AndroidViewModel {
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> updateReceiptAmountEvent =
       new MutableLiveData<>();
-
 
   /*
    * Dependencies for this class
@@ -280,17 +281,33 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public boolean canPerformTransaction(
       String currentAmount, String currentPublicKeySelected, int radioGroup) {
-    if ((currentAmount.isEmpty()) || (Integer.parseInt(currentAmount) < MIN_LAO_COIN)) {
-      // create in View Model a function that toast : please enter amount
+    if (currentAmount.isEmpty()) {
+      // ask the user to fill the amount box
       requireToPutAnAmount();
+    }
+    int parsedAmount = 0;
+    try {
+      parsedAmount = Integer.parseInt(currentAmount);
+    } catch (NumberFormatException e) {
+      // Overflow in the amount (no characters or negative numbers can be inserted)
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(),
+          TAG,
+          R.string.digital_cash_amount_inserted_error);
+      return false;
+    }
+    if (parsedAmount <= MIN_LAO_COIN) {
+      ErrorUtils.logAndShow(
+          getApplication().getApplicationContext(),
+          TAG,
+          R.string.digital_cash_amount_min_indication);
       return false;
     } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {
       // create in View Model a function that toast : please enter key
       requireToPutLAOMember();
       return false;
-    } else {
-      return true;
     }
+    return true;
   }
 
   private void processNotCoinbaseTransaction(

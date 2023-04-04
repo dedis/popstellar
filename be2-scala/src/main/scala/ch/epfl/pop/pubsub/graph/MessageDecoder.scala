@@ -17,24 +17,24 @@ object MessageDecoder {
 
   /** Graph component: takes a string as input and parses it into a JsonRpcMessage (stored into a GraphMessage)
     */
-  val jsonRpcParser: Flow[Either[JsonString, PipelineError], GraphMessage, NotUsed] = Flow[Either[JsonString, PipelineError]].map {
-    case Left(jsonString) => Try(jsonString.parseJson.asJsObject) match {
+  val jsonRpcParser: Flow[Either[PipelineError, JsonString], GraphMessage, NotUsed] = Flow[Either[PipelineError, JsonString]].map {
+    case Right(jsonString) => Try(jsonString.parseJson.asJsObject) match {
         case Success(obj) =>
           val fields: Set[String] = obj.fields.keySet
 
           if (fields.contains("method")) {
-            Left(obj.convertTo[JsonRpcRequest])
+            Right(obj.convertTo[JsonRpcRequest])
           } else {
-            Left(obj.convertTo[JsonRpcResponse])
+            Right(obj.convertTo[JsonRpcResponse])
           }
-        case _ => Right(PipelineError(
+        case _ => Left(PipelineError(
             ErrorCodes.INVALID_DATA.id,
             "MessageDecoder parsing failed : input json is not correctly formatted (and thus unknown rpcId).",
             None // no rpcId since we couldn't decrypt the message
           ))
       }
 
-    case Right(pipelineError) => Right(pipelineError) // implicit typecasting
+    case Left(pipelineError) => Left(pipelineError) // implicit typecasting
   }
 
   /** Graph component: takes a GraphMessage and parses the 'data' field of any JsonRpcRequest query containing a message. The result is stored in the input JsonRpcRequest's Message's decodedData field
@@ -69,8 +69,8 @@ object MessageDecoder {
       }
 
     } match {
-      case Success(_)         => Left(filledRequest) // everything worked at expected, 'decodedData' field was populated
-      case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: ${exception.getMessage}", rpcRequest.id))
+      case Success(_)         => Right(filledRequest) // everything worked at expected, 'decodedData' field was populated
+      case Failure(exception) => Left(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: ${exception.getMessage}", rpcRequest.id))
     }
   }
 
@@ -82,7 +82,7 @@ object MessageDecoder {
     *   the upgraded graph message (with 'data' field decoded) or an error
     */
   def parseData(graphMessage: GraphMessage, registry: MessageRegistry): GraphMessage = graphMessage match {
-    case Left(rpcRequest: JsonRpcRequest) => rpcRequest.getDecodedData match {
+    case Right(rpcRequest: JsonRpcRequest) => rpcRequest.getDecodedData match {
         case Some(_) =>
           println(s"Message was already decoded and of type $graphMessage")
           graphMessage // do nothing if 'data' already decoded
@@ -95,7 +95,7 @@ object MessageDecoder {
             case Success((_object, action)) =>
               populateDataField(rpcRequest, _object, action, jsonString, registry)
             case Failure(exception) =>
-              Right(PipelineError(
+              Left(PipelineError(
                 ErrorCodes.INVALID_DATA.id,
                 s"Invalid header: ${exception.getMessage()}",
                 rpcRequest.id

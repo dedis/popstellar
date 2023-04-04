@@ -47,7 +47,6 @@ import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObj
 import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.DigitalCashPageObject.*;
 import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.HistoryPageObject.fragmentDigitalCashHistoryId;
 import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.IssuePageObject.fragmentDigitalCashIssueId;
-import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.ReceiptPageObject.fragmentDigitalCashReceiptId;
 import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.ReceivePageObject.fragmentDigitalCashReceiveId;
 import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.SendPageObject.fragmentDigitalCashSendId;
 import static com.github.dedis.popstellar.testutils.pages.lao.digitalcash.SendPageObject.sendButtonToReceipt;
@@ -170,7 +169,7 @@ public class DigitalCashActivityTest {
     sendButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashSendId()))));
     sendButtonToReceipt().perform(click());
-    fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashReceiptId()))));
+    fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashSendId()))));
   }
 
   @Test

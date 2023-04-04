@@ -10,7 +10,7 @@ object Handler {
     val (_object, action) = rpcRequest.getDecodedDataHeader
     messageRegistry.getHandler(_object, action) match {
       case Some(handler) => handler(rpcRequest)
-      case _ => Right(PipelineError(
+      case _ => Left(PipelineError(
           ErrorCodes.SERVER_ERROR.id,
           s"MessageRegistry could not find any handler for JsonRpcRequest : $rpcRequest'",
           rpcRequest.getId
@@ -20,8 +20,8 @@ object Handler {
 
   // handles messages
   def handler(messageRegistry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(rpcRequest: JsonRpcRequest) => handle(rpcRequest, messageRegistry)
-    case Left(rpcResponse: JsonRpcResponse) => Right(PipelineError(
+    case Right(rpcRequest: JsonRpcRequest) => handle(rpcRequest, messageRegistry)
+    case Right(rpcResponse: JsonRpcResponse) => Left(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         "NOT IMPLEMENTED : Server does not allow JsonRpcResponse processing (handling) currently",
         rpcResponse.getId

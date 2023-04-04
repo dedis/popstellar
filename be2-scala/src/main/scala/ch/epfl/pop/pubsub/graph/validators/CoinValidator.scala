@@ -13,7 +13,6 @@ case object CoinValidator extends MessageDataContentValidator {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: PostTransaction = message.decodedData.get.asInstanceOf[PostTransaction]
-
         runChecks(
           checkId(
             rpcMessage,
@@ -32,8 +31,7 @@ case object CoinValidator extends MessageDataContentValidator {
             s => validationError(s)
           )
         )
-
-      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+      case _ => Left(validationErrorNoMessage(rpcMessage.id))
     }
   }
 
@@ -44,13 +42,13 @@ case object CoinValidator extends MessageDataContentValidator {
     * @param error
     *   the error to forward in case the transaction signatures are not valid.
     * @return
-    *   : GraphMessage passes the rpcMessages to Left if successful, else right with pipeline error
+    *   : GraphMessage passes the rpcMessages to Right if successful, else Left with pipeline error
     */
   private def checkTransactionSignatures(rpcMessage: JsonRpcRequest, transaction: Transaction, error: PipelineError): GraphMessage = {
     if (transaction.checkSignatures())
-      Left(rpcMessage)
+      Right(rpcMessage)
     else {
-      Right(error)
+      Left(error)
     }
   }
 
@@ -61,12 +59,12 @@ case object CoinValidator extends MessageDataContentValidator {
     * @param validationError
     *   the error to forward in case the transaction's sum is not valid.
     * @return
-    *   GraphMessage passes the rpcMessages to Left if successful, else right with pipeline error
+    *   GraphMessage passes the rpcMessages to Right if successful, else Left with pipeline error
     */
   private def checkSumOutputs(rpcMessage: JsonRpcRequest, transaction: Transaction, validationError: String => PipelineError): GraphMessage = {
     transaction.sumOutputs() match {
-      case Left(err) => Right(validationError(err.getMessage))
-      case Right(_)  => Left(rpcMessage)
+      case Left(err) => Left(validationError(err.getMessage))
+      case Right(_)  => Right(rpcMessage)
     }
   }
 

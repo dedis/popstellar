@@ -1,14 +1,14 @@
 package ch.epfl.pop.pubsub.graph
 
-import java.io.InputStream
-
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.data.ProtocolException
 import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
-import com.networknt.schema.{JsonSchema, JsonSchemaFactory, SpecVersion, ValidationMessage}
+import com.networknt.schema._
 import spray.json._
 
+import java.io.InputStream
+import java.util
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -27,13 +27,25 @@ object SchemaVerifier {
     // creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtained from a node created from query.json
     val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
 
+    val config = new SchemaValidatorsConfig()
+    val mapping = new util.HashMap[String, String]()
+    mapping.put(
+      "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/heartbeat.json",
+      "resource:/protocol/query/method/heartbeat.json"
+    )
+    mapping.put(
+      "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/get_messages_by_id.json",
+      "resource:/protocol/query/method/get_messages_by_id.json"
+    )
+    config.setUriMappings(mapping)
+
     // creation of a JsonNode using the readTree function from the file query.json (at queryPath)
     // closing the stream is done by readTree
     // FIXME: error handling for queryPath
     lazy val jsonNode: JsonNode = objectMapper.readTree(queryFile)
 
     // creation of a JsonSchema from the previously created factory and JsonNode
-    factory.getSchema(jsonNode)
+    factory.getSchema(jsonNode, config)
   }
 
   private def verifySchema(schema: JsonSchema, jsonString: JsonString): Try[Unit] = {
@@ -60,15 +72,15 @@ object SchemaVerifier {
     * @return
     *   a [[GraphMessage]] containing the input if successful, or a [[PipelineError]] otherwise
     */
-  def verifyRpcSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
+  def verifyRpcSchema(jsonString: JsonString): Either[PipelineError, JsonString] = {
     verifySchema(querySchema, jsonString) match {
-      case Success(_) => Left(jsonString)
+      case Success(_) => Right(jsonString)
       case Failure(ex) =>
         val rpcId = Try(jsonString.parseJson.asJsObject.getFields("id")) match {
           case Success(Seq(JsNumber(id))) => Some(id.toInt)
           case _                          => None
         }
-        Right(PipelineError(ErrorCodes.INVALID_DATA.id, ex.getMessage, rpcId))
+        Left(PipelineError(ErrorCodes.INVALID_DATA.id, ex.getMessage, rpcId))
     }
   }
 
@@ -99,5 +111,5 @@ object SchemaVerifier {
   )
 
   // takes a string (json) input and compares it with the JsonSchema
-  val rpcSchemaVerifier: Flow[JsonString, Either[JsonString, PipelineError], NotUsed] = Flow[JsonString].map(verifyRpcSchema)
+  val rpcSchemaVerifier: Flow[JsonString, Either[PipelineError, JsonString], NotUsed] = Flow[JsonString].map(verifyRpcSchema)
 }

@@ -113,7 +113,15 @@ public class RollCallFragment extends Fragment {
                   rollCallViewModel
                       .openRollCall(rollCall.getId())
                       .subscribe(
-                          () -> {},
+                          () ->
+                              /* Here the fragment is reopened as we want to have continuity between
+                               * the list of attendees and the list of scanned tokens for the organizer.
+                               * By reopening the fragment, the roll call attendees will be immediately
+                               * displayed also in the list of scanned tokens. */
+                              LaoActivity.setCurrentFragment(
+                                  getParentFragmentManager(),
+                                  R.id.fragment_roll_call,
+                                  () -> RollCallFragment.newInstance(rollCall.getPersistentId())),
                           error ->
                               ErrorUtils.logAndShow(
                                   requireContext(), TAG, error, R.string.error_open_rollcall)));
@@ -234,7 +242,7 @@ public class RollCallFragment extends Fragment {
    */
   private void setupListOfAttendees() {
     boolean isOrganizer = laoViewModel.isOrganizer();
-    // Set the visibility of the list
+    // Set the visibility of the list:
     // It is set to visible only if the roll call is closed
     // Or also if the user is the organizer and roll call is opened
     // Otherwise do not display the list
@@ -244,18 +252,27 @@ public class RollCallFragment extends Fragment {
     binding.listViewAttendees.setVisibility(visibility);
 
     List<String> attendeesList = null;
-    // Show the list of scanned attendees if the roll call is opened and the user is the organizer
     if (isOrganizer && rollCall.isOpen()) {
-      binding.rollCallAttendeesText.setText(R.string.roll_call_scanned);
+      // Show the list of all time scanned attendees if the roll call is opened
+      // and the user is the organizer
       attendeesList =
           rollCallViewModel.getAttendees().stream()
               .map(PublicKey::getEncoded)
               .collect(Collectors.toList());
-    } else if (rollCall.isClosed()) { // Show the list of attendees if the roll call has ended
-      binding.rollCallAttendeesText.setText(R.string.roll_call_attendees);
+      binding.rollCallAttendeesText.setText(
+          String.format(
+              getResources().getString(R.string.roll_call_scanned),
+              rollCallViewModel.getAttendees().size()));
+    } else if (rollCall.isClosed()) {
+      // Show the list of attendees if the roll call has ended
+      binding.rollCallAttendeesText.setText(
+          String.format(
+              getResources().getString(R.string.roll_call_attendees),
+              rollCall.getAttendees().size()));
       attendeesList =
           rollCall.getAttendees().stream().map(PublicKey::getEncoded).collect(Collectors.toList());
     }
+
     if (attendeesList != null) {
       binding.listViewAttendees.setAdapter(
           new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, attendeesList));
@@ -290,16 +307,20 @@ public class RollCallFragment extends Fragment {
     String pk = popToken.getPublicKey().getEncoded();
     Log.d(TAG, "key displayed is " + pk);
 
-    PopTokenData data = new PopTokenData(new PublicKey(pk));
+    // Set the QR visible only if the rollcall is opened and the user isn't the organizer
+    binding.rollCallPkQrCode.setVisibility((rollCall.isOpen()) ? View.VISIBLE : View.INVISIBLE);
 
+    // Don't lose time generating the QR code if it's not visible
+    if (laoViewModel.isOrganizer() || rollCall.isClosed()) {
+      return;
+    }
+
+    PopTokenData data = new PopTokenData(new PublicKey(pk));
     Bitmap myBitmap =
         QRCode.from(gson.toJson(data))
-            .withColor(ActivityUtils.getQRCodeColor(getActivity()), Color.TRANSPARENT)
+            .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
             .bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
-    // Set the QR visible only if the rollcall is opened and the user isn't the organizer
-    binding.rollCallPkQrCode.setVisibility(
-        (!laoViewModel.isOrganizer() && rollCall.isOpen()) ? View.VISIBLE : View.INVISIBLE);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {

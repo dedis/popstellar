@@ -6,7 +6,7 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROLL_CALL_DATA_PREFIX, ROOT_CHANNEL_PREFIX}
+import ch.epfl.pop.model.objects.Channel.{CHANNEL_SEPARATOR, ROOT_CHANNEL_PREFIX}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
@@ -74,8 +74,8 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def readElectionData(electionId: Hash): ElectionData = {
-    Try(storage.read(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")) match {
+  private def readElectionData(laoId: Hash, electionId: Hash): ElectionData = {
+    Try(storage.read(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")) match {
       case Success(Some(json)) => ElectionData.buildFromJson(json)
       case Success(None)       => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ElectionData for election $electionId not in the database")
       case Failure(ex)         => throw ex
@@ -139,8 +139,8 @@ final case class DbActor(
   }
 
   @throws[DbActorNAckException]
-  private def createElectionData(electionId: Hash, keyPair: KeyPair): Unit = {
-    val channel = Channel(s"${ROOT_CHANNEL_PREFIX}private/${electionId.toString}")
+  private def createElectionData(laoId: Hash, electionId: Hash, keyPair: KeyPair): Unit = {
+    val channel = Channel(s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/private/${electionId.toString}")
     if (!checkChannelExistence(channel)) {
       val pair = channel.toString -> ElectionData(electionId, keyPair).toJsonString
       storage.write(pair)
@@ -205,7 +205,7 @@ final case class DbActor(
 
   // generates the key of the RollCallData to store in the database
   private def generateRollCallDataKey(laoId: Hash): String = {
-    s"${ROLL_CALL_DATA_PREFIX}${laoId.toString}"
+    s"${ROOT_CHANNEL_PREFIX}${laoId.toString}/rollcall"
   }
 
   @throws[DbActorNAckException]
@@ -251,9 +251,9 @@ final case class DbActor(
         case failure              => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case ReadElectionData(electionId) =>
+    case ReadElectionData(laoId, electionId) =>
       log.info(s"Actor $self (db) received a ReadElectionData request for election '$electionId'")
-      Try(readElectionData(electionId)) match {
+      Try(readElectionData(laoId, electionId)) match {
         case Success(electionData) => sender() ! DbActorReadElectionDataAck(electionData)
         case failure               => sender() ! failure.recover(Status.Failure(_))
       }
@@ -293,11 +293,11 @@ final case class DbActor(
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case CreateElectionData(id, keyPair) =>
+    case CreateElectionData(laoId, id, keyPair) =>
       log.info(s"Actor $self (db) received an CreateElection request for election '$id'" +
         s"\n\tprivate key = ${keyPair.privateKey.toString}" +
         s"\n\tpublic key = ${keyPair.publicKey.toString}")
-      Try(createElectionData(id, keyPair)) match {
+      Try(createElectionData(laoId, id, keyPair)) match {
         case Success(_) => sender() ! DbActorAck()
         case failure    => sender() ! failure.recover(Status.Failure(_))
       }
@@ -391,7 +391,7 @@ object DbActor {
     * @param electionId
     *   the election unique id
     */
-  final case class ReadElectionData(electionId: Hash) extends Event
+  final case class ReadElectionData(laoId: Hash, electionId: Hash) extends Event
 
   /** Request to read the laoData of the LAO, with key laoId
     *
@@ -441,7 +441,7 @@ object DbActor {
     * @param keyPair
     *   the keypair of the election
     */
-  final case class CreateElectionData(id: Hash, keyPair: KeyPair) extends Event
+  final case class CreateElectionData(laoId: Hash, id: Hash, keyPair: KeyPair) extends Event
 
   /** Request to create List of channels in the db with given types
     *

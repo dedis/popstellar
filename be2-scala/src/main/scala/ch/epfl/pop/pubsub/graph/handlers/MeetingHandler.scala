@@ -19,9 +19,9 @@ case object MeetingHandler extends MessageHandler {
     }
 
     Await.ready(ask, duration).value match {
-      case Some(Success(_))                        => Left(rpcMessage)
-      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCreateMeeting failed : ${ex.message}", rpcMessage.getId))
-      case reply => Right(PipelineError(
+      case Some(Success(_))                        => Right(rpcMessage)
+      case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"handleCreateMeeting failed : ${ex.message}", rpcMessage.getId))
+      case reply => Left(PipelineError(
           ErrorCodes.SERVER_ERROR.id,
           s"handleCreateMeeting failed : unexpected DbActor reply '$reply'",
           rpcMessage.getId
@@ -30,6 +30,6 @@ case object MeetingHandler extends MessageHandler {
   }
 
   def handleStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateMeeting is not implemented", rpcMessage.id))
+    Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateMeeting is not implemented", rpcMessage.id))
   }
 }

@@ -185,6 +185,7 @@ jobs:
           distribution: "zulu"
           java-version: "11"
 
+      # Cache the build process
       - name: Cache Gradle
         uses: actions/cache@v2
         with:
@@ -193,12 +194,11 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
-
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
       # Get version tag
-      - name: Get the version
+      - name: Get the release version
         id: get_version
         run: |
           echo ::set-output name=version::$(echo ${GITHUB_REF/refs\/tags\//})
@@ -210,29 +210,16 @@ jobs:
       # Create APK Debug
       - name: Build apk debug project (APK)
         run: ./gradlew assembleDebug
-      
-      # Create APK Release
-      - name: Build apk release project (APK)
-        run: ./gradlew assemble
 
       - name: Rename APK debug
-        run: mv $(pwd)/app/build/outputs/apk/debug/app-debug.apk $(pwd)/app/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
-
-      - name: Rename APK release
-        run: mv $(pwd)/app/build/outputs/apk/release/app-release-unsigned.apk $(pwd)/app/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
-
+        run: mv $(pwd)/app/build/outputs/apk/debug/app-debug.apk $(pwd)/app/build/outputs/apk/debug/${{ env.app_name }}-${{ steps.get_version.outputs.version }}.apk
+      
       # Upload the APKs
       - name: APK Debug
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ env.base_folder }}/app/build/outputs/apk/debug/${{ env.app_name }}-D-${{ steps.get_version.outputs.version }}.apk
-
-      - name: APK Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: ${{ env.base_folder }}/app/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk
+          files: ${{ env.base_folder }}/app/build/outputs/apk/debug/${{ env.app_name }}-${{ steps.get_version.outputs.version }}.apk
 
       # Use rsync to deploy the release apk on the website
       - name: Sync
@@ -243,4 +230,4 @@ jobs:
             chmod 600 ./deploy_key
             rsync -chav --delete \
               -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
-              $(pwd)/app/build/outputs/apk/release/${{ env.app_name }}-R-${{ steps.get_version.outputs.version }}.apk ${{env.dest}}
+              $(pwd)/app/build/outputs/apk/debug/${{ env.app_name }}-${{ steps.get_version.outputs.version }}.apk ${{env.dest}}
