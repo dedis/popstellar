@@ -154,6 +154,7 @@ public class LaoActivity extends AppCompatActivity {
                   R.id.fragment_digital_cash_history,
                   DigitalCashHistoryFragment::newInstance);
             } else {
+              // Restore the fragment pushed on the stack before opening the transaction history
               resetLastFragment();
             }
             return true;
@@ -277,6 +278,7 @@ public class LaoActivity extends AppCompatActivity {
     openEventsTab();
   }
 
+  /** Restore the fragment contained in the stack as container of the current lao */
   public void resetLastFragment() {
     Fragment fragment = fragmentStack.pop();
     getSupportFragmentManager()
