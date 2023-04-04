@@ -56,7 +56,6 @@ object ParamsWithMapHandler extends AskPatternConstants {
         /* close the shape */
         FlowShape(handlerPartitioner.in, handlerMerger.out)
 
-        // ajouter les handlers
 
       }
   })
