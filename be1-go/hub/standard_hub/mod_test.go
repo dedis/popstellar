@@ -1765,7 +1765,7 @@ func (f *fakeSocket) Send(msg []byte) {
 }
 
 // SendResult implements socket.Socket
-func (f *fakeSocket) SendResult(id int, res []message.Message) {
+func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[string][]message.Message) {
 	f.Lock()
 	defer f.Unlock()
 
