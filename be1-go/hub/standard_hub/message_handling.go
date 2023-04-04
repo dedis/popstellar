@@ -15,6 +15,7 @@ import (
 
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 )
 
@@ -174,7 +175,6 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		// send an error to another server that will create another error
 		return nil
 	}
-
 	if answerMsg.Result.IsEmpty() {
 		h.log.Info().Msg("result isn't an answer to a catchup, nothing to handle")
 		return nil
@@ -193,15 +193,47 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return xerrors.Errorf("query %v already got an answer", answerMsg.ID)
 	}
 
-	channel := h.queries.queries[*answerMsg.ID].Params.Channel
+	catchUpQuery, isCatchupQuery := h.queries.catchupQueries[*answerMsg.ID]
+	_, isGetMessagesByIdQuery := h.queries.getMessagesByIdQueries[*answerMsg.ID]
+
 	*h.queries.state[*answerMsg.ID] = true
 	h.queries.Unlock()
 
+	if isCatchupQuery {
+		h.handleCatchupAnswer(senderSocket, answerMsg, catchUpQuery)
+	} else if isGetMessagesByIdQuery {
+		h.handleGetMessagesByIdAnswer(senderSocket, answerMsg)
+	} else {
+		return xerrors.Errorf("query %v is not catchup or getMessagesById", answerMsg.ID)
+	}
+
+	return nil
+}
+
+func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) {
+	messages := answerMsg.Result.GetMessagesByChannel()
+
+	for channel, messageArray := range messages {
+		for msg := range messageArray {
+			var messageData message.Message
+			err := json.Unmarshal(messageArray[msg], &messageData)
+			if err != nil {
+				h.log.Error().Msgf("failed to unmarshal message during getMessagesById answer handling: %v", err)
+				continue
+			}
+			h.hubInbox.StoreMessage(messageData)
+			h.messageIdsByChannel[channel] = append(h.messageIdsByChannel[channel], messageData.MessageID)
+			h.log.Info().Msgf("Stored message %s received during GetMessagesById answer", messageData.MessageID)
+		}
+	}
+}
+
+func (h *Hub) handleCatchupAnswer(senderSocket socket.Socket, answerMsg answer.Answer, catchUpQuery method.Catchup) {
 	messages := answerMsg.Result.GetData()
 	for msg := range messages {
 
 		var messageData message.Message
-		err = json.Unmarshal(messages[msg], &messageData)
+		err := json.Unmarshal(messages[msg], &messageData)
 		if err != nil {
 			h.log.Error().Msgf("failed to unmarshal message during catchup: %v", err)
 			continue
@@ -219,18 +251,16 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 				Channel string          `json:"channel"`
 				Message message.Message `json:"message"`
 			}{
-				Channel: channel,
+				Channel: catchUpQuery.Params.Channel,
 				Message: messageData,
 			},
 		}
 
-		err := h.handleDuringCatchup(senderSocket, publish)
+		err = h.handleDuringCatchup(senderSocket, publish)
 		if err != nil {
 			h.log.Error().Msgf("failed to handle message during catchup: %v", err)
 		}
 	}
-
-	return nil
 }
 
 // handleDuringCatchup handle a message obtained by the server catching up
@@ -458,13 +488,74 @@ func (h *Hub) handleCatchup(socket socket.Socket,
 func (h *Hub) handleHeartbeat(socket socket.Socket,
 	byteMessage []byte) error {
 	h.log.Info().Msg("Handling heartbeat")
-	//@TODO implement heartbeat handling
+
+	var heartbeat method.Heartbeat
+
+	err := json.Unmarshal(byteMessage, &heartbeat)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal heartbeat message: %v", err)
+	}
+
+	receivedIds := heartbeat.Params
+
+	missingIds := getMissingIds(receivedIds, h.messageIdsByChannel)
+
+	err = h.sendGetMessagesByIdToServer(socket, missingIds)
+	if err != nil {
+		return xerrors.Errorf("failed to send getMessagesById message: %v", err)
+	}
+
 	return nil
+}
+
+func getMissingIds(receivedIds map[string][]string, storedIds map[string][]string) map[string][]string {
+	missingIds := make(map[string][]string)
+	for channelId, receivedMessageIds := range receivedIds {
+		for _, id := range receivedMessageIds {
+			storedIdsForChannel, channelKnown := storedIds[channelId]
+			if channelKnown {
+				contains := slices.Contains(storedIdsForChannel, id)
+				if !contains {
+					missingIds[channelId] = append(missingIds[channelId], id)
+				}
+			} else {
+				missingIds[channelId] = append(missingIds[channelId], id)
+			}
+		}
+	}
+	return missingIds
 }
 
 func (h *Hub) handleGetMessagesById(socket socket.Socket,
 	byteMessage []byte) (map[string][]message.Message, int, error) {
 	h.log.Info().Msg("Handling getMessagesById")
-	//@TODO implement getMessagesById handling
-	return nil, 0, nil
+
+	var getMessagesById method.GetMessagesById
+
+	err := json.Unmarshal(byteMessage, &getMessagesById)
+	if err != nil {
+		return nil, 0, xerrors.Errorf("failed to unmarshal getMessagesById message: %v", err)
+	}
+
+	missingMessages, err := h.getMissingMessages(getMessagesById.Params)
+	if err != nil {
+		return nil, getMessagesById.ID, err
+	}
+
+	return missingMessages, getMessagesById.ID, nil
+}
+
+func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]message.Message, error) {
+	h.log.Info().Msg("retrieving missing message from inbox")
+	missingMsgs := make(map[string][]message.Message)
+	for channelId, msgIds := range missingIds {
+		for i := 0; i < len(msgIds); i++ {
+			msg, exists := h.hubInbox.GetMessage(msgIds[i])
+			if !exists {
+				return nil, xerrors.Errorf("Message %s not found in hub inbox", msgIds[i])
+			}
+			missingMsgs[channelId] = append(missingMsgs[channelId], *msg)
+		}
+	}
+	return missingMsgs, nil
 }

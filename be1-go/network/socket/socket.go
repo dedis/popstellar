@@ -197,10 +197,10 @@ func (s *baseSocket) SendError(id *int, err error) {
 
 // SendResult is a utility method that allows sending a `message.Result` to the
 // socket.
-func (s *baseSocket) SendResult(id int, res []message.Message) {
+func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message) {
 	var answer interface{}
 
-	if res == nil {
+	if res == nil && missingMessagesByChannel == nil {
 		answer = struct {
 			JSONRPC string `json:"jsonrpc"`
 			ID      int    `json:"id"`
@@ -208,7 +208,7 @@ func (s *baseSocket) SendResult(id int, res []message.Message) {
 		}{
 			"2.0", id, 0,
 		}
-	} else {
+	} else if res != nil {
 		for _, r := range res {
 			if r.WitnessSignatures == nil {
 				r.WitnessSignatures = []message.WitnessSignature{}
@@ -220,6 +220,14 @@ func (s *baseSocket) SendResult(id int, res []message.Message) {
 			Result  []message.Message `json:"result"`
 		}{
 			"2.0", id, res,
+		}
+	} else if missingMessagesByChannel != nil {
+		answer = struct {
+			JSONRPC string                       `json:"jsonrpc"`
+			ID      int                          `json:"id"`
+			Result  map[string][]message.Message `json:"result"`
+		}{
+			"2.0", id, missingMessagesByChannel,
 		}
 	}
 

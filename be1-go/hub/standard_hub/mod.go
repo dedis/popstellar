@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 	"popstellar/channel"
 	"popstellar/crypto"
 	"popstellar/inbox"
@@ -45,7 +44,7 @@ const (
 
 	// heartbeatDelay represents the number of seconds
 	// between heartbeat messages
-	heartbeatDelay = 2
+	heartbeatDelay = 7
 )
 
 var suite = crypto.Suite
@@ -94,8 +93,9 @@ type Hub struct {
 // newQueries creates a new queries struct
 func newQueries() queries {
 	return queries{
-		state:   make(map[int]*bool),
-		queries: make(map[int]method.Catchup),
+		state:                  make(map[int]*bool),
+		catchupQueries:         make(map[int]method.Catchup),
+		getMessagesByIdQueries: make(map[int]method.GetMessagesById),
 	}
 }
 
@@ -105,9 +105,10 @@ type queries struct {
 	// state stores the ID of the server's queries and their state. False for a
 	// query not yet answered, else true.
 	state map[int]*bool
-	// queries stores the server's queries by their ID.
-	queries map[int]method.Catchup
-
+	// catchupQueries stores the server's catchup queries by their ID.
+	catchupQueries map[int]method.Catchup
+	// getMessagesByIdQueries stores the server's getMessagesByIds queries by their ID.
+	getMessagesByIdQueries map[int]method.GetMessagesById
 	// nextID store the ID of the next query
 	nextID int
 }
@@ -136,7 +137,7 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 		},
 	}
 
-	q.queries[catchupID] = rpcMessage
+	q.catchupQueries[catchupID] = rpcMessage
 	q.nextID++
 
 	return rpcMessage
@@ -156,22 +157,23 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 	pubServ, secServ := generateKeys()
 
 	hub := Hub{
-		serverAdress:    serverAddress,
-		messageChan:     make(chan socket.IncomingMessage),
-		channelByID:     make(map[string]channel.Channel),
-		closedSockets:   make(chan string),
-		pubKeyOwner:     pubKeyOwner,
-		pubKeyServ:      pubServ,
-		secKeyServ:      secServ,
-		schemaValidator: schemaValidator,
-		stop:            make(chan struct{}),
-		workers:         semaphore.NewWeighted(numWorkers),
-		log:             log,
-		laoFac:          laoFac,
-		serverSockets:   channel.NewSockets(),
-		hubInbox:        *inbox.NewInbox(rootChannel),
-		rootInbox:       *inbox.NewInbox(rootChannel),
-		queries:         newQueries(),
+		serverAdress:        serverAddress,
+		messageChan:         make(chan socket.IncomingMessage),
+		channelByID:         make(map[string]channel.Channel),
+		closedSockets:       make(chan string),
+		pubKeyOwner:         pubKeyOwner,
+		pubKeyServ:          pubServ,
+		secKeyServ:          secServ,
+		schemaValidator:     schemaValidator,
+		stop:                make(chan struct{}),
+		workers:             semaphore.NewWeighted(numWorkers),
+		log:                 log,
+		laoFac:              laoFac,
+		serverSockets:       channel.NewSockets(),
+		hubInbox:            *inbox.NewInbox(rootChannel),
+		rootInbox:           *inbox.NewInbox(rootChannel),
+		queries:             newQueries(),
+		messageIdsByChannel: make(map[string][]string),
 	}
 
 	return &hub, nil
@@ -179,23 +181,14 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 
 // Start implements hub.Hub
 func (h *Hub) Start() {
-	print("Start function")
 	go func() {
-		h.log.Info().Msg("Start check ticker")
-		print("start check ticker")
 		ticker := time.NewTicker(time.Second * heartbeatDelay)
 		defer ticker.Stop()
 
 		for {
-			log.Printf("checking heartbeat")
 			select {
 			case <-ticker.C:
-				log.Printf("Sending heartbeat")
-				h.log.Info().Msg("Sending heartbeat")
 				err := h.sendHeartbeatToServers()
-				h.log.Info().Msg("Heartbeat sent")
-				log.Info().Msg("sent heartbeat no hub ")
-
 				if err != nil {
 					h.log.Err(err).Msg("problem sending heartbeat to servers")
 				}
@@ -382,11 +375,11 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs)
+		socket.SendResult(id, msgs, nil)
 		return nil
 	}
 
-	socket.SendResult(id, nil)
+	socket.SendResult(id, nil, nil)
 
 	return nil
 }
@@ -472,16 +465,16 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs)
+		socket.SendResult(id, msgs, nil)
 		return nil
 	}
 
 	if queryBase.Method == query.MethodGetMessagesById {
-		socket.SendResult(id, msgs)
+		socket.SendResult(id, nil, msgsByChannel)
 		return nil
 	}
 
-	socket.SendResult(id, nil)
+	socket.SendResult(id, nil, nil)
 
 	return nil
 }
@@ -504,24 +497,65 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 
 }
 
+func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
+	h.Lock()
+	defer h.Unlock()
+	h.log.Info().Msg("Entering getMessagesById")
+
+	queryId := h.queries.nextID
+	baseValue := false
+	h.queries.state[queryId] = &baseValue
+
+	h.log.Info().Msg("Sending getMessagesById")
+	getMessagesById := method.GetMessagesById{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "get_messages_by_id",
+		},
+		ID:     queryId,
+		Params: missingIds,
+	}
+
+	buf, err := json.Marshal(getMessagesById)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal getMessagesById query: %v", err)
+	}
+
+	h.queries.getMessagesByIdQueries[queryId] = getMessagesById
+	h.queries.nextID++
+
+	socket.Send(buf)
+
+	return nil
+}
+
 // sendHeartbeatToServers send a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() error {
 	h.Lock()
 	defer h.Unlock()
 	h.log.Info().Msg("Entering heartbeat")
 
-	heartbeatMessage := method.Heartbeat{
-		Base:   query.Base{},
-		Params: h.messageIdsByChannel,
+	if len(h.messageIdsByChannel) >= 1 {
+		h.log.Info().Msg("Sending heartbeat")
+		heartbeatMessage := method.Heartbeat{
+			Base: query.Base{
+				JSONRPCBase: jsonrpc.JSONRPCBase{
+					JSONRPC: "2.0",
+				},
+				Method: "heartbeat",
+			},
+			Params: h.messageIdsByChannel,
+		}
+
+		buf, err := json.Marshal(heartbeatMessage)
+		if err != nil {
+			return xerrors.Errorf("failed to marshal heartbeat query: %v", err)
+		}
+
+		h.serverSockets.SendToAll(buf)
 	}
-
-	buf, err := json.Marshal(heartbeatMessage)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal heartbeat query: %v", err)
-	}
-
-	h.serverSockets.SendToAll(buf)
-
 	return nil
 }
 

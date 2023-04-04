@@ -36,7 +36,7 @@ func Test_Add_Server_Socket(t *testing.T) {
 
 	err = hub.NotifyNewServer(sock)
 	require.NoError(t, err)
-	require.NotNil(t, hub.queries.queries[0])
+	require.NotNil(t, hub.queries.catchupQueries[0])
 	require.Equal(t, 1, hub.queries.nextID)
 }
 
@@ -841,7 +841,7 @@ func Test_Handle_Answer(t *testing.T) {
 
 	queryState := false
 	hub.queries.state[1] = &queryState
-	hub.queries.queries[1] = method.Catchup{
+	hub.queries.catchupQueries[1] = method.Catchup{
 		Params: struct {
 			Channel string "json:\"channel\""
 		}{

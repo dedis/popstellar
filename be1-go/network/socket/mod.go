@@ -52,7 +52,7 @@ type Socket interface {
 
 	// SendResult is used to send a result message to the client. Res can be
 	// nil, empty, or filled. In case it is nil it sends the "0" return value.
-	SendResult(id int, res []message.Message)
+	SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message)
 }
 
 // IncomingMessage wraps the raw message from the websocket connection and pairs
