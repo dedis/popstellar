@@ -18,6 +18,7 @@ import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRu
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import org.junit.Rule;
@@ -220,6 +221,36 @@ public class ElectionFragmentTest {
     verify(messageSenderHelper.getMockedSender())
         .publish(any(), eq(ELECTION.getChannel()), any(ElectionEnd.class));
     messageSenderHelper.assertSubscriptions();
+  }
+
+  @Test
+  public void actionButtonNotEnabledOpenTest() throws KeyException {
+    doAnswer(
+            invocation -> {
+              throw new KeyException("") {
+                @Override
+                public int getUserMessage() {
+                  return 0;
+                }
+
+                @Override
+                public Object[] getUserMessageArguments() {
+                  return new Object[0];
+                }
+              };
+            })
+        .when(keyManager)
+        .getPoPToken(any(), any());
+
+    electionManagementButton().check(matches(withText("OPEN")));
+    electionManagementButton().perform(click());
+    dialogPositiveButton().performClick();
+    // Wait for the main thread to finish executing the calls made above
+    // before asserting their effect
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    electionActionButton().check(matches(withText("VOTE")));
+    electionActionButton().check(matches(isNotEnabled()));
   }
 
   @Test
