@@ -207,23 +207,20 @@ public class RollCallFragment extends Fragment {
     boolean isOrganizer = laoViewModel.isOrganizer();
 
     binding.rollCallFragmentTitle.setText(rollCall.getName());
-    try {
-      // If the roll call is not closed management button is open or close
-      // Then it should be visible only to the organizer
-      // However, if isOrganizer but the roll call is closed then the button is
-      // reopen, however this is a valid action only if this is the last closed roll call
-      if (isOrganizer
-          && (!rollCall.isClosed()
-              || (rollCall.isClosed()
-                  && rollCallRepo
-                      .getLastClosedRollCall(laoViewModel.getLaoId())
-                      .equals(rollCall)))) {
-        binding.rollCallManagementButton.setVisibility(View.VISIBLE);
-      } else {
-        throw new NoRollCallException("");
+
+    // Set visibility of management button as Gone by default
+    binding.rollCallManagementButton.setVisibility(View.GONE);
+
+    // The management button is only visible to the organizer under the following conditions:
+    if (isOrganizer) {
+      // If the roll call is the last closed roll call or it's not closed (either opened or created)
+      try {
+        if (!rollCall.isClosed()
+            || rollCallRepo.getLastClosedRollCall(laoViewModel.getLaoId()).equals(rollCall)) {
+          binding.rollCallManagementButton.setVisibility(View.VISIBLE);
+        }
+      } catch (NoRollCallException ignored) {
       }
-    } catch (NoRollCallException e) {
-      binding.rollCallManagementButton.setVisibility(View.GONE);
     }
 
     binding.rollCallManagementButton.setText(managementTextMap.getOrDefault(rcState, ID_NULL));
