@@ -8,7 +8,21 @@ import java.util.Base64;
 import static org.junit.Assert.assertThrows;
 
 public class DataCheckUtilsTest {
-  private static final int TIME = 100;
+  private static final int DELTA_TIME = 100;
+
+  @Test
+  public void testCheckStringNotEmpty() {
+    String validString = "test string";
+    String emptyString = "";
+    String field = "testField";
+
+    DataCheckUtils.checkStringNotEmpty(validString, field);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> DataCheckUtils.checkStringNotEmpty(emptyString, field));
+    assertThrows(
+        IllegalArgumentException.class, () -> DataCheckUtils.checkStringNotEmpty(null, field));
+  }
 
   @Test
   public void testCheckBase64() {
@@ -25,8 +39,8 @@ public class DataCheckUtilsTest {
   @Test
   public void testCheckValidOrderedTimes() {
     long currentTime = Instant.now().getEpochSecond();
-    long futureTime = currentTime + TIME;
-    long pastTime = currentTime - TIME;
+    long futureTime = currentTime + DELTA_TIME;
+    long pastTime = currentTime - DELTA_TIME;
 
     DataCheckUtils.checkValidOrderedTimes(pastTime, currentTime);
     assertThrows(
@@ -43,7 +57,7 @@ public class DataCheckUtilsTest {
   @Test
   public void testCheckValidTime() {
     long currentTime = Instant.now().getEpochSecond();
-    long futureTime = currentTime + TIME;
+    long futureTime = currentTime + DELTA_TIME;
 
     DataCheckUtils.checkValidTime(currentTime);
     assertThrows(IllegalArgumentException.class, () -> DataCheckUtils.checkValidTime(futureTime));
