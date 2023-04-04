@@ -13,8 +13,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
-import static com.github.dedis.popstellar.utility.DataCheckUtils.checkBase64;
-import static com.github.dedis.popstellar.utility.DataCheckUtils.checkValidTimes;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.*;
 
 /** Data received to track the state of a lao */
 public class StateLao extends Data {
@@ -62,7 +61,8 @@ public class StateLao extends Data {
       @NonNull List<PublicKeySignaturePair> modificationSignatures) {
     // organizer, modificationId and witnesses are checked to be base64 at deserialization
     checkBase64(id, "id");
-    checkValidTimes(creation, lastModified);
+    checkStringNotEmpty(name, "name");
+    checkValidOrderedTimes(creation, lastModified);
 
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");

@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNotEquals;
 
 public class CreateRollCallTest {
 
-  private static final String LAO_ID = Hash.hash("LAO_ID");
+  private static final String LAO_ID = "fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U=";
   private static final String NAME = "NAME";
   private static final long NOW = Instant.now().getEpochSecond();
   private static final long END = NOW + 30L;

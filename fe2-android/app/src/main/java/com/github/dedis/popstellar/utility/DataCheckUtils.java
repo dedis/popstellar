@@ -10,6 +10,19 @@ public class DataCheckUtils {
       Pattern.compile("^(?:[A-Za-z0-9-_]{4})*(?:[A-Za-z0-9-_]{2}==|[A-Za-z0-9-_]{3}=)?$");
 
   /**
+   * Helper method to check that a string is not empty.
+   *
+   * @param input the string to check
+   * @param field name of the field (to print in case of error)
+   * @throws IllegalArgumentException if the string is empty or null
+   */
+  public static void checkStringNotEmpty(String input, String field) {
+    if (input == null || field.isEmpty()) {
+      throw new IllegalArgumentException(field + " cannot be empty");
+    }
+  }
+
+  /**
    * Helper method to check that a string is a valid URL-safe base64 encoding.
    *
    * @param input the string to check
@@ -24,24 +37,24 @@ public class DataCheckUtils {
 
   /**
    * Helper method to check that times in a Data are valid. The time values provided are assumed to
-   * be in Unix epoch time (UTC). Checks that: 1) time is not negative (this is already checked at
-   * deserialization), 2) time is not in the future, 3) modification time is not before creation
-   * time.
+   * be in Unix epoch time (UTC). Checks that time is valid and that the first time comes before the
+   * second time.
    *
-   * @param creationTime creation time
-   * @param lastModified time of last modification
-   * @throws IllegalArgumentException if a time is invalid
+   * @param beforeTime before time
+   * @param afterTime after time
+   * @throws IllegalArgumentException if a time is invalid or if the first time comes after the
+   *     second
    */
-  public static void checkValidTimes(long creationTime, long lastModified) {
-    checkValidTime(creationTime);
-    checkValidTime(lastModified);
-    if (lastModified < creationTime) {
+  public static void checkValidOrderedTimes(long beforeTime, long afterTime) {
+    checkValidTime(beforeTime);
+    checkValidTime(afterTime);
+    if (afterTime < beforeTime) {
       throw new IllegalArgumentException("Last modified time cannot be before creation time");
     }
   }
 
   /**
-   * Helper method to check that time in a Data are valid. The time value provided is assumed to be
+   * Helper method to check that time in a Data is valid. The time value provided is assumed to be
    * in Unix epoch time (UTC). Checks that: 1) time is not negative (this is already checked at
    * deserialization), 2) time is not in the future
    *
@@ -57,9 +70,6 @@ public class DataCheckUtils {
   }
 
   private static boolean isInFuture(long creationTime) {
-    if (creationTime > Instant.now().getEpochSecond()) {
-      return true;
-    }
-    return false;
+    return (creationTime > Instant.now().getEpochSecond());
   }
 }

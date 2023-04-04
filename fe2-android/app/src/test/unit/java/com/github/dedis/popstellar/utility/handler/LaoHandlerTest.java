@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
+import com.github.dedis.popstellar.utility.security.Hash;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -31,7 +32,8 @@ import io.reactivex.Completable;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoNameWitnessMessage;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
@@ -42,7 +44,7 @@ public class LaoHandlerTest {
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
-  private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
+  private static final CreateLao CREATE_LAO = new CreateLao(Hash.hash("LAO_ID"), SENDER);
   private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
 
   private LAORepository laoRepo;
@@ -162,12 +164,6 @@ public class LaoHandlerTest {
     assertEquals(
         new PublicKey(RANDOM_KEY), serverRepository.getServerByLaoId(lao.getId()).getPublicKey());
 
-    // Test for invalid LAO Id
-    GreetLao greetLao_invalid =
-        new GreetLao("123", RANDOM_KEY, RANDOM_ADDRESS, Collections.singletonList(RANDOM_PEER));
-    MessageGeneral message_invalid = new MessageGeneral(SENDER_KEY, greetLao_invalid, gson);
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL, message_invalid));
+    // Test for invalid LAO Id is already in GreetLao
   }
 }

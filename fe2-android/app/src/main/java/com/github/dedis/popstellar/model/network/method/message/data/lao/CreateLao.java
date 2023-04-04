@@ -11,8 +11,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import java.time.Instant;
 import java.util.*;
 
-import static com.github.dedis.popstellar.utility.DataCheckUtils.checkBase64;
-import static com.github.dedis.popstellar.utility.DataCheckUtils.checkValidTime;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.*;
 
 /** Data sent when creating a new LAO */
 @Immutable
@@ -42,6 +41,7 @@ public class CreateLao extends Data {
       @NonNull List<PublicKey> witnesses) {
     // organizer and witnesses are checked to be base64 at deserialization
     checkBase64(id, "id");
+    checkStringNotEmpty(name, "name");
     checkValidTime(creation);
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("CreateLao id must be Hash(organizer||creation||name)");

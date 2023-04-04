@@ -23,19 +23,21 @@ public class DataCheckUtilsTest {
   }
 
   @Test
-  public void testCheckValidTimes() {
+  public void testCheckValidOrderedTimes() {
     long currentTime = Instant.now().getEpochSecond();
     long futureTime = currentTime + TIME;
     long pastTime = currentTime - TIME;
 
-    DataCheckUtils.checkValidTimes(pastTime, currentTime);
+    DataCheckUtils.checkValidOrderedTimes(pastTime, currentTime);
     assertThrows(
         IllegalArgumentException.class,
-        () -> DataCheckUtils.checkValidTimes(futureTime, currentTime));
+        () -> DataCheckUtils.checkValidOrderedTimes(futureTime, currentTime));
     assertThrows(
-        IllegalArgumentException.class, () -> DataCheckUtils.checkValidTimes(pastTime, futureTime));
+        IllegalArgumentException.class,
+        () -> DataCheckUtils.checkValidOrderedTimes(pastTime, futureTime));
     assertThrows(
-        IllegalArgumentException.class, () -> DataCheckUtils.checkValidTimes(-1, currentTime));
+        IllegalArgumentException.class,
+        () -> DataCheckUtils.checkValidOrderedTimes(-1, currentTime));
   }
 
   @Test
