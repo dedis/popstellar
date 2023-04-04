@@ -25,15 +25,11 @@ def check_config(config_file) -> bool:
 
 
 def check_provider(provider: dict) -> bool:
-    # TODO Update lao_id len with correct len and carefully check url
-    parsed_domain = parse.urlsplit(provider["domain"])
-    valid_url_scheme = parsed_domain.scheme == "scheme" and parsed_domain.netloc != "" and parsed_domain.path == "" \
-        and parsed_domain.query == ""
     return ("lao_id" in provider) and (len(provider["lao_id"]) > 0) \
-        and ("domain" in provider) and ('/' not in provider["domain"]) and valid_url_scheme
+        and ("domain" in provider) and ('/' not in provider["domain"]) and not provider["domain"].startswith("http")
 
 
-def get_valid_providers() -> None:
+def filter_providers() -> None:
     global providers
     providers = [provider for provider in providers if check_provider(provider)]
 
@@ -46,13 +42,13 @@ def on_startup() -> None:
     global home_page_html, providers, config
     with open("data/providers.json") as provider_file:
         providers = json.loads(provider_file.read())
-        get_valid_providers()
+        filter_providers()
     with open("data/config.json", "r+") as config_file:
         config = json.loads(config_file.read())
         if not check_config(config_file):
             config_file.seek(0)
             config = json.loads(config_file.read())
-    htmlProviders = [f'<option value="{str(i)}">{provider.get("laoId")}@{provider.get("domain")}</option>' for
+    htmlProviders = [f'<option value="{str(i)}">{provider.get("lao_id")}@{provider.get("domain")}</option>' for
                      i, provider
                      in enumerate(providers)]
     home_page_html = open("model/index.html", "r").read().replace("<!-- Insert options -->", ''.join(htmlProviders))

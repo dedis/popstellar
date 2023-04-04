@@ -31,19 +31,17 @@
     }
     h1, p, button {
         position: relative;
-        font-family: sans-serif;
         text-align: center;
     }
     p, button{
         margin-top: 10px;
         font-size: 1.2rem;
     }
-    input {
-        flex-grow: 1;
-    }
+
     select {
         width: 100%;
     }
+
     select, #submitAuthentication {
         background-color: #c6d6f1;
         border: none;
@@ -60,23 +58,25 @@
         padding-top: 10px;
         margin-left: -35%;
     }
+    .important {
+        font-weight: bolder;
+        color: red;
+        font-size: 0.9em;
+    }
+
 </style>
 <body>
 <div class="container">
     <div class="dataBox">
         <h1>PoPCHA authentication example</h1>
         <p>More informations <a href="https://github.com/dedis/popstellar">here.</a></p>
+        <p class="important"> Please note that this is a website designed to be used as an example only</p>
 
         <form action="/authenticate">
         <select id="lao-selection" name="serverAndLaoId" required>
             <option value="">-- Please choose a lao / server pair --</option>
-            <option value="test">My customs server</option>
             <!-- Insert options -->
         </select>
-            <div class="formLine">
-                <label for="userToken">Enter your user token: </label>
-                <input id="userToken" name="token" type="text"/>
-            </div>
             <input type="submit" id="submitAuthentication" value="Submit">
         </form>
     </div>
