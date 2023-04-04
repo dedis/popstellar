@@ -13,8 +13,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
-import static com.github.dedis.popstellar.utility.DataCheckUtils.isBase64;
-import static com.github.dedis.popstellar.utility.DataCheckUtils.isInFuture;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.checkBase64;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.checkValidTimes;
 
 /** Data received to track the state of a lao */
 public class StateLao extends Data {
@@ -44,8 +44,11 @@ public class StateLao extends Data {
    * @param creation time of creation
    * @param lastModified time of last modification
    * @param organizer id of the LAO's organizer
+   * @param modificationId id of the modification (either creation/update)
    * @param witnesses list of witnesses of the LAO
-   * @throws IllegalArgumentException if the id is not valid
+   * @param modificationSignatures signatures of the witnesses on the modification message (either
+   *     creation/update)
+   * @throws IllegalArgumentException if arguments are invalid
    */
   @Immutable
   public StateLao(
@@ -57,21 +60,13 @@ public class StateLao extends Data {
       @NonNull MessageID modificationId,
       @NonNull Set<PublicKey> witnesses,
       @NonNull List<PublicKeySignaturePair> modificationSignatures) {
-    if (!isBase64(id)) {
-      throw new IllegalArgumentException("StateLao id must be a base64 encoded string");
-    }
     // organizer, modificationId and witnesses are checked to be base64 at deserialization
+    checkBase64(id, "id");
+    checkValidTimes(creation, lastModified);
 
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");
     }
-    if (isInFuture(creation)) {
-      throw new IllegalArgumentException("Creation time cannot be in the future");
-    }
-    if (lastModified < creation) {
-      throw new IllegalArgumentException("Last modified time cannot be before creation time");
-    }
-    // times are checked to be non-negative at deserialization
 
     this.id = id;
     this.name = name;

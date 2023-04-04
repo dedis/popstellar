@@ -11,8 +11,8 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import java.time.Instant;
 import java.util.*;
 
-import static com.github.dedis.popstellar.utility.DataCheckUtils.isBase64;
-import static com.github.dedis.popstellar.utility.DataCheckUtils.isInFuture;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.checkBase64;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.checkValidTime;
 
 /** Data sent when creating a new LAO */
 @Immutable
@@ -32,7 +32,7 @@ public class CreateLao extends Data {
    * @param creation time of creation
    * @param organizer id of the LAO's organizer
    * @param witnesses list of witnesses of the LAO
-   * @throws IllegalArgumentException if the id is not valid
+   * @throws IllegalArgumentException if arguments are invalid
    */
   public CreateLao(
       @NonNull String id,
@@ -40,19 +40,12 @@ public class CreateLao extends Data {
       long creation,
       @NonNull PublicKey organizer,
       @NonNull List<PublicKey> witnesses) {
-    if (!isBase64(id)) {
-      throw new IllegalArgumentException("CreateLao id must be a base64 encoded string");
-    }
     // organizer and witnesses are checked to be base64 at deserialization
-
+    checkBase64(id, "id");
+    checkValidTime(creation);
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("CreateLao id must be Hash(organizer||creation||name)");
     }
-    if (isInFuture(creation)) {
-      throw new IllegalArgumentException("Creation time cannot be in the future");
-    }
-    // creation time is checked to be non-negative at deserialization
-
     this.id = id;
     this.name = name;
     this.creation = creation;

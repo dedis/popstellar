@@ -12,6 +12,7 @@ import com.google.gson.JsonParseException;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,19 +24,42 @@ import static org.junit.Assert.*;
 public class UpdateLaoTest {
 
   private final String name = "New name";
-  private final long time = 0xC972;
+  private final long creation = 0xC972;
   private final PublicKey organizer = generatePublicKey();
-  private final long lastModified = 972;
+  private final long lastModified = 0xC972 + 10;
 
   private final Set<PublicKey> witnesses = Sets.newSet(generatePublicKey(), generatePublicKey());
   private final UpdateLao updateLao = new UpdateLao(organizer, 10, name, lastModified, witnesses);
 
   @Test
   public void generateUpdateLaoIdTest() {
-    UpdateLao updateLao = new UpdateLao(organizer, time, name, time, new HashSet<>());
+    UpdateLao updateLao = new UpdateLao(organizer, creation, name, lastModified, new HashSet<>());
     // Hash(organizer||creation||name)
-    String expectedId = Hash.hash(organizer.getEncoded(), Long.toString(time), updateLao.getName());
+    String expectedId =
+        Hash.hash(organizer.getEncoded(), Long.toString(creation), updateLao.getName());
     assertThat(updateLao.getId(), is(expectedId));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsEmptyNameTest() {
+    new UpdateLao(organizer, creation, "", lastModified, new HashSet<>());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsFutureCreationTimeTest() {
+    long futureCreation = Instant.now().getEpochSecond() + 1000;
+    new UpdateLao(organizer, futureCreation, name, lastModified, new HashSet<>());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsFutureModificationTimeTest() {
+    long futureModification = Instant.now().getEpochSecond() + 1000;
+    new UpdateLao(organizer, creation, name, futureModification, new HashSet<>());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsModificationBeforeCreationTimeTest() {
+    new UpdateLao(organizer, creation, name, creation - 10, new HashSet<>());
   }
 
   @Test
@@ -98,7 +122,13 @@ public class UpdateLaoTest {
     String jsonInvalid1 =
         JsonTestUtils.loadFile(pathDir + "wrong_lao_update_additional_params.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_update_missing_params.json");
+    String jsonInvalid3 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_update_negative_last_modified.json");
+    String jsonInvalid4 =
+        JsonTestUtils.loadFile(pathDir + "bad_lao_update_witness_not_base64.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid4));
   }
 }

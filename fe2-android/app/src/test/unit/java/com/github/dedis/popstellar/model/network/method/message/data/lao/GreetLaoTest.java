@@ -26,12 +26,12 @@ public class GreetLaoTest {
       new GreetLao(LAO_ID, RANDOM_KEY, RANDOM_ADDRESS, RANDOM_PEER_LIST);
 
   @Test(expected = IllegalArgumentException.class)
-  public void noInstantiationWithWrongPublicKey() {
+  public void constructorFailsWrongPublicKeyTest() {
     new GreetLao(LAO_ID, "IsNotValid", RANDOM_ADDRESS, Collections.emptyList());
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void noInstantiationIfLaoIdNotBase64() {
+  public void constructorFailsLaoIdNotBase64Test() {
     new GreetLao("wrong id", RANDOM_KEY, RANDOM_ADDRESS, Collections.emptyList());
   }
 

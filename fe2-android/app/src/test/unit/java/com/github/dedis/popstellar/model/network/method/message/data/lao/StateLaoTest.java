@@ -44,70 +44,85 @@ public class StateLaoTest {
           witnesses,
           modificationSignatures);
 
-  @Test
-  public void idNotBase64Test() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () ->
-            new StateLao(
-                "wrong id",
-                name,
-                creation,
-                lastModified,
-                organizer,
-                modificationId,
-                witnesses,
-                modificationSignatures));
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsIdNotBase64Test() {
+    new StateLao(
+        "wrong id",
+        name,
+        creation,
+        lastModified,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
   }
 
-  @Test
-  public void invalidIdHashTest() {
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsInvalidIdHashTest() {
     String wrongId = "A" + id.substring(1);
-    assertThrows(
-        IllegalArgumentException.class,
-        () ->
-            new StateLao(
-                wrongId,
-                name,
-                creation,
-                lastModified,
-                organizer,
-                modificationId,
-                witnesses,
-                modificationSignatures));
+    new StateLao(
+        wrongId,
+        name,
+        creation,
+        lastModified,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
   }
 
-  @Test
-  public void emptyNameTest() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () ->
-            new StateLao(
-                id,
-                "",
-                creation,
-                lastModified,
-                organizer,
-                modificationId,
-                witnesses,
-                modificationSignatures));
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsEmptyNameTest() {
+    new StateLao(
+        id,
+        "",
+        creation,
+        lastModified,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
   }
 
-  @Test
-  public void futureCreationTimeTest() {
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsFutureCreationTimeTest() {
     long futureCreation = Instant.now().getEpochSecond() + 1000;
-    assertThrows(
-        IllegalArgumentException.class,
-        () ->
-            new StateLao(
-                id,
-                name,
-                futureCreation,
-                lastModified,
-                organizer,
-                modificationId,
-                witnesses,
-                modificationSignatures));
+    new StateLao(
+        id,
+        name,
+        futureCreation,
+        lastModified,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsFutureModificationTimeTest() {
+    long futureModification = Instant.now().getEpochSecond() + 1000;
+    new StateLao(
+        id,
+        name,
+        creation,
+        futureModification,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsModificationBeforeCreationTimeTest() {
+    new StateLao(
+        id,
+        name,
+        creation,
+        creation - 10,
+        organizer,
+        modificationId,
+        witnesses,
+        modificationSignatures);
   }
 
   @Test

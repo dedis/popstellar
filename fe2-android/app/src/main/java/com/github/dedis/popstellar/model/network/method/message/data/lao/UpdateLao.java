@@ -11,6 +11,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
+import static com.github.dedis.popstellar.utility.DataCheckUtils.checkBase64;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.checkValidTimes;
+
 /** Data sent to update the lao specifications */
 @Immutable
 public class UpdateLao extends Data {
@@ -31,13 +34,17 @@ public class UpdateLao extends Data {
    * @param name name of the LAO
    * @param lastModified time of last modification
    * @param witnesses list of witnesses of the LAO
+   * @throws IllegalArgumentException if arguments are invalid
    */
   public UpdateLao(
-      PublicKey organizer,
+      @NonNull PublicKey organizer,
       long creation,
-      String name,
+      @NonNull String name,
       long lastModified,
-      Set<PublicKey> witnesses) {
+      @NonNull Set<PublicKey> witnesses) {
+    // witnesses are checked to be base64 at deserialization, but not organizer
+    checkBase64(organizer.getEncoded(), "organizer");
+    checkValidTimes(creation, lastModified);
     this.id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;

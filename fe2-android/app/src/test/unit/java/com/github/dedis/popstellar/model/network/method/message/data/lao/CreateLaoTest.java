@@ -30,34 +30,26 @@ public class CreateLaoTest {
   private final String id = Lao.generateLaoId(organizer, creation, name);
   private final CreateLao createLao = new CreateLao(id, name, creation, organizer, witnesses);
 
-  @Test
-  public void idNotBase64Test() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> new CreateLao("wrong Id", name, creation, organizer, witnesses));
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsIdNotBase64Test() {
+    new CreateLao("wrong Id", name, creation, organizer, witnesses);
   }
 
-  @Test
-  public void invalidIdHashTest() {
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsInvalidIdHashTest() {
     String wrongId = "A" + id.substring(1);
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> new CreateLao(wrongId, name, creation, organizer, witnesses));
+    new CreateLao(wrongId, name, creation, organizer, witnesses);
   }
 
-  @Test
-  public void emptyNameTest() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> new CreateLao(id, "", creation, organizer, witnesses));
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsEmptyNameTest() {
+    new CreateLao(id, "", creation, organizer, witnesses);
   }
 
-  @Test
-  public void futureCreationTimeTest() {
+  @Test(expected = IllegalArgumentException.class)
+  public void constructorFailsFutureCreationTimeTest() {
     long futureCreation = Instant.now().getEpochSecond() + 1000;
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> new CreateLao(id, name, futureCreation, organizer, witnesses));
+    new CreateLao(id, name, futureCreation, organizer, witnesses);
   }
 
   @Test

@@ -3,8 +3,6 @@ package com.github.dedis.popstellar.utility;
 import com.github.dedis.popstellar.ui.home.ConnectingActivity;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 
-import java.util.regex.Pattern;
-
 public class Constants {
 
   /** The extra key given by the home activity to LaoDetailActivity and Connecting Activity */
@@ -58,8 +56,4 @@ public class Constants {
 
   /** Number of milliseconds in a day */
   public static final long MS_IN_A_DAY = 1000 * 60 * 60 * 24L;
-
-  /** URL-safe base64 pattern */
-  public static final Pattern BASE64_PATTERN =
-      Pattern.compile("^(?:[A-Za-z0-9-_]{4})*(?:[A-Za-z0-9-_]{2}==|[A-Za-z0-9-_]{3}=)?$");
 }

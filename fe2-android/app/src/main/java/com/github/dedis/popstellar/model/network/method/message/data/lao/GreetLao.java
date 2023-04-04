@@ -11,14 +11,14 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
-import static com.github.dedis.popstellar.utility.DataCheckUtils.isBase64;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.checkBase64;
 
 @Immutable
 public class GreetLao extends Data {
 
   @NonNull
   @SerializedName("lao")
-  private final String lao_id;
+  private final String id;
 
   // Backend sender address
   @NonNull
@@ -35,21 +35,24 @@ public class GreetLao extends Data {
   private final List<PeerAddress> peers;
 
   /**
-   * Constructor for a Greeting Message
+   * Constructor for a data Greet LAO
    *
+   * @param id id of the lao, should match Hash(organizer||creation||name) of the LAO creation
+   *     message
+   * @param frontend public key of the frontend of the server owner
+   * @param address canonical address of the server with a protocol prefix and the port number
+   * @param peers list of peers the server is connected to (excluding itself). These can be other
+   *     organizers or witnesses
    * @throws IllegalArgumentException if arguments are invalid
    */
   public GreetLao(
-      @NonNull String lao_id,
+      @NonNull String id,
       @NonNull String frontend,
       @NonNull String address,
       @NonNull List<PeerAddress> peers) {
-
-    if (!isBase64(lao_id)) {
-      throw new IllegalArgumentException("Lao id must be a base64 encoded string");
-    }
+    checkBase64(id, "lao_id");
     // Correctness of the id will be checked via the handler
-    this.lao_id = lao_id;
+    this.id = id;
 
     // Checking the validity of the public key is done via the Public Key class
     try {
@@ -82,7 +85,7 @@ public class GreetLao extends Data {
 
   @NonNull
   public String getId() {
-    return lao_id;
+    return id;
   }
 
   @Override
