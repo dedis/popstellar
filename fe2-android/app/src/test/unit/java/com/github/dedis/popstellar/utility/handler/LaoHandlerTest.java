@@ -30,6 +30,7 @@ import java.util.*;
 import io.reactivex.Completable;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoNameWitnessMessage;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,6 +41,8 @@ import static org.mockito.Mockito.when;
 public class LaoHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
+  private static final PublicKey WITNESS1_KEY = generatePublicKey();
+  private static final PublicKey WITNESS2_KEY = generatePublicKey();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
@@ -169,5 +172,38 @@ public class LaoHandlerTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL, message_invalid));
+  }
+
+  @Test
+  public void testHandleUpdateLaoWitnessSetsNotEqual()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException, NoRollCallException {
+    lao.setWitnesses(new HashSet<>(Arrays.asList(WITNESS1_KEY)));
+
+    // Create UpdateLao with different witness set
+    UpdateLao updateLao =
+        new UpdateLao(
+            SENDER,
+            CREATE_LAO.getCreation(),
+            CREATE_LAO.getName(),
+            Instant.now().getEpochSecond(),
+            new HashSet<>(Arrays.asList(WITNESS1_KEY, WITNESS2_KEY)));
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, updateLao, gson);
+
+    // Call the handler
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
+
+    // Check the WitnessMessage has been created with the expected title and description
+    Optional<WitnessMessage> witnessMessage =
+        laoRepo.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
+    assertTrue(witnessMessage.isPresent());
+    assertEquals("Update Lao Witnesses", witnessMessage.get().getTitle());
+    System.out.println("check " + message.getMessageId().toString());
+
+    String expectedDescription =
+        String.format(
+            "Lao Name : %s\nMessage ID : %s\nNew Witness ID : %s",
+            lao.getName(), message.getMessageId(), WITNESS2_KEY);
+    assertEquals(expectedDescription, witnessMessage.get().getDescription());
   }
 }
