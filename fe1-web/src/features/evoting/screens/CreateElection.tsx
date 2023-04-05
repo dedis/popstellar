@@ -4,6 +4,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo, useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
 
 import {
   ConfirmModal,
@@ -30,12 +31,10 @@ import STRINGS from 'resources/strings';
 import { EvotingHooks } from '../hooks';
 import { EvotingFeature } from '../interface';
 import { requestCreateElection } from '../network/ElectionMessageApi';
-import { ElectionVersion, Question, QuestionState } from '../objects';
+import { ElectionVersion, Question, QuestionState, EMPTY_QUESTION } from '../objects';
+import { getElectionState } from '../reducer';
 
 const DEFAULT_ELECTION_DURATION = 3600;
-
-// for now only plurality voting is supported (2022-03-16, Tyratox)
-const VOTING_METHOD = STRINGS.election_method_Plurality;
 
 type NavigationProps = CompositeScreenProps<
   StackScreenProps<LaoEventsParamList, typeof STRINGS.events_create_election>,
@@ -50,12 +49,6 @@ type NavigationProps = CompositeScreenProps<
 // only on creation of the election
 // ALSO: for now the write_in feature is disabled (2022-03-16, Tyratox)
 type NewQuestion = Omit<QuestionState, 'id' | 'write_in'>;
-
-const EMPTY_QUESTION: NewQuestion = {
-  question: '',
-  voting_method: VOTING_METHOD,
-  ballot_options: [],
-};
 
 const MIN_BALLOT_OPTIONS = 2;
 
@@ -151,6 +144,7 @@ const CreateElection = () => {
   const toast = useToast();
   const currentLao = EvotingHooks.useCurrentLao();
   const isConnected = EvotingHooks.useConnectedToLao();
+  const defaultQuestions = useSelector((state) => getElectionState(state).defaultQuestions);
 
   // form data for the new election
   const [startTime, setStartTime] = useState<Timestamp>(Timestamp.EpochNow());
@@ -159,7 +153,7 @@ const CreateElection = () => {
   );
   const [electionName, setElectionName] = useState<string>('');
 
-  const [questions, setQuestions] = useState<NewQuestion[]>([EMPTY_QUESTION]);
+  const [questions, setQuestions] = useState<NewQuestion[]>(defaultQuestions);
   const [version, setVersion] = useState<ElectionVersion>(ElectionVersion.OPEN_BALLOT);
 
   // UI state
