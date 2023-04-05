@@ -5,7 +5,7 @@ import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
 import ch.epfl.pop.model.network.method.{Catchup, GetMessagesById, Heartbeat, Subscribe, Unsubscribe}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 import ch.epfl.pop.storage.DbActor
@@ -17,6 +17,7 @@ import akka.stream.FlowShape
 import ch.epfl.pop.model.network.JsonRpcResponse
 import ch.epfl.pop.model.network.ResultObject
 import scala.concurrent.{Await, Future}
+import scala.util.{Failure, Success}
 
 object ParamsWithMapHandler extends AskPatternConstants {
 
@@ -63,18 +64,35 @@ object ParamsWithMapHandler extends AskPatternConstants {
 
   def heartbeatHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
     case Right(jsonRpcMessage: JsonRpcRequest) =>
-      val receivedHeartBeat: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[Heartbeat].channelsToMessageIds // pas sûr
+      /** first step is to retrieve the received heartbeat from the jsonRpcRequest * */
+      val receivedHeartBeat: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[Heartbeat].channelsToMessageIds
+
+      /** second step is to retrieve the local set of channels * */
+      var setOfChannels: Set[Channel] = Set()
       val ask = dbActorRef ? DbActor.GetSetOfChannels()
-      val answer = Await.result(ask, duration)
-      val setOfChannels: Set[Channel] = answer.asInstanceOf[DbActor.DbActorGetSetOfChannelsAck].channels.map(s => Channel(s))
-      var localHeartBeat: mutable.HashMap[Channel, List[Hash]] = mutable.HashMap()
+      Await.ready(ask, duration).value match {
+        case Some(Success(DbActor.DbActorGetSetOfChannelsAck(channels))) =>
+          setOfChannels = channels.map(s => Channel(s))
+
+        case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"couldn't retrieve local set of channels", jsonRpcMessage.getId))
+        case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
+      }
+
+      /** third step is to ask the DB for the content of each channel in terms of message ids. * */
+      val localHeartBeat: mutable.HashMap[Channel, List[Hash]] = mutable.HashMap()
       setOfChannels.foreach(channel => {
         val ask = dbActorRef ? DbActor.ReadChannelData(channel)
-        val answer = Await.result(ask, duration)
-        val setOfIds = answer.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData.messages.to(collection.mutable.Set)
-        localHeartBeat += (channel -> setOfIds.toList)
+        Await.ready(ask, duration).value match {
+          case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
+            val setOfIds = channelData.messages.to(collection.mutable.Set)
+            localHeartBeat += (channel -> setOfIds.toList)
+          case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"couldn't readChannelData for local heartbeat", jsonRpcMessage.getId))
+          case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
+        }
       })
-      var missingIds: mutable.HashMap[Channel, Set[Hash]] = mutable.HashMap()
+
+      /** finally, we only keep from the received heartbeat the message ids that are not contained in the locally extracted heartbeat. * */
+      val missingIds: mutable.HashMap[Channel, Set[Hash]] = mutable.HashMap()
       receivedHeartBeat.keys.foreach(channel => {
         if (localHeartBeat.contains(channel)) {
           missingIds += (channel -> receivedHeartBeat.get(channel).get.filter(id =>
@@ -95,9 +113,13 @@ object ParamsWithMapHandler extends AskPatternConstants {
       var response: mutable.HashMap[Channel, Set[Message]] = mutable.HashMap()
       receivedRequest.keys.foreach(channel => {
         val ask = dbActorRef ? DbActor.Catchup(channel)
-        val answer = Await.result(ask, duration)
-        val missingIds = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages.filter(message => receivedRequest.get(channel).contains(message.message_id)).to(collection.immutable.Set) // je retrieve tous les messages pour ne garder que ceux qui m'intéresse :((
-        response += (channel -> missingIds)
+        Await.ready(ask, duration).value match {
+          case Some(Success(DbActor.DbActorCatchupAck(messages))) =>
+            val missingMessages = messages.filter(message => receivedRequest.get(channel).contains(message.message_id)).to(collection.immutable.Set)
+            response += (channel -> missingMessages)
+          case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"getMessagesByIdHandler failed : ${ex.message}", jsonRpcMessage.getId))
+          case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
+        }
       })
       Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(Map[Channel, Set[Message]]()), None, None))
 
