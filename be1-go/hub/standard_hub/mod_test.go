@@ -1746,9 +1746,10 @@ type fakeSocket struct {
 	sync.Mutex
 	socket.Socket
 
-	resultID int
-	res      []message.Message
-	msg      []byte
+	resultID    int
+	res         []message.Message
+	missingMsgs map[string][]message.Message
+	msg         []byte
 
 	err error
 
@@ -1771,6 +1772,7 @@ func (f *fakeSocket) SendResult(id int, res []message.Message, missingMsgs map[s
 
 	f.resultID = id
 	f.res = res
+	f.missingMsgs = missingMsgs
 }
 
 // SendError implements socket.Socket
