@@ -3,6 +3,7 @@ package standard_hub
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog/log"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
@@ -212,7 +213,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 
 func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg answer.Answer) {
 	messages := answerMsg.Result.GetMessagesByChannel()
-
+	h.log.Info().Msg("Handling getMessagesById answer")
 	for channel, messageArray := range messages {
 		for msg := range messageArray {
 			var messageData message.Message
@@ -514,11 +515,13 @@ func getMissingIds(receivedIds map[string][]string, storedIds map[string][]strin
 		for _, id := range receivedMessageIds {
 			storedIdsForChannel, channelKnown := storedIds[channelId]
 			if channelKnown {
+				log.Info().Msg("Channel known")
 				contains := slices.Contains(storedIdsForChannel, id)
 				if !contains {
 					missingIds[channelId] = append(missingIds[channelId], id)
 				}
 			} else {
+				log.Info().Msg("Channel not known")
 				missingIds[channelId] = append(missingIds[channelId], id)
 			}
 		}
