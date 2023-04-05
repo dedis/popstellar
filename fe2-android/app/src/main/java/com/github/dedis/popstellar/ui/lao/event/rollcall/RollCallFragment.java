@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -284,12 +285,16 @@ public class RollCallFragment extends Fragment {
 
   @SuppressLint("SourceLockedOrientationActivity")
   private void handleRotation() {
+    Activity activity = getActivity();
+    if (activity == null) {
+      return;
+    }
     if (rollCall.isOpen() && !laoViewModel.isOrganizer()) {
       // If the qr is visible, then the activity rotation should be locked,
       // as the QR could not fit in the screen in landscape
-      requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+      activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     } else {
-      requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+      activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
   }
 
