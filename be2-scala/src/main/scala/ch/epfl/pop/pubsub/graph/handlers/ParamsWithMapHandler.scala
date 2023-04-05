@@ -62,7 +62,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
       }
   })
 
-  def heartbeatHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
+  private def heartbeatHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       /** first step is to retrieve the received heartbeat from the jsonRpcRequest * */
       val receivedHeartBeat: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[Heartbeat].channelsToMessageIds
@@ -95,7 +95,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
       val missingIds: mutable.HashMap[Channel, Set[Hash]] = mutable.HashMap()
       receivedHeartBeat.keys.foreach(channel => {
         if (localHeartBeat.contains(channel)) {
-          missingIds += (channel -> receivedHeartBeat.get(channel).get.filter(id =>
+          missingIds += (channel -> receivedHeartBeat(channel).filter(id =>
             !localHeartBeat.get(channel).contains(id)
           ))
         }
@@ -107,7 +107,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
     case graphMessage @ _ => graphMessage
   })
 
-  def getMessagesByIdHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
+  private def getMessagesByIdHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       val receivedRequest: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[GetMessagesById].channelsToMessageIds
       var response: mutable.HashMap[Channel, Set[Message]] = mutable.HashMap()
