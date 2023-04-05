@@ -144,11 +144,12 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/roll_call_end_time"
       app:layout_constraintVertical_bias="@dimen/roll_call_attendees_text_vertical_bias" />
+
     <ListView
       android:id="@+id/list_view_attendees"
       android:scrollbarStyle="outsideOverlay"
       android:layout_width="@dimen/roll_call_attendees_list_width"
-      android:layout_height="wrap_content"
+      android:layout_height="@dimen/roll_call_attendees_list_height"
       android:layout_marginStart="@dimen/roll_call_attendees_margin"
       android:layout_marginEnd="@dimen/roll_call_attendees_margin"
       android:layout_centerHorizontal="true"
