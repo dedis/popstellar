@@ -100,7 +100,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
           ))
         }
       })
-      Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.HEARTBEAT, Heartbeat(missingIds.toMap), None)) // how to pass the missing ids?? répondre par un getmsgsbyid et gérer les ids.
+      Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, Heartbeat(missingIds.toMap), None)) // how to pass the missing ids?? répondre par un getmsgsbyid et gérer les ids.
 
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "HeartbeatHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
