@@ -96,11 +96,11 @@ object ParamsWithMapHandler extends AskPatternConstants {
       receivedHeartBeat.keys.foreach(channel => {
         if (localHeartBeat.contains(channel)) {
           missingIds += (channel -> receivedHeartBeat(channel).filter(id =>
-            !localHeartBeat.get(channel).contains(id)
+            !localHeartBeat(channel).contains(id)
           ))
         }
       })
-      Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, Heartbeat(missingIds.toMap), None)) // how to pass the missing ids?? répondre par un getmsgsbyid et gérer les ids.
+      Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, GetMessagesById(missingIds.toMap), None)) // how to pass the missing ids?? répondre par un getmsgsbyid et gérer les ids.
 
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "HeartbeatHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))

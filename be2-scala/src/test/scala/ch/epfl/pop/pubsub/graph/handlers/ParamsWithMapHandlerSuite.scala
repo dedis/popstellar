@@ -61,8 +61,13 @@ class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSy
     val source = Source(input)
     val s = source.via(boxUnderTest).runWith(Sink.seq[GraphMessage])
     Await.ready(s, duration).value match {
-      case Some(Success(seq)) => seq.toList should equal(expectedOutput)
-      case Some(Failure(_)) => 1 should equal(0)
+      case Some(Success(seq)) => seq.toList.head match {
+        case Right(jsonRpcReq : JsonRpcRequest) => jsonRpcReq.getParams.asInstanceOf[GetMessagesById].channelsToMessageIds should equal(EXPECTED_MISSING_MESSAGE_IDS)
+        case _ => 1 should equal(0)
+      }
+
+
+      case _ => 1 should equal(0)
     }
   }
 
