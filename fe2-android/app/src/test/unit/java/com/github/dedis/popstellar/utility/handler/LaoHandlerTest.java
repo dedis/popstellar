@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.utility.handler;
 import com.github.dedis.popstellar.di.DataRegistryModuleHelper;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -29,8 +30,7 @@ import java.util.*;
 
 import io.reactivex.Completable;
 
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.*;
 import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoNameWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoWitnessesWitnessMessage;
 import static org.junit.Assert.*;
@@ -68,7 +68,7 @@ public class LaoHandlerTest {
   public static final PeerAddress RANDOM_PEER = new PeerAddress("ws://128.0.0.2:8001/");
 
   private Lao lao;
-  private MessageGeneral createLaoMessage;
+  private MessageGeneral createLaoMessage1;
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
@@ -95,8 +95,8 @@ public class LaoHandlerTest {
     laoRepo.updateLao(lao);
 
     // Add the CreateLao message to the LAORepository
-    createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO1, gson);
-    messageRepo.addMessage(createLaoMessage);
+    createLaoMessage1 = new MessageGeneral(SENDER_KEY, CREATE_LAO1, gson);
+    messageRepo.addMessage(createLaoMessage1);
   }
 
   @Test
@@ -241,7 +241,7 @@ public class LaoHandlerTest {
             CREATE_LAO1.getCreation(),
             Instant.now().getEpochSecond(),
             CREATE_LAO1.getOrganizer(),
-            createLaoMessage.getMessageId(),
+            createLaoMessage1.getMessageId(),
             new HashSet<>(),
             new ArrayList<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY, stateLao, gson);
@@ -254,6 +254,58 @@ public class LaoHandlerTest {
         (Long) stateLao.getLastModified(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getLastModified());
     assertEquals(
         stateLao.getModificationId(), laoRepo.getLaoByChannel(LAO_CHANNEL1).getModificationId());
+  }
+
+  @Test
+  public void testHandleStateLaoInvalidMessageId()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException, NoRollCallException {
+    MessageGeneral createLaoMessage2 = new MessageGeneral(SENDER_KEY, CREATE_LAO2, gson);
+    // Create the state LAO message
+    StateLao stateLao =
+        new StateLao(
+            CREATE_LAO1.getId(),
+            CREATE_LAO1.getName(),
+            CREATE_LAO1.getCreation(),
+            Instant.now().getEpochSecond(),
+            CREATE_LAO1.getOrganizer(),
+            createLaoMessage2.getMessageId(),
+            new HashSet<>(),
+            new ArrayList<>());
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, stateLao, gson);
+
+    // Check that handling the message with invalid ID fails
+    assertThrows(
+        InvalidMessageIdException.class,
+        () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL1, message));
+  }
+
+  @Test
+  public void testHandleStateLaoInvalidSignatures()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+          UnknownElectionException, NoRollCallException {
+    PublicKeySignaturePair invalidKeyPair =
+        new PublicKeySignaturePair(generatePublicKey(), generateSignature());
+    List<PublicKeySignaturePair> modificationSignatures = new ArrayList<>();
+    modificationSignatures.add(invalidKeyPair);
+
+    // Create the a state LAO message with invalid modification signatures
+    StateLao stateLao =
+        new StateLao(
+            CREATE_LAO1.getId(),
+            CREATE_LAO1.getName(),
+            CREATE_LAO1.getCreation(),
+            Instant.now().getEpochSecond(),
+            CREATE_LAO1.getOrganizer(),
+            createLaoMessage1.getMessageId(),
+            new HashSet<>(),
+            modificationSignatures);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, stateLao, gson);
+
+    // Check that handling the message with invalid signatures fails
+    assertThrows(
+        InvalidSignatureException.class,
+        () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL1, message));
   }
 
   @Test()
