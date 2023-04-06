@@ -1,873 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CreateElection renders correctly trimmed question and election name 1`] = `
-<View
-  style={
-    {
-      "flex": 1,
-    }
-  }
->
-  <RNCSafeAreaProvider
-    onInsetsChange={[Function]}
-    style={
-      [
-        {
-          "flex": 1,
-        },
-        undefined,
-      ]
-    }
-  >
-    <View
-      style={
-        [
-          {
-            "backgroundColor": "rgb(242, 242, 242)",
-            "flex": 1,
-          },
-          undefined,
-        ]
-      }
-    >
-      <View
-        collapsable={false}
-        pointerEvents="box-none"
-        style={
-          {
-            "zIndex": 1,
-          }
-        }
-      >
-        <View
-          accessibilityElementsHidden={false}
-          importantForAccessibility="auto"
-          onLayout={[Function]}
-          pointerEvents="box-none"
-          style={null}
-        >
-          <View
-            collapsable={false}
-            pointerEvents="box-none"
-            style={
-              {
-                "bottom": 0,
-                "left": 0,
-                "opacity": 1,
-                "position": "absolute",
-                "right": 0,
-                "top": 0,
-                "zIndex": 0,
-              }
-            }
-          >
-            <View
-              collapsable={false}
-              style={
-                {
-                  "backgroundColor": "rgb(255, 255, 255)",
-                  "borderBottomColor": "rgb(216, 216, 216)",
-                  "flex": 1,
-                  "shadowColor": "rgb(216, 216, 216)",
-                  "shadowOffset": {
-                    "height": 0.5,
-                    "width": 0,
-                  },
-                  "shadowOpacity": 0.85,
-                  "shadowRadius": 0,
-                }
-              }
-            />
-          </View>
-          <View
-            collapsable={false}
-            pointerEvents="box-none"
-            style={
-              {
-                "height": 44,
-                "maxHeight": undefined,
-                "minHeight": undefined,
-                "opacity": undefined,
-                "transform": undefined,
-              }
-            }
-          >
-            <View
-              pointerEvents="none"
-              style={
-                {
-                  "height": 0,
-                }
-              }
-            />
-            <View
-              pointerEvents="box-none"
-              style={
-                {
-                  "alignItems": "stretch",
-                  "flex": 1,
-                  "flexDirection": "row",
-                }
-              }
-            >
-              <View
-                collapsable={false}
-                pointerEvents="box-none"
-                style={
-                  {
-                    "alignItems": "flex-start",
-                    "flexBasis": 0,
-                    "flexGrow": 1,
-                    "justifyContent": "center",
-                    "marginStart": 0,
-                    "opacity": 1,
-                  }
-                }
-              />
-              <View
-                collapsable={false}
-                pointerEvents="box-none"
-                style={
-                  {
-                    "justifyContent": "center",
-                    "marginHorizontal": 16,
-                    "maxWidth": 718,
-                    "opacity": 1,
-                  }
-                }
-              >
-                <Text
-                  accessibilityRole="header"
-                  aria-level="1"
-                  collapsable={false}
-                  numberOfLines={1}
-                  onLayout={[Function]}
-                  style={
-                    {
-                      "color": "rgb(28, 28, 30)",
-                      "fontSize": 17,
-                      "fontWeight": "600",
-                    }
-                  }
-                >
-                  MockScreen
-                </Text>
-              </View>
-              <View
-                collapsable={false}
-                pointerEvents="box-none"
-                style={
-                  {
-                    "alignItems": "flex-end",
-                    "flexBasis": 0,
-                    "flexGrow": 1,
-                    "justifyContent": "center",
-                    "marginEnd": 0,
-                    "opacity": 1,
-                  }
-                }
-              />
-            </View>
-          </View>
-        </View>
-      </View>
-      <RNSScreenContainer
-        onLayout={[Function]}
-        style={
-          {
-            "flex": 1,
-          }
-        }
-      >
-        <RNSScreen
-          activityState={2}
-          collapsable={false}
-          forwardedRef={[Function]}
-          gestureResponseDistance={
-            {
-              "bottom": -1,
-              "end": -1,
-              "start": -1,
-              "top": -1,
-            }
-          }
-          pointerEvents="box-none"
-          style={
-            {
-              "bottom": 0,
-              "left": 0,
-              "position": "absolute",
-              "right": 0,
-              "top": 0,
-            }
-          }
-        >
-          <View
-            collapsable={false}
-            style={
-              {
-                "opacity": 1,
-              }
-            }
-          />
-          <View
-            accessibilityElementsHidden={false}
-            closing={false}
-            gestureVelocityImpact={0.3}
-            importantForAccessibility="auto"
-            onClose={[Function]}
-            onGestureBegin={[Function]}
-            onGestureCanceled={[Function]}
-            onGestureEnd={[Function]}
-            onOpen={[Function]}
-            onTransition={[Function]}
-            pointerEvents="box-none"
-            style={
-              [
-                {
-                  "display": "flex",
-                  "overflow": undefined,
-                },
-                {
-                  "bottom": 0,
-                  "left": 0,
-                  "position": "absolute",
-                  "right": 0,
-                  "top": 0,
-                },
-              ]
-            }
-            transitionSpec={
-              {
-                "close": {
-                  "animation": "spring",
-                  "config": {
-                    "damping": 500,
-                    "mass": 3,
-                    "overshootClamping": true,
-                    "restDisplacementThreshold": 10,
-                    "restSpeedThreshold": 10,
-                    "stiffness": 1000,
-                  },
-                },
-                "open": {
-                  "animation": "spring",
-                  "config": {
-                    "damping": 500,
-                    "mass": 3,
-                    "overshootClamping": true,
-                    "restDisplacementThreshold": 10,
-                    "restSpeedThreshold": 10,
-                    "stiffness": 1000,
-                  },
-                },
-              }
-            }
-          >
-            <View
-              collapsable={false}
-              pointerEvents="box-none"
-              style={
-                {
-                  "flex": 1,
-                }
-              }
-            >
-              <View
-                collapsable={false}
-                forwardedRef={[Function]}
-                handlerTag={16}
-                handlerType="PanGestureHandler"
-                needsOffscreenAlphaCompositing={false}
-                onGestureHandlerEvent={[Function]}
-                onGestureHandlerStateChange={[Function]}
-                style={
-                  {
-                    "flex": 1,
-                    "transform": [
-                      {
-                        "translateX": 0,
-                      },
-                      {
-                        "translateX": 0,
-                      },
-                    ],
-                  }
-                }
-              >
-                <View
-                  pointerEvents="box-none"
-                  style={
-                    [
-                      {
-                        "flex": 1,
-                        "overflow": "hidden",
-                      },
-                      [
-                        {
-                          "backgroundColor": "rgb(242, 242, 242)",
-                        },
-                        undefined,
-                      ],
-                    ]
-                  }
-                >
-                  <View
-                    style={
-                      {
-                        "flex": 1,
-                        "flexDirection": "column-reverse",
-                      }
-                    }
-                  >
-                    <View
-                      style={
-                        {
-                          "flex": 1,
-                        }
-                      }
-                    >
-                      <View
-                        style={
-                          {
-                            "flex": 1,
-                          }
-                        }
-                      >
-                        <RCTScrollView
-                          collapsable={false}
-                          handlerTag={17}
-                          handlerType="NativeViewGestureHandler"
-                          onGestureHandlerEvent={[Function]}
-                          onGestureHandlerStateChange={[Function]}
-                          style={
-                            {
-                              "padding": 16,
-                            }
-                          }
-                          waitFor={
-                            [
-                              {
-                                "current": null,
-                              },
-                            ]
-                          }
-                        >
-                          <View>
-                            <Text
-                              style={
-                                [
-                                  {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  {
-                                    "fontWeight": "bold",
-                                  },
-                                ]
-                              }
-                            >
-                              Name
-                            </Text>
-                            <View
-                              style={
-                                {
-                                  "flex": 1,
-                                  "flexDirection": "row",
-                                }
-                              }
-                            >
-                              <TextInput
-                                editable={true}
-                                onChangeText={[Function]}
-                                placeholder="Election Q1 2022"
-                                placeholderTextColor="#8E8E8E"
-                                style={
-                                  [
-                                    {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    {
-                                      "backgroundColor": "#fff",
-                                      "borderColor": "#fff",
-                                      "borderRadius": 8,
-                                      "borderWidth": 1,
-                                      "flex": 1,
-                                      "padding": 8,
-                                      "width": 50,
-                                    },
-                                  ]
-                                }
-                                testID="election_name_selector"
-                                value="Trimmed election name    "
-                              />
-                            </View>
-                            <Text
-                              style={
-                                [
-                                  {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  {
-                                    "fontWeight": "bold",
-                                  },
-                                ]
-                              }
-                            >
-                              Election Type
-                            </Text>
-                            <View
-                              style={
-                                {
-                                  "backgroundColor": "#fff",
-                                  "borderRadius": 8,
-                                  "borderWidth": 0,
-                                  "color": "#000",
-                                  "fontSize": 20,
-                                  "lineHeight": 26,
-                                  "marginBottom": 16,
-                                  "padding": 8,
-                                  "textAlign": "left",
-                                }
-                              }
-                            >
-                              <RNCPicker
-                                items={
-                                  [
-                                    {
-                                      "label": "Open Ballot",
-                                      "testID": undefined,
-                                      "textColor": undefined,
-                                      "value": "OPEN_BALLOT",
-                                    },
-                                    {
-                                      "label": "Secret Ballot",
-                                      "testID": undefined,
-                                      "textColor": undefined,
-                                      "value": "SECRET_BALLOT",
-                                    },
-                                  ]
-                                }
-                                numberOfLines={1}
-                                onChange={[Function]}
-                                selectedIndex={0}
-                                style={
-                                  [
-                                    {
-                                      "height": 216,
-                                    },
-                                    undefined,
-                                  ]
-                                }
-                              />
-                            </View>
-                            <View>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    {
-                                      "fontWeight": "bold",
-                                    },
-                                  ]
-                                }
-                              >
-                                Question
-                                 
-                                1
-                              </Text>
-                              <View
-                                style={
-                                  {
-                                    "flex": 1,
-                                    "flexDirection": "row",
-                                  }
-                                }
-                              >
-                                <TextInput
-                                  editable={true}
-                                  onChangeText={[Function]}
-                                  placeholder="What is your favorite color?"
-                                  placeholderTextColor="#8E8E8E"
-                                  style={
-                                    [
-                                      {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "marginBottom": 16,
-                                        "textAlign": "left",
-                                      },
-                                      {
-                                        "backgroundColor": "#fff",
-                                        "borderColor": "#fff",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "flex": 1,
-                                        "padding": 8,
-                                        "width": 50,
-                                      },
-                                    ]
-                                  }
-                                  testID="question_selector_0"
-                                  value="Trimmed question "
-                                />
-                              </View>
-                              <Text
-                                style={
-                                  [
-                                    {
-                                      "color": "#000",
-                                      "fontSize": 20,
-                                      "lineHeight": 26,
-                                      "marginBottom": 16,
-                                      "textAlign": "left",
-                                    },
-                                    {
-                                      "fontWeight": "bold",
-                                    },
-                                  ]
-                                }
-                              >
-                                Ballot Options
-                              </Text>
-                              <View>
-                                <View
-                                  style={
-                                    {
-                                      "alignItems": "center",
-                                      "flex": 1,
-                                      "flexDirection": "row",
-                                    }
-                                  }
-                                  testID="question_0_ballots_option_0"
-                                >
-                                  <View
-                                    style={
-                                      {
-                                        "flex": 1,
-                                        "flexDirection": "row",
-                                      }
-                                    }
-                                  >
-                                    <TextInput
-                                      editable={true}
-                                      onChangeText={[Function]}
-                                      placeholder="Blue"
-                                      placeholderTextColor="#8E8E8E"
-                                      style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "backgroundColor": "#fff",
-                                            "borderColor": "#fff",
-                                            "borderRadius": 8,
-                                            "borderWidth": 1,
-                                            "flex": 1,
-                                            "padding": 8,
-                                            "width": 50,
-                                          },
-                                        ]
-                                      }
-                                      testID="question_0_ballots_option_0_input"
-                                      value=""
-                                    />
-                                  </View>
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    focusable={true}
-                                    onBlur={[Function]}
-                                    onClick={[Function]}
-                                    onFocus={[Function]}
-                                    onResponderGrant={[Function]}
-                                    onResponderMove={[Function]}
-                                    onResponderRelease={[Function]}
-                                    onResponderTerminate={[Function]}
-                                    onResponderTerminationRequest={[Function]}
-                                    onStartShouldSetResponder={[Function]}
-                                    style={
-                                      {
-                                        "marginBottom": 16,
-                                        "marginLeft": 16,
-                                      }
-                                    }
-                                    testID="question_0_ballots_option_0_remove"
-                                  >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      delayLongPress={600}
-                                      enabled={true}
-                                      exclusive={true}
-                                      handlerTag={18}
-                                      handlerType="NativeViewGestureHandler"
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      touchSoundDisabled={false}
-                                    >
-                                      <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        style={
-                                          {
-                                            "opacity": 1,
-                                          }
-                                        }
-                                      >
-                                        <View>
-                                          {"name":"ios-trash","size":25,"color":"#000"}
-                                        </View>
-                                      </View>
-                                    </RNGestureHandlerButton>
-                                  </View>
-                                </View>
-                              </View>
-                            </View>
-                            <View
-                              accessible={true}
-                              collapsable={false}
-                              focusable={true}
-                              onBlur={[Function]}
-                              onClick={[Function]}
-                              onFocus={[Function]}
-                              onResponderGrant={[Function]}
-                              onResponderMove={[Function]}
-                              onResponderRelease={[Function]}
-                              onResponderTerminate={[Function]}
-                              onResponderTerminationRequest={[Function]}
-                              onStartShouldSetResponder={[Function]}
-                              style={
-                                {
-                                  "marginBottom": 16,
-                                }
-                              }
-                            >
-                              <RNGestureHandlerButton
-                                collapsable={false}
-                                delayLongPress={600}
-                                enabled={true}
-                                exclusive={true}
-                                handlerTag={19}
-                                handlerType="NativeViewGestureHandler"
-                                onGestureEvent={[Function]}
-                                onGestureHandlerEvent={[Function]}
-                                onGestureHandlerStateChange={[Function]}
-                                onHandlerStateChange={[Function]}
-                                rippleColor={0}
-                                touchSoundDisabled={false}
-                              >
-                                <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  style={
-                                    {
-                                      "opacity": 1,
-                                    }
-                                  }
-                                >
-                                  <View
-                                    style={
-                                      [
-                                        {
-                                          "backgroundColor": "#3742fa",
-                                          "borderColor": "#3742fa",
-                                          "borderRadius": 8,
-                                          "borderWidth": 1,
-                                          "padding": 8,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    <Text
-                                      style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "textAlign": "center",
-                                          },
-                                          {
-                                            "color": "#fff",
-                                          },
-                                        ]
-                                      }
-                                    >
-                                      Add Question
-                                    </Text>
-                                  </View>
-                                </View>
-                              </RNGestureHandlerButton>
-                            </View>
-                            <Text
-                              style={
-                                [
-                                  {
-                                    "color": "#000",
-                                    "fontSize": 20,
-                                    "lineHeight": 26,
-                                    "marginBottom": 16,
-                                    "textAlign": "left",
-                                  },
-                                  {
-                                    "color": "#e74c3c",
-                                  },
-                                ]
-                              }
-                            >
-                              All questions must have a title and at least 2 different ballot options.
-                            </Text>
-                            <Modal
-                              hardwareAccelerated={false}
-                              transparent={true}
-                              visible={false}
-                            />
-                            <Modal
-                              hardwareAccelerated={false}
-                              onRequestClose={[Function]}
-                              transparent={true}
-                              visible={false}
-                            />
-                          </View>
-                        </RCTScrollView>
-                        <View
-                          style={
-                            {
-                              "alignItems": "center",
-                              "backgroundColor": "#fff",
-                              "borderColor": "rgb(216, 216, 216)",
-                              "borderTopWidth": 1,
-                              "flexDirection": "row",
-                              "justifyContent": "space-around",
-                              "paddingHorizontal": 16,
-                              "paddingVertical": 16,
-                            }
-                          }
-                        >
-                          <View
-                            accessible={true}
-                            collapsable={false}
-                            focusable={true}
-                            onBlur={[Function]}
-                            onClick={[Function]}
-                            onFocus={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={{}}
-                            testID="election_confirm_selector"
-                          >
-                            <RNGestureHandlerButton
-                              collapsable={false}
-                              delayLongPress={600}
-                              enabled={true}
-                              exclusive={true}
-                              handlerTag={20}
-                              handlerType="NativeViewGestureHandler"
-                              onGestureEvent={[Function]}
-                              onGestureHandlerEvent={[Function]}
-                              onGestureHandlerStateChange={[Function]}
-                              onHandlerStateChange={[Function]}
-                              rippleColor={0}
-                              touchSoundDisabled={false}
-                            >
-                              <View
-                                accessible={true}
-                                collapsable={false}
-                                style={
-                                  {
-                                    "opacity": 1,
-                                  }
-                                }
-                              >
-                                <View
-                                  style={
-                                    [
-                                      {
-                                        "backgroundColor": "#3742fa",
-                                        "borderColor": "#3742fa",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "padding": 8,
-                                      },
-                                      {
-                                        "backgroundColor": "#8E8E8E",
-                                        "borderColor": "#8E8E8E",
-                                      },
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "textAlign": "center",
-                                        },
-                                        {
-                                          "color": "#fff",
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Confirm
-                                  </Text>
-                                </View>
-                              </View>
-                            </RNGestureHandlerButton>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </View>
-          </View>
-        </RNSScreen>
-      </RNSScreenContainer>
-    </View>
-  </RNCSafeAreaProvider>
-</View>
-`;
-
 exports[`CreateElection renders correctly when name and question are empty 1`] = `
 <View
   style={
@@ -1144,7 +276,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={6}
+                handlerTag={7}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1204,7 +336,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={7}
+                          handlerTag={8}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -1340,7 +472,13 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                                 }
                               />
                             </View>
-                            <View>
+                            <View
+                              style={
+                                {
+                                  "marginBottom": 32,
+                                }
+                              }
+                            >
                               <Text
                                 style={
                                   [
@@ -1364,39 +502,103 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                               <View
                                 style={
                                   {
+                                    "alignItems": "center",
                                     "flex": 1,
                                     "flexDirection": "row",
                                   }
                                 }
+                                testID="question_selector_0"
                               >
-                                <TextInput
-                                  editable={true}
-                                  onChangeText={[Function]}
-                                  placeholder="What is your favorite color?"
-                                  placeholderTextColor="#8E8E8E"
+                                <View
                                   style={
-                                    [
-                                      {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "marginBottom": 16,
-                                        "textAlign": "left",
-                                      },
-                                      {
-                                        "backgroundColor": "#fff",
-                                        "borderColor": "#fff",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "flex": 1,
-                                        "padding": 8,
-                                        "width": 50,
-                                      },
-                                    ]
+                                    {
+                                      "flex": 1,
+                                      "flexDirection": "row",
+                                    }
                                   }
-                                  testID="question_selector_0"
-                                  value=""
-                                />
+                                >
+                                  <TextInput
+                                    editable={true}
+                                    onChangeText={[Function]}
+                                    placeholder="What is your favorite color?"
+                                    placeholderTextColor="#8E8E8E"
+                                    style={
+                                      [
+                                        {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "marginBottom": 16,
+                                          "textAlign": "left",
+                                        },
+                                        {
+                                          "backgroundColor": "#fff",
+                                          "borderColor": "#fff",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "flex": 1,
+                                          "padding": 8,
+                                          "width": 50,
+                                        },
+                                      ]
+                                    }
+                                    testID="question_selector_0_input"
+                                    value=""
+                                  />
+                                </View>
+                                <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
+                                  style={
+                                    {
+                                      "marginBottom": 16,
+                                      "marginLeft": 16,
+                                    }
+                                  }
+                                >
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
+                                    exclusive={true}
+                                    handlerTag={9}
+                                    handlerType="NativeViewGestureHandler"
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    touchSoundDisabled={false}
+                                  >
+                                    <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      style={
+                                        {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <View
+                                        style={
+                                          {
+                                            "width": 25,
+                                          }
+                                        }
+                                      />
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                               <Text
                                 style={
@@ -1417,102 +619,107 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                                 Ballot Options
                               </Text>
                               <View>
-                                <View
-                                  style={
-                                    {
-                                      "alignItems": "center",
-                                      "flex": 1,
-                                      "flexDirection": "row",
-                                    }
-                                  }
-                                  testID="question_0_ballots_option_0"
-                                >
+                                <View>
                                   <View
                                     style={
                                       {
+                                        "alignItems": "center",
                                         "flex": 1,
                                         "flexDirection": "row",
                                       }
                                     }
+                                    testID="question_0_ballots_option_0"
                                   >
-                                    <TextInput
-                                      editable={true}
-                                      onChangeText={[Function]}
-                                      placeholder="Blue"
-                                      placeholderTextColor="#8E8E8E"
+                                    <View
                                       style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "backgroundColor": "#fff",
-                                            "borderColor": "#fff",
-                                            "borderRadius": 8,
-                                            "borderWidth": 1,
-                                            "flex": 1,
-                                            "padding": 8,
-                                            "width": 50,
-                                          },
-                                        ]
-                                      }
-                                      testID="question_0_ballots_option_0_input"
-                                      value=""
-                                    />
-                                  </View>
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    focusable={true}
-                                    onBlur={[Function]}
-                                    onClick={[Function]}
-                                    onFocus={[Function]}
-                                    onResponderGrant={[Function]}
-                                    onResponderMove={[Function]}
-                                    onResponderRelease={[Function]}
-                                    onResponderTerminate={[Function]}
-                                    onResponderTerminationRequest={[Function]}
-                                    onStartShouldSetResponder={[Function]}
-                                    style={
-                                      {
-                                        "marginBottom": 16,
-                                        "marginLeft": 16,
-                                      }
-                                    }
-                                    testID="question_0_ballots_option_0_remove"
-                                  >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      delayLongPress={600}
-                                      enabled={true}
-                                      exclusive={true}
-                                      handlerTag={8}
-                                      handlerType="NativeViewGestureHandler"
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      touchSoundDisabled={false}
-                                    >
-                                      <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        style={
-                                          {
-                                            "opacity": 1,
-                                          }
+                                        {
+                                          "flex": 1,
+                                          "flexDirection": "row",
                                         }
+                                      }
+                                    >
+                                      <TextInput
+                                        editable={true}
+                                        onChangeText={[Function]}
+                                        placeholder="Blue"
+                                        placeholderTextColor="#8E8E8E"
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "backgroundColor": "#fff",
+                                              "borderColor": "#fff",
+                                              "borderRadius": 8,
+                                              "borderWidth": 1,
+                                              "flex": 1,
+                                              "padding": 8,
+                                              "width": 50,
+                                            },
+                                          ]
+                                        }
+                                        testID="question_0_ballots_option_0_input"
+                                        value=""
+                                      />
+                                    </View>
+                                    <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      style={
+                                        {
+                                          "marginBottom": 16,
+                                          "marginLeft": 16,
+                                        }
+                                      }
+                                    >
+                                      <RNGestureHandlerButton
+                                        collapsable={false}
+                                        delayLongPress={600}
+                                        enabled={true}
+                                        exclusive={true}
+                                        handlerTag={10}
+                                        handlerType="NativeViewGestureHandler"
+                                        onGestureEvent={[Function]}
+                                        onGestureHandlerEvent={[Function]}
+                                        onGestureHandlerStateChange={[Function]}
+                                        onHandlerStateChange={[Function]}
+                                        rippleColor={0}
+                                        touchSoundDisabled={false}
                                       >
-                                        <View>
-                                          {"name":"ios-trash","size":25,"color":"#000"}
+                                        <View
+                                          accessible={true}
+                                          collapsable={false}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
+                                        >
+                                          <View
+                                            style={
+                                              {
+                                                "width": 25,
+                                              }
+                                            }
+                                          />
                                         </View>
-                                      </View>
-                                    </RNGestureHandlerButton>
+                                      </RNGestureHandlerButton>
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -1541,7 +748,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                                 delayLongPress={600}
                                 enabled={true}
                                 exclusive={true}
-                                handlerTag={9}
+                                handlerTag={11}
                                 handlerType="NativeViewGestureHandler"
                                 onGestureEvent={[Function]}
                                 onGestureHandlerEvent={[Function]}
@@ -1630,7 +837,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                                 ]
                               }
                             >
-                              All questions must have a title and at least 2 different ballot options.
+                              At least one question is needed
                             </Text>
                             <Modal
                               hardwareAccelerated={false}
@@ -1680,7 +887,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                               delayLongPress={600}
                               enabled={true}
                               exclusive={true}
-                              handlerTag={10}
+                              handlerTag={12}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
@@ -2030,7 +1237,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={11}
+                handlerTag={13}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -2090,7 +1297,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={12}
+                          handlerTag={14}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -2160,7 +1367,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                   ]
                                 }
                                 testID="election_name_selector"
-                                value=""
+                                value="     "
                               />
                             </View>
                             <Text
@@ -2226,7 +1433,13 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                 }
                               />
                             </View>
-                            <View>
+                            <View
+                              style={
+                                {
+                                  "marginBottom": 32,
+                                }
+                              }
+                            >
                               <Text
                                 style={
                                   [
@@ -2250,39 +1463,103 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                               <View
                                 style={
                                   {
+                                    "alignItems": "center",
                                     "flex": 1,
                                     "flexDirection": "row",
                                   }
                                 }
+                                testID="question_selector_0"
                               >
-                                <TextInput
-                                  editable={true}
-                                  onChangeText={[Function]}
-                                  placeholder="What is your favorite color?"
-                                  placeholderTextColor="#8E8E8E"
+                                <View
                                   style={
-                                    [
-                                      {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "marginBottom": 16,
-                                        "textAlign": "left",
-                                      },
-                                      {
-                                        "backgroundColor": "#fff",
-                                        "borderColor": "#fff",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "flex": 1,
-                                        "padding": 8,
-                                        "width": 50,
-                                      },
-                                    ]
+                                    {
+                                      "flex": 1,
+                                      "flexDirection": "row",
+                                    }
                                   }
-                                  testID="question_selector_0"
-                                  value=""
-                                />
+                                >
+                                  <TextInput
+                                    editable={true}
+                                    onChangeText={[Function]}
+                                    placeholder="What is your favorite color?"
+                                    placeholderTextColor="#8E8E8E"
+                                    style={
+                                      [
+                                        {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "marginBottom": 16,
+                                          "textAlign": "left",
+                                        },
+                                        {
+                                          "backgroundColor": "#fff",
+                                          "borderColor": "#fff",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "flex": 1,
+                                          "padding": 8,
+                                          "width": 50,
+                                        },
+                                      ]
+                                    }
+                                    testID="question_selector_0_input"
+                                    value=""
+                                  />
+                                </View>
+                                <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
+                                  style={
+                                    {
+                                      "marginBottom": 16,
+                                      "marginLeft": 16,
+                                    }
+                                  }
+                                >
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
+                                    exclusive={true}
+                                    handlerTag={15}
+                                    handlerType="NativeViewGestureHandler"
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    touchSoundDisabled={false}
+                                  >
+                                    <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      style={
+                                        {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <View
+                                        style={
+                                          {
+                                            "width": 25,
+                                          }
+                                        }
+                                      />
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                               <Text
                                 style={
@@ -2303,102 +1580,107 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                 Ballot Options
                               </Text>
                               <View>
-                                <View
-                                  style={
-                                    {
-                                      "alignItems": "center",
-                                      "flex": 1,
-                                      "flexDirection": "row",
-                                    }
-                                  }
-                                  testID="question_0_ballots_option_0"
-                                >
+                                <View>
                                   <View
                                     style={
                                       {
+                                        "alignItems": "center",
                                         "flex": 1,
                                         "flexDirection": "row",
                                       }
                                     }
+                                    testID="question_0_ballots_option_0"
                                   >
-                                    <TextInput
-                                      editable={true}
-                                      onChangeText={[Function]}
-                                      placeholder="Blue"
-                                      placeholderTextColor="#8E8E8E"
+                                    <View
                                       style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "backgroundColor": "#fff",
-                                            "borderColor": "#fff",
-                                            "borderRadius": 8,
-                                            "borderWidth": 1,
-                                            "flex": 1,
-                                            "padding": 8,
-                                            "width": 50,
-                                          },
-                                        ]
-                                      }
-                                      testID="question_0_ballots_option_0_input"
-                                      value=""
-                                    />
-                                  </View>
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    focusable={true}
-                                    onBlur={[Function]}
-                                    onClick={[Function]}
-                                    onFocus={[Function]}
-                                    onResponderGrant={[Function]}
-                                    onResponderMove={[Function]}
-                                    onResponderRelease={[Function]}
-                                    onResponderTerminate={[Function]}
-                                    onResponderTerminationRequest={[Function]}
-                                    onStartShouldSetResponder={[Function]}
-                                    style={
-                                      {
-                                        "marginBottom": 16,
-                                        "marginLeft": 16,
-                                      }
-                                    }
-                                    testID="question_0_ballots_option_0_remove"
-                                  >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      delayLongPress={600}
-                                      enabled={true}
-                                      exclusive={true}
-                                      handlerTag={13}
-                                      handlerType="NativeViewGestureHandler"
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      touchSoundDisabled={false}
-                                    >
-                                      <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        style={
-                                          {
-                                            "opacity": 1,
-                                          }
+                                        {
+                                          "flex": 1,
+                                          "flexDirection": "row",
                                         }
+                                      }
+                                    >
+                                      <TextInput
+                                        editable={true}
+                                        onChangeText={[Function]}
+                                        placeholder="Blue"
+                                        placeholderTextColor="#8E8E8E"
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "backgroundColor": "#fff",
+                                              "borderColor": "#fff",
+                                              "borderRadius": 8,
+                                              "borderWidth": 1,
+                                              "flex": 1,
+                                              "padding": 8,
+                                              "width": 50,
+                                            },
+                                          ]
+                                        }
+                                        testID="question_0_ballots_option_0_input"
+                                        value=""
+                                      />
+                                    </View>
+                                    <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      style={
+                                        {
+                                          "marginBottom": 16,
+                                          "marginLeft": 16,
+                                        }
+                                      }
+                                    >
+                                      <RNGestureHandlerButton
+                                        collapsable={false}
+                                        delayLongPress={600}
+                                        enabled={true}
+                                        exclusive={true}
+                                        handlerTag={16}
+                                        handlerType="NativeViewGestureHandler"
+                                        onGestureEvent={[Function]}
+                                        onGestureHandlerEvent={[Function]}
+                                        onGestureHandlerStateChange={[Function]}
+                                        onHandlerStateChange={[Function]}
+                                        rippleColor={0}
+                                        touchSoundDisabled={false}
                                       >
-                                        <View>
-                                          {"name":"ios-trash","size":25,"color":"#000"}
+                                        <View
+                                          accessible={true}
+                                          collapsable={false}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
+                                        >
+                                          <View
+                                            style={
+                                              {
+                                                "width": 25,
+                                              }
+                                            }
+                                          />
                                         </View>
-                                      </View>
-                                    </RNGestureHandlerButton>
+                                      </RNGestureHandlerButton>
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -2427,7 +1709,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                 delayLongPress={600}
                                 enabled={true}
                                 exclusive={true}
-                                handlerTag={14}
+                                handlerTag={17}
                                 handlerType="NativeViewGestureHandler"
                                 onGestureEvent={[Function]}
                                 onGestureHandlerEvent={[Function]}
@@ -2516,7 +1798,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                 ]
                               }
                             >
-                              All questions must have a title and at least 2 different ballot options.
+                              At least one question is needed
                             </Text>
                             <Modal
                               hardwareAccelerated={false}
@@ -2566,7 +1848,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                               delayLongPress={600}
                               enabled={true}
                               exclusive={true}
-                              handlerTag={15}
+                              handlerTag={18}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
@@ -3112,7 +2394,13 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                                 }
                               />
                             </View>
-                            <View>
+                            <View
+                              style={
+                                {
+                                  "marginBottom": 32,
+                                }
+                              }
+                            >
                               <Text
                                 style={
                                   [
@@ -3136,39 +2424,103 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                               <View
                                 style={
                                   {
+                                    "alignItems": "center",
                                     "flex": 1,
                                     "flexDirection": "row",
                                   }
                                 }
+                                testID="question_selector_0"
                               >
-                                <TextInput
-                                  editable={true}
-                                  onChangeText={[Function]}
-                                  placeholder="What is your favorite color?"
-                                  placeholderTextColor="#8E8E8E"
+                                <View
                                   style={
-                                    [
-                                      {
-                                        "color": "#000",
-                                        "fontSize": 20,
-                                        "lineHeight": 26,
-                                        "marginBottom": 16,
-                                        "textAlign": "left",
-                                      },
-                                      {
-                                        "backgroundColor": "#fff",
-                                        "borderColor": "#fff",
-                                        "borderRadius": 8,
-                                        "borderWidth": 1,
-                                        "flex": 1,
-                                        "padding": 8,
-                                        "width": 50,
-                                      },
-                                    ]
+                                    {
+                                      "flex": 1,
+                                      "flexDirection": "row",
+                                    }
                                   }
-                                  testID="question_selector_0"
-                                  value=""
-                                />
+                                >
+                                  <TextInput
+                                    editable={true}
+                                    onChangeText={[Function]}
+                                    placeholder="What is your favorite color?"
+                                    placeholderTextColor="#8E8E8E"
+                                    style={
+                                      [
+                                        {
+                                          "color": "#000",
+                                          "fontSize": 20,
+                                          "lineHeight": 26,
+                                          "marginBottom": 16,
+                                          "textAlign": "left",
+                                        },
+                                        {
+                                          "backgroundColor": "#fff",
+                                          "borderColor": "#fff",
+                                          "borderRadius": 8,
+                                          "borderWidth": 1,
+                                          "flex": 1,
+                                          "padding": 8,
+                                          "width": 50,
+                                        },
+                                      ]
+                                    }
+                                    testID="question_selector_0_input"
+                                    value=""
+                                  />
+                                </View>
+                                <View
+                                  accessible={true}
+                                  collapsable={false}
+                                  focusable={true}
+                                  onBlur={[Function]}
+                                  onClick={[Function]}
+                                  onFocus={[Function]}
+                                  onResponderGrant={[Function]}
+                                  onResponderMove={[Function]}
+                                  onResponderRelease={[Function]}
+                                  onResponderTerminate={[Function]}
+                                  onResponderTerminationRequest={[Function]}
+                                  onStartShouldSetResponder={[Function]}
+                                  style={
+                                    {
+                                      "marginBottom": 16,
+                                      "marginLeft": 16,
+                                    }
+                                  }
+                                >
+                                  <RNGestureHandlerButton
+                                    collapsable={false}
+                                    delayLongPress={600}
+                                    enabled={true}
+                                    exclusive={true}
+                                    handlerTag={3}
+                                    handlerType="NativeViewGestureHandler"
+                                    onGestureEvent={[Function]}
+                                    onGestureHandlerEvent={[Function]}
+                                    onGestureHandlerStateChange={[Function]}
+                                    onHandlerStateChange={[Function]}
+                                    rippleColor={0}
+                                    touchSoundDisabled={false}
+                                  >
+                                    <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      style={
+                                        {
+                                          "opacity": 1,
+                                        }
+                                      }
+                                    >
+                                      <View
+                                        style={
+                                          {
+                                            "width": 25,
+                                          }
+                                        }
+                                      />
+                                    </View>
+                                  </RNGestureHandlerButton>
+                                </View>
                               </View>
                               <Text
                                 style={
@@ -3189,102 +2541,107 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                                 Ballot Options
                               </Text>
                               <View>
-                                <View
-                                  style={
-                                    {
-                                      "alignItems": "center",
-                                      "flex": 1,
-                                      "flexDirection": "row",
-                                    }
-                                  }
-                                  testID="question_0_ballots_option_0"
-                                >
+                                <View>
                                   <View
                                     style={
                                       {
+                                        "alignItems": "center",
                                         "flex": 1,
                                         "flexDirection": "row",
                                       }
                                     }
+                                    testID="question_0_ballots_option_0"
                                   >
-                                    <TextInput
-                                      editable={true}
-                                      onChangeText={[Function]}
-                                      placeholder="Blue"
-                                      placeholderTextColor="#8E8E8E"
+                                    <View
                                       style={
-                                        [
-                                          {
-                                            "color": "#000",
-                                            "fontSize": 20,
-                                            "lineHeight": 26,
-                                            "marginBottom": 16,
-                                            "textAlign": "left",
-                                          },
-                                          {
-                                            "backgroundColor": "#fff",
-                                            "borderColor": "#fff",
-                                            "borderRadius": 8,
-                                            "borderWidth": 1,
-                                            "flex": 1,
-                                            "padding": 8,
-                                            "width": 50,
-                                          },
-                                        ]
-                                      }
-                                      testID="question_0_ballots_option_0_input"
-                                      value=""
-                                    />
-                                  </View>
-                                  <View
-                                    accessible={true}
-                                    collapsable={false}
-                                    focusable={true}
-                                    onBlur={[Function]}
-                                    onClick={[Function]}
-                                    onFocus={[Function]}
-                                    onResponderGrant={[Function]}
-                                    onResponderMove={[Function]}
-                                    onResponderRelease={[Function]}
-                                    onResponderTerminate={[Function]}
-                                    onResponderTerminationRequest={[Function]}
-                                    onStartShouldSetResponder={[Function]}
-                                    style={
-                                      {
-                                        "marginBottom": 16,
-                                        "marginLeft": 16,
-                                      }
-                                    }
-                                    testID="question_0_ballots_option_0_remove"
-                                  >
-                                    <RNGestureHandlerButton
-                                      collapsable={false}
-                                      delayLongPress={600}
-                                      enabled={true}
-                                      exclusive={true}
-                                      handlerTag={3}
-                                      handlerType="NativeViewGestureHandler"
-                                      onGestureEvent={[Function]}
-                                      onGestureHandlerEvent={[Function]}
-                                      onGestureHandlerStateChange={[Function]}
-                                      onHandlerStateChange={[Function]}
-                                      rippleColor={0}
-                                      touchSoundDisabled={false}
-                                    >
-                                      <View
-                                        accessible={true}
-                                        collapsable={false}
-                                        style={
-                                          {
-                                            "opacity": 1,
-                                          }
+                                        {
+                                          "flex": 1,
+                                          "flexDirection": "row",
                                         }
+                                      }
+                                    >
+                                      <TextInput
+                                        editable={true}
+                                        onChangeText={[Function]}
+                                        placeholder="Blue"
+                                        placeholderTextColor="#8E8E8E"
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "backgroundColor": "#fff",
+                                              "borderColor": "#fff",
+                                              "borderRadius": 8,
+                                              "borderWidth": 1,
+                                              "flex": 1,
+                                              "padding": 8,
+                                              "width": 50,
+                                            },
+                                          ]
+                                        }
+                                        testID="question_0_ballots_option_0_input"
+                                        value=""
+                                      />
+                                    </View>
+                                    <View
+                                      accessible={true}
+                                      collapsable={false}
+                                      focusable={true}
+                                      onBlur={[Function]}
+                                      onClick={[Function]}
+                                      onFocus={[Function]}
+                                      onResponderGrant={[Function]}
+                                      onResponderMove={[Function]}
+                                      onResponderRelease={[Function]}
+                                      onResponderTerminate={[Function]}
+                                      onResponderTerminationRequest={[Function]}
+                                      onStartShouldSetResponder={[Function]}
+                                      style={
+                                        {
+                                          "marginBottom": 16,
+                                          "marginLeft": 16,
+                                        }
+                                      }
+                                    >
+                                      <RNGestureHandlerButton
+                                        collapsable={false}
+                                        delayLongPress={600}
+                                        enabled={true}
+                                        exclusive={true}
+                                        handlerTag={4}
+                                        handlerType="NativeViewGestureHandler"
+                                        onGestureEvent={[Function]}
+                                        onGestureHandlerEvent={[Function]}
+                                        onGestureHandlerStateChange={[Function]}
+                                        onHandlerStateChange={[Function]}
+                                        rippleColor={0}
+                                        touchSoundDisabled={false}
                                       >
-                                        <View>
-                                          {"name":"ios-trash","size":25,"color":"#000"}
+                                        <View
+                                          accessible={true}
+                                          collapsable={false}
+                                          style={
+                                            {
+                                              "opacity": 1,
+                                            }
+                                          }
+                                        >
+                                          <View
+                                            style={
+                                              {
+                                                "width": 25,
+                                              }
+                                            }
+                                          />
                                         </View>
-                                      </View>
-                                    </RNGestureHandlerButton>
+                                      </RNGestureHandlerButton>
+                                    </View>
                                   </View>
                                 </View>
                               </View>
@@ -3313,7 +2670,7 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                                 delayLongPress={600}
                                 enabled={true}
                                 exclusive={true}
-                                handlerTag={4}
+                                handlerTag={5}
                                 handlerType="NativeViewGestureHandler"
                                 onGestureEvent={[Function]}
                                 onGestureHandlerEvent={[Function]}
@@ -3384,7 +2741,7 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                                 ]
                               }
                             >
-                              All questions must have a title and at least 2 different ballot options.
+                              At least one question is needed
                             </Text>
                             <Modal
                               hardwareAccelerated={false}
@@ -3434,7 +2791,7 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                               delayLongPress={600}
                               enabled={true}
                               exclusive={true}
-                              handlerTag={5}
+                              handlerTag={6}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}

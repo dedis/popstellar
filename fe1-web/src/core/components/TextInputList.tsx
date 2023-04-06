@@ -40,7 +40,7 @@ const TextInputList = ({ values, onChange, placeholder, testID }: IPropTypes) =>
 };
 
 const propTypes = {
-  values: PropTypes.arrayOf(PropTypes.string).isRequired,
+  values: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   testID: PropTypes.string,
