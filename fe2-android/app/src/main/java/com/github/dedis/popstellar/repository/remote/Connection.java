@@ -17,16 +17,16 @@ public class Connection {
   public static final String TAG = Connection.class.getSimpleName();
 
   // Create a new subject whose purpose is to dispatch incoming messages to all subscribers
-  private final BehaviorSubject<GenericMessage> messagesSubject = BehaviorSubject.create();
-  private final BehaviorSubject<Lifecycle.State> manualState;
-  private final LAOService laoService;
-  private final CompositeDisposable disposables = new CompositeDisposable();
+  protected final BehaviorSubject<GenericMessage> messagesSubject = BehaviorSubject.create();
+  protected final BehaviorSubject<Lifecycle.State> manualState;
+  protected final LAOService laoService;
+  protected final CompositeDisposable disposables = new CompositeDisposable();
 
   public Connection(
       String url, LAOService laoService, BehaviorSubject<Lifecycle.State> manualState) {
     this.laoService = laoService;
-    // Subscribe to the incoming messages of the websocket service and simply hand them to the
-    // subject
+    // Subscribe to the incoming messages of the websocket service
+    // and simply hand them to the subject
     this.disposables.add(
         laoService
             .observeMessage()

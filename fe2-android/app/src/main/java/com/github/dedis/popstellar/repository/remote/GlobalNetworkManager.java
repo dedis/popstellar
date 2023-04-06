@@ -49,11 +49,13 @@ public class GlobalNetworkManager implements Disposable {
   }
 
   public void connect(String url, Set<Channel> subscriptions) {
-    if (networkManager != null) networkManager.dispose();
+    if (networkManager != null) {
+      networkManager.dispose();
+    }
 
-    Connection connection = connectionFactory.createConnection(url);
     networkManager =
-        new LAONetworkManager(messageHandler, connection, gson, schedulerProvider, subscriptions);
+        new LAONetworkManager(
+            messageHandler, connectionFactory, url, gson, schedulerProvider, subscriptions);
     currentURL = url;
   }
 
@@ -63,14 +65,17 @@ public class GlobalNetworkManager implements Disposable {
 
   @NonNull
   public MessageSender getMessageSender() {
-    if (networkManager == null)
+    if (networkManager == null) {
       throw new IllegalStateException("The connection has not been established.");
+    }
     return networkManager;
   }
 
   @Override
   public void dispose() {
-    if (networkManager != null) networkManager.dispose();
+    if (networkManager != null) {
+      networkManager.dispose();
+    }
     networkManager = null;
   }
 
