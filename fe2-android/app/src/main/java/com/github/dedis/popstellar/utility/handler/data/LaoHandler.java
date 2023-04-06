@@ -159,7 +159,6 @@ public final class LaoHandler {
     // TODO: verify if lao/state_lao is consistent with the lao/update message
 
     Lao lao = laoView.createLaoCopy();
-
     lao.setId(stateLao.getId());
     lao.setWitnesses(stateLao.getWitnesses());
     lao.setName(stateLao.getName());
@@ -201,7 +200,7 @@ public final class LaoHandler {
     return message;
   }
 
-  public WitnessMessage updateLaoWitnessesWitnessMessage(
+  public static WitnessMessage updateLaoWitnessesWitnessMessage(
       MessageID messageId, UpdateLao updateLao, LaoView laoView) {
     WitnessMessage message = new WitnessMessage(messageId);
     List<PublicKey> tempList = new ArrayList<>(updateLao.getWitnesses());
