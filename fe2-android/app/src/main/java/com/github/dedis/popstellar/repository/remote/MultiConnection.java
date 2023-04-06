@@ -7,12 +7,13 @@ import com.tinder.scarlet.Lifecycle;
 import com.tinder.scarlet.WebSocket;
 
 import java.util.*;
+import java.util.function.Function;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
 public class MultiConnection extends Connection {
-  private ConnectionFactory connectionFactory;
+  private Function<String, Connection> connectionProvider;
   private final Map<PeerAddress, Connection> connectionMap = new HashMap<>();
 
   public MultiConnection(
@@ -20,13 +21,12 @@ public class MultiConnection extends Connection {
     super(url, laoService, manualState);
   }
 
-  public void setConnectionFactory(ConnectionFactory connectionFactory) {
-    this.connectionFactory = connectionFactory;
+  public void setConnectionProvider(Function<String, Connection> connectionProvider) {
+    this.connectionProvider = connectionProvider;
   }
 
   public void connectToPeers(List<PeerAddress> peerAddressList) {
-    peerAddressList.forEach(
-        p -> connectionMap.put(p, connectionFactory.createConnection(p.getAddress())));
+    peerAddressList.forEach(p -> connectionMap.put(p, connectionProvider.apply(p.getAddress())));
   }
 
   public io.reactivex.Observable<GenericMessage> observeMessage(boolean firstConnection) {

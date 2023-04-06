@@ -21,6 +21,7 @@ import com.tinder.scarlet.WebSocket;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import io.reactivex.Observable;
 import io.reactivex.*;
@@ -46,15 +47,15 @@ public class LAONetworkManager implements MessageSender {
 
   public LAONetworkManager(
       MessageHandler messageHandler,
-      ConnectionFactory connectionFactory,
+      Function<String, Connection> connectionProvider,
       String url,
       Gson gson,
       SchedulerProvider schedulerProvider,
       Set<Channel> subscribedChannels) {
 
     this.messageHandler = messageHandler;
-    this.multiConnection = (MultiConnection) connectionFactory.createConnection(url);
-    this.multiConnection.setConnectionFactory(connectionFactory);
+    this.multiConnection = (MultiConnection) connectionProvider.apply(url);
+    this.multiConnection.setConnectionProvider(connectionProvider);
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;
     this.subscribedChannels = new HashSet<>(subscribedChannels);
@@ -183,6 +184,7 @@ public class LAONetworkManager implements MessageSender {
   @Override
   public void extendConnection(List<PeerAddress> peerAddressList) {
     multiConnection.connectToPeers(peerAddressList);
+
     // Start the incoming message processing for the other connections
     processIncomingMessages(false);
     // Start the routine aimed at resubscribing to channels when the connection is lost

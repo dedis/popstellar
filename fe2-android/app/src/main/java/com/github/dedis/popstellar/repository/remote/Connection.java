@@ -73,8 +73,8 @@ public class Connection {
   }
 
   public void close() {
-    // Dispose of any held resources and mark the message subject as complete (aka will not be used
-    // again)
+    // Dispose of any held resources and mark the message subject as complete
+    // (i.e. will not be used again)
     messagesSubject.onComplete();
     disposables.dispose();
     manualState.onNext(new Lifecycle.State.Stopped.WithReason(ShutdownReason.GRACEFUL));

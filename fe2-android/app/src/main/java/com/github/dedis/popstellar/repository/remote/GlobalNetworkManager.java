@@ -55,7 +55,12 @@ public class GlobalNetworkManager implements Disposable {
 
     networkManager =
         new LAONetworkManager(
-            messageHandler, connectionFactory, url, gson, schedulerProvider, subscriptions);
+            messageHandler,
+            connectionFactory::createConnection,
+            url,
+            gson,
+            schedulerProvider,
+            subscriptions);
     currentURL = url;
   }
 
