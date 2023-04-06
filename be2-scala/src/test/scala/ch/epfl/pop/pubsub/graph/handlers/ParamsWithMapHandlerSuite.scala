@@ -19,7 +19,7 @@ import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
 import scala.collection.{immutable, mutable}
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
-class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSystem")) with AnyFunSuiteLike with AskPatternConstants{
+class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSystem")) with AnyFunSuiteLike with AskPatternConstants {
 
   final val toyDbActorRef: AskableActorRef = system.actorOf(Props(new ToyDbActor))
   final val boxUnderTest: Flow[GraphMessage, GraphMessage, NotUsed] = ParamsWithMapHandler.graph(toyDbActorRef)
@@ -32,7 +32,7 @@ class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSy
   final val CHANNEL1 = new Channel(CHANNEL1_NAME)
   final val CHANNEL2 = new Channel(CHANNEL2_NAME)
 
-  //defining the messages
+  // defining the messages
   final val MESSAGE1_ID: Hash = Hash(Base64Data.encode("message1Id"))
   final val MESSAGE2_ID: Hash = Hash(Base64Data.encode("message2Id"))
   final val MESSAGE3_ID: Hash = Hash(Base64Data.encode("message3Id"))
@@ -54,7 +54,6 @@ class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSy
   final val EXPECTED_GET_MSGS_BY_ID_RESPONSE: GetMessagesById = GetMessagesById(EXPECTED_MISSING_MESSAGE_IDS)
   final val EXPECTED_GET_MSGS_BY_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.GET_MESSAGES_BY_ID, EXPECTED_GET_MSGS_BY_ID_RESPONSE, id)
 
-
   test("sending a heartbeat correctly returns the missing ids") {
     val input: List[GraphMessage] = List(Right(VALID_RECEIVED_HEARTBEAT_RPC))
     val expectedOutput: List[GraphMessage] = List(Right(EXPECTED_GET_MSGS_BY_ID_RPC))
@@ -62,10 +61,9 @@ class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSy
     val s = source.via(boxUnderTest).runWith(Sink.seq[GraphMessage])
     Await.ready(s, duration).value match {
       case Some(Success(seq)) => seq.toList.head match {
-        case Right(jsonRpcReq : JsonRpcRequest) => jsonRpcReq.getParams.asInstanceOf[GetMessagesById].channelsToMessageIds should equal(EXPECTED_MISSING_MESSAGE_IDS)
-        case _ => 1 should equal(0)
-      }
-
+          case Right(jsonRpcReq: JsonRpcRequest) => jsonRpcReq.getParams.asInstanceOf[GetMessagesById].channelsToMessageIds should equal(EXPECTED_MISSING_MESSAGE_IDS)
+          case _                                 => 1 should equal(0)
+        }
 
       case _ => 1 should equal(0)
     }
