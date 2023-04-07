@@ -88,7 +88,8 @@ public class ElectionSetupViewPagerAdapter
 
             // Prevents the user from creating two different questions with the same name
             if (!questionText.isEmpty() && questions.contains(questionText)) {
-              electionQuestionText.setError("Two different questions can't have the same name");
+              electionQuestionText.setError(
+                  context.getString(R.string.error_election_duplicate_question_name));
             }
             if (!electionQuestionText.getText().toString().trim().isEmpty()) {
               listOfValidQuestions.add(holder.getAdapterPosition());
@@ -116,7 +117,8 @@ public class ElectionSetupViewPagerAdapter
 
           @Override
           public void onNothingSelected(AdapterView<?> parent) {
-            votingMethod.set(holder.getAdapterPosition(), "Plurality");
+            votingMethod.set(
+                holder.getAdapterPosition(), context.getString(R.string.voting_method));
           }
         };
     setupElectionSpinner(spinner, spinnerListener);
@@ -237,7 +239,8 @@ public class ElectionSetupViewPagerAdapter
             String text = editable.toString();
             // Prevents the user from creating two different ballot options with the same name
             if (!text.isEmpty() && questionBallotOption.contains(text)) {
-              ballotOptionText.setError("Two different ballot options can't have the same name");
+              ballotOptionText.setError(
+                  context.getString(R.string.error_election_duplicate_ballot_name));
             }
             // Counts the number of non-empty ballot options, to know when the user can create the
             // election (at least 2 non-empty)

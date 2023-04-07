@@ -111,14 +111,17 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     if (event instanceof RollCall) {
       location = ", at " + ((RollCall) event).getLocation();
     }
-    String timeText = "";
+    String timeText;
     switch (event.getState()) {
       case CREATED:
         if (event.isStartPassed()) {
           timeText = getActivity().getString(R.string.start_anytime);
         } else {
           long eventTime = event.getStartTimestampInMillis();
-          timeText = "Starting " + new PrettyTime().format(new Date(eventTime));
+          timeText =
+              String.format(
+                  getActivity().getString(R.string.start_at),
+                  new PrettyTime().format(new Date(eventTime)));
         }
         break;
       case OPENED:
@@ -127,8 +130,12 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
       case CLOSED:
       case RESULTS_READY:
+      default:
         long eventTime = event.getEndTimestampInMillis();
-        timeText = "Closed " + new PrettyTime().format(new Date(eventTime));
+        timeText =
+            String.format(
+                getActivity().getString(R.string.close_at),
+                new PrettyTime().format(new Date(eventTime)));
     }
     String textToDisplay = timeText + location;
     viewHolder.eventTimeAndLoc.setText(textToDisplay);
