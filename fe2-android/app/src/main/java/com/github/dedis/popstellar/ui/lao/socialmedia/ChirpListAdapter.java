@@ -89,7 +89,8 @@ public class ChirpListAdapter extends BaseAdapter {
                       .deleteChirp(chirp.getId(), Instant.now().getEpochSecond())
                       .subscribe(
                           msg ->
-                              Toast.makeText(context, "Deleted chirp!", Toast.LENGTH_LONG).show(),
+                              Toast.makeText(context, R.string.deleted_chirp, Toast.LENGTH_LONG)
+                                  .show(),
                           error ->
                               ErrorUtils.logAndShow(
                                   context, TAG, error, R.string.error_delete_chirp))));
@@ -98,7 +99,7 @@ public class ChirpListAdapter extends BaseAdapter {
     }
 
     if (chirp.isDeleted()) {
-      text = "Chirp is deleted.";
+      text = context.getString(R.string.deleted_chirp_2);
       deleteChirp.setVisibility(View.GONE);
       itemText.setTextColor(Color.GRAY);
     } else {
