@@ -102,8 +102,12 @@ public class Chirp implements Copyable<Chirp> {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Chirp chirp = (Chirp) o;
     return timestamp == chirp.timestamp
         && isDeleted == chirp.isDeleted

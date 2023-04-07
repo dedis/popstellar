@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.crypto.tink.KeyTemplates;
 import com.google.crypto.tink.aead.AeadConfig;
 import com.google.crypto.tink.aead.AesGcmKeyManager;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
@@ -60,7 +61,7 @@ public class KeysetModule {
 
       return new AndroidKeysetManager.Builder()
           .withSharedPref(applicationContext, DEVICE_KEYSET_NAME, DEVICE_SHARED_PREF_FILE_NAME)
-          .withKeyTemplate(Ed25519PrivateKeyManager.rawEd25519Template())
+          .withKeyTemplate(KeyTemplates.get("ED25519_RAW"))
           .withMasterKeyUri(DEVICE_MASTER_KEY_URI)
           .build();
     } catch (IOException | GeneralSecurityException e) {
@@ -78,7 +79,7 @@ public class KeysetModule {
       AeadConfig.register();
       return new AndroidKeysetManager.Builder()
           .withSharedPref(applicationContext, WALLET_KEYSET_NAME, WALLET_SHARED_PREF_FILE_NAME)
-          .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
+          .withKeyTemplate(KeyTemplates.get("AES256_GCM_RAW"))
           .withMasterKeyUri(WALLET_MASTER_KEY_URI)
           .build();
     } catch (GeneralSecurityException | IOException e) {

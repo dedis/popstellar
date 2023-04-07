@@ -66,22 +66,22 @@ public final class MessageGeneral {
 
   private void generateSignature(PrivateKey signer) {
     try {
-      this.signature = signer.sign(this.dataBuf);
+      signature = signer.sign(this.dataBuf);
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to generate signature", e);
     }
   }
 
   public MessageID getMessageId() {
-    return this.messageId;
+    return messageId;
   }
 
   public PublicKey getSender() {
-    return this.sender;
+    return sender;
   }
 
   public Signature getSignature() {
-    return this.signature;
+    return signature;
   }
 
   public List<PublicKeySignaturePair> getWitnessSignatures() {
@@ -89,23 +89,25 @@ public final class MessageGeneral {
   }
 
   public Data getData() {
-    return this.data;
+    return data;
   }
 
   public Base64URLData getDataEncoded() {
-    return this.dataBuf;
+    return dataBuf;
   }
 
   public boolean verify() {
-    if (!this.sender.verify(this.signature, this.dataBuf)) return false;
+    if (!sender.verify(signature, dataBuf)) {
+      return false;
+    }
 
-    if (this.data instanceof WitnessMessageSignature) {
-      WitnessMessageSignature witness = (WitnessMessageSignature) this.data;
+    if (data instanceof WitnessMessageSignature) {
+      WitnessMessageSignature witness = (WitnessMessageSignature) data;
 
       Signature witnessSignature = witness.getSignature();
       MessageID messageID = witness.getMessageId();
 
-      return this.sender.verify(witnessSignature, messageID);
+      return sender.verify(witnessSignature, messageID);
     } else {
       return true;
     }
