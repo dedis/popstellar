@@ -41,7 +41,7 @@ $(document).ready(function() {
 
 
 
-<title>Cucumber Reports  - Feature: be/rollCall/closeRollCall.feature</title>
+<title>Cucumber Reports  - Feature: be/election/electionEnd.feature</title>
 
 </head>
 <body>
@@ -74,7 +74,7 @@ $(document).ready(function() {
   <tbody>
     <tr class="info">
       <td>go</td>
-      <td>06 Apr 2023, 04:38</td>
+      <td>07 Apr 2023, 04:38</td>
     </tr>
   </tbody>
 </table>
@@ -126,19 +126,19 @@ $(document).ready(function() {
 
         <tbody>
         <tr>
-          <td class="tagname">be/rollCall/closeRollCall.feature</td>
-          <td      class="passed"    >4</td>
-          <td      class="failed"    >8</td>
-          <td     class="skipped"   >37</td>
+          <td class="tagname">be/election/electionEnd.feature</td>
+          <td      class="passed"    >5</td>
+          <td      class="failed"    >10</td>
+          <td     class="skipped"   >50</td>
           <td >0</td>
           <td >0</td>
-          <td class="total">49</td>
+          <td class="total">65</td>
 
           <td >0</td>
-          <td  class="failed"    >4</td>
-          <td class="total">4</td>
+          <td  class="failed"    >5</td>
+          <td class="total">5</td>
 
-          <td class="duration" data-value="306550506646">5:6.550</td>
+          <td class="duration" data-value="383318365392">6:23.318</td>
           <td class="failed">Failed</td>
         </tr>
         </tbody>
@@ -175,12 +175,12 @@ $(document).ready(function() {
 
 <div class="brief failed">
   <span class="keyword indention">Feature</span>
-  <span class="name">be/rollCall/closeRollCall.feature</span>
+  <span class="name">be/election/electionEnd.feature</span>
 
 
 </div>
 
-        <div class="description indention">Close a Roll Call</div>
+        <div class="description indention">Terminate an election</div>
 
         <div class="elements inner-level">
 
@@ -191,7 +191,7 @@ $(document).ready(function() {
 </div>
 
 
-  <span class="lead-duration duration">1:16.657</span>
+  <span class="lead-duration duration">1:16.663</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-1">
@@ -234,7 +234,7 @@ $(document).ready(function() {
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.342</span>
+  <span class="lead-duration duration">38.335</span>
 
 </div>
 
@@ -251,7 +251,7 @@ $(document).ready(function() {
       <div id="msg-3" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14</pre>
+classpath:be/election/electionEnd.feature:15</pre>
       </div>
     </div>
   </div>
@@ -265,11 +265,11 @@ classpath:be/rollCall/closeRollCall.feature:14</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-4" class="collapse collapsable-details">
-        <pre>04:28:27.034 classpath:be/rollCall/closeRollCall.feature:14
+        <pre>04:19:03.226 classpath:be/election/electionEnd.feature:15
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14
+classpath:be/election/electionEnd.feature:15
 </pre>
       </div>
     </div>
@@ -316,7 +316,7 @@ classpath:be/rollCall/closeRollCall.feature:14
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.314</span>
+  <span class="lead-duration duration">38.328</span>
 
 </div>
 
@@ -407,6 +407,33 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
+  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -456,7 +483,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Close a valid roll should succeed</span>
+  <span class="name">Sending a valid election end should succeed</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -490,7 +517,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -517,7 +544,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def validElectionEnd =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -538,12 +565,12 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-8" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseValidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;end&quot;,
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;created_at&quot;: 1633099883,
+  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
 }</pre>
       </div>
     </div>
@@ -561,7 +588,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(validElectionEnd), electionChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -588,7 +615,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponseWithElectionResults(JSON.stringify(validElectionEnd))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -615,7 +642,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Then skipped">
   <span class="keyword indention">Then</span>
-  <span class="name">match answer contains VALID_MESSAGE</span>
+  <span class="name">match answer contains ELECTION_RESULTS</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -682,7 +709,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.628</span>
+  <span class="lead-duration duration">1:16.659</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-9">
@@ -725,7 +752,7 @@ classpath:be/utils/server.feature:82</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.318</span>
+  <span class="lead-duration duration">38.333</span>
 
 </div>
 
@@ -742,7 +769,7 @@ classpath:be/utils/server.feature:82</pre>
       <div id="msg-11" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14</pre>
+classpath:be/election/electionEnd.feature:15</pre>
       </div>
     </div>
   </div>
@@ -756,11 +783,11 @@ classpath:be/rollCall/closeRollCall.feature:14</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-12" class="collapse collapsable-details">
-        <pre>04:29:05.359 classpath:be/rollCall/closeRollCall.feature:14
+        <pre>04:19:41.564 classpath:be/election/electionEnd.feature:15
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14
+classpath:be/election/electionEnd.feature:15
 </pre>
       </div>
     </div>
@@ -807,7 +834,7 @@ classpath:be/rollCall/closeRollCall.feature:14
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.310</span>
+  <span class="lead-duration duration">38.326</span>
 
 </div>
 
@@ -898,6 +925,33 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
+  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -947,7 +1001,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Non-organizer closing a roll call should fail</span>
+  <span class="name">Sending an election end with invalid election id should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -981,7 +1035,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1008,7 +1062,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def invalidElectionEnd =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1029,12 +1083,12 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-16" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseValidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;end&quot;,
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;election&quot;: '#(getInvalidElectionSetupId)',
+  &quot;created_at&quot;: 1633099883,
+  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
 }</pre>
       </div>
     </div>
@@ -1050,36 +1104,9 @@ classpath:be/utils/server.feature:82</pre>
       <div class="step">
 
 
-<div class="brief step-name-* skipped">
-  <span class="keyword indention">*</span>
-  <span class="name">frontend.changeSenderToBeNonAttendee()</span>
-
-  <span class="lead-duration duration">0.000</span>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div class="step">
-
-
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1106,7 +1133,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1200,7 +1227,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.638</span>
+  <span class="lead-duration duration">1:16.661</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-17">
@@ -1243,7 +1270,7 @@ classpath:be/utils/server.feature:82</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.322</span>
+  <span class="lead-duration duration">38.335</span>
 
 </div>
 
@@ -1260,7 +1287,7 @@ classpath:be/utils/server.feature:82</pre>
       <div id="msg-19" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14</pre>
+classpath:be/election/electionEnd.feature:15</pre>
       </div>
     </div>
   </div>
@@ -1274,11 +1301,11 @@ classpath:be/rollCall/closeRollCall.feature:14</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-20" class="collapse collapsable-details">
-        <pre>04:29:43.684 classpath:be/rollCall/closeRollCall.feature:14
+        <pre>04:20:19.903 classpath:be/election/electionEnd.feature:15
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14
+classpath:be/election/electionEnd.feature:15
 </pre>
       </div>
     </div>
@@ -1325,7 +1352,7 @@ classpath:be/rollCall/closeRollCall.feature:14
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.316</span>
+  <span class="lead-duration duration">38.326</span>
 
 </div>
 
@@ -1416,6 +1443,33 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
+  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -1465,7 +1519,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Close a valid roll call with wrong update_id should return an error message</span>
+  <span class="name">Sending an election end message with invalid registered votes field should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1499,7 +1553,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1526,7 +1580,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def invalidElectionEnd =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1547,12 +1601,12 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-24" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseInvalidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;end&quot;,
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;created_at&quot;: 1633099883,
+  &quot;registered_votes&quot;: '#(getInvalidRegisteredVotes)'
 }</pre>
       </div>
     </div>
@@ -1570,7 +1624,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1597,7 +1651,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -1691,7 +1745,7 @@ classpath:be/utils/server.feature:82</pre>
 </div>
 
 
-  <span class="lead-duration duration">1:16.625</span>
+  <span class="lead-duration duration">1:16.664</span>
 
 
   <span data-toggle="collapse" class=" collapsable-control" data-target="#element-25">
@@ -1734,7 +1788,7 @@ classpath:be/utils/server.feature:82</pre>
   <span class="keyword indention">*</span>
   <span class="name">call read('classpath:be/utils/server.feature')</span>
 
-  <span class="lead-duration duration">38.315</span>
+  <span class="lead-duration duration">38.335</span>
 
 </div>
 
@@ -1751,7 +1805,7 @@ classpath:be/utils/server.feature:82</pre>
       <div id="msg-27" class="collapse collapsable-details  in ">
         <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14</pre>
+classpath:be/election/electionEnd.feature:15</pre>
       </div>
     </div>
   </div>
@@ -1765,11 +1819,11 @@ classpath:be/rollCall/closeRollCall.feature:14</pre>
           <a>Doc string</a>
       </div>
       <div id="msg-28" class="collapse collapsable-details">
-        <pre>04:30:22.004 classpath:be/rollCall/closeRollCall.feature:14
+        <pre>04:20:58.244 classpath:be/election/electionEnd.feature:15
 * call read('classpath:be/utils/server.feature')
 Failed waiting for ws://127.0.0.1:9000/organizer/client
 classpath:be/utils/server.feature:82
-classpath:be/rollCall/closeRollCall.feature:14
+classpath:be/election/electionEnd.feature:15
 </pre>
       </div>
     </div>
@@ -1816,7 +1870,7 @@ classpath:be/rollCall/closeRollCall.feature:14
   <span class="keyword indention">&gt; *</span>
   <span class="name">call waitForPort</span>
 
-  <span class="lead-duration duration">38.309</span>
+  <span class="lead-duration duration">38.328</span>
 
 </div>
 
@@ -1907,6 +1961,33 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-* skipped">
   <span class="keyword indention">*</span>
+  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
   <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
 
   <span class="lead-duration duration">0.000</span>
@@ -1956,7 +2037,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief failed">
   <span class="keyword indention">Scenario</span>
-  <span class="name">Close a valid roll call that was never opened should return an error</span>
+  <span class="name">Sending an election end message with registered votes field set to valid election setup id should return an error</span>
 
 
      <i class="chevron fa fa-fw"></i>
@@ -1990,7 +2071,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-Given skipped">
   <span class="keyword indention">Given</span>
-  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2017,7 +2098,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">def validCloseRollCall =</span>
+  <span class="name">def invalidElectionEnd =</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2038,12 +2119,12 @@ classpath:be/utils/server.feature:82</pre>
       </div>
       <div id="msg-32" class="collapse collapsable-details">
         <pre>{
-  &quot;object&quot;: &quot;roll_call&quot;,
-  &quot;action&quot;: &quot;close&quot;,
-  &quot;update_id&quot;: '#(getRollCallCloseValidUpdateId)',
-  &quot;closes&quot;: '#(getRollCallCloseValidId)',
-  &quot;closed_at&quot;: '#(getRollCallCloseValidCreationTime)',
-  &quot;attendees&quot;: ['#(getAttendee)']
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;end&quot;,
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;created_at&quot;: 1633099883,
+  &quot;registered_votes&quot;: '#(getValidElectionSetupId)'
 }</pre>
       </div>
     </div>
@@ -2061,7 +2142,7 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-When skipped">
   <span class="keyword indention">When</span>
-  <span class="name">frontend.publish(JSON.stringify(validCloseRollCall), laoChannel)</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
 
   <span class="lead-duration duration">0.000</span>
 
@@ -2088,7 +2169,525 @@ classpath:be/utils/server.feature:82</pre>
 
 <div class="brief step-name-And skipped">
   <span class="keyword indention">And</span>
-  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(validCloseRollCall))</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-Then skipped">
+  <span class="keyword indention">Then</span>
+  <span class="name">match answer contains INVALID_MESSAGE_FIELD</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">match frontend.receiveNoMoreResponses() == true</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+</div>
+
+
+  <span class="lead-duration duration">1:16.669</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-33">
+
+<div class="brief failed">
+  <span class="keyword indention">Background</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-33" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-34">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-34" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-* failed">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/utils/server.feature')</span>
+
+  <span class="lead-duration duration">38.342</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-35">
+          <a>Failed</a>
+      </div>
+      <div id="msg-35" class="collapse collapsable-details  in ">
+        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
+classpath:be/utils/server.feature:82
+classpath:be/election/electionEnd.feature:15</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-36">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-36" class="collapse collapsable-details">
+        <pre>04:21:36.595 classpath:be/election/electionEnd.feature:15
+* call read('classpath:be/utils/server.feature')
+Failed waiting for ws://127.0.0.1:9000/organizer/client
+classpath:be/utils/server.feature:82
+classpath:be/election/electionEnd.feature:15
+</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name- passed">
+  <span class="keyword indention"></span>
+  <span class="name">be/utils/server.feature</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-&amp;gt; * failed">
+  <span class="keyword indention">&gt; *</span>
+  <span class="name">call waitForPort</span>
+
+  <span class="lead-duration duration">38.327</span>
+
+</div>
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="message indention">
+      <div data-toggle="collapse" class=" collapsable-control" data-target="#msg-37">
+          <a>Failed</a>
+      </div>
+      <div id="msg-37" class="collapse collapsable-details  in ">
+        <pre>Failed waiting for ws://127.0.0.1:9000/organizer/client
+classpath:be/utils/server.feature:82</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/mockFrontEnd.feature')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">call read('classpath:be/constants.feature')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string electionChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-* skipped">
+  <span class="keyword indention">*</span>
+  <span class="name">string laoChannel = &quot;/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=&quot;</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+  </div>
+</div>
+
+
+
+
+
+  </div>
+</div>
+
+
+<div class="element">
+
+
+<div class="tags indention">
+    <b>Tags:</b>
+       <a href="report-tag_524961969.html">@env=go,scala</a>
+</div>
+
+
+  <span class="lead-duration duration">0.000</span>
+
+
+  <span data-toggle="collapse" class=" collapsable-control" data-target="#element-38">
+
+<div class="brief failed">
+  <span class="keyword indention">Scenario</span>
+  <span class="name">Sending a valid election end too early should fail</span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </span>
+  <div class="description indention"></div>
+
+  <div id="element-38" class="collapse collapsable-details  in ">
+
+
+
+
+
+<div class="steps inner-level">
+  <div data-toggle="collapse" class=" collapsable-control" data-target="#steps-39">
+
+<div class="brief failed">
+  <span class="keyword indention">Steps</span>
+  <span class="name"></span>
+
+
+     <i class="chevron fa fa-fw"></i>
+</div>
+
+  </div>
+
+  <div id="steps-39" class="inner-level collapse collapsable-details  in ">
+      <div class="step">
+
+
+<div class="brief step-name-Given skipped">
+  <span class="keyword indention">Given</span>
+  <span class="name">call read('classpath:be/utils/simpleScenarios.feature@name=cast_vote')</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">def invalidElectionEnd =</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+  <div class="inner-level">
+    <div class="docstring indention">
+      <div data-toggle="collapse" class="collapsable-control" data-target="#msg-40">
+          <a>Doc string</a>
+      </div>
+      <div id="msg-40" class="collapse collapsable-details">
+        <pre>{
+  &quot;object&quot;: &quot;election&quot;,
+  &quot;action&quot;: &quot;end&quot;,
+  &quot;lao&quot;: '#(getLaoValid)',
+  &quot;election&quot;: '#(getValidElectionSetupId)',
+  &quot;created_at&quot;: 1633098900,
+  &quot;registered_votes&quot;: '#(getValidRegisteredVotes)'
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-When skipped">
+  <span class="keyword indention">When</span>
+  <span class="name">frontend.publish(JSON.stringify(invalidElectionEnd), electionChannel)</span>
+
+  <span class="lead-duration duration">0.000</span>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div class="step">
+
+
+<div class="brief step-name-And skipped">
+  <span class="keyword indention">And</span>
+  <span class="name">json answer = frontend.getBackendResponse(JSON.stringify(invalidElectionEnd))</span>
 
   <span class="lead-duration duration">0.000</span>
 
