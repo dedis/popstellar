@@ -67,6 +67,8 @@ public class DigitalCashHistoryFragment extends Fragment {
         requireActivity(),
         getViewLifecycleOwner(),
         ActivityUtils.buildBackButtonCallback(
-            TAG, "last fragment", ((LaoActivity) requireActivity())::resetLastFragment));
+            TAG,
+            "digital cash home",
+            () -> DigitalCashHomeFragment.openFragment(getParentFragmentManager())));
   }
 }

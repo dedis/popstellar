@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
 @Singleton
 public class GlobalNetworkManager implements Disposable {
 
-  private static final String DEFAULT_URL = "ws://10.0.2.2:9000/client";
+  private static final String DEFAULT_URL = "ws://10.0.2.2:9000/organizer/client";
 
   private final MessageHandler messageHandler;
   private final ConnectionFactory connectionFactory;

@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.testutils.pages.lao.digitalcash;
 
-import androidx.annotation.IdRes;
 import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
@@ -34,10 +33,5 @@ public class DigitalCashPageObject {
 
   public static ViewInteraction issueButton() {
     return onView(withId(R.id.issue_button));
-  }
-
-  @IdRes
-  public static int fragmentDigitalCashHomeId() {
-    return R.id.fragment_digital_cash_home;
   }
 }
