@@ -189,11 +189,4 @@ public class DigitalCashActivityTest {
     receiveButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashReceiveId()))));
   }
-
-  @Test
-  public void historyButtonOnHistoryFragmentGoesBack() {
-    historyButton().perform(click());
-    historyButton().perform(click());
-    fragmentContainer().check(matches(withChild(withId(fragmentDigitalCashHomeId()))));
-  }
 }

@@ -17,14 +17,16 @@ public class Connection {
   public static final String TAG = Connection.class.getSimpleName();
 
   // Create a new subject whose purpose is to dispatch incoming messages to all subscribers
-  protected final BehaviorSubject<GenericMessage> messagesSubject = BehaviorSubject.create();
-  protected final BehaviorSubject<Lifecycle.State> manualState;
-  protected final LAOService laoService;
-  protected final CompositeDisposable disposables = new CompositeDisposable();
+  private final BehaviorSubject<GenericMessage> messagesSubject;
+  private final BehaviorSubject<Lifecycle.State> manualState;
+  private final LAOService laoService;
+  private final CompositeDisposable disposables;
 
   public Connection(
       String url, LAOService laoService, BehaviorSubject<Lifecycle.State> manualState) {
+    this.messagesSubject = BehaviorSubject.create();
     this.laoService = laoService;
+    this.disposables = new CompositeDisposable();
     // Subscribe to the incoming messages of the websocket service
     // and simply hand them to the subject
     this.disposables.add(
@@ -41,6 +43,13 @@ public class Connection {
                 event -> logEvent(event, url),
                 err -> Log.d(TAG, "Error in connection " + url, err)));
     this.manualState = manualState;
+  }
+
+  protected Connection(Connection connection) {
+    this.laoService = connection.laoService;
+    this.manualState = connection.manualState;
+    this.disposables = connection.disposables;
+    this.messagesSubject = connection.messagesSubject;
   }
 
   private void logEvent(WebSocket.Event event, String url) {

@@ -56,11 +56,7 @@
   <dimen name="status_margin_top">16dp</dimen>
   <dimen name="event_header_between_texts_margin">5dp</dimen>
   <dimen name="pickers_horizontal_margin">16dp</dimen>
-  <dimen name="roll_call_attendees_margin">5dp</dimen>
-  <dimen name="roll_call_attendees_scrollbar_size">6dp</dimen>
-  <dimen name="roll_call_attendees_list_width">300dp</dimen>
-  <dimen name="roll_call_attendees_text_vertical_bias">0.16</dimen>
-  <dimen name="roll_call_attendees_list_vertical_bias">0.03</dimen>
+  <dimen name="roll_call_attendees_end_margin">10dp</dimen>
 
   <!--  Event layout-->
   <dimen name="event_layout_arrow_end_margin">8dp</dimen>

@@ -54,7 +54,7 @@ public class LAONetworkManager implements MessageSender {
       Set<Channel> subscribedChannels) {
 
     this.messageHandler = messageHandler;
-    this.multiConnection = (MultiConnection) connectionProvider.apply(url);
+    this.multiConnection = new MultiConnection(connectionProvider.apply(url));
     this.multiConnection.setConnectionProvider(connectionProvider);
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;

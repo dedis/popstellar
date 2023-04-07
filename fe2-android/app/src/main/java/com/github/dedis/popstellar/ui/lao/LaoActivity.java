@@ -37,7 +37,7 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
 import java.security.GeneralSecurityException;
-import java.util.*;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -48,7 +48,6 @@ public class LaoActivity extends AppCompatActivity {
 
   LaoViewModel laoViewModel;
   LaoActivityBinding binding;
-  private final Deque<Fragment> fragmentStack = new LinkedList<>();
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,24 +136,21 @@ public class LaoActivity extends AppCompatActivity {
               }
             });
 
-    // Listener for the transaction button
     binding.laoAppBar.setOnMenuItemClickListener(
         menuItem -> {
           if (menuItem.getItemId() == R.id.history_menu_toolbar) {
+            binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.DIGITAL_CASH.getMenuId());
             // If the user clicks on the button when the transaction history is
             // already displayed, then consider it as a back button pressed
             Fragment fragment =
                 getSupportFragmentManager().findFragmentById(R.id.fragment_container_lao);
             if (!(fragment instanceof DigitalCashHistoryFragment)) {
-              // Push onto the stack the current fragment to restore it upon exit
-              fragmentStack.push(fragment);
               setCurrentFragment(
                   getSupportFragmentManager(),
                   R.id.fragment_digital_cash_history,
                   DigitalCashHistoryFragment::newInstance);
             } else {
-              // Restore the fragment pushed on the stack before opening the transaction history
-              resetLastFragment();
+              openDigitalCashTab();
             }
             return true;
           }
@@ -275,15 +271,6 @@ public class LaoActivity extends AppCompatActivity {
   private void setEventsTab() {
     binding.laoNavigationDrawer.setCheckedItem(MainMenuTab.EVENTS.getMenuId());
     openEventsTab();
-  }
-
-  /** Restore the fragment contained in the stack as container of the current lao */
-  public void resetLastFragment() {
-    Fragment fragment = fragmentStack.pop();
-    getSupportFragmentManager()
-        .beginTransaction()
-        .replace(R.id.fragment_container_lao, fragment)
-        .commit();
   }
 
   public static LaoViewModel obtainViewModel(FragmentActivity activity) {

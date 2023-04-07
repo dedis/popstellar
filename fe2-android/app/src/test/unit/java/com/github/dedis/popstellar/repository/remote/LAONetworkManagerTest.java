@@ -43,15 +43,18 @@ public class LAONetworkManagerTest {
   private static final Channel CHANNEL = Channel.ROOT.subChannel("channel");
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
   private static final Data DATA = new CreateLao("LaoName", KEY_PAIR.getPublicKey());
+  private static final String URL = "localhost";
 
   private final BehaviorSubject<WebSocket.Event> events = BehaviorSubject.create();
   private final BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
 
   @Mock MessageHandler handler;
+  @Mock ConnectionFactory connectionFactory;
   @Mock Connection connection;
 
   @Before
   public void setup() {
+    when(connectionFactory.createConnection(anyString())).thenReturn(connection);
     when(connection.observeMessage()).thenReturn(messages);
     when(connection.observeConnectionEvents()).thenReturn(events);
 
@@ -77,7 +80,8 @@ public class LAONetworkManagerTest {
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
-            connection,
+            connectionFactory::createConnection,
+            URL,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
             new HashSet<>());
@@ -113,7 +117,8 @@ public class LAONetworkManagerTest {
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
-            connection,
+            connectionFactory::createConnection,
+            URL,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
             new HashSet<>());
@@ -148,7 +153,8 @@ public class LAONetworkManagerTest {
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
-            connection,
+            connectionFactory::createConnection,
+            URL,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
             new HashSet<>());
@@ -185,7 +191,8 @@ public class LAONetworkManagerTest {
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
-            connection,
+            connectionFactory::createConnection,
+            URL,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
             new HashSet<>());
@@ -228,7 +235,8 @@ public class LAONetworkManagerTest {
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
-            connection,
+            connectionFactory::createConnection,
+            URL,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
             new HashSet<>());
@@ -270,7 +278,8 @@ public class LAONetworkManagerTest {
     LAONetworkManager networkManager =
         new LAONetworkManager(
             handler,
-            connection,
+            connectionFactory::createConnection,
+            URL,
             JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
             schedulerProvider,
             new HashSet<>());

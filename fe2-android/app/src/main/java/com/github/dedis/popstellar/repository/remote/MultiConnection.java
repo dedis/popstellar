@@ -3,22 +3,19 @@ package com.github.dedis.popstellar.repository.remote;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
-import com.tinder.scarlet.Lifecycle;
 import com.tinder.scarlet.WebSocket;
 
 import java.util.*;
 import java.util.function.Function;
 
 import io.reactivex.Observable;
-import io.reactivex.subjects.BehaviorSubject;
 
 public class MultiConnection extends Connection {
   private Function<String, Connection> connectionProvider;
   private final Map<PeerAddress, Connection> connectionMap = new HashMap<>();
 
-  public MultiConnection(
-      String url, LAOService laoService, BehaviorSubject<Lifecycle.State> manualState) {
-    super(url, laoService, manualState);
+  public MultiConnection(Connection connection) {
+    super(connection);
   }
 
   public void setConnectionProvider(Function<String, Connection> connectionProvider) {
@@ -36,7 +33,7 @@ public class MultiConnection extends Connection {
     return connectionMap.values().stream()
         .map(Connection::observeMessage)
         .reduce(Observable::concatWith)
-        .get();
+        .orElse(Observable.empty());
   }
 
   public Observable<WebSocket.Event> observeConnectionEvents(boolean firstConnection) {
@@ -46,7 +43,7 @@ public class MultiConnection extends Connection {
     return connectionMap.values().stream()
         .map(Connection::observeConnectionEvents)
         .reduce(Observable::concatWith)
-        .get();
+        .orElse(Observable.empty());
   }
 
   @Override
