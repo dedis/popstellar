@@ -244,6 +244,8 @@ public final class LaoHandler {
     serverRepo.addServer(greetLao.getId(), server);
 
     // Extend the current connection by connecting to the peers of the main server
+    // The greetLao will also be sent by the other servers, so the message sender
+    // should handle this, avoiding to connect twice to the same server
     context.getMessageSender().extendConnection(greetLao.getPeers());
   }
 }

@@ -54,8 +54,7 @@ public class LAONetworkManager implements MessageSender {
       Set<Channel> subscribedChannels) {
 
     this.messageHandler = messageHandler;
-    this.multiConnection = new MultiConnection(connectionProvider.apply(url));
-    this.multiConnection.setConnectionProvider(connectionProvider);
+    this.multiConnection = new MultiConnection(connectionProvider, url);
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;
     this.subscribedChannels = new HashSet<>(subscribedChannels);
@@ -183,12 +182,12 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public void extendConnection(List<PeerAddress> peerAddressList) {
-    multiConnection.connectToPeers(peerAddressList);
-
-    // Start the incoming message processing for the other connections
-    processIncomingMessages(false);
-    // Start the routine aimed at resubscribing to channels when the connection is lost
-    resubscribeToChannelOnReconnection(false);
+    if (multiConnection.connectToPeers(peerAddressList)) {
+      // Start the incoming message processing for the other connections
+      processIncomingMessages(false);
+      // Start the routine aimed at resubscribing to channels when the connection is lost
+      resubscribeToChannelOnReconnection(false);
+    }
   }
 
   private void handleBroadcast(Broadcast broadcast) {

@@ -77,5 +77,10 @@ public interface MessageSender extends Disposable {
    */
   Set<Channel> getSubscriptions();
 
+  /**
+   * Extend the connection by connecting to the peers of a server upon a GreetLao
+   *
+   * @param peerAddressList list of peers to be connected
+   */
   void extendConnection(List<PeerAddress> peerAddressList);
 }
