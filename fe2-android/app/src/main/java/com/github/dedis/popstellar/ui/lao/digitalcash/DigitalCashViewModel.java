@@ -124,7 +124,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   public void requireToPutAnAmount() {
     Toast.makeText(
             getApplication().getApplicationContext(),
-            "Please enter a positive amount of LAOcoin",
+            R.string.digital_cash_amount_min_indication,
             Toast.LENGTH_LONG)
         .show();
   }
@@ -132,7 +132,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   public void requireToPutLAOMember() {
     Toast.makeText(
             getApplication().getApplicationContext(),
-            "Please select a LAOMember",
+            R.string.digital_cash_select_lao_member_indication,
             Toast.LENGTH_LONG)
         .show();
   }
