@@ -7,12 +7,13 @@ import akka.stream.SinkShape
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.testkit.TestKit
 import ch.epfl.pop.decentralized.ToyDbActor
-import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, MethodType, ResultObject}
 import ch.epfl.pop.model.network.method.{GetMessagesById, Heartbeat}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.funsuite.{AnyFunSuite, AnyFunSuiteLike}
 import org.scalatest.matchers.should.Matchers.{convertToAnyShouldWrapper, equal}
 
@@ -54,6 +55,15 @@ class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSy
   final val EXPECTED_GET_MSGS_BY_ID_RESPONSE: GetMessagesById = GetMessagesById(EXPECTED_MISSING_MESSAGE_IDS)
   final val EXPECTED_GET_MSGS_BY_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.GET_MESSAGES_BY_ID, EXPECTED_GET_MSGS_BY_ID_RESPONSE, id)
 
+  // defining a received getMsgsById
+  final val RECEIVED_GET_MSG_BY_ID_PARAMS = Map(CHANNEL1 -> Set(MESSAGE1_ID))
+  final val RECEIVED_GET_MSG_BY_ID: GetMessagesById = GetMessagesById(RECEIVED_GET_MSG_BY_ID_PARAMS)
+  final val VALID_RECEIVED_GET_MSG_BY_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.GET_MESSAGES_BY_ID, RECEIVED_GET_MSG_BY_ID, id)
+
+  // defined what the answer to the received getMsgsById should be
+  final val EXPECTED_MISSING_MESSAGES = Map(CHANNEL1 -> Set(MESSAGE1))
+  final val EXPECTED_GET_MSGS_BY_ID_RPC_RESPONSE: JsonRpcResponse = JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(new ResultObject(EXPECTED_MISSING_MESSAGES)), None, None)
+
   test("sending a heartbeat correctly returns the missing ids") {
     val input: List[GraphMessage] = List(Right(VALID_RECEIVED_HEARTBEAT_RPC))
     val expectedOutput: List[GraphMessage] = List(Right(EXPECTED_GET_MSGS_BY_ID_RPC))
@@ -67,6 +77,21 @@ class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSy
 
       case _ => 1 should equal(0)
     }
+  }
+
+  test("sending a getMessagesById correctly returns the missing messages") {
+    val input: List[GraphMessage] = List(Right(VALID_RECEIVED_GET_MSG_BY_ID_RPC))
+    val expectedOutput: List[GraphMessage] = List(Right(EXPECTED_GET_MSGS_BY_ID_RPC_RESPONSE))
+    val source = Source(input)
+    val s = source.via(boxUnderTest).runWith(Sink.seq[GraphMessage])
+    Await.ready(s, duration).value match {
+      case Some(Success(seq)) => seq.toList.head match {
+          case Right(jsonRpcResp: JsonRpcResponse) => jsonRpcResp.result.get.resultMap.get should equal(EXPECTED_MISSING_MESSAGES)
+          case _                                   => 1 should equal(0)
+        }
+      case _ => 1 should equal(0)
+    }
+
   }
 
 }
