@@ -1,9 +1,10 @@
 package ch.epfl.pop.json
 
-import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.network.method.ParamsWithMap
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects._
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.Inspectors.forEvery
 import org.scalatest.funsuite.{AnyFunSuite => FunSuite}
 import org.scalatest.matchers.should.Matchers
@@ -132,9 +133,8 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
   }
 
   test("parse correctly heartbeat") {
-    val heartbeat = "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"heartbeat\",\n    \"params\": {\n        \"/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=\": [\n            \"DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI=\"\n        ],\n        \"/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=\": [\n            \"z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=\",\n            \"txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg=\"\n        ]\n    }\n}"
-    val rpcBuilt = JsonRpcRequest.buildFromJson(heartbeat)
 
+    // Setup
     val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
     val id1 = Hash(Base64Data("DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="))
 
@@ -146,16 +146,20 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
       chan2 -> Set(id2, id3)
     )
 
-    val contructedRpc = JsonRpcRequest("\"jsonrpc\": \"2.0\"", MethodType.HEARTBEAT, new ParamsWithMap(map), None)
+    val hbJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.HEARTBEAT, new ParamsWithMap(map), None))
+    val hbFromJson = JsonRpcRequest.buildFromJson(hbJsValue.prettyPrint)
 
-    contructedRpc.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
-    rpcBuilt.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
+    // Test
+    hbFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
+    hbFromJson.method should equal(MethodType.HEARTBEAT)
+    hbFromJson.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
+    hbFromJson.id should equal(None)
+
   }
 
   test("parse correctly get_messages_by_id") {
-    val getMgs = "{\n    \"jsonrpc\": \"2.0\",\n    \"id\": 6,\n    \"method\": \"get_messages_by_id\",\n    \"params\": {\n        \"/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=\": [\n            \"DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI=\"\n        ],\n        \"/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/HnXDyvSSron676Icmvcjk5zXvGLkPJ1fVOaWOxItzBE=\": [\n            \"z6SbjJ0Hw36k8L09-GVRq4PNmi06yQX4e8aZRSbUDwc=\",\n            \"txbTmVMwCDkZdoaAiEYfAKozVizZzkeMkeOlzq5qMlg=\"\n        ]\n    }\n}"
-    val rpcBuilt = JsonRpcRequest.buildFromJson(getMgs)
 
+    // Setup
     val chan1 = Channel("/root/nLghr9_P406lfkMjaNWqyohLxOiGlQee8zad4qAfj18=/social/8qlv4aUT5-tBodKp4RszY284CFYVaoDZK6XKiw9isSw=")
     val id1 = Hash(Base64Data("DCBX48EuNO6q-Sr42ONqsj7opKiNeXyRzrjqTbZ_aMI="))
 
@@ -167,10 +171,15 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
       chan2 -> Set(id2, id3)
     )
 
-    val contructedRpc = JsonRpcRequest("\"jsonrpc\": \"2.0\"", MethodType.GET_MESSAGES_BY_ID, new ParamsWithMap(map), None)
+    val id = Some(5)
+    val getMsgsByIdJsValue = HighLevelProtocol.jsonRpcRequestFormat.write(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, new ParamsWithMap(map), id))
+    val getMsgsByIdFromJson = JsonRpcRequest.buildFromJson(getMsgsByIdJsValue.prettyPrint)
 
-    contructedRpc.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
-    rpcBuilt.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
+    // Test
+    getMsgsByIdFromJson.jsonrpc should equal(RpcValidator.JSON_RPC_VERSION)
+    getMsgsByIdFromJson.method should equal(MethodType.GET_MESSAGES_BY_ID)
+    getMsgsByIdFromJson.getParams.asInstanceOf[ParamsWithMap].channelsToMessageIds should equal(map)
+    getMsgsByIdFromJson.id should equal(id)
   }
 }
 
