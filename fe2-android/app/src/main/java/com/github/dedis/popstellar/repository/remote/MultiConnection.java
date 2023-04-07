@@ -56,39 +56,29 @@ public class MultiConnection extends Connection {
   /**
    * Function to observe messages on the connections.
    *
-   * @param firstConnection boolean to indicate whether we want to observe messages from the first
-   *     main connection or from the others.
    * @return an Observable of GenericMessage received on the connections
    */
-  public io.reactivex.Observable<GenericMessage> observeMessage(boolean firstConnection) {
-    // As the first connection has to be made at the start, we need first to observe on that
-    // to deliver the GreetLao and then extend to multiple connections
-    if (firstConnection) {
-      return super.observeMessage();
-    }
-    return connectionMap.values().stream()
-        .map(Connection::observeMessage)
-        .reduce(Observable::concatWith)
-        .orElse(Observable.empty());
+  public io.reactivex.Observable<GenericMessage> observeMessage() {
+    return super.observeMessage()
+        .concatWith(
+            connectionMap.values().stream()
+                .map(Connection::observeMessage)
+                .reduce(Observable::concatWith)
+                .orElse(Observable.empty()));
   }
 
   /**
    * Function to observe events on the connections.
    *
-   * @param firstConnection boolean to indicate whether we want to observe messages from the first
-   *     main connection or from the others.
    * @return an Observable of Events happening on the connection
    */
-  public Observable<WebSocket.Event> observeConnectionEvents(boolean firstConnection) {
-    // As the first connection has to be made at the start, we need first to observe on that
-    // to deliver the GreetLao and then extend to multiple connections
-    if (firstConnection) {
-      return super.observeConnectionEvents();
-    }
-    return connectionMap.values().stream()
-        .map(Connection::observeConnectionEvents)
-        .reduce(Observable::concatWith)
-        .orElse(Observable.empty());
+  public Observable<WebSocket.Event> observeConnectionEvents() {
+    return super.observeConnectionEvents()
+        .concatWith(
+            connectionMap.values().stream()
+                .map(Connection::observeConnectionEvents)
+                .reduce(Observable::concatWith)
+                .orElse(Observable.empty()));
   }
 
   @Override

@@ -21,7 +21,6 @@ import com.tinder.scarlet.WebSocket;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import io.reactivex.Observable;
 import io.reactivex.*;
@@ -47,28 +46,26 @@ public class LAONetworkManager implements MessageSender {
 
   public LAONetworkManager(
       MessageHandler messageHandler,
-      Function<String, Connection> connectionProvider,
-      String url,
+      MultiConnection multiConnection,
       Gson gson,
       SchedulerProvider schedulerProvider,
       Set<Channel> subscribedChannels) {
-
     this.messageHandler = messageHandler;
-    this.multiConnection = new MultiConnection(connectionProvider, url);
+    this.multiConnection = multiConnection;
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;
     this.subscribedChannels = new HashSet<>(subscribedChannels);
 
     // Start the incoming message processing
-    processIncomingMessages(true);
+    processIncomingMessages();
     // Start the routine aimed at resubscribing to channels when the connection is lost
-    resubscribeToChannelOnReconnection(true);
+    resubscribeToChannelOnReconnection();
   }
 
-  private void resubscribeToChannelOnReconnection(boolean firstConnection) {
+  private void resubscribeToChannelOnReconnection() {
     disposables.add(
         multiConnection
-            .observeConnectionEvents(firstConnection) // Observe the events of a connection
+            .observeConnectionEvents() // Observe the events of a connection
             .subscribeOn(schedulerProvider.io())
             // Filter out events that are not related to a reconnection
             .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
@@ -89,14 +86,14 @@ public class LAONetworkManager implements MessageSender {
                 error -> Log.d(TAG, "Error on resubscription : " + error)));
   }
 
-  private void processIncomingMessages(boolean firstConnection) {
+  private void processIncomingMessages() {
     disposables.add(
         Observable.merge(
                 // Normal message received over the wire
-                multiConnection.observeMessage(firstConnection),
-                // Packets that could not be processed (maybe due to a reordering), this is merged
-                // into
-                // incoming message with a delay of 5 seconds to give priority to new messages.
+                multiConnection.observeMessage(),
+                // Packets that could not be processed (maybe due to a reordering),
+                // this is merged into incoming message,
+                // with a delay of 5 seconds to give priority to new messages.
                 unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
             .filter(Broadcast.class::isInstance) // Filter the Broadcast
             .map(Broadcast.class::cast)
@@ -182,11 +179,12 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public void extendConnection(List<PeerAddress> peerAddressList) {
+    // If succeeded in extending the connections then return true
     if (multiConnection.connectToPeers(peerAddressList)) {
       // Start the incoming message processing for the other connections
-      processIncomingMessages(false);
+      processIncomingMessages();
       // Start the routine aimed at resubscribing to channels when the connection is lost
-      resubscribeToChannelOnReconnection(false);
+      resubscribeToChannelOnReconnection();
     }
   }
 
