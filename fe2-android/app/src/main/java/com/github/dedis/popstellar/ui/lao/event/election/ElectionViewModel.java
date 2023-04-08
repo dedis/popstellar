@@ -207,12 +207,12 @@ public class ElectionViewModel extends AndroidViewModel {
           CompletableFuture.supplyAsync(
               () -> {
                 List<EncryptedVote> encryptedVotes = election.encrypt(votes);
+                isEncrypting.postValue(false);
                 new Handler(Looper.getMainLooper())
                     .post(
                         () ->
                             Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
                                 .show());
-                isEncrypting.postValue(false);
                 return new CastVote(encryptedVotes, election.getId(), laoView.getId());
               },
               Executors.newSingleThreadExecutor());

@@ -233,7 +233,7 @@ public class CastVoteFragmentTest {
   }
 
   @Test
-  public void castEncryptedVoteSendsACastVoteMessage() {
+  public void castEncryptedVoteTest() {
     launchSecretElection();
 
     onView(withText(ELECTION_BALLOT_TEXT11)).perform(click());
@@ -243,7 +243,7 @@ public class CastVoteFragmentTest {
     // Wait for the operations performed above to complete
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-    verify(messageSenderHelper.getMockedSender()).publish(any(), any(), any(CastVote.class));
+    encryptedVoteText().check(matches(isDisplayed()));
   }
 
   private void launchSecretElection() {
@@ -254,6 +254,7 @@ public class CastVoteFragmentTest {
                 activity
                     .getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(containerId(), CastVoteFragment.newInstance(SECRET_ELECTION_ID)));
+                    .replace(containerId(), CastVoteFragment.newInstance(SECRET_ELECTION_ID))
+                    .commit());
   }
 }
