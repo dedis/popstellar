@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.databinding.CastVoteBallotOptionLayoutBinding
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionSetupFragment;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /** This is where whe define behaviour of the ViewPager of election setup */
 public class ElectionSetupViewPagerAdapter
@@ -189,13 +190,9 @@ public class ElectionSetupViewPagerAdapter
    * @return the indexes of election question where input is valid
    */
   public List<Integer> getValidInputs() {
-    List<Integer> listOfValidInputs = new ArrayList<>();
-    for (Integer i : listOfValidQuestions) {
-      if (listOfValidBallots.contains(i)) {
-        listOfValidInputs.add(i);
-      }
-    }
-    return listOfValidInputs;
+    return listOfValidQuestions.stream()
+        .filter(listOfValidBallots::contains)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -265,7 +262,6 @@ public class ElectionSetupViewPagerAdapter
   }
 
   private void setupElectionSpinner(Spinner spinner, AdapterView.OnItemSelectedListener listener) {
-
     String[] items =
         Arrays.stream(ElectionSetupFragment.VotingMethods.values())
             .map(ElectionSetupFragment.VotingMethods::getDesc)

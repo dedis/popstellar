@@ -48,14 +48,14 @@ public final class MessageGeneral {
   }
 
   public MessageGeneral(KeyPair keyPair, Data data, Gson gson) {
-    this.sender = keyPair.getPublicKey();
+    sender = keyPair.getPublicKey();
     this.data = data;
     String dataJson = gson.toJson(data, Data.class);
     Log.d(TAG, dataJson);
-    this.dataBuf = new Base64URLData(dataJson.getBytes(StandardCharsets.UTF_8));
+    dataBuf = new Base64URLData(dataJson.getBytes(StandardCharsets.UTF_8));
 
     generateSignature(keyPair.getPrivateKey());
-    this.messageId = new MessageID(this.dataBuf, this.signature);
+    messageId = new MessageID(dataBuf, signature);
   }
 
   public MessageGeneral(
@@ -66,7 +66,7 @@ public final class MessageGeneral {
 
   private void generateSignature(PrivateKey signer) {
     try {
-      signature = signer.sign(this.dataBuf);
+      signature = signer.sign(dataBuf);
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to generate signature", e);
     }
@@ -108,9 +108,9 @@ public final class MessageGeneral {
       MessageID messageID = witness.getMessageId();
 
       return sender.verify(witnessSignature, messageID);
-    } else {
-      return true;
     }
+
+    return true;
   }
 
   @NonNull

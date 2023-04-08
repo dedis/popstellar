@@ -24,9 +24,9 @@ public class CastVoteViewPagerAdapter
 
   public CastVoteViewPagerAdapter(
       CastVoteFragmentBinding binding, Election election, Map<String, Integer> votes) {
-    this.questions = election.getElectionQuestions();
+    questions = election.getElectionQuestions();
+    voteButton = binding.castVoteButton;
     this.votes = votes;
-    this.voteButton = binding.castVoteButton;
   }
 
   @NonNull

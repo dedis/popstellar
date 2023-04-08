@@ -38,7 +38,7 @@ public class UpdateLao extends Data {
       String name,
       long lastModified,
       Set<PublicKey> witnesses) {
-    this.id = Lao.generateLaoId(organizer, creation, name);
+    id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;
     this.witnesses = new HashSet<>();

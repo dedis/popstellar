@@ -18,8 +18,8 @@ public class ElectionResultListAdapter
 
   public ElectionResultListAdapter(Context context, int resource, List<ElectionResult> objects) {
     super(context, resource, objects);
-    this.mContext = context;
-    this.mResource = resource;
+    mContext = context;
+    mResource = resource;
   }
 
   @Override

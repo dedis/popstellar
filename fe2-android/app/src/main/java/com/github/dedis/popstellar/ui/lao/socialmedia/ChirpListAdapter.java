@@ -27,12 +27,12 @@ public class ChirpListAdapter extends BaseAdapter {
   private List<Chirp> chirps;
 
   public ChirpListAdapter(
-      Context ctx, SocialMediaViewModel socialMediaViewModel, LaoViewModel viewModel) {
-    this.context = ctx;
+      Context context, SocialMediaViewModel socialMediaViewModel, LaoViewModel viewModel) {
+    this.context = context;
     this.socialMediaViewModel = socialMediaViewModel;
     this.laoViewModel = viewModel;
 
-    layoutInflater = LayoutInflater.from(ctx);
+    layoutInflater = LayoutInflater.from(context);
     viewModel.addDisposable(
         socialMediaViewModel
             .getChirps()
