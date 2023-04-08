@@ -166,7 +166,7 @@ public final class LaoHandler {
     lao.setModificationId(stateLao.getModificationId());
 
     PublicKey publicKey = keyManager.getMainPublicKey();
-    if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
+    if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
       context
           .getMessageSender()
           .subscribe(laoView.getChannel().subChannel("consensus"))
