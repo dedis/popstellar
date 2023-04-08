@@ -20,7 +20,6 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.lao.event.election.adapters.CastVoteViewPagerAdapter;
-import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -110,8 +109,31 @@ public class CastVoteFragment extends Fragment {
     // setUp the cast Vote button
     binding.castVoteButton.setOnClickListener(this::castVote);
 
+    setEncryptionVotes();
+
     handleBackNav();
     return binding.getRoot();
+  }
+
+  private void setEncryptionVotes() {
+    // observe the progress for encryption
+    electionViewModel
+        .getIsEncrypting()
+        .observe(
+            getViewLifecycleOwner(),
+            isEncrypting -> {
+              binding.loadingContainer.setVisibility(isEncrypting ? View.VISIBLE : View.GONE);
+              // Block touch inputs if loading
+              if (isEncrypting) {
+                getActivity()
+                    .getWindow()
+                    .setFlags(
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+              } else {
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+              }
+            });
   }
 
   private boolean setLaoName() {
@@ -166,10 +188,6 @@ public class CastVoteFragment extends Fragment {
               .sendVote(electionId, plainVotes)
               .subscribe(
                   () -> {
-                    LaoActivity.setCurrentFragment(
-                        getParentFragmentManager(),
-                        R.id.fragment_event_list,
-                        EventListFragment::newInstance);
                     // Toast ? + send back to election screen or details screen ?
                     Toast.makeText(requireContext(), "vote successfully sent !", Toast.LENGTH_LONG)
                         .show();

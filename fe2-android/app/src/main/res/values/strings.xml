@@ -129,6 +129,7 @@
   <string name="voting_method_spinner_text">Voting method</string>
   <string name="write_in_switch_text">Allow write in</string>
   <string name="new_ballot_option_hint">ballot option</string>
+  <string name="encrypting_vote">Encrypting the vote…</string>
 
   <string name="results">Results</string>
   <string name="waiting_for_results">Waiting for results</string>

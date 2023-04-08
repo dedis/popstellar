@@ -1,11 +1,14 @@
 package com.github.dedis.popstellar.ui.lao.event.election;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
@@ -18,6 +21,7 @@ import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.util.List;
+import java.util.concurrent.*;
 
 import javax.inject.Inject;
 
@@ -36,6 +40,8 @@ public class ElectionViewModel extends AndroidViewModel {
   private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
   private final RollCallRepository rollCallRepo;
+
+  private final MutableLiveData<Boolean> isEncrypting = new MutableLiveData<>(false);
 
   @Inject
   public ElectionViewModel(
@@ -93,6 +99,10 @@ public class ElectionViewModel extends AndroidViewModel {
 
   public void setLaoId(String laoId) {
     this.laoId = laoId;
+  }
+
+  public MutableLiveData<Boolean> getIsEncrypting() {
+    return isEncrypting;
   }
 
   /**
@@ -191,10 +201,26 @@ public class ElectionViewModel extends AndroidViewModel {
     if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
       return new CastVote(votes, election.getId(), laoView.getId());
     } else {
-      List<EncryptedVote> encryptedVotes = election.encrypt(votes);
-
-      Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG).show();
-      return new CastVote(encryptedVotes, election.getId(), laoView.getId());
+      isEncrypting.postValue(true);
+      Future<CastVote> future =
+          Executors.newSingleThreadExecutor()
+              .submit(
+                  () -> {
+                    List<EncryptedVote> encryptedVotes = election.encrypt(votes);
+                    new Handler(Looper.getMainLooper())
+                        .post(
+                            () ->
+                                Toast.makeText(
+                                        getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
+                                    .show());
+                    isEncrypting.postValue(false);
+                    return new CastVote(encryptedVotes, election.getId(), laoView.getId());
+                  });
+      try {
+        return future.get();
+      } catch (ExecutionException | InterruptedException e) {
+        throw new RuntimeException("Couldn't encrypt the vote", e);
+      }
     }
   }
 
