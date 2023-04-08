@@ -59,6 +59,7 @@ public class MultiConnection extends Connection {
    *
    * @return an Observable of GenericMessage received on the connections
    */
+  @Override
   public io.reactivex.Observable<GenericMessage> observeMessage() {
     return super.observeMessage()
         .concatWith(
@@ -73,6 +74,7 @@ public class MultiConnection extends Connection {
    *
    * @return an Observable of Events happening on the connection
    */
+  @Override
   public Observable<WebSocket.Event> observeConnectionEvents() {
     return super.observeConnectionEvents()
         .concatWith(
