@@ -125,15 +125,16 @@ public class CastVoteFragment extends Fragment {
         .observe(
             getViewLifecycleOwner(),
             isEncrypting -> {
-              binding.loadingContainer.setVisibility(isEncrypting ? View.VISIBLE : View.GONE);
-              // Block touch inputs if loading
-              if (isEncrypting) {
+              // Block touch inputs if loading and display progress bar
+              if (Boolean.TRUE.equals(isEncrypting)) {
+                binding.loadingContainer.setVisibility(View.VISIBLE);
                 requireActivity()
                     .getWindow()
                     .setFlags(
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
               } else {
+                binding.loadingContainer.setVisibility(View.GONE);
                 requireActivity()
                     .getWindow()
                     .clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
@@ -192,11 +193,10 @@ public class CastVoteFragment extends Fragment {
           electionViewModel
               .sendVote(electionId, plainVotes)
               .subscribe(
-                  () -> {
-                    // Toast ? + send back to election screen or details screen ?
-                    Toast.makeText(requireContext(), "vote successfully sent !", Toast.LENGTH_LONG)
-                        .show();
-                  },
+                  () ->
+                      Toast.makeText(
+                              requireContext(), "vote successfully sent !", Toast.LENGTH_LONG)
+                          .show(),
                   err -> logAndShow(requireContext(), TAG, err, R.string.error_send_vote)));
     } catch (UnknownElectionException err) {
       logAndShow(requireContext(), TAG, err, R.string.generic_error);
