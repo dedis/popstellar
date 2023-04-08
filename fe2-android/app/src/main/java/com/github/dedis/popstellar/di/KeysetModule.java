@@ -92,7 +92,7 @@ public class KeysetModule {
       AeadConfig.register();
       return new AndroidKeysetManager.Builder()
           .withSharedPref(applicationContext, WALLET_KEYSET_NAME, WALLET_SHARED_PREF_FILE_NAME)
-          .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
+          .withKeyTemplate(KeyTemplates.get("AES256_GCM_RAW"))
           .withMasterKeyUri(WALLET_MASTER_KEY_URI)
           .build();
     } catch (GeneralSecurityException | IOException e) {
