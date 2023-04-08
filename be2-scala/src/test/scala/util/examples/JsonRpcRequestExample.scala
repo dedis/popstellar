@@ -27,6 +27,7 @@ object JsonRpcRequestExample {
   private final val channel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "channel")
   private final val paramsWithoutMessage: ParamsWithChannel = new ParamsWithChannel(channel)
   private final val paramsWithMessage: ParamsWithMessage = new ParamsWithMessage(channel, MESSAGE_WORKING_WS_PAIR)
+  private final val paramsWithChannel: ParamsWithChannel = new ParamsWithChannel(channel)
   private final val paramsWithFaultyIdMessage: ParamsWithMessage = new ParamsWithMessage(channel, MESSAGE_FAULTY_ID)
   private final val paramsWithFaultyWSMessage: ParamsWithMessage = new ParamsWithMessage(channel, MESSAGE_FAULTY_WS_PAIR)
   private final val paramsWithFaultySignatureMessage: ParamsWithMessage = new ParamsWithMessage(channel, MESSAGE_FAULTY_SIGNATURE)
@@ -263,4 +264,10 @@ object JsonRpcRequestExample {
 
   // broadcast JsonRpcRequest
   final val broadcastRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.BROADCAST, paramsWithMessage, None)
+
+  // paramsWithChannel JsonRpcRequest
+  final val subscribeRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.SUBSCRIBE, paramsWithChannel, id)
+  final val unSubscribeRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.UNSUBSCRIBE, paramsWithChannel, id)
+  final val catchupRpcRequest: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.CATCHUP, paramsWithChannel, id)
+
 }
