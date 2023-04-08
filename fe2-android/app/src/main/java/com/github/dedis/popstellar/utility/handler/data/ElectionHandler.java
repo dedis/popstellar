@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -96,8 +97,7 @@ public final class ElectionHandler {
 
     List<ElectionResultQuestion> resultsQuestions = electionResult.getElectionQuestionResults();
     Log.d(TAG, "size of resultsQuestions is " + resultsQuestions.size());
-    if (resultsQuestions.isEmpty())
-      throw new DataHandlingException(electionResult, "the questions results is empty");
+    // No need to check here that resultsQuestions is not empty, as it is already done at the creation of the ElectionResult Data
 
     Election election =
         electionRepository

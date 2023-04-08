@@ -127,6 +127,7 @@ public class LaoHandlerTest {
     assertTrue(resultLao.getWitnessMessages().isEmpty());
     assertNull(resultLao.getModificationId());
   }
+
   @Test
   public void testHandleCreateLaoWitness()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,

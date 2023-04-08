@@ -38,11 +38,9 @@ import io.reactivex.Completable;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElectionHandlerTest {
@@ -86,6 +84,7 @@ public class ElectionHandlerTest {
   private LAORepository laoRepo;
   private ElectionRepository electionRepo;
   private MessageHandler messageHandler;
+  private MessageRepository messageRepo;
   private Gson gson;
 
   @Mock MessageSender messageSender;
@@ -103,9 +102,10 @@ public class ElectionHandlerTest {
     laoRepo = new LAORepository();
     electionRepo = new ElectionRepository();
 
+    messageRepo = new MessageRepository();
     DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(laoRepo, electionRepo, keyManager);
-    MessageRepository messageRepo = new MessageRepository();
+        DataRegistryModuleHelper.buildRegistry(laoRepo, electionRepo, keyManager, messageRepo);
+
     gson = JsonModule.provideGson(dataRegistry);
     messageHandler = new MessageHandler(messageRepo, dataRegistry);
 
@@ -116,7 +116,7 @@ public class ElectionHandlerTest {
     messageRepo.addMessage(createLaoMessage);
   }
 
-  private MessageID handleElectionSetup(Election election)
+  private MessageID handleElectionSetup(Election election, Channel channel)
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
           DataHandlingException, NoRollCallException {
     List<Question> questions =
@@ -142,7 +142,7 @@ public class ElectionHandlerTest {
             questions);
 
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionSetupOpenBallot, gson);
-    messageHandler.handleMessage(messageSender, LAO_CHANNEL, message);
+    messageHandler.handleMessage(messageSender, channel, message);
     return message.getMessageId();
   }
 
@@ -165,12 +165,12 @@ public class ElectionHandlerTest {
     messageHandler.handleMessage(messageSender, election.getChannel(), message);
   }
 
-  private void handleCastVote(Vote vote, KeyPair senderKey)
+  private void handleCastVote(Vote vote, KeyPair senderKey, Long creation)
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
           DataHandlingException, NoRollCallException {
 
     CastVote castVote =
-        new CastVote(singletonList(vote), OPEN_BALLOT_ELECTION.getId(), CREATE_LAO.getId());
+        new CastVote(singletonList(vote), OPEN_BALLOT_ELECTION.getId(), CREATE_LAO.getId(), creation);
 
     MessageGeneral message = new MessageGeneral(senderKey, castVote, gson);
     messageHandler.handleMessage(messageSender, OPEN_BALLOT_ELECTION.getChannel(), message);
@@ -204,7 +204,7 @@ public class ElectionHandlerTest {
   public void testHandleElectionSetup()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-    MessageID messageID = handleElectionSetup(OPEN_BALLOT_ELECTION);
+    MessageID messageID = handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
 
     // Check the Election is present and has correct values
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
@@ -228,11 +228,21 @@ public class ElectionHandlerTest {
   }
 
   @Test
+  public void testHandleElectionSetupInvalidChannel()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+      UnknownElectionException, NoRollCallException {
+    // Check that handling the message fails with an invalid channel (channel that is not a lao sub-channel)
+    assertThrows(
+        InvalidChannelException.class,
+        () -> handleElectionSetup(OPEN_BALLOT_ELECTION, Channel.ROOT));
+  }
+
+  @Test
   public void testElectionKey()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
 
-    handleElectionSetup(OPEN_BALLOT_ELECTION);
+    handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
 
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
@@ -245,10 +255,10 @@ public class ElectionHandlerTest {
           UnknownElectionException, NoRollCallException {
     Set<QuestionResult> results = Collections.singleton(new QuestionResult(OPTION_1, 1));
 
-    handleElectionSetup(OPEN_BALLOT_ELECTION);
+    handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
-    handleCastVote(new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID), SENDER_KEY);
+    handleCastVote(new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID), SENDER_KEY, OPENED_AT);
     handleElectionEnd();
     handleElectionResults(results, OPEN_BALLOT_ELECTION.getChannel());
 
@@ -261,7 +271,7 @@ public class ElectionHandlerTest {
   public void testHandleElectionOpen()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-    handleElectionSetup(OPEN_BALLOT_ELECTION);
+    handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
 
@@ -271,10 +281,39 @@ public class ElectionHandlerTest {
   }
 
   @Test
+  public void testHandleElectionOpenInvalidState()
+      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
+      UnknownElectionException, NoRollCallException {
+    handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
+    handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
+
+    // Set the election to a closed state and check that opening the election fails
+    Election closedElection = OPEN_BALLOT_ELECTION.builder().setState(EventState.CLOSED).build();
+    electionRepo.updateElection(closedElection);
+    assertThrows(
+        InvalidStateException.class,
+        () -> handleElectionOpen(closedElection));
+
+    // Set the election to an opened state and check that opening the election fails
+    Election openedElection = OPEN_BALLOT_ELECTION.builder().setState(EventState.OPENED).build();
+    electionRepo.updateElection(closedElection);
+    assertThrows(
+        InvalidStateException.class,
+        () -> handleElectionOpen(openedElection));
+
+    // Set the election to a result ready state and check that opening the election fails
+    Election resultsReadyElection = OPEN_BALLOT_ELECTION.builder().setState(EventState.RESULTS_READY).build();
+    electionRepo.updateElection(closedElection);
+    assertThrows(
+        InvalidStateException.class,
+        () -> handleElectionOpen(resultsReadyElection));
+  }
+
+  @Test
   public void testHandleElectionEnd()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-    handleElectionSetup(OPEN_BALLOT_ELECTION);
+    handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
     handleElectionEnd();
@@ -290,17 +329,123 @@ public class ElectionHandlerTest {
     PlainVote vote1 = new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
     PlainVote vote2 = new PlainVote(QUESTION.getId(), 1, false, null, ELECTION_ID);
 
-    handleElectionSetup(OPEN_BALLOT_ELECTION);
+    handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
-    handleCastVote(vote1, SENDER_KEY);
-    handleCastVote(vote2, ATTENDEE_KEY);
+
+    // Handle the votes of two different senders
+    handleCastVote(vote1, SENDER_KEY, OPENED_AT);
+    handleCastVote(vote2, ATTENDEE_KEY, OPENED_AT);
 
     // The expected hash is made on the sorted vote ids
     String[] voteIds = Stream.of(vote1, vote2).map(Vote::getId).sorted().toArray(String[]::new);
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
 
     assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
+  }
+
+  @Test
+  public void castVoteOnlyKeepsLastVote()
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+      DataHandlingException, NoRollCallException {
+    PlainVote vote1 = new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
+    PlainVote vote2 = new PlainVote(QUESTION.getId(), 1, false, null, ELECTION_ID);
+    PlainVote vote3 = new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
+
+    handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
+    handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
+    handleElectionOpen(OPEN_BALLOT_ELECTION);
+
+    // Handle the votes of two different senders. One sender sends two votes, and the first should be discarded
+    handleCastVote(vote1, SENDER_KEY, OPENED_AT);
+    handleCastVote(vote2, ATTENDEE_KEY, OPENED_AT + 1);
+    handleCastVote(vote3, ATTENDEE_KEY, OPENED_AT + 2);
+
+    // The expected hash is made on the sorted vote ids (check that vote2 was discarded)
+    System.out.println("vote1: " + vote1.getId());
+    System.out.println("vote2: " + vote2.getId());
+    System.out.println("vote3: " + vote3.getId());
+    String[] voteIds = Stream.of(vote1, vote3).map(Vote::getId).sorted().toArray(String[]::new);
+    Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+
+    assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
+  }
+
+  @Test
+  public void castVoteDiscardsStaleVote()
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+      DataHandlingException, NoRollCallException {
+    PlainVote vote1 = new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
+    PlainVote vote2 = new PlainVote(QUESTION.getId(), 1, false, null, ELECTION_ID);
+    PlainVote vote3 = new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
+
+    handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
+    handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
+    handleElectionOpen(OPEN_BALLOT_ELECTION);
+
+    // Handle the votes of two different senders. One sender sends two votes, and the first should be discarded
+    // Vote3 arrives after vote2, but it has an older creation date and should be discarded
+    handleCastVote(vote1, SENDER_KEY, OPENED_AT);
+    handleCastVote(vote2, ATTENDEE_KEY, OPENED_AT + 2);
+    handleCastVote(vote3, ATTENDEE_KEY, OPENED_AT + 1);
+
+    // The expected hash is made on the sorted vote ids (check that vote2 was discarded)
+    String[] voteIds = Stream.of(vote1, vote2).map(Vote::getId).sorted().toArray(String[]::new);
+    Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+
+    assertEquals(Hash.hash(voteIds), election.computeRegisteredVotesHash());
+  }
+
+  @Test
+  public void castVoteFailsOnPreviousDataNull()
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+      DataHandlingException, NoRollCallException {
+    PlainVote vote1 = new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
+    PlainVote vote2 = new PlainVote(QUESTION.getId(), 1, false, null, ELECTION_ID);
+
+    handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
+    handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
+    handleElectionOpen(OPEN_BALLOT_ELECTION);
+
+    // TODO: refactor this
+    MessageGeneral nullData = new MessageGeneral(SENDER_KEY, null, gson);
+    messageRepo = mock(MessageRepository.class);
+    when(messageRepo.getMessage(any())).thenReturn(nullData);
+    DataRegistry dataRegistry =
+        DataRegistryModuleHelper.buildRegistry(laoRepo, electionRepo, keyManager, messageRepo);
+    gson = JsonModule.provideGson(dataRegistry);
+    messageHandler = new MessageHandler(messageRepo, dataRegistry);
+
+    handleCastVote(vote1, SENDER_KEY, OPENED_AT);
+    assertThrows(
+        IllegalStateException.class,
+        () ->  handleCastVote(vote2, SENDER_KEY, OPENED_AT + 1));
+  }
+
+  @Test
+  public void castVoteFailsOnPreviousDataInvalid()
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+      DataHandlingException, NoRollCallException {
+    PlainVote vote1 = new PlainVote(QUESTION.getId(), 0, false, null, ELECTION_ID);
+    PlainVote vote2 = new PlainVote(QUESTION.getId(), 1, false, null, ELECTION_ID);
+
+    handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
+    handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
+    handleElectionOpen(OPEN_BALLOT_ELECTION);
+
+    // TODO: refactor this
+    MessageGeneral invalidData = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
+    messageRepo = mock(MessageRepository.class);
+    when(messageRepo.getMessage(any())).thenReturn(invalidData);
+    DataRegistry dataRegistry =
+        DataRegistryModuleHelper.buildRegistry(laoRepo, electionRepo, keyManager, messageRepo);
+    gson = JsonModule.provideGson(dataRegistry);
+    messageHandler = new MessageHandler(messageRepo, dataRegistry);
+
+    handleCastVote(vote1, SENDER_KEY, OPENED_AT);
+    assertThrows(
+        DataHandlingException.class,
+        () ->  handleCastVote(vote2, SENDER_KEY, OPENED_AT + 1));
   }
 
   @Test
@@ -314,12 +459,12 @@ public class ElectionHandlerTest {
     EncryptedVote vote1 = new EncryptedVote(QUESTION.getId(), "0", false, null, ELECTION_ID);
     EncryptedVote vote2 = new EncryptedVote(QUESTION.getId(), "1", false, null, ELECTION_ID);
 
-    handleElectionSetup(SECRET_BALLOT_ELECTION);
+    handleElectionSetup(SECRET_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(SECRET_BALLOT_ELECTION, encodedKey.getEncoded());
     handleElectionOpen(SECRET_BALLOT_ELECTION);
 
-    handleCastVote(vote1, SENDER_KEY);
-    handleCastVote(vote2, ATTENDEE_KEY);
+    handleCastVote(vote1, SENDER_KEY, OPENED_AT);
+    handleCastVote(vote2, ATTENDEE_KEY, OPENED_AT);
 
     // The expected hash is made on the sorted vote ids
     String[] voteIds = Stream.of(vote1, vote2).map(Vote::getId).sorted().toArray(String[]::new);
