@@ -72,6 +72,7 @@
 
   <!--  Election fragment dimension-->
   <dimen name="inter_buttons_margin">8dp</dimen>
+  <dimen name="election_encrypting_text_offset">45dp</dimen>
 
   <!-- Election setup dimensions -->
   <dimen name="election_setup_spinner_width">150dp</dimen>

@@ -21,7 +21,8 @@ import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -202,25 +203,21 @@ public class ElectionViewModel extends AndroidViewModel {
       return new CastVote(votes, election.getId(), laoView.getId());
     } else {
       isEncrypting.postValue(true);
-      Future<CastVote> future =
-          Executors.newSingleThreadExecutor()
-              .submit(
-                  () -> {
-                    List<EncryptedVote> encryptedVotes = election.encrypt(votes);
-                    new Handler(Looper.getMainLooper())
-                        .post(
-                            () ->
-                                Toast.makeText(
-                                        getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
-                                    .show());
-                    isEncrypting.postValue(false);
-                    return new CastVote(encryptedVotes, election.getId(), laoView.getId());
-                  });
-      try {
-        return future.get();
-      } catch (ExecutionException | InterruptedException e) {
-        throw new RuntimeException("Couldn't encrypt the vote", e);
-      }
+      CompletableFuture<CastVote> future =
+          CompletableFuture.supplyAsync(
+              () -> {
+                List<EncryptedVote> encryptedVotes = election.encrypt(votes);
+                new Handler(Looper.getMainLooper())
+                    .post(
+                        () ->
+                            Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
+                                .show());
+                isEncrypting.postValue(false);
+                return new CastVote(encryptedVotes, election.getId(), laoView.getId());
+              },
+              Executors.newSingleThreadExecutor());
+
+      return future.join();
     }
   }
 
