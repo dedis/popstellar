@@ -56,7 +56,7 @@ public class GlobalNetworkManager implements Disposable {
     networkManager =
         new LAONetworkManager(
             messageHandler,
-            new MultiConnection(connectionFactory::createConnection, url),
+            connectionFactory.createMultiConnection(url),
             gson,
             schedulerProvider,
             subscriptions);

@@ -24,12 +24,13 @@ public class Connection {
 
   public Connection(
       String url, LAOService laoService, BehaviorSubject<Lifecycle.State> manualState) {
-    this.messagesSubject = BehaviorSubject.create();
     this.laoService = laoService;
-    this.disposables = new CompositeDisposable();
+    this.manualState = manualState;
+    messagesSubject = BehaviorSubject.create();
+    disposables = new CompositeDisposable();
     // Subscribe to the incoming messages of the websocket service
     // and simply hand them to the subject
-    this.disposables.add(
+    disposables.add(
         laoService
             .observeMessage()
             .doOnNext(msg -> Log.d(TAG, "Received a new message from remote: " + msg))
@@ -37,19 +38,18 @@ public class Connection {
 
     // Add logs on connection state events
     disposables.add(
-        this.laoService
+        laoService
             .observeWebsocket()
             .subscribe(
                 event -> logEvent(event, url),
                 err -> Log.d(TAG, "Error in connection " + url, err)));
-    this.manualState = manualState;
   }
 
   protected Connection(Connection connection) {
-    this.laoService = connection.laoService;
-    this.manualState = connection.manualState;
-    this.disposables = connection.disposables;
-    this.messagesSubject = connection.messagesSubject;
+    laoService = connection.laoService;
+    manualState = connection.manualState;
+    disposables = connection.disposables;
+    messagesSubject = connection.messagesSubject;
   }
 
   private void logEvent(WebSocket.Event event, String url) {

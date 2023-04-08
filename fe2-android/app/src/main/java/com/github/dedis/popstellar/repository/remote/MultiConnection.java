@@ -22,7 +22,7 @@ public class MultiConnection extends Connection {
   private final Function<String, Connection> connectionProvider;
 
   /** Map a PeerAddress (url for now) to its connection */
-  private final Map<PeerAddress, Connection> connectionMap = new HashMap<>();
+  private final Map<PeerAddress, Connection> connectionMap;
 
   /**
    * Create the main connection as the super class
@@ -34,6 +34,7 @@ public class MultiConnection extends Connection {
   public MultiConnection(Function<String, Connection> connectionProvider, String url) {
     super(connectionProvider.apply(url));
     this.connectionProvider = connectionProvider;
+    connectionMap = new HashMap<>();
   }
 
   /**
