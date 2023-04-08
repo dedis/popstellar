@@ -115,6 +115,9 @@ public class CastVoteFragment extends Fragment {
     return binding.getRoot();
   }
 
+  /**
+   * Show the progress bar and block user's touch inputs if the encryption of the vote takes time
+   */
   private void setEncryptionVotes() {
     // observe the progress for encryption
     electionViewModel
@@ -125,13 +128,15 @@ public class CastVoteFragment extends Fragment {
               binding.loadingContainer.setVisibility(isEncrypting ? View.VISIBLE : View.GONE);
               // Block touch inputs if loading
               if (isEncrypting) {
-                getActivity()
+                requireActivity()
                     .getWindow()
                     .setFlags(
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
               } else {
-                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                requireActivity()
+                    .getWindow()
+                    .clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
               }
             });
   }
