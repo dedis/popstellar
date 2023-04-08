@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.crypto.tink.KeyTemplates;
 import com.google.crypto.tink.aead.AeadConfig;
 import com.google.crypto.tink.aead.AesGcmKeyManager;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.*;
 
 import javax.inject.Qualifier;
 import javax.inject.Singleton;
@@ -56,15 +58,23 @@ public class KeysetModule {
       Ed25519PrivateKeyManager.registerPair(true);
       PublicKeySignWrapper.register();
 
-      // TODO: move to background thread
+      Callable<AndroidKeysetManager> keysetManagerCallable =
+          () ->
+              new AndroidKeysetManager.Builder()
+                  .withSharedPref(
+                      applicationContext, DEVICE_KEYSET_NAME, DEVICE_SHARED_PREF_FILE_NAME)
+                  .withKeyTemplate(KeyTemplates.get("ED25519_RAW"))
+                  .withMasterKeyUri(DEVICE_MASTER_KEY_URI)
+                  .build();
 
-      return new AndroidKeysetManager.Builder()
-          .withSharedPref(applicationContext, DEVICE_KEYSET_NAME, DEVICE_SHARED_PREF_FILE_NAME)
-          .withKeyTemplate(Ed25519PrivateKeyManager.rawEd25519Template())
-          .withMasterKeyUri(DEVICE_MASTER_KEY_URI)
-          .build();
-    } catch (IOException | GeneralSecurityException e) {
+      // Move the keyset manager creation to a background thread
+      Future<AndroidKeysetManager> future =
+          Executors.newSingleThreadExecutor().submit(keysetManagerCallable);
+      return future.get();
+    } catch (GeneralSecurityException e) {
       throw new SecurityException("Could not retrieve the device keyset from the app", e);
+    } catch (ExecutionException | InterruptedException e) {
+      throw new RuntimeException("Could not complete the keyset creation background thread", e);
     }
   }
 
