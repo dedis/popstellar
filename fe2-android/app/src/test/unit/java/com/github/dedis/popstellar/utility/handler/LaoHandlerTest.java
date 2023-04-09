@@ -51,7 +51,8 @@ public class LaoHandlerTest {
   private static final String ID1 = Lao.generateLaoId(SENDER1, CREATION, NAME1);
   private static final String ID2 = Lao.generateLaoId(SENDER1, CREATION, NAME2);
   private static final String ID3 = Lao.generateLaoId(SENDER1, CREATION, NAME3);
-  private static final List<PublicKey> WITNESS = new ArrayList<>(Arrays.asList(SENDER2));
+  private static final List<PublicKey> WITNESS = new ArrayList<>(
+      Collections.singletonList(SENDER2));
   private static final List<PublicKey> WITNESSES = new ArrayList<>(Arrays.asList(SENDER1, SENDER2));
   private static final CreateLao CREATE_LAO1 =
       new CreateLao(ID1, NAME1, CREATION, SENDER1, new ArrayList<>());
@@ -226,6 +227,8 @@ public class LaoHandlerTest {
     assertTrue(witnessMessage.isPresent());
     assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
     assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
+
+    // Check the PendingUpdate has been added
     assertEquals(expectedPendingUpdateSet,
         laoRepo.getLaoByChannel(LAO_CHANNEL1).getPendingUpdates());
   }
@@ -362,7 +365,7 @@ public class LaoHandlerTest {
     messageHandler.handleMessage(messageSender, LAO_CHANNEL1, stateMessage);
 
     // The old pending update is removed in the expected pending list
-    Set<PendingUpdate> expectedPending = new HashSet<>(Arrays.asList(newPendingUpdate));
+    Set<PendingUpdate> expectedPending = new HashSet<>(Collections.singletonList(newPendingUpdate));
     assertEquals(expectedPending, laoRepo.getLaoByChannel(LAO_CHANNEL1).getPendingUpdates());
   }
 
@@ -444,19 +447,19 @@ public class LaoHandlerTest {
 
   private static List<PublicKeySignaturePair> getValidModificationSignatures(
       MessageGeneral messageGeneral) {
-    PublicKeySignaturePair validKeyPair = null;
+    PublicKeySignaturePair validKeyPair;
     try {
       validKeyPair = new PublicKeySignaturePair(SENDER1,
           SENDER_KEY1.sign(messageGeneral.getMessageId()));
     } catch (GeneralSecurityException e) {
       throw new RuntimeException(e);
     }
-    return Arrays.asList(validKeyPair);
+    return Collections.singletonList(validKeyPair);
   }
 
   private static List<PublicKeySignaturePair> getInvalidModificationSignatures() {
     PublicKeySignaturePair invalidKeyPair =
         new PublicKeySignaturePair(generatePublicKey(), generateSignature());
-    return new ArrayList<>(Arrays.asList(invalidKeyPair));
+    return new ArrayList<>(Collections.singletonList(invalidKeyPair));
   }
 }
