@@ -48,7 +48,8 @@ public final class LaoHandler {
    * @param createLao the message that was received
    */
   @SuppressLint("CheckResult") // for now concerns Consensus which is not a priority this semester
-  public void handleCreateLao(HandlerContext context, CreateLao createLao) {
+  public void handleCreateLao(HandlerContext context, CreateLao createLao)
+      throws UnknownLaoException {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
@@ -62,9 +63,10 @@ public final class LaoHandler {
     lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
 
     laoRepo.updateLao(lao);
+    LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     PublicKey publicKey = keyManager.getMainPublicKey();
-    if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
+    if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
       context
           .getMessageSender()
           .subscribe(lao.getChannel().subChannel("consensus"))
@@ -168,7 +170,7 @@ public final class LaoHandler {
     lao.setModificationId(stateLao.getModificationId());
 
     PublicKey publicKey = keyManager.getMainPublicKey();
-    if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
+    if (laoView.isOrganizer(publicKey) || laoView.isWitness(publicKey)) {
       context
           .getMessageSender()
           .subscribe(laoView.getChannel().subChannel("consensus"))

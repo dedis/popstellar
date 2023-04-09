@@ -1,9 +1,9 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
+import static com.github.dedis.popstellar.model.objects.event.EventState.*;
+
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -12,16 +12,10 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
-
 import java.util.*;
-
 import javax.inject.Inject;
 
-import static com.github.dedis.popstellar.model.objects.event.EventState.*;
-
-/**
- * Election messages handler class
- */
+/** Election messages handler class */
 public final class ElectionHandler {
 
   public static final String TAG = ElectionHandler.class.getSimpleName();
@@ -41,7 +35,7 @@ public final class ElectionHandler {
   /**
    * Process an ElectionSetup message.
    *
-   * @param context       the HandlerContext of the message
+   * @param context the HandlerContext of the message
    * @param electionSetup the message that was received
    */
   public void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup)
@@ -58,7 +52,7 @@ public final class ElectionHandler {
 
     Election election =
         new Election.ElectionBuilder(
-            laoView.getId(), electionSetup.getCreation(), electionSetup.getName())
+                laoView.getId(), electionSetup.getCreation(), electionSetup.getName())
             .setElectionVersion(electionSetup.getElectionVersion())
             .setElectionQuestions(electionSetup.getQuestions())
             .setStart(electionSetup.getStartTime())
@@ -73,7 +67,7 @@ public final class ElectionHandler {
     context
         .getMessageSender()
         .subscribe(election.getChannel())
-        .doOnError(err -> Log.e(TAG, "On error occured while subscribing to election channel", err))
+        .doOnError(err -> Log.e(TAG, "An error occurred while subscribing to election channel", err))
         .onErrorComplete()
         .subscribe();
 
@@ -87,7 +81,7 @@ public final class ElectionHandler {
   /**
    * Process an ElectionResult message.
    *
-   * @param context        the HandlerContext of the message
+   * @param context the HandlerContext of the message
    * @param electionResult the message that was received
    */
   public void handleElectionResult(HandlerContext context, ElectionResult electionResult)
@@ -98,7 +92,8 @@ public final class ElectionHandler {
 
     List<ElectionResultQuestion> resultsQuestions = electionResult.getElectionQuestionResults();
     Log.d(TAG, "size of resultsQuestions is " + resultsQuestions.size());
-    // No need to check here that resultsQuestions is not empty, as it is already done at the creation of the ElectionResult Data
+    // No need to check here that resultsQuestions is not empty, as it is already done at the
+    // creation of the ElectionResult Data
 
     Election election =
         electionRepository
@@ -126,7 +121,7 @@ public final class ElectionHandler {
   /**
    * Process an OpenElection message.
    *
-   * @param context      the HandlerContext of the message
+   * @param context the HandlerContext of the message
    * @param openElection the message that was received
    */
   @SuppressWarnings("unused")
@@ -154,7 +149,7 @@ public final class ElectionHandler {
   /**
    * Process an ElectionEnd message.
    *
-   * @param context     the HandlerContext of the message
+   * @param context the HandlerContext of the message
    * @param electionEnd the message that was received
    */
   @SuppressWarnings("unused")
@@ -172,7 +167,7 @@ public final class ElectionHandler {
   /**
    * Process a CastVote message.
    *
-   * @param context  the HandlerContext of the message
+   * @param context the HandlerContext of the message
    * @param castVote the message that was received
    */
   public void handleCastVote(HandlerContext context, CastVote castVote)
@@ -248,7 +243,7 @@ public final class ElectionHandler {
   /**
    * Simple way to handle a election key, add the given key to the given election
    *
-   * @param context     context
+   * @param context context
    * @param electionKey key to add
    */
   public void handleElectionKey(HandlerContext context, ElectionKey electionKey)
