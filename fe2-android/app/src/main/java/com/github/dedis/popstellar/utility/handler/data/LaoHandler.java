@@ -17,9 +17,7 @@ import java.util.*;
 
 import javax.inject.Inject;
 
-/**
- * Lao messages handler class
- */
+/** Lao messages handler class */
 public final class LaoHandler {
 
   public static final String TAG = LaoHandler.class.getSimpleName();
@@ -44,7 +42,7 @@ public final class LaoHandler {
   /**
    * Process a CreateLao message.
    *
-   * @param context   the HandlerContext of the message
+   * @param context the HandlerContext of the message
    * @param createLao the message that was received
    */
   @SuppressLint("CheckResult") // for now concerns Consensus which is not a priority this semester
@@ -90,7 +88,7 @@ public final class LaoHandler {
   /**
    * Process an UpdateLao message.
    *
-   * @param context   the HandlerContext of the message
+   * @param context the HandlerContext of the message
    * @param updateLao the message that was received
    */
   public void handleUpdateLao(HandlerContext context, UpdateLao updateLao)
@@ -133,7 +131,7 @@ public final class LaoHandler {
   /**
    * Process a StateLao message.
    *
-   * @param context  the HandlerContext of the message
+   * @param context the HandlerContext of the message
    * @param stateLao the message that was received
    */
   @SuppressLint("CheckResult")
