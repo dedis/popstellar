@@ -44,7 +44,12 @@ const styles = StyleSheet.create({
     backgroundColor: Color.contrast,
     padding: Spacing.x05,
   } as ViewStyle,
-  enterManually: {
+  enterButton: {
+    ...QrCodeScannerUIElementContainer,
+    borderColor: Color.blue,
+    borderWidth: Spacing.x025,
+  } as ViewStyle,
+  textInformation: {
     alignItems: 'center',
   } as ViewStyle,
 });
@@ -186,8 +191,8 @@ const RollCallOpened = () => {
           <View style={styles.qrCode}>
             <QrCodeScanOverlay width={300} height={300} />
           </View>
-          <View style={styles.enterManually}>
-            <View style={QrCodeScannerUIElementContainer}>
+          <View style={styles.textInformation}>
+            <View style={styles.enterButton}>
               <PoPTouchableOpacity
                 testID="roll_call_open_add_manually"
                 onPress={() => setInputModalIsVisible(true)}>
@@ -197,7 +202,7 @@ const RollCallOpened = () => {
               </PoPTouchableOpacity>
             </View>
             <View style={styles.counter}>
-              <Text style={[Typography.base, Typography.accent]}>
+              <Text style={Typography.base}>
                 {/* -1 because we don't count the organizer */}
                 {STRINGS.roll_call_scan_counter}: {attendeePopTokens.current.length - 1}
               </Text>
