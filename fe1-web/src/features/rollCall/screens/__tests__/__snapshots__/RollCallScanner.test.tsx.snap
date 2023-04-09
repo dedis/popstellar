@@ -484,7 +484,9 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                   style={
                                     {
                                       "backgroundColor": "#fff",
+                                      "borderColor": "#2196F3",
                                       "borderRadius": 8,
+                                      "borderWidth": 4,
                                       "padding": 8,
                                     }
                                   }
@@ -564,17 +566,12 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
                                 >
                                   <Text
                                     style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "color": "#3742fa",
-                                        },
-                                      ]
+                                      {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      }
                                     }
                                   >
                                     Number of scanned attendees
@@ -1154,7 +1151,9 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                   style={
                                     {
                                       "backgroundColor": "#fff",
+                                      "borderColor": "#2196F3",
                                       "borderRadius": 8,
+                                      "borderWidth": 4,
                                       "padding": 8,
                                     }
                                   }
@@ -1234,17 +1233,12 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
                                 >
                                   <Text
                                     style={
-                                      [
-                                        {
-                                          "color": "#000",
-                                          "fontSize": 20,
-                                          "lineHeight": 26,
-                                          "textAlign": "left",
-                                        },
-                                        {
-                                          "color": "#3742fa",
-                                        },
-                                      ]
+                                      {
+                                        "color": "#000",
+                                        "fontSize": 20,
+                                        "lineHeight": 26,
+                                        "textAlign": "left",
+                                      }
                                     }
                                   >
                                     Number of scanned attendees
