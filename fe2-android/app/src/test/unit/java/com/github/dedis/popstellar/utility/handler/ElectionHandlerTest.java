@@ -362,9 +362,6 @@ public class ElectionHandlerTest {
     handleCastVote(vote3, ATTENDEE_KEY, OPENED_AT + 2);
 
     // The expected hash is made on the sorted vote ids (check that vote2 was discarded)
-    System.out.println("vote1: " + vote1.getId());
-    System.out.println("vote2: " + vote2.getId());
-    System.out.println("vote3: " + vote3.getId());
     String[] voteIds = Stream.of(vote1, vote3).map(Vote::getId).sorted().toArray(String[]::new);
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
 
@@ -383,13 +380,12 @@ public class ElectionHandlerTest {
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
 
-    // Handle the votes of two different senders. One sender sends two votes, and the first should be discarded
-    // Vote3 arrives after vote2, but it has an older creation date and should be discarded
+    // Handle the votes of two different senders. One sender sends two votes, and the second should be discarded as it has an older creation date
     handleCastVote(vote1, SENDER_KEY, OPENED_AT);
     handleCastVote(vote2, ATTENDEE_KEY, OPENED_AT + 2);
     handleCastVote(vote3, ATTENDEE_KEY, OPENED_AT + 1);
 
-    // The expected hash is made on the sorted vote ids (check that vote2 was discarded)
+    // The expected hash is made on the sorted vote ids (check that vote3 was discarded)
     String[] voteIds = Stream.of(vote1, vote2).map(Vote::getId).sorted().toArray(String[]::new);
     Election election = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
 

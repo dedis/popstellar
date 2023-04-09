@@ -42,22 +42,26 @@ public class LaoHandlerTest {
 
   private static final KeyPair SENDER_KEY1 = generateKeyPair();
   private static final KeyPair SENDER_KEY2 = generateKeyPair();
-  private static final PublicKey WITNESS1_KEY = generatePublicKey();
-  private static final PublicKey WITNESS2_KEY = generatePublicKey();
   private static final PublicKey SENDER1 = SENDER_KEY1.getPublicKey();
   private static final PublicKey SENDER2 = SENDER_KEY2.getPublicKey();
   private static final long CREATION = Instant.now().getEpochSecond();
   private static final String NAME1 = "lao1";
   private static final String NAME2 = "lao2";
+  private static final String NAME3 = "lao3";
   private static final String ID1 = Lao.generateLaoId(SENDER1, CREATION, NAME1);
   private static final String ID2 = Lao.generateLaoId(SENDER1, CREATION, NAME2);
+  private static final String ID3 = Lao.generateLaoId(SENDER1, CREATION, NAME3);
+  private static final  List<PublicKey> WITNESS = new ArrayList<>(Arrays.asList(SENDER2));
+  private static final List<PublicKey> WITNESSES = new ArrayList<>(Arrays.asList(SENDER1, SENDER2));
   private static final CreateLao CREATE_LAO1 =
       new CreateLao(ID1, NAME1, CREATION, SENDER1, new ArrayList<>());
   private static final CreateLao CREATE_LAO2 =
       new CreateLao(ID2, NAME2, CREATION, SENDER1, new ArrayList<>());
-
+  private static final CreateLao CREATE_LAO3 =
+      new CreateLao(ID3, NAME3, CREATION, SENDER1, WITNESSES);
   private static final Channel LAO_CHANNEL1 = Channel.getLaoChannel(CREATE_LAO1.getId());
   private static final Channel LAO_CHANNEL2 = Channel.getLaoChannel(CREATE_LAO2.getId());
+  private static final Channel LAO_CHANNEL3 = Channel.getLaoChannel(CREATE_LAO3.getId());
 
   private LAORepository laoRepo;
   private MessageHandler messageHandler;
@@ -69,7 +73,7 @@ public class LaoHandlerTest {
   public static final PeerAddress RANDOM_PEER = new PeerAddress("ws://128.0.0.2:8001/");
 
   private Lao lao;
-  private MessageGeneral createLaoMessage1;
+  private MessageGeneral createLaoMessage;
 
   @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
@@ -96,16 +100,15 @@ public class LaoHandlerTest {
     laoRepo.updateLao(lao);
 
     // Add the CreateLao message to the LAORepository
-    createLaoMessage1 = new MessageGeneral(SENDER_KEY1, CREATE_LAO1, gson);
-    messageRepo.addMessage(createLaoMessage1);
+    createLaoMessage = new MessageGeneral(SENDER_KEY1, CREATE_LAO1, gson);
+    messageRepo.addMessage(createLaoMessage);
   }
 
   @Test
   public void testHandleCreateLaoOrganizer()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-
-    // Create the message and call the message handler
+    // Create the message (new CreateLao) and call the message handler
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, CREATE_LAO2, gson);
     messageHandler.handleMessage(messageSender, LAO_CHANNEL2, message);
 
@@ -132,33 +135,28 @@ public class LaoHandlerTest {
   public void testHandleCreateLaoWitness()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
       UnknownElectionException, NoRollCallException {
-
     // Main public key is a witness now, and not the organizer
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER2);
-    List<PublicKey> witnesses = new ArrayList<>();
-    witnesses.add(SENDER2);
 
-    // Create the message and call the message handler
-    CreateLao createLao =
-        new CreateLao(ID2, NAME2, CREATION, SENDER1, witnesses);
-    MessageGeneral message = new MessageGeneral(SENDER_KEY1, createLao, gson);
-    messageHandler.handleMessage(messageSender, LAO_CHANNEL2, message);
+    // Create the message (CreateLao with witnesses) and call the message handler
+    MessageGeneral message = new MessageGeneral(SENDER_KEY1, CREATE_LAO3, gson);
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL3, message);
 
     // Get expected results
     Lao resultLao = laoRepo.getLaoByChannel(LAO_CHANNEL2);
-    String expectedName = createLao.getName();
-    PublicKey expectedOrganizer = createLao.getOrganizer();
-    long expectedCreation = createLao.getCreation();
+    String expectedName = CREATE_LAO3.getName();
+    PublicKey expectedOrganizer = CREATE_LAO3.getOrganizer();
+    long expectedCreation = CREATE_LAO3.getCreation();
     String expectedID = Lao.generateLaoId(expectedOrganizer, expectedCreation, expectedName);
 
     // Check that the expected LAO was created in the LAO repo
-    assertEquals(LAO_CHANNEL2, resultLao.getChannel());
+    assertEquals(LAO_CHANNEL3, resultLao.getChannel());
     assertEquals(expectedID, resultLao.getId());
     assertEquals(expectedName, resultLao.getName());
     assertEquals(expectedCreation, (long) resultLao.getLastModified());
     assertEquals(expectedCreation, (long) resultLao.getCreation());
     assertEquals(expectedOrganizer, resultLao.getOrganizer());
-    assertEquals(new HashSet<>(witnesses), resultLao.getWitnesses());
+    assertEquals(new HashSet<>(WITNESSES), resultLao.getWitnesses());
     assertTrue(resultLao.getWitnessMessages().isEmpty());
     assertNull(resultLao.getModificationId());
   }
@@ -167,7 +165,7 @@ public class LaoHandlerTest {
   public void testHandleUpdateLaoNewName()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-    // Create the update LAO message
+    // Create the update LAO message with new LAO name
     UpdateLao updateLao =
         new UpdateLao(
             SENDER1,
@@ -196,16 +194,17 @@ public class LaoHandlerTest {
   public void testHandleUpdateLaoNewWitness()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-    lao.setWitnesses(new HashSet<>(Arrays.asList(WITNESS1_KEY)));
+    // Set LAO to have one witness
+    lao.setWitnesses(new HashSet<>(WITNESS));
 
-    // Create UpdateLao with different witness set
+    // Create UpdateLao with updated witness set
     UpdateLao updateLao =
         new UpdateLao(
             SENDER1,
             CREATE_LAO1.getCreation(),
             CREATE_LAO1.getName(),
             Instant.now().getEpochSecond(),
-            new HashSet<>(Arrays.asList(WITNESS1_KEY, WITNESS2_KEY)));
+            new HashSet<>(WITNESSES));
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, updateLao, gson);
 
     // Create the expected WitnessMessage
@@ -224,10 +223,8 @@ public class LaoHandlerTest {
   }
 
   @Test
-  public void testHandleUpdateLaoOldInfo()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
-    // Create UpdateLao with no new name or witness
+  public void testHandleUpdateLaoOldInfo(){
+    // Create UpdateLao with no updated name or witness set
     UpdateLao updateLao =
         new UpdateLao(
             SENDER1,
@@ -244,10 +241,8 @@ public class LaoHandlerTest {
   }
 
   @Test
-  public void testHandleUpdateLaoStale()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
-    // Create a LAO update message with last modified time older than the current LAO last modified
+  public void testHandleUpdateLaoStale() {
+    // Create a update LAO message with last modified time older than the current LAO last modified
     // time (was creation)
     UpdateLao updateLao1 =
         new UpdateLao(
@@ -256,7 +251,6 @@ public class LaoHandlerTest {
             "new lao name",
             CREATE_LAO1.getCreation() - 10,
             new HashSet<>());
-
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, updateLao1, gson);
 
     // Check that handling the older message fails
@@ -269,17 +263,8 @@ public class LaoHandlerTest {
   public void testHandleStateLaoOrganizer()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-
-    // Create a valid public key signature pair to add to modification signatures
-    List<PublicKeySignaturePair> modificationSignatures = new ArrayList<>();
-
-    PublicKeySignaturePair validKeyPair = null;
-    try {
-      validKeyPair = new PublicKeySignaturePair(SENDER1, SENDER_KEY1.sign(createLaoMessage1.getMessageId()));
-    } catch (GeneralSecurityException e) {
-      throw new RuntimeException(e);
-    }
-    modificationSignatures.add(validKeyPair);
+    // Create a valid list of modification signatures
+    List<PublicKeySignaturePair> modificationSignatures = getValidModificationSignatures(createLaoMessage);
 
     // Create the state LAO message
     StateLao stateLao =
@@ -289,7 +274,7 @@ public class LaoHandlerTest {
             CREATE_LAO1.getCreation(),
             Instant.now().getEpochSecond(),
             CREATE_LAO1.getOrganizer(),
-            createLaoMessage1.getMessageId(),
+            createLaoMessage.getMessageId(),
             new HashSet<>(),
             modificationSignatures);
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, stateLao, gson);
@@ -308,13 +293,10 @@ public class LaoHandlerTest {
   public void testHandleStateLaoWitness()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
       UnknownElectionException, NoRollCallException {
-
     // Main public key is a witness now, and not the organizer
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER2);
-    Set<PublicKey> witnesses = new HashSet<>();
-    witnesses.add(SENDER2);
 
-    // Create the state LAO message
+    // Create the state LAO message with one witness that has the main public key
     StateLao stateLao =
         new StateLao(
             CREATE_LAO1.getId(),
@@ -322,8 +304,8 @@ public class LaoHandlerTest {
             CREATE_LAO1.getCreation(),
             Instant.now().getEpochSecond(),
             CREATE_LAO1.getOrganizer(),
-            createLaoMessage1.getMessageId(),
-            witnesses,
+            createLaoMessage.getMessageId(),
+            new HashSet<>(WITNESS),
             new ArrayList<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, stateLao, gson);
 
@@ -338,10 +320,47 @@ public class LaoHandlerTest {
   }
 
   @Test
-  public void testHandleStateLaoInvalidMessageId()
+  public void testHandleStateLaoRemovesStalePendingUpdates()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
+      UnknownElectionException, NoRollCallException {
+    // Create a list of 2 pending updates: one newer and one older than the stateLao message
+    long targetTime = CREATE_LAO1.getCreation() + 5;
+    PendingUpdate oldPendingUpdate = mock(PendingUpdate.class);
+    PendingUpdate newPendingUpdate = mock(PendingUpdate.class);
+    when(oldPendingUpdate.getModificationTime()).thenReturn(targetTime - 1);
+    when(newPendingUpdate.getModificationTime()).thenReturn(targetTime + 1);
+    Set<PendingUpdate> pendingUpdates = new HashSet<>(Arrays.asList(oldPendingUpdate, newPendingUpdate));
+
+    // Add the list of pending updates to the LAO
+    Lao createdLao = laoRepo.getLaoByChannel(LAO_CHANNEL1);
+    createdLao.setPendingUpdates(pendingUpdates);
+
+    // Create the stateLao message
+    StateLao stateLao =
+        new StateLao(
+            CREATE_LAO1.getId(),
+            CREATE_LAO1.getName(),
+            CREATE_LAO1.getCreation(),
+            targetTime,
+            CREATE_LAO1.getOrganizer(),
+            createLaoMessage.getMessageId(),
+            new HashSet<>(),
+            new ArrayList<>());
+    MessageGeneral stateMessage = new MessageGeneral(SENDER_KEY1, stateLao, gson);
+
+    // Call the message handler
+    messageHandler.handleMessage(messageSender, LAO_CHANNEL1, stateMessage);
+
+    // The old pending update is removed in the expected pending list
+    Set<PendingUpdate> expectedPending = new HashSet<>(Arrays.asList(newPendingUpdate));
+    assertEquals(expectedPending, laoRepo.getLaoByChannel(LAO_CHANNEL1).getPendingUpdates());
+  }
+
+  @Test
+  public void testHandleStateLaoInvalidMessageId(){
+    // Create some message that has an invalid ID
     MessageGeneral createLaoMessage2 = new MessageGeneral(SENDER_KEY1, CREATE_LAO2, gson);
+
     // Create the state LAO message
     StateLao stateLao =
         new StateLao(
@@ -362,13 +381,9 @@ public class LaoHandlerTest {
   }
 
   @Test
-  public void testHandleStateLaoInvalidSignatures()
-      throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-          UnknownElectionException, NoRollCallException {
-    PublicKeySignaturePair invalidKeyPair =
-        new PublicKeySignaturePair(generatePublicKey(), generateSignature());
-    List<PublicKeySignaturePair> modificationSignatures = new ArrayList<>();
-    modificationSignatures.add(invalidKeyPair);
+  public void testHandleStateLaoInvalidSignatures() {
+    // Create a list with invalid modification signature
+    List<PublicKeySignaturePair> modificationSignatures = getInvalidModificationSignatures();
 
     // Create the a state LAO message with invalid modification signatures
     StateLao stateLao =
@@ -378,7 +393,7 @@ public class LaoHandlerTest {
             CREATE_LAO1.getCreation(),
             Instant.now().getEpochSecond(),
             CREATE_LAO1.getOrganizer(),
-            createLaoMessage1.getMessageId(),
+            createLaoMessage.getMessageId(),
             new HashSet<>(),
             modificationSignatures);
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, stateLao, gson);
@@ -397,7 +412,6 @@ public class LaoHandlerTest {
     GreetLao greetLao =
         new GreetLao(
             lao.getId(), RANDOM_KEY, RANDOM_ADDRESS, Collections.singletonList(RANDOM_PEER));
-
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, greetLao, gson);
 
     // Call the handler
@@ -416,5 +430,21 @@ public class LaoHandlerTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL1, message_invalid));
+  }
+
+  private static List<PublicKeySignaturePair> getValidModificationSignatures(MessageGeneral messageGeneral){
+    PublicKeySignaturePair validKeyPair = null;
+    try {
+      validKeyPair = new PublicKeySignaturePair(SENDER1, SENDER_KEY1.sign(messageGeneral.getMessageId()));
+    } catch (GeneralSecurityException e) {
+      throw new RuntimeException(e);
+    }
+    return Arrays.asList(validKeyPair);
+  }
+
+  private static List<PublicKeySignaturePair> getInvalidModificationSignatures(){
+    PublicKeySignaturePair invalidKeyPair =
+        new PublicKeySignaturePair(generatePublicKey(), generateSignature());
+    return new ArrayList<>(Arrays.asList(invalidKeyPair));
   }
 }
