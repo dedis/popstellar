@@ -50,6 +50,6 @@ public class PendingUpdateTest {
   public void testCompareTo() {
     assertTrue(PENDING_UPDATE1.compareTo(PENDING_UPDATE3) < 0);
     assertTrue(PENDING_UPDATE3.compareTo(PENDING_UPDATE1) > 0);
-    assertEquals(PENDING_UPDATE1.compareTo(PENDING_UPDATE2), 0);
+    assertEquals(0, PENDING_UPDATE1.compareTo(PENDING_UPDATE2));
   }
 }
