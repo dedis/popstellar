@@ -48,7 +48,6 @@ public class KeysetModule {
   @Singleton
   public static AndroidKeysetManager provideDeviceKeysetManager(
       @ApplicationContext Context applicationContext) {
-
     try {
       SharedPreferences.Editor editor =
           applicationContext
@@ -70,14 +69,14 @@ public class KeysetModule {
                       .withMasterKeyUri(DEVICE_MASTER_KEY_URI)
                       .build();
                 } catch (GeneralSecurityException | IOException e) {
-                  throw new SecurityException(
-                      "Could not retrieve the device keyset from the app", e);
+                  throw new SecurityException(e);
                 }
               },
               Executors.newSingleThreadExecutor());
 
       return future.join();
     } catch (GeneralSecurityException e) {
+      Log.e(TAG, "Could not retrieve the device keyset from the app", e);
       throw new SecurityException("Could not retrieve the device keyset from the app", e);
     }
   }
@@ -90,12 +89,25 @@ public class KeysetModule {
     try {
       AesGcmKeyManager.register(true);
       AeadConfig.register();
-      return new AndroidKeysetManager.Builder()
-          .withSharedPref(applicationContext, WALLET_KEYSET_NAME, WALLET_SHARED_PREF_FILE_NAME)
-          .withKeyTemplate(KeyTemplates.get("AES256_GCM_RAW"))
-          .withMasterKeyUri(WALLET_MASTER_KEY_URI)
-          .build();
-    } catch (GeneralSecurityException | IOException e) {
+
+      CompletableFuture<AndroidKeysetManager> future =
+          CompletableFuture.supplyAsync(
+              () -> {
+                try {
+                  return new AndroidKeysetManager.Builder()
+                      .withSharedPref(
+                          applicationContext, WALLET_KEYSET_NAME, WALLET_SHARED_PREF_FILE_NAME)
+                      .withKeyTemplate(KeyTemplates.get("AES256_GCM_RAW"))
+                      .withMasterKeyUri(WALLET_MASTER_KEY_URI)
+                      .build();
+                } catch (GeneralSecurityException | IOException e) {
+                  throw new SecurityException(e);
+                }
+              },
+              Executors.newSingleThreadExecutor());
+
+      return future.join();
+    } catch (GeneralSecurityException e) {
       Log.e(TAG, "Could not retrieve the wallet keyset from the app", e);
       throw new SecurityException("Could not retrieve the wallet keyset from the app", e);
     }

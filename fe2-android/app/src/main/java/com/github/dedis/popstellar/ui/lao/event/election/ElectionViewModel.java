@@ -216,7 +216,6 @@ public class ElectionViewModel extends AndroidViewModel {
                 return new CastVote(encryptedVotes, election.getId(), laoView.getId());
               },
               Executors.newSingleThreadExecutor());
-
       return future.join();
     }
   }
