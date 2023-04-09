@@ -1,9 +1,9 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import static com.github.dedis.popstellar.model.objects.event.EventState.*;
-
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -12,8 +12,12 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
+
 import java.util.*;
+
 import javax.inject.Inject;
+
+import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
 /** Election messages handler class */
 public final class ElectionHandler {
@@ -67,7 +71,8 @@ public final class ElectionHandler {
     context
         .getMessageSender()
         .subscribe(election.getChannel())
-        .doOnError(err -> Log.e(TAG, "An error occurred while subscribing to election channel", err))
+        .doOnError(
+            err -> Log.e(TAG, "An error occurred while subscribing to election channel", err))
         .onErrorComplete()
         .subscribe();
 

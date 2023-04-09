@@ -38,8 +38,7 @@ public class PendingUpdate implements Comparable<PendingUpdate> {
       return false;
     }
     PendingUpdate that = (PendingUpdate) o;
-    return modificationTime == that.modificationTime &&
-        Objects.equals(messageId, that.messageId);
+    return modificationTime == that.modificationTime && Objects.equals(messageId, that.messageId);
   }
 
   @Override

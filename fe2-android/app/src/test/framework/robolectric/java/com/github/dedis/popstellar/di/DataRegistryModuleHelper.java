@@ -53,7 +53,10 @@ public class DataRegistryModuleHelper {
   }
 
   public static DataRegistry buildRegistry(
-      LAORepository laoRepository, ElectionRepository electionRepo, KeyManager keyManager, MessageRepository messageRepo) {
+      LAORepository laoRepository,
+      ElectionRepository electionRepo,
+      KeyManager keyManager,
+      MessageRepository messageRepo) {
     return buildRegistry(
         laoRepository,
         new SocialMediaRepository(),

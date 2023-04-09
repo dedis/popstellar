@@ -51,8 +51,8 @@ public class LaoHandlerTest {
   private static final String ID1 = Lao.generateLaoId(SENDER1, CREATION, NAME1);
   private static final String ID2 = Lao.generateLaoId(SENDER1, CREATION, NAME2);
   private static final String ID3 = Lao.generateLaoId(SENDER1, CREATION, NAME3);
-  private static final List<PublicKey> WITNESS = new ArrayList<>(
-      Collections.singletonList(SENDER2));
+  private static final List<PublicKey> WITNESS =
+      new ArrayList<>(Collections.singletonList(SENDER2));
   private static final List<PublicKey> WITNESSES = new ArrayList<>(Arrays.asList(SENDER1, SENDER2));
   private static final CreateLao CREATE_LAO1 =
       new CreateLao(ID1, NAME1, CREATION, SENDER1, new ArrayList<>());
@@ -76,10 +76,8 @@ public class LaoHandlerTest {
   private Lao lao;
   private MessageGeneral createLaoMessage;
 
-  @Mock
-  MessageSender messageSender;
-  @Mock
-  KeyManager keyManager;
+  @Mock MessageSender messageSender;
+  @Mock KeyManager keyManager;
 
   @Before
   public void setup() throws GeneralSecurityException, IOException {
@@ -110,7 +108,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleCreateLaoOrganizer()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-      UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create the message (new CreateLao) and call the message handler
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, CREATE_LAO2, gson);
     messageHandler.handleMessage(messageSender, LAO_CHANNEL2, message);
@@ -137,7 +135,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleCreateLaoWitness()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-      UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Main public key is a witness now, and not the organizer
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER2);
 
@@ -167,7 +165,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleUpdateLaoNewName()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-      UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create the update LAO message with new LAO name
     UpdateLao updateLao =
         new UpdateLao(
@@ -196,7 +194,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleUpdateLaoNewWitness()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-      UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Set LAO to have one witness
     lao.setWitnesses(new HashSet<>(WITNESS));
 
@@ -213,8 +211,8 @@ public class LaoHandlerTest {
     // Create the expected WitnessMessage and PendingUpdate
     WitnessMessage expectedMessage =
         updateLaoWitnessesWitnessMessage(message.getMessageId(), updateLao, new LaoView(lao));
-    PendingUpdate pendingUpdate = new PendingUpdate(updateLao.getLastModified(),
-        message.getMessageId());
+    PendingUpdate pendingUpdate =
+        new PendingUpdate(updateLao.getLastModified(), message.getMessageId());
     HashSet<PendingUpdate> expectedPendingUpdateSet = new HashSet<>();
     expectedPendingUpdateSet.add(pendingUpdate);
 
@@ -229,8 +227,8 @@ public class LaoHandlerTest {
     assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
 
     // Check the PendingUpdate has been added
-    assertEquals(expectedPendingUpdateSet,
-        laoRepo.getLaoByChannel(LAO_CHANNEL1).getPendingUpdates());
+    assertEquals(
+        expectedPendingUpdateSet, laoRepo.getLaoByChannel(LAO_CHANNEL1).getPendingUpdates());
   }
 
   @Test
@@ -273,10 +271,10 @@ public class LaoHandlerTest {
   @Test
   public void testHandleStateLaoOrganizer()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-      UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create a valid list of modification signatures
-    List<PublicKeySignaturePair> modificationSignatures = getValidModificationSignatures(
-        createLaoMessage);
+    List<PublicKeySignaturePair> modificationSignatures =
+        getValidModificationSignatures(createLaoMessage);
 
     // Create the state LAO message
     StateLao stateLao =
@@ -304,7 +302,7 @@ public class LaoHandlerTest {
   @Test
   public void testHandleStateLaoWitness()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-      UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Main public key is a witness now, and not the organizer
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER2);
 
@@ -334,15 +332,15 @@ public class LaoHandlerTest {
   @Test
   public void testHandleStateLaoRemovesStalePendingUpdates()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-      UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create a list of 2 pending updates: one newer and one older than the stateLao message
     long targetTime = CREATE_LAO1.getCreation() + 5;
     PendingUpdate oldPendingUpdate = mock(PendingUpdate.class);
     PendingUpdate newPendingUpdate = mock(PendingUpdate.class);
     when(oldPendingUpdate.getModificationTime()).thenReturn(targetTime - 1);
     when(newPendingUpdate.getModificationTime()).thenReturn(targetTime + 1);
-    Set<PendingUpdate> pendingUpdates = new HashSet<>(
-        Arrays.asList(oldPendingUpdate, newPendingUpdate));
+    Set<PendingUpdate> pendingUpdates =
+        new HashSet<>(Arrays.asList(oldPendingUpdate, newPendingUpdate));
 
     // Add the list of pending updates to the LAO
     Lao createdLao = laoRepo.getLaoByChannel(LAO_CHANNEL1);
@@ -420,7 +418,7 @@ public class LaoHandlerTest {
   @Test()
   public void testGreetLao()
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
-      UnknownElectionException, NoRollCallException {
+          UnknownElectionException, NoRollCallException {
     // Create the Greet Lao
     GreetLao greetLao =
         new GreetLao(
@@ -449,8 +447,8 @@ public class LaoHandlerTest {
       MessageGeneral messageGeneral) {
     PublicKeySignaturePair validKeyPair;
     try {
-      validKeyPair = new PublicKeySignaturePair(SENDER1,
-          SENDER_KEY1.sign(messageGeneral.getMessageId()));
+      validKeyPair =
+          new PublicKeySignaturePair(SENDER1, SENDER_KEY1.sign(messageGeneral.getMessageId()));
     } catch (GeneralSecurityException e) {
       throw new RuntimeException(e);
     }

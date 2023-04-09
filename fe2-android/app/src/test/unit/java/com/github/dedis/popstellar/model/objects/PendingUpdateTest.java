@@ -13,14 +13,14 @@ public class PendingUpdateTest {
   private static final MessageID MESSAGE_ID2 = Base64DataUtils.generateMessageID();
   private static final long MODIFICATION1 = 1000L;
   private static final long MODIFICATION2 = 2000L;
-  private static final PendingUpdate PENDING_UPDATE1 = new PendingUpdate(MODIFICATION1,
-      MESSAGE_ID1);
-  private static final PendingUpdate PENDING_UPDATE2 = new PendingUpdate(MODIFICATION1,
-      MESSAGE_ID1);
-  private static final PendingUpdate PENDING_UPDATE3 = new PendingUpdate(MODIFICATION2,
-      MESSAGE_ID1);
-  private static final PendingUpdate PENDING_UPDATE4 = new PendingUpdate(MODIFICATION1,
-      MESSAGE_ID2);
+  private static final PendingUpdate PENDING_UPDATE1 =
+      new PendingUpdate(MODIFICATION1, MESSAGE_ID1);
+  private static final PendingUpdate PENDING_UPDATE2 =
+      new PendingUpdate(MODIFICATION1, MESSAGE_ID1);
+  private static final PendingUpdate PENDING_UPDATE3 =
+      new PendingUpdate(MODIFICATION2, MESSAGE_ID1);
+  private static final PendingUpdate PENDING_UPDATE4 =
+      new PendingUpdate(MODIFICATION1, MESSAGE_ID2);
 
   @Test
   public void testGetModificationTime() {
@@ -52,5 +52,4 @@ public class PendingUpdateTest {
     assertTrue(PENDING_UPDATE3.compareTo(PENDING_UPDATE1) > 0);
     assertEquals(PENDING_UPDATE1.compareTo(PENDING_UPDATE2), 0);
   }
-
 }
