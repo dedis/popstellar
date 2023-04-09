@@ -3,6 +3,8 @@ package com.github.dedis.popstellar.model.objects;
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 
+import java.util.Objects;
+
 @Immutable
 public class PendingUpdate implements Comparable<PendingUpdate> {
 
@@ -25,5 +27,23 @@ public class PendingUpdate implements Comparable<PendingUpdate> {
   @Override
   public int compareTo(PendingUpdate o) {
     return Long.compare(modificationTime, o.modificationTime);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PendingUpdate that = (PendingUpdate) o;
+    return modificationTime == that.modificationTime &&
+        Objects.equals(messageId, that.messageId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(modificationTime, messageId);
   }
 }

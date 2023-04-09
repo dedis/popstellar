@@ -19,7 +19,9 @@ import javax.inject.Inject;
 
 import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 
-/** Election messages handler class */
+/**
+ * Election messages handler class
+ */
 public final class ElectionHandler {
 
   public static final String TAG = ElectionHandler.class.getSimpleName();
@@ -39,7 +41,7 @@ public final class ElectionHandler {
   /**
    * Process an ElectionSetup message.
    *
-   * @param context the HandlerContext of the message
+   * @param context       the HandlerContext of the message
    * @param electionSetup the message that was received
    */
   public void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup)
@@ -56,7 +58,7 @@ public final class ElectionHandler {
 
     Election election =
         new Election.ElectionBuilder(
-                laoView.getId(), electionSetup.getCreation(), electionSetup.getName())
+            laoView.getId(), electionSetup.getCreation(), electionSetup.getName())
             .setElectionVersion(electionSetup.getElectionVersion())
             .setElectionQuestions(electionSetup.getQuestions())
             .setStart(electionSetup.getStartTime())
@@ -85,11 +87,11 @@ public final class ElectionHandler {
   /**
    * Process an ElectionResult message.
    *
-   * @param context the HandlerContext of the message
+   * @param context        the HandlerContext of the message
    * @param electionResult the message that was received
    */
   public void handleElectionResult(HandlerContext context, ElectionResult electionResult)
-      throws DataHandlingException, UnknownElectionException {
+      throws UnknownElectionException {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handling election result");
@@ -124,7 +126,7 @@ public final class ElectionHandler {
   /**
    * Process an OpenElection message.
    *
-   * @param context the HandlerContext of the message
+   * @param context      the HandlerContext of the message
    * @param openElection the message that was received
    */
   @SuppressWarnings("unused")
@@ -152,7 +154,7 @@ public final class ElectionHandler {
   /**
    * Process an ElectionEnd message.
    *
-   * @param context the HandlerContext of the message
+   * @param context     the HandlerContext of the message
    * @param electionEnd the message that was received
    */
   @SuppressWarnings("unused")
@@ -170,7 +172,7 @@ public final class ElectionHandler {
   /**
    * Process a CastVote message.
    *
-   * @param context the HandlerContext of the message
+   * @param context  the HandlerContext of the message
    * @param castVote the message that was received
    */
   public void handleCastVote(HandlerContext context, CastVote castVote)
@@ -246,7 +248,7 @@ public final class ElectionHandler {
   /**
    * Simple way to handle a election key, add the given key to the given election
    *
-   * @param context context
+   * @param context     context
    * @param electionKey key to add
    */
   public void handleElectionKey(HandlerContext context, ElectionKey electionKey)
