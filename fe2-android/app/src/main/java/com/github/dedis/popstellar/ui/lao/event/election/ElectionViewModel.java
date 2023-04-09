@@ -202,7 +202,7 @@ public class ElectionViewModel extends AndroidViewModel {
     if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
       return new CastVote(votes, election.getId(), laoView.getId());
     } else {
-      isEncrypting.postValue(true);
+      isEncrypting.setValue(true);
       CompletableFuture<CastVote> future =
           CompletableFuture.supplyAsync(
               () -> {
@@ -216,6 +216,7 @@ public class ElectionViewModel extends AndroidViewModel {
                 return new CastVote(encryptedVotes, election.getId(), laoView.getId());
               },
               Executors.newSingleThreadExecutor());
+
       return future.join();
     }
   }
