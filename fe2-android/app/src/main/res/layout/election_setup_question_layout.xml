@@ -25,7 +25,7 @@
     android:layout_alignParentEnd="true"
     android:layout_alignParentBottom="true"
     android:layout_centerVertical="true"
-    android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
+    android:layout_marginEnd="@dimen/election_setup_text_field_margin_lateral"
     android:text="@string/voting_method_spinner_text"
     android:textColor="#7E000000"
     android:textStyle="bold"
@@ -39,7 +39,7 @@
     android:layout_height="@dimen/election_setup_spinner_height"
     android:background="@android:drawable/btn_dropdown"
     android:clickable="true"
-    android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
+    android:layout_marginEnd="@dimen/election_setup_text_field_margin_lateral"
     android:spinnerMode="dropdown"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/voting_method" />
@@ -53,21 +53,21 @@
     android:textColor="#7E000000"
     android:textStyle="bold"
     app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
+    android:layout_marginEnd="@dimen/election_setup_text_field_margin_lateral"
     app:layout_constraintTop_toBottomOf="@+id/election_setup_spinner"
     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
   <ScrollView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
+    android:layout_marginStart="@dimen/election_setup_text_field_margin_lateral"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/add_ballot_option">
+    app:layout_constraintTop_toBottomOf="@+id/write_in">
 
     <LinearLayout
       android:id="@+id/election_setup_ballot_options_ll"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="wrap_content"
       android:orientation="vertical" />
   </ScrollView>
 
@@ -76,9 +76,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAllCaps="false"
-    android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
+    android:layout_marginStart="@dimen/election_setup_text_field_margin_lateral"
     android:text="@string/add_ballot_options_button_text"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/election_question" />
+    app:layout_constraintTop_toBottomOf="@+id/voting_method" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
