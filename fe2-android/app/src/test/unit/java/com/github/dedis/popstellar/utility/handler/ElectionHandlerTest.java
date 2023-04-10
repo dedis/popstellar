@@ -40,7 +40,8 @@ import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.e
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElectionHandlerTest {
@@ -206,15 +207,6 @@ public class ElectionHandlerTest {
 
     // Call the message handler
     messageHandler.handleMessage(messageSender, electionChannel, message);
-  }
-
-  private void setMessageRepoReturns(MessageGeneral message) {
-    messageRepo = mock(MessageRepository.class);
-    when(messageRepo.getMessage(any())).thenReturn(message);
-    DataRegistry dataRegistry =
-        DataRegistryModuleHelper.buildRegistry(laoRepo, electionRepo, keyManager, messageRepo);
-    gson = JsonModule.provideGson(dataRegistry);
-    messageHandler = new MessageHandler(messageRepo, dataRegistry);
   }
 
   @Test
