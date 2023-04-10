@@ -396,33 +396,51 @@ public class ElectionHandlerTest {
   }
 
   @Test
-  public void castVoteFailsOnPreviousDataNull()
+  public void castVoteFailsOnPreviousMessageDataNull()
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
           DataHandlingException, NoRollCallException {
+    // This test checks that the handler fails if the messageMap of the election already has a
+    // message (previously sent by the same sender) that contains null data.
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
 
+    // Create an invalid message with null data and add it to the message repo
     MessageGeneral nullData = new MessageGeneral(SENDER_KEY, null, gson);
-    setMessageRepoReturns(nullData);
+    messageRepo.addMessage(nullData);
 
-    handleCastVote(VOTE1, SENDER_KEY, OPENED_AT);
+    // Update the messageMap in this election to contain the invalid message
+    Election prevElection = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+    Election updatedElection =
+        prevElection.builder().updateMessageMap(SENDER, nullData.getMessageId()).build();
+    electionRepo.updateElection(updatedElection);
+
+    // Check that handling the message fails
     assertThrows(
         IllegalStateException.class, () -> handleCastVote(VOTE1, SENDER_KEY, OPENED_AT + 1));
   }
 
   @Test
-  public void castVoteFailsOnPreviousDataInvalid()
+  public void castVoteFailsOnPreviousMessageDataInvalid()
       throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
           DataHandlingException, NoRollCallException {
+    // This test checks that the handler fails if the messageMap of the election already has a
+    // message (previously sent by the same sender) that contains data that is not a CastVote.
     handleElectionSetup(OPEN_BALLOT_ELECTION, LAO_CHANNEL);
     handleElectionKey(OPEN_BALLOT_ELECTION, ELECTION_KEY);
     handleElectionOpen(OPEN_BALLOT_ELECTION);
 
+    // Create an invalid message with data that is not a CastVote and add it to the message repo
     MessageGeneral invalidData = new MessageGeneral(SENDER_KEY, CREATE_LAO, gson);
-    setMessageRepoReturns(invalidData);
+    messageRepo.addMessage(invalidData);
 
-    handleCastVote(VOTE1, SENDER_KEY, OPENED_AT);
+    // Update the messageMap in this election to contain the invalid message
+    Election prevElection = electionRepo.getElectionByChannel(OPEN_BALLOT_ELECTION.getChannel());
+    Election updatedElection =
+        prevElection.builder().updateMessageMap(SENDER, invalidData.getMessageId()).build();
+    electionRepo.updateElection(updatedElection);
+
+    // Check that handling the message fails
     assertThrows(
         DataHandlingException.class, () -> handleCastVote(VOTE1, SENDER_KEY, OPENED_AT + 1));
   }
