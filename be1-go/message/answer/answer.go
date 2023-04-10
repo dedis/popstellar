@@ -2,9 +2,8 @@ package answer
 
 import (
 	"encoding/json"
-	message "popstellar/message"
-
 	"golang.org/x/xerrors"
+	message "popstellar/message"
 )
 
 // Answer defines the JSON RPC answer message
@@ -16,10 +15,11 @@ type Answer struct {
 	Error  *Error  `json:"error,omitempty"`
 }
 
-// Result can be either a 0 int or a slice of messages
+// Result can be either a 0 int, a slice of messages or an array of MessageIdsByChannelId objects
 type Result struct {
-	isEmpty bool
-	data    []json.RawMessage
+	isEmpty           bool
+	data              []json.RawMessage
+	MessagesByChannel map[string][]json.RawMessage
 }
 
 // UnmarshalJSON implements json.Unmarshaler
@@ -33,9 +33,12 @@ func (r *Result) UnmarshalJSON(buf []byte) error {
 
 	err := json.Unmarshal(buf, &r.data)
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal data: %v", err)
+		err = json.Unmarshal(buf, &r.MessagesByChannel)
 	}
 
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal data: %v", err)
+	}
 	return nil
 }
 
@@ -47,4 +50,9 @@ func (r Result) IsEmpty() bool {
 // GetData returns the answer data. It can be nil in case the return is empty.
 func (r *Result) GetData() []json.RawMessage {
 	return r.data
+}
+
+// GetMessagesByChannel returns the array of objects mapping a channel with its messages.
+func (r *Result) GetMessagesByChannel() map[string][]json.RawMessage {
+	return r.MessagesByChannel
 }
