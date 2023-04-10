@@ -243,7 +243,7 @@ func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesBy
 	}
 
 	s.log.Info().
-		//Str("to", s.conn.RemoteAddr().String()).
+		Str("to", s.id).
 		Str("msg", string(answerBuf)).
 		Msg("send result")
 	s.send <- answerBuf
