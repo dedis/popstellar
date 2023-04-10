@@ -15,7 +15,7 @@ type Answer struct {
 	Error  *Error  `json:"error,omitempty"`
 }
 
-// Result can be either a 0 int, a slice of messages or an array of MessageIdsByChannelId objects
+// Result can be either a 0 int, a slice of messages or a map of messages associated to a channel ID
 type Result struct {
 	isEmpty           bool
 	data              []json.RawMessage
@@ -32,14 +32,16 @@ func (r *Result) UnmarshalJSON(buf []byte) error {
 	}
 
 	err := json.Unmarshal(buf, &r.data)
-	if err != nil {
-		err = json.Unmarshal(buf, &r.MessagesByChannel)
+	if err == nil {
+		return nil
 	}
 
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal data: %v", err)
+	err = json.Unmarshal(buf, &r.MessagesByChannel)
+	if err == nil {
+		return nil
 	}
-	return nil
+
+	return xerrors.Errorf("failed to unmarshal data: %v", err)
 }
 
 // IsEmpty tells if there are potentially 0 or more messages in the result.

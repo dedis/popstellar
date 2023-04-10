@@ -54,6 +54,8 @@ func Test_SendResult_Messages_By_Channel_Id(t *testing.T) {
 
 	require.False(t, receivedAnswer.Result.IsEmpty())
 
+	require.Equal(t, 1, *receivedAnswer.ID)
+
 	messagesByChannel := receivedAnswer.Result.GetMessagesByChannel()
 	for channelId, msgs := range messagesByChannel {
 		for _, msg := range msgs {

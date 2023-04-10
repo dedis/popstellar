@@ -54,7 +54,7 @@ type Socket interface {
 	// nil, empty, or filled if the result is a slice of messages.
 	// MissingMessagesByChannel can be nil or filled if the result is a map
 	// associating a channel to a slice of messages. In case both are nil
-	// it sends the "0" return value.
+	// it sends the "0" return value. You can either send res or missingMessagesByChannel, not both.
 	SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message)
 }
 
