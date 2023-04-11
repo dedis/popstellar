@@ -1,17 +1,17 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import androidx.annotation.NonNull;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.*;
+import static com.github.dedis.popstellar.utility.DataCheckUtils.checkBase64;
 
+import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.Immutable;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.*;
-
-import static com.github.dedis.popstellar.utility.DataCheckUtils.*;
 
 /** Data sent to update the lao specifications */
 @Immutable
@@ -42,9 +42,6 @@ public class UpdateLao extends Data {
       long lastModified,
       @NonNull Set<PublicKey> witnesses) {
     // witnesses are checked to be base64 at deserialization, but not organizer
-    checkBase64(organizer.getEncoded(), "organizer");
-    checkValidOrderedTimes(creation, lastModified);
-    checkStringNotEmpty(name, "name");
     this.id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;
@@ -52,6 +49,24 @@ public class UpdateLao extends Data {
     if (witnesses != null) {
       this.witnesses.addAll(witnesses);
     }
+    MessageValidator validator =
+        new MessageValidator() {
+          @Override
+          protected void checkBase64() {
+            checkBase64(organizer.getEncoded(), "organizer");
+          }
+
+          @Override
+          protected void checkStringsNotEmpty() {
+            checkStringNotEmpty(name, "name");
+          }
+
+          @Override
+          protected void checkValidOrderedTimes() {
+            checkValidOrderedTimes(creation, lastModified);
+          }
+        };
+    validator.checkValidity();
   }
 
   @Override
