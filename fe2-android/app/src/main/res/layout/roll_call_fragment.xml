@@ -139,7 +139,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="@string/roll_call_attendees"
-      app:layout_constraintBottom_toTopOf="@+id/list_view_attendees"
+      app:layout_constraintBottom_toTopOf="@+id/roll_call_management_button"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/roll_call_end_time"
@@ -154,14 +154,16 @@
       android:layout_marginEnd="@dimen/roll_call_attendees_margin"
       android:layout_centerHorizontal="true"
       android:fadeScrollbars="true"
-      android:scrollbarSize="@dimen/event_layout_arrow_end_margin"
+      android:scrollbarSize="@dimen/roll_call_attendees_scrollbar_size"
       android:scrollbars="vertical"
       android:scrollingCache="true"
       android:smoothScrollbar="true"
       app:layout_constraintBottom_toTopOf="@+id/roll_call_management_button"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="@+id/roll_call_pk_qr_code" />
+      app:layout_constraintTop_toBottomOf="@+id/roll_call_attendees_text"
+      app:layout_constraintVertical_bias="@dimen/roll_call_attendees_list_vertical_bias" />
+    />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
