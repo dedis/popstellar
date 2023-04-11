@@ -2,6 +2,7 @@ package answer
 
 import (
 	"encoding/json"
+	"fmt"
 	"golang.org/x/xerrors"
 	message "popstellar/message"
 )
@@ -31,17 +32,21 @@ func (r *Result) UnmarshalJSON(buf []byte) error {
 		return nil
 	}
 
-	err := json.Unmarshal(buf, &r.data)
-	if err == nil {
+	errData := json.Unmarshal(buf, &r.data)
+	if errData == nil {
 		return nil
 	}
 
-	err = json.Unmarshal(buf, &r.MessagesByChannel)
-	if err == nil {
+	errMsg := fmt.Sprintf("failed to unmarshal into r.data: %v", errData)
+
+	errMessagesByChannel := json.Unmarshal(buf, &r.MessagesByChannel)
+	if errMessagesByChannel == nil {
 		return nil
 	}
 
-	return xerrors.Errorf("failed to unmarshal data: %v", err)
+	errMsg += fmt.Sprintf("failed to unmarshal into r.MessagesByChannel: %v", errMessagesByChannel)
+
+	return xerrors.Errorf("failed to unmarshal result: %s", errMsg)
 }
 
 // IsEmpty tells if there are potentially 0 or more messages in the result.
