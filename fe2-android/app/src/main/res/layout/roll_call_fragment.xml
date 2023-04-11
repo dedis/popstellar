@@ -163,7 +163,6 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/roll_call_attendees_text"
       app:layout_constraintVertical_bias="@dimen/roll_call_attendees_list_vertical_bias" />
-    />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
