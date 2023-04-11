@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
@@ -82,7 +81,7 @@ public class TokenFragment extends Fragment {
       Bitmap bitmap =
           QRCode.from(gson.toJson(data))
               .withSize(Constants.QR_SIDE, Constants.QR_SIDE)
-              .withColor(ActivityUtils.getQRCodeColor(getActivity()), Color.TRANSPARENT)
+              .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
               .bitmap();
       binding.tokenQrCode.setImageBitmap(bitmap);
       binding.tokenTextView.setText(poPToken.getPublicKey().getEncoded());
@@ -115,12 +114,7 @@ public class TokenFragment extends Fragment {
     LaoActivity.addBackNavigationCallback(
         requireActivity(),
         getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            Log.d(TAG, "Back pressed, going to token list");
-            TokenListFragment.openFragment(getParentFragmentManager());
-          }
-        });
+        ActivityUtils.buildBackButtonCallback(
+            TAG, "token list", () -> TokenListFragment.openFragment(getParentFragmentManager())));
   }
 }

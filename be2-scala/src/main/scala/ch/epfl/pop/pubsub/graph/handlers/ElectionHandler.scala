@@ -54,7 +54,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
       _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
-      _ <- dbActor ? DbActor.CreateElectionData(electionId, keyPair)
+      _ <- dbActor ? DbActor.CreateElectionData(rpcMessage.extractLaoId, electionId, keyPair)
     } yield (data, electionId, keyPair, electionChannel)
 
     Await.ready(combined, duration).value match {
@@ -108,7 +108,9 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
     val electionChannel: Channel = rpcMessage.getParamsChannel
     val combined = for {
-      electionQuestionResults <- createElectionQuestionResults(electionChannel)
+      (_, Some(laoId)) <- extractLaoChannel(rpcMessage, "There is an issue with the id of the LAO")
+
+      electionQuestionResults <- createElectionQuestionResults(electionChannel, laoId)
       // propagate the endElection message
       _ <- dbAskWritePropagate(rpcMessage)
       // data to be broadcast
@@ -129,7 +131,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
     * @return
     *   the list of ElectionQuestionResult wrapped in a [[scala.concurrent.Future]]
     */
-  private def createElectionQuestionResults(electionChannel: Channel): Future[List[ElectionQuestionResult]] = {
+  private def createElectionQuestionResults(electionChannel: Channel, laoId: Hash): Future[List[ElectionQuestionResult]] = {
     for {
       // get the last votes of the CastVotes messages
       castsVotesElections <- electionChannel.getLastVotes(dbActor)
@@ -137,7 +139,7 @@ class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
       setupMessage <- electionChannel.getSetupMessage(dbActor)
       // associate the questions ids to their ballots
       questionToBallots = setupMessage.questions.map(question => question.id -> question.ballot_options).toMap
-      DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(setupMessage.id)
+      DbActorReadElectionDataAck(electionData) <- dbActor ? DbActor.ReadElectionData(laoId, setupMessage.id)
     } yield {
       // set up the table of results
       val resultsTable = mutable.HashMap.from(for {
