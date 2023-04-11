@@ -33,7 +33,7 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
   private final val rpcReq4: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithMessage2, id)
   private final val rpcReq5: JsonRpcRequest = JsonRpcRequest(rpc, methodType2, paramsWithMap, None)
 
-  test("Constructor works for regular Params and ParamsWithMessage") {
+  test("Constructor works for regular Params, ParamsWithMessage and ParamsWithMap") {
 
     rpcReq.jsonrpc should equal(rpc)
     rpcReq.method should equal(methodType)
@@ -41,6 +41,7 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
     rpcReq.id should equal(id)
 
     rpcReq2.params should equal(paramsWithMessage)
+    rpcReq5.params should equal(paramsWithMap)
   }
 
   test("getParams returns right value") {
