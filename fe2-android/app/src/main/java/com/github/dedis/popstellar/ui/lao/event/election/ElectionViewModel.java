@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.util.List;
@@ -184,6 +185,20 @@ public class ElectionViewModel extends AndroidViewModel {
               Channel electionChannel = election.getChannel();
               return networkManager.getMessageSender().publish(token, electionChannel, vote);
             });
+  }
+
+  /**
+   * Function to enable the user to vote checking they have a valid pop token
+   *
+   * @return true if they can vote, false otherwise
+   */
+  public boolean canVote() {
+    try {
+      keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
+    } catch (KeyException e) {
+      return false;
+    }
+    return true;
   }
 
   @NonNull
