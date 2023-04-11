@@ -71,7 +71,8 @@ public final class ElectionHandler {
     context
         .getMessageSender()
         .subscribe(election.getChannel())
-        .doOnError(err -> Log.e(TAG, "On error occured while subscribing to election channel", err))
+        .doOnError(
+            err -> Log.e(TAG, "An error occurred while subscribing to election channel", err))
         .onErrorComplete()
         .subscribe();
 
@@ -89,15 +90,15 @@ public final class ElectionHandler {
    * @param electionResult the message that was received
    */
   public void handleElectionResult(HandlerContext context, ElectionResult electionResult)
-      throws DataHandlingException, UnknownElectionException {
+      throws UnknownElectionException {
     Channel channel = context.getChannel();
 
     Log.d(TAG, "handling election result");
 
     List<ElectionResultQuestion> resultsQuestions = electionResult.getElectionQuestionResults();
     Log.d(TAG, "size of resultsQuestions is " + resultsQuestions.size());
-    if (resultsQuestions.isEmpty())
-      throw new DataHandlingException(electionResult, "the questions results is empty");
+    // No need to check here that resultsQuestions is not empty, as it is already done at the
+    // creation of the ElectionResult Data
 
     Election election =
         electionRepository
