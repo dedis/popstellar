@@ -1,6 +1,5 @@
-import { PoPchaParamList } from '../../../core/navigation/typing/PoPchaParamList';
-import { NavigationDrawerScreen, NavigationScreen } from "../../../core/navigation/typing/Screen";
-import { LaoParamList } from "../../../core/navigation/typing/LaoParamList";
+import { LaoParamList } from '../../../core/navigation/typing/LaoParamList';
+import { NavigationDrawerScreen } from '../../../core/navigation/typing/Screen';
 
 export namespace PoPchaFeature {
   // TODO: add the configuration interface
