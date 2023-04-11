@@ -92,6 +92,10 @@ public class ElectionFragment extends Fragment {
 
     managementVisibilityMap = buildManagementVisibilityMap();
 
+    if (!electionViewModel.canVote()) {
+      resetEnablingMap();
+    }
+
     managementButton.setOnClickListener(
         v -> {
           Election election;
@@ -187,6 +191,12 @@ public class ElectionFragment extends Fragment {
 
     handleBackNav();
     return view;
+  }
+
+  /** Set to not enabled the button "Vote" */
+  private void resetEnablingMap() {
+    actionEnablingMap.put(EventState.CREATED, false);
+    actionEnablingMap.put(EventState.OPENED, false);
   }
 
   @Override

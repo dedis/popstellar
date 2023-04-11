@@ -35,6 +35,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
@@ -209,7 +210,21 @@ public class RollCallFragment extends Fragment {
     boolean isOrganizer = laoViewModel.isOrganizer();
 
     binding.rollCallFragmentTitle.setText(rollCall.getName());
-    binding.rollCallManagementButton.setVisibility(isOrganizer ? View.VISIBLE : View.GONE);
+
+    // Set visibility of management button as Gone by default
+    binding.rollCallManagementButton.setVisibility(View.GONE);
+
+    // The management button is only visible to the organizer under the following conditions:
+    if (isOrganizer) {
+      // If the roll call is the last closed roll call or it's not closed (either opened or created)
+      try {
+        if (!rollCall.isClosed()
+            || rollCallRepo.getLastClosedRollCall(laoViewModel.getLaoId()).equals(rollCall)) {
+          binding.rollCallManagementButton.setVisibility(View.VISIBLE);
+        }
+      } catch (NoRollCallException ignored) {
+      }
+    }
 
     binding.rollCallManagementButton.setText(managementTextMap.getOrDefault(rcState, ID_NULL));
 
