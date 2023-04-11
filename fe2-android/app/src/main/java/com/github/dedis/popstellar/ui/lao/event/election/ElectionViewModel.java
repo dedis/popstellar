@@ -190,34 +190,33 @@ public class ElectionViewModel extends AndroidViewModel {
         .doOnSuccess(token -> Log.d(TAG, "Retrieved PoP Token to send votes : " + token))
         .flatMapCompletable(
             token -> {
-              CastVote vote = createCastVote(votes, election, laoView);
+              CompletableFuture<CastVote> vote = createCastVote(votes, election, laoView);
 
               Channel electionChannel = election.getChannel();
-              return networkManager.getMessageSender().publish(token, electionChannel, vote);
+              return networkManager.getMessageSender().publish(token, electionChannel, vote.get());
             });
   }
 
   @NonNull
-  private CastVote createCastVote(List<PlainVote> votes, Election election, LaoView laoView) {
+  private CompletableFuture<CastVote> createCastVote(
+      List<PlainVote> votes, Election election, LaoView laoView) {
     if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
-      return new CastVote(votes, election.getId(), laoView.getId());
+      return CompletableFuture.completedFuture(
+          new CastVote(votes, election.getId(), laoView.getId()));
     } else {
       isEncrypting.setValue(true);
-      CompletableFuture<CastVote> future =
-          CompletableFuture.supplyAsync(
-              () -> {
-                List<EncryptedVote> encryptedVotes = election.encrypt(votes);
-                isEncrypting.postValue(false);
-                new Handler(Looper.getMainLooper())
-                    .post(
-                        () ->
-                            Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
-                                .show());
-                return new CastVote(encryptedVotes, election.getId(), laoView.getId());
-              },
-              Executors.newSingleThreadExecutor());
-
-      return future.join();
+      return CompletableFuture.supplyAsync(
+          () -> {
+            List<EncryptedVote> encryptedVotes = election.encrypt(votes);
+            isEncrypting.postValue(false);
+            new Handler(Looper.getMainLooper())
+                .post(
+                    () ->
+                        Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG)
+                            .show());
+            return new CastVote(encryptedVotes, election.getId(), laoView.getId());
+          },
+          Executors.newSingleThreadExecutor());
     }
   }
 
