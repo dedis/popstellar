@@ -4,13 +4,16 @@ import { Text, View } from 'react-native';
 import ScreenWrapper from '../../../core/components/ScreenWrapper';
 import { Typography } from '../../../core/styles';
 import STRINGS from '../../../resources/strings';
+import { PoPchaHooks } from '../hooks/PoPchaHooks';
 import { PoPchaFeature } from '../interface';
 
 const PoPchaScanner = () => {
+  const laoId = PoPchaHooks.useCurrentLaoId();
+
   return (
     <ScreenWrapper>
       <View>
-        <Text style={Typography.paragraph}>Hello World!</Text>
+        <Text style={Typography.paragraph}>Hello, here is your laoID: {laoId}</Text>
       </View>
     </ScreenWrapper>
   );

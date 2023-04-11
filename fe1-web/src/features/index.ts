@@ -125,7 +125,9 @@ export function configureFeatures() {
     discardNotifications: notificationConfiguration.actionCreators.discardNotifications,
   });
 
-  const popchaConfiguration = popcha.configure({});
+  const popchaConfiguration = popcha.configure({
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
+  });
 
   // compose features
   const notificationComposition = notification.compose({
