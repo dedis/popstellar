@@ -1,1 +1,3 @@
-export type PoPchaParamList = {};
+export type PoPchaParamList = {
+  ['simpleScreen']: undefined;
+};
