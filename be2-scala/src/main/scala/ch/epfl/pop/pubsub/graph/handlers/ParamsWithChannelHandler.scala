@@ -14,7 +14,7 @@ import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-object ParamsHandler extends AskPatternConstants {
+object ParamsWithChannelHandler extends AskPatternConstants {
 
   def graph(clientActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] =>
@@ -41,9 +41,9 @@ object ParamsHandler extends AskPatternConstants {
           }
         ))
 
-        val subscribeHandler = builder.add(ParamsHandler.subscribeHandler(clientActorRef))
-        val unsubscribeHandler = builder.add(ParamsHandler.unsubscribeHandler(clientActorRef))
-        val catchupHandler = builder.add(ParamsHandler.catchupHandler(clientActorRef))
+        val subscribeHandler = builder.add(ParamsWithChannelHandler.subscribeHandler(clientActorRef))
+        val unsubscribeHandler = builder.add(ParamsWithChannelHandler.unsubscribeHandler(clientActorRef))
+        val catchupHandler = builder.add(ParamsWithChannelHandler.catchupHandler(clientActorRef))
 
         val handlerMerger = builder.add(Merge[GraphMessage](totalPorts))
 

@@ -345,11 +345,11 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs)
+		socket.SendResult(id, msgs, nil)
 		return nil
 	}
 
-	socket.SendResult(id, nil)
+	socket.SendResult(id, nil, nil)
 
 	return nil
 }
@@ -429,11 +429,11 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs)
+		socket.SendResult(id, msgs, nil)
 		return nil
 	}
 
-	socket.SendResult(id, nil)
+	socket.SendResult(id, nil, nil)
 
 	return nil
 }
