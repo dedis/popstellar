@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     borderColor: Color.blue,
     borderWidth: Spacing.x025,
   } as ViewStyle,
-  textInformation: {
+  scannerTextItems: {
     alignItems: 'center',
   } as ViewStyle,
 });
@@ -191,7 +191,7 @@ const RollCallOpened = () => {
           <View style={styles.qrCode}>
             <QrCodeScanOverlay width={300} height={300} />
           </View>
-          <View style={styles.textInformation}>
+          <View style={styles.scannerTextItems}>
             <View style={styles.enterButton}>
               <PoPTouchableOpacity
                 testID="roll_call_open_add_manually"
