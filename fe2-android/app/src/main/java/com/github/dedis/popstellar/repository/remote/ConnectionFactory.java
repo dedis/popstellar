@@ -38,7 +38,7 @@ public class ConnectionFactory {
     this.gson = gson;
   }
 
-  public Connection createConnection(String url) {
+  private Connection createConnection(String url) {
     // Create a behavior subject that will be used to close or start the socket manually
     BehaviorSubject<Lifecycle.State> manualState =
         BehaviorSubject.createDefault(Lifecycle.State.Started.INSTANCE);
@@ -60,5 +60,9 @@ public class ConnectionFactory {
 
     // And return a bundled object of the service and the subject
     return new Connection(url, scarlet.create(LAOService.class), manualState);
+  }
+
+  public MultiConnection createMultiConnection(String url) {
+    return new MultiConnection(this::createConnection, url);
   }
 }

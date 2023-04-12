@@ -195,7 +195,7 @@ public class CastVoteFragment extends Fragment {
               .subscribe(
                   () ->
                       Toast.makeText(
-                              requireContext(), "vote successfully sent !", Toast.LENGTH_LONG)
+                              requireContext(), R.string.vote_sent, Toast.LENGTH_LONG)
                           .show(),
                   err -> logAndShow(requireContext(), TAG, err, R.string.error_send_vote)));
     } catch (UnknownElectionException err) {

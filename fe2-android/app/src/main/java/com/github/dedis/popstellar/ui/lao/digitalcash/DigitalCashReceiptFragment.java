@@ -66,7 +66,9 @@ public class DigitalCashReceiptFragment extends Fragment {
               String address = stringEvent.getContentIfNotHandled();
               if (address != null) {
                 binding.digitalCashReceiptBeneficiary.setText(
-                    String.format("Beneficary : %n %s", address));
+                    String.format(
+                        getResources().getString(R.string.digital_cash_beneficiary_address),
+                        address));
               }
             });
   }

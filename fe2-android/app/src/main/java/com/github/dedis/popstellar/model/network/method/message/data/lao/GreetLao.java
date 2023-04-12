@@ -48,13 +48,13 @@ public class GreetLao extends Data {
 
     // Check the validity of the public key should is done via the Public Key class
     try {
-      this.frontendKey = new PublicKey(frontend);
+      frontendKey = new PublicKey(frontend);
     } catch (Exception e) {
       throw new IllegalArgumentException("Please provide a valid public key");
     }
 
     // Assume the id of the LAO will be checked via the handler
-    this.id = lao;
+    id = lao;
   }
 
   // Set of getters for t
@@ -79,7 +79,6 @@ public class GreetLao extends Data {
 
   @Override
   public boolean equals(Object o) {
-
     if (this == o) {
       return true;
     }
@@ -92,7 +91,7 @@ public class GreetLao extends Data {
     boolean checkId = that.getId().equals(getId());
     boolean checkAddress = that.getAddress().equals(getAddress());
     boolean checkSendKey = that.getFrontendKey().equals(getFrontendKey());
-    boolean checkPeers = that.getPeers().containsAll(getPeers());
+    boolean checkPeers = new HashSet<>(that.getPeers()).containsAll(getPeers());
 
     return checkId && checkPeers && checkSendKey && checkAddress;
   }

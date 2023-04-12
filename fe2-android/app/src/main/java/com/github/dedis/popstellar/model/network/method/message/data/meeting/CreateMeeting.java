@@ -45,7 +45,7 @@ public class CreateMeeting extends Data {
 
   public CreateMeeting(
       String laoId, String name, long creation, String location, long start, long end) {
-    this.id = Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name);
+    id = Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name);
     this.name = name;
     this.creation = creation;
     this.location = location;

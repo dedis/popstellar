@@ -33,15 +33,15 @@ public class GlobalNetworkManagerTest {
     TestScheduler testScheduler = schedulerProvider.getTestScheduler();
     ConnectionFactory factory = mock(ConnectionFactory.class);
 
-    Connection firstConnection = mock(Connection.class);
+    MultiConnection firstConnection = mock(MultiConnection.class);
     when(firstConnection.observeMessage()).thenReturn(BehaviorSubject.create());
     when(firstConnection.observeConnectionEvents()).thenReturn(BehaviorSubject.create());
 
-    when(factory.createConnection(anyString())).thenReturn(firstConnection);
+    when(factory.createMultiConnection(anyString())).thenReturn(firstConnection);
 
     GlobalNetworkManager networkManager =
         new GlobalNetworkManager(handler, factory, gson, schedulerProvider);
-    verify(factory).createConnection(anyString());
+    verify(factory).createMultiConnection(anyString());
 
     Completable sendMessage = networkManager.getMessageSender().unsubscribe(Channel.ROOT);
     verify(firstConnection, never()).sendMessage(any());
@@ -57,21 +57,21 @@ public class GlobalNetworkManagerTest {
   public void connectingToANewConnectionClosesTheLast() {
     ConnectionFactory factory = mock(ConnectionFactory.class);
 
-    Connection firstConnection = mock(Connection.class);
+    MultiConnection firstConnection = mock(MultiConnection.class);
     when(firstConnection.observeMessage()).thenReturn(BehaviorSubject.create());
     when(firstConnection.observeConnectionEvents()).thenReturn(BehaviorSubject.create());
 
-    when(factory.createConnection(anyString())).thenReturn(firstConnection);
+    when(factory.createMultiConnection(anyString())).thenReturn(firstConnection);
 
     GlobalNetworkManager networkManager =
         new GlobalNetworkManager(handler, factory, gson, new TestSchedulerProvider());
-    verify(factory).createConnection(anyString());
+    verify(factory).createMultiConnection(anyString());
 
-    Connection secondConnection = mock(Connection.class);
+    MultiConnection secondConnection = mock(MultiConnection.class);
     when(secondConnection.observeMessage()).thenReturn(BehaviorSubject.create());
     when(secondConnection.observeConnectionEvents()).thenReturn(BehaviorSubject.create());
 
-    when(factory.createConnection(anyString())).thenReturn(secondConnection);
+    when(factory.createMultiConnection(anyString())).thenReturn(secondConnection);
     networkManager.connect("new url");
 
     verify(firstConnection).close();
