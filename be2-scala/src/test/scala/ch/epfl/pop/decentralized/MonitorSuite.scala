@@ -10,9 +10,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
 import util.examples.JsonRpcRequestExample
-
 import scala.concurrent.duration.DurationInt
-import scala.language.postfixOps
 
 class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with FunSuiteLike with Matchers with BeforeAndAfterAll {
 
