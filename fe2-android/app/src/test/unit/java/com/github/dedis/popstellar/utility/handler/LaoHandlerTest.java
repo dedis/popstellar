@@ -32,8 +32,7 @@ import io.reactivex.Completable;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoNameWitnessMessage;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
@@ -164,6 +163,13 @@ public class LaoHandlerTest {
     assertEquals(
         new PublicKey(RANDOM_KEY), serverRepository.getServerByLaoId(lao.getId()).getPublicKey());
 
-    // Test for invalid LAO Id is already in GreetLao
+    // Test that the handler throws an exception if the lao id does not match the current one
+    String invalidId = Lao.generateLaoId(SENDER, CREATE_LAO.getCreation(), "some name");
+    GreetLao greetLao_invalid =
+        new GreetLao(invalidId, RANDOM_KEY, RANDOM_ADDRESS, Collections.singletonList(RANDOM_PEER));
+    MessageGeneral message_invalid = new MessageGeneral(SENDER_KEY, greetLao_invalid, gson);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL, message_invalid));
   }
 }
