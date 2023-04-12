@@ -156,7 +156,7 @@ const trimQuestion = (question: NewQuestion): NewQuestion => {
 };
 
 const globalErrorMessages = (
-  isConnected: boolean | undefined,
+  isConnected: boolean,
   electionName: string,
   trimmedQuestions: NewQuestion[],
 ) => {
@@ -386,7 +386,7 @@ const CreateElection = () => {
       <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
         {STRINGS.election_create_add_question}
       </PoPTextButton>
-      {globalErrorMessages(isConnected, electionName, trimmedQuestions)}
+      {globalErrorMessages(isConnected || false, electionName, trimmedQuestions)}
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}
