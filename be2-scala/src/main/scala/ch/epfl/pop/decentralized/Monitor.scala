@@ -1,20 +1,20 @@
 package ch.epfl.pop.decentralized
 
 import akka.NotUsed
-import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props, Timers}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props, Timers}
 import akka.event.LoggingReceive
 import akka.stream.scaladsl.Sink
 import ch.epfl.pop.decentralized.Monitor.TriggerHeartbeat
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.{GetMessagesById, Heartbeat}
+import ch.epfl.pop.model.network.method.ParamsWithMap
 import ch.epfl.pop.pubsub.graph.GraphMessage
 
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 //This actor is tasked with scheduling heartbeats.
 // To that end it sees every messages the system receives.
-// When a message is seen it schedule a heartbeat in the next MESSAGE_DELAY seconds.
-// Periodic heartbeats are sent with a period of PERIODIC_HEARTBEAT seconds.
+// When a message is seen it schedule a heartbeat in the next heartbeatRate seconds.
+// Periodic heartbeats are sent with a period of messageDelay seconds.
 final case class Monitor(
     heartbeatGenRef: ActorRef,
     heartbeatRate: FiniteDuration,
@@ -47,8 +47,7 @@ final case class Monitor(
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.getParams match {
 
-        case _: Heartbeat       => /* Actively ignoring this specific message */
-        case _: GetMessagesById => /* Actively ignoring this specific message */
+        case _: ParamsWithMap => /* Actively ignoring this specific message */
         // For any other message, we schedule a single heartbeat to reduce messages propagation delay
         case _ =>
           if (!timers.isTimerActive(singleHbKey) && timers.isTimerActive(periodicHbKey)) {
