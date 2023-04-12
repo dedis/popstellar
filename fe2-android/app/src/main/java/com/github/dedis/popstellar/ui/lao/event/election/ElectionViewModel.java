@@ -227,7 +227,8 @@ public class ElectionViewModel extends AndroidViewModel {
             new Handler(Looper.getMainLooper())
                 .post(
                     () ->
-                        Toast.makeText(getApplication(), R.string.vote_encrypted, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplication(), R.string.vote_encrypted, Toast.LENGTH_LONG)
+                            .show());
             return new CastVote(encryptedVotes, election.getId(), laoView.getId());
           },
           Executors.newSingleThreadExecutor());
