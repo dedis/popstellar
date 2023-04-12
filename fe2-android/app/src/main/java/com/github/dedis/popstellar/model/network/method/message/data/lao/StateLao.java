@@ -1,19 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
-import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.*;
-
-import static com.github.dedis.popstellar.utility.DataCheckUtils.*;
 
 /** Data received to track the state of a lao */
 public class StateLao extends Data {
@@ -36,7 +32,7 @@ public class StateLao extends Data {
   private final List<PublicKeySignaturePair> modificationSignatures;
 
   /**
-   * Constructor for a data State LAO
+   * Constructor for a Data StateLao
    *
    * @param id of the LAO state message, Hash(organizer||creation||name)
    * @param name name of the LAO
@@ -58,15 +54,12 @@ public class StateLao extends Data {
       @NonNull PublicKey organizer,
       @NonNull MessageID modificationId,
       @NonNull Set<PublicKey> witnesses,
-      @NonNull List<PublicKeySignaturePair> modificationSignatures) {
-    // organizer, modificationId and witnesses are checked to be base64 at deserialization
-    checkBase64(id, "id");
-    checkStringNotEmpty(name, "name");
-    checkValidOrderedTimes(creation, lastModified);
-
-    if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
-      throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");
-    }
+      List<PublicKeySignaturePair> modificationSignatures) {
+    // Organizer and witnesses are checked to be base64 at deserialization
+    MessageValidator.verify()
+        .checkValidOrderedTimes(creation, lastModified)
+        .checkValidId(id, organizer, creation, name)
+        .checkBase64(modificationId.getEncoded(), "Modification ID");
 
     this.id = id;
     this.name = name;

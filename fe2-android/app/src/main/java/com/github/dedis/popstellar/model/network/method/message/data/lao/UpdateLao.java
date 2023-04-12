@@ -1,8 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import static com.github.dedis.popstellar.utility.DataCheckUtils.*;
-import static com.github.dedis.popstellar.utility.DataCheckUtils.checkBase64;
-
 import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
@@ -26,7 +23,7 @@ public class UpdateLao extends Data {
   private final Set<PublicKey> witnesses;
 
   /**
-   * Constructor for a data Update LAO
+   * Constructor for a Data UpdateLao
    *
    * @param organizer public key of the LAO
    * @param creation creation time
@@ -40,8 +37,13 @@ public class UpdateLao extends Data {
       long creation,
       @NonNull String name,
       long lastModified,
-      @NonNull Set<PublicKey> witnesses) {
-    // witnesses are checked to be base64 at deserialization, but not organizer
+      Set<PublicKey> witnesses) {
+    // Witnesses are checked to be base64 at deserialization, but not organizer
+    MessageValidator.verify()
+        .checkBase64(organizer.getEncoded(), "organizer")
+        .checkStringNotEmpty(name, "name")
+        .checkValidOrderedTimes(creation, lastModified);
+
     this.id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;
@@ -49,24 +51,6 @@ public class UpdateLao extends Data {
     if (witnesses != null) {
       this.witnesses.addAll(witnesses);
     }
-    MessageValidator validator =
-        new MessageValidator() {
-          @Override
-          protected void checkBase64() {
-            checkBase64(organizer.getEncoded(), "organizer");
-          }
-
-          @Override
-          protected void checkStringsNotEmpty() {
-            checkStringNotEmpty(name, "name");
-          }
-
-          @Override
-          protected void checkValidOrderedTimes() {
-            checkValidOrderedTimes(creation, lastModified);
-          }
-        };
-    validator.checkValidity();
   }
 
   @Override

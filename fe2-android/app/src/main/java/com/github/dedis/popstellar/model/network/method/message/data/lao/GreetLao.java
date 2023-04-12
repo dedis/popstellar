@@ -1,17 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.Immutable;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
+import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.*;
-
-import static com.github.dedis.popstellar.utility.DataCheckUtils.checkBase64;
 
 @Immutable
 public class GreetLao extends Data {
@@ -35,10 +32,9 @@ public class GreetLao extends Data {
   private final List<PeerAddress> peers;
 
   /**
-   * Constructor for a data Greet LAO
+   * Constructor for a Data GreetLao
    *
-   * @param id id of the lao, should match Hash(organizer||creation||name) of the LAO creation
-   *     message
+   * @param id id of the lao
    * @param frontend public key of the frontend of the server owner
    * @param address canonical address of the server with a protocol prefix and the port number
    * @param peers list of peers the server is connected to (excluding itself). These can be other
@@ -50,8 +46,8 @@ public class GreetLao extends Data {
       @NonNull String frontend,
       @NonNull String address,
       @NonNull List<PeerAddress> peers) {
-    checkBase64(id, "lao_id");
-    // Correctness of the id will be checked via the handler
+    MessageValidator.verify().checkBase64(id, "id");
+    // Checking that the id matches the current lao id is done in the GreetLao handler
     this.id = id;
 
     // Checking the validity of the public key is done via the Public Key class
