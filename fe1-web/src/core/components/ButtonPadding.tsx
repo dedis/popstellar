@@ -9,7 +9,7 @@ import { Icon } from 'core/styles';
  * the same amount of horizontal space as n icons would
  * This way it allows proper centering of navigation titles
  */
-const NavigationPadding = ({ paddingAmount, nextToIcon }: IPropTypes) => {
+const ButtonPadding = ({ paddingAmount, nextToIcon }: IPropTypes) => {
   // default is a padding of 1
   const actualPaddingAmount =
     paddingAmount === undefined || paddingAmount === null ? 1 : paddingAmount;
@@ -38,9 +38,9 @@ const propTypes = {
   nextToIcon: PropTypes.bool,
 };
 
-NavigationPadding.propTypes = propTypes;
+ButtonPadding.propTypes = propTypes;
 
-NavigationPadding.defaultProps = {
+ButtonPadding.defaultProps = {
   paddingAmount: 1,
   // if this padding is next to an icon, the amount of padding will be different
   nextToIcon: false,
@@ -48,4 +48,4 @@ NavigationPadding.defaultProps = {
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
-export default NavigationPadding;
+export default ButtonPadding;

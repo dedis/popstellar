@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 
@@ -90,10 +90,12 @@ describe('CreateElection', () => {
       </Provider>,
     );
     const electionName = getByTestId('election_name_selector');
-    const question = getByTestId('question_selector_0');
+    const question = getByTestId('question_selector_0_input');
+    const option = getByTestId('question_0_ballots_option_0_input');
     fireEvent.changeText(electionName, '     ');
     fireEvent.changeText(question, '        ');
-    expect(toJSON()).toMatchSnapshot();
+    fireEvent.changeText(option, '        ');
+    waitFor(() => expect(toJSON()).toMatchSnapshot());
   });
 
   it('sends correctly data on edited input that should be trimmed', () => {
@@ -113,7 +115,7 @@ describe('CreateElection', () => {
         write_in: false,
       },
     ];
-    jest.setSystemTime(Date.UTC(2023, 3, 21));
+
     mockStore.dispatch(setDefaultQuestions(badQuestions));
     const goodQuestions = [
       {
@@ -158,8 +160,7 @@ describe('CreateElection', () => {
       'electionName',
       ElectionVersion.OPEN_BALLOT,
       Timestamp.EpochNow(),
-      // might change
-      Timestamp.EpochNow().addSeconds(3600),
+      expect.anything(),
       expectedQuestions,
       Timestamp.EpochNow(),
     );

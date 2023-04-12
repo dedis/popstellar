@@ -276,7 +276,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={7}
+                handlerTag={5}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -336,7 +336,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={8}
+                          handlerTag={6}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -547,18 +547,6 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                                   />
                                 </View>
                                 <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     {
                                       "marginBottom": 16,
@@ -566,38 +554,13 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                                     }
                                   }
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={9}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
-                                        {
-                                          "opacity": 1,
-                                        }
+                                  <View
+                                    style={
+                                      {
+                                        "width": 25,
                                       }
-                                    >
-                                      <View
-                                        style={
-                                          {
-                                            "width": 25,
-                                          }
-                                        }
-                                      />
-                                    </View>
-                                  </RNGestureHandlerButton>
+                                    }
+                                  />
                                 </View>
                               </View>
                               <Text
@@ -668,18 +631,6 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                                       />
                                     </View>
                                     <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      focusable={true}
-                                      onBlur={[Function]}
-                                      onClick={[Function]}
-                                      onFocus={[Function]}
-                                      onResponderGrant={[Function]}
-                                      onResponderMove={[Function]}
-                                      onResponderRelease={[Function]}
-                                      onResponderTerminate={[Function]}
-                                      onResponderTerminationRequest={[Function]}
-                                      onStartShouldSetResponder={[Function]}
                                       style={
                                         {
                                           "marginBottom": 16,
@@ -687,38 +638,13 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                                         }
                                       }
                                     >
-                                      <RNGestureHandlerButton
-                                        collapsable={false}
-                                        delayLongPress={600}
-                                        enabled={true}
-                                        exclusive={true}
-                                        handlerTag={10}
-                                        handlerType="NativeViewGestureHandler"
-                                        onGestureEvent={[Function]}
-                                        onGestureHandlerEvent={[Function]}
-                                        onGestureHandlerStateChange={[Function]}
-                                        onHandlerStateChange={[Function]}
-                                        rippleColor={0}
-                                        touchSoundDisabled={false}
-                                      >
-                                        <View
-                                          accessible={true}
-                                          collapsable={false}
-                                          style={
-                                            {
-                                              "opacity": 1,
-                                            }
+                                      <View
+                                        style={
+                                          {
+                                            "width": 25,
                                           }
-                                        >
-                                          <View
-                                            style={
-                                              {
-                                                "width": 25,
-                                              }
-                                            }
-                                          />
-                                        </View>
-                                      </RNGestureHandlerButton>
+                                        }
+                                      />
                                     </View>
                                   </View>
                                 </View>
@@ -748,7 +674,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                                 delayLongPress={600}
                                 enabled={true}
                                 exclusive={true}
-                                handlerTag={11}
+                                handlerTag={7}
                                 handlerType="NativeViewGestureHandler"
                                 onGestureEvent={[Function]}
                                 onGestureHandlerEvent={[Function]}
@@ -887,7 +813,7 @@ exports[`CreateElection renders correctly when name and question are empty 1`] =
                               delayLongPress={600}
                               enabled={true}
                               exclusive={true}
-                              handlerTag={12}
+                              handlerTag={8}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
@@ -1237,7 +1163,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
               <View
                 collapsable={false}
                 forwardedRef={[Function]}
-                handlerTag={13}
+                handlerTag={9}
                 handlerType="PanGestureHandler"
                 needsOffscreenAlphaCompositing={false}
                 onGestureHandlerEvent={[Function]}
@@ -1297,7 +1223,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                       >
                         <RCTScrollView
                           collapsable={false}
-                          handlerTag={14}
+                          handlerTag={10}
                           handlerType="NativeViewGestureHandler"
                           onGestureHandlerEvent={[Function]}
                           onGestureHandlerStateChange={[Function]}
@@ -1504,22 +1430,10 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                       ]
                                     }
                                     testID="question_selector_0_input"
-                                    value=""
+                                    value="        "
                                   />
                                 </View>
                                 <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     {
                                       "marginBottom": 16,
@@ -1527,38 +1441,13 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                     }
                                   }
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={15}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
-                                        {
-                                          "opacity": 1,
-                                        }
+                                  <View
+                                    style={
+                                      {
+                                        "width": 25,
                                       }
-                                    >
-                                      <View
-                                        style={
-                                          {
-                                            "width": 25,
-                                          }
-                                        }
-                                      />
-                                    </View>
-                                  </RNGestureHandlerButton>
+                                    }
+                                  />
                                 </View>
                               </View>
                               <Text
@@ -1625,7 +1514,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                           ]
                                         }
                                         testID="question_0_ballots_option_0_input"
-                                        value=""
+                                        value="        "
                                       />
                                     </View>
                                     <View
@@ -1647,13 +1536,14 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                           "marginLeft": 16,
                                         }
                                       }
+                                      testID="question_0_ballots_option_0_remove"
                                     >
                                       <RNGestureHandlerButton
                                         collapsable={false}
                                         delayLongPress={600}
                                         enabled={true}
                                         exclusive={true}
-                                        handlerTag={16}
+                                        handlerTag={13}
                                         handlerType="NativeViewGestureHandler"
                                         onGestureEvent={[Function]}
                                         onGestureHandlerEvent={[Function]}
@@ -1671,19 +1561,117 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                             }
                                           }
                                         >
-                                          <View
-                                            style={
-                                              {
-                                                "width": 25,
-                                              }
-                                            }
-                                          />
+                                          <View>
+                                            {"name":"ios-trash","size":25,"color":"#000"}
+                                          </View>
                                         </View>
                                       </RNGestureHandlerButton>
                                     </View>
                                   </View>
                                 </View>
+                                <View>
+                                  <View
+                                    style={
+                                      {
+                                        "alignItems": "center",
+                                        "flex": 1,
+                                        "flexDirection": "row",
+                                      }
+                                    }
+                                    testID="question_0_ballots_option_1"
+                                  >
+                                    <View
+                                      style={
+                                        {
+                                          "flex": 1,
+                                          "flexDirection": "row",
+                                        }
+                                      }
+                                    >
+                                      <TextInput
+                                        editable={true}
+                                        onChangeText={[Function]}
+                                        placeholder="Blue"
+                                        placeholderTextColor="#8E8E8E"
+                                        style={
+                                          [
+                                            {
+                                              "color": "#000",
+                                              "fontSize": 20,
+                                              "lineHeight": 26,
+                                              "marginBottom": 16,
+                                              "textAlign": "left",
+                                            },
+                                            {
+                                              "backgroundColor": "#fff",
+                                              "borderColor": "#fff",
+                                              "borderRadius": 8,
+                                              "borderWidth": 1,
+                                              "flex": 1,
+                                              "padding": 8,
+                                              "width": 50,
+                                            },
+                                          ]
+                                        }
+                                        testID="question_0_ballots_option_1_input"
+                                        value=""
+                                      />
+                                    </View>
+                                    <View
+                                      style={
+                                        {
+                                          "marginBottom": 16,
+                                          "marginLeft": 16,
+                                        }
+                                      }
+                                    >
+                                      <View
+                                        style={
+                                          {
+                                            "width": 25,
+                                          }
+                                        }
+                                      />
+                                    </View>
+                                  </View>
+                                </View>
                               </View>
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "color": "#e74c3c",
+                                    },
+                                  ]
+                                }
+                              >
+                                A question can not be blank.
+                              </Text>
+                              <Text
+                                style={
+                                  [
+                                    {
+                                      "color": "#000",
+                                      "fontSize": 20,
+                                      "lineHeight": 26,
+                                      "marginBottom": 16,
+                                      "textAlign": "left",
+                                    },
+                                    {
+                                      "color": "#e74c3c",
+                                    },
+                                  ]
+                                }
+                              >
+                                All questions must have at least 2 different ballot options and no blank options.
+                              </Text>
                             </View>
                             <View
                               accessible={true}
@@ -1709,7 +1697,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                                 delayLongPress={600}
                                 enabled={true}
                                 exclusive={true}
-                                handlerTag={17}
+                                handlerTag={11}
                                 handlerType="NativeViewGestureHandler"
                                 onGestureEvent={[Function]}
                                 onGestureHandlerEvent={[Function]}
@@ -1848,7 +1836,7 @@ exports[`CreateElection renders correctly when name and questions are whitespace
                               delayLongPress={600}
                               enabled={true}
                               exclusive={true}
-                              handlerTag={18}
+                              handlerTag={12}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}
@@ -2469,18 +2457,6 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                                   />
                                 </View>
                                 <View
-                                  accessible={true}
-                                  collapsable={false}
-                                  focusable={true}
-                                  onBlur={[Function]}
-                                  onClick={[Function]}
-                                  onFocus={[Function]}
-                                  onResponderGrant={[Function]}
-                                  onResponderMove={[Function]}
-                                  onResponderRelease={[Function]}
-                                  onResponderTerminate={[Function]}
-                                  onResponderTerminationRequest={[Function]}
-                                  onStartShouldSetResponder={[Function]}
                                   style={
                                     {
                                       "marginBottom": 16,
@@ -2488,38 +2464,13 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                                     }
                                   }
                                 >
-                                  <RNGestureHandlerButton
-                                    collapsable={false}
-                                    delayLongPress={600}
-                                    enabled={true}
-                                    exclusive={true}
-                                    handlerTag={3}
-                                    handlerType="NativeViewGestureHandler"
-                                    onGestureEvent={[Function]}
-                                    onGestureHandlerEvent={[Function]}
-                                    onGestureHandlerStateChange={[Function]}
-                                    onHandlerStateChange={[Function]}
-                                    rippleColor={0}
-                                    touchSoundDisabled={false}
-                                  >
-                                    <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      style={
-                                        {
-                                          "opacity": 1,
-                                        }
+                                  <View
+                                    style={
+                                      {
+                                        "width": 25,
                                       }
-                                    >
-                                      <View
-                                        style={
-                                          {
-                                            "width": 25,
-                                          }
-                                        }
-                                      />
-                                    </View>
-                                  </RNGestureHandlerButton>
+                                    }
+                                  />
                                 </View>
                               </View>
                               <Text
@@ -2590,18 +2541,6 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                                       />
                                     </View>
                                     <View
-                                      accessible={true}
-                                      collapsable={false}
-                                      focusable={true}
-                                      onBlur={[Function]}
-                                      onClick={[Function]}
-                                      onFocus={[Function]}
-                                      onResponderGrant={[Function]}
-                                      onResponderMove={[Function]}
-                                      onResponderRelease={[Function]}
-                                      onResponderTerminate={[Function]}
-                                      onResponderTerminationRequest={[Function]}
-                                      onStartShouldSetResponder={[Function]}
                                       style={
                                         {
                                           "marginBottom": 16,
@@ -2609,38 +2548,13 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                                         }
                                       }
                                     >
-                                      <RNGestureHandlerButton
-                                        collapsable={false}
-                                        delayLongPress={600}
-                                        enabled={true}
-                                        exclusive={true}
-                                        handlerTag={4}
-                                        handlerType="NativeViewGestureHandler"
-                                        onGestureEvent={[Function]}
-                                        onGestureHandlerEvent={[Function]}
-                                        onGestureHandlerStateChange={[Function]}
-                                        onHandlerStateChange={[Function]}
-                                        rippleColor={0}
-                                        touchSoundDisabled={false}
-                                      >
-                                        <View
-                                          accessible={true}
-                                          collapsable={false}
-                                          style={
-                                            {
-                                              "opacity": 1,
-                                            }
+                                      <View
+                                        style={
+                                          {
+                                            "width": 25,
                                           }
-                                        >
-                                          <View
-                                            style={
-                                              {
-                                                "width": 25,
-                                              }
-                                            }
-                                          />
-                                        </View>
-                                      </RNGestureHandlerButton>
+                                        }
+                                      />
                                     </View>
                                   </View>
                                 </View>
@@ -2670,7 +2584,7 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                                 delayLongPress={600}
                                 enabled={true}
                                 exclusive={true}
-                                handlerTag={5}
+                                handlerTag={3}
                                 handlerType="NativeViewGestureHandler"
                                 onGestureEvent={[Function]}
                                 onGestureHandlerEvent={[Function]}
@@ -2791,7 +2705,7 @@ exports[`CreateElection renders correctly when question is empty 1`] = `
                               delayLongPress={600}
                               enabled={true}
                               exclusive={true}
-                              handlerTag={6}
+                              handlerTag={4}
                               handlerType="NativeViewGestureHandler"
                               onGestureEvent={[Function]}
                               onGestureHandlerEvent={[Function]}

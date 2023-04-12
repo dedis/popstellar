@@ -57,35 +57,44 @@ const MIN_BALLOT_OPTIONS = 2;
  */
 
 /**
- * Checks whether a question with some ballots options is invalid
+ * Checks whether the question might be silently removed later
  * @param question The question to check
+ * @param referenceQuestions The reference array
  */
-const isNonEmptyQuestionInvalid = (question: NewQuestion): boolean =>
-  question.question === '' && question.ballot_options.length !== 0;
+const isSilentlyRemoved = (question: NewQuestion, referenceQuestions: NewQuestion[]): boolean =>
+  question.question !== '' &&
+  !referenceQuestions.some((trimmedQuestion) =>
+    question.question.includes(trimmedQuestion.question),
+  );
 
 /**
- * Checks whether the question list is invalid
+ * Checks whether the question list has enough questions to be valid
  * @param questions The question list to check
  */
-const areQuestionsValid = (questions: NewQuestion[]): boolean => questions.length > 0;
+const hasEnoughQuestions = (questions: NewQuestion[]): boolean => questions.length > 0;
 
 /**
  * Checks whether the ballot options of the question are invalid
  * @param question the question that contains the ballot options to check
  */
-const areBallotOptionsInvalid = (question: NewQuestion): boolean =>
-  question.question !== '' &&
-  (new Set(question.ballot_options).size !== question.ballot_options.length ||
-    question.ballot_options.length < MIN_BALLOT_OPTIONS);
+const hasInvalidBallotOptions = (question: NewQuestion): boolean => {
+  // Impossible to do so without trimming. We do not have an id linking the non trimmed question to the trimmed one.
+  const trimmedBallotOptions = question.ballot_options
+    .map((ballot) => ballot.trim())
+    .filter((ballot) => ballot !== '');
+  return (
+    question.ballot_options.length > 0 &&
+    (new Set(trimmedBallotOptions).size !== question.ballot_options.length ||
+      trimmedBallotOptions.length < MIN_BALLOT_OPTIONS)
+  );
+};
 
 /**
- * Checks whether a question title is not unique withcreateEin a list of questions
+ * Checks whether a question title is not unique within a list of questions
  * @param questions The list of questions
  */
-const haveQuestionsSameTitle = (questions: NewQuestion[]): boolean => {
-  const questionTitles = questions
-    .map((q: NewQuestion) => q.question.trim())
-    .filter((string) => string !== '');
+const haveUniqueQuestionTitles = (questions: NewQuestion[]): boolean => {
+  const questionTitles = questions.map((q: NewQuestion) => q.question);
   return questionTitles.length === new Set(questionTitles).size;
 };
 
@@ -136,6 +145,47 @@ const createElection = (
   );
 };
 
+const trimQuestion = (question: NewQuestion): NewQuestion => {
+  return {
+    ...question,
+    question: question.question.trim(),
+    ballot_options: question.ballot_options
+      .map((val) => val.trim())
+      .filter((value) => value !== ''),
+  };
+};
+
+const globalErrorMessages = (
+  isConnected: boolean | undefined,
+  electionName: string,
+  trimmedQuestions: NewQuestion[],
+) => {
+  return (
+    <>
+      {!isConnected && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_must_be_connected}
+        </Text>
+      )}
+      {electionName.trim() === '' && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.event_creation_name_not_empty}
+        </Text>
+      )}
+      {!hasEnoughQuestions(trimmedQuestions) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_min_one_question}
+        </Text>
+      )}
+      {!haveUniqueQuestionTitles(trimmedQuestions) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_same_questions}
+        </Text>
+      )}
+    </>
+  );
+};
+
 /**
  * UI to create an Election Event
  */
@@ -162,27 +212,17 @@ const CreateElection = () => {
 
   // Automatically compute the trimmed questions
   const trimmedQuestions = useMemo(() => {
-    return questions
-      .map((item) => {
-        return {
-          ...item,
-          question: item.question.trim(),
-          ballot_options: item.ballot_options
-            .map((val) => val.trim())
-            .filter((value) => value !== ''),
-        };
-      })
-      .filter((question) => question.question !== '');
+    return questions.map(trimQuestion).filter((question) => question.question !== '');
   }, [questions]);
 
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const confirmButtonEnabled: boolean =
     isConnected === true &&
     electionName.trim() !== '' &&
-    areQuestionsValid(trimmedQuestions) && // Checks there are enough valid questions to open an election
-    !questions.some(isNonEmptyQuestionInvalid) && // Checks that there are no questions that will be silently removed
-    !trimmedQuestions.some(areBallotOptionsInvalid) &&
-    haveQuestionsSameTitle(trimmedQuestions);
+    hasEnoughQuestions(trimmedQuestions) &&
+    !questions.some((question) => isSilentlyRemoved(question, trimmedQuestions)) &&
+    !questions.some(hasInvalidBallotOptions) &&
+    haveUniqueQuestionTitles(trimmedQuestions);
 
   const onCreateElection = () => {
     createElection(
@@ -209,7 +249,6 @@ const CreateElection = () => {
   const buildDatePickerWeb = () => {
     const startDate = startTime.toDate();
     const endDate = endTime.toDate();
-
     return (
       <>
         <Text style={[Typography.paragraph, Typography.important]}>
@@ -256,7 +295,7 @@ const CreateElection = () => {
       </Text>
       <Input
         value={electionName}
-        onChange={(s) => setElectionName(s)}
+        onChange={setElectionName}
         placeholder={STRINGS.election_create_name_placeholder}
         testID="election_name_selector"
       />
@@ -283,7 +322,7 @@ const CreateElection = () => {
       />
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
-      {questions.map((value, idx) => (
+      {questions.map((multipleChoiceQuestion, idx) => (
         // FIXME: Do not use index in key
         // eslint-disable-next-line react/no-array-index-key
         <View key={idx.toString()} style={{ marginBottom: Spacing.x2 }}>
@@ -291,7 +330,7 @@ const CreateElection = () => {
             {STRINGS.election_create_question} {idx + 1}
           </Text>
           <RemovableTextInput
-            value={value.question}
+            value={multipleChoiceQuestion.question}
             testID={`question_selector_${idx}`}
             onChange={(text: string) =>
               setQuestions((prev) =>
@@ -313,7 +352,7 @@ const CreateElection = () => {
             {STRINGS.election_create_ballot_options}
           </Text>
           <TextInputList
-            values={value.ballot_options}
+            values={multipleChoiceQuestion.ballot_options}
             placeholder={STRINGS.election_create_option_placeholder}
             onChange={(ballot_options: string[]) =>
               setQuestions((prev) =>
@@ -329,14 +368,14 @@ const CreateElection = () => {
             }
             testID={`question_${idx}_ballots`}
           />
-          {isNonEmptyQuestionInvalid(value) && (
+          {isSilentlyRemoved(multipleChoiceQuestion, trimmedQuestions) && (
             <Text style={[Typography.paragraph, Typography.error]}>
-              {STRINGS.election_create_empty_question_with_ballot}
+              {STRINGS.election_create_empty_question}
             </Text>
           )}
-          {areBallotOptionsInvalid(value) && (
+          {hasInvalidBallotOptions(multipleChoiceQuestion) && (
             <Text style={[Typography.paragraph, Typography.error]}>
-              {STRINGS.election_create_invalid_questions.replace(
+              {STRINGS.election_create_invalid_ballot_options.replace(
                 '{}',
                 MIN_BALLOT_OPTIONS.toString(),
               )}
@@ -344,34 +383,10 @@ const CreateElection = () => {
           )}
         </View>
       ))}
-
       <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
         {STRINGS.election_create_add_question}
       </PoPTextButton>
-
-      {!isConnected && (
-        <Text style={[Typography.paragraph, Typography.error]}>
-          {STRINGS.event_creation_must_be_connected}
-        </Text>
-      )}
-      {electionName.trim() === '' && (
-        <Text style={[Typography.paragraph, Typography.error]}>
-          {STRINGS.event_creation_name_not_empty}
-        </Text>
-      )}
-
-      {!areQuestionsValid(trimmedQuestions) && (
-        <Text style={[Typography.paragraph, Typography.error]}>
-          {STRINGS.election_create_min_one_question}
-        </Text>
-      )}
-
-      {!haveQuestionsSameTitle(questions) && (
-        <Text style={[Typography.paragraph, Typography.error]}>
-          {STRINGS.election_create_same_questions}
-        </Text>
-      )}
-
+      {globalErrorMessages(isConnected, electionName, trimmedQuestions)}
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}

@@ -3,8 +3,8 @@ import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { Color, Icon, Spacing } from '../styles';
+import ButtonPadding from './ButtonPadding';
 import Input from './Input';
-import NavigationPadding from './NavigationPadding';
 import PoPIcon from './PoPIcon';
 import PoPTouchableOpacity from './PoPTouchableOpacity';
 
@@ -36,19 +36,19 @@ const RemovableTextInput = (props: IPropTypes) => {
         value={value || ''}
         testID={testID ? `${testID}_input` : undefined}
       />
-      {/* Added for UI coherence and alignment */}
-      {!isRemovable && (
-        <PoPTouchableOpacity containerStyle={styles.icon} onPress={() => {}}>
-          <NavigationPadding />
-        </PoPTouchableOpacity>
-      )}
-      {isRemovable && (
+
+      {isRemovable ? (
         <PoPTouchableOpacity
           containerStyle={styles.icon}
           onPress={onRemove}
           testID={testID ? `${testID}_remove` : undefined}>
           <PoPIcon name="delete" color={Color.primary} size={Icon.size} />
         </PoPTouchableOpacity>
+      ) : (
+        <View style={styles.icon}>
+          {/* Added for UI coherence and alignment */}
+          <ButtonPadding />
+        </View>
       )}
     </View>
   );

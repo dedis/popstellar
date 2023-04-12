@@ -24,9 +24,12 @@ const TextInputList = ({ values, onChange, placeholder, testID }: IPropTypes) =>
         // eslint-disable-next-line react/no-array-index-key
         <View key={idx.toString()}>
           <RemovableTextInput
-            onChange={(newVal) =>
-              onChange(displayedValues.map((oldVal, id) => (idx === id ? newVal : oldVal)))
-            }
+            onChange={(newVal) => {
+              // remove last element of displayedValues which is always ''
+              const newValues = displayedValues.slice(0, -1);
+              newValues[idx] = newVal;
+              onChange(newValues);
+            }}
             onRemove={() => onChange(values.filter((_, id) => idx !== id))}
             value={text || ''}
             isRemovable={idx !== displayedValues.length - 1}
