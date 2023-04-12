@@ -18,7 +18,6 @@ object ServerConf {
     val clientPath = serverConf.getString("client-path")
     val serverPath = serverConf.getString("server-path")
 
-
     new ServerConf(serverInterface, serverPort, clientPath, serverPath)
   }
 
