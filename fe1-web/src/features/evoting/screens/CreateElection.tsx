@@ -167,7 +167,7 @@ const globalErrorMessages = (
           {STRINGS.event_creation_must_be_connected}
         </Text>
       )}
-      {electionName.trim() === '' && (
+      {electionName === '' && (
         <Text style={[Typography.paragraph, Typography.error]}>
           {STRINGS.event_creation_name_not_empty}
         </Text>
@@ -202,6 +202,7 @@ const CreateElection = () => {
     Timestamp.EpochNow().addSeconds(DEFAULT_ELECTION_DURATION),
   );
   const [electionName, setElectionName] = useState<string>('');
+  const trimmedElectionName = useMemo<string>(() => electionName.trim(), [electionName]);
 
   const [questions, setQuestions] = useState<NewQuestion[]>(defaultQuestions);
   const [version, setVersion] = useState<ElectionVersion>(ElectionVersion.OPEN_BALLOT);
@@ -218,7 +219,7 @@ const CreateElection = () => {
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const confirmButtonEnabled: boolean =
     isConnected === true &&
-    electionName.trim() !== '' &&
+    trimmedElectionName !== '' &&
     hasEnoughQuestions(trimmedQuestions) &&
     !questions.some((question) => isSilentlyRemoved(question, trimmedQuestions)) &&
     !questions.some(hasInvalidBallotOptions) &&
@@ -228,7 +229,7 @@ const CreateElection = () => {
     createElection(
       currentLao.id,
       version,
-      electionName.trim(),
+      trimmedElectionName,
       trimmedQuestions,
       startTime,
       endTime,
@@ -386,7 +387,7 @@ const CreateElection = () => {
       <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
         {STRINGS.election_create_add_question}
       </PoPTextButton>
-      {globalErrorMessages(isConnected || false, electionName, trimmedQuestions)}
+      {globalErrorMessages(isConnected || false, trimmedElectionName, trimmedQuestions)}
       <DismissModal
         visibility={modalEndIsVisible}
         setVisibility={setModalEndIsVisible}
