@@ -34,9 +34,7 @@ public class CastVoteViewPagerAdapter
   public Pager2ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     ballotAdapter =
         new ArrayAdapter<>(
-            parent.getContext(),
-            android.R.layout.simple_list_item_single_choice,
-            new ArrayList<>());
+            parent.getContext(), R.layout.list_item_choice_custom, new ArrayList<>());
 
     return new Pager2ViewHolder(
         LayoutInflater.from(parent.getContext())
