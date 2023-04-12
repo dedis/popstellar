@@ -208,7 +208,7 @@ public class ElectionViewModel extends AndroidViewModel {
     } else {
       List<EncryptedVote> encryptedVotes = election.encrypt(votes);
 
-      Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG).show();
+      Toast.makeText(getApplication(), R.string.vote_encrypted, Toast.LENGTH_LONG).show();
       return new CastVote(encryptedVotes, election.getId(), laoView.getId());
     }
   }

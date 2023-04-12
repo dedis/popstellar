@@ -50,7 +50,9 @@ public class Base64URLData {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     Base64URLData that = (Base64URLData) o;
     return Arrays.equals(data, that.data);

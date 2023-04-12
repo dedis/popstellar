@@ -253,7 +253,9 @@ public abstract class AbstractEventCreationFragment extends Fragment {
 
   private Calendar getSelection(Bundle bundle) {
     Calendar value = (Calendar) bundle.getSerializable(PickerConstant.RESPONSE_KEY);
-    if (value == null) throw new IllegalStateException("Bundle does not contain selection");
+    if (value == null) {
+      throw new IllegalStateException("Bundle does not contain selection");
+    }
     return value;
   }
 

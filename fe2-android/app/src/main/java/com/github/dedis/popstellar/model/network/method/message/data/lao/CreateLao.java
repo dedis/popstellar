@@ -46,9 +46,9 @@ public class CreateLao extends Data {
   public CreateLao(String name, PublicKey organizer) {
     this.name = name;
     this.organizer = organizer;
-    this.creation = Instant.now().getEpochSecond();
-    this.id = Lao.generateLaoId(organizer, creation, name);
-    this.witnesses = new ArrayList<>();
+    creation = Instant.now().getEpochSecond();
+    id = Lao.generateLaoId(organizer, creation, name);
+    witnesses = new ArrayList<>();
   }
 
   @Override

@@ -77,11 +77,9 @@ public class Election extends Event {
 
   private static void validateVotesTypes(
       Map<PublicKey, List<Vote>> votesBySender, ElectionVersion version) {
-    for (List<Vote> votes : votesBySender.values()) {
-      for (Vote vote : votes) {
-        validateVoteType(vote, version);
-      }
-    }
+    votesBySender.values().stream()
+        .flatMap(List::stream)
+        .forEach(vote -> validateVoteType(vote, version));
   }
 
   private static void validateVoteType(Vote vote, ElectionVersion version) {
@@ -344,32 +342,32 @@ public class Election extends Event {
      * @param name of the election
      */
     public ElectionBuilder(String laoId, long creation, String name) {
-      this.id = generateElectionSetupId(laoId, creation, name);
+      id = generateElectionSetupId(laoId, creation, name);
       this.name = name;
       this.creation = creation;
-      this.channel = Channel.getLaoChannel(laoId).subChannel(id);
+      channel = Channel.getLaoChannel(laoId).subChannel(id);
 
-      this.results = new HashMap<>();
-      this.electionQuestions = new ArrayList<>();
-      this.votesBySender = new HashMap<>();
-      this.messageMap = new HashMap<>();
+      results = new HashMap<>();
+      electionQuestions = new ArrayList<>();
+      votesBySender = new HashMap<>();
+      messageMap = new HashMap<>();
     }
 
     public ElectionBuilder(Election election) {
-      this.channel = election.channel;
-      this.id = election.id;
-      this.name = election.name;
-      this.creation = election.creation;
-      this.start = election.start;
-      this.end = election.end;
-      this.electionKey = election.electionKey;
-      this.electionQuestions = election.electionQuestions;
-      this.electionVersion = election.electionVersion;
+      channel = election.channel;
+      id = election.id;
+      name = election.name;
+      creation = election.creation;
+      start = election.start;
+      end = election.end;
+      electionKey = election.electionKey;
+      electionQuestions = election.electionQuestions;
+      electionVersion = election.electionVersion;
       // We might modify the maps, for safety reason, we need to create a copy
-      this.votesBySender = new HashMap<>(election.votesBySender);
-      this.messageMap = new HashMap<>(election.messageMap);
-      this.state = election.state;
-      this.results = election.results;
+      votesBySender = new HashMap<>(election.votesBySender);
+      messageMap = new HashMap<>(election.messageMap);
+      state = election.state;
+      results = election.results;
     }
 
     public ElectionBuilder setName(@NonNull String name) {
@@ -425,19 +423,19 @@ public class Election extends Event {
 
     public Election build() {
       return new Election(
-          this.id,
-          this.name,
-          this.creation,
-          this.channel,
-          this.start,
-          this.end,
-          this.electionQuestions,
-          this.electionKey,
-          this.electionVersion,
-          this.votesBySender,
-          this.messageMap,
-          this.state,
-          this.results);
+          id,
+          name,
+          creation,
+          channel,
+          start,
+          end,
+          electionQuestions,
+          electionKey,
+          electionVersion,
+          votesBySender,
+          messageMap,
+          state,
+          results);
     }
   }
 }

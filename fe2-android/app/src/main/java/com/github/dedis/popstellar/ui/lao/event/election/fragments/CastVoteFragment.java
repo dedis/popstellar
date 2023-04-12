@@ -171,8 +171,7 @@ public class CastVoteFragment extends Fragment {
                         R.id.fragment_event_list,
                         EventListFragment::newInstance);
                     // Toast ? + send back to election screen or details screen ?
-                    Toast.makeText(requireContext(), "vote successfully sent !", Toast.LENGTH_LONG)
-                        .show();
+                    Toast.makeText(requireContext(), R.string.vote_sent, Toast.LENGTH_LONG).show();
                   },
                   err -> logAndShow(requireContext(), TAG, err, R.string.error_send_vote)));
     } catch (UnknownElectionException err) {

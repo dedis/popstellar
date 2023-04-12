@@ -100,7 +100,9 @@ public class HomeViewModel extends AndroidViewModel
     } catch (JsonParseException e) {
       Log.e(TAG, "Invalid QRCode laoData", e);
       Toast.makeText(
-              getApplication().getApplicationContext(), "Invalid QRCode laoData", Toast.LENGTH_LONG)
+              getApplication().getApplicationContext(),
+              R.string.invalid_qrcode_data,
+              Toast.LENGTH_LONG)
           .show();
       return;
     }
@@ -185,8 +187,11 @@ public class HomeViewModel extends AndroidViewModel
 
   public boolean isWalletSetUp() {
     Boolean setup = isWalletSetup.getValue();
-    if (setup == null) return false;
-    else return setup;
+    if (setup == null) {
+      return false;
+    } else {
+      return setup;
+    }
   }
 
   public void logoutWallet() {
