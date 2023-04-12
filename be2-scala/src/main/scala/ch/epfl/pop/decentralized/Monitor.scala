@@ -17,10 +17,9 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
 // Periodic heartbeats are sent with a period of PERIODIC_HEARTBEAT seconds.
 final case class Monitor(
     heartbeatGenRef: ActorRef,
-    PERIODIC_HEARTBEAT: FiniteDuration,
-    MESSAGE_DELAY: FiniteDuration
-)(implicit system: ActorSystem) extends Actor with ActorLogging with Timers {
-  import system.dispatcher
+    heartbeatRate: FiniteDuration,
+    messageDelay: FiniteDuration
+) extends Actor with ActorLogging with Timers {
 
   // These keys are used to keep track of the timers states
   private val periodicHbKey = 0
@@ -35,7 +34,7 @@ final case class Monitor(
     case Monitor.AtLeastOneServerConnected =>
       connectionMediatorRef = sender()
       if (!timers.isTimerActive(periodicHbKey))
-        timers.startTimerWithFixedDelay(periodicHbKey, TriggerHeartbeat, PERIODIC_HEARTBEAT)
+        timers.startTimerWithFixedDelay(periodicHbKey, TriggerHeartbeat, heartbeatRate)
 
     case Monitor.NoServerConnected =>
       timers.cancelAll()
@@ -45,16 +44,16 @@ final case class Monitor(
       timers.cancel(singleHbKey)
       heartbeatGenRef ! Monitor.GenerateAndSendHeartbeat(connectionMediatorRef)
 
-    case Right(jsonRpcRequest: JsonRpcRequest) =>
-      jsonRpcRequest.getParams match {
+    case Right(jsonRpcMessage: JsonRpcRequest) =>
+      jsonRpcMessage.getParams match {
 
         case _: Heartbeat       => /* Actively ignoring this specific message */
         case _: GetMessagesById => /* Actively ignoring this specific message */
         // For any other message, we schedule a single heartbeat to reduce messages propagation delay
         case _ =>
           if (!timers.isTimerActive(singleHbKey) && timers.isTimerActive(periodicHbKey)) {
-            log.info("Scheduling single heartbeat")
-            timers.startSingleTimer(singleHbKey, TriggerHeartbeat, MESSAGE_DELAY)
+            log.info(s"Scheduling single heartbeat")
+            timers.startSingleTimer(singleHbKey, TriggerHeartbeat, messageDelay)
           }
       }
 
@@ -63,8 +62,8 @@ final case class Monitor(
 }
 
 object Monitor {
-  def props(heartbeatGenRef: ActorRef, PERIODIC_HEARTBEAT: FiniteDuration = 30.seconds, MESSAGE_DELAY: FiniteDuration = 3.seconds)(implicit system: ActorSystem): Props =
-    Props(new Monitor(heartbeatGenRef, PERIODIC_HEARTBEAT, MESSAGE_DELAY)(system))
+  def props(heartbeatGenRef: ActorRef, heartbeatRate: FiniteDuration = 30.seconds, messageDelay: FiniteDuration = 3.seconds): Props =
+    Props(new Monitor(heartbeatGenRef, heartbeatRate, messageDelay))
 
   def sink(monitorRef: ActorRef): Sink[GraphMessage, NotUsed] = {
     Sink.actorRef(

@@ -22,7 +22,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     val testProbe = TestProbe()
     val monitorRef = system.actorOf(
-      Monitor.props(testProbe.ref, PERIODIC_HEARTBEAT = 2.seconds, MESSAGE_DELAY = 1.seconds)
+      Monitor.props(testProbe.ref, heartbeatRate = 2.seconds, messageDelay = 1.seconds)
     )
 
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
@@ -35,7 +35,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     val testProbe = TestProbe()
     val monitorRef = system.actorOf(
-      Monitor.props(testProbe.ref, PERIODIC_HEARTBEAT = 60.seconds, MESSAGE_DELAY = 1.seconds)
+      Monitor.props(testProbe.ref, heartbeatRate = 60.seconds, messageDelay = 1.seconds)
     )
 
     // Needed to tell monitor ConnectionMediatorRef
@@ -51,13 +51,13 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     val testProbe = TestProbe()
     val monitorRef = system.actorOf(
-      Monitor.props(testProbe.ref, PERIODIC_HEARTBEAT = 1.seconds, MESSAGE_DELAY = 60.seconds)
+      Monitor.props(testProbe.ref, heartbeatRate = 1.seconds, messageDelay = 60.seconds)
     )
 
     // Needed to tell monitor ConnectionMediatorRef
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
 
-    // Wait for the first hearbeat then "disconnect" servers
+    // Wait for the first heartbeat then "disconnect" servers
     testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
     testProbe.send(monitorRef, Monitor.NoServerConnected)
 
