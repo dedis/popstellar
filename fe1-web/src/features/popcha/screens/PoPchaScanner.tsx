@@ -6,6 +6,7 @@ import { Typography } from '../../../core/styles';
 import STRINGS from '../../../resources/strings';
 import { PoPchaHooks } from '../hooks';
 import { PoPchaFeature } from '../interface';
+import { makeIcon } from "../../../core/components/PoPIcon";
 
 const PoPchaScanner = () => {
   const laoId = PoPchaHooks.useCurrentLaoId();
@@ -23,6 +24,7 @@ export default PoPchaScanner;
 
 export const popchaScannerScreen: PoPchaFeature.LaoScreen = {
   id: STRINGS.navigation_lao_popcha,
+  Icon: makeIcon('scan'),
   Component: PoPchaScanner,
   order: 100000,
 };
