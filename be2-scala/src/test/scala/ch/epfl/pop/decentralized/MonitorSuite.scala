@@ -38,7 +38,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
       Monitor.props(testProbe.ref, PERIODIC_HEARTBEAT = 60.seconds, MESSAGE_DELAY = 1.seconds)
     )
 
-    //Needed to tell monitor ConnectionMediatorRef
+    // Needed to tell monitor ConnectionMediatorRef
     testProbe.send(monitorRef, ConnectionMediator.AtLeastOneServerConnected)
 
     val sink = Monitor.sink(monitorRef)
@@ -54,10 +54,10 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
       Monitor.props(testProbe.ref, PERIODIC_HEARTBEAT = 1.seconds, MESSAGE_DELAY = 60.seconds)
     )
 
-    //Needed to tell monitor ConnectionMediatorRef
+    // Needed to tell monitor ConnectionMediatorRef
     testProbe.send(monitorRef, ConnectionMediator.AtLeastOneServerConnected)
 
-    //Wait for the first hearbeat then "disconnect" servers
+    // Wait for the first hearbeat then "disconnect" servers
     testProbe.expectMsgType[HeartbeatGenerator.SendHeartbeat]
     testProbe.send(monitorRef, ConnectionMediator.NoServerConnected)
 
