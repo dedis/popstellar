@@ -1,14 +1,16 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
-import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.*;
 
 /** Data received to track the state of a lao */
@@ -58,7 +60,7 @@ public class StateLao extends Data {
     // Organizer and witnesses are checked to be base64 at deserialization
     MessageValidator.verify()
         .checkValidOrderedTimes(creation, lastModified)
-        .checkValidId(id, organizer, creation, name)
+        .checkValidLaoId(id, organizer, creation, name)
         .checkBase64(modificationId.getEncoded(), "Modification ID");
 
     this.id = id;

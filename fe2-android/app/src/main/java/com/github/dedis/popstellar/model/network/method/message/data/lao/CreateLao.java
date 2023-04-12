@@ -1,12 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.Immutable;
-import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.MessageValidator;
+
 import java.time.Instant;
 import java.util.*;
 
@@ -37,7 +39,9 @@ public class CreateLao extends Data {
       @NonNull PublicKey organizer,
       @NonNull List<PublicKey> witnesses) {
     // Organizer and witnesses are checked to be base64 at deserialization
-    MessageValidator.verify().checkValidId(id, organizer, creation, name).checkValidTime(creation);
+    MessageValidator.verify()
+        .checkValidLaoId(id, organizer, creation, name)
+        .checkValidTime(creation);
 
     this.id = id;
     this.name = name;

@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.utility;
 
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -27,7 +28,7 @@ public abstract class MessageValidator {
      * @param name the lao name
      * @throws IllegalArgumentException if the id is invalid
      */
-    public MessageValidatorBuilder checkValidId(
+    public MessageValidatorBuilder checkValidLaoId(
         String id, PublicKey organizer, long creation, String name) {
       // If any of the arguments are empty or null this throws an exception
       if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
