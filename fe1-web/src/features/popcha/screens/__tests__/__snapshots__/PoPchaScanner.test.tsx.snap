@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PoPcha scanner renders correctly 1`] = `
+<View
+  style={
+    {
+      "flex": 1,
+    }
+  }
+>
+  <RCTScrollView
+    collapsable={false}
+    handlerTag={1}
+    handlerType="NativeViewGestureHandler"
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    style={
+      {
+        "padding": 16,
+      }
+    }
+    waitFor={
+      [
+        {
+          "current": null,
+        },
+      ]
+    }
+  >
+    <View>
+      <View>
+        <Text
+          style={
+            {
+              "color": "#000",
+              "fontSize": 20,
+              "lineHeight": 26,
+              "marginBottom": 16,
+              "textAlign": "left",
+            }
+          }
+        >
+          Hello, here is your laoID: 
+          -
+          M
+          2
+          5
+          9
+          c
+          5
+          J
+          l
+          a
+          k
+          L
+          V
+          l
+          X
+          B
+          R
+          a
+          8
+          9
+          3
+          p
+          c
+          E
+          -
+          4
+          s
+          7
+          s
+          s
+          O
+          8
+          J
+          v
+          5
+          g
+          X
+          O
+          v
+          t
+          r
+          e
+          E
+          =
+        </Text>
+      </View>
+    </View>
+  </RCTScrollView>
+</View>
+`;

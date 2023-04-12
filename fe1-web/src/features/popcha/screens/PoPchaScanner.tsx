@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 import ScreenWrapper from '../../../core/components/ScreenWrapper';
 import { Typography } from '../../../core/styles';
 import STRINGS from '../../../resources/strings';
-import { PoPchaHooks } from '../hooks/PoPchaHooks';
+import { PoPchaHooks } from '../hooks';
 import { PoPchaFeature } from '../interface';
 
 const PoPchaScanner = () => {
