@@ -46,7 +46,7 @@ ch_epfl_pop_Server {
 	http {
 		interface = "127.0.0.1"
 		port = "8000"
-		path = ""
+		path = "client"
 	}
 }
  ```
@@ -93,7 +93,7 @@ environment:
 
 ```sh
 # install sdkman
-curl -s "https://get.sdkman.io" | bash 
+curl -s "https://get.sdkman.io" | bash
 # install java zulu 11
 sdk install java 11.0.18-zulu
 # install sbt
@@ -115,5 +115,5 @@ Run by specifying the configuration file:
 
 ```sh
 java -Dscala.config="src/main/scala/ch/epfl/pop/config" -jar target/scala-2.13/pop-assembly-<version>-SNAPSHOT.jar
-> ch.epfl.pop.Server online at ws://127.0.0.1:8000/
+> ch.epfl.pop.Server online at ws://127.0.0.1:8000/client
 ```
