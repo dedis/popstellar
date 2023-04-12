@@ -4,7 +4,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.github.dedis.popstellar.model.network.method.message.data.election.*;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVersion;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -41,7 +42,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.model.objects.Election.generateElectionSetupId;
 import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
@@ -49,13 +51,13 @@ import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePoPT
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.containerId;
 import static com.github.dedis.popstellar.testutils.pages.lao.LaoActivityPageObject.laoIdExtra;
 import static com.github.dedis.popstellar.testutils.pages.lao.event.election.CastVoteFragmentPageObject.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
-public class CastVoteFragmentTest {
+public class CastVoteSecretBallotFragmentTest {
   private static final String LAO_NAME = "LAO";
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
@@ -81,8 +83,7 @@ public class CastVoteFragmentTest {
           "id", "id", "rc", 0L, 1L, 2L, EventState.CLOSED, new HashSet<>(), "nowhere", "none");
 
   private static final String ELECTION_ID = generateElectionSetupId(LAO_ID, CREATION, TITLE);
-  private static final String SECRET_ELECTION_ID =
-      generateElectionSetupId(LAO_ID, CREATION + 100, TITLE + "2");
+
   private static final ElectionQuestion ELECTION_QUESTION_1 =
       new ElectionQuestion(
           ELECTION_ID,
@@ -92,14 +93,6 @@ public class CastVoteFragmentTest {
               Arrays.asList(ELECTION_BALLOT_TEXT11, ELECTION_BALLOT_TEXT12, ELECTION_BALLOT_TEXT13),
               false));
 
-  private static final ElectionQuestion SECRET_ELECTION_QUESTION_1 =
-      new ElectionQuestion(
-          SECRET_ELECTION_ID,
-          new ElectionQuestion.Question(
-              ELECTION_QUESTION_TEXT1,
-              PLURALITY,
-              Arrays.asList(ELECTION_BALLOT_TEXT11, ELECTION_BALLOT_TEXT12, ELECTION_BALLOT_TEXT13),
-              false));
   private static final ElectionQuestion ELECTION_QUESTION_2 =
       new ElectionQuestion(
           ELECTION_ID,
@@ -109,29 +102,10 @@ public class CastVoteFragmentTest {
               Arrays.asList(ELECTION_BALLOT_TEXT21, ELECTION_BALLOT_TEXT22),
               false));
 
-  private static final ElectionQuestion SECRET_ELECTION_QUESTION_2 =
-      new ElectionQuestion(
-          SECRET_ELECTION_ID,
-          new ElectionQuestion.Question(
-              ELECTION_QUESTION_TEXT2,
-              PLURALITY,
-              Arrays.asList(ELECTION_BALLOT_TEXT21, ELECTION_BALLOT_TEXT22),
-              false));
-
   private static final Election ELECTION =
       new Election.ElectionBuilder(LAO_ID, CREATION, TITLE)
-          .setElectionVersion(ElectionVersion.OPEN_BALLOT)
-          .setElectionQuestions(Arrays.asList(ELECTION_QUESTION_1, ELECTION_QUESTION_2))
-          .setStart(START)
-          .setEnd(END)
-          .setState(CREATED)
-          .build();
-
-  private static final Election SECRET_ELECTION =
-      new Election.ElectionBuilder(LAO_ID, CREATION + 100, TITLE + "2")
           .setElectionVersion(ElectionVersion.SECRET_BALLOT)
-          .setElectionQuestions(
-              Arrays.asList(SECRET_ELECTION_QUESTION_1, SECRET_ELECTION_QUESTION_2))
+          .setElectionQuestions(Arrays.asList(ELECTION_QUESTION_1, ELECTION_QUESTION_2))
           .setStart(START)
           .setEnd(END)
           .setState(CREATED)
@@ -166,7 +140,6 @@ public class CastVoteFragmentTest {
 
           rollCallRepo.updateRollCall(LAO_ID, ROLL_CALL);
           electionRepo.updateElection(ELECTION);
-          electionRepo.updateElection(SECRET_ELECTION);
 
           when(keyManager.getMainPublicKey()).thenReturn(SENDER);
           when(keyManager.getValidPoPToken(any(), any())).thenReturn(generatePoPToken());
@@ -186,56 +159,7 @@ public class CastVoteFragmentTest {
           () -> CastVoteFragment.newInstance(ELECTION_ID));
 
   @Test
-  public void laoTitleMatches() {
-    castVoteLaoTitle().check(matches(withText(LAO_NAME)));
-  }
-
-  @Test
-  public void electionTitleMatches() {
-    castVoteElectionName().check(matches(withText(TITLE)));
-  }
-
-  @Test
-  public void question1ElementsAreDisplayed() {
-    onView(withText(ELECTION_QUESTION_TEXT1)).check(matches(isDisplayed()));
-    onView(withText(ELECTION_BALLOT_TEXT11)).check(matches(isDisplayed()));
-    onView(withText(ELECTION_BALLOT_TEXT12)).check(matches(isDisplayed()));
-    onView(withText(ELECTION_BALLOT_TEXT13)).check(matches(isDisplayed()));
-  }
-
-  @Test
-  public void question2ElementsAreDisplayed() {
-    castVotePager().perform(swipeLeft());
-    onView(withText(ELECTION_QUESTION_TEXT2)).check(matches(isDisplayed()));
-    onView(withText(ELECTION_BALLOT_TEXT21)).check(matches(isDisplayed()));
-    onView(withText(ELECTION_BALLOT_TEXT22)).check(matches(isDisplayed()));
-  }
-
-  @Test
-  public void castVoteButtonIsEnabledWhenAnElementIsClicked() {
-    onView(withText(ELECTION_BALLOT_TEXT11)).perform(click());
-    castVotePager().perform(swipeLeft());
-    onView(withText(ELECTION_BALLOT_TEXT22)).perform(click());
-    castVoteButton().check(matches(isEnabled()));
-  }
-
-  @Test
-  public void castVoteSendsACastVoteMessage() {
-    onView(withText(ELECTION_BALLOT_TEXT11)).perform(click());
-    castVotePager().perform(swipeLeft());
-    onView(withText(ELECTION_BALLOT_TEXT22)).perform(click());
-    castVoteButton().perform(click());
-    // Wait for the operations performed above to complete
-    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-
-    verify(messageSenderHelper.getMockedSender())
-        .publish(any(), eq(ELECTION.getChannel()), any(CastVote.class));
-  }
-
-  @Test
   public void castEncryptedVoteTest() {
-    launchSecretElection();
-
     onView(withText(ELECTION_BALLOT_TEXT11)).perform(click());
     castVotePager().perform(swipeLeft());
     onView(withText(ELECTION_BALLOT_TEXT22)).perform(click());
@@ -244,17 +168,5 @@ public class CastVoteFragmentTest {
     InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
     encryptedVoteText().check(matches(isDisplayed()));
-  }
-
-  private void launchSecretElection() {
-    fragmentRule
-        .getScenario()
-        .onActivity(
-            activity ->
-                activity
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(containerId(), CastVoteFragment.newInstance(SECRET_ELECTION_ID))
-                    .commit());
   }
 }
