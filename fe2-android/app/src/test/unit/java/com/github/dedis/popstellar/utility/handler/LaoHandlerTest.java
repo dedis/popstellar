@@ -14,7 +14,6 @@ import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
-import com.github.dedis.popstellar.utility.security.Hash;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -45,7 +44,7 @@ public class LaoHandlerTest {
   private static final KeyPair SENDER_KEY2 = generateKeyPair();
   private static final PublicKey SENDER1 = SENDER_KEY1.getPublicKey();
   private static final PublicKey SENDER2 = SENDER_KEY2.getPublicKey();
-  private static final long CREATION = Instant.now().getEpochSecond();
+  private static final long CREATION = Instant.now().getEpochSecond() - 10;
   private static final String NAME1 = "lao1";
   private static final String NAME2 = "lao2";
   private static final String NAME3 = "lao3";
@@ -253,13 +252,14 @@ public class LaoHandlerTest {
   @Test
   public void testHandleUpdateLaoStale() {
     // Create a update LAO message with last modified time older than the current LAO last modified
-    // time (was creation)
+    // time
+    lao.setLastModified(CREATE_LAO1.getCreation() + 10);
     UpdateLao updateLao1 =
         new UpdateLao(
             SENDER1,
-            CREATE_LAO1.getCreation() - 5,
+            CREATE_LAO1.getCreation(),
             "new lao name",
-            CREATE_LAO1.getCreation() - 10,
+            CREATE_LAO1.getCreation() + 5,
             new HashSet<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, updateLao1, gson);
 
