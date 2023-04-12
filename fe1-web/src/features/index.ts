@@ -229,6 +229,7 @@ export function configureFeatures() {
       [witnessConfiguration.identifier]: witnessConfiguration.context,
       [digitalCashComposition.identifier]: digitalCashComposition.context,
       [socialConfiguration.identifier]: socialConfiguration.context,
+      [popchaConfiguration.identifier]: popchaConfiguration.context,
     },
   };
 }
