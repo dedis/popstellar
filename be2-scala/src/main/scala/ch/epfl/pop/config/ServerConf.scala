@@ -15,12 +15,14 @@ object ServerConf {
     val serverConf = appConf.getConfig("ch_epfl_pop_Server").getConfig("http")
     val serverInterface = serverConf.getString("interface")
     val serverPort = serverConf.getInt("port")
-    val path = serverConf.getString("path")
+    val clientPath = serverConf.getString("client-path")
+    val serverPath = serverConf.getString("server-path")
 
-    new ServerConf(serverInterface, serverPort, path)
+
+    new ServerConf(serverInterface, serverPort, clientPath, serverPath)
   }
 
 }
 
 /* Note: Can be upgraded for future configs :) */
-final case class ServerConf(interface: String, port: Int, path: String)
+final case class ServerConf(interface: String, port: Int, clientPath: String, serverPath: String)
