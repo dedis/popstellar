@@ -22,15 +22,18 @@ final case class Monitor(
 )(implicit system: ActorSystem) extends Actor with ActorLogging with Timers {
   import system.dispatcher
 
-  // Background scheduled periodic job, None until a server is connected
+  // These keys are used to keep track of the timers states
   private val periodicHbKey = 0
   private val singleHbKey = 1
-  private var connectionActorRef = ActorRef.noSender
+
+  // Monitor is self-contained,
+  // To that end it doesn't know the ref of the connectionMediator
+  private var connectionMediatorRef = ActorRef.noSender
 
   override def receive: Receive = LoggingReceive {
 
     case Monitor.AtLeastOneServerConnected =>
-      connectionActorRef = sender()
+      connectionMediatorRef = sender()
       if (!timers.isTimerActive(periodicHbKey))
         timers.startTimerWithFixedDelay(periodicHbKey, TriggerHeartbeat, PERIODIC_HEARTBEAT)
 
@@ -40,7 +43,7 @@ final case class Monitor(
     case Monitor.TriggerHeartbeat =>
       log.info("triggering a heartbeat")
       timers.cancel(singleHbKey)
-      heartbeatGenRef ! Monitor.GenerateAndSendHeartbeat(connectionActorRef)
+      heartbeatGenRef ! Monitor.GenerateAndSendHeartbeat(connectionMediatorRef)
 
     case Right(jsonRpcRequest: JsonRpcRequest) =>
       jsonRpcRequest.getParams match {
