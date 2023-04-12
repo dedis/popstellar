@@ -112,7 +112,7 @@ implementations:
 
 The `ReadPump` and `WritePump` are low-level methods which allow reading/writing
 data over the wire. Most users would instead use the `Send(msg []byte)`,
-`SendError(id int, err error)` and `SendResult(id int, res message.Result)`
+`SendError(id *int, err error)` and `SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message)`
 APIs.
 
 Each incoming message read by `ReadPump` is passed to the Hub for processing.

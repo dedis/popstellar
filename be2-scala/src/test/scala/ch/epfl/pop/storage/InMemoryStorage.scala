@@ -14,6 +14,8 @@ case class InMemoryStorage(initial: Map[String, String] = Map.empty) extends Sto
     }
   }
 
+  override def filterKeysByPrefix(prefix: String): Set[String] = elements.keys.filter(str => str.startsWith(prefix)).toSet
+
   override def delete(key: String): Unit = elements -= key
 
   override def close(): Unit = ()

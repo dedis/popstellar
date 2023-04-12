@@ -2,6 +2,11 @@ package ch.epfl.pop.storage
 
 trait Storage {
 
+  /** List of prefix to the keys
+    */
+  final val CHANNEL_DATA_KEY = "ChannelData:"
+  final val DATA_KEY = "Data:"
+
   /** Optionally returns the value associated with a key
     *
     * @param key
@@ -17,6 +22,8 @@ trait Storage {
     *   collection of pairs of key and its associated values
     */
   def write(keyValues: (String, String)*): Unit
+
+  def filterKeysByPrefix(prefix: String): Set[String]
 
   /** Removes a single element from the storage
     *

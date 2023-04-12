@@ -90,6 +90,35 @@ class DiskStorageSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     an[DbActorNAckException] should be thrownBy storage.write(faultyBatch: _*)
   }
 
+  test("all the keys are retrieved") {
+    val storage = generateDiskStorage()
+
+    storage.write(BATCH: _*)
+    storage.filterKeysByPrefix("key") should equal(BATCH.map(s => s._1).toSet)
+  }
+
+  test("Only some of the keys are retrieved") {
+    val storage = generateDiskStorage()
+    val prefix = "test"
+
+    var set = Set[String]()
+    val MIXED_BATCH = BATCH
+      .map(s =>
+        (
+          if (s._1.hashCode % 2 == 0) {
+            set += prefix + s._1
+            prefix + s._1
+          } else
+            s._1
+          ,
+          s._2
+        )
+      )
+
+    storage.write(MIXED_BATCH: _*)
+    storage.filterKeysByPrefix(prefix) should equal(set)
+  }
+
   test("delete successfully deletes a key") {
     val storage: DiskStorage = generateDiskStorage()
 
