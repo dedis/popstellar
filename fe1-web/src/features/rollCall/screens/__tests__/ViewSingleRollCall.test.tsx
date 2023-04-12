@@ -87,25 +87,32 @@ beforeEach(() => {
 
 describe('EventRollCall', () => {
   describe('render correctly', () => {
-    const testRender = (rollCall: RollCall, isOrganizer: boolean) => () => {
-      mockStore.dispatch(updateRollCall(rollCall.toState()));
+    const testRender =
+      (
+        rollCall: RollCall,
+        isOrganizer: boolean,
+        attendeePopTokens: String[] | undefined = undefined,
+      ) =>
+      () => {
+        mockStore.dispatch(updateRollCall(rollCall.toState()));
 
-      const obj = render(
-        <Provider store={mockStore}>
-          <FeatureContext.Provider value={contextValue}>
-            <MockNavigator
-              component={ViewSingleRollCall}
-              params={{
-                eventId: rollCall.id.valueOf(),
-                isOrganizer,
-              }}
-            />
-          </FeatureContext.Provider>
-        </Provider>,
-      );
+        const obj = render(
+          <Provider store={mockStore}>
+            <FeatureContext.Provider value={contextValue}>
+              <MockNavigator
+                component={ViewSingleRollCall}
+                params={{
+                  eventId: rollCall.id.valueOf(),
+                  isOrganizer,
+                  attendeePopTokens: attendeePopTokens,
+                }}
+              />
+            </FeatureContext.Provider>
+          </Provider>,
+        );
 
-      expect(obj.toJSON()).toMatchSnapshot();
-    };
+        expect(obj.toJSON()).toMatchSnapshot();
+      };
 
     describe('organizers', () => {
       it('created roll calls', testRender(mockRollCallCreated, true));
@@ -119,6 +126,12 @@ describe('EventRollCall', () => {
       it('opened roll calls', testRender(mockRollCallOpened, false));
       it('re-opened roll calls', testRender(mockRollCallReopened, false));
       it('closed roll calls', testRender(mockRollCallClosed, false));
+    });
+
+    // test to verify that if same attendee present multiple times, only one is displayed (here: attendee1)
+    describe('no duplicate attendees', () => {
+      it('opened roll calls', testRender(mockRollCallOpened, false, ['attendee1']));
+      it('re-opened roll calls', testRender(mockRollCallReopened, false, ['attendee1']));
     });
   });
 });
