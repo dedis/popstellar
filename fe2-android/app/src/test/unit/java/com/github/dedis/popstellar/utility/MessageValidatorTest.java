@@ -1,41 +1,47 @@
 package com.github.dedis.popstellar.utility;
 
-import static org.junit.Assert.assertThrows;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.testutils.Base64DataUtils;
+
+import org.junit.Test;
 
 import java.time.Instant;
-import java.util.Base64;
-import org.junit.Test;
+import java.util.*;
+
+import static org.junit.Assert.assertThrows;
 
 public class MessageValidatorTest {
   private static final int DELTA_TIME = 100;
+  private static final PublicKey ORGANIZER = Base64DataUtils.generatePublicKey();
+  private static final String NAME = "lao name";
+  private static final long CREATION = Instant.now().getEpochSecond();
+  private static final String ID = Lao.generateLaoId(ORGANIZER, CREATION, NAME);
 
   @Test
-  public void testCheckStringNotEmpty() {
-    String validString = "test string";
-    String emptyString = "";
-    String field = "testField";
+  public void testCheckValidLaoId() {
+    String invalid1 = "invalidID";
+    String invalid2 = "A" + ID.substring(1);
 
-    MessageValidator.verify().checkStringNotEmpty(validString, field);
+    MessageValidator.verify().checkValidLaoId(ID, ORGANIZER, CREATION, NAME);
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkStringNotEmpty(emptyString, field));
+        () -> MessageValidator.verify().checkValidLaoId(invalid1, ORGANIZER, CREATION, NAME));
     assertThrows(
         IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkStringNotEmpty(null, field));
+        () -> MessageValidator.verify().checkValidLaoId(invalid2, ORGANIZER, CREATION, NAME));
   }
 
   @Test
-  public void testCheckBase64() {
-    String validBase64 = Base64.getEncoder().encodeToString("test data".getBytes());
-    String invalidBase64 = "This is not a valid Base64 string!";
-    String field = "testField";
+  public void testCheckValidTime() {
+    long currentTime = Instant.now().getEpochSecond();
+    long futureTime = currentTime + DELTA_TIME;
 
-    MessageValidator.verify().checkBase64(validBase64, field);
+    MessageValidator.verify().checkValidTime(currentTime);
     assertThrows(
-        IllegalArgumentException.class,
-        () -> MessageValidator.verify().checkBase64(invalidBase64, field));
+        IllegalArgumentException.class, () -> MessageValidator.verify().checkValidTime(futureTime));
     assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().checkBase64(null, field));
+        IllegalArgumentException.class, () -> MessageValidator.verify().checkValidTime(-1));
   }
 
   @Test
@@ -57,14 +63,45 @@ public class MessageValidatorTest {
   }
 
   @Test
-  public void testCheckValidTime() {
-    long currentTime = Instant.now().getEpochSecond();
-    long futureTime = currentTime + DELTA_TIME;
+  public void testCheckBase64() {
+    String validBase64 = Base64.getEncoder().encodeToString("test data".getBytes());
+    String invalidBase64 = "This is not a valid Base64 string!";
+    String field = "testField";
 
-    MessageValidator.verify().checkValidTime(currentTime);
+    MessageValidator.verify().checkBase64(validBase64, field);
     assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().checkValidTime(futureTime));
+        IllegalArgumentException.class,
+        () -> MessageValidator.verify().checkBase64(invalidBase64, field));
     assertThrows(
-        IllegalArgumentException.class, () -> MessageValidator.verify().checkValidTime(-1));
+        IllegalArgumentException.class, () -> MessageValidator.verify().checkBase64(null, field));
+  }
+
+  @Test
+  public void testCheckStringNotEmpty() {
+    String validString = "test string";
+    String emptyString = "";
+    String field = "testField";
+
+    MessageValidator.verify().checkStringNotEmpty(validString, field);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> MessageValidator.verify().checkStringNotEmpty(emptyString, field));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> MessageValidator.verify().checkStringNotEmpty(null, field));
+  }
+
+  @Test
+  public void testCheckListNotEmpty() {
+    List<Integer> valid1 = Arrays.asList(1, 2, 3);
+    List<String> valid2 = Arrays.asList("a", "b");
+    List<String> invalid = new ArrayList<>();
+
+    MessageValidator.verify().checkListNotEmpty(valid1);
+    MessageValidator.verify().checkListNotEmpty(valid2);
+    assertThrows(
+        IllegalArgumentException.class, () -> MessageValidator.verify().checkListNotEmpty(invalid));
+    assertThrows(
+        IllegalArgumentException.class, () -> MessageValidator.verify().checkListNotEmpty(null));
   }
 }

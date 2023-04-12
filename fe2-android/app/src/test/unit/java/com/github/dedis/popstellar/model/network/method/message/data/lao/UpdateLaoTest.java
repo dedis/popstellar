@@ -24,12 +24,13 @@ import static org.junit.Assert.*;
 public class UpdateLaoTest {
 
   private final String name = "New name";
-  private final long creation = 0xC972;
   private final PublicKey organizer = generatePublicKey();
-  private final long lastModified = 0xC972 + 10;
+  private final long lastModified = Instant.now().getEpochSecond();
+  private final long creation = lastModified - 10;
 
   private final Set<PublicKey> witnesses = Sets.newSet(generatePublicKey(), generatePublicKey());
-  private final UpdateLao updateLao = new UpdateLao(organizer, 10, name, lastModified, witnesses);
+  private final UpdateLao updateLao =
+      new UpdateLao(organizer, creation, name, lastModified, witnesses);
 
   @Test
   public void generateUpdateLaoIdTest() {
@@ -84,7 +85,7 @@ public class UpdateLaoTest {
 
   @Test
   public void getIdTest() {
-    assertThat(updateLao.getId(), is(Lao.generateLaoId(organizer, 10, name)));
+    assertThat(updateLao.getId(), is(Lao.generateLaoId(organizer, creation, name)));
   }
 
   @Test
@@ -94,7 +95,7 @@ public class UpdateLaoTest {
 
   @Test
   public void isEqual() {
-    assertEquals(updateLao, new UpdateLao(organizer, 10, name, lastModified, witnesses));
+    assertEquals(updateLao, new UpdateLao(organizer, creation, name, lastModified, witnesses));
     // different creation time so the id won't be the same
     assertNotEquals(updateLao, new UpdateLao(organizer, 20, name, lastModified, witnesses));
     // different organizer so the id won't be the same
