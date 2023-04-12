@@ -1,9 +1,7 @@
 import secrets
-from urllib import parse
 from flask import Flask, request, redirect, Response
 from authentication import get_url
 import json
-
 
 # Define the global variables
 home_page_html: str = ""
@@ -12,12 +10,12 @@ providers: list = []
 
 
 def check_config(config_file) -> bool:
-    if "client_id" not in config.keys() or config["client_id"]:
+    if "client_id" not in config.keys() or config["client_id"] == '':
         config["client_id"] = secrets.token_urlsafe(32)
         config_file.seek(0)
         config_file.write(json.dumps(config))
         return False
-    if "host_url" not in config.keys() or config["host_url"] != "":
+    if "host_url" not in config.keys() or config["host_url"] == "":
         raise ValueError("The \"server_url\" property should be set in config.json and not empty")
     if "host_port" not in config.keys() or config["host_port"] < 1:
         raise ValueError("The \"server_port\" should be set in config.json and greater than 0")
@@ -40,10 +38,10 @@ def on_startup() -> None:
     Open ID providers, as well as basic config information such as the homepage HTML code or the
     """
     global home_page_html, providers, config
-    with open("data/providers.json") as provider_file:
+    with open("server/data/providers.json") as provider_file:
         providers = json.loads(provider_file.read())
         filter_providers()
-    with open("data/config.json", "r+") as config_file:
+    with open("server/data/config.json", "r+") as config_file:
         config = json.loads(config_file.read())
         if not check_config(config_file):
             config_file.seek(0)
@@ -51,15 +49,15 @@ def on_startup() -> None:
     htmlProviders = [f'<option value="{str(i)}">{provider.get("lao_id")}@{provider.get("domain")}</option>' for
                      i, provider
                      in enumerate(providers)]
-    home_page_html = open("model/index.html", "r").read().replace("<!-- Insert options -->", ''.join(htmlProviders))
+    home_page_html = open("server/model/index.html", "r").read().replace("<!-- Insert options -->",
+                                                                         ''.join(htmlProviders))
 
 
 app = Flask("Example_authentication_server")
+on_startup()
+
 
 # Step1: Returns the homepage
-app.get("/home/")
-
-
 @app.get("/")
 def root() -> str:
     return home_page_html
@@ -75,5 +73,4 @@ def authentication() -> Response:
 
 # Step 0: Starts the server
 if __name__ == "__main__":
-    on_startup()
     app.run(host=config["host_url"], port=config["host_port"], debug=True)
