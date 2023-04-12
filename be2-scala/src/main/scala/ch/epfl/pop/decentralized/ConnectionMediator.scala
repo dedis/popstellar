@@ -48,7 +48,7 @@ final case class ConnectionMediator(
       serverSet -= serverRef
       // Tell monitor to stop scheduling heartbeats since there is no one to receive them
       if (serverSet.isEmpty)
-        sender() ! Monitor.NoServerConnected
+        monitorRef ! Monitor.NoServerConnected
 
     case Heartbeat(map) =>
       log.info("sending to some hearbeat to the clients")
