@@ -25,10 +25,10 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
       Monitor.props(testProbe.ref, PERIODIC_HEARTBEAT = 2.seconds, MESSAGE_DELAY = 1.seconds)
     )
 
-    testProbe.send(monitorRef, ConnectionMediator.AtLeastOneServerConnected)
-    testProbe.expectMsgType[HeartbeatGenerator.SendHeartbeat]
-    testProbe.expectMsgType[HeartbeatGenerator.SendHeartbeat]
-    testProbe.expectMsgType[HeartbeatGenerator.SendHeartbeat]
+    testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
   }
 
   test("monitor should schedule single heartbeat when receiving a Right GraphMessage") {
@@ -39,11 +39,11 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     )
 
     // Needed to tell monitor ConnectionMediatorRef
-    testProbe.send(monitorRef, ConnectionMediator.AtLeastOneServerConnected)
+    testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
 
     val sink = Monitor.sink(monitorRef)
     Source.single(Right(JsonRpcRequestExample.subscribeRpcRequest)).to(sink).run()
-    testProbe.expectMsgType[HeartbeatGenerator.SendHeartbeat]
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
 
   }
 
@@ -55,17 +55,17 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     )
 
     // Needed to tell monitor ConnectionMediatorRef
-    testProbe.send(monitorRef, ConnectionMediator.AtLeastOneServerConnected)
+    testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
 
     // Wait for the first hearbeat then "disconnect" servers
-    testProbe.expectMsgType[HeartbeatGenerator.SendHeartbeat]
-    testProbe.send(monitorRef, ConnectionMediator.NoServerConnected)
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
+    testProbe.send(monitorRef, Monitor.NoServerConnected)
 
     testProbe.expectNoMessage(5.seconds)
 
     // Connect a server and check for heartbeats again
-    testProbe.send(monitorRef, ConnectionMediator.AtLeastOneServerConnected)
+    testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
 
-    testProbe.expectMsgType[HeartbeatGenerator.SendHeartbeat]
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
   }
 }

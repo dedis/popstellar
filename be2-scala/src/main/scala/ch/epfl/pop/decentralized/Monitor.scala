@@ -29,18 +29,18 @@ final case class Monitor(
 
   override def receive: Receive = LoggingReceive {
 
-    case ConnectionMediator.AtLeastOneServerConnected =>
+    case Monitor.AtLeastOneServerConnected =>
       connectionActorRef = sender()
       if (!timers.isTimerActive(periodicHbKey))
         timers.startTimerWithFixedDelay(periodicHbKey, TriggerHeartbeat, PERIODIC_HEARTBEAT)
 
-    case ConnectionMediator.NoServerConnected =>
+    case Monitor.NoServerConnected =>
       timers.cancelAll()
 
-    case TriggerHeartbeat =>
+    case Monitor.TriggerHeartbeat =>
       log.info("triggering a heartbeat")
       timers.cancel(singleHbKey)
-      heartbeatGenRef ! HeartbeatGenerator.SendHeartbeat(connectionActorRef)
+      heartbeatGenRef ! Monitor.GenerateAndSendHeartbeat(connectionActorRef)
 
     case Right(jsonRpcRequest: JsonRpcRequest) =>
       jsonRpcRequest.getParams match {
@@ -74,6 +74,9 @@ object Monitor {
   }
 
   sealed trait Event
+  final case class AtLeastOneServerConnected() extends Event
+  final case class NoServerConnected() extends Event
+  final case class GenerateAndSendHeartbeat(connectionMediatorRef: ActorRef) extends Event
   final case class TriggerHeartbeat() extends Event
   private final case class DoNothing() extends Event
 }
