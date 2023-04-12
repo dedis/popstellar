@@ -48,7 +48,7 @@ public class LAONetworkManagerTest {
   private final BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
 
   @Mock MessageHandler handler;
-  @Mock Connection connection;
+  @Mock MultiConnection connection;
 
   @Before
   public void setup() {

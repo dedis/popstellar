@@ -244,7 +244,9 @@ public final class LaoHandler {
     Log.d(TAG, "Adding the server to the repository for lao id : " + laoView.getId());
     serverRepo.addServer(greetLao.getId(), server);
 
-    // In the future, implement automatic connection to all the peers contained in the peers
-    // message
+    // Extend the current connection by connecting to the peers of the main server
+    // The greetLao will also be sent by the other servers, so the message sender
+    // should handle this, avoiding to connect twice to the same server
+    context.getMessageSender().extendConnection(greetLao.getPeers());
   }
 }

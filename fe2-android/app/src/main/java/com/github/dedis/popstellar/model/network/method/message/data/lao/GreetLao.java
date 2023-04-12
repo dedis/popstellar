@@ -92,7 +92,7 @@ public class GreetLao extends Data {
     boolean checkId = that.getId().equals(getId());
     boolean checkAddress = that.getAddress().equals(getAddress());
     boolean checkSendKey = that.getFrontendKey().equals(getFrontendKey());
-    boolean checkPeers = that.getPeers().containsAll(getPeers());
+    boolean checkPeers = new HashSet<>(that.getPeers()).containsAll(getPeers());
 
     return checkId && checkPeers && checkSendKey && checkAddress;
   }
