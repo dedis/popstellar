@@ -24,7 +24,7 @@ function fn() {
     // customize
     config.host = '127.0.0.1';
     config.port = 8000;
-    config.path = '';
+    config.path = 'client';
     config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
   } else {
     config.port = 9005;
