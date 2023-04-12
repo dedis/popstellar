@@ -56,7 +56,7 @@
     tools:ignore="UseSwitchCompatOrMaterialXml" />
 
   <ScrollView
-    android:layout_width="wrap_content"
+    android:layout_width="@dimen/zero_dp"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/election_setup_text_field_margin_lateral"
     android:layout_marginEnd="@dimen/election_setup_text_field_margin_lateral"
