@@ -20,7 +20,6 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.ZoomOutTransformer;
 import com.github.dedis.popstellar.ui.lao.event.election.adapters.CastVoteViewPagerAdapter;
-import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
@@ -110,8 +109,37 @@ public class CastVoteFragment extends Fragment {
     // setUp the cast Vote button
     binding.castVoteButton.setOnClickListener(this::castVote);
 
+    setEncryptionVotes();
+
     handleBackNav();
     return binding.getRoot();
+  }
+
+  /**
+   * Show the progress bar and block user's touch inputs if the encryption of the vote takes time
+   */
+  private void setEncryptionVotes() {
+    // observe the progress for encryption
+    electionViewModel
+        .getIsEncrypting()
+        .observe(
+            getViewLifecycleOwner(),
+            isEncrypting -> {
+              // Block touch inputs if loading and display progress bar
+              if (Boolean.TRUE.equals(isEncrypting)) {
+                binding.loadingContainer.setVisibility(View.VISIBLE);
+                requireActivity()
+                    .getWindow()
+                    .setFlags(
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+              } else {
+                binding.loadingContainer.setVisibility(View.GONE);
+                requireActivity()
+                    .getWindow()
+                    .clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+              }
+            });
   }
 
   private boolean setLaoName() {
@@ -165,14 +193,10 @@ public class CastVoteFragment extends Fragment {
           electionViewModel
               .sendVote(electionId, plainVotes)
               .subscribe(
-                  () -> {
-                    LaoActivity.setCurrentFragment(
-                        getParentFragmentManager(),
-                        R.id.fragment_event_list,
-                        EventListFragment::newInstance);
-                    // Toast ? + send back to election screen or details screen ?
-                    Toast.makeText(requireContext(), R.string.vote_sent, Toast.LENGTH_LONG).show();
-                  },
+                  () ->
+                      Toast.makeText(
+                              requireContext(), R.string.vote_sent, Toast.LENGTH_LONG)
+                          .show(),
                   err -> logAndShow(requireContext(), TAG, err, R.string.error_send_vote)));
     } catch (UnknownElectionException err) {
       logAndShow(requireContext(), TAG, err, R.string.generic_error);

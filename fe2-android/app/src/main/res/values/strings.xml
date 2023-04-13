@@ -136,6 +136,7 @@
   <string name="voting_method_spinner_text">Voting method</string>
   <string name="write_in_switch_text">Allow write in</string>
   <string name="new_ballot_option_hint">ballot option</string>
+  <string name="encrypting_vote">Encrypting the vote…</string>
   <string name="voting_method">Plurality</string>
   <string name="vote_encrypted">Vote encrypted!</string>
   <string name="vote_sent">Vote successfully sent!</string>
