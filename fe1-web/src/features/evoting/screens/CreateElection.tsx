@@ -151,6 +151,10 @@ const createElection = (
   );
 };
 
+/**
+ * Trims a single question and it's properties
+ * @param question
+ */
 const trimQuestion = (question: NewQuestion): NewQuestion => {
   return {
     ...question,
@@ -161,6 +165,12 @@ const trimQuestion = (question: NewQuestion): NewQuestion => {
   };
 };
 
+/**
+ * Display the error message that are not directly related to a question
+ * @param isConnected If the user isConnected to the LAO
+ * @param electionName the trimmed name of the election
+ * @param trimmedQuestions the trimmed questions of the election
+ */
 const globalErrorMessages = (
   isConnected: boolean,
   electionName: string,
@@ -192,6 +202,10 @@ const globalErrorMessages = (
   );
 };
 
+/**
+ * Generate some unique key from the index for each default question
+ * @param defaultQuestions
+ */
 const defaultWithID = (defaultQuestions: NewQuestion[]): NewQuestion[] => {
   return defaultQuestions.map((question, idx) => {
     return { ...question, id: idx.toString() };
