@@ -1711,6 +1711,7 @@ func Test_Handle_Heartbeat(t *testing.T) {
 		Socket:  sock,
 		Message: msg,
 	})
+	require.NoError(t, err)
 	require.NoError(t, sock.err)
 
 	//socket should receive a getMessagesById query after handling of heartbeat
