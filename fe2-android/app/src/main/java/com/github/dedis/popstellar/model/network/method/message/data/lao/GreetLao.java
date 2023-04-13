@@ -1,13 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
 import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.Immutable;
-import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.MessageValidator;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.*;
 
 @Immutable
@@ -48,7 +50,7 @@ public class GreetLao extends Data {
       @NonNull List<PeerAddress> peers) {
     MessageValidator.verify().checkBase64(id, "id");
     // Checking that the id matches the current lao id is done in the GreetLao handler
-    id = id;
+    this.id = id;
 
     // Checking the validity of the public key is done via the Public Key class
     try {
@@ -58,11 +60,10 @@ public class GreetLao extends Data {
     }
 
     // Validity of the address is checked at deserialization
-    address = address;
+    this.address = address;
 
     // Peers can be empty
-    peers = new ArrayList<>(peers);
-
+    this.peers = new ArrayList<>(peers);
   }
 
   // Set of getters for t
