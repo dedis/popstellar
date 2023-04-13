@@ -1983,7 +1983,6 @@ var msg3 = message.Message{
 	WitnessSignatures: nil,
 }
 
-var res1 = []message.Message{msg1, msg2}
 var res2 = []message.Message{msg3}
 
 var idsRoot = []string{msg1.MessageID, msg2.MessageID}
