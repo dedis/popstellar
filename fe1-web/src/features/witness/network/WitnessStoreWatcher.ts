@@ -122,11 +122,12 @@ export const makeWitnessStoreWatcher = (
   let currentAllIds: string[] = [];
   let currentUnprocessedIds: string[] = [];
   return () => {
+    const laoId = getCurrentLaoId();
     // we have to be careful with ExtendedMessage.fromState
     // since some message constructors assume that we are connected to a lao
     // thus we delay this watcher until we are connected to a lao
     // (sending witness messages would also be difficult under these circumstances)
-    if (!getCurrentLaoId()) {
+    if (!laoId) {
       return;
     }
 
@@ -134,7 +135,7 @@ export const makeWitnessStoreWatcher = (
 
     const msgState = getMessagesState(state);
     const allIds = msgState?.allIds || [];
-    previousAllIds = currentAllIds;
+    previousAllIds = currentAllIds || [];
     currentAllIds = allIds;
 
     const unprocessedIds = msgState?.unprocessedIds || [];
@@ -153,14 +154,19 @@ export const makeWitnessStoreWatcher = (
 
     // get all message ids that are part of currentAllIds
     for (const msgId of currentAllIds) {
-      // and that are currently not part of unprocessedIds
+      // and that are part of this lao and currently not part of unprocessedIds
       if (!currentUnprocessedIds.includes(msgId)) {
         // and that either have not been part of previousAllIds OR
         // have been part of previousUnprocessedIds
         if (!previousAllIds.includes(msgId) || previousUnprocessedIds.includes(msgId)) {
           // i.e. all messages that have been processed
           // since the last call of this function
-          afterProcessingHandler(ExtendedMessage.fromState(msgState.byId[msgId]));
+          const msg = ExtendedMessage.fromState(msgState.byId[msgId]);
+          if (msg.laoId?.valueOf() === laoId.valueOf()) {
+            afterProcessingHandler(msg);
+          } else {
+            currentAllIds = currentAllIds.filter((id) => id !== msgId);
+          }
         }
       }
     }
