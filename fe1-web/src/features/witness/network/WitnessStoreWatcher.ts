@@ -162,6 +162,7 @@ export const makeWitnessStoreWatcher = (
           // i.e. all messages that have been processed
           // since the last call of this function
           const msg = ExtendedMessage.fromState(msgState.byId[msgId]);
+          // The message is witnessed only if it comes from the current lao
           if (msg.laoId?.valueOf() === laoId.valueOf()) {
             afterProcessingHandler(msg);
           } else {
