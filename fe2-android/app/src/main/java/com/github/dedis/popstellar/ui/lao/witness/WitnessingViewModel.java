@@ -147,8 +147,6 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
             });
   }
 
-
-
   @Override
   public void handleData(String data) {
     MainPublicKeyData pkData;
@@ -173,7 +171,8 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
         updateLaoWitnesses()
             .subscribe(
                 () -> {
-                  String networkSuccess = "Witness " + publicKey + " successfully added to LAO";
+                  String networkSuccess =
+                      String.format(getApplication().getString(R.string.witness_added), publicKey);
                   Log.d(TAG, networkSuccess);
                   Toast.makeText(getApplication(), networkSuccess, Toast.LENGTH_SHORT).show();
                 },

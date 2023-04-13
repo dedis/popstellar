@@ -165,7 +165,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
   protected void updateRole() {
     Role currentRole = determineRole();
     if (role.getValue() != currentRole) {
-      this.role.setValue(currentRole);
+      role.setValue(currentRole);
     }
   }
 
@@ -179,7 +179,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
    * @param disposable to add
    */
   public void addDisposable(Disposable disposable) {
-    this.disposables.add(disposable);
+    disposables.add(disposable);
   }
 
   @Override

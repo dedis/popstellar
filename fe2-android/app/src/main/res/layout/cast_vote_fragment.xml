@@ -10,6 +10,35 @@
     android:layout_margin="@dimen/container_margin"
     tools:context=".ui.lao.event.election.fragments.CastVoteFragment">
 
+    <FrameLayout
+      android:id="@+id/loading_container"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+      <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+      <TextView
+        android:id="@+id/encrypting_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/encrypting_vote"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/election_encrypting_text_offset"
+        app:layout_constraintBottom_toTopOf="@+id/progress_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    </FrameLayout>
+
     <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline_tab"
       android:layout_width="wrap_content"

@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.network.method.*;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
@@ -33,7 +34,7 @@ public class LAONetworkManager implements MessageSender {
   private static final String TAG = LAONetworkManager.class.getSimpleName();
 
   private final MessageHandler messageHandler;
-  private final Connection connection;
+  private final MultiConnection multiConnection;
   public final AtomicInteger requestCounter = new AtomicInteger();
   private final SchedulerProvider schedulerProvider;
   private final Gson gson;
@@ -45,13 +46,12 @@ public class LAONetworkManager implements MessageSender {
 
   public LAONetworkManager(
       MessageHandler messageHandler,
-      Connection connection,
+      MultiConnection multiConnection,
       Gson gson,
       SchedulerProvider schedulerProvider,
       Set<Channel> subscribedChannels) {
-
     this.messageHandler = messageHandler;
-    this.connection = connection;
+    this.multiConnection = multiConnection;
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;
     this.subscribedChannels = new HashSet<>(subscribedChannels);
@@ -64,7 +64,7 @@ public class LAONetworkManager implements MessageSender {
 
   private void resubscribeToChannelOnReconnection() {
     disposables.add(
-        connection
+        multiConnection
             .observeConnectionEvents() // Observe the events of a connection
             .subscribeOn(schedulerProvider.io())
             // Filter out events that are not related to a reconnection
@@ -90,10 +90,10 @@ public class LAONetworkManager implements MessageSender {
     disposables.add(
         Observable.merge(
                 // Normal message received over the wire
-                connection.observeMessage(),
-                // Packets that could not be processed (maybe due to a reordering), this is merged
-                // into
-                // incoming message with a delay of 5 seconds to give priority to new messages.
+                multiConnection.observeMessage(),
+                // Packets that could not be processed (maybe due to a reordering),
+                // this is merged into incoming message,
+                // with a delay of 5 seconds to give priority to new messages.
                 unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
             .filter(Broadcast.class::isInstance) // Filter the Broadcast
             .map(Broadcast.class::cast)
@@ -169,12 +169,23 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public Observable<WebSocket.Event> getConnectEvents() {
-    return connection.observeConnectionEvents();
+    return multiConnection.observeConnectionEvents();
   }
 
   @Override
   public Set<Channel> getSubscriptions() {
     return new HashSet<>(subscribedChannels);
+  }
+
+  @Override
+  public void extendConnection(List<PeerAddress> peerAddressList) {
+    // If succeeded in extending the connections then return true
+    if (multiConnection.connectToPeers(peerAddressList)) {
+      // Start the incoming message processing for the other connections
+      processIncomingMessages();
+      // Start the routine aimed at resubscribing to channels when the connection is lost
+      resubscribeToChannelOnReconnection();
+    }
   }
 
   private void handleBroadcast(Broadcast broadcast) {
@@ -206,12 +217,12 @@ public class LAONetworkManager implements MessageSender {
   }
 
   private Single<Answer> request(Query query) {
-    return connection
+    return multiConnection
         .observeMessage() // Observe incoming messages
         // Send the message upon subscription the the incoming messages. That way we are
         // certain the reply will be processed and the message is only sent when an observer
         // subscribes to the request answer.
-        .doOnSubscribe(d -> connection.sendMessage(query))
+        .doOnSubscribe(d -> multiConnection.sendMessage(query))
         .filter(Answer.class::isInstance) // Filter for Answers
         .map(Answer.class::cast)
         // This specific request has an id, only let the related Answer pass
@@ -240,7 +251,7 @@ public class LAONetworkManager implements MessageSender {
   @Override
   public void dispose() {
     disposables.dispose();
-    connection.close();
+    multiConnection.close();
   }
 
   @Override

@@ -3,9 +3,11 @@ package com.github.dedis.popstellar.repository.remote;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.PeerAddress;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.tinder.scarlet.WebSocket;
 
+import java.util.List;
 import java.util.Set;
 
 import io.reactivex.Completable;
@@ -74,4 +76,11 @@ public interface MessageSender extends Disposable {
    * @return the list of channels we subscribed to
    */
   Set<Channel> getSubscriptions();
+
+  /**
+   * Extend the connection by connecting to the peers of a server upon a GreetLao
+   *
+   * @param peerAddressList list of peers to be connected
+   */
+  void extendConnection(List<PeerAddress> peerAddressList);
 }

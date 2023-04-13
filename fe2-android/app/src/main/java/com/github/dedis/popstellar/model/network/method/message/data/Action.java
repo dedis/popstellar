@@ -55,12 +55,9 @@ public enum Action {
    * @return the corresponding enum action
    */
   public static Action find(String searched) {
-    for (Action action : ALL) {
-      if (action.getAction().equals(searched)) {
-        return action;
-      }
-    }
-
-    return null;
+    return ALL.stream()
+        .filter(action -> action.getAction().equals(searched))
+        .findFirst()
+        .orElse(null);
   }
 }

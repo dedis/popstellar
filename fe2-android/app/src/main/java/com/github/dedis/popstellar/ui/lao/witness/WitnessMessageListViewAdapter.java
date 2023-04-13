@@ -76,7 +76,9 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
-    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+    if (binding == null) {
+      throw new IllegalStateException("Binding could not be find in the view");
+    }
 
     Context context = parent.getContext();
     View.OnClickListener listener =
@@ -84,13 +86,14 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
           AlertDialog.Builder adb = new AlertDialog.Builder(context);
 
           if (Boolean.TRUE.equals(laoViewModel.isWitness().getValue())) {
-            adb.setTitle("Sign Message");
+            adb.setTitle(R.string.sign_message);
             adb.setMessage(
-                " Are you sure you want to sign message with ID : "
-                    + messages.get(position).getMessageId());
-            adb.setNegativeButton("Cancel", null);
+                String.format(
+                    context.getString(R.string.confirm_to_sign),
+                    messages.get(position).getMessageId()));
+            adb.setNegativeButton(R.string.cancel, null);
             adb.setPositiveButton(
-                "Confirm",
+                R.string.confirm,
                 (dialog, which) ->
                     laoViewModel.addDisposable(
                         witnessingViewModel
@@ -101,10 +104,10 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                                     ErrorUtils.logAndShow(
                                         activity, TAG, error, R.string.error_sign_message))));
           } else {
-            adb.setTitle("You are not a witness");
-            adb.setMessage("You need to be a witness in order to sign this message");
+            adb.setTitle(R.string.not_a_witness);
+            adb.setMessage(R.string.not_a_witness_explanation);
             adb.setCancelable(false);
-            adb.setPositiveButton("Ok", (dialog, which) -> {});
+            adb.setPositiveButton(R.string.ok, (dialog, which) -> {});
           }
           adb.show();
         };
