@@ -35,7 +35,7 @@ public class CloseRollCall extends Data {
    * @param attendees list of attendees of the Roll-Call
    */
   public CloseRollCall(String laoId, String closes, long closedAt, List<PublicKey> attendees) {
-    this.updateId = RollCall.generateCloseRollCallId(laoId, closes, closedAt);
+    updateId = RollCall.generateCloseRollCallId(laoId, closes, closedAt);
     this.closes = closes;
     this.closedAt = closedAt;
     this.attendees = new ArrayList<>(attendees);

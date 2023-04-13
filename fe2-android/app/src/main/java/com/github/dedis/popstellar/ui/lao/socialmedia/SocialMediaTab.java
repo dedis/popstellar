@@ -22,13 +22,10 @@ public enum SocialMediaTab {
    * @return the tab corresponding to the given menu id
    */
   public static SocialMediaTab findByMenu(@IdRes int menuId) {
-    for (SocialMediaTab tab : ALL) {
-      if (tab.menuId == menuId) {
-        return tab;
-      }
-    }
-
-    throw new IllegalArgumentException("Unknown id : " + menuId);
+    return ALL.stream()
+        .filter(tab -> tab.menuId == menuId)
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Unknown id : " + menuId));
   }
 
   @IdRes private final int menuId;

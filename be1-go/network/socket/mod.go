@@ -51,7 +51,10 @@ type Socket interface {
 	SendError(id *int, err error)
 
 	// SendResult is used to send a result message to the client. Res can be
-	// nil, empty, or filled. In case it is nil it sends the "0" return value.
+	// nil, empty, or filled if the result is a slice of messages.
+	// MissingMessagesByChannel can be nil or filled if the result is a map
+	// associating a channel to a slice of messages. In case both are nil
+	// it sends the "0" return value. You can either send res or missingMessagesByChannel, not both.
 	SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message)
 }
 

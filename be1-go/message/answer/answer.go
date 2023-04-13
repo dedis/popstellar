@@ -2,6 +2,7 @@ package answer
 
 import (
 	"encoding/json"
+	"fmt"
 	"golang.org/x/xerrors"
 	message "popstellar/message"
 )
@@ -15,7 +16,7 @@ type Answer struct {
 	Error  *Error  `json:"error,omitempty"`
 }
 
-// Result can be either a 0 int, a slice of messages or an array of MessageIdsByChannelId objects
+// Result can be either a 0 int, a slice of messages or a map of messages associated to a channel ID
 type Result struct {
 	isEmpty           bool
 	data              []json.RawMessage
@@ -31,12 +32,21 @@ func (r *Result) UnmarshalJSON(buf []byte) error {
 		return nil
 	}
 
-	err := json.Unmarshal(buf, &r.data)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal data: %v", err)
+	errData := json.Unmarshal(buf, &r.data)
+	if errData == nil {
+		return nil
 	}
 
-	return nil
+	errMsg := fmt.Sprintf("failed to unmarshal into r.data: %v", errData)
+
+	errMessagesByChannel := json.Unmarshal(buf, &r.MessagesByChannel)
+	if errMessagesByChannel == nil {
+		return nil
+	}
+
+	errMsg += fmt.Sprintf("failed to unmarshal into r.MessagesByChannel: %v", errMessagesByChannel)
+
+	return xerrors.Errorf("failed to unmarshal result: %s", errMsg)
 }
 
 // IsEmpty tells if there are potentially 0 or more messages in the result.

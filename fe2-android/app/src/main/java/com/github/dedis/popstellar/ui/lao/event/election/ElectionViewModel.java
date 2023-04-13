@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
 import java.util.List;
@@ -186,6 +187,20 @@ public class ElectionViewModel extends AndroidViewModel {
             });
   }
 
+  /**
+   * Function to enable the user to vote checking they have a valid pop token
+   *
+   * @return true if they can vote, false otherwise
+   */
+  public boolean canVote() {
+    try {
+      keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId));
+    } catch (KeyException e) {
+      return false;
+    }
+    return true;
+  }
+
   @NonNull
   private CastVote createCastVote(List<PlainVote> votes, Election election, LaoView laoView) {
     if (election.getElectionVersion() == ElectionVersion.OPEN_BALLOT) {
@@ -193,7 +208,7 @@ public class ElectionViewModel extends AndroidViewModel {
     } else {
       List<EncryptedVote> encryptedVotes = election.encrypt(votes);
 
-      Toast.makeText(getApplication(), "Vote encrypted !", Toast.LENGTH_LONG).show();
+      Toast.makeText(getApplication(), R.string.vote_encrypted, Toast.LENGTH_LONG).show();
       return new CastVote(encryptedVotes, election.getId(), laoView.getId());
     }
   }

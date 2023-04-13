@@ -200,6 +200,11 @@ func (s *baseSocket) SendError(id *int, err error) {
 func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesByChannel map[string][]message.Message) {
 	var answer interface{}
 
+	if res != nil && missingMessagesByChannel != nil {
+		s.log.Error().Msg("The result must be either a slice or a map of messages, not both.")
+		return
+	}
+
 	if res == nil && missingMessagesByChannel == nil {
 		answer = struct {
 			JSONRPC string `json:"jsonrpc"`
@@ -238,7 +243,7 @@ func (s *baseSocket) SendResult(id int, res []message.Message, missingMessagesBy
 	}
 
 	s.log.Info().
-		Str("to", s.conn.RemoteAddr().String()).
+		Str("to", s.id).
 		Str("msg", string(answerBuf)).
 		Msg("send result")
 	s.send <- answerBuf
