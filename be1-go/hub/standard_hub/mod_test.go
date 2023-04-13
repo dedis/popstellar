@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/exp/slices"
 	"io"
 	"os"
 	"path/filepath"
@@ -1629,6 +1630,168 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	c.Unlock()
 }
 
+// Test that the correct heartbeat message is sent
+func Test_Send_Heartbeat_Message(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "", nolog, nil)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.serverSockets.Upsert(sock)
+
+	hub.hubInbox.StoreMessage(msg1)
+	hub.hubInbox.StoreMessage(msg2)
+	hub.hubInbox.StoreMessage(msg3)
+
+	hub.messageIdsByChannel["/root"] = idsRoot
+	hub.messageIdsByChannel["/root/channel1"] = idsChannel1
+
+	err = hub.sendHeartbeatToServers()
+	require.NoError(t, err)
+
+	heartbeatMsg := sock.msg
+
+	var heartbeat method.Heartbeat
+
+	err = json.Unmarshal(heartbeatMsg, &heartbeat)
+	require.NoError(t, err)
+
+	messageIdsSent := heartbeat.Params
+
+	//Check that all the stored messages where sent
+	for storedChannel, storedIds := range hub.messageIdsByChannel {
+		sentIds, exists := messageIdsSent[storedChannel]
+		require.True(t, exists)
+		for _, storedId := range storedIds {
+			require.True(t, slices.Contains(sentIds, storedId))
+		}
+	}
+
+}
+
+// Test that the heartbeat messages are properly handled
+func Test_Handle_Heartbeat(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "", nolog, nil)
+	require.NoError(t, err)
+
+	hub.hubInbox.StoreMessage(msg1)
+
+	hub.messageIdsByChannel["/root"] = []string{msg1.MessageID}
+
+	sock := &fakeSocket{}
+
+	//The message Ids sent in hearbeat message
+	messageIds := make(map[string][]string)
+	messageIds["/root"] = idsRoot
+	messageIds["/root/channel1"] = idsChannel1
+
+	//The missing Ids the server should request
+	missingIds := make(map[string][]string)
+	missingIds["/root"] = []string{msg2.MessageID}
+	missingIds["/root/channel1"] = idsChannel1
+
+	heartbeatMessage := method.Heartbeat{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodHeartbeat,
+		},
+		Params: messageIds,
+	}
+
+	msg, err := json.Marshal(heartbeatMessage)
+	require.NoError(t, err)
+
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg,
+	})
+	require.NoError(t, sock.err)
+
+	//socket should receive a getMessagesById query after handling of heartbeat
+	var getMessagesById method.GetMessagesById
+
+	err = json.Unmarshal(sock.msg, &getMessagesById)
+	require.NoError(t, err)
+
+	requestedIds := getMessagesById.Params
+
+	for channelId, messageIds := range missingIds {
+		requestedIds, exists := requestedIds[channelId]
+		require.True(t, exists)
+		for _, storedId := range messageIds {
+			require.True(t, slices.Contains(requestedIds, storedId))
+		}
+	}
+}
+
+// Test that the getMessagesById messages are properly handled
+func Test_Handle_GetMessagesById(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, "", nolog, nil)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.serverSockets.Upsert(sock)
+
+	hub.hubInbox.StoreMessage(msg1)
+	hub.hubInbox.StoreMessage(msg2)
+	hub.hubInbox.StoreMessage(msg3)
+
+	hub.messageIdsByChannel["/root"] = idsRoot
+	hub.messageIdsByChannel["/root/channel1"] = idsChannel1
+
+	//The missing Ids requested by the server
+	missingIds := make(map[string][]string)
+	missingIds["/root"] = []string{msg2.MessageID}
+	missingIds["/root/channel1"] = idsChannel1
+
+	//The missing messages the server should receive
+	missingMessages := make(map[string][]message.Message)
+	missingMessages["/root"] = []message.Message{msg2}
+	missingMessages["/root/channel1"] = res2
+
+	getMessagesById := method.GetMessagesById{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: query.MethodGetMessagesById,
+		}, ID: 5,
+		Params: missingIds,
+	}
+
+	msg, err := json.Marshal(getMessagesById)
+	require.NoError(t, err)
+
+	err = hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: msg,
+	})
+	require.NoError(t, err)
+
+	require.Equal(t, getMessagesById.ID, sock.resultID)
+
+	receivedMessages := sock.missingMsgs
+	for receivedChannelIds, receivedMessagesForChannel := range receivedMessages {
+		for _, msg := range receivedMessagesForChannel {
+			require.Contains(t, missingMessages[receivedChannelIds], msg)
+		}
+	}
+}
+
+// Test that the answers to a getMessagesById are properly handled
+func Test_Handle_GetMessagesById_Answer(t *testing.T) {
+
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
@@ -1793,3 +1956,35 @@ func (f *fakeSocket) ID() string {
 func (f *fakeSocket) Type() socket.SocketType {
 	return socket.ClientSocketType
 }
+
+// -------------------------------------
+// Test variables definition
+
+var msg1 = message.Message{
+	Data:              "data1",
+	Sender:            "sender1",
+	Signature:         "signature1",
+	MessageID:         "message1",
+	WitnessSignatures: nil,
+}
+var msg2 = message.Message{
+	Data:              "data2",
+	Sender:            "sender2",
+	Signature:         "signature2",
+	MessageID:         "message2",
+	WitnessSignatures: nil,
+}
+
+var msg3 = message.Message{
+	Data:              "data3",
+	Sender:            "sender3",
+	Signature:         "signature3",
+	MessageID:         "message3",
+	WitnessSignatures: nil,
+}
+
+var res1 = []message.Message{msg1, msg2}
+var res2 = []message.Message{msg3}
+
+var idsRoot = []string{msg1.MessageID, msg2.MessageID}
+var idsChannel1 = []string{msg3.MessageID}

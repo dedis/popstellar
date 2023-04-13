@@ -190,7 +190,7 @@ func (h *Hub) Start() {
 			case <-ticker.C:
 				err := h.sendHeartbeatToServers()
 				if err != nil {
-					h.log.Err(err).Msg("problem sending heartbeat to servers")
+					h.log.Err(err).Msgf("Failed to send heartbeat message to servers %v", err)
 				}
 			case <-h.stop:
 				h.log.Info().Msg("stopping the hub")
@@ -497,16 +497,15 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 
 }
 
+// sendGetMessagesByIdToServer sends a getMessagesById message to a server
 func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[string][]string) error {
 	h.Lock()
 	defer h.Unlock()
-	h.log.Info().Msg("Entering getMessagesById")
 
 	queryId := h.queries.nextID
 	baseValue := false
 	h.queries.state[queryId] = &baseValue
 
-	h.log.Info().Msg("Sending getMessagesById")
 	getMessagesById := method.GetMessagesById{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -531,14 +530,12 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 	return nil
 }
 
-// sendHeartbeatToServers send a heartbeat message to all servers
+// sendHeartbeatToServers sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() error {
 	h.Lock()
 	defer h.Unlock()
-	h.log.Info().Msg("Entering heartbeat")
 
-	if len(h.messageIdsByChannel) >= 1 {
-		h.log.Info().Msg("Sending heartbeat")
+	if len(h.messageIdsByChannel) > 0 {
 		heartbeatMessage := method.Heartbeat{
 			Base: query.Base{
 				JSONRPCBase: jsonrpc.JSONRPCBase{
