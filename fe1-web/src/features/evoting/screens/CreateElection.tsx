@@ -2,7 +2,7 @@ import { CompositeScreenProps } from '@react-navigation/core';
 import { useNavigation } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import React, { useMemo, useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
@@ -44,11 +44,17 @@ type NavigationProps = CompositeScreenProps<
   >
 >;
 
+const styles = StyleSheet.create({
+  question: {
+    marginBottom: Spacing.x2,
+  } as ViewStyle,
+});
+
 // the type used for storing questions in the react state
 // does not yet contain the id of the questions, this is computed
 // only on creation of the election
 // ALSO: for now the write_in feature is disabled (2022-03-16, Tyratox)
-type NewQuestion = Omit<QuestionState, 'id' | 'write_in'>;
+type NewQuestion = Omit<QuestionState, 'write_in'>;
 
 const MIN_BALLOT_OPTIONS = 2;
 
@@ -186,6 +192,12 @@ const globalErrorMessages = (
   );
 };
 
+const defaultWithID = (defaultQuestions: NewQuestion[]): NewQuestion[] => {
+  return defaultQuestions.map((question, idx) => {
+    return { ...question, id: idx.toString() };
+  });
+};
+
 /**
  * UI to create an Election Event
  */
@@ -204,8 +216,9 @@ const CreateElection = () => {
   const [electionName, setElectionName] = useState<string>('');
   const trimmedElectionName = useMemo<string>(() => electionName.trim(), [electionName]);
 
-  const [questions, setQuestions] = useState<NewQuestion[]>(defaultQuestions);
+  const [questions, setQuestions] = useState<NewQuestion[]>(defaultWithID(defaultQuestions));
   const [version, setVersion] = useState<ElectionVersion>(ElectionVersion.OPEN_BALLOT);
+  const [questionCount, setQuestionCount] = useState<number>(defaultQuestions.length);
 
   // UI state
   const [modalEndIsVisible, setModalEndIsVisible] = useState<boolean>(false);
@@ -324,9 +337,7 @@ const CreateElection = () => {
       {/* see archive branches for date picker used for native apps */}
       {Platform.OS === 'web' && buildDatePickerWeb()}
       {questions.map((multipleChoiceQuestion, idx) => (
-        // FIXME: Do not use index in key
-        // eslint-disable-next-line react/no-array-index-key
-        <View key={idx.toString()} style={{ marginBottom: Spacing.x2 }}>
+        <View key={multipleChoiceQuestion.id} style={styles.question}>
           <Text style={[Typography.paragraph, Typography.important]}>
             {STRINGS.election_create_question} {idx + 1}
           </Text>
@@ -384,7 +395,12 @@ const CreateElection = () => {
           )}
         </View>
       ))}
-      <PoPTextButton onPress={() => setQuestions((prev) => [...prev, EMPTY_QUESTION])}>
+      <PoPTextButton
+        onPress={() => {
+          const newQuestion: NewQuestion = { ...EMPTY_QUESTION, id: questionCount.toString() };
+          setQuestionCount((prev) => prev + 1);
+          setQuestions((prev) => [...prev, newQuestion]);
+        }}>
         {STRINGS.election_create_add_question}
       </PoPTextButton>
       {globalErrorMessages(isConnected || false, trimmedElectionName, trimmedQuestions)}
