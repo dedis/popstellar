@@ -152,23 +152,20 @@ export const makeWitnessStoreWatcher = (
       return;
     }
 
+    const messagesToWitness = currentAllIds.filter(
+      (msgId) =>
+        !currentUnprocessedIds.includes(msgId) &&
+        (!previousAllIds.includes(msgId) || previousUnprocessedIds.includes(msgId)),
+    );
     // get all message ids that are part of currentAllIds
-    for (const msgId of currentAllIds) {
-      // and that are part of this lao and currently not part of unprocessedIds
-      if (!currentUnprocessedIds.includes(msgId)) {
-        // and that either have not been part of previousAllIds OR
-        // have been part of previousUnprocessedIds
-        if (!previousAllIds.includes(msgId) || previousUnprocessedIds.includes(msgId)) {
-          // i.e. all messages that have been processed
-          // since the last call of this function
-          const msg = ExtendedMessage.fromState(msgState.byId[msgId]);
-          // The message is witnessed only if it comes from the current lao
-          if (msg.laoId?.valueOf() === laoId.valueOf()) {
-            afterProcessingHandler(msg);
-          } else {
-            currentAllIds = currentAllIds.filter((id) => id !== msgId);
-          }
-        }
+
+    for (const msgId of messagesToWitness) {
+      const msg = ExtendedMessage.fromState(msgState.byId[msgId]);
+      // The message is witnessed only if it comes from the current lao
+      if (msg.laoId?.valueOf() === laoId.valueOf()) {
+        afterProcessingHandler(msg);
+      } else {
+        currentAllIds = currentAllIds.filter((id) => id !== msgId);
       }
     }
   };
