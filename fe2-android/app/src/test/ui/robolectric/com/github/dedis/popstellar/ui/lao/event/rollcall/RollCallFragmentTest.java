@@ -93,10 +93,10 @@ public class RollCallFragmentTest {
       new RollCall(
           LAO.getId() + "2",
           LAO.getId() + "2",
-          ROLL_CALL_TITLE,
-          CREATION,
-          ROLL_CALL_START,
-          ROLL_CALL_END,
+          ROLL_CALL_TITLE + "2",
+          CREATION + 1,
+          ROLL_CALL_START + 3,
+          ROLL_CALL_END + 3,
           EventState.CREATED,
           new HashSet<>(),
           LOCATION,
@@ -307,6 +307,16 @@ public class RollCallFragmentTest {
     // Check visibility as client
     rollCallRepo.updateRollCall(LAO_ID, RollCall.openRollCall(ROLL_CALL));
     rollCallQRCode().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+  }
+
+  @Test
+  public void reopenButtonVisibilityTest() {
+    // Close the roll call 1
+    rollCallRepo.updateRollCall(LAO_ID, RollCall.closeRollCall(ROLL_CALL));
+    // Close then the roll call 2 (it becomes last closed)
+    rollCallRepo.updateRollCall(LAO_ID, RollCall.closeRollCall(ROLL_CALL_2));
+
+    managementButton().check(matches(withEffectiveVisibility(Visibility.GONE)));
   }
 
   /** Utility function to create a LAO when the user is not the organizer */

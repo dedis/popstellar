@@ -95,8 +95,11 @@ public class Wallet {
       @NonNull String laoID, @NonNull String rollCallID, @NonNull Set<PublicKey> rollCallTokens)
       throws KeyGenerationException, UninitializedWalletException, InvalidPoPTokenException {
     PoPToken token = generatePoPToken(laoID, rollCallID);
-    if (rollCallTokens.contains(token.getPublicKey())) return token;
-    else throw new InvalidPoPTokenException(token);
+    if (rollCallTokens.contains(token.getPublicKey())) {
+      return token;
+    } else {
+      throw new InvalidPoPTokenException(token);
+    }
   }
 
   /**
@@ -119,7 +122,6 @@ public class Wallet {
    */
   public void importSeed(@NonNull String words)
       throws SeedValidationException, GeneralSecurityException {
-
     try {
       MnemonicValidator.ofWordList(English.INSTANCE).validate(words);
     } catch (InvalidChecksumException
@@ -148,9 +150,8 @@ public class Wallet {
     encryptedMnemonic = null;
   }
 
-  /** Generates mnemonic seed but does not store it*/
+  /** Generates mnemonic seed but does not store it */
   public String newSeed() {
-
     StringBuilder sb = new StringBuilder();
     byte[] entropy = new byte[Words.TWELVE.byteLength()];
     new SecureRandom().nextBytes(entropy);
@@ -195,7 +196,9 @@ public class Wallet {
     }
 
     // If the path is not complete, add the remaining bytes to the joiner
-    if (curPath.length() > 0) joiner.add(curPath.toString());
+    if (curPath.length() > 0) {
+      joiner.add(curPath.toString());
+    }
 
     return joiner.toString();
   }

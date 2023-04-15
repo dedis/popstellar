@@ -74,7 +74,7 @@ public class RollCallViewModel extends AndroidViewModel implements QRCodeScannin
   public void setLaoId(String laoId) {
     this.laoId = laoId;
 
-    this.attendedRollCalls =
+    attendedRollCalls =
         rollCallRepo
             .getRollCallsObservableInLao(laoId)
             .map(

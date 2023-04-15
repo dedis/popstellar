@@ -36,9 +36,9 @@ public class EventListAdapter extends EventsAdapter {
   public EventListAdapter(
       LaoViewModel viewModel, Observable<Set<Event>> events, FragmentActivity activity) {
     super(events, viewModel, activity, TAG);
-    this.eventsMap = new EnumMap<>(EventCategory.class);
-    this.eventsMap.put(PAST, new ArrayList<>());
-    this.eventsMap.put(PRESENT, new ArrayList<>());
+    eventsMap = new EnumMap<>(EventCategory.class);
+    eventsMap.put(PAST, new ArrayList<>());
+    eventsMap.put(PRESENT, new ArrayList<>());
 
     expanded[PAST.ordinal()] = true;
     expanded[PRESENT.ordinal()] = true;
@@ -54,8 +54,8 @@ public class EventListAdapter extends EventsAdapter {
   @SuppressLint("NotifyDataSetChanged")
   @Override
   public void updateEventSet(List<Event> events) {
-    this.eventsMap.get(PAST).clear();
-    this.eventsMap.get(PRESENT).clear();
+    eventsMap.get(PAST).clear();
+    eventsMap.get(PRESENT).clear();
 
     for (Event event : events) {
       switch (event.getState()) {

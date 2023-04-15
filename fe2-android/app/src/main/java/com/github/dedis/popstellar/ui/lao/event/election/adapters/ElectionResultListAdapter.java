@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.election.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.*;
 import android.widget.ArrayAdapter;
@@ -17,13 +18,14 @@ public class ElectionResultListAdapter
 
   public ElectionResultListAdapter(Context context, int resource, List<ElectionResult> objects) {
     super(context, resource, objects);
-    this.mContext = context;
-    this.mResource = resource;
+    mContext = context;
+    mResource = resource;
   }
 
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
     LayoutInflater inflater = LayoutInflater.from(mContext);
+    @SuppressLint("ViewHolder")
     View view = inflater.inflate(mResource, parent, false);
     String ballotOption = getItem(position).getBallotOption();
     TextView ballotView = (TextView) view.findViewById(R.id.election_result_ballot_option);

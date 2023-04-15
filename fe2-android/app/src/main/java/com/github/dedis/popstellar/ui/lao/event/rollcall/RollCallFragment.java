@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.ui.lao.event.rollcall;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -32,6 +35,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
@@ -206,7 +210,21 @@ public class RollCallFragment extends Fragment {
     boolean isOrganizer = laoViewModel.isOrganizer();
 
     binding.rollCallFragmentTitle.setText(rollCall.getName());
-    binding.rollCallManagementButton.setVisibility(isOrganizer ? View.VISIBLE : View.GONE);
+
+    // Set visibility of management button as Gone by default
+    binding.rollCallManagementButton.setVisibility(View.GONE);
+
+    // The management button is only visible to the organizer under the following conditions:
+    if (isOrganizer) {
+      // If the roll call is the last closed roll call or it's not closed (either opened or created)
+      try {
+        if (!rollCall.isClosed()
+            || rollCallRepo.getLastClosedRollCall(laoViewModel.getLaoId()).equals(rollCall)) {
+          binding.rollCallManagementButton.setVisibility(View.VISIBLE);
+        }
+      } catch (NoRollCallException ignored) {
+      }
+    }
 
     binding.rollCallManagementButton.setText(managementTextMap.getOrDefault(rcState, ID_NULL));
 
@@ -233,6 +251,7 @@ public class RollCallFragment extends Fragment {
 
     setupListOfAttendees();
     retrieveAndDisplayPublicKey();
+    handleRotation();
   }
 
   /**
@@ -276,6 +295,21 @@ public class RollCallFragment extends Fragment {
     if (attendeesList != null) {
       binding.listViewAttendees.setAdapter(
           new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, attendeesList));
+    }
+  }
+
+  @SuppressLint("SourceLockedOrientationActivity")
+  private void handleRotation() {
+    Activity activity = getActivity();
+    if (activity == null) {
+      return;
+    }
+    if (rollCall.isOpen() && !laoViewModel.isOrganizer()) {
+      // If the qr is visible, then the activity rotation should be locked,
+      // as the QR could not fit in the screen in landscape
+      activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    } else {
+      activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
   }
 
