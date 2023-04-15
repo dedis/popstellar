@@ -19,13 +19,10 @@ public enum MainMenuTab {
   private static final List<MainMenuTab> ALL = Arrays.asList(values());
 
   public static MainMenuTab findByMenu(@IdRes int menuId) {
-    for (MainMenuTab tab : ALL) {
-      if (tab.menuId == menuId) {
-        return tab;
-      }
-    }
-
-    throw new IllegalArgumentException("Unknown id : " + menuId);
+    return ALL.stream()
+        .filter(tab -> tab.menuId == menuId)
+        .findFirst()
+        .orElseThrow(() -> new IllegalArgumentException("Unknown id : " + menuId));
   }
 
   @IdRes private final int menuId;

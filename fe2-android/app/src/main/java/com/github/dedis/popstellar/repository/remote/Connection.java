@@ -17,17 +17,20 @@ public class Connection {
   public static final String TAG = Connection.class.getSimpleName();
 
   // Create a new subject whose purpose is to dispatch incoming messages to all subscribers
-  private final BehaviorSubject<GenericMessage> messagesSubject = BehaviorSubject.create();
+  private final BehaviorSubject<GenericMessage> messagesSubject;
   private final BehaviorSubject<Lifecycle.State> manualState;
   private final LAOService laoService;
-  private final CompositeDisposable disposables = new CompositeDisposable();
+  private final CompositeDisposable disposables;
 
   public Connection(
       String url, LAOService laoService, BehaviorSubject<Lifecycle.State> manualState) {
     this.laoService = laoService;
-    // Subscribe to the incoming messages of the websocket service and simply hand them to the
-    // subject
-    this.disposables.add(
+    this.manualState = manualState;
+    messagesSubject = BehaviorSubject.create();
+    disposables = new CompositeDisposable();
+    // Subscribe to the incoming messages of the websocket service
+    // and simply hand them to the subject
+    disposables.add(
         laoService
             .observeMessage()
             .doOnNext(msg -> Log.d(TAG, "Received a new message from remote: " + msg))
@@ -35,12 +38,18 @@ public class Connection {
 
     // Add logs on connection state events
     disposables.add(
-        this.laoService
+        laoService
             .observeWebsocket()
             .subscribe(
                 event -> logEvent(event, url),
                 err -> Log.d(TAG, "Error in connection " + url, err)));
-    this.manualState = manualState;
+  }
+
+  protected Connection(Connection connection) {
+    laoService = connection.laoService;
+    manualState = connection.manualState;
+    disposables = connection.disposables;
+    messagesSubject = connection.messagesSubject;
   }
 
   private void logEvent(WebSocket.Event event, String url) {
@@ -73,8 +82,8 @@ public class Connection {
   }
 
   public void close() {
-    // Dispose of any held resources and mark the message subject as complete (aka will not be used
-    // again)
+    // Dispose of any held resources and mark the message subject as complete
+    // (i.e. will not be used again)
     messagesSubject.onComplete();
     disposables.dispose();
     manualState.onNext(new Lifecycle.State.Stopped.WithReason(ShutdownReason.GRACEFUL));

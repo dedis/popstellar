@@ -77,25 +77,26 @@ public class SeedWalletFragment extends Fragment {
             seedAlert.dismiss();
           }
           AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-          builder.setTitle("You are sure you have saved the words somewhere?");
+          builder.setTitle(R.string.wallet_confirm_text);
           builder.setPositiveButton(
-              "Yes",
+              R.string.yes,
               (dialog, which) -> {
                 try {
                   viewModel.importSeed(binding.seedWalletText.getText().toString());
                   HomeActivity.setCurrentFragment(
                       getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
-
                 } catch (GeneralSecurityException | SeedValidationException e) {
                   Log.e(TAG, "Error importing key", e);
                   Toast.makeText(
                           requireContext().getApplicationContext(),
-                          "Error importing key : " + e.getMessage() + "\ntry again",
+                          String.format(
+                              getResources().getString(R.string.error_importing_key),
+                              e.getMessage()),
                           Toast.LENGTH_LONG)
                       .show();
                 }
               });
-          builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+          builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
           seedAlert = builder.create();
           seedAlert.show();
         });

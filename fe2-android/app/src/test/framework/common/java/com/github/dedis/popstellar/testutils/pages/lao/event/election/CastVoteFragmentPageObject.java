@@ -28,4 +28,8 @@ public class CastVoteFragmentPageObject {
   public static ViewInteraction castVoteButton() {
     return onView(withId(R.id.cast_vote_button));
   }
+
+  public static ViewInteraction encryptedVoteText() {
+    return onView(withId(R.id.encrypting_text));
+  }
 }

@@ -37,12 +37,9 @@ public enum Objects {
    * @return the corresponding enum object
    */
   public static Objects find(String searched) {
-    for (Objects object : ALL) {
-      if (object.getObject().equals(searched)) {
-        return object;
-      }
-    }
-
-    return null;
+    return ALL.stream()
+        .filter(object -> object.getObject().equals(searched))
+        .findFirst()
+        .orElse(null);
   }
 }

@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.di;
 
 import com.github.dedis.popstellar.di.KeysetModule.DeviceKeyset;
 import com.github.dedis.popstellar.di.KeysetModule.WalletKeyset;
+import com.google.crypto.tink.KeyTemplates;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.aead.AeadConfig;
 import com.google.crypto.tink.aead.AesGcmKeyManager;
@@ -39,7 +40,7 @@ public class TestKeysetModule {
       Ed25519PrivateKeyManager.registerPair(true);
       PublicKeySignWrapper.register();
       when(manager.getKeysetHandle())
-          .thenReturn(KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template()));
+          .thenReturn(KeysetHandle.generateNew(KeyTemplates.get("ED25519_RAW")));
       return manager;
     } catch (GeneralSecurityException e) {
       throw new IllegalStateException(
@@ -57,7 +58,7 @@ public class TestKeysetModule {
       AesGcmKeyManager.register(true);
       AeadConfig.register();
       when(manager.getKeysetHandle())
-          .thenReturn(KeysetHandle.generateNew(AesGcmKeyManager.rawAes128GcmTemplate()));
+          .thenReturn(KeysetHandle.generateNew(KeyTemplates.get("AES128_GCM_RAW")));
       return manager;
     } catch (GeneralSecurityException e) {
       throw new IllegalStateException(

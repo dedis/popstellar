@@ -74,6 +74,8 @@
   <string name="end_time_optional">End Time</string>
   <string name="ongoing">Ongoing</string>
   <string name="start_anytime">Starting anytime now</string>
+  <string name="start_at">Starting %1$s</string>
+  <string name="close_at">Closed %1$s</string>
   <string name="button_cancel">Cancel</string>
 
   <!-- Roll-Call Event -->
@@ -101,12 +103,17 @@
   <!--  Witnessing-->
   <string name="messages">Messages</string>
   <string name="witnesses">Witnesses</string>
+  <string name="witness_added">Witness %1$s successfully added to LAO</string>
 
   <!-- Witness -->
   <string name="button_text">Cast Vote</string>
   <string name="submit">Submit</string>
   <string name="manual_witness_hint">Witness public key</string>
   <string name="add_witness_title">Add Witness</string>
+  <string name="sign_message">Sign message</string>
+  <string name="not_a_witness">You\'re not a witness</string>
+  <string name="not_a_witness_explanation">You need to be a witness in order to sign this message</string>
+  <string name="confirm_to_sign">Are you sure you want to sign message with ID : %1$s</string>
 
   <!--  Roll Call -->
   <string name="roll_call_setup_title">Roll Call Setup</string>
@@ -129,6 +136,10 @@
   <string name="voting_method_spinner_text">Voting method</string>
   <string name="write_in_switch_text">Allow write in</string>
   <string name="new_ballot_option_hint">ballot option</string>
+  <string name="encrypting_vote">Encrypting the vote…</string>
+  <string name="voting_method">Plurality</string>
+  <string name="vote_encrypted">Vote encrypted!</string>
+  <string name="vote_sent">Vote successfully sent!</string>
 
   <string name="results">Results</string>
   <string name="waiting_for_results">Waiting for results</string>
@@ -157,7 +168,7 @@
   <string name="text_seed_wallet">This is the only backup for your PoP tokens - store it securely \n Warning ! If you don\'t, your key will be lost forever</string>
   <string name="wallet_seed_title">Mnemonic wallet seed:</string>
   <string name="confirm_button">Confirm</string>
-
+  <string name="wallet_confirm_text">Are you sure you have saved the words somewhere?</string>
   <string name="logout_title">Wallet log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
   <string name="ok">OK</string>
@@ -190,7 +201,7 @@
   <string name="digital_cash_send_button">Send</string>
   <string name="digital_cash_amount">Amount</string>
   <string name="digital_cash_amount_empty">Amount: 0.00</string>
-  <string name="digital_cash_beneficiary_address">Beneficiary: address</string>
+  <string name="digital_cash_beneficiary_address">Beneficiary: %1$s</string>
   <string name="digital_cash_my_address">My Address: address</string>
   <string name="digital_cash_issue_button">Issue</string>
   <string name="digital_cash_select_single_member">Individual from the Selector</string>
@@ -213,7 +224,8 @@
   <string name="digital_cash_warning_not_enough_money">"Can't send more money than you have !"</string>
   <string name="digital_cash_send_initial_amount">0</string>
   <string name="digital_cash_amount_inserted_error">Amount inserted is too large</string>
-  <string name="digital_cash_amount_min_indication">Please enter an amount greater than 0</string>
+  <string name="digital_cash_amount_min_indication">Please enter an amount greater than 0 of LAOCoin</string>
+  <string name="digital_cash_select_lao_member_indication">Please select a LAOMember</string>
 
   <!-- Social Media -->
   <string name="home">Home</string>
@@ -228,6 +240,8 @@
   <string name="text">text</string>
   <string name="chirp_list">Chirp List</string>
   <string name="delete_button">delete button</string>
+  <string name="deleted_chirp">Deleted chirp!</string>
+  <string name="deleted_chirp_2">Chirp is deleted.</string>
 
   <!--  Storage-->
   <string name="nothing_stored">no stored data found</string>
@@ -283,6 +297,9 @@
   <string name="qr_code_not_pop_token">Error, this QR code is not a pop token or the key format is invalid</string>
   <string name="qr_code_not_main_pk">Error, this QR code is not a main public key or the key format is invalid</string>
   <string name="error_event_observed">Error, could not update events</string>
+  <string name="error_importing_key">"Error importing key : %1$s\nTry again</string>
+  <string name="error_election_duplicate_question_name">Two different questions can\'t have the same name</string>
+  <string name="error_election_duplicate_ballot_name">Two different ballot options can\'t have the same name</string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
@@ -299,5 +316,6 @@
   <string name="unknown_roll_call_exception">Unknown Roll Call</string>
   <string name="already_open_roll_call_exception">Another Roll Call is already open</string>
   <string name="lao_coins">LAO coins</string>
+  <string name="invalid_qrcode_data">Invalid QRCode laoData</string>
 
 </resources>

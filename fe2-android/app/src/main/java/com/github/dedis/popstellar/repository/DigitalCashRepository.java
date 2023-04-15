@@ -36,7 +36,6 @@ public class DigitalCashRepository {
 
   public Observable<List<TransactionObject>> getTransactionsObservable(
       String laoId, PublicKey user) {
-
     return getLaoTransactions(laoId).getTransactionsObservable(user);
   }
 
@@ -85,9 +84,9 @@ public class DigitalCashRepository {
       if (hashDictionary.isEmpty()) {
         throw new NoRollCallException("No roll call attendees could be found");
       }
-      
+
       for (PublicKey current : getReceiversTransaction(transaction)) {
-        List<TransactionObject> transactionList = this.transactions.get(current);
+        List<TransactionObject> transactionList = transactions.get(current);
 
         if (transactionList == null) {
           // Unfortunately without Java 9 one can't use List.of(...) :(
@@ -106,7 +105,7 @@ public class DigitalCashRepository {
           transactionList.add(transaction);
           transactionsSubject.get(current).onNext(transactionList);
         }
-        this.transactions.put(current, new ArrayList<>(transactionList));
+        transactions.put(current, new ArrayList<>(transactionList));
       }
     }
 

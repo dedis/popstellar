@@ -39,13 +39,13 @@ public final class Lao implements Copyable<Lao> {
       throw new IllegalArgumentException(" The id of the Lao is empty");
     }
 
-    this.channel = Channel.getLaoChannel(id);
+    channel = Channel.getLaoChannel(id);
     this.id = id;
-    this.keyToNode = new HashMap<>();
-    this.messageIdToElectInstance = new HashMap<>();
-    this.witnessMessages = new HashMap<>();
-    this.witnesses = new HashSet<>();
-    this.pendingUpdates = new HashSet<>();
+    keyToNode = new HashMap<>();
+    messageIdToElectInstance = new HashMap<>();
+    witnessMessages = new HashMap<>();
+    witnesses = new HashSet<>();
+    pendingUpdates = new HashSet<>();
   }
 
   public Lao(String name, PublicKey organizer, long creation) {
@@ -62,20 +62,20 @@ public final class Lao implements Copyable<Lao> {
    * @param lao the lao to be deep copied in a new object
    */
   public Lao(Lao lao) {
-    this.channel = lao.channel;
-    this.id = lao.id;
-    this.name = lao.name;
-    this.lastModified = lao.lastModified;
-    this.creation = lao.creation;
-    this.organizer = lao.organizer;
-    this.modificationId = lao.modificationId;
-    this.witnesses = new HashSet<>(lao.witnesses);
-    this.witnessMessages = new HashMap<>(lao.witnessMessages);
-    this.pendingUpdates = new HashSet<>(lao.pendingUpdates);
+    channel = lao.channel;
+    id = lao.id;
+    name = lao.name;
+    lastModified = lao.lastModified;
+    creation = lao.creation;
+    organizer = lao.organizer;
+    modificationId = lao.modificationId;
+    witnesses = new HashSet<>(lao.witnesses);
+    witnessMessages = new HashMap<>(lao.witnessMessages);
+    pendingUpdates = new HashSet<>(lao.pendingUpdates);
     // FIXME We need to keep the ElectInstance because the current consensus relies on references
     // (Gabriel Fleischer 11.08.22)
-    this.messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
-    this.keyToNode = Copyable.copy(lao.keyToNode);
+    messageIdToElectInstance = new HashMap<>(lao.messageIdToElectInstance);
+    keyToNode = Copyable.copy(lao.keyToNode);
   }
 
   /**
@@ -163,7 +163,6 @@ public final class Lao implements Copyable<Lao> {
   }
 
   public void setName(String name) {
-
     if (name == null) {
       throw new IllegalArgumentException(" The name of the Lao is null");
     } else if (name.isEmpty()) {
@@ -199,7 +198,6 @@ public final class Lao implements Copyable<Lao> {
   }
 
   public void setWitnesses(Set<PublicKey> witnesses) {
-
     if (witnesses == null) {
       throw new IllegalArgumentException("The witnesses set is null");
     }

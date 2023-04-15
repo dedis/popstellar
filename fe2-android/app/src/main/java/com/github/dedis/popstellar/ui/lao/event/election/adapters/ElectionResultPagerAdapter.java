@@ -96,11 +96,11 @@ public class ElectionResultPagerAdapter
 
   @Override
   public int getItemCount() {
-    if (this.currentResults == null) {
+    if (currentResults == null) {
       return 0;
     }
 
-    return this.currentResults.size();
+    return currentResults.size();
   }
 
   protected static class Pager2ViewHolder extends RecyclerView.ViewHolder {
