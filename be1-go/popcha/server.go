@@ -1,4 +1,4 @@
-package server
+package popcha
 
 import (
 	"bytes"
@@ -17,7 +17,7 @@ import (
 	"net/http"
 	"os"
 	"popstellar/hub"
-	"popstellar/popcha/storage"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -30,14 +30,19 @@ const (
 	//error message for invalid response type
 	errInvalidRepsonseType = "response type is invalid for the implicit flow"
 
+	//error message for unimplemented methods of op.Client
+	errUnimplementedMethod = "this method is not implemented for our protocol"
+
 	// defaultValue for the ID token lifetime (in hours)
 	tokenLifeTimeHour = 24
 
-	//file path for valid QRCode Displaying page
-	QRCodeDisplay = "../qrcode/popcha.html"
+	// qrCodeWebPage file path for valid QRCode Displaying page
+	qrCodeWebPage = "qrcode/popcha.html"
 
-	//size of QRCode SVG
-	QRSize = 10
+	// qrSize size of QRCode SVG
+	qrSize = 10
+
+	badRequestCode = 400
 )
 
 // constant parameter names
@@ -45,14 +50,13 @@ const (
 	ClientID     = "client_id"
 	Nonce        = "nonce"
 	Scope        = "scope"
-	LaoID        = "lao_id"
 	RedirectURI  = "redirect_uri"
 	ResponseType = "response_type"
 	State        = "state"
 	ResTypeMulti = "id_token token"
-	ResTypeId    = "id_token"
 	OpenID       = "openid"
 	Profile      = "profile"
+	LoginHint    = "login_hint"
 )
 
 // clientParams implements op.Client
@@ -60,87 +64,108 @@ const (
 // for any client sending an auth request. As an example, any client requesting authorization has to use
 // the implicit flow.
 type clientParams struct {
-	clientID      string
-	redirectURIs  []string
-	responseTypes []oidc.ResponseType
+	clientID     string
+	redirectURIs []string
+	resType      oidc.ResponseType
 }
 
-// returns the clientID
+/*
+Most of the methods of op.Client are implemented, however some of them
+are not going to be used in our Implicit Flow protocol.
+*/
+
+// GetID returns the clientID
 func (c clientParams) GetID() string {
 	return c.clientID
 }
 
+// RedirectURIs returns all the registered and valid redirect URIs
 func (c clientParams) RedirectURIs() []string {
 	return c.redirectURIs
 }
 
 func (c clientParams) PostLogoutRedirectURIs() []string {
-	return nil
+	panic(errUnimplementedMethod)
 }
 
+// ApplicationType designates whether the client supports https URIs or not
 func (c clientParams) ApplicationType() op.ApplicationType {
 	return op.ApplicationTypeNative
 }
 
+// AuthMethod returns the type of authentication mechanism used in our flow. We use a custom one, so we return
+// none by default.
 func (c clientParams) AuthMethod() oidc.AuthMethod {
 	return oidc.AuthMethodNone
 }
 
+// ResponseTypes returns the valid types of response in the Implicit Flow.
 func (c clientParams) ResponseTypes() []oidc.ResponseType {
-	return c.responseTypes
+	return []oidc.ResponseType{c.resType}
 }
 
+// GrantTypes returns the type of Flow used in PoPCHA (Implicit in our case)
 func (c clientParams) GrantTypes() []oidc.GrantType {
 	return []oidc.GrantType{oidc.GrantTypeImplicit}
 }
 
 func (c clientParams) LoginURL(_ string) string {
-	return ""
+	panic(errUnimplementedMethod)
 }
 
+// AccessTokenType returns the standard type of token used in PoPCHA
 func (c clientParams) AccessTokenType() op.AccessTokenType {
 	return op.AccessTokenTypeBearer
 }
 
+// IDTokenLifetime returns the lifetime of the token
 func (c clientParams) IDTokenLifetime() time.Duration {
 	return tokenLifeTimeHour * time.Hour
 }
 
+// DevMode is a utility boolean used to bypass the validation of the auth request.
+// It is disabled by default.
 func (c clientParams) DevMode() bool {
 	return false
 }
 
 func (c clientParams) RestrictAdditionalIdTokenScopes() func(scopes []string) []string {
-	return nil
+	panic(errUnimplementedMethod)
 }
 
 func (c clientParams) RestrictAdditionalAccessTokenScopes() func(scopes []string) []string {
-	return nil
+	panic(errUnimplementedMethod)
 }
 
+// IsScopeAllowed returns whether the given scope is allowed. We disable this feature by default to restrict the scopes
+// to a pre-defined set.
 func (c clientParams) IsScopeAllowed(_ string) bool {
-	return false
+	panic(errUnimplementedMethod)
 }
 
 func (c clientParams) IDTokenUserinfoClaimsAssertion() bool {
-	return true
+	panic(errUnimplementedMethod)
 }
 
+// ClockSkew is a parameter used to synchronize two auth servers. It is a required parameter, but will be set at 0 by
+// default.
 func (c clientParams) ClockSkew() time.Duration {
 	return 0
 }
 
-func internalClientParams(clientID string, redURIS []string, respTypes []oidc.ResponseType) *clientParams {
+// generates the client parameters for our Implicit Flow Protocol
+func internalClientParams(clientID string, redURIS []string, respTypes oidc.ResponseType) *clientParams {
 	return &clientParams{
-		clientID:      clientID,
-		redirectURIs:  redURIS,
-		responseTypes: respTypes,
+		clientID:     clientID,
+		redirectURIs: redURIS,
+		resType:      respTypes,
 	}
 }
 
+// AuthorizationServer defines the HTTP server displaying the QR Code webpage, and
+// redirecting clients with their access tokens.
 type AuthorizationServer struct {
 	log               zerolog.Logger
-	store             *storage.Storage
 	httpServer        *http.Server
 	hub               hub.Hub
 	challengeServAddr string
@@ -155,15 +180,10 @@ func NewAuthServer(hub hub.Hub, st string, httpAddr string, httpPort int, seed s
 
 	// key for encryption
 	key := sha256.Sum256([]byte(seed))
-	store, err := storage.NewStorage(log)
-	if err != nil {
-		return nil, err
-	}
 
 	as := AuthorizationServer{
 		log: log.With().
 			Str("role", "authorization server").Logger(),
-		store:             store,
 		hub:               hub,
 		challengeServAddr: fmt.Sprintf("%s:%d", httpAddr, httpPort),
 		key:               key,
@@ -225,54 +245,51 @@ func (as *AuthorizationServer) HandleRequest(w http.ResponseWriter, req *http.Re
 	w.Header().Set("Content-Type", "text/html")
 
 	// take the request, parse its parameters ang creates an auth request object
-	params, oidcReq, err := verifyParamsAndCreateRequest(req)
+	oidcReq, err := verifyParamsAndCreateRequest(req)
 	if err != nil {
-		as.log.Fatal().Err(err)
+		as.handleBadRequest(w, err, "Error while verifying the parameters of the request")
 		return
 	}
 
 	//validate the parameters of the authorization request
 	err = as.ValidateAuthRequest(oidcReq)
 	if err != nil {
-		as.log.Fatal().Err(err).Msg("Error while validating auth request")
-		return
-	}
+		as.handleBadRequest(w, err, "Error while validating the auth request")
 
-	// adding nonce to storage, marking it as used
-	err = as.store.AddNonce(oidcReq.Nonce)
-	if err != nil {
-		as.log.Fatal().Err(err).Msg("Error while validating nonce")
 		return
 	}
 
 	// generate PoPCHA QRCode
-	err = as.generateQRCode(w, params)
+	err = as.generateQRCode(w, req)
 	if err != nil {
-		as.log.Fatal().Err(err).Msg("Error while generating PoPCHA QRCode")
+		as.handleBadRequest(w, err, "Error while generating PoPCHA QRCode")
+	}
+}
+
+func (as *AuthorizationServer) handleBadRequest(w http.ResponseWriter, err error, msg string) {
+	as.log.Err(err).Msg(msg)
+	w.WriteHeader(badRequestCode)
+	_, err = w.Write([]byte(strconv.Itoa(badRequestCode) + " - " + err.Error()))
+	if err != nil {
+		as.log.Err(err).Msg("Error while writing error message in the HTTP repsonse body")
 	}
 }
 
 // generateQRCode builds a PoPCHA QRCode and executes an HTML template including it, given authorization parameters.
-func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, params map[string]string) error {
+func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.Request) error {
 	var buffer bytes.Buffer
 	// new SVG buffer
 	s := svg.New(&buffer)
 
-	// getting the arguments
-	serverURL := as.challengeServAddr
-	clientID := params[ClientID]
-	nonce := params[Nonce]
-	laoID := params[LaoID]
-
-	// creating the QRCode content
-	data := strings.Join([]string{serverURL, laoID, clientID, nonce}, "|")
+	// QRCode contains the Auth request URL
+	data := req.Host + req.URL.String()
 	qrCode, err := qr.Encode(data, qr.M, qr.Auto)
 	if err != nil {
 		return err
 	}
 
 	// Write QR code to SVG
-	qs := goqrsvg.NewQrSVG(qrCode, QRSize)
+	qs := goqrsvg.NewQrSVG(qrCode, qrSize)
 	qs.StartQrSVG(s)
 	err = qs.WriteQrSVG(s)
 	if err != nil {
@@ -288,7 +305,7 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, params map[
 		SVGImage: template.HTML(buffer.String()),
 	}
 
-	templateFile := QRCodeDisplay
+	templateFile := qrCodeWebPage
 	// reading HTML template bytes
 	templateContent, err := os.ReadFile(templateFile)
 	if err != nil {
@@ -310,7 +327,7 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, params map[
 func (as *AuthorizationServer) ValidateAuthRequest(req *oidc.AuthRequest) error {
 
 	// creating client parameters, with a set of rules regarding PoPCHA protocol
-	client := internalClientParams(req.ClientID, []string{req.RedirectURI}, []oidc.ResponseType{req.ResponseType})
+	client := internalClientParams(req.ClientID, []string{req.RedirectURI}, req.ResponseType)
 
 	//validating the scopes
 	_, err := op.ValidateAuthReqScopes(client, req.Scopes)
@@ -333,7 +350,7 @@ func (as *AuthorizationServer) ValidateAuthRequest(req *oidc.AuthRequest) error 
 func (as *AuthorizationServer) validateImplicitFlowResponseType(params *clientParams, req *oidc.AuthRequest) error {
 	rType := req.ResponseType
 	// only two response types are allowed
-	if !(rType == ResTypeId || rType == ResTypeMulti) {
+	if rType != ResTypeMulti {
 		return oidc.ErrInvalidRequest().WithDescription(errValidAuthFormat, errInvalidRepsonseType)
 	}
 
@@ -352,12 +369,13 @@ func createOIDCRequestFromParams(params map[string]string) *oidc.AuthRequest {
 		RedirectURI:  params[RedirectURI],
 		State:        params[State],
 		Nonce:        params[Nonce],
+		LoginHint:    params[LoginHint],
 	}
 }
 
 // verifyParamsAndCreateRequest is an internal method used to parse a http request into a parameter table,
 // verify that all the required parameters are present, and build an OIDC Auth Request object.
-func verifyParamsAndCreateRequest(req *http.Request) (map[string]string, *oidc.AuthRequest, error) {
+func verifyParamsAndCreateRequest(req *http.Request) (*oidc.AuthRequest, error) {
 
 	// Parameters parsing
 	params := make(map[string]string)
@@ -366,7 +384,7 @@ func verifyParamsAndCreateRequest(req *http.Request) (map[string]string, *oidc.A
 	params[Nonce] = req.URL.Query().Get(Nonce)
 	params[Scope] = req.URL.Query().Get(Scope)
 	params[ClientID] = req.URL.Query().Get(ClientID)
-	params[LaoID] = req.URL.Query().Get(LaoID)
+	params[LoginHint] = req.URL.Query().Get(LoginHint)
 
 	var nilStrings = make([]string, 0)
 	for k, v := range params {
@@ -377,7 +395,7 @@ func verifyParamsAndCreateRequest(req *http.Request) (map[string]string, *oidc.A
 
 	// at least a parameter is missing
 	if len(nilStrings) != 0 {
-		return nil, nil, xerrors.Errorf("missing arguments %s", strings.Join(nilStrings, " "))
+		return nil, xerrors.Errorf("missing arguments %s", strings.Join(nilStrings, " "))
 	}
 	//optional parameters
 	state := req.URL.Query().Get(State)
@@ -388,5 +406,5 @@ func verifyParamsAndCreateRequest(req *http.Request) (map[string]string, *oidc.A
 	//build auth request
 	oidcReq := createOIDCRequestFromParams(params)
 
-	return params, oidcReq, nil
+	return oidcReq, nil
 }
