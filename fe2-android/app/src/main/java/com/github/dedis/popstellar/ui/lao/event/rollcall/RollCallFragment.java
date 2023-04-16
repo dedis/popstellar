@@ -229,15 +229,17 @@ public class RollCallFragment extends Fragment {
     boolean isOrganizer = laoViewModel.isOrganizer();
 
     binding.rollCallFragmentTitle.setText(rollCall.getName());
-    binding.descriptionText.setText(rollCall.getDescription());
 
-    // Set the description visible only if the QR is not displayed
-    // (i.e. I'm the organizer or the roll call is open)
-    if (rollCall.isOpen() && !isOrganizer) {
+    // Set the description visible if the QR is not displayed
+    // (i.e. I'm the organizer or the roll call is open) or
+    // if the description is empty
+    if (rollCall.isOpen() && !isOrganizer || rollCall.getDescription().isEmpty()) {
       binding.descriptionContainer.setVisibility(View.GONE);
     } else {
       binding.descriptionContainer.setVisibility(View.VISIBLE);
     }
+
+    binding.descriptionText.setText(rollCall.getDescription());
 
     // Set visibility of management button as Gone by default
     binding.rollCallManagementButton.setVisibility(View.GONE);
