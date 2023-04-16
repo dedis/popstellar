@@ -28,7 +28,7 @@ const (
 	errValidAuthFormat = "Error while validating the auth request: %s"
 
 	//error message for invalid response type
-	errInvalidRepsonseType = "response type is invalid for the implicit flow"
+	errInvalidResponseType = "response type is invalid for the implicit flow"
 
 	//error message for unimplemented methods of op.Client
 	errUnimplementedMethod = "this method is not implemented for our protocol"
@@ -60,7 +60,7 @@ const (
 )
 
 // clientParams implements op.Client
-// as PoPCHA don't support registered clients, clientParams is an alternative which defines  parameters
+// as PoPCHA don't support registered clients, clientParams is an alternative which defines parameters
 // for any client sending an auth request. As an example, any client requesting authorization has to use
 // the implicit flow.
 type clientParams struct {
@@ -82,10 +82,6 @@ func (c clientParams) GetID() string {
 // RedirectURIs returns all the registered and valid redirect URIs
 func (c clientParams) RedirectURIs() []string {
 	return c.redirectURIs
-}
-
-func (c clientParams) PostLogoutRedirectURIs() []string {
-	panic(errUnimplementedMethod)
 }
 
 // ApplicationType designates whether the client supports https URIs or not
@@ -129,6 +125,22 @@ func (c clientParams) DevMode() bool {
 	return false
 }
 
+// ClockSkew is a parameter used to synchronize two auth servers. It is a required parameter, but will be set at 0 by
+// default.
+func (c clientParams) ClockSkew() time.Duration {
+	return 0
+}
+
+/*
+
+ Unimplemented methods
+
+*/
+
+func (c clientParams) PostLogoutRedirectURIs() []string {
+	panic(errUnimplementedMethod)
+}
+
 func (c clientParams) RestrictAdditionalIdTokenScopes() func(scopes []string) []string {
 	panic(errUnimplementedMethod)
 }
@@ -145,12 +157,6 @@ func (c clientParams) IsScopeAllowed(_ string) bool {
 
 func (c clientParams) IDTokenUserinfoClaimsAssertion() bool {
 	panic(errUnimplementedMethod)
-}
-
-// ClockSkew is a parameter used to synchronize two auth servers. It is a required parameter, but will be set at 0 by
-// default.
-func (c clientParams) ClockSkew() time.Duration {
-	return 0
 }
 
 // generates the client parameters for our Implicit Flow Protocol
@@ -271,7 +277,7 @@ func (as *AuthorizationServer) handleBadRequest(w http.ResponseWriter, err error
 	w.WriteHeader(badRequestCode)
 	_, err = w.Write([]byte(strconv.Itoa(badRequestCode) + " - " + err.Error()))
 	if err != nil {
-		as.log.Err(err).Msg("Error while writing error message in the HTTP repsonse body")
+		as.log.Err(err).Msg("Error while writing error message in the HTTP response body")
 	}
 }
 
@@ -351,7 +357,7 @@ func (as *AuthorizationServer) validateImplicitFlowResponseType(params *clientPa
 	rType := req.ResponseType
 	// only two response types are allowed
 	if rType != ResTypeMulti {
-		return oidc.ErrInvalidRequest().WithDescription(errValidAuthFormat, errInvalidRepsonseType)
+		return oidc.ErrInvalidRequest().WithDescription(errValidAuthFormat, errInvalidResponseType)
 	}
 
 	// further validation
