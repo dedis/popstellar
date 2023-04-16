@@ -59,9 +59,18 @@
   <dimen name="roll_call_attendees_margin">5dp</dimen>
   <dimen name="roll_call_attendees_scrollbar_size">6dp</dimen>
   <dimen name="roll_call_attendees_list_width">320dp</dimen>
-  <dimen name="roll_call_attendees_list_height">0dp</dimen>
-  <dimen name="roll_call_attendees_text_vertical_bias">0.05</dimen>
+  <dimen name="roll_call_attendees_text_vertical_bias">0.015</dimen>
   <dimen name="roll_call_attendees_list_vertical_bias">0.15</dimen>
+  <dimen name="roll_call_attendees_list_margin_top">10dp</dimen>
+  <dimen name="roll_call_attendees_list_margin_bottom">5dp</dimen>
+  <dimen name="roll_call_attendees_margin_top">10dp</dimen>
+  <dimen name="roll_call_description_text_margin_top">10dp</dimen>
+  <dimen name="roll_call_description_text_margin_horizontal">10dp</dimen>
+  <dimen name="roll_call_description_card_lateral_margin">10dp</dimen>
+  <dimen name="roll_call_description_arrow_side">15dp</dimen>
+  <dimen name="roll_call_description_card_corner_radius">10dp</dimen>
+  <dimen name="roll_call_description_container_margin_horizontal">15dp</dimen>
+  <dimen name="roll_call_description_container_margin_top">10dp</dimen>
 
   <!--  Event layout-->
   <dimen name="event_layout_arrow_end_margin">8dp</dimen>

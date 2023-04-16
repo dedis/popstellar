@@ -107,6 +107,25 @@ public class RollCallFragment extends Fragment {
 
     setUpStateDependantContent();
 
+    // Set the description dropdown
+    binding.descriptionCard.setOnClickListener(
+        v -> {
+          float newRotation;
+          int visibility;
+          // If the arrow is pointing up, then rotate down and make visible the description
+          if (binding.descriptionArrow.getRotation() == 0f) {
+            newRotation = 180f;
+            visibility = View.VISIBLE;
+          } else { // Otherwise rotate up and hide the description
+            newRotation = 0f;
+            visibility = View.GONE;
+          }
+
+          // Use an animation to rotate smoothly
+          binding.descriptionArrow.animate().rotation(newRotation).setDuration(300).start();
+          binding.descriptionText.setVisibility(visibility);
+        });
+
     binding.rollCallManagementButton.setOnClickListener(
         v -> {
           EventState state = rollCall.getState();
@@ -210,6 +229,15 @@ public class RollCallFragment extends Fragment {
     boolean isOrganizer = laoViewModel.isOrganizer();
 
     binding.rollCallFragmentTitle.setText(rollCall.getName());
+    binding.descriptionText.setText(rollCall.getDescription());
+
+    // Set the description visible only if the QR is not displayed
+    // (i.e. I'm the organizer or the roll call is open)
+    if (rollCall.isOpen() && !isOrganizer) {
+      binding.descriptionContainer.setVisibility(View.GONE);
+    } else {
+      binding.descriptionContainer.setVisibility(View.VISIBLE);
+    }
 
     // Set visibility of management button as Gone by default
     binding.rollCallManagementButton.setVisibility(View.GONE);
