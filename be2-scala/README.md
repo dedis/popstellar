@@ -43,11 +43,12 @@ where the configuration lives. This can be updated if needed.
 # Snapshot of application.config
 
 ch_epfl_pop_Server {
-	http {
-		interface = "127.0.0.1"
-		port = "8000"
-		path = "client"
-	}
+  http {
+      interface = "127.0.0.1"
+      port = "8000"
+      client-path = "client"
+      server-path = "server"
+    }
 }
  ```
 
