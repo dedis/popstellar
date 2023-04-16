@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <!-- General -->
-  <dimen name="zero_dp">0dp</dimen>
-
   <!-- Tabs -->
   <dimen name="guideline_horizontal_tab">0.08</dimen>
 
