@@ -14,6 +14,10 @@ import scala.concurrent.duration.DurationInt
 
 class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with FunSuiteLike with Matchers with BeforeAndAfterAll {
 
+  private val fastRate = 1.seconds
+  private val slowRate = 60.seconds
+  private val timeout = 3.seconds
+
   override def afterAll(): Unit = {
     // Stops the test actor system
     TestKit.shutdownActorSystem(system)
@@ -23,13 +27,13 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     val testProbe = TestProbe()
     val monitorRef = system.actorOf(
-      Monitor.props(testProbe.ref, heartbeatRate = 2.seconds, messageDelay = 1.seconds)
+      Monitor.props(testProbe.ref, heartbeatRate = fastRate, messageDelay = fastRate)
     )
 
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
   }
 
   test("monitor should schedule single heartbeat when receiving a Right GraphMessage") {
@@ -39,7 +43,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     val testProbe = TestProbe()
     val monitorRef = system.actorOf(
-      Monitor.props(testProbe.ref, heartbeatRate = 60.seconds, messageDelay = 1.seconds)
+      Monitor.props(testProbe.ref, heartbeatRate = slowRate, messageDelay = fastRate)
     )
 
     // Needed to tell monitor ConnectionMediatorRef
@@ -47,34 +51,34 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
 
     Source.single(Right(heartbeat)).to(sink).run()
-    testProbe.expectNoMessage(5.seconds)
+    testProbe.expectNoMessage(timeout)
 
     Source.single(Right(JsonRpcRequestExample.subscribeRpcRequest)).to(sink).run()
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
 
     Source.single(Right(getMessagesById)).to(sink).run()
-    testProbe.expectNoMessage(5.seconds)
+    testProbe.expectNoMessage(timeout)
   }
 
   test("monitor should send heartbeats only when servers are connected") {
 
     val testProbe = TestProbe()
     val monitorRef = system.actorOf(
-      Monitor.props(testProbe.ref, heartbeatRate = 1.seconds, messageDelay = 60.seconds)
+      Monitor.props(testProbe.ref, heartbeatRate = fastRate, messageDelay = slowRate)
     )
 
     // Needed to tell monitor ConnectionMediatorRef
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
 
     // Wait for the first heartbeat then "disconnect" servers
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
     testProbe.send(monitorRef, Monitor.NoServerConnected)
 
-    testProbe.expectNoMessage(5.seconds)
+    testProbe.expectNoMessage(timeout)
 
     // Connect a server and check for heartbeats again
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
 
-    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat]
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
   }
 }
