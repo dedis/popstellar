@@ -48,8 +48,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
-import static com.github.dedis.popstellar.utility.Constants.ROLL_CALL_ID;
+import static com.github.dedis.popstellar.utility.Constants.*;
 
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
@@ -385,11 +384,11 @@ public class RollCallFragment extends Fragment {
     float newRotation;
     int visibility;
     // If the arrow is pointing up, then rotate down and make visible the text
-    if (arrow.getRotation() == 0f) {
-      newRotation = 180f;
+    if (arrow.getRotation() == ORIENTATION_UP) {
+      newRotation = ORIENTATION_DOWN;
       visibility = View.VISIBLE;
     } else { // Otherwise rotate up and hide the text
-      newRotation = 0f;
+      newRotation = ORIENTATION_UP;
       visibility = View.GONE;
     }
 
