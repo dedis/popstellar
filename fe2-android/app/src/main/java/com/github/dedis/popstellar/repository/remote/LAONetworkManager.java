@@ -253,6 +253,12 @@ public class LAONetworkManager implements MessageSender {
         .cache();
   }
 
+  /**
+   * This function distinguish an unrecoverable failure based on the number of attempts of
+   * reprocessing.
+   *
+   * @param message Message failed to be handled to be reprocessed
+   */
   private void reprocessMessage(GenericMessage message) {
     // Check that the message hasn't already reprocessed more than the threshold of dropout
     int count = reprocessingCounter.getOrDefault(message, 0);
