@@ -72,6 +72,8 @@ func (h *Hub) handleRootChannelPublishMessage(sock socket.Socket, publish method
 	}
 
 	h.rootInbox.StoreMessage(publish.Params.Message)
+	h.globalInbox.StoreMessage(publish.Params.Message)
+	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
 
 	return nil
 }
@@ -135,6 +137,8 @@ func (h *Hub) handleRootChannelBroadcastMessage(sock socket.Socket,
 	}
 
 	h.rootInbox.StoreMessage(broadcast.Params.Message)
+	h.globalInbox.StoreMessage(broadcast.Params.Message)
+	h.addMessageId(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
 
 	return nil
 }
@@ -241,11 +245,10 @@ func (h *Hub) handleGetMessagesByIdAnswer(senderSocket socket.Socket, answerMsg 
 			}
 
 			err = h.handleReceivedMessage(senderSocket, publish)
+
 			if err != nil {
 				h.log.Error().Msgf("failed to handle message received from getMessagesById answer: %v", err)
 			}
-
-			h.messageIdsByChannel[channel] = append(h.messageIdsByChannel[channel], messageData.MessageID)
 		}
 	}
 }
@@ -379,6 +382,9 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 		return nil
 	}
 	h.hubInbox.StoreMessage(broadcast.Params.Message)
+	h.globalInbox.StoreMessage(broadcast.Params.Message)
+	h.addMessageId(broadcast.Params.Channel, broadcast.Params.Message.MessageID)
+
 	h.Unlock()
 
 	if err != nil {
@@ -544,7 +550,7 @@ func (h *Hub) getMissingMessages(missingIds map[string][]string) (map[string][]m
 	missingMsgs := make(map[string][]message.Message)
 	for channelId, messageIds := range missingIds {
 		for _, messageId := range messageIds {
-			msg, exists := h.hubInbox.GetMessage(messageId)
+			msg, exists := h.globalInbox.GetMessage(messageId)
 			if !exists {
 				return nil, xerrors.Errorf("Message %s not found in hub inbox", messageId)
 			}
@@ -564,6 +570,9 @@ func (h *Hub) handleReceivedMessage(socket socket.Socket, publish method.Publish
 		return xerrors.Errorf("already stored this message")
 	}
 	h.hubInbox.StoreMessage(publish.Params.Message)
+	h.globalInbox.StoreMessage(publish.Params.Message)
+	h.addMessageId(publish.Params.Channel, publish.Params.Message.MessageID)
+	h.log.Info().Msgf("Added %s to %s", publish.Params.Message.MessageID, publish.Params.Channel)
 	h.Unlock()
 
 	if publish.Params.Channel == rootChannel {

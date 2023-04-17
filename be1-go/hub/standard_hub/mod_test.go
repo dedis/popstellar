@@ -1641,9 +1641,9 @@ func Test_Send_Heartbeat_Message(t *testing.T) {
 
 	hub.serverSockets.Upsert(sock)
 
-	hub.hubInbox.StoreMessage(msg1)
-	hub.hubInbox.StoreMessage(msg2)
-	hub.hubInbox.StoreMessage(msg3)
+	hub.globalInbox.StoreMessage(msg1)
+	hub.globalInbox.StoreMessage(msg2)
+	hub.globalInbox.StoreMessage(msg3)
 
 	hub.messageIdsByChannel["/root"] = idsRoot
 	hub.messageIdsByChannel["/root/channel1"] = idsChannel1
@@ -1678,7 +1678,7 @@ func Test_Handle_Heartbeat(t *testing.T) {
 	hub, err := NewHub(keypair.public, "", nolog, nil)
 	require.NoError(t, err)
 
-	hub.hubInbox.StoreMessage(msg1)
+	hub.globalInbox.StoreMessage(msg1)
 
 	hub.messageIdsByChannel["/root"] = []string{msg1.MessageID}
 
@@ -1742,9 +1742,9 @@ func Test_Handle_GetMessagesById(t *testing.T) {
 
 	hub.serverSockets.Upsert(sock)
 
-	hub.hubInbox.StoreMessage(msg1)
-	hub.hubInbox.StoreMessage(msg2)
-	hub.hubInbox.StoreMessage(msg3)
+	hub.globalInbox.StoreMessage(msg1)
+	hub.globalInbox.StoreMessage(msg2)
+	hub.globalInbox.StoreMessage(msg3)
 
 	hub.messageIdsByChannel["/root"] = idsRoot
 	hub.messageIdsByChannel["/root/channel1"] = idsChannel1
@@ -1786,11 +1786,6 @@ func Test_Handle_GetMessagesById(t *testing.T) {
 			require.Contains(t, missingMessages[receivedChannelIds], msg)
 		}
 	}
-}
-
-// Test that the answers to a getMessagesById are properly handled
-func Test_Handle_GetMessagesById_Answer(t *testing.T) {
-
 }
 
 // -----------------------------------------------------------------------------
@@ -1956,6 +1951,10 @@ func (f *fakeSocket) ID() string {
 
 func (f *fakeSocket) Type() socket.SocketType {
 	return socket.ClientSocketType
+}
+
+func IntPointer(i int) *int {
+	return &i
 }
 
 // -------------------------------------
