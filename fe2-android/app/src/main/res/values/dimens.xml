@@ -39,6 +39,10 @@
   <dimen name="standard_button_text_size">16dp</dimen>
   <dimen name="big_button_text_size">22sp</dimen>
 
+  <!-- Expand Arrow -->
+  <dimen name="expand_arrow_image_side">20dp</dimen>
+  <dimen name="expand_arrow_end_margin">8dp</dimen>
+
   <!--  Lao Detail -->
   <dimen name="properties_section_margin">16dp</dimen>
   <dimen name="properties_title_margin">8dp</dimen>
@@ -67,14 +71,11 @@
   <dimen name="roll_call_expand_text_margin_top">10dp</dimen>
   <dimen name="roll_call_expand_text_margin_horizontal">10dp</dimen>
   <dimen name="roll_call_card_lateral_margin">10dp</dimen>
-  <dimen name="roll_call_arrow_side">15dp</dimen>
   <dimen name="roll_call_card_corner_radius">10dp</dimen>
   <dimen name="roll_call_container_margin_horizontal">15dp</dimen>
   <dimen name="roll_call_container_margin_top">10dp</dimen>
 
   <!--  Event layout-->
-  <dimen name="event_layout_arrow_end_margin">8dp</dimen>
-  <dimen name="event_layout_arrow_image_side">20dp</dimen>
   <dimen name="event_layout_type_image_side">30dp</dimen>
   <dimen name="event_layout_type_start_margin">8dp</dimen>
 

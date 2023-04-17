@@ -9,8 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -380,7 +379,7 @@ public class RollCallFragment extends Fragment {
   }
 
   /** Callback function for the card listener to expand and shrink a text box */
-  private void handleExpandArrow(android.widget.ImageView arrow, android.widget.TextView text) {
+  private void handleExpandArrow(ImageView arrow, TextView text) {
     float newRotation;
     int visibility;
     // If the arrow is pointing up, then rotate down and make visible the text
