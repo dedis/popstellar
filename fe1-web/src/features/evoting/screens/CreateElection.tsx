@@ -202,6 +202,25 @@ const globalErrorMessages = (
   );
 };
 
+const localErrorMessage = (multipleChoiceQuestion: NewQuestion, trimmedQuestions : NewQuestion[]) => {
+  return (
+    <>
+    {isSilentlyRemoved(multipleChoiceQuestion, trimmedQuestions) && (
+    <Text style={[Typography.paragraph, Typography.error]}>
+      {STRINGS.election_create_empty_question}
+    </Text>
+  )}
+  {hasInvalidBallotOptions(multipleChoiceQuestion) && (
+    <Text style={[Typography.paragraph, Typography.error]}>
+      {STRINGS.election_create_invalid_ballot_options.replace(
+        '{}',
+        MIN_BALLOT_OPTIONS.toString(),
+      )}
+    </Text>
+  )}
+  </>
+  )}
+
 /**
  * Generate some unique key from the index for each default question
  * @param defaultQuestions
@@ -394,19 +413,7 @@ const CreateElection = () => {
             }
             testID={`question_${idx}_ballots`}
           />
-          {isSilentlyRemoved(multipleChoiceQuestion, trimmedQuestions) && (
-            <Text style={[Typography.paragraph, Typography.error]}>
-              {STRINGS.election_create_empty_question}
-            </Text>
-          )}
-          {hasInvalidBallotOptions(multipleChoiceQuestion) && (
-            <Text style={[Typography.paragraph, Typography.error]}>
-              {STRINGS.election_create_invalid_ballot_options.replace(
-                '{}',
-                MIN_BALLOT_OPTIONS.toString(),
-              )}
-            </Text>
-          )}
+          {localErrorMessage(multipleChoiceQuestion, trimmedQuestions)}
         </View>
       ))}
       <PoPTextButton
