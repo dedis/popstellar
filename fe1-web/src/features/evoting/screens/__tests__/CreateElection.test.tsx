@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import { Provider } from 'react-redux';
 
@@ -95,7 +95,7 @@ describe('CreateElection', () => {
     fireEvent.changeText(electionName, '     ');
     fireEvent.changeText(question, '        ');
     fireEvent.changeText(option, '        ');
-    waitFor(() => expect(toJSON()).toMatchSnapshot());
+    expect(toJSON()).toMatchSnapshot();
   });
 
   it('sends correctly data on edited input that should be trimmed', () => {
