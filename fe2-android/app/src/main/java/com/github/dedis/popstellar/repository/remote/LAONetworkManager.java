@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,6 +34,8 @@ public class LAONetworkManager implements MessageSender {
 
   private static final String TAG = LAONetworkManager.class.getSimpleName();
 
+  private static final int MAX_REPROCESSING = 5;
+
   private final MessageHandler messageHandler;
   private final MultiConnection multiConnection;
   public final AtomicInteger requestCounter = new AtomicInteger();
@@ -41,6 +44,8 @@ public class LAONetworkManager implements MessageSender {
 
   // A subject that represents unprocessed messages
   private final Subject<GenericMessage> unprocessed = PublishSubject.create();
+  private final ConcurrentHashMap<GenericMessage, Integer> reprocessingCounter =
+      new ConcurrentHashMap<>();
   private final Set<Channel> subscribedChannels;
   private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -198,7 +203,7 @@ public class LAONetworkManager implements MessageSender {
         | NoRollCallException
         | UnknownElectionException e) {
       Log.e(TAG, "Error while handling received message", e);
-      unprocessed.onNext(broadcast);
+      reprocessMessage(broadcast);
     }
   }
 
@@ -246,6 +251,19 @@ public class LAONetworkManager implements MessageSender {
         // Add a timeout to automatically dispose of the flow and end with a failure
         .timeout(5, TimeUnit.SECONDS)
         .cache();
+  }
+
+  private void reprocessMessage(GenericMessage message) {
+    // Check that the message hasn't already reprocessed more than the threshold of dropout
+    int count = reprocessingCounter.getOrDefault(message, 0);
+    if (count < MAX_REPROCESSING) {
+      // Increase the counter and reprocess
+      reprocessingCounter.put(message, count + 1);
+      unprocessed.onNext(message);
+    } else {
+      // Discard the message
+      reprocessingCounter.remove(message);
+    }
   }
 
   @Override
