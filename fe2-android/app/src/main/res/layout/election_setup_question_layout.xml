@@ -62,8 +62,7 @@
     android:layout_marginEnd="@dimen/election_setup_text_field_margin_lateral"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/write_in"
-    app:layout_constraintHorizontal_bias="0">
+    app:layout_constraintTop_toBottomOf="@+id/write_in">
 
     <LinearLayout
       android:id="@+id/election_setup_ballot_options_ll"
