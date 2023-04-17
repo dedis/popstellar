@@ -126,6 +126,25 @@ public class RollCallFragment extends Fragment {
           binding.descriptionText.setVisibility(visibility);
         });
 
+    // Set the location dropdown
+    binding.locationCard.setOnClickListener(
+        v -> {
+          float newRotation;
+          int visibility;
+          // If the arrow is pointing up, then rotate down and make visible the description
+          if (binding.locationArrow.getRotation() == 0f) {
+            newRotation = 180f;
+            visibility = View.VISIBLE;
+          } else { // Otherwise rotate up and hide the description
+            newRotation = 0f;
+            visibility = View.GONE;
+          }
+
+          // Use an animation to rotate smoothly
+          binding.locationArrow.animate().rotation(newRotation).setDuration(300).start();
+          binding.locationText.setVisibility(visibility);
+        });
+
     binding.rollCallManagementButton.setOnClickListener(
         v -> {
           EventState state = rollCall.getState();
@@ -230,15 +249,19 @@ public class RollCallFragment extends Fragment {
 
     binding.rollCallFragmentTitle.setText(rollCall.getName());
 
-    // Set the description visible if the QR is not displayed
-    // (i.e. I'm the organizer or the roll call is open) or
-    // if the description is empty
-    if (rollCall.isOpen() && !isOrganizer || rollCall.getDescription().isEmpty()) {
-      binding.descriptionContainer.setVisibility(View.GONE);
+    // Set the description and location visible if the QR is not displayed
+    // (i.e. I'm the organizer or the roll call is open)
+    if (rollCall.isOpen() && !isOrganizer) {
+      binding.metadataContainer.setVisibility(View.GONE);
     } else {
-      binding.descriptionContainer.setVisibility(View.VISIBLE);
+      binding.metadataContainer.setVisibility(View.VISIBLE);
+      // Set the description invisible if it's empty
+      if (rollCall.getDescription().isEmpty()) {
+        binding.descriptionCard.setVisibility(View.GONE);
+      }
     }
 
+    binding.locationText.setText(rollCall.getLocation());
     binding.descriptionText.setText(rollCall.getDescription());
 
     // Set visibility of management button as Gone by default
