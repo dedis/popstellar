@@ -96,7 +96,7 @@ const hasInvalidBallotOptions = (question: NewQuestion): boolean => {
 };
 
 /**
- * Checks whether a question title is not unique within a list of questions
+ * Checks whether a question title is unique within a list of questions
  * @param questions The list of questions
  */
 const haveUniqueQuestionTitles = (questions: NewQuestion[]): boolean => {
@@ -202,24 +202,33 @@ const globalErrorMessages = (
   );
 };
 
-const localErrorMessage = (multipleChoiceQuestion: NewQuestion, trimmedQuestions : NewQuestion[]) => {
+/**
+ * Displays the error messages that are related to a specific question
+ * @param multipleChoiceQuestion the question that might have error
+ * @param trimmedQuestions all the valid questions
+ */
+const localErrorMessage = (
+  multipleChoiceQuestion: NewQuestion,
+  trimmedQuestions: NewQuestion[],
+) => {
   return (
     <>
-    {isSilentlyRemoved(multipleChoiceQuestion, trimmedQuestions) && (
-    <Text style={[Typography.paragraph, Typography.error]}>
-      {STRINGS.election_create_empty_question}
-    </Text>
-  )}
-  {hasInvalidBallotOptions(multipleChoiceQuestion) && (
-    <Text style={[Typography.paragraph, Typography.error]}>
-      {STRINGS.election_create_invalid_ballot_options.replace(
-        '{}',
-        MIN_BALLOT_OPTIONS.toString(),
+      {isSilentlyRemoved(multipleChoiceQuestion, trimmedQuestions) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_empty_question}
+        </Text>
       )}
-    </Text>
-  )}
-  </>
-  )}
+      {hasInvalidBallotOptions(multipleChoiceQuestion) && (
+        <Text style={[Typography.paragraph, Typography.error]}>
+          {STRINGS.election_create_invalid_ballot_options.replace(
+            '{}',
+            MIN_BALLOT_OPTIONS.toString(),
+          )}
+        </Text>
+      )}
+    </>
+  );
+};
 
 /**
  * Generate some unique key from the index for each default question
