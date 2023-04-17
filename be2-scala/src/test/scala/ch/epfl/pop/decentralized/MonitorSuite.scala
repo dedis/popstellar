@@ -38,6 +38,21 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
   test("monitor should schedule single heartbeat when receiving a Right GraphMessage") {
 
+    val testProbe = TestProbe()
+    val monitorRef = system.actorOf(
+      Monitor.props(testProbe.ref, heartbeatRate = slowRate, messageDelay = fastRate)
+    )
+
+    // Needed to tell monitor ConnectionMediatorRef
+    val sink = Monitor.sink(monitorRef)
+    testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
+
+    Source.single(Right(JsonRpcRequestExample.subscribeRpcRequest)).to(sink).run()
+    testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
+  }
+
+  test("monitor should not schedule single hearbeats when receiving a heartbeat or get_messages_by_id") {
+
     val heartbeat = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.HEARTBEAT, new ParamsWithMap(Map.empty), None)
     val getMessagesById = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, new ParamsWithMap(Map.empty), None)
 
@@ -49,10 +64,11 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     // Needed to tell monitor ConnectionMediatorRef
     val sink = Monitor.sink(monitorRef)
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
-
     Source.single(Right(heartbeat)).to(sink).run()
+
     testProbe.expectNoMessage(timeout)
 
+    // Check that monitor is still doing fine when receiving other Right(...)
     Source.single(Right(JsonRpcRequestExample.subscribeRpcRequest)).to(sink).run()
     testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
 
