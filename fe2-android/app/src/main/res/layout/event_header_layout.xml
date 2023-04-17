@@ -34,7 +34,7 @@
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
     android:src="@drawable/ic_arrow_expand"
-    android:layout_marginEnd="@dimen/event_layout_arrow_end_margin"
+    android:layout_marginEnd="@dimen/expand_arrow_end_margin"
     android:contentDescription="@string/expand_icon_description" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
