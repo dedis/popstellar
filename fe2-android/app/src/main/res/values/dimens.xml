@@ -45,6 +45,8 @@
 
   <!-- Event -->
   <dimen name="election_setup_question_margin">20dp</dimen>
+  <dimen name="election_results_margin">20dp</dimen>
+  <dimen name="election_results_space">10dp</dimen>
   <dimen name="election_setup_text_field_margin_lateral">10dp</dimen>
   <dimen name="event_button_text_size">14sp</dimen>
   <dimen name="event_button_margin">24dp</dimen>
