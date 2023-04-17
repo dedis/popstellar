@@ -84,7 +84,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
         val ask = dbActorRef ? DbActor.ReadChannelData(channel)
         Await.ready(ask, duration).value match {
           case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
-            val setOfIds = channelData.messages.to(collection.mutable.Set)
+            val setOfIds = channelData.messages.to(collection.immutable.Set)
             localHeartBeat += (channel -> setOfIds.toList)
           case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"couldn't readChannelData for local heartbeat", jsonRpcMessage.getId))
           case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
@@ -100,7 +100,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
           ))
         }
       })
-      Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, GetMessagesById(missingIds.toMap), None)) // how to pass the missing ids?? répondre par un getmsgsbyid et gérer les ids.
+      Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, GetMessagesById(missingIds.toMap), None))
 
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "HeartbeatHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
