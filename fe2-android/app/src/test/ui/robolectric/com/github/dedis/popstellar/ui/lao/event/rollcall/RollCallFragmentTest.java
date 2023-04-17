@@ -66,7 +66,8 @@ public class RollCallFragmentTest {
   private static final long CREATION = 10323411;
   private static final long ROLL_CALL_START = 10323421;
   private static final long ROLL_CALL_END = 10323431;
-  private static final String ROLL_CALL_DESC = "";
+  private static final String ROLL_CALL_EMPTY_DESC = "";
+  private static final String ROLL_CALL_DESC = "description";
   private static final String LOCATION = "EPFL";
   private static final BehaviorSubject<LaoView> laoSubject =
       BehaviorSubject.createDefault(new LaoView(LAO));
@@ -87,7 +88,7 @@ public class RollCallFragmentTest {
           EventState.CREATED,
           new HashSet<>(),
           LOCATION,
-          ROLL_CALL_DESC);
+          ROLL_CALL_EMPTY_DESC);
 
   private final RollCall ROLL_CALL_2 =
       new RollCall(
@@ -319,6 +320,70 @@ public class RollCallFragmentTest {
     managementButton().check(matches(withEffectiveVisibility(Visibility.GONE)));
   }
 
+  @Test
+  public void locationDropdownShowTest() {
+    // Here the location text must be hidden
+    rollCallLocationText().check(matches(withEffectiveVisibility(Visibility.GONE)));
+
+    rollCallLocationCard().perform(click());
+
+    // Wait for the main thread to finish executing the calls made above
+    // before asserting their effect
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    // Check that the location text is properly displayed
+    rollCallLocationText().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+    rollCallLocationText().check(matches(withText(LOCATION)));
+  }
+
+  @Test
+  public void locationDropdownHideTest() {
+    // Click two times to show and then hide
+    rollCallLocationCard().perform(click());
+    rollCallLocationCard().perform(click());
+
+    // Wait for the main thread to finish executing the calls made above
+    // before asserting their effect
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    // Check that the location text is properly displayed
+    rollCallLocationText().check(matches(withEffectiveVisibility(Visibility.GONE)));
+  }
+
+  @Test
+  public void descriptionDropdownShowTest() {
+    openRollCallWithDescription();
+
+    // Here the location text must be hidden
+    rollCallDescriptionText().check(matches(withEffectiveVisibility(Visibility.GONE)));
+
+    rollCallDescriptionCard().perform(click());
+
+    // Wait for the main thread to finish executing the calls made above
+    // before asserting their effect
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    // Check that the location text is properly displayed
+    rollCallDescriptionText().check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+    rollCallDescriptionText().check(matches(withText(ROLL_CALL_DESC)));
+  }
+
+  @Test
+  public void descriptionDropdownHideTest() {
+    openRollCallWithDescription();
+
+    // Click two times to show and then hide
+    rollCallDescriptionCard().perform(click());
+    rollCallDescriptionCard().perform(click());
+
+    // Wait for the main thread to finish executing the calls made above
+    // before asserting their effect
+    InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+    // Check that the location text is properly displayed
+    rollCallDescriptionText().check(matches(withEffectiveVisibility(Visibility.GONE)));
+  }
+
   /** Utility function to create a LAO when the user is not the organizer */
   private void fakeClientLao() throws UnknownLaoException {
     when(laoRepo.getLaoObservable(anyString())).thenReturn(laoSubject2);
@@ -326,5 +391,17 @@ public class RollCallFragmentTest {
     rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL);
     rollCallRepo.updateRollCall(LAO_ID2, ROLL_CALL_2);
     when(keyManager.getMainPublicKey()).thenReturn(SENDER_2);
+  }
+
+  /** Utility function to open the fragment of an alternative roll call */
+  private void openRollCallWithDescription() {
+    activityScenarioRule
+        .getScenario()
+        .onActivity(
+            activity ->
+                LaoActivity.setCurrentFragment(
+                    activity.getSupportFragmentManager(),
+                    fragmentId(),
+                    () -> RollCallFragment.newInstance(ROLL_CALL_2.getPersistentId())));
   }
 }

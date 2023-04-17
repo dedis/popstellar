@@ -108,42 +108,12 @@ public class RollCallFragment extends Fragment {
     setUpStateDependantContent();
 
     // Set the description dropdown
-    binding.descriptionCard.setOnClickListener(
-        v -> {
-          float newRotation;
-          int visibility;
-          // If the arrow is pointing up, then rotate down and make visible the description
-          if (binding.descriptionArrow.getRotation() == 0f) {
-            newRotation = 180f;
-            visibility = View.VISIBLE;
-          } else { // Otherwise rotate up and hide the description
-            newRotation = 0f;
-            visibility = View.GONE;
-          }
-
-          // Use an animation to rotate smoothly
-          binding.descriptionArrow.animate().rotation(newRotation).setDuration(300).start();
-          binding.descriptionText.setVisibility(visibility);
-        });
+    binding.rollCallDescriptionCard.setOnClickListener(
+        v -> handleExpandArrow(binding.rollCallDescriptionArrow, binding.rollCallDescriptionText));
 
     // Set the location dropdown
-    binding.locationCard.setOnClickListener(
-        v -> {
-          float newRotation;
-          int visibility;
-          // If the arrow is pointing up, then rotate down and make visible the description
-          if (binding.locationArrow.getRotation() == 0f) {
-            newRotation = 180f;
-            visibility = View.VISIBLE;
-          } else { // Otherwise rotate up and hide the description
-            newRotation = 0f;
-            visibility = View.GONE;
-          }
-
-          // Use an animation to rotate smoothly
-          binding.locationArrow.animate().rotation(newRotation).setDuration(300).start();
-          binding.locationText.setVisibility(visibility);
-        });
+    binding.rollCallLocationCard.setOnClickListener(
+        v -> handleExpandArrow(binding.rollCallLocationArrow, binding.rollCallLocationText));
 
     binding.rollCallManagementButton.setOnClickListener(
         v -> {
@@ -252,17 +222,17 @@ public class RollCallFragment extends Fragment {
     // Set the description and location visible if the QR is not displayed
     // (i.e. I'm the organizer or the roll call is open)
     if (rollCall.isOpen() && !isOrganizer) {
-      binding.metadataContainer.setVisibility(View.GONE);
+      binding.rollCallMetadataContainer.setVisibility(View.GONE);
     } else {
-      binding.metadataContainer.setVisibility(View.VISIBLE);
+      binding.rollCallMetadataContainer.setVisibility(View.VISIBLE);
       // Set the description invisible if it's empty
       if (rollCall.getDescription().isEmpty()) {
-        binding.descriptionCard.setVisibility(View.GONE);
+        binding.rollCallDescriptionCard.setVisibility(View.GONE);
       }
     }
 
-    binding.locationText.setText(rollCall.getLocation());
-    binding.descriptionText.setText(rollCall.getDescription());
+    binding.rollCallLocationText.setText(rollCall.getLocation());
+    binding.rollCallDescriptionText.setText(rollCall.getDescription());
 
     // Set visibility of management button as Gone by default
     binding.rollCallManagementButton.setVisibility(View.GONE);
@@ -408,6 +378,24 @@ public class RollCallFragment extends Fragment {
             .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
             .bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
+  }
+
+  /** Callback function for the card listener to expand and shrink a text box */
+  private void handleExpandArrow(android.widget.ImageView arrow, android.widget.TextView text) {
+    float newRotation;
+    int visibility;
+    // If the arrow is pointing up, then rotate down and make visible the text
+    if (arrow.getRotation() == 0f) {
+      newRotation = 180f;
+      visibility = View.VISIBLE;
+    } else { // Otherwise rotate up and hide the text
+      newRotation = 0f;
+      visibility = View.GONE;
+    }
+
+    // Use an animation to rotate smoothly
+    arrow.animate().rotation(newRotation).setDuration(300).start();
+    text.setVisibility(visibility);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {

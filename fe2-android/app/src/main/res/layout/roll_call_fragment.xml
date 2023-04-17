@@ -134,7 +134,7 @@
       app:layout_constraintTop_toTopOf="@id/end_time_icon" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-      android:id="@+id/metadata_container"
+      android:id="@+id/roll_call_metadata_container"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginHorizontal="@dimen/roll_call_container_margin_horizontal"
@@ -142,7 +142,7 @@
       app:layout_constraintTop_toBottomOf="@id/end_time_icon">
 
       <com.google.android.material.card.MaterialCardView
-        android:id="@+id/location_card"
+        android:id="@+id/roll_call_location_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -155,7 +155,7 @@
           android:paddingVertical="@dimen/padding_standard">
 
           <ImageView
-            android:id="@+id/location_arrow"
+            android:id="@+id/roll_call_location_arrow"
             android:layout_width="@dimen/roll_call_arrow_side"
             android:layout_height="@dimen/roll_call_arrow_side"
             android:layout_marginEnd="@dimen/roll_call_card_lateral_margin"
@@ -179,22 +179,22 @@
       </com.google.android.material.card.MaterialCardView>
 
       <TextView
-        android:id="@+id/location_text"
+        android:id="@+id/roll_call_location_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/roll_call_expand_text_margin_top"
         android:layout_marginHorizontal="@dimen/roll_call_expand_text_margin_horizontal"
-        app:layout_constraintTop_toBottomOf="@id/location_card"
+        app:layout_constraintTop_toBottomOf="@id/roll_call_location_card"
         android:visibility="gone" />
 
       <com.google.android.material.card.MaterialCardView
-        android:id="@+id/description_card"
+        android:id="@+id/roll_call_description_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
         android:layout_marginTop="@dimen/roll_call_container_margin_top"
         app:cardCornerRadius="@dimen/roll_call_card_corner_radius"
-        app:layout_constraintTop_toBottomOf="@id/location_text">
+        app:layout_constraintTop_toBottomOf="@id/roll_call_location_text">
 
         <androidx.constraintlayout.widget.ConstraintLayout
           android:layout_width="match_parent"
@@ -202,7 +202,7 @@
           android:paddingVertical="@dimen/padding_standard">
 
           <ImageView
-            android:id="@+id/description_arrow"
+            android:id="@+id/roll_call_description_arrow"
             android:layout_width="@dimen/roll_call_arrow_side"
             android:layout_height="@dimen/roll_call_arrow_side"
             android:layout_marginEnd="@dimen/roll_call_card_lateral_margin"
@@ -226,13 +226,13 @@
       </com.google.android.material.card.MaterialCardView>
 
       <TextView
-        android:id="@+id/description_text"
+        android:id="@+id/roll_call_description_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/roll_call_expand_text_margin_top"
         android:layout_marginHorizontal="@dimen/roll_call_expand_text_margin_horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/description_card"
+        app:layout_constraintTop_toBottomOf="@id/roll_call_description_card"
         android:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -247,7 +247,7 @@
       app:layout_constraintBottom_toTopOf="@id/roll_call_management_button"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/metadata_container"
+      app:layout_constraintTop_toBottomOf="@id/roll_call_metadata_container"
       app:layout_constraintVertical_bias="@dimen/roll_call_attendees_text_vertical_bias" />
 
     <ListView
