@@ -89,12 +89,14 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     // Wait for the first heartbeat then "disconnect" servers
     testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
     testProbe.send(monitorRef, Monitor.NoServerConnected)
+    testProbe.expectNoMessage(timeout)
 
+    // No single heartbeat should be scheduled either
+    Source.single(Right(JsonRpcRequestExample.subscribeRpcRequest)).to(Monitor.sink(monitorRef)).run()
     testProbe.expectNoMessage(timeout)
 
     // Connect a server and check for heartbeats again
     testProbe.send(monitorRef, Monitor.AtLeastOneServerConnected)
-
     testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
   }
 }
