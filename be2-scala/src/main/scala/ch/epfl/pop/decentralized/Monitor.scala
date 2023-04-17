@@ -25,6 +25,9 @@ final case class Monitor(
   private val periodicHbKey = 0
   private val singleHbKey = 1
 
+  // State of connected servers
+  private var someServerConnected = false
+
   // Monitor is self-contained,
   // To that end it doesn't know the ref of the connectionMediator
   private var connectionMediatorRef = ActorRef.noSender
@@ -32,11 +35,13 @@ final case class Monitor(
   override def receive: Receive = LoggingReceive {
 
     case Monitor.AtLeastOneServerConnected =>
+      someServerConnected = true
       connectionMediatorRef = sender()
       if (!timers.isTimerActive(periodicHbKey))
         timers.startTimerWithFixedDelay(periodicHbKey, TriggerHeartbeat, heartbeatRate)
 
     case Monitor.NoServerConnected =>
+      someServerConnected = false
       timers.cancelAll()
 
     case Monitor.TriggerHeartbeat =>
@@ -46,11 +51,10 @@ final case class Monitor(
 
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       jsonRpcMessage.getParams match {
-
         case _: ParamsWithMap => /* Actively ignoring this specific message */
         // For any other message, we schedule a single heartbeat to reduce messages propagation delay
         case _ =>
-          if (!timers.isTimerActive(singleHbKey) && timers.isTimerActive(periodicHbKey)) {
+          if (someServerConnected && !timers.isTimerActive(singleHbKey)) {
             log.info(s"Scheduling single heartbeat")
             timers.startSingleTimer(singleHbKey, TriggerHeartbeat, messageDelay)
           }
