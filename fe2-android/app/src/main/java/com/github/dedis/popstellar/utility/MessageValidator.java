@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.utility;
 
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -13,6 +12,9 @@ public abstract class MessageValidator {
   /** URL-safe base64 pattern */
   public static final Pattern BASE64_PATTERN =
       Pattern.compile("^(?:[A-Za-z0-9-_]{4})*(?:[A-Za-z0-9-_]{2}==|[A-Za-z0-9-_]{3}=)?$");
+
+  /** Prevent instantiations */
+  private MessageValidator() {}
 
   public static MessageValidatorBuilder verify() {
     return new MessageValidatorBuilder();
