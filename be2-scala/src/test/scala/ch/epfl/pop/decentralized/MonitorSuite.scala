@@ -80,7 +80,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
 
     val testProbe = TestProbe()
     val monitorRef = system.actorOf(
-      Monitor.props(testProbe.ref, heartbeatRate = fastRate, messageDelay = slowRate)
+      Monitor.props(testProbe.ref, heartbeatRate = fastRate, messageDelay = fastRate)
     )
 
     // Needed to tell monitor ConnectionMediatorRef
