@@ -186,11 +186,14 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 
 // Start implements hub.Hub
 func (h *Hub) Start() {
+	ticker := time.NewTicker(time.Second * heartbeatDelay)
+	defer ticker.Stop()
+
 	go func() {
 		h.log.Info().Msg("Start check messages")
 		for {
 			select {
-			case <-time.Tick(time.Second * heartbeatDelay):
+			case <-ticker.C:
 				err := h.sendHeartbeatToServers()
 				if err != nil {
 					h.log.Err(err).Msgf("Failed to send heartbeat message to servers %v", err)
