@@ -35,10 +35,11 @@ final case class Monitor(
   override def receive: Receive = LoggingReceive {
 
     case Monitor.AtLeastOneServerConnected =>
-      someServerConnected = true
       connectionMediatorRef = sender()
-      if (!timers.isTimerActive(periodicHbKey))
+      if (!someServerConnected) {
         timers.startTimerWithFixedDelay(periodicHbKey, TriggerHeartbeat, heartbeatRate)
+        someServerConnected = true
+      }
 
     case Monitor.NoServerConnected =>
       someServerConnected = false
