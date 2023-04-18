@@ -9,8 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -48,8 +47,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-import static com.github.dedis.popstellar.utility.Constants.ID_NULL;
-import static com.github.dedis.popstellar.utility.Constants.ROLL_CALL_ID;
+import static com.github.dedis.popstellar.utility.Constants.*;
 
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
@@ -106,6 +104,14 @@ public class RollCallFragment extends Fragment {
     }
 
     setUpStateDependantContent();
+
+    // Set the description dropdown
+    binding.rollCallDescriptionCard.setOnClickListener(
+        v -> handleExpandArrow(binding.rollCallDescriptionArrow, binding.rollCallDescriptionText));
+
+    // Set the location dropdown
+    binding.rollCallLocationCard.setOnClickListener(
+        v -> handleExpandArrow(binding.rollCallLocationArrow, binding.rollCallLocationText));
 
     binding.rollCallManagementButton.setOnClickListener(
         v -> {
@@ -210,6 +216,21 @@ public class RollCallFragment extends Fragment {
     boolean isOrganizer = laoViewModel.isOrganizer();
 
     binding.rollCallFragmentTitle.setText(rollCall.getName());
+
+    // Set the description and location visible if the QR is not displayed
+    // (i.e. I'm the organizer or the roll call is open)
+    if (rollCall.isOpen() && !isOrganizer) {
+      binding.rollCallMetadataContainer.setVisibility(View.GONE);
+    } else {
+      binding.rollCallMetadataContainer.setVisibility(View.VISIBLE);
+      // Set the description invisible if it's empty
+      if (rollCall.getDescription().isEmpty()) {
+        binding.rollCallDescriptionCard.setVisibility(View.GONE);
+      }
+    }
+
+    binding.rollCallLocationText.setText(rollCall.getLocation());
+    binding.rollCallDescriptionText.setText(rollCall.getDescription());
 
     // Set visibility of management button as Gone by default
     binding.rollCallManagementButton.setVisibility(View.GONE);
@@ -355,6 +376,24 @@ public class RollCallFragment extends Fragment {
             .withColor(ActivityUtils.getQRCodeColor(requireContext()), Color.TRANSPARENT)
             .bitmap();
     binding.rollCallPkQrCode.setImageBitmap(myBitmap);
+  }
+
+  /** Callback function for the card listener to expand and shrink a text box */
+  private void handleExpandArrow(ImageView arrow, TextView text) {
+    float newRotation;
+    int visibility;
+    // If the arrow is pointing up, then rotate down and make visible the text
+    if (arrow.getRotation() == ORIENTATION_UP) {
+      newRotation = ORIENTATION_DOWN;
+      visibility = View.VISIBLE;
+    } else { // Otherwise rotate up and hide the text
+      newRotation = ORIENTATION_UP;
+      visibility = View.GONE;
+    }
+
+    // Use an animation to rotate smoothly
+    arrow.animate().rotation(newRotation).setDuration(300).start();
+    text.setVisibility(visibility);
   }
 
   private EnumMap<EventState, Integer> buildManagementTextMap() {
