@@ -526,47 +526,6 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 	return nil
 }
 
-func (h *Hub) addMessageId(channelId string, messageId string) {
-	messageIds, channelKnown := h.messageIdsByChannel[channelId]
-	if !channelKnown {
-		h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
-	} else {
-		alreadyStored := slices.Contains(messageIds, messageId)
-		if !alreadyStored {
-			h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
-		}
-	}
-}
-
-func (h *Hub) updateRecords() {
-	for channelId, channel := range h.channelByID {
-		catchupQuery := method.Catchup{
-			Base: query.Base{
-				JSONRPCBase: jsonrpc.JSONRPCBase{
-					JSONRPC: "2.0",
-				},
-				Method: "catchup",
-			},
-			ID: 0,
-			Params: struct {
-				Channel string "json:\"channel\""
-			}{
-				channelId,
-			},
-		}
-		messages := channel.Catchup(catchupQuery)
-
-		for _, msg := range messages {
-			_, alreadyStored := h.globalInbox.GetMessage(msg.MessageID)
-			if !alreadyStored {
-				h.globalInbox.StoreMessage(msg)
-				h.addMessageId(channelId, msg.MessageID)
-			}
-		}
-	}
-
-}
-
 // sendHeartbeatToServers sends a heartbeat message to all servers
 func (h *Hub) sendHeartbeatToServers() error {
 	h.Lock()
@@ -718,4 +677,48 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	point := suite.Point().Mul(secret, nil)
 
 	return point, secret
+}
+
+//addMessageId adds a message ID to the map of messageIds by channel of the hub
+func (h *Hub) addMessageId(channelId string, messageId string) {
+	messageIds, channelStored := h.messageIdsByChannel[channelId]
+	if !channelStored {
+		h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
+	} else {
+		alreadyStored := slices.Contains(messageIds, messageId)
+		if !alreadyStored {
+			h.messageIdsByChannel[channelId] = append(h.messageIdsByChannel[channelId], messageId)
+		}
+	}
+}
+
+//updateRecords updates the hub's globalInbox and messageIdsByChannel to have all the messages ready
+//for heartbeats by locally catching up on channels and store the messages in the hub
+func (h *Hub) updateRecords() {
+	for channelId, channel := range h.channelByID {
+		catchupQuery := method.Catchup{
+			Base: query.Base{
+				JSONRPCBase: jsonrpc.JSONRPCBase{
+					JSONRPC: "2.0",
+				},
+				Method: "catchup",
+			},
+			ID: 0,
+			Params: struct {
+				Channel string "json:\"channel\""
+			}{
+				channelId,
+			},
+		}
+		messages := channel.Catchup(catchupQuery)
+
+		for _, msg := range messages {
+			_, alreadyStored := h.globalInbox.GetMessage(msg.MessageID)
+			if !alreadyStored {
+				h.globalInbox.StoreMessage(msg)
+				h.addMessageId(channelId, msg.MessageID)
+			}
+		}
+	}
+
 }
