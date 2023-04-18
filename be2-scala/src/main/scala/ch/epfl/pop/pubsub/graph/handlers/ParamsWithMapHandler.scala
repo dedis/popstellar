@@ -12,10 +12,13 @@ import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.model.network.method.message.Message
+
 import scala.collection.mutable
 import akka.stream.FlowShape
 import ch.epfl.pop.model.network.JsonRpcResponse
 import ch.epfl.pop.model.network.ResultObject
+
+import scala.collection.immutable.HashMap
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
 
@@ -57,7 +60,6 @@ object ParamsWithMapHandler extends AskPatternConstants {
 
         /* close the shape */
         FlowShape(handlerPartitioner.in, handlerMerger.out)
-
 
       }
   })
@@ -121,13 +123,11 @@ object ParamsWithMapHandler extends AskPatternConstants {
           case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
         }
       })
-      Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(Map[Channel, Set[Message]]()), None))
-
-
+      Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(HashMap.from(response)), None))
 
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "getMessagesByIdHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
-    case graphMessage@_ => graphMessage
+    case graphMessage @ _ => graphMessage
   })
 
 }
