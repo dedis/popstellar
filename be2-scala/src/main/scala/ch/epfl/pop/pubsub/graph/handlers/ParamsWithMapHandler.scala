@@ -69,10 +69,10 @@ object ParamsWithMapHandler extends AskPatternConstants {
 
       /** second step is to retrieve the local set of channels * */
       var setOfChannels: Set[Channel] = Set()
-      val ask = dbActorRef ? DbActor.GetSetOfChannels()
+      val ask = dbActorRef ? DbActor.GetAllChannels()
       Await.ready(ask, duration).value match {
-        case Some(Success(DbActor.DbActorGetSetOfChannelsAck(channels))) =>
-          setOfChannels = channels.map(s => Channel(s))
+        case Some(Success(DbActor.DbActorGetAllChannelsAck(channels))) =>
+          setOfChannels = channels
 
         case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"couldn't retrieve local set of channels", jsonRpcMessage.getId))
         case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
@@ -110,7 +110,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
   private def getMessagesByIdHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       val receivedRequest: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[GetMessagesById].channelsToMessageIds
-      var response: mutable.HashMap[Channel, Set[Message]] = mutable.HashMap()
+      val response: mutable.HashMap[Channel, Set[Message]] = mutable.HashMap()
       receivedRequest.keys.foreach(channel => {
         val ask = dbActorRef ? DbActor.Catchup(channel)
         Await.ready(ask, duration).value match {
@@ -121,7 +121,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
           case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
         }
       })
-      Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(Map[Channel, Set[Message]]()), None, None))
+      Right(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, new ResultObject(Map[Channel, Set[Message]]()), None))
 
 
 
