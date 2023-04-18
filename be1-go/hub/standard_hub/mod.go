@@ -679,7 +679,7 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-//addMessageId adds a message ID to the map of messageIds by channel of the hub
+// addMessageId adds a message ID to the map of messageIds by channel of the hub
 func (h *Hub) addMessageId(channelId string, messageId string) {
 	messageIds, channelStored := h.messageIdsByChannel[channelId]
 	if !channelStored {
@@ -692,8 +692,8 @@ func (h *Hub) addMessageId(channelId string, messageId string) {
 	}
 }
 
-//updateRecords updates the hub's globalInbox and messageIdsByChannel to have all the messages ready
-//for heartbeats by locally catching up on channels and store the messages in the hub
+// updateRecords updates the hub's globalInbox and messageIdsByChannel to have all the messages ready
+// for heartbeats by locally catching up on channels and store the messages in the hub
 func (h *Hub) updateRecords() {
 	for channelId, channel := range h.channelByID {
 		catchupQuery := method.Catchup{
