@@ -8,14 +8,17 @@ import ch.epfl.pop.pubsub.MessageRegistry
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.{AnyFunSuiteLike => FunSuiteLike}
 import org.scalatest.matchers.should.Matchers
+import scala.concurrent.duration.DurationInt
 
 class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSuiteActorSystem")) with FunSuiteLike with Matchers with BeforeAndAfterAll {
+  private val timeout = 3.seconds
+
   override def afterAll(): Unit = {
     // Stops the test actor system
     TestKit.shutdownActorSystem(system)
   }
 
-  test("ConnectionMediator tells monitor if some or no server are connected") {
+  test("ConnectionMediator tells monitor if some or no servers are connected") {
     val mockMonitor = TestProbe()
     val server = TestProbe()
 
@@ -26,12 +29,12 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     // Register server
     connectionMediatorRef ! ConnectionMediator.NewServerConnected(server.ref)
 
-    mockMonitor.expectMsg(Monitor.AtLeastOneServerConnected)
+    mockMonitor.expectMsg(timeout, Monitor.AtLeastOneServerConnected)
 
     // Unregister server
     connectionMediatorRef ! ConnectionMediator.ServerLeft(server.ref)
 
-    mockMonitor.expectMsg(Monitor.NoServerConnected)
+    mockMonitor.expectMsg(timeout, Monitor.NoServerConnected)
   }
 
   test("ConnectionMediator broadcasts heartbeat only to the expected servers") {
@@ -51,8 +54,8 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     connectionMediatorRef ! ConnectionMediator.NewServerConnected(server3.ref)
 
     // Monitor expect a single message
-    mockMonitor.expectMsg(Monitor.AtLeastOneServerConnected)
-    mockMonitor.expectNoMessage()
+    mockMonitor.expectMsg(timeout, Monitor.AtLeastOneServerConnected)
+    mockMonitor.expectNoMessage(timeout)
 
     // Ask to broadcast Heartbeat
     connectionMediatorRef ! new Heartbeat(Map.empty)
@@ -68,12 +71,12 @@ class ConnectionMediatorSuite extends TestKit(ActorSystem("ConnectionMediatorSui
     // Ask to broadcast Heartbeat
     connectionMediatorRef ! new Heartbeat(Map.empty)
 
-    server1.expectNoMessage()
-    server2.expectNoMessage()
-    server3.expectMsgType[ClientActorMessage]
+    server1.expectNoMessage(timeout)
+    server2.expectNoMessage(timeout)
+    server3.expectMsgType[ClientActorMessage](timeout)
 
     // Everybody leaves
     connectionMediatorRef ! ConnectionMediator.ServerLeft(server3.ref)
-    mockMonitor.expectMsg(Monitor.NoServerConnected)
+    mockMonitor.expectMsg(timeout, Monitor.NoServerConnected)
   }
 }
