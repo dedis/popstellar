@@ -1953,10 +1953,6 @@ func (f *fakeSocket) Type() socket.SocketType {
 	return socket.ClientSocketType
 }
 
-func IntPointer(i int) *int {
-	return &i
-}
-
 // -------------------------------------
 // Test variables definition
 
