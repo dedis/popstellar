@@ -51,7 +51,7 @@ final case class ConnectionMediator(
         monitorRef ! Monitor.NoServerConnected
 
     case Heartbeat(map) =>
-      log.info("sending to some hearbeat to the clients")
+      log.info("Sending a heartbeat to the servers")
       serverSet.map(server =>
         server ! ClientAnswer(
           Right(JsonRpcRequest(
@@ -71,7 +71,6 @@ object ConnectionMediator {
     Props(new ConnectionMediator(monitorRef, mediatorRef, dbActorRef, messageRegistry))
 
   sealed trait Event
-
   final case class ConnectTo(urlList: List[String]) extends Event
   final case class NewServerConnected(serverRef: ActorRef) extends Event
   final case class ServerLeft(serverRef: ActorRef) extends Event
