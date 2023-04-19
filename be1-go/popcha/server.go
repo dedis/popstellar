@@ -28,7 +28,7 @@ const (
 	errValidAuthFormat = "Error while validating the auth request: %s"
 
 	//error message for invalid response type
-	errInvalidResponseType = "response type is invalid for the implicit flow"
+	errInvalidResponseType = "Response type should be " + ResTypeMulti
 
 	//error message for unimplemented methods of op.Client
 	errUnimplementedMethod = "this method is not implemented for our protocol"
@@ -74,7 +74,7 @@ Most of the methods of op.Client are implemented, however some of them
 are not going to be used in our Implicit Flow protocol.
 */
 
-// GetID returns the clientID
+// GetID returns the ClientID
 func (c clientParams) GetID() string {
 	return c.clientID
 }
@@ -244,7 +244,7 @@ func (as *AuthorizationServer) newChallengeServer(endpoint string) *http.Server 
 
 }
 
-// HandleRequest is a HTTP handler for the Challenge Server of PoPCHA. It only responds to GET request,
+// HandleRequest is an HTTP handler for the Challenge Server of PoPCHA. It only responds to GET request,
 // parse them into authorization requests, validate them, and if validated, displays a QRCode containing the different
 // information necessary for the client to be authenticated using its PoP App.
 func (as *AuthorizationServer) HandleRequest(w http.ResponseWriter, req *http.Request) {

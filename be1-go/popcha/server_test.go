@@ -180,7 +180,7 @@ func TestClientParams(t *testing.T) {
 	time.Sleep(1 * time.Second)
 
 	// create a property generating random, valid client parameters (valid because only
-	// the clientID is random, and only uses alphanumerical alphabet).
+	// the ClientID is random, and only uses alphanumerical alphabet).
 	propertyConfig := quick.Config{
 		MaxCount: MaxChecks,
 		Values: func(values []reflect.Value, r *rand.Rand) {
@@ -232,7 +232,7 @@ func invalidResponseTypeClientParam() clientParams {
 // property checker method for clientParams
 func validClientParams(c clientParams) bool {
 	// boolean formula validating client parameters.
-	// clientID must be present
+	// ClientID must be present
 	return c.GetID() != "" &&
 		// at least one URI is present
 		len(c.RedirectURIs()) != 0 &&
