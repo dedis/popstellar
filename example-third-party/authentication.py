@@ -1,3 +1,7 @@
+"""
+This file includes all the authentication logic. No external server logic is
+done here.
+"""
 import secrets
 import time
 from urllib import parse
@@ -14,7 +18,9 @@ def get_url(server: str, lao_id: str, client_id: str) -> str:
     :param client_id: The unique identifier of this client
     :return: A url to the authentication server
     """
+    global valid_nonces
     nonce = (secrets.token_urlsafe(64), time.time())
+    valid_nonces.append(nonce)
     parameters = {
         "response_mode": "query",
         "response_type": "id_token token",

@@ -1,3 +1,7 @@
+"""
+This files includes the basis of the example server. Here are managed all
+HTTP/S requests.
+"""
 import json
 import secrets
 from typing import IO

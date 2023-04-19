@@ -161,3 +161,26 @@ jobs:
             rsync -chav --delete \
               -e 'ssh -p ${{secrets.POPDEMO_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
               ./pop-scala.jar ${{env.dest}}
+
+deploy_popcha_example:
+    name: Release and deploy the example PoPCHA client
+
+    if:  ${{ startsWith(github.event.release.tag_name, 'example-') || startsWith(github.event.release.tag_name, 'all-') }}
+    runs-on: ubuntu-latest
+    
+    env:
+      base_folder: example-third-party    
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Use rsync to deploy the new website (no build is necessary)
+      - name: Sync
+        env:
+            dest: "popCHAExample@${{secrets.POPCHA_EXAMPLE_DEPLOY_ADDR}}:www"
+        run: |
+            echo "${{secrets.POPCHA_EXAMPLE_DEPLOY_KEY}}" > deploy_key
+            chmod 600 ./deploy_key
+            rsync -chav --delete \
+              -e 'ssh -p ${{secrets.POPCHA_EXAMPLE_DEPLOY_PORT}} -i ./deploy_key -o StrictHostKeyChecking=no' \
+              ./{{ env.base_folder }} ${{ env.dest }}
