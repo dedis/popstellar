@@ -45,7 +45,7 @@ const (
 
 	// heartbeatDelay represents the number of seconds
 	// between heartbeat messages
-	heartbeatDelay = 7
+	heartbeatDelay = 4
 )
 
 var suite = crypto.Suite
