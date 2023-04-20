@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <PreferenceCategory android:title="@string/settings_debugging">
+
+    <SwitchPreference
+      android:key="enable_logging"
+      android:title="@string/settings_logging"
+      android:summary="@string/settings_logging_summary"
+      android:defaultValue="false" />
+
+  </PreferenceCategory>
+
+</PreferenceScreen>

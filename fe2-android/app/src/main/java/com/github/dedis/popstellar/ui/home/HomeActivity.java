@@ -78,6 +78,8 @@ public class HomeActivity extends AppCompatActivity {
             handleWalletSettings();
           } else if (item.getItemId() == R.id.clear_storage) {
             handleClearing();
+          } else if (item.getItemId() == R.id.home_settings) {
+            handleSettings();
           }
           return true;
         });
@@ -168,6 +170,10 @@ public class HomeActivity extends AppCompatActivity {
         .show();
   }
 
+  private void handleSettings() {
+    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_settings, SettingsFragment::new);
+  }
+
   private void restoreStoredState() {
     PersistentData data = ActivityUtils.loadPersistentData(this);
     viewModel.restoreConnections(data);
@@ -175,6 +181,10 @@ public class HomeActivity extends AppCompatActivity {
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
     return new ViewModelProvider(activity).get(HomeViewModel.class);
+  }
+
+  public static SettingsViewModel obtainSettingsViewModel(FragmentActivity activity) {
+    return new ViewModelProvider(activity).get(SettingsViewModel.class);
   }
 
   /** Factory method to create a fresh Intent that opens an HomeActivity */

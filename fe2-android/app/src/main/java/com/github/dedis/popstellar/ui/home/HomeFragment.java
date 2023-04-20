@@ -39,7 +39,6 @@ public final class HomeFragment extends Fragment {
     binding = HomeFragmentBinding.inflate(inflater, container, false);
     binding.setLifecycleOwner(getActivity());
     viewModel = HomeActivity.obtainViewModel(requireActivity());
-    binding.setViewmodel(viewModel);
 
     setupListAdapter();
     setupListUpdates();

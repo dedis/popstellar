@@ -29,6 +29,13 @@
   <string name="server_url">Server URL</string>
   <string name="no_lao_text">OOPS, Looks like you don\'t have any Local Autonomous Organization (LAO) yet.\n Join or Create one with the buttons below</string>
 
+  <!-- Settings -->
+  <string name="settings">Settings</string>
+  <string name="settings_debugging">Debugging</string>
+  <string name="settings_logging">Logging</string>
+  <string name="settings_logging_summary">Check the box if you want to send logs to a server for remote debugging</string>
+  <string name="settings_enable_logging_confirmation">Are you sure you want to enable logging? This can impact on app performance</string>
+
   <!-- Connect -->
   <string name="allow_camera_text">Please allow the camera to be used by the app</string>
   <string name="allow_camera_button">Allow Camera</string>
