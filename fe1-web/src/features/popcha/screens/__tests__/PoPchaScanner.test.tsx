@@ -3,7 +3,7 @@ import React from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 
-import { mockLaoId } from '../../../../__tests__/utils';
+import { mockLaoId } from '__tests__/utils';
 import { POPCHA_FEATURE_IDENTIFIER, PoPchaReactContext } from '../../interface';
 import PoPchaScanner from '../PoPchaScanner';
 
