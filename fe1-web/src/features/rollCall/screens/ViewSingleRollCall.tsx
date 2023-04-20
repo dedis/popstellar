@@ -42,16 +42,12 @@ const ViewSingleRollCall = () => {
   const rollCall = useSelector(selectRollCall);
 
   const attendeePopTokens = useMemo(() => {
-    const tokens = [
-      ...(attendeePopTokensStrings?.map((k) => new PublicKey(k)) || []),
-      ...(rollCall?.attendees || []),
-    ];
-    // remove duplicates (not using Set because it doesn't work with PublicKey)
-    const seenTokens = new Set<String>();
-    const uniqueTokens = tokens.filter((publicKey) => {
-      return !seenTokens.has(publicKey.toString()) && seenTokens.add(publicKey.toString());
-    });
-    return Array.from(uniqueTokens);
+    // if attendeePopTokens is defined, it means we come from the scanner -> take the tokens from there
+    // otherwise, take the tokens from the roll call
+    if (attendeePopTokensStrings) {
+      return attendeePopTokensStrings.map((k) => new PublicKey(k));
+    }
+    return rollCall?.attendees || [];
   }, [attendeePopTokensStrings, rollCall?.attendees]);
 
   if (!rollCall) {

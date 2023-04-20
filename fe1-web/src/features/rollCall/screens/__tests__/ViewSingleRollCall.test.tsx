@@ -130,8 +130,11 @@ describe('EventRollCall', () => {
 
     // test to verify that if same attendee present multiple times, only one is displayed (here: attendee1)
     describe('no duplicate attendees', () => {
-      it('opened roll calls', testRender(mockRollCallOpened, false, ['attendee1']));
-      it('re-opened roll calls', testRender(mockRollCallReopened, false, ['attendee1']));
+      it('opened roll calls', testRender(mockRollCallOpened, false, ['attendee1', 'attendee2']));
+      it(
+        're-opened roll calls',
+        testRender(mockRollCallReopened, false, ['attendee1', 'attendee2']),
+      );
     });
   });
 });
