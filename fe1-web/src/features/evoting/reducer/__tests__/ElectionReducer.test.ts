@@ -76,10 +76,11 @@ describe('ElectionReducer', () => {
       } as ElectionReducerState);
     });
 
-    expect(() =>
-      electionReduce(defaultElectionReducerState, updateElection(mockElectionState)),
-    ).toThrow();
-    it('throws an error when trying to update an inexistent election', () => {});
+    it('throws an error when trying to update an inexistent election', () => {
+      expect(() =>
+        electionReduce(defaultElectionReducerState, removeElection(mockElection.id)),
+      ).toThrow();
+    });
   });
 
   describe('removeElection', () => {
@@ -98,10 +99,11 @@ describe('ElectionReducer', () => {
       ).toEqual(defaultElectionReducerState);
     });
 
-    expect(() =>
-      electionReduce(defaultElectionReducerState, removeElection(mockElection.id)),
-    ).toThrow();
-    it('throws an error when trying to remove an inexistent election', () => {});
+    it('throws an error when trying to remove an inexistent election', () => {
+      expect(() =>
+        electionReduce(defaultElectionReducerState, removeElection(mockElection.id)),
+      ).toThrow();
+    });
   });
 
   describe('makeElectionSelector', () => {
