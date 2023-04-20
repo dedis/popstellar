@@ -34,7 +34,7 @@ public class LAONetworkManager implements MessageSender {
 
   private static final String TAG = LAONetworkManager.class.getSimpleName();
 
-  private static final int MAX_REPROCESSING = 5;
+  public static final int MAX_REPROCESSING = 5;
 
   private final MessageHandler messageHandler;
   private final MultiConnection multiConnection;

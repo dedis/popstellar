@@ -12,7 +12,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
-import com.github.dedis.popstellar.utility.error.JsonRPCErrorException;
+import com.github.dedis.popstellar.utility.error.*;
+import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.tinder.scarlet.WebSocket;
@@ -324,5 +325,48 @@ public class LAONetworkManagerTest {
     verify(connection).observeConnectionEvents();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
+  }
+
+  @Test
+  public void identifyUnrecoverableFailures()
+      throws UnknownElectionException, UnknownRollCallException, UnknownLaoException,
+          DataHandlingException, NoRollCallException {
+    TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
+    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+
+    // Mock to be not able to handle any broadcast message
+    doThrow(UnknownLaoException.class)
+        .when(handler)
+        .handleMessage(any(), any(), any(MessageGeneral.class));
+
+    LAONetworkManager networkManager =
+        new LAONetworkManager(
+            handler,
+            connection,
+            JsonModule.provideGson(DataRegistryModuleHelper.buildRegistry()),
+            schedulerProvider,
+            new HashSet<>());
+
+    Answer<?> answer =
+        args -> {
+          messages.onNext(mock(Broadcast.class));
+          return null;
+        };
+    doAnswer(answer).when(connection).sendMessage(any());
+
+    // Actual test
+    Disposable disposable = networkManager.publish(KEY_PAIR, CHANNEL, DATA).subscribe();
+    testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+
+    // Now as the message fails to be handled it should be placed in unprocessed
+    // Every 5 seconds reprocessing takes place
+    for (int i = 0; i < LAONetworkManager.MAX_REPROCESSING; i++) {
+      testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+    }
+
+    disposable.dispose();
+    networkManager.dispose();
+    // After MAX_REPROCESSING times check the message is discarded
+
   }
 }
