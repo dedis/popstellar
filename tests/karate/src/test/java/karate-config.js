@@ -18,7 +18,7 @@ function fn() {
     // customize
     config.host = '127.0.0.1';
     config.port = 9000;
-    config.path = 'organizer/client';
+    config.path = 'client';
     config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
   } else if (env === 'scala') {
     // customize
