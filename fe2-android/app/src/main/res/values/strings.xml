@@ -121,6 +121,8 @@
   <string name="add_attendee_title">Add Attendee</string>
   <string name="roll_call_attendees">Attendees : %1$d</string>
   <string name="roll_call_scanned">Scanned tokens : %1$d</string>
+  <string name="roll_call_description_title">Description</string>
+  <string name="roll_call_location_title">Location</string>
 
   <!-- Election Event -->
   <string name="election_title">Election</string>
@@ -136,6 +138,7 @@
   <string name="voting_method_spinner_text">Voting method</string>
   <string name="write_in_switch_text">Allow write in</string>
   <string name="new_ballot_option_hint">ballot option</string>
+  <string name="encrypting_vote">Encrypting the vote…</string>
   <string name="voting_method">Plurality</string>
   <string name="vote_encrypted">Vote encrypted!</string>
   <string name="vote_sent">Vote successfully sent!</string>

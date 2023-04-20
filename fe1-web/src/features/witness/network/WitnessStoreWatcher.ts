@@ -122,11 +122,12 @@ export const makeWitnessStoreWatcher = (
   let currentAllIds: string[] = [];
   let currentUnprocessedIds: string[] = [];
   return () => {
+    const laoId = getCurrentLaoId();
     // we have to be careful with ExtendedMessage.fromState
     // since some message constructors assume that we are connected to a lao
     // thus we delay this watcher until we are connected to a lao
     // (sending witness messages would also be difficult under these circumstances)
-    if (!getCurrentLaoId()) {
+    if (!laoId) {
       return;
     }
 
@@ -134,7 +135,7 @@ export const makeWitnessStoreWatcher = (
 
     const msgState = getMessagesState(state);
     const allIds = msgState?.allIds || [];
-    previousAllIds = currentAllIds;
+    previousAllIds = currentAllIds || [];
     currentAllIds = allIds;
 
     const unprocessedIds = msgState?.unprocessedIds || [];
@@ -151,17 +152,20 @@ export const makeWitnessStoreWatcher = (
       return;
     }
 
+    const messagesToWitness = currentAllIds.filter(
+      (msgId) =>
+        !currentUnprocessedIds.includes(msgId) &&
+        (!previousAllIds.includes(msgId) || previousUnprocessedIds.includes(msgId)),
+    );
     // get all message ids that are part of currentAllIds
-    for (const msgId of currentAllIds) {
-      // and that are currently not part of unprocessedIds
-      if (!currentUnprocessedIds.includes(msgId)) {
-        // and that either have not been part of previousAllIds OR
-        // have been part of previousUnprocessedIds
-        if (!previousAllIds.includes(msgId) || previousUnprocessedIds.includes(msgId)) {
-          // i.e. all messages that have been processed
-          // since the last call of this function
-          afterProcessingHandler(ExtendedMessage.fromState(msgState.byId[msgId]));
-        }
+
+    for (const msgId of messagesToWitness) {
+      const msg = ExtendedMessage.fromState(msgState.byId[msgId]);
+      // The message is witnessed only if it comes from the current lao
+      if (msg.laoId?.valueOf() === laoId.valueOf()) {
+        afterProcessingHandler(msg);
+      } else {
+        currentAllIds = currentAllIds.filter((id) => id !== msgId);
       }
     }
   };

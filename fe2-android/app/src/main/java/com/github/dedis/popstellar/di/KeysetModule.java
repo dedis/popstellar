@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 import javax.inject.Qualifier;
 import javax.inject.Singleton;
@@ -46,7 +48,6 @@ public class KeysetModule {
   @Singleton
   public static AndroidKeysetManager provideDeviceKeysetManager(
       @ApplicationContext Context applicationContext) {
-
     try {
       SharedPreferences.Editor editor =
           applicationContext
@@ -57,14 +58,25 @@ public class KeysetModule {
       Ed25519PrivateKeyManager.registerPair(true);
       PublicKeySignWrapper.register();
 
-      // TODO: move to background thread
+      CompletableFuture<AndroidKeysetManager> future =
+          CompletableFuture.supplyAsync(
+              () -> {
+                try {
+                  return new AndroidKeysetManager.Builder()
+                      .withSharedPref(
+                          applicationContext, DEVICE_KEYSET_NAME, DEVICE_SHARED_PREF_FILE_NAME)
+                      .withKeyTemplate(KeyTemplates.get("ED25519_RAW"))
+                      .withMasterKeyUri(DEVICE_MASTER_KEY_URI)
+                      .build();
+                } catch (GeneralSecurityException | IOException e) {
+                  throw new SecurityException(e);
+                }
+              },
+              Executors.newSingleThreadExecutor());
 
-      return new AndroidKeysetManager.Builder()
-          .withSharedPref(applicationContext, DEVICE_KEYSET_NAME, DEVICE_SHARED_PREF_FILE_NAME)
-          .withKeyTemplate(KeyTemplates.get("ED25519_RAW"))
-          .withMasterKeyUri(DEVICE_MASTER_KEY_URI)
-          .build();
-    } catch (IOException | GeneralSecurityException e) {
+      return future.join();
+    } catch (GeneralSecurityException e) {
+      Log.e(TAG, "Could not retrieve the device keyset from the app", e);
       throw new SecurityException("Could not retrieve the device keyset from the app", e);
     }
   }
@@ -77,12 +89,25 @@ public class KeysetModule {
     try {
       AesGcmKeyManager.register(true);
       AeadConfig.register();
-      return new AndroidKeysetManager.Builder()
-          .withSharedPref(applicationContext, WALLET_KEYSET_NAME, WALLET_SHARED_PREF_FILE_NAME)
-          .withKeyTemplate(KeyTemplates.get("AES256_GCM_RAW"))
-          .withMasterKeyUri(WALLET_MASTER_KEY_URI)
-          .build();
-    } catch (GeneralSecurityException | IOException e) {
+
+      CompletableFuture<AndroidKeysetManager> future =
+          CompletableFuture.supplyAsync(
+              () -> {
+                try {
+                  return new AndroidKeysetManager.Builder()
+                      .withSharedPref(
+                          applicationContext, WALLET_KEYSET_NAME, WALLET_SHARED_PREF_FILE_NAME)
+                      .withKeyTemplate(KeyTemplates.get("AES256_GCM_RAW"))
+                      .withMasterKeyUri(WALLET_MASTER_KEY_URI)
+                      .build();
+                } catch (GeneralSecurityException | IOException e) {
+                  throw new SecurityException(e);
+                }
+              },
+              Executors.newSingleThreadExecutor());
+
+      return future.join();
+    } catch (GeneralSecurityException e) {
       Log.e(TAG, "Could not retrieve the wallet keyset from the app", e);
       throw new SecurityException("Could not retrieve the wallet keyset from the app", e);
     }

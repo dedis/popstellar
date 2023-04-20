@@ -44,7 +44,7 @@ public class LaoHandlerTest {
   private static final KeyPair SENDER_KEY2 = generateKeyPair();
   private static final PublicKey SENDER1 = SENDER_KEY1.getPublicKey();
   private static final PublicKey SENDER2 = SENDER_KEY2.getPublicKey();
-  private static final long CREATION = Instant.now().getEpochSecond();
+  private static final long CREATION = Instant.now().getEpochSecond() - 10;
   private static final String NAME1 = "lao1";
   private static final String NAME2 = "lao2";
   private static final String NAME3 = "lao3";
@@ -252,13 +252,14 @@ public class LaoHandlerTest {
   @Test
   public void testHandleUpdateLaoStale() {
     // Create a update LAO message with last modified time older than the current LAO last modified
-    // time (was creation)
+    // time
+    lao.setLastModified(CREATE_LAO1.getCreation() + 10);
     UpdateLao updateLao1 =
         new UpdateLao(
             SENDER1,
-            CREATE_LAO1.getCreation() - 5,
+            CREATE_LAO1.getCreation(),
             "new lao name",
-            CREATE_LAO1.getCreation() - 10,
+            CREATE_LAO1.getCreation() + 5,
             new HashSet<>());
     MessageGeneral message = new MessageGeneral(SENDER_KEY1, updateLao1, gson);
 
@@ -434,10 +435,12 @@ public class LaoHandlerTest {
     assertEquals(
         new PublicKey(RANDOM_KEY), serverRepository.getServerByLaoId(lao.getId()).getPublicKey());
 
-    // Test for invalid LAO Id
+    // Test that the handler throws an exception if the lao id does not match the current one
+    String invalidId = Lao.generateLaoId(SENDER1, CREATE_LAO1.getCreation(), "some name");
     GreetLao greetLao_invalid =
-        new GreetLao("123", RANDOM_KEY, RANDOM_ADDRESS, Collections.singletonList(RANDOM_PEER));
+        new GreetLao(invalidId, RANDOM_KEY, RANDOM_ADDRESS, Collections.singletonList(RANDOM_PEER));
     MessageGeneral message_invalid = new MessageGeneral(SENDER_KEY1, greetLao_invalid, gson);
+
     assertThrows(
         IllegalArgumentException.class,
         () -> messageHandler.handleMessage(messageSender, LAO_CHANNEL1, message_invalid));

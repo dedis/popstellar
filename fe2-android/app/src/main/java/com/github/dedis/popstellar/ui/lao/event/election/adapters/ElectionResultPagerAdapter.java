@@ -71,6 +71,10 @@ public class ElectionResultPagerAdapter
 
   @Override
   public void onBindViewHolder(@NonNull Pager2ViewHolder holder, int position) {
+    // This is bad practice and should be removed in the future
+    // The problem for now is that reused view messes up the data intake
+    holder.setIsRecyclable(false);
+
     // setting the question
     QuestionResults results = currentResults.get(position);
     String question = results.question.getQuestion();
