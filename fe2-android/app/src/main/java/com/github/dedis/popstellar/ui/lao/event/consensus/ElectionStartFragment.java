@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.consensus;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.GridView;
 
@@ -17,6 +16,9 @@ import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -38,7 +40,7 @@ import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 @AndroidEntryPoint
 public class ElectionStartFragment extends Fragment {
 
-  private static final String TAG = ElectionStartFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ElectionStartFragment.class);
   private static final String ELECTION_ID = "election_id";
 
   public static final String CONSENSUS_TYPE = "election";
@@ -98,7 +100,7 @@ public class ElectionStartFragment extends Fragment {
       subscribeTo(election, this::updateElection);
       subscribeTo(merged, this::updateNodesAndElection);
     } catch (UnknownElectionException | UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+      ErrorUtils.logAndShow(requireContext(), logger, e, R.string.generic_error);
       return null;
     }
 
@@ -110,7 +112,7 @@ public class ElectionStartFragment extends Fragment {
 
       if (ownNode == null) {
         // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
-        Log.e(TAG, "Couldn't find the Node with public key : " + laoViewModel.getPublicKey());
+        logger.error("Couldn't find the Node with public key : " + laoViewModel.getPublicKey());
         throw new IllegalStateException(
             "Only acceptors are allowed to access ElectionStartFragment");
       }
@@ -123,7 +125,7 @@ public class ElectionStartFragment extends Fragment {
       GridView gridView = binding.nodesGrid;
       gridView.setAdapter(adapter);
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      ErrorUtils.logAndShow(requireContext(), logger, R.string.error_no_lao);
       return null;
     }
 
@@ -136,7 +138,7 @@ public class ElectionStartFragment extends Fragment {
     disposables.add(
         observable.subscribe(
             onNext,
-            err -> ErrorUtils.logAndShow(requireContext(), TAG, err, R.string.generic_error)));
+            err -> ErrorUtils.logAndShow(requireContext(), logger, err, R.string.generic_error)));
   }
 
   private void updateNodes(List<ConsensusNode> nodes) {
@@ -195,7 +197,7 @@ public class ElectionStartFragment extends Fragment {
                         msg -> {},
                         error ->
                             ErrorUtils.logAndShow(
-                                requireContext(), TAG, error, R.string.error_start_election))));
+                                requireContext(), logger, error, R.string.error_start_election))));
   }
 
   private void updateStartAndStatus(

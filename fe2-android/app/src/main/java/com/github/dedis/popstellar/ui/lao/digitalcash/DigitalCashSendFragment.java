@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -21,6 +20,9 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
@@ -32,7 +34,7 @@ import io.reactivex.Completable;
  * method to create an instance of this fragment.
  */
 public class DigitalCashSendFragment extends Fragment {
-  private static final String TAG = DigitalCashSendFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(DigitalCashSendFragment.class);
   private DigitalCashSendFragmentBinding binding;
   private LaoViewModel laoViewModel;
   private DigitalCashViewModel digitalCashViewModel;
@@ -98,13 +100,13 @@ public class DigitalCashSendFragment extends Fragment {
                                         R.id.fragment_digital_cash_receipt,
                                         DigitalCashReceiptFragment::newInstance);
                                   },
-                                  error -> Log.d(TAG, "error posting transaction", error)));
+                                  error -> logger.debug("error posting transaction", error)));
                     }
 
                   } catch (KeyException keyException) {
                     ErrorUtils.logAndShow(
                         requireContext(),
-                        TAG,
+                        logger,
                         keyException,
                         R.string.digital_cash_please_enter_a_lao);
                   }
@@ -115,7 +117,7 @@ public class DigitalCashSendFragment extends Fragment {
     try {
       setUpTheAdapter();
     } catch (KeyException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.digital_cash_error_poptoken);
+      ErrorUtils.logAndShow(requireContext(), logger, e, R.string.digital_cash_error_poptoken);
     }
   }
 
@@ -129,7 +131,7 @@ public class DigitalCashSendFragment extends Fragment {
   public boolean canPostTransaction(PublicKey publicKey, int amount) {
     long currentBalance = digitalCashViewModel.getUserBalance(publicKey);
     if (currentBalance < amount) {
-      Log.d(TAG, "Current Balance: " + currentBalance + " amount: " + amount);
+      logger.debug("Current Balance: " + currentBalance + " amount: " + amount);
       Toast.makeText(
               requireContext(), R.string.digital_cash_warning_not_enough_money, Toast.LENGTH_SHORT)
           .show();
@@ -178,7 +180,7 @@ public class DigitalCashSendFragment extends Fragment {
     try {
       members.remove(digitalCashViewModel.getValidToken().getPublicKey().getEncoded());
     } catch (KeyException e) {
-      Log.e(TAG, getResources().getString(R.string.error_retrieve_own_token));
+      logger.error(getResources().getString(R.string.error_retrieve_own_token));
     }
   }
 
@@ -208,10 +210,10 @@ public class DigitalCashSendFragment extends Fragment {
             error -> {
               if (error instanceof KeyException || error instanceof GeneralSecurityException) {
                 ErrorUtils.logAndShow(
-                    requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                    requireContext(), logger, error, R.string.error_retrieve_own_token);
               } else {
                 ErrorUtils.logAndShow(
-                    requireContext(), TAG, error, R.string.error_post_transaction);
+                    requireContext(), logger, error, R.string.error_post_transaction);
               }
             });
   }
@@ -222,7 +224,7 @@ public class DigitalCashSendFragment extends Fragment {
         .addCallback(
             getViewLifecycleOwner(),
             ActivityUtils.buildBackButtonCallback(
-                TAG,
+                logger,
                 "digital cash home",
                 () ->
                     LaoActivity.setCurrentFragment(

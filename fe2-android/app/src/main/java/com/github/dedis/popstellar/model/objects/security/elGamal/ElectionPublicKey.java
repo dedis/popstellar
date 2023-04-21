@@ -1,8 +1,9 @@
 package com.github.dedis.popstellar.model.objects.security.elGamal;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,6 +16,8 @@ import io.reactivex.annotations.NonNull;
 
 /** Represents a private key meant for El-Gam */
 public class ElectionPublicKey {
+
+  private static final Logger logger = LogManager.getLogger(ElectionPublicKey.class);
 
   // Point is generate with given public key
   private final Point publicKey;
@@ -106,8 +109,7 @@ public class ElectionPublicKey {
       output.write(C.toBytes());
       result = output.toByteArray();
     } catch (IOException e) {
-      Log.d(
-          "Encryption: ",
+      logger.debug(
           "Something happened during the encryption, could concatenate the final result into a byte array");
       result = null;
     }

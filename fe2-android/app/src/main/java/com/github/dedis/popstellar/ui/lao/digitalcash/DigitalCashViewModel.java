@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.app.Application;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,6 +25,9 @@ import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.*;
@@ -40,7 +42,7 @@ import io.reactivex.*;
 @HiltViewModel
 public class DigitalCashViewModel extends AndroidViewModel {
 
-  public static final String TAG = DigitalCashViewModel.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(DigitalCashViewModel.class);
 
   private String laoId;
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
@@ -157,7 +159,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       outputs.add(addOutput);
       return amount;
     } catch (Exception e) {
-      Log.e(TAG, RECEIVER_KEY_ERROR, e);
+      logger.error(RECEIVER_KEY_ERROR, e);
       return 0;
     }
   }
@@ -177,7 +179,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      logger.error(LAO_FAILURE_MESSAGE);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -193,7 +195,8 @@ public class DigitalCashViewModel extends AndroidViewModel {
                   .getMessageSender()
                   .publish(channel, msg)
                   .doOnComplete(
-                      () -> Log.d(TAG, "Successfully sent post transaction message : " + postTxn));
+                      () ->
+                          logger.debug("Successfully sent post transaction message : " + postTxn));
             });
   }
 
@@ -292,14 +295,14 @@ public class DigitalCashViewModel extends AndroidViewModel {
       // Overflow in the amount (no characters or negative numbers can be inserted)
       ErrorUtils.logAndShow(
           getApplication().getApplicationContext(),
-          TAG,
+          logger,
           R.string.digital_cash_amount_inserted_error);
       return false;
     }
     if (parsedAmount <= MIN_LAO_COIN) {
       ErrorUtils.logAndShow(
           getApplication().getApplicationContext(),
-          TAG,
+          logger,
           R.string.digital_cash_amount_min_indication);
       return false;
     } else if (currentPublicKeySelected.isEmpty() && (radioGroup == NOTHING_SELECTED)) {

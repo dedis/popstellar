@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.home;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.util.Log;
 import android.view.*;
 import android.widget.TextView;
 
@@ -15,11 +14,14 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
 public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListItemViewHolder> {
 
-  private static final String TAG = LAOListAdapter.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(LAOListAdapter.class);
 
   private final Activity activity;
 
@@ -54,7 +56,7 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
     CardView cardView = holder.cardView;
     cardView.setOnClickListener(
         v -> {
-          Log.d(TAG, "Opening lao detail activity on the home tab for lao " + laoId);
+          logger.debug("Opening lao detail activity on the home tab for lao " + laoId);
           activity.startActivity(LaoActivity.newIntentForLao(activity, laoId));
         });
 

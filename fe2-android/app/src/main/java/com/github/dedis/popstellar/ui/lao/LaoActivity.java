@@ -36,6 +36,8 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
+import org.apache.logging.log4j.Logger;
+
 import java.security.GeneralSecurityException;
 import java.util.*;
 import java.util.function.Supplier;
@@ -370,11 +372,11 @@ public class LaoActivity extends AppCompatActivity {
 
   /** Adds a specific callback for the back button that opens the events tab */
   public static void addBackNavigationCallbackToEvents(
-      FragmentActivity activity, LifecycleOwner lifecycleOwner, String tag) {
+      FragmentActivity activity, LifecycleOwner lifecycleOwner, Logger logger) {
     addBackNavigationCallback(
         activity,
         lifecycleOwner,
         ActivityUtils.buildBackButtonCallback(
-            tag, "event list", ((LaoActivity) activity)::setEventsTab));
+            logger, "event list", ((LaoActivity) activity)::setEventsTab));
   }
 }

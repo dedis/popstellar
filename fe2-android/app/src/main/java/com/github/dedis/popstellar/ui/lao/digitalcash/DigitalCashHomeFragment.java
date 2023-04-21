@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -15,6 +14,9 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
@@ -22,6 +24,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  * method to create an instance of this fragment.
  */
 public class DigitalCashHomeFragment extends Fragment {
+
   private DigitalCashHomeFragmentBinding binding;
   private LaoViewModel laoViewModel;
   private DigitalCashViewModel digitalCashViewModel;
@@ -38,7 +41,7 @@ public class DigitalCashHomeFragment extends Fragment {
     return new DigitalCashHomeFragment();
   }
 
-  public static final String TAG = DigitalCashHomeFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(DigitalCashHomeFragment.class);
 
   @Override
   public View onCreateView(
@@ -71,13 +74,13 @@ public class DigitalCashHomeFragment extends Fragment {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 transactions -> {
-                  Log.d(TAG, "updating transactions " + transactions);
+                  logger.debug("updating transactions " + transactions);
                   long totalAmount = digitalCashViewModel.getOwnBalance();
                   binding.coinAmountText.setText(String.valueOf(totalAmount));
                 },
                 error ->
                     ErrorUtils.logAndShow(
-                        requireContext(), TAG, error, R.string.error_retrieve_own_token)));
+                        requireContext(), logger, error, R.string.error_retrieve_own_token)));
   }
 
   private void setupReceiveButton() {
@@ -130,6 +133,7 @@ public class DigitalCashHomeFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
+    LaoActivity.addBackNavigationCallbackToEvents(
+        requireActivity(), getViewLifecycleOwner(), logger);
   }
 }

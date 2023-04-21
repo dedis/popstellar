@@ -1,19 +1,22 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.*;
 import com.google.gson.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Type;
 
 /** Json serializer and deserializer for the low level messages */
 public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Message> {
 
+  private static final Logger logger = LogManager.getLogger(JsonMessageSerializer.class);
+
   @Override
   public Message deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
-    Log.d("deserializer", "deserializing message");
+    logger.debug("deserializing message");
     JSONRPCRequest container = context.deserialize(json, JSONRPCRequest.class);
     JsonUtils.testRPCVersion(container.getJsonrpc());
 

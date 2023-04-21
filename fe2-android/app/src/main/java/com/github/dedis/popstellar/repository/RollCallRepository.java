@@ -1,13 +1,14 @@
 package com.github.dedis.popstellar.repository;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ import static java.util.Collections.unmodifiableSet;
  */
 @Singleton
 public class RollCallRepository {
-  public static final String TAG = RollCallRepository.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(RollCallRepository.class);
   private final Map<String, LaoRollCalls> rollCallsByLao = new HashMap<>();
 
   @Inject
@@ -49,7 +50,8 @@ public class RollCallRepository {
     if (rollCall == null) {
       throw new IllegalArgumentException("Roll call is null");
     }
-    Log.d(TAG, "Updating roll call on lao " + laoId + " : " + rollCall);
+
+    logger.debug("Updating roll call on lao " + laoId + " : " + rollCall);
 
     // Retrieve Lao data and add the roll call to it
     getLaoRollCalls(laoId).update(rollCall);
@@ -150,11 +152,11 @@ public class RollCallRepository {
       // Publish new values on subjects
       if (rollCallSubjects.containsKey(persistentId)) {
         // If it exist we update the subject
-        Log.d(TAG, "Updating existing roll call " + rollCall.getName());
+        logger.debug("Updating existing roll call " + rollCall.getName());
         rollCallSubjects.get(persistentId).onNext(rollCall);
       } else {
         // If it does not, we create a new subject
-        Log.d(TAG, "New roll call, subject created for " + rollCall.getName());
+        logger.debug("New roll call, subject created for " + rollCall.getName());
         rollCallSubjects.put(persistentId, BehaviorSubject.createDefault(rollCall));
       }
 

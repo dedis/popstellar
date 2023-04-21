@@ -1,9 +1,9 @@
 package com.github.dedis.popstellar.ui.lao.event.election.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -25,6 +25,9 @@ import com.github.dedis.popstellar.ui.lao.event.election.adapters.ElectionSetupV
 import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +38,7 @@ import me.relex.circleindicator.CircleIndicator3;
 @AndroidEntryPoint
 public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
-  public static final String TAG = ElectionSetupFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ElectionSetupFragment.class);
 
   // mandatory fields for submitting
   private EditText electionNameText;
@@ -191,6 +194,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   }
 
   /** Setups the submit button that creates the new election */
+  @SuppressLint("DefaultLocale")
   private void setupElectionSubmitButton() {
     submitButton.setOnClickListener(
         v -> {
@@ -227,8 +231,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
           String electionName = electionNameText.getText().toString();
 
-          Log.d(
-              TAG,
+          logger.debug(
               String.format(
                   "Creating election with version %s, name %s, creation time %d, start time %d, end time %d, questions %s",
                   electionVersion,
@@ -255,7 +258,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                               EventListFragment::newInstance),
                       error ->
                           ErrorUtils.logAndShow(
-                              requireContext(), TAG, error, R.string.error_create_election)));
+                              requireContext(), logger, error, R.string.error_create_election)));
         });
   }
 
@@ -296,6 +299,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
+    LaoActivity.addBackNavigationCallbackToEvents(
+        requireActivity(), getViewLifecycleOwner(), logger);
   }
 }

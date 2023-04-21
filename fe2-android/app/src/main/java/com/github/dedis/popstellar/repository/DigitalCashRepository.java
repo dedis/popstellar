@@ -1,11 +1,12 @@
 package com.github.dedis.popstellar.repository;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.objects.OutputObject;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +22,7 @@ import io.reactivex.subjects.Subject;
 @Singleton
 public class DigitalCashRepository {
 
-  public static final String TAG = DigitalCashRepository.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(DigitalCashRepository.class);
 
   private final Map<String, LaoTransactions> transactionsByLao = new HashMap<>();
 
@@ -45,7 +46,7 @@ public class DigitalCashRepository {
 
   public void updateTransactions(String laoId, TransactionObject transaction)
       throws NoRollCallException {
-    Log.d(TAG, "updating transactions on Lao " + laoId + " and transaction " + transaction);
+    logger.debug("updating transactions on Lao " + laoId + " and transaction " + transaction);
     getLaoTransactions(laoId).updateTransactions(transaction);
   }
 
@@ -76,7 +77,7 @@ public class DigitalCashRepository {
       transactionsSubject.values().forEach(Observer::onComplete);
       transactionsSubject.clear();
       attendees.forEach(publicKey -> hashDictionary.put(publicKey.computeHash(), publicKey));
-      Log.d(TAG, "initializing digital cash with attendees " + attendees);
+      logger.debug("initializing digital cash with attendees " + attendees);
     }
 
     public synchronized void updateTransactions(TransactionObject transaction)

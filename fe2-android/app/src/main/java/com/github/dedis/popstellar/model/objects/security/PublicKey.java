@@ -1,10 +1,11 @@
 package com.github.dedis.popstellar.model.objects.security;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.Immutable;
 import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.*;
 import java.util.Arrays;
@@ -14,7 +15,7 @@ import java.util.Base64;
 @Immutable
 public class PublicKey extends Base64URLData {
 
-  private static final String TAG = PublicKey.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(PublicKey.class);
 
   private final PublicKeyVerify verifier;
 
@@ -33,7 +34,7 @@ public class PublicKey extends Base64URLData {
       verifier.verify(signature.getData(), data.getData());
       return true;
     } catch (GeneralSecurityException e) {
-      Log.d(TAG, "failed to verify witness signature " + e.getMessage());
+      logger.error("failed to verify witness signature", e);
       return false;
     }
   }
@@ -50,7 +51,7 @@ public class PublicKey extends Base64URLData {
       byte[] hash = digest.digest(this.getData());
       return Base64.getUrlEncoder().encodeToString(Arrays.copyOf(hash, 20));
     } catch (NoSuchAlgorithmException e) {
-      Log.e(TAG, "Something is wrong by hashing the String element ");
+      logger.error("Something is wrong by hashing the String element", e);
       throw new IllegalArgumentException("Error in computing the hash in public key");
     }
   }

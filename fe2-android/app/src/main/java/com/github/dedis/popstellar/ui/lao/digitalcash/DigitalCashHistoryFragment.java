@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.fragment.app.Fragment;
@@ -12,10 +11,13 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class DigitalCashHistoryFragment extends Fragment {
-  private static final String TAG = DigitalCashHistoryFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(DigitalCashHistoryFragment.class);
 
   private LaoViewModel laoViewModel;
 
@@ -49,7 +51,7 @@ public class DigitalCashHistoryFragment extends Fragment {
             .getTransactionsObservable()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                adapter::setList, error -> Log.d(TAG, "error with history update " + error)));
+                adapter::setList, error -> logger.debug("error with history update " + error)));
 
     handleBackNav();
     return view;
@@ -67,6 +69,6 @@ public class DigitalCashHistoryFragment extends Fragment {
         requireActivity(),
         getViewLifecycleOwner(),
         ActivityUtils.buildBackButtonCallback(
-            TAG, "last fragment", ((LaoActivity) requireActivity())::resetLastFragment));
+            logger, "last fragment", ((LaoActivity) requireActivity())::resetLastFragment));
   }
 }

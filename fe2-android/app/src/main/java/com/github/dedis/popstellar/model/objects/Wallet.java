@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.di.KeysetModule.WalletKeyset;
@@ -12,6 +10,8 @@ import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.Aead;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
@@ -34,7 +34,7 @@ import io.github.novacrypto.bip39.wordlists.English;
 @Singleton
 public class Wallet {
 
-  private static final String TAG = Wallet.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(Wallet.class);
   private static final String PURPOSE = "888";
   private static final String ACCOUNT = "0";
   private byte[] encryptedSeed;
@@ -47,7 +47,7 @@ public class Wallet {
     try {
       aead = keysetManager.getKeysetHandle().getPrimitive(Aead.class);
     } catch (GeneralSecurityException e) {
-      Log.e(TAG, "Failed to initialize the Wallet", e);
+      logger.error("Failed to initialize the Wallet", e);
       throw new IllegalStateException("Failed to initialize the Wallet", e);
     }
   }
@@ -73,7 +73,7 @@ public class Wallet {
             convertDataToPath(laoID),
             convertDataToPath(rollCallID));
 
-    Log.d(TAG, "Generated path: " + res);
+    logger.debug("Generated path: " + res);
 
     return generateKeyFromPath(res);
   }
@@ -111,7 +111,7 @@ public class Wallet {
     }
     byte[] decryptedBytes = aead.decrypt(encryptedMnemonic, new byte[0]);
     String words = new String(decryptedBytes, StandardCharsets.UTF_8);
-    Log.d(TAG, "Mnemonic words successfully decrypted for export");
+    logger.debug("Mnemonic words successfully decrypted for export");
     return words.split(" ");
   }
 
@@ -131,7 +131,7 @@ public class Wallet {
       throw new SeedValidationException(e);
     }
     storeEncrypted(words);
-    Log.d(TAG, "Mnemonic words were successfully imported");
+    logger.debug("Mnemonic words were successfully imported");
   }
 
   /**
@@ -145,7 +145,7 @@ public class Wallet {
 
   /** Logout the wallet by replacing the seed by a random one */
   public void logout() {
-    Log.d(TAG, "Logged out of wallet");
+    logger.debug("Logged out of wallet");
     encryptedSeed = null;
     encryptedMnemonic = null;
   }
@@ -165,7 +165,7 @@ public class Wallet {
     encryptedSeed =
         aead.encrypt(
             new SeedCalculator().calculateSeed(String.join("", mnemonicWords), ""), new byte[0]);
-    Log.d(TAG, "Mnemonic words and seed successfully encrypted");
+    logger.debug("Mnemonic words and seed successfully encrypted");
   }
 
   /**

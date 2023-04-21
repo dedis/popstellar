@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +19,9 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.tinder.scarlet.WebSocket;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -30,7 +32,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 @AndroidEntryPoint
 public class ConnectingActivity extends AppCompatActivity {
-  public static final String TAG = ConnectingActivity.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ConnectingActivity.class);
 
   private final CompositeDisposable disposables = new CompositeDisposable();
   private ConnectingActivityBinding binding;
@@ -85,9 +87,9 @@ public class ConnectingActivity extends AppCompatActivity {
     disposables.add(
         replay.subscribe(
             v -> {
-              Log.d(TAG, "connect message is " + v);
+              logger.debug("connect message is " + v);
               if (v instanceof WebSocket.Event.OnConnectionOpened) {
-                Log.d(TAG, "connection opened with new server address");
+                logger.debug("connection opened with new server address");
                 handleConnecting(isDestinationHome);
               } else if (v instanceof WebSocket.Event.OnConnectionFailed) {
                 startActivity(HomeActivity.newIntent(this));
@@ -95,7 +97,7 @@ public class ConnectingActivity extends AppCompatActivity {
                 finish();
               }
             },
-            e -> Log.e(TAG, "error on subscription to connection events")));
+            e -> logger.error("error on subscription to connection events")));
 
     // Now that we observe the events we let the observable know it can begin to emit events
     replay.connect();
@@ -105,7 +107,7 @@ public class ConnectingActivity extends AppCompatActivity {
   private void handleConnecting(boolean isDestinationHome) {
     if (isDestinationHome) {
       // This is when we reconnect to laos, therefore returning home
-      Log.d(TAG, "Opening Home activity");
+      logger.debug("Opening Home activity");
       startActivity(HomeActivity.newIntent(this));
       finish();
       return;
@@ -122,14 +124,14 @@ public class ConnectingActivity extends AppCompatActivity {
       String laoName = getIntent().getExtras().getString(Constants.LAO_NAME);
       CreateLao createLao = new CreateLao(laoName, keyManager.getMainPublicKey());
       Lao lao = new Lao(createLao.getId());
-      Log.d(TAG, "Creating Lao " + lao.getId());
+      logger.debug("Creating Lao " + lao.getId());
       disposables.add(
           networkManager
               .getMessageSender()
               .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
               .subscribe(
                   () -> {
-                    Log.d(TAG, "got success result for create lao with id " + lao.getId());
+                    logger.debug("got success result for create lao with id " + lao.getId());
                     subscribeToLao(lao); // Subscribe to the newly created Lao
                   }));
     } else { // Joining an existing lao
@@ -140,20 +142,21 @@ public class ConnectingActivity extends AppCompatActivity {
   }
 
   private void subscribeToLao(Lao lao) {
-    Log.d(TAG, "connecting to lao " + lao.getChannel());
+    logger.debug("connecting to lao " + lao.getChannel());
     disposables.add(
         networkManager
             .getMessageSender()
             .subscribe(lao.getChannel())
             .subscribe(
                 () -> {
-                  Log.d(TAG, "subscribing to LAO with id " + lao.getId());
+                  logger.debug("subscribing to LAO with id " + lao.getId());
                   startActivity(LaoActivity.newIntentForLao(this, lao.getId()));
                   finish();
                 },
                 error -> {
                   // In case of error, log it and go to home activity
-                  ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_subscribe_lao);
+                  ErrorUtils.logAndShow(
+                      getApplication(), logger, error, R.string.error_subscribe_lao);
                   startActivity(HomeActivity.newIntent(this));
                   finish();
                 }));

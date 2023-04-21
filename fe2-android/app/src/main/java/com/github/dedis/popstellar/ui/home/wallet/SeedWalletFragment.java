@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.home.wallet;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
@@ -19,6 +18,9 @@ import com.github.dedis.popstellar.ui.home.*;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.security.GeneralSecurityException;
 import java.util.Objects;
 
@@ -30,7 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SeedWalletFragment extends Fragment {
 
-  public static final String TAG = SeedWalletFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(SeedWalletFragment.class);
   private WalletSeedFragmentBinding binding;
   private HomeViewModel viewModel;
 
@@ -87,7 +89,7 @@ public class SeedWalletFragment extends Fragment {
                   HomeActivity.setCurrentFragment(
                       getParentFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
                 } catch (GeneralSecurityException | SeedValidationException e) {
-                  Log.e(TAG, "Error importing key", e);
+                  logger.error("Error importing key", e);
                   Toast.makeText(
                           requireContext().getApplicationContext(),
                           String.format(
@@ -130,7 +132,7 @@ public class SeedWalletFragment extends Fragment {
             viewModel.importSeed(
                 Objects.requireNonNull(binding.importSeedEntryEditText.getText()).toString());
           } catch (GeneralSecurityException | SeedValidationException e) {
-            ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.seed_validation_exception);
+            ErrorUtils.logAndShow(requireContext(), logger, e, R.string.seed_validation_exception);
             return;
           }
           Toast.makeText(requireContext(), R.string.seed_import_success, Toast.LENGTH_SHORT).show();

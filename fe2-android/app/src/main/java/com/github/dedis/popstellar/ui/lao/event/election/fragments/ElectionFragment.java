@@ -23,6 +23,9 @@ import com.github.dedis.popstellar.ui.lao.event.election.ElectionViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -37,7 +40,7 @@ import static com.github.dedis.popstellar.utility.Constants.*;
 @AndroidEntryPoint
 public class ElectionFragment extends Fragment {
 
-  private static final String TAG = ElectionFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ElectionFragment.class);
 
   private static final String ELECTION_ID = "election_id";
 
@@ -102,7 +105,7 @@ public class ElectionFragment extends Fragment {
           try {
             election = electionRepository.getElection(laoViewModel.getLaoId(), electionId);
           } catch (UnknownElectionException e) {
-            ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+            ErrorUtils.logAndShow(requireContext(), logger, e, R.string.generic_error);
             return;
           }
 
@@ -125,7 +128,7 @@ public class ElectionFragment extends Fragment {
                                       error ->
                                           ErrorUtils.logAndShow(
                                               requireContext(),
-                                              TAG,
+                                              logger,
                                               error,
                                               R.string.error_open_election))))
                   .setNegativeButton(R.string.no, null)
@@ -146,7 +149,7 @@ public class ElectionFragment extends Fragment {
                                       error ->
                                           ErrorUtils.logAndShow(
                                               requireContext(),
-                                              TAG,
+                                              logger,
                                               error,
                                               R.string.error_end_election))))
                   .setNegativeButton(R.string.no, null)
@@ -165,7 +168,7 @@ public class ElectionFragment extends Fragment {
           try {
             election = electionRepository.getElection(laoViewModel.getLaoId(), electionId);
           } catch (UnknownElectionException e) {
-            ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+            ErrorUtils.logAndShow(requireContext(), logger, e, R.string.generic_error);
             return;
           }
 
@@ -211,9 +214,10 @@ public class ElectionFragment extends Fragment {
               .subscribe(
                   this::setupElectionContent,
                   err ->
-                      ErrorUtils.logAndShow(requireContext(), TAG, err, R.string.generic_error)));
+                      ErrorUtils.logAndShow(
+                          requireContext(), logger, err, R.string.generic_error)));
     } catch (UnknownElectionException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.generic_error);
+      ErrorUtils.logAndShow(requireContext(), logger, e, R.string.generic_error);
     }
   }
 
@@ -390,7 +394,8 @@ public class ElectionFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
+    LaoActivity.addBackNavigationCallbackToEvents(
+        requireActivity(), getViewLifecycleOwner(), logger);
   }
 
   public static void openFragment(FragmentManager manager, String electionId) {

@@ -1,14 +1,16 @@
 package com.github.dedis.popstellar.model.network.method.message;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.Immutable;
+import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.objects.security.*;
 import com.google.gson.Gson;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -22,7 +24,7 @@ import java.util.*;
 @Immutable
 public final class MessageGeneral {
 
-  private static final String TAG = MessageGeneral.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(Message.class);
 
   private final PublicKey sender;
   private final Base64URLData dataBuf;
@@ -51,7 +53,8 @@ public final class MessageGeneral {
     sender = keyPair.getPublicKey();
     this.data = data;
     String dataJson = gson.toJson(data, Data.class);
-    Log.d(TAG, dataJson);
+
+    logger.debug(dataJson);
     dataBuf = new Base64URLData(dataJson.getBytes(StandardCharsets.UTF_8));
 
     generateSignature(keyPair.getPrivateKey());
@@ -68,7 +71,7 @@ public final class MessageGeneral {
     try {
       signature = signer.sign(dataBuf);
     } catch (GeneralSecurityException e) {
-      Log.d(TAG, "failed to generate signature", e);
+      logger.debug("failed to generate signature", e);
     }
   }
 

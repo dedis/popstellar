@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
 import android.app.Application;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +22,9 @@ import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +40,7 @@ import io.reactivex.disposables.Disposable;
 public class HomeViewModel extends AndroidViewModel
     implements QRCodeScanningViewModel, PopViewModel {
 
-  public static final String TAG = HomeViewModel.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(HomeViewModel.class);
 
   /** LiveData objects that represent the state in a fragment */
   private final MutableLiveData<Boolean> isWalletSetup = new MutableLiveData<>(false);
@@ -99,7 +101,7 @@ public class HomeViewModel extends AndroidViewModel
     try {
       laoData = ConnectToLao.extractFrom(gson, data);
     } catch (JsonParseException e) {
-      Log.e(TAG, "Invalid QRCode laoData", e);
+      logger.error("Invalid QRCode laoData", e);
       Toast.makeText(
               getApplication().getApplicationContext(),
               R.string.invalid_qrcode_data,
@@ -120,31 +122,31 @@ public class HomeViewModel extends AndroidViewModel
     if (data == null) {
       return;
     }
-    Log.d(TAG, "Saved state found : " + data);
+    logger.debug("Saved state found : " + data);
 
     if (!isWalletSetUp()) {
-      Log.d(TAG, "Restoring wallet");
+      logger.debug("Restoring wallet");
       String[] seed = data.getWalletSeed();
-      Log.d(TAG, "seed is " + Arrays.toString(seed));
+      logger.debug("seed is " + Arrays.toString(seed));
       if (seed.length == 0) {
         ErrorUtils.logAndShow(
-            getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
+            getApplication().getApplicationContext(), logger, R.string.no_seed_storage_found);
         return;
       }
       String appended = String.join(" ", data.getWalletSeed());
       try {
         importSeed(appended);
       } catch (GeneralSecurityException | SeedValidationException e) {
-        Log.e(TAG, "error importing seed from storage");
+        logger.error("error importing seed from storage");
         return;
       }
     }
 
     if (data.getSubscriptions().equals(networkManager.getMessageSender().getSubscriptions())) {
-      Log.d(TAG, "current state is up to date");
+      logger.debug("current state is up to date");
       return;
     }
-    Log.d(TAG, "restoring connections");
+    logger.debug("restoring connections");
     networkManager.connect(data.getServerAddress(), data.getSubscriptions());
     getApplication()
         .startActivity(

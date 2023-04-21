@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.consensus;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -20,6 +19,9 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -29,7 +31,7 @@ import io.reactivex.*;
 
 @HiltViewModel
 public class ConsensusViewModel extends AndroidViewModel {
-  private static final String TAG = ConsensusViewModel.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ConsensusViewModel.class);
 
   private String laoId;
 
@@ -66,8 +68,7 @@ public class ConsensusViewModel extends AndroidViewModel {
    */
   public Single<MessageGeneral> sendConsensusElect(
       long creation, String objId, String type, String property, Object value) {
-    Log.d(
-        TAG,
+    logger.debug(
         String.format(
             "creating a new consensus for type: %s, property: %s, value: %s",
             type, property, value));
@@ -76,7 +77,7 @@ public class ConsensusViewModel extends AndroidViewModel {
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.logAndShow(getApplication(), logger, e, R.string.unknown_lao_exception);
       return Single.error(new UnknownLaoException());
     }
 
@@ -98,8 +99,7 @@ public class ConsensusViewModel extends AndroidViewModel {
    */
   public Completable sendConsensusElectAccept(ElectInstance electInstance, boolean accept) {
     MessageID messageId = electInstance.getMessageId();
-    Log.d(
-        TAG,
+    logger.debug(
         "sending a new elect_accept for consensus with messageId : "
             + messageId
             + " with value "

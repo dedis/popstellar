@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.home;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -13,6 +12,9 @@ import androidx.fragment.app.Fragment;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoCreateFragmentBinding;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
@@ -24,7 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public final class LaoCreateFragment extends Fragment {
 
-  public static final String TAG = LaoCreateFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(LaoCreateFragment.class);
 
   @Inject GlobalNetworkManager networkManager;
 
@@ -104,7 +106,7 @@ public final class LaoCreateFragment extends Fragment {
               Objects.requireNonNull(binding.serverUrlEntryEditText.getText()).toString();
           String laoName =
               Objects.requireNonNull(binding.laoNameEntryEditText.getText()).toString();
-          Log.d(TAG, "creating lao with name " + laoName);
+          logger.debug("creating lao with name " + laoName);
 
           networkManager.connect(serverAddress);
           requireActivity()

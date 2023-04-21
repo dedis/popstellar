@@ -1,12 +1,13 @@
 package com.github.dedis.popstellar.repository;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.utility.error.UnknownChirpException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
@@ -25,7 +26,7 @@ import io.reactivex.subjects.Subject;
 @Singleton
 public class SocialMediaRepository {
 
-  private static final String TAG = SocialMediaRepository.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(SocialMediaRepository.class);
 
   private final Map<String, LaoChirps> chirpsByLao = new HashMap<>();
 
@@ -43,7 +44,7 @@ public class SocialMediaRepository {
    * @param chirp to add
    */
   public void addChirp(String laoId, Chirp chirp) {
-    Log.d(TAG, "Adding new chirp on lao " + laoId + " : " + chirp);
+    logger.debug("Adding new chirp on lao " + laoId + " : " + chirp);
     // Retrieve Lao data and add the chirp to it
     getLaoChirps(laoId).add(chirp);
   }
@@ -55,7 +56,7 @@ public class SocialMediaRepository {
    * @return true if a chirp with given id existed
    */
   public boolean deleteChirp(String laoId, MessageID id) {
-    Log.d(TAG, "Deleting chirp on lao " + laoId + " with id " + id);
+    logger.debug("Deleting chirp on lao " + laoId + " with id " + id);
     return getLaoChirps(laoId).delete(id);
   }
 
@@ -100,7 +101,7 @@ public class SocialMediaRepository {
       MessageID id = chirp.getId();
       Chirp old = chirps.get(id);
       if (old != null) {
-        Log.w(TAG, "A chirp with id " + id + " already exist : " + old);
+        logger.warn("A chirp with id " + id + " already exist : " + old);
         return;
       }
 
@@ -119,7 +120,7 @@ public class SocialMediaRepository {
       }
 
       if (chirp.isDeleted()) {
-        Log.d(TAG, "The chirp with id " + id + " is already deleted");
+        logger.debug("The chirp with id " + id + " is already deleted");
       } else {
         Subject<Chirp> subject = chirpSubjects.get(id);
         if (subject == null) {

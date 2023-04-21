@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
@@ -21,6 +20,9 @@ import com.github.dedis.popstellar.ui.home.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
 
@@ -30,7 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class HomeActivity extends AppCompatActivity {
 
-  private final String TAG = HomeActivity.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(HomeActivity.class);
 
   private HomeViewModel viewModel;
   private HomeActivityBinding binding;
@@ -147,7 +149,7 @@ public class HomeActivity extends AppCompatActivity {
       viewModel.savePersistentData();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
-      Log.d(TAG, "Storage was unsuccessful due to wallet error " + e);
+      logger.debug("Storage was unsuccessful due to wallet error " + e);
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
     }
   }

@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.utility;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.util.Log;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -16,6 +15,9 @@ import com.github.dedis.popstellar.repository.local.PersistentData;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.HashSet;
@@ -23,7 +25,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class ActivityUtils {
-  private static final String TAG = ActivityUtils.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ActivityUtils.class);
 
   private static final String PERSISTENT_DATA_FILE_NAME = "persistent_data";
 
@@ -54,17 +56,17 @@ public class ActivityUtils {
    * @return true if the storage process was a success; false otherwise
    */
   public static boolean storePersistentData(Context context, PersistentData data) {
-    Log.d(TAG, "Initiating storage of " + data);
+    logger.debug("Initiating storage of " + data);
 
     try (ObjectOutputStream oos =
         new ObjectOutputStream(
             context.openFileOutput(PERSISTENT_DATA_FILE_NAME, Context.MODE_PRIVATE))) {
       oos.writeObject(data);
     } catch (IOException e) {
-      ErrorUtils.logAndShow(context, TAG, e, R.string.error_storing_data);
+      ErrorUtils.logAndShow(context, logger, e, R.string.error_storing_data);
       return false;
     }
-    Log.d(TAG, "storage successful");
+    logger.debug("storage successful");
     return true;
   }
 
@@ -75,21 +77,21 @@ public class ActivityUtils {
    * @return the data if found, null otherwise
    */
   public static PersistentData loadPersistentData(Context context) {
-    Log.d(TAG, "Initiating loading of data");
+    logger.debug("Initiating loading of data");
 
     PersistentData persistentData;
     try (ObjectInputStream ois =
         new ObjectInputStream(context.openFileInput(PERSISTENT_DATA_FILE_NAME))) {
       persistentData = (PersistentData) ois.readObject();
     } catch (FileNotFoundException e) {
-      ErrorUtils.logAndShow(context, TAG, e, R.string.nothing_stored);
+      ErrorUtils.logAndShow(context, logger, e, R.string.nothing_stored);
       return null;
     } catch (IOException | ClassNotFoundException e) {
-      ErrorUtils.logAndShow(context, TAG, e, R.string.error_loading_data);
+      ErrorUtils.logAndShow(context, logger, e, R.string.error_loading_data);
       return null;
     }
 
-    Log.d(TAG, "loading of " + persistentData);
+    logger.debug("loading of " + persistentData);
     return persistentData;
   }
 
@@ -100,7 +102,7 @@ public class ActivityUtils {
    * @return true if the clearing was a success; false otherwise
    */
   public static boolean clearStorage(Context context) {
-    Log.d(TAG, "clearing data");
+    logger.debug("clearing data");
 
     File file = new File(context.getFilesDir(), PERSISTENT_DATA_FILE_NAME);
     return file.delete();
@@ -128,8 +130,7 @@ public class ActivityUtils {
     }
 
     String[] seed = wallet.exportSeed();
-    Log.d(
-        TAG,
+    logger.debug(
         "seed length"
             + seed.length
             + " address "
@@ -143,17 +144,17 @@ public class ActivityUtils {
    * The following function creates an object of type OnBackPressedCallback given a specific
    * callback function. This avoids code repetitions.
    *
-   * @param tag String tag for the log
+   * @param logger logger of the class that invoked the callback
    * @param message String message for the log
    * @param callback Runnable function to use * as callback
    * @return the callback object
    */
   public static OnBackPressedCallback buildBackButtonCallback(
-      String tag, String message, Runnable callback) {
+      Logger logger, String message, Runnable callback) {
     return new OnBackPressedCallback(true) {
       @Override
       public void handleOnBackPressed() {
-        Log.d(tag, "Back pressed, going to " + message);
+        logger.debug("Back pressed, going to " + message);
         callback.run();
       }
     };

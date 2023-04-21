@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.model.network.method.message.data;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -10,10 +8,15 @@ import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.data.DataHandler;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 
 /** A registry of Data classes and handlers */
 public final class DataRegistry {
+
+  private static final Logger logger = LogManager.getLogger(DataRegistry.class);
 
   /** A mapping of (object, action) -> (class, handler) */
   private final Map<EntryPair, Entry<? extends Data>> mapping;
@@ -30,7 +33,7 @@ public final class DataRegistry {
    * @return the class assigned to the pair or empty if none are defined
    */
   public Optional<Class<? extends Data>> getType(Objects obj, Action action) {
-    Log.d("data", "getting data type");
+    logger.debug("getting data type");
     return Optional.ofNullable(mapping.get(pair(obj, action))).map(Entry::getDataClass);
   }
 

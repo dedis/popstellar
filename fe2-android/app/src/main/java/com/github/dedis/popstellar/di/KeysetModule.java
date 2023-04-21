@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.di;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.crypto.tink.KeyTemplates;
 import com.google.crypto.tink.aead.AeadConfig;
@@ -10,6 +9,9 @@ import com.google.crypto.tink.aead.AesGcmKeyManager;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import com.google.crypto.tink.signature.PublicKeySignWrapper;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -31,7 +33,7 @@ import dagger.hilt.components.SingletonComponent;
 @InstallIn(SingletonComponent.class)
 public class KeysetModule {
 
-  private static final String TAG = KeysetModule.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(KeysetModule.class);
 
   private static final String DEVICE_KEYSET_NAME = "POP_KEYSET";
   private static final String DEVICE_SHARED_PREF_FILE_NAME = "POP_KEYSET_SP";
@@ -76,7 +78,7 @@ public class KeysetModule {
 
       return future.join();
     } catch (GeneralSecurityException e) {
-      Log.e(TAG, "Could not retrieve the device keyset from the app", e);
+      logger.error("Could not retrieve the device keyset from the app", e);
       throw new SecurityException("Could not retrieve the device keyset from the app", e);
     }
   }
@@ -108,7 +110,7 @@ public class KeysetModule {
 
       return future.join();
     } catch (GeneralSecurityException e) {
-      Log.e(TAG, "Could not retrieve the wallet keyset from the app", e);
+      logger.error("Could not retrieve the wallet keyset from the app", e);
       throw new SecurityException("Could not retrieve the wallet keyset from the app", e);
     }
   }

@@ -274,9 +274,9 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
-    // ================= SLF4J =================
-    testImplementation "org.slf4j:slf4j-api:$slf4j_version"
-    testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
+    // ================= Log4j ====================
+    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.20.0'
 
     // ================= Pretty Time =================
     implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'

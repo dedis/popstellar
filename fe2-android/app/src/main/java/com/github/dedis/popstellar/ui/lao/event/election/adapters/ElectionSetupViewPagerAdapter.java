@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.lao.event.election.adapters;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -15,6 +14,9 @@ import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.CastVoteBallotOptionLayoutBinding;
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionSetupFragment;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,7 +24,7 @@ import java.util.stream.Collectors;
 public class ElectionSetupViewPagerAdapter
     extends RecyclerView.Adapter<ElectionSetupViewPagerAdapter.ViewHolder> {
 
-  public static final String TAG = ElectionSetupViewPagerAdapter.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ElectionSetupViewPagerAdapter.class);
   private final List<String> votingMethod;
   private final List<List<String>> ballotOptions;
   private final List<Integer> numberBallotOptions;
@@ -249,7 +251,7 @@ public class ElectionSetupViewPagerAdapter
             }
             // Keeps the list of string updated when the user changes the text
             ballotOptions.get(position).set(ballotIndex, editable.toString());
-            Log.d(TAG, "Postion is " + position + " ballot options are" + ballotOptions);
+            logger.debug("Postion is " + position + " ballot options are" + ballotOptions);
             boolean areFieldsFilled = numberBallotOptions.get(position) >= 2;
             if (areFieldsFilled) {
               listOfValidBallots.add(position);

@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.lao.event.election;
 import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,6 +20,9 @@ import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -33,7 +35,7 @@ import io.reactivex.Single;
 
 @HiltViewModel
 public class ElectionViewModel extends AndroidViewModel {
-  public static final String TAG = ElectionViewModel.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ElectionViewModel.class);
 
   private String laoId;
 
@@ -80,13 +82,13 @@ public class ElectionViewModel extends AndroidViewModel {
       long start,
       long end,
       List<ElectionQuestion.Question> questions) {
-    Log.d(TAG, "creating a new election with name " + name);
+    logger.debug("creating a new election with name " + name);
 
     LaoView laoView;
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.logAndShow(getApplication(), logger, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -114,12 +116,12 @@ public class ElectionViewModel extends AndroidViewModel {
    * @param election election to be opened
    */
   public Completable openElection(Election election) {
-    Log.d(TAG, "opening election with name : " + election.getName());
+    logger.debug("opening election with name : " + election.getName());
     LaoView laoView;
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.logAndShow(getApplication(), logger, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -136,12 +138,12 @@ public class ElectionViewModel extends AndroidViewModel {
   }
 
   public Completable endElection(Election election) {
-    Log.d(TAG, "ending election with name : " + election.getName());
+    logger.debug("ending election with name : " + election.getName());
     LaoView laoView;
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.logAndShow(getApplication(), logger, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -167,12 +169,11 @@ public class ElectionViewModel extends AndroidViewModel {
     try {
       election = electionRepo.getElection(laoId, electionId);
     } catch (UnknownElectionException e) {
-      Log.d(TAG, "failed to retrieve current election");
+      logger.debug("failed to retrieve current election");
       return Completable.error(e);
     }
 
-    Log.d(
-        TAG,
+    logger.debug(
         "sending a new vote in election : "
             + election
             + " with election start time"
@@ -182,13 +183,13 @@ public class ElectionViewModel extends AndroidViewModel {
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.logAndShow(getApplication(), logger, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 
     return Single.fromCallable(
             () -> keyManager.getValidPoPToken(laoId, rollCallRepo.getLastClosedRollCall(laoId)))
-        .doOnSuccess(token -> Log.d(TAG, "Retrieved PoP Token to send votes : " + token))
+        .doOnSuccess(token -> logger.debug("Retrieved PoP Token to send votes : " + token))
         .flatMapCompletable(
             token -> {
               CompletableFuture<CastVote> vote = createCastVote(votes, election, laoView);

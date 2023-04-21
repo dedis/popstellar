@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,11 +17,14 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.HistoryViewHolder> {
-  private static final String TAG = HistoryListAdapter.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(HistoryListAdapter.class);
   private List<TransactionHistoryElement> transactions = new ArrayList<>();
   private final Map<String, Boolean> expandMap = new HashMap<>();
   private final DigitalCashViewModel viewModel;
@@ -46,7 +48,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
   public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
     TransactionHistoryElement element = transactions.get(position);
     if (element == null) {
-      Log.d(TAG, "element is null");
+      logger.debug("element is null");
       return;
     }
     String transactionId = element.getId();
@@ -68,7 +70,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
 
     View.OnClickListener listener =
         v -> {
-          Log.d(TAG, "transaction is " + transactionId + " position is " + position);
+          logger.debug("transaction is " + transactionId + " position is " + position);
           boolean expandStatus = expandMap.get(transactionId);
           expandMap.put(transactionId, !expandStatus);
           notifyItemChanged(position);
@@ -97,7 +99,7 @@ public class HistoryListAdapter extends RecyclerView.Adapter<HistoryListAdapter.
     try {
       ownKey = viewModel.getValidToken().getPublicKey();
     } catch (KeyException e) {
-      ErrorUtils.logAndShow(activity, TAG, e, R.string.error_retrieve_own_token);
+      ErrorUtils.logAndShow(activity, logger, e, R.string.error_retrieve_own_token);
       return new ArrayList<>();
     }
     for (TransactionObject transactionObject : transactionObjects) {

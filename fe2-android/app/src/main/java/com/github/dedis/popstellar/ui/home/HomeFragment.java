@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -14,13 +13,16 @@ import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
 import com.github.dedis.popstellar.ui.qrcode.QrScannerFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the Home UI */
 @AndroidEntryPoint
 public final class HomeFragment extends Fragment {
 
-  public static final String TAG = HomeFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(HomeFragment.class);
 
   private HomeFragmentBinding binding;
   private HomeViewModel viewModel;
@@ -57,14 +59,14 @@ public final class HomeFragment extends Fragment {
   private void setupButtonsActions() {
     binding.homeCreateButton.setOnClickListener(
         v -> {
-          Log.d(TAG, "Opening Create fragment");
+          logger.debug("Opening Create fragment");
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(), R.id.fragment_lao_create, LaoCreateFragment::newInstance);
         });
 
     binding.homeJoinButton.setOnClickListener(
         v -> {
-          Log.d(TAG, "Opening join fragment");
+          logger.debug("Opening join fragment");
           HomeActivity.setCurrentFragment(
               getParentFragmentManager(),
               R.id.fragment_qr_scanner,
@@ -79,7 +81,7 @@ public final class HomeFragment extends Fragment {
         .observe(
             requireActivity(),
             laoIds -> {
-              Log.d(TAG, "Got a list update");
+              logger.debug("Got a list update");
               laoListAdapter.setList(laoIds);
 
               if (!laoIds.isEmpty()) {

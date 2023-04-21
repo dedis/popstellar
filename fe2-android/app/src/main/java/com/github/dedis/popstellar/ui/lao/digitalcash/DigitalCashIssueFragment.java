@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.digitalcash;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -21,6 +20,9 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.*;
@@ -34,7 +36,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class DigitalCashIssueFragment extends Fragment {
 
-  public static final String TAG = DigitalCashIssueFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(DigitalCashIssueFragment.class);
 
   private DigitalCashIssueFragmentBinding binding;
   private LaoViewModel laoViewModel;
@@ -102,9 +104,9 @@ public class DigitalCashIssueFragment extends Fragment {
           postTransaction(issueMap);
         }
       } catch (NoRollCallException r) {
-        ErrorUtils.logAndShow(requireContext(), TAG, r, R.string.no_rollcall_exception);
+        ErrorUtils.logAndShow(requireContext(), logger, r, R.string.no_rollcall_exception);
       } catch (UnknownLaoException e) {
-        ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
+        ErrorUtils.logAndShow(requireContext(), logger, e, R.string.unknown_lao_exception);
       }
     }
   }
@@ -165,7 +167,7 @@ public class DigitalCashIssueFragment extends Fragment {
     try {
       myArray = digitalCashViewModel.getAttendeesFromTheRollCallList();
     } catch (NoRollCallException e) {
-      Log.d(TAG, getString(R.string.error_no_rollcall_closed_in_LAO));
+      logger.debug(getString(R.string.error_no_rollcall_closed_in_LAO));
       Toast.makeText(
               requireContext(),
               getString(R.string.digital_cash_please_enter_roll_call),
@@ -207,10 +209,10 @@ public class DigitalCashIssueFragment extends Fragment {
                 error -> {
                   if (error instanceof KeyException || error instanceof GeneralSecurityException) {
                     ErrorUtils.logAndShow(
-                        requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                        requireContext(), logger, error, R.string.error_retrieve_own_token);
                   } else {
                     ErrorUtils.logAndShow(
-                        requireContext(), TAG, error, R.string.error_post_transaction);
+                        requireContext(), logger, error, R.string.error_post_transaction);
                   }
                 }));
   }
@@ -221,7 +223,7 @@ public class DigitalCashIssueFragment extends Fragment {
         .addCallback(
             getViewLifecycleOwner(),
             ActivityUtils.buildBackButtonCallback(
-                TAG,
+                logger,
                 "digital cash home",
                 () ->
                     LaoActivity.setCurrentFragment(

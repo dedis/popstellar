@@ -14,8 +14,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SettingsFragment extends PreferenceFragmentCompat {
 
-  public static final String TAG = SettingsFragment.class.getSimpleName();
-
   public static SettingsFragment newInstance() {
     return new SettingsFragment();
   }
@@ -62,9 +60,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             ((preference, newValue) -> {
               boolean selected = (boolean) newValue;
               if (selected) {
-                settingsViewModel.enableLogging();
+                settingsViewModel.enableServerLogging();
               } else {
-                settingsViewModel.disableLogging();
+                settingsViewModel.disableServerLogging();
               }
               return true;
             }));

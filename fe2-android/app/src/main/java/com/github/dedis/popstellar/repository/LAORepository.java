@@ -1,10 +1,11 @@
 package com.github.dedis.popstellar.repository;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ import io.reactivex.subjects.Subject;
 @Singleton
 public class LAORepository {
 
-  private static final String TAG = LAORepository.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(LAORepository.class);
 
   private final Map<String, Lao> laoById = new HashMap<>();
   private final Map<String, Subject<LaoView>> subjectById = new HashMap<>();
@@ -42,7 +43,7 @@ public class LAORepository {
    * @return the Lao corresponding to this channel
    */
   public Lao getLaoByChannel(Channel channel) {
-    Log.d(TAG, "querying lao for channel " + channel);
+    logger.debug("querying lao for channel " + channel);
     return laoById.get(channel.extractLaoId());
   }
 
@@ -69,7 +70,7 @@ public class LAORepository {
   }
 
   public synchronized void updateLao(Lao lao) {
-    Log.d(TAG, "updating Lao " + lao);
+    logger.debug("updating Lao " + lao);
     if (lao == null) {
       throw new IllegalArgumentException();
     }

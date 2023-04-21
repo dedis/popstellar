@@ -1,12 +1,13 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.networknt.schema.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.util.*;
@@ -20,7 +21,7 @@ public final class JsonUtils {
 
   public static final String JSON_REQUEST_ID = "id";
 
-  private static final String TAG = JsonUtils.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(JsonUtils.class);
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final JsonSchemaFactory FACTORY =
       JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
@@ -71,7 +72,7 @@ public final class JsonUtils {
    * @throws JsonParseException if the json is invalid or cannot be parsed
    */
   public static void verifyJson(String schemaPath, String json) throws JsonParseException {
-    Log.d(TAG, "verifyJson for : " + json);
+    logger.debug("verifyJson for : " + json);
 
     JsonSchema schema = loadSchema(schemaPath);
 
