@@ -73,20 +73,19 @@ object ParamsWithMapHandler extends AskPatternConstants {
       var setOfChannels: Set[Channel] = Set()
       val ask = dbActorRef ? DbActor.GetAllChannels()
       Await.ready(ask, duration).value match {
-        case Some(Success(DbActor.DbActorGetAllChannelsAck(channels))) =>
-          setOfChannels = channels
+        case Some(Success(DbActor.DbActorGetAllChannelsAck(channels))) => setOfChannels = channels
 
         case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"couldn't retrieve local set of channels", jsonRpcMessage.getId))
         case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
       }
 
       /** third step is to ask the DB for the content of each channel in terms of message ids. * */
-      val localHeartBeat: mutable.HashMap[Channel, List[Hash]] = mutable.HashMap()
+      val localHeartBeat: mutable.HashMap[Channel, Set[Hash]] = mutable.HashMap()
       setOfChannels.foreach(channel => {
         val ask = dbActorRef ? DbActor.ReadChannelData(channel)
         Await.ready(ask, duration).value match {
           case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
-            val setOfIds = channelData.messages.to(collection.immutable.Set)
+            val setOfIds = channelData.messages.toSet
             localHeartBeat += (channel -> setOfIds.toList)
           case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"couldn't readChannelData for local heartbeat", jsonRpcMessage.getId))
           case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
@@ -97,9 +96,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
       val missingIds: mutable.HashMap[Channel, Set[Hash]] = mutable.HashMap()
       receivedHeartBeat.keys.foreach(channel => {
         if (localHeartBeat.contains(channel)) {
-          missingIds += (channel -> receivedHeartBeat(channel).filter(id =>
-            !localHeartBeat(channel).contains(id)
-          ))
+          missingIds += (channel -> receivedHeartBeat(channel).diff(localHeartBeat(channel)))
         }
       })
       Right(JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, GetMessagesById(missingIds.toMap), None))
@@ -117,7 +114,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
         val ask = dbActorRef ? DbActor.Catchup(channel)
         Await.ready(ask, duration).value match {
           case Some(Success(DbActor.DbActorCatchupAck(messages))) =>
-            val missingMessages = messages.filter(message => receivedRequest(channel).contains(message.message_id)).to(collection.immutable.Set)
+            val missingMessages = messages.filter(message => receivedRequest(channel).contains(message.message_id)).toSet
             response += (channel -> missingMessages)
           case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"getMessagesByIdHandler failed : ${ex.message}", jsonRpcMessage.getId))
           case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
