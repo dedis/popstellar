@@ -86,7 +86,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
         Await.ready(ask, duration).value match {
           case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
             val setOfIds = channelData.messages.toSet
-            localHeartBeat += (channel -> setOfIds.toList)
+            localHeartBeat += (channel -> setOfIds.toSet)
           case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"couldn't readChannelData for local heartbeat", jsonRpcMessage.getId))
           case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
         }
