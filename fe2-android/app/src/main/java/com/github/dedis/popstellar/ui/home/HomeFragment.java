@@ -51,6 +51,7 @@ public final class HomeFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.home_title);
+    viewModel.setIsHome(true);
   }
 
   private void setupButtonsActions() {
@@ -68,6 +69,7 @@ public final class HomeFragment extends Fragment {
               getParentFragmentManager(),
               R.id.fragment_qr_scanner,
               () -> QrScannerFragment.newInstance(ScanningAction.ADD_LAO_PARTICIPANT));
+          viewModel.setIsHome(false);
         });
   }
 

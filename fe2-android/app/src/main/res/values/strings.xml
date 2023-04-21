@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">popstellar</string>
+  <string name="app_name">Popstellar</string>
 
   <!--  General-->
   <string name="yes">Yes</string>
@@ -28,6 +28,7 @@
   <string name="create">Create</string>
   <string name="server_url">Server URL</string>
   <string name="no_lao_text">OOPS, Looks like you don\'t have any Local Autonomous Organization (LAO) yet.\n Join or Create one with the buttons below</string>
+  <string name="app_info">Welcome to POPstellar, a Proof-Of-Personhood system developed by the DEDIS lab!</string>
 
   <!-- Settings -->
   <string name="settings">Settings</string>

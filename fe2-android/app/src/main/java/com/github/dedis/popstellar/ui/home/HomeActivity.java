@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.home;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -69,15 +68,8 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
-  @Override
-  public void onResume() {
-    super.onResume();
-  }
-
   private void handleTopAppBar() {
     viewModel.getPageTitle().observe(this, binding.topAppBar::setTitle);
-
-    Drawable overflowMenuIcon = binding.topAppBar.getOverflowIcon();
 
     // Observe whether the home icon or back arrow should be displayed
     viewModel
@@ -87,10 +79,18 @@ public class HomeActivity extends AppCompatActivity {
             isHome -> {
               if (Boolean.TRUE.equals(isHome)) {
                 binding.topAppBar.setNavigationIcon(R.drawable.home_icon);
-                binding.topAppBar.setOverflowIcon(overflowMenuIcon);
+                binding.topAppBar.getMenu().setGroupVisible(0, true);
               } else {
-                binding.topAppBar.setNavigationIcon(R.drawable.back_arrow_icon);
-                binding.topAppBar.setOverflowIcon(null);
+                Fragment fragment =
+                    getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
+                // If the fragment is not the seed wallet then make the back arrow appear
+                if (!(fragment instanceof SeedWalletFragment)) {
+                  binding.topAppBar.setNavigationIcon(R.drawable.back_arrow_icon);
+                } else {
+                  binding.topAppBar.setNavigationIcon(null);
+                }
+                // Disable the overflow menu
+                binding.topAppBar.getMenu().setGroupVisible(0, false);
               }
             });
 
@@ -100,6 +100,13 @@ public class HomeActivity extends AppCompatActivity {
           if (Boolean.FALSE.equals(viewModel.isHome().getValue())) {
             // Press back arrow
             onBackPressed();
+          } else {
+            // If the user presses on the home button display the general info about the app
+            new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.app_name)
+                .setMessage(R.string.app_info)
+                .setPositiveButton(R.string.ok, null)
+                .show();
           }
         });
 
@@ -151,7 +158,6 @@ public class HomeActivity extends AppCompatActivity {
     if (!(fragment instanceof SeedWalletFragment)) {
       setCurrentFragment(
           getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
-      viewModel.setIsHome(true);
     }
     // Move the application to background if back button is pressed on home
     if (fragment instanceof HomeFragment) {

@@ -58,6 +58,7 @@ public final class LaoCreateFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.lao_create_title);
+    viewModel.setIsHome(false);
   }
 
   TextWatcher launchWatcher =

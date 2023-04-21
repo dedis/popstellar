@@ -68,6 +68,7 @@ public class SeedWalletFragment extends Fragment {
   public void onResume() {
     super.onResume();
     viewModel.setPageTitle(R.string.wallet_setup);
+    viewModel.setIsHome(false);
   }
 
   private void setupConfirmSeedButton() {
