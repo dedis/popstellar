@@ -78,7 +78,7 @@ describe('ElectionReducer', () => {
 
     it('throws an error when trying to update an inexistent election', () => {
       expect(() =>
-        electionReduce(defaultElectionReducerState, removeElection(mockElection.id)),
+        electionReduce(defaultElectionReducerState, updateElection(mockElection.id)),
       ).toThrow();
     });
   });
