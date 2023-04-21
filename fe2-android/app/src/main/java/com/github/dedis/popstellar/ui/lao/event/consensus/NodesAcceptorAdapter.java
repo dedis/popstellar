@@ -14,11 +14,14 @@ import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 
 public class NodesAcceptorAdapter extends BaseAdapter {
 
-  private static final String TAG = NodesAcceptorAdapter.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(NodesAcceptorAdapter.class);
   private List<ConsensusNode> nodes = new ArrayList<>();
   private final ConsensusNode ownNode;
   private final String instanceId;
@@ -112,7 +115,7 @@ public class NodesAcceptorAdapter extends BaseAdapter {
                                 error ->
                                     ErrorUtils.logAndShow(
                                         parent.getContext(),
-                                        TAG,
+                                        logger,
                                         error,
                                         R.string.error_consensus_accept)))));
     binding.setLifecycleOwner(lifecycleOwner);

@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.security;
 
-import android.util.Log;
-
 import androidx.annotation.VisibleForTesting;
 
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -13,6 +11,9 @@ import com.github.dedis.popstellar.utility.error.keys.*;
 import com.google.crypto.tink.*;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,7 +30,7 @@ import static com.github.dedis.popstellar.di.KeysetModule.DeviceKeyset;
 @Singleton
 public class KeyManager {
 
-  private static final String TAG = KeyManager.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(KeyManager.class);
 
   private final AndroidKeysetManager keysetManager;
   private final Wallet wallet;
@@ -42,9 +43,9 @@ public class KeyManager {
 
     try {
       cacheMainKey();
-      Log.d(TAG, "Public Key = " + getMainPublicKey().getEncoded());
+      logger.debug("Public Key = " + getMainPublicKey().getEncoded());
     } catch (IOException | GeneralSecurityException e) {
-      Log.e(TAG, "Failed to retrieve device's key", e);
+      logger.error("Failed to retrieve device's key", e);
       throw new IllegalStateException("Failed to retrieve device's key", e);
     }
   }

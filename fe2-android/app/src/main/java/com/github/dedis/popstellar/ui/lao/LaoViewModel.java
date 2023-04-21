@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -24,6 +23,9 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.keys.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.security.GeneralSecurityException;
 
 import javax.inject.Inject;
@@ -35,7 +37,7 @@ import io.reactivex.disposables.Disposable;
 
 @HiltViewModel
 public class LaoViewModel extends AndroidViewModel implements PopViewModel {
-  public static final String TAG = LaoViewModel.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(LaoViewModel.class);
 
   private final MutableLiveData<MainMenuTab> currentTab = new MutableLiveData<>();
 
@@ -213,14 +215,14 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 laoView -> {
-                  Log.d(TAG, "got an update for lao: " + laoView);
+                  logger.debug("got an update for lao: " + laoView);
 
                   setIsOrganizer(laoView.getOrganizer().equals(keyManager.getMainPublicKey()));
                   setIsWitness(laoView.getWitnesses().contains(keyManager.getMainPublicKey()));
 
                   updateRole();
                 },
-                error -> Log.d(TAG, "error updating LAO :" + error)));
+                error -> logger.debug("error updating LAO :" + error)));
   }
 
   protected void observeRollCalls(String laoId) {
@@ -245,7 +247,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
                 },
                 error ->
                     ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.unknown_roll_call_exception)));
+                        getApplication(), logger, error, R.string.unknown_roll_call_exception)));
   }
 
   private boolean isRollCallAttended(RollCall rollcall, String laoId) {
@@ -253,7 +255,7 @@ public class LaoViewModel extends AndroidViewModel implements PopViewModel {
       PublicKey pk = wallet.generatePoPToken(laoId, rollcall.getPersistentId()).getPublicKey();
       return rollcall.isClosed() && rollcall.getAttendees().contains(pk);
     } catch (KeyGenerationException | UninitializedWalletException e) {
-      Log.e(TAG, "failed to retrieve public key from wallet", e);
+      logger.error("failed to retrieve public key from wallet", e);
       return false;
     }
   }

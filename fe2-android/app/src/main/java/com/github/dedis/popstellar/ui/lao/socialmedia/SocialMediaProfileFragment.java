@@ -13,12 +13,15 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment of the user's profile page */
 @AndroidEntryPoint
 public class SocialMediaProfileFragment extends Fragment {
-  public static final String TAG = SocialMediaProfileFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(SocialMediaProfileFragment.class);
   private LaoViewModel laoViewModel;
 
   public static SocialMediaProfileFragment newInstance() {
@@ -57,7 +60,7 @@ public class SocialMediaProfileFragment extends Fragment {
         requireActivity(),
         getViewLifecycleOwner(),
         ActivityUtils.buildBackButtonCallback(
-            TAG,
+            logger,
             "social media home",
             () -> SocialMediaHomeFragment.openFragment(getParentFragmentManager())));
   }

@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.witness;
 
 import android.app.Application;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,6 +24,9 @@ import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.time.Instant;
 import java.util.*;
 
@@ -38,7 +40,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 @HiltViewModel
 public class WitnessingViewModel extends AndroidViewModel implements QRCodeScanningViewModel {
-  public static final String TAG = WitnessingViewModel.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(WitnessingViewModel.class);
 
   private String laoId;
 
@@ -102,12 +104,12 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 laoView -> {
-                  Log.d(TAG, "got an update for lao: " + laoView);
+                  logger.debug("got an update for lao: " + laoView);
 
                   setWitnessMessages(new ArrayList<>(laoView.getWitnessMessages().values()));
                   setWitnesses(new ArrayList<>(laoView.getWitnesses()));
                 },
-                error -> Log.d(TAG, "error updating LAO :" + error)));
+                error -> logger.debug("error updating LAO :" + error)));
   }
 
   @Override
@@ -122,12 +124,12 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
   }
 
   protected Completable signMessage(WitnessMessage witnessMessage) {
-    Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId());
+    logger.debug("signing message with ID " + witnessMessage.getMessageId());
     final LaoView laoView;
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.logAndShow(getApplication(), logger, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -137,7 +139,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
               // Generate the signature of the message
               Signature signature = keyPair.sign(witnessMessage.getMessageId());
 
-              Log.d(TAG, "Signed message id, resulting signature : " + signature);
+              logger.debug("Signed message id, resulting signature : " + signature);
               WitnessMessageSignature signatureMessage =
                   new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
 
@@ -154,18 +156,18 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
       pkData = MainPublicKeyData.extractFrom(gson, data);
     } catch (Exception e) {
       ErrorUtils.logAndShow(
-          getApplication().getApplicationContext(), TAG, e, R.string.qr_code_not_main_pk);
+          getApplication().getApplicationContext(), logger, e, R.string.qr_code_not_main_pk);
       return;
     }
     PublicKey publicKey = pkData.getPublicKey();
     if (scannedWitnesses.contains(publicKey)) {
-      ErrorUtils.logAndShow(getApplication(), TAG, R.string.witness_already_scanned_warning);
+      ErrorUtils.logAndShow(getApplication(), logger, R.string.witness_already_scanned_warning);
       return;
     }
 
     scannedWitnesses.add(publicKey);
     nbScanned.setValue(scannedWitnesses.size());
-    Log.d(TAG, "Witness " + publicKey + " successfully scanned");
+    logger.debug("Witness " + publicKey + " successfully scanned");
     Toast.makeText(getApplication(), R.string.witness_scan_success, Toast.LENGTH_SHORT).show();
     disposables.add(
         updateLaoWitnesses()
@@ -173,24 +175,24 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
                 () -> {
                   String networkSuccess =
                       String.format(getApplication().getString(R.string.witness_added), publicKey);
-                  Log.d(TAG, networkSuccess);
+                  logger.debug(networkSuccess);
                   Toast.makeText(getApplication(), networkSuccess, Toast.LENGTH_SHORT).show();
                 },
                 error -> {
                   scannedWitnesses.remove(publicKey);
                   nbScanned.setValue(scannedWitnesses.size());
-                  ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao);
+                  ErrorUtils.logAndShow(getApplication(), logger, error, R.string.error_update_lao);
                 }));
   }
 
   private Completable updateLaoWitnesses() {
-    Log.d(TAG, "Updating lao witnesses ");
+    logger.debug("Updating lao witnesses");
 
     LaoView laoView;
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.logAndShow(getApplication(), logger, e, R.string.unknown_lao_exception);
       return Completable.error(new UnknownLaoException());
     }
 
@@ -209,7 +211,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     return networkManager
         .getMessageSender()
         .publish(channel, msg)
-        .doOnComplete(() -> Log.d(TAG, "updated lao witnesses"))
+        .doOnComplete(() -> logger.debug("updated lao witnesses"))
         .andThen(dispatchLaoUpdate(updateLao, laoView, channel, msg));
   }
 
@@ -229,7 +231,7 @@ public class WitnessingViewModel extends AndroidViewModel implements QRCodeScann
     return networkManager
         .getMessageSender()
         .publish(keyManager.getMainKeyPair(), channel, stateLao)
-        .doOnComplete(() -> Log.d(TAG, "updated lao with " + stateLao));
+        .doOnComplete(() -> logger.debug("updated lao with " + stateLao));
   }
 
   private LaoView getLao() throws UnknownLaoException {

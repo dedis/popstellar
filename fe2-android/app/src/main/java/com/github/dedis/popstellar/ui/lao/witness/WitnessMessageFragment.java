@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.witness;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ListView;
 
@@ -13,6 +12,9 @@ import com.github.dedis.popstellar.databinding.WitnessMessageFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -20,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class WitnessMessageFragment extends Fragment {
 
-  public static final String TAG = WitnessMessageFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(WitnessMessageFragment.class);
   private WitnessMessageFragmentBinding binding;
   private WitnessingViewModel witnessingViewModel;
   private WitnessMessageListViewAdapter adapter;
@@ -60,7 +62,7 @@ public class WitnessMessageFragment extends Fragment {
         .observe(
             requireActivity(),
             messages -> {
-              Log.d(TAG, "witness messages updated");
+              logger.debug("witness messages updated");
               adapter.replaceList(messages);
             });
   }

@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.lao;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +35,7 @@ import com.github.dedis.popstellar.utility.Constants;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.security.GeneralSecurityException;
@@ -46,7 +46,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class LaoActivity extends AppCompatActivity {
-  public static final String TAG = LaoActivity.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(LaoActivity.class);
 
   LaoViewModel laoViewModel;
   LaoActivityBinding binding;
@@ -90,7 +90,7 @@ public class LaoActivity extends AppCompatActivity {
       laoViewModel.savePersistentData();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
-      Log.d(TAG, "Storage was unsuccessful du to wallet error " + e);
+      logger.debug("Storage was unsuccessful du to wallet error " + e);
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
     }
   }
@@ -178,13 +178,13 @@ public class LaoActivity extends AppCompatActivity {
     binding.laoNavigationDrawer.setNavigationItemSelectedListener(
         item -> {
           MainMenuTab tab = MainMenuTab.findByMenu(item.getItemId());
-          Log.i(TAG, "Opening tab : " + tab.getName());
+          logger.info("Opening tab : " + tab.getName());
           boolean selected = openTab(tab);
           if (selected) {
-            Log.d(TAG, "The tab was successfully opened");
+            logger.debug("The tab was successfully opened");
             laoViewModel.setCurrentTab(tab);
           } else {
-            Log.d(TAG, "The tab wasn't opened");
+            logger.debug("The tab wasn't opened");
           }
           binding.laoDrawerLayout.close();
           return selected;
@@ -200,7 +200,7 @@ public class LaoActivity extends AppCompatActivity {
               .findViewById(R.id.drawer_header_lao_title);
       laoNameView.setText(laoViewModel.getLao().getName());
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(this, TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.logAndShow(this, logger, e, R.string.unknown_lao_exception);
       startActivity(HomeActivity.newIntent(this));
     }
   }
@@ -238,7 +238,7 @@ public class LaoActivity extends AppCompatActivity {
         startActivity(HomeActivity.newIntent(this));
         return true;
       default:
-        Log.w(TAG, "Unhandled tab type : " + tab);
+        logger.warn("Unhandled tab type : " + tab);
         return false;
     }
   }

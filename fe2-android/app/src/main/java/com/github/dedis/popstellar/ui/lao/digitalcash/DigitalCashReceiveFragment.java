@@ -21,6 +21,9 @@ import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -32,8 +35,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
  */
 @AndroidEntryPoint
 public class DigitalCashReceiveFragment extends Fragment {
-  public static final String TAG = DigitalCashReceiveFragment.class.getSimpleName();
-
+  private static final Logger logger = LogManager.getLogger(DigitalCashReceiveFragment.class);
   @Inject Gson gson;
 
   private DigitalCashReceiveFragmentBinding binding;
@@ -88,7 +90,7 @@ public class DigitalCashReceiveFragment extends Fragment {
                 },
                 error ->
                     ErrorUtils.logAndShow(
-                        requireContext(), TAG, error, R.string.error_retrieve_own_token)));
+                        requireContext(), logger, error, R.string.error_retrieve_own_token)));
   }
 
   @Override
@@ -104,7 +106,7 @@ public class DigitalCashReceiveFragment extends Fragment {
         .addCallback(
             getViewLifecycleOwner(),
             ActivityUtils.buildBackButtonCallback(
-                TAG,
+                logger,
                 "digital cash home",
                 () ->
                     LaoActivity.setCurrentFragment(

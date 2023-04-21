@@ -12,9 +12,12 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class WitnessingFragment extends Fragment {
 
-  public static final String TAG = WitnessingFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(WitnessingFragment.class);
 
   public WitnessingFragment() {
     // Required empty public constructor
@@ -54,6 +57,7 @@ public class WitnessingFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
+    LaoActivity.addBackNavigationCallbackToEvents(
+        requireActivity(), getViewLifecycleOwner(), logger);
   }
 }

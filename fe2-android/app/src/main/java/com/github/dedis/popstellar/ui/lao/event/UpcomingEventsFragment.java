@@ -14,9 +14,12 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.eventlist.UpcomingEventsAdapter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class UpcomingEventsFragment extends Fragment {
 
-  private static final String TAG = UpcomingEventsFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(UpcomingEventsFragment.class);
   private LaoViewModel laoViewModel;
 
   public static UpcomingEventsFragment newInstance() {
@@ -39,7 +42,7 @@ public class UpcomingEventsFragment extends Fragment {
     binding.upcomingEventsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     binding.upcomingEventsRecyclerView.setAdapter(
         new UpcomingEventsAdapter(
-            eventsViewModel.getEvents(), laoViewModel, requireActivity(), TAG));
+            eventsViewModel.getEvents(), laoViewModel, requireActivity(), logger));
 
     handleBackNav();
     return binding.getRoot();
@@ -53,6 +56,7 @@ public class UpcomingEventsFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
+    LaoActivity.addBackNavigationCallbackToEvents(
+        requireActivity(), getViewLifecycleOwner(), logger);
   }
 }

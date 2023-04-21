@@ -13,8 +13,10 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.repository.ElectionRepository;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
-import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionResultFragment;
 import com.github.dedis.popstellar.utility.error.UnknownElectionException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,7 +28,7 @@ import static com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow;
 public class ElectionResultPagerAdapter
     extends RecyclerView.Adapter<ElectionResultPagerAdapter.Pager2ViewHolder> {
 
-  private static final String TAG = ElectionResultFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ElectionResultPagerAdapter.class);
 
   private List<QuestionResults> currentResults;
   private ElectionResultListAdapter adapter;
@@ -53,7 +55,7 @@ public class ElectionResultPagerAdapter
                     }
                   }));
     } catch (UnknownElectionException err) {
-      logAndShow(viewModel.getApplication(), TAG, err, R.string.generic_error);
+      logAndShow(viewModel.getApplication(), logger, err, R.string.generic_error);
     }
   }
 

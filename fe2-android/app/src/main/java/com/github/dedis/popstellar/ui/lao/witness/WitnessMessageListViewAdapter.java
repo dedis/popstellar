@@ -15,12 +15,15 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
 /** Adapter to show the messages that have to be signed by the witnesses */
 public class WitnessMessageListViewAdapter extends BaseAdapter {
 
-  private static final String TAG = WitnessMessageListViewAdapter.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(WitnessMessageListViewAdapter.class);
   private final LaoViewModel laoViewModel;
   private final WitnessingViewModel witnessingViewModel;
 
@@ -102,7 +105,7 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
                                 () -> {},
                                 error ->
                                     ErrorUtils.logAndShow(
-                                        activity, TAG, error, R.string.error_sign_message))));
+                                        activity, logger, error, R.string.error_sign_message))));
           } else {
             adb.setTitle(R.string.not_a_witness);
             adb.setMessage(R.string.not_a_witness_explanation);

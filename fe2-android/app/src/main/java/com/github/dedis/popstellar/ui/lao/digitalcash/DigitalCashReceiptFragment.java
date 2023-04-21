@@ -13,12 +13,15 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiptFragment} factory method to
  * create an instance of this fragment.
  */
 public class DigitalCashReceiptFragment extends Fragment {
-  public static final String TAG = DigitalCashReceiptFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(DigitalCashReceiptFragment.class);
   private DigitalCashReceiptFragmentBinding binding;
   private LaoViewModel laoViewModel;
   private DigitalCashViewModel digitalCashViewModel;
@@ -85,7 +88,7 @@ public class DigitalCashReceiptFragment extends Fragment {
         requireActivity(),
         getViewLifecycleOwner(),
         ActivityUtils.buildBackButtonCallback(
-            TAG,
+            logger,
             "digital cash home",
             () -> DigitalCashHomeFragment.openFragment(getParentFragmentManager())));
   }

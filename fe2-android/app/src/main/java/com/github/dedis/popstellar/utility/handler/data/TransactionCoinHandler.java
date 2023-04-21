@@ -1,19 +1,20 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.*;
 import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.digitalcash.*;
 import com.github.dedis.popstellar.repository.DigitalCashRepository;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 
 import javax.inject.Inject;
 
 public class TransactionCoinHandler {
-  public static final String TAG = TransactionCoinHandler.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(TransactionCoinHandler.class);
   private final DigitalCashRepository digitalCashRepo;
 
   @Inject
@@ -31,7 +32,7 @@ public class TransactionCoinHandler {
       HandlerContext context, PostTransactionCoin postTransactionCoin) throws NoRollCallException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
+    logger.debug("handlePostTransactionCoin: " + channel + " msg=" + postTransactionCoin);
 
     // inputs and outputs for the creation
     List<InputObject> inputs = new ArrayList<>();

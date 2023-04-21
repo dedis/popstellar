@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.qrcode;
 
 import android.Manifest;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -19,6 +18,9 @@ import com.github.dedis.popstellar.ui.PopViewModel;
 import com.google.mlkit.vision.barcode.*;
 import com.google.mlkit.vision.barcode.common.Barcode;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -28,7 +30,7 @@ import static androidx.camera.view.CameraController.COORDINATE_SYSTEM_VIEW_REFER
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 public class QrScannerFragment extends Fragment {
-  public static final String TAG = QrScannerFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(QrScannerFragment.class);
 
   public static final String SCANNING_KEY = "scanning_action_key";
   public static final String BACK_ARGS = "back_arguments";
@@ -172,7 +174,7 @@ public class QrScannerFragment extends Fragment {
             result -> {
               List<Barcode> barcodes = result.getValue(barcodeScanner);
               if (barcodes != null && !barcodes.isEmpty()) {
-                Log.d(TAG, "barcode raw value :" + barcodes.get(0).getRawValue());
+                logger.debug("barcode raw value :" + barcodes.get(0).getRawValue());
                 onResult(barcodes.get(0));
               }
             }));

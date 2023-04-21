@@ -19,6 +19,9 @@ import com.github.dedis.popstellar.ui.lao.event.eventlist.EventListFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Objects;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -28,7 +31,7 @@ import io.reactivex.Single;
 @AndroidEntryPoint
 public final class RollCallCreationFragment extends AbstractEventCreationFragment {
 
-  public static final String TAG = RollCallCreationFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(RollCallCreationFragment.class);
 
   private RollCallCreateFragmentBinding binding;
   private LaoViewModel laoViewModel;
@@ -139,7 +142,7 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
                     EventListFragment::newInstance),
             error ->
                 ErrorUtils.logAndShow(
-                    requireContext(), TAG, error, R.string.error_create_rollcall)));
+                    requireContext(), logger, error, R.string.error_create_rollcall)));
   }
 
   private void handleBackNav() {
@@ -147,6 +150,8 @@ public final class RollCallCreationFragment extends AbstractEventCreationFragmen
         requireActivity(),
         getViewLifecycleOwner(),
         ActivityUtils.buildBackButtonCallback(
-            TAG, "event list", () -> EventListFragment.openFragment(getParentFragmentManager())));
+            logger,
+            "event list",
+            () -> EventListFragment.openFragment(getParentFragmentManager())));
   }
 }

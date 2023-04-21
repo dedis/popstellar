@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.security;
 
-import android.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -10,7 +11,7 @@ import java.util.Base64;
 /** SHA256 Hashing Class */
 public class Hash {
 
-  public static final String TAG = Hash.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(Hash.class);
 
   /**
    * Hash some objects using SHA256. Concatenate the object's string representation following the
@@ -39,7 +40,7 @@ public class Hash {
       byte[] digestBuf = digest.digest();
       return Base64.getUrlEncoder().encodeToString(digestBuf);
     } catch (NoSuchAlgorithmException e) {
-      Log.e(TAG, "failed to hash", e);
+      logger.error("failed to hash", e);
       throw new UnsupportedOperationException("failed to retrieve SHA-256 instance", e);
     }
   }

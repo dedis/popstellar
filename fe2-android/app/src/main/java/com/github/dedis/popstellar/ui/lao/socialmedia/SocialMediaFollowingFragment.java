@@ -13,13 +13,16 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment that shows people we are subscribed to */
 @AndroidEntryPoint
 public class SocialMediaFollowingFragment extends Fragment {
 
-  public static final String TAG = SocialMediaFollowingFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(SocialMediaFollowingFragment.class);
   private LaoViewModel laoViewModel;
 
   public static SocialMediaFollowingFragment newInstance() {
@@ -58,7 +61,7 @@ public class SocialMediaFollowingFragment extends Fragment {
         requireActivity(),
         getViewLifecycleOwner(),
         ActivityUtils.buildBackButtonCallback(
-            TAG,
+            logger,
             "social media home",
             () -> SocialMediaHomeFragment.openFragment(getParentFragmentManager())));
   }

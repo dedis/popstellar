@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.*;
@@ -13,6 +12,9 @@ import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 
 import javax.inject.Inject;
@@ -20,7 +22,7 @@ import javax.inject.Inject;
 /** Lao messages handler class */
 public final class LaoHandler {
 
-  public static final String TAG = LaoHandler.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(LaoHandler.class);
 
   private final MessageRepository messageRepo;
   private final LAORepository laoRepo;
@@ -50,7 +52,7 @@ public final class LaoHandler {
       throws UnknownLaoException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
+    logger.debug("handleCreateLao: channel " + channel + ", msg=" + createLao);
     Lao lao = new Lao(createLao.getId());
 
     lao.setName(createLao.getName());
@@ -70,8 +72,8 @@ public final class LaoHandler {
           .subscribe(lao.getChannel().subChannel("consensus"))
           .subscribe( // For now if we receive an error, we assume that it is because the server
               // running is the scala one which does not implement consensus
-              () -> Log.d(TAG, "subscription to consensus channel was a success"),
-              error -> Log.d(TAG, "error while trying to subscribe to consensus channel", error));
+              () -> logger.debug("subscription to consensus channel was a success"),
+              error -> logger.debug("error while trying to subscribe to consensus channel", error));
     }
 
     /* Creation channel coin*/
@@ -79,8 +81,8 @@ public final class LaoHandler {
         .getMessageSender()
         .subscribe(channel.subChannel("coin"))
         .subscribe(
-            () -> Log.d(TAG, "subscription to the coin channel was a success"),
-            error -> Log.d(TAG, "error while trying  to subscribe to coin channel", error));
+            () -> logger.debug("subscription to the coin channel was a success"),
+            error -> logger.debug("error while trying  to subscribe to coin channel", error));
 
     laoRepo.updateNodes(channel);
   }
@@ -96,7 +98,7 @@ public final class LaoHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
+    logger.debug("Receive Update Lao Broadcast msg=" + updateLao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     if (laoView.getLastModified() > updateLao.getLastModified()) {
@@ -111,7 +113,7 @@ public final class LaoHandler {
     } else if (!laoView.areWitnessSetsEqual(updateLao.getWitnesses())) {
       message = updateLaoWitnessesWitnessMessage(messageId, updateLao, laoView);
     } else {
-      Log.d(TAG, "Cannot set the witness message title to update lao");
+      logger.debug("Cannot set the witness message title to update lao");
       throw new DataHandlingException(
           updateLao, "Cannot set the witness message title to update lao");
     }
@@ -139,24 +141,24 @@ public final class LaoHandler {
       throws DataHandlingException, UnknownLaoException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
+    logger.debug("Receive State Lao Broadcast msg=" + stateLao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
-    Log.d(TAG, "Receive State Lao Broadcast " + stateLao.getName());
+    logger.debug("Receive State Lao Broadcast " + stateLao.getName());
     if (!messageRepo.isMessagePresent(stateLao.getModificationId())) {
-      Log.d(TAG, "Can't find modification id : " + stateLao.getModificationId());
+      logger.debug("Can't find modification id : " + stateLao.getModificationId());
       // queue it if we haven't received the update message yet
       throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
     }
 
-    Log.d(TAG, "Verifying signatures");
+    logger.debug("Verifying signatures");
     for (PublicKeySignaturePair pair : stateLao.getModificationSignatures()) {
       if (!pair.getWitness().verify(pair.getSignature(), stateLao.getModificationId())) {
         throw new InvalidSignatureException(stateLao, pair.getSignature());
       }
     }
 
-    Log.d(TAG, "Success to verify state lao signatures");
+    logger.debug("Success to verify state lao signatures");
 
     // TODO: verify if lao/state_lao is consistent with the lao/update message
 
@@ -173,8 +175,8 @@ public final class LaoHandler {
           .getMessageSender()
           .subscribe(laoView.getChannel().subChannel("consensus"))
           .subscribe(
-              () -> Log.d(TAG, "Successful subscribe to consensus channel"),
-              e -> Log.d(TAG, "Unsuccessful subscribe to consensus channel : " + e));
+              () -> logger.debug("Successful subscribe to consensus channel"),
+              e -> logger.debug("Unsuccessful subscribe to consensus channel : " + e));
     }
 
     // Now we're going to remove all pending updates which came prior to this state lao
@@ -222,13 +224,12 @@ public final class LaoHandler {
   public void handleGreetLao(HandlerContext context, GreetLao greetLao) throws UnknownLaoException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleGreetLao: channel " + channel + ", msg=" + greetLao);
+    logger.debug("handleGreetLao: channel " + channel + ", msg=" + greetLao);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     // Check the correctness of the LAO id
     if (!laoView.getId().equals(greetLao.getId())) {
-      Log.d(
-          TAG,
+      logger.debug(
           "Current lao id "
               + laoView.getId()
               + " doesn't match the lao id from greetLao message ("
@@ -237,11 +238,11 @@ public final class LaoHandler {
       throw new IllegalArgumentException(
           "Current lao doesn't match the lao id from the greetLao message");
     }
-    Log.d(TAG, "Creating a server with IP: " + greetLao.getAddress());
+    logger.debug("Creating a server with IP: " + greetLao.getAddress());
 
     Server server = new Server(greetLao.getAddress(), greetLao.getFrontendKey());
 
-    Log.d(TAG, "Adding the server to the repository for lao id : " + laoView.getId());
+    logger.debug("Adding the server to the repository for lao id : " + laoView.getId());
     serverRepo.addServer(greetLao.getId(), server);
 
     // Extend the current connection by connecting to the peers of the main server

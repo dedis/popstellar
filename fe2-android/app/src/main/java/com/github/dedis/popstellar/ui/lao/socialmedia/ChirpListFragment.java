@@ -19,7 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 /** Fragment displaying the chirp list and the add chirp button */
 @AndroidEntryPoint
 public class ChirpListFragment extends Fragment {
-  public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
 
   private ChirpListFragmentBinding binding;
   private LaoViewModel laoViewModel;

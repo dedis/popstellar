@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -11,6 +9,9 @@ import com.github.dedis.popstellar.utility.error.*;
 import com.github.dedis.popstellar.utility.error.keys.NoRollCallException;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -18,7 +19,7 @@ import javax.inject.Singleton;
 @Singleton
 public final class MessageHandler {
 
-  public static final String TAG = MessageHandler.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(MessageHandler.class);
 
   private final MessageRepository messageRepo;
   private final DataRegistry registry;
@@ -39,15 +40,15 @@ public final class MessageHandler {
   public void handleMessage(MessageSender messageSender, Channel channel, MessageGeneral message)
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-    Log.d(TAG, "handle incoming message");
+    logger.debug("handle incoming message");
 
     if (messageRepo.isMessagePresent(message.getMessageId())) {
-      Log.d(TAG, "the message has already been handled in the past");
+      logger.debug("the message has already been handled in the past");
       return;
     }
 
     Data data = message.getData();
-    Log.d(TAG, "data with class: " + data.getClass());
+    logger.debug("data with class: " + data.getClass());
     Objects dataObj = Objects.find(data.getObject());
     Action dataAction = Action.find(data.getAction());
 

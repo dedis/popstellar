@@ -21,6 +21,9 @@ import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -28,7 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class InviteFragment extends Fragment {
 
-  private static final String TAG = InviteFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(InviteFragment.class);
 
   @Inject Gson gson;
   @Inject GlobalNetworkManager networkManager;
@@ -73,7 +76,7 @@ public class InviteFragment extends Fragment {
               role -> binding.laoPropertiesRoleText.setText(role.getStringId()));
 
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.logAndShow(requireContext(), logger, e, R.string.unknown_lao_exception);
       return null;
     }
 
@@ -89,6 +92,7 @@ public class InviteFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
+    LaoActivity.addBackNavigationCallbackToEvents(
+        requireActivity(), getViewLifecycleOwner(), logger);
   }
 }

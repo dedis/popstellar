@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.eventlist;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.NonNull;
@@ -25,6 +24,9 @@ import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -35,8 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class EventListFragment extends Fragment {
 
-  public static final String TAG = EventListFragment.class.getSimpleName();
-
+  private static final Logger logger = LogManager.getLogger(EventListFragment.class);
   @Inject Gson gson;
 
   private EventListFragmentBinding binding;
@@ -86,7 +87,8 @@ public class EventListFragment extends Fragment {
                   setupEmptyEventsTextVisibility(events);
                 },
                 error ->
-                    ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_event_observed)));
+                    ErrorUtils.logAndShow(
+                        requireContext(), logger, R.string.error_event_observed)));
 
     // Add listener to upcoming events card
     binding.upcomingEventsCard.setOnClickListener(
@@ -146,7 +148,7 @@ public class EventListFragment extends Fragment {
                 R.id.fragment_setup_election_event,
                 ElectionSetupFragment::newInstance);
       default:
-        return v -> Log.d(TAG, "unknown event type: " + type);
+        return v -> logger.debug("unknown event type: " + type);
     }
   }
 
@@ -168,7 +170,7 @@ public class EventListFragment extends Fragment {
 
     EventListAdapter eventListAdapter =
         new EventListAdapter(laoViewModel, eventsViewModel.getEvents(), requireActivity());
-    Log.d(TAG, "created adapter");
+    logger.debug("created adapter");
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
     eventList.setLayoutManager(mLayoutManager);
 

@@ -15,6 +15,9 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 
@@ -24,8 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SocialMediaSendFragment extends Fragment {
 
-  public static final String TAG = SocialMediaSendFragment.class.getSimpleName();
-
+  private static final Logger logger = LogManager.getLogger(SocialMediaSendFragment.class);
   private SocialMediaSendFragmentBinding binding;
   private LaoViewModel laoViewModel;
   private SocialMediaViewModel socialMediaViewModel;
@@ -75,7 +77,7 @@ public class SocialMediaSendFragment extends Fragment {
     // Trying to send a chirp when no LAO has been chosen in the application will not send it, it
     // will make a toast appear and it will log the error
     if (laoViewModel.getLaoId() == null) {
-      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      ErrorUtils.logAndShow(requireContext(), logger, R.string.error_no_lao);
     } else {
       laoViewModel.addDisposable(
           socialMediaViewModel
@@ -91,10 +93,10 @@ public class SocialMediaSendFragment extends Fragment {
                     if (error instanceof KeyException
                         || error instanceof GeneralSecurityException) {
                       ErrorUtils.logAndShow(
-                          requireContext(), TAG, error, R.string.error_retrieve_own_token);
+                          requireContext(), logger, error, R.string.error_retrieve_own_token);
                     } else {
                       ErrorUtils.logAndShow(
-                          requireContext(), TAG, error, R.string.error_sending_chirp);
+                          requireContext(), logger, error, R.string.error_sending_chirp);
                     }
                   }));
       socialMediaViewModel.setBottomNavigationTab(SocialMediaTab.HOME);
@@ -106,6 +108,8 @@ public class SocialMediaSendFragment extends Fragment {
         requireActivity(),
         getViewLifecycleOwner(),
         ActivityUtils.buildBackButtonCallback(
-            TAG, "chirp list", () -> ChirpListFragment.OpenFragment(getParentFragmentManager())));
+            logger,
+            "chirp list",
+            () -> ChirpListFragment.OpenFragment(getParentFragmentManager())));
   }
 }

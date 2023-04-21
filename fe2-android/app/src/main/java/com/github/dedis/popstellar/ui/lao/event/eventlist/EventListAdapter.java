@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.event.eventlist;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +16,9 @@ import com.github.dedis.popstellar.model.objects.event.EventCategory;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.LaoDetailAnimation;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 
 import io.reactivex.Observable;
@@ -31,11 +33,11 @@ public class EventListAdapter extends EventsAdapter {
   private final boolean[] expanded = new boolean[2];
   public static final int TYPE_HEADER = 0;
   public static final int TYPE_EVENT = 1;
-  public static final String TAG = EventListAdapter.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(EventListAdapter.class);
 
   public EventListAdapter(
       LaoViewModel viewModel, Observable<Set<Event>> events, FragmentActivity activity) {
-    super(events, viewModel, activity, TAG);
+    super(events, viewModel, activity, logger);
     eventsMap = new EnumMap<>(EventCategory.class);
     eventsMap.put(PAST, new ArrayList<>());
     eventsMap.put(PRESENT, new ArrayList<>());
@@ -160,7 +162,7 @@ public class EventListAdapter extends EventsAdapter {
       return Objects.requireNonNull(eventsMap.get(PAST))
           .get(position - eventAccumulator - secondSectionOffset);
     }
-    Log.e(TAG, "position was " + position);
+    logger.error("position was " + position);
     throw new IllegalStateException("no event matches");
   }
 
@@ -184,7 +186,7 @@ public class EventListAdapter extends EventsAdapter {
     if (position == eventAccumulator + 1) {
       return PAST;
     }
-    Log.e(TAG, "Illegal position " + position);
+    logger.error("Illegal position " + position);
     throw new IllegalStateException("No event category");
   }
 

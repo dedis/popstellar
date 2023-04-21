@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.lao.event.eventlist;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +19,7 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.election.fragments.ElectionFragment;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallFragment;
 
+import org.apache.logging.log4j.Logger;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.util.*;
@@ -31,16 +31,16 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
   private List<Event> events;
   private final LaoViewModel laoViewModel;
   private final FragmentActivity activity;
-  private final String tag;
+  private final Logger logger;
 
   protected EventsAdapter(
       Observable<Set<Event>> observable,
       LaoViewModel viewModel,
       FragmentActivity activity,
-      String tag) {
+      Logger logger) {
     this.laoViewModel = viewModel;
     this.activity = activity;
-    this.tag = tag;
+    this.logger = logger;
     subscribeToEventSet(observable);
   }
 
@@ -48,7 +48,7 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     this.laoViewModel.addDisposable(
         observable
             .map(eventList -> eventList.stream().sorted().collect(Collectors.toList()))
-            .subscribe(this::updateEventSet, err -> Log.e(tag, "ERROR", err)));
+            .subscribe(this::updateEventSet, err -> logger.error("ERROR", err)));
   }
 
   public abstract void updateEventSet(List<Event> events);

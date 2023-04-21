@@ -18,6 +18,9 @@ import com.github.dedis.popstellar.ui.lao.event.election.adapters.ElectionResult
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.github.dedis.popstellar.utility.error.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -27,7 +30,7 @@ import static com.github.dedis.popstellar.utility.error.ErrorUtils.logAndShow;
 
 @AndroidEntryPoint
 public class ElectionResultFragment extends Fragment {
-  private static final String TAG = ElectionResultFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ElectionResultFragment.class);
 
   private static final String ELECTION_ID = "election_id";
   private LaoViewModel laoViewModel;
@@ -74,10 +77,10 @@ public class ElectionResultFragment extends Fragment {
       CircleIndicator3 circleIndicator = binding.swipeIndicatorElectionResults;
       circleIndicator.setViewPager(viewPager2);
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, R.string.error_no_lao);
+      ErrorUtils.logAndShow(requireContext(), logger, R.string.error_no_lao);
       return null;
     } catch (UnknownElectionException e) {
-      logAndShow(requireContext(), TAG, R.string.error_no_election);
+      logAndShow(requireContext(), logger, R.string.error_no_election);
       return null;
     }
 
@@ -99,7 +102,7 @@ public class ElectionResultFragment extends Fragment {
         requireActivity(),
         getViewLifecycleOwner(),
         ActivityUtils.buildBackButtonCallback(
-            TAG,
+            logger,
             "election",
             () ->
                 ElectionFragment.openFragment(

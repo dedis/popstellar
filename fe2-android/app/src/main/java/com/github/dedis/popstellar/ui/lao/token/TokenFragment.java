@@ -4,7 +4,6 @@ import android.content.*;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 
@@ -30,6 +29,9 @@ import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -37,7 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class TokenFragment extends Fragment {
 
-  private static final String TAG = TokenFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(TokenFragment.class);
 
   @Inject Gson gson;
   @Inject RollCallRepository rollCallRepo;
@@ -74,7 +76,7 @@ public class TokenFragment extends Fragment {
       RollCall rollCall =
           rollCallRepo.getRollCallWithPersistentId(
               laoViewModel.getLaoId(), requireArguments().getString(Constants.ROLL_CALL_ID));
-      Log.d(TAG, "token displayed from roll call: " + rollCall);
+      logger.debug("token displayed from roll call: " + rollCall);
 
       PoPToken poPToken = keyManager.getValidPoPToken(laoViewModel.getLaoId(), rollCall);
       PopTokenData data = new PopTokenData(poPToken.getPublicKey());
@@ -93,7 +95,7 @@ public class TokenFragment extends Fragment {
           });
 
     } catch (UnknownRollCallException | KeyException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.error_retrieve_own_token);
+      ErrorUtils.logAndShow(requireContext(), logger, e, R.string.error_retrieve_own_token);
       LaoActivity.setCurrentFragment(
           getParentFragmentManager(), R.id.fragment_event_list, LaoCreateFragment::new);
       return null;
@@ -115,6 +117,8 @@ public class TokenFragment extends Fragment {
         requireActivity(),
         getViewLifecycleOwner(),
         ActivityUtils.buildBackButtonCallback(
-            TAG, "token list", () -> TokenListFragment.openFragment(getParentFragmentManager())));
+            logger,
+            "token list",
+            () -> TokenListFragment.openFragment(getParentFragmentManager())));
   }
 }

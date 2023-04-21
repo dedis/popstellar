@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 
 import androidx.annotation.*;
@@ -13,6 +12,9 @@ import com.github.dedis.popstellar.databinding.SocialMediaHomeFragmentBinding;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.function.Supplier;
 
@@ -28,7 +30,7 @@ public class SocialMediaHomeFragment extends Fragment {
   private SocialMediaViewModel socialMediaViewModel;
   private SocialMediaHomeFragmentBinding binding;
 
-  public static final String TAG = SocialMediaHomeFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(SocialMediaHomeFragment.class);
 
   @Nullable
   @Override
@@ -58,7 +60,7 @@ public class SocialMediaHomeFragment extends Fragment {
     binding.socialMediaNavBar.setOnItemSelectedListener(
         item -> {
           SocialMediaTab tab = SocialMediaTab.findByMenu(item.getItemId());
-          Log.i(TAG, "Opening tab : " + tab.getName());
+          logger.info("Opening tab : " + tab.getName());
           openBottomTab(tab);
           return true;
         });
@@ -128,6 +130,7 @@ public class SocialMediaHomeFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
+    LaoActivity.addBackNavigationCallbackToEvents(
+        requireActivity(), getViewLifecycleOwner(), logger);
   }
 }

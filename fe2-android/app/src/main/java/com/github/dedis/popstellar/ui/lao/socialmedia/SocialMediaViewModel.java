@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.socialmedia;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +24,9 @@ import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,7 +39,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 @HiltViewModel
 public class SocialMediaViewModel extends AndroidViewModel {
-  public static final String TAG = SocialMediaViewModel.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(SocialMediaViewModel.class);
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String SOCIAL = "social";
   public static final Integer MAX_CHAR_NUMBERS = 300;
@@ -126,20 +128,20 @@ public class SocialMediaViewModel extends AndroidViewModel {
    */
   public Single<MessageGeneral> sendChirp(
       String text, @Nullable MessageID parentId, long timestamp) {
-    Log.d(TAG, "Sending a chirp");
+    logger.debug("Sending a chirp");
 
     LaoView laoView;
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      logger.error(LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
 
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
     return Single.fromCallable(this::getValidPoPToken)
-        .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to send Chirp : " + token))
+        .doOnSuccess(token -> logger.debug("Retrieved PoPToken to send Chirp : " + token))
         .flatMap(
             token -> {
               Channel channel =
@@ -154,20 +156,20 @@ public class SocialMediaViewModel extends AndroidViewModel {
   }
 
   public Single<MessageGeneral> deleteChirp(MessageID chirpId, long timestamp) {
-    Log.d(TAG, "Deleting the chirp with id: " + chirpId);
+    logger.debug("Deleting the chirp with id: " + chirpId);
 
     final LaoView laoView;
     try {
       laoView = getLao();
     } catch (UnknownLaoException e) {
-      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      logger.error(LAO_FAILURE_MESSAGE);
       return Single.error(new UnknownLaoException());
     }
 
     DeleteChirp deleteChirp = new DeleteChirp(chirpId, timestamp);
 
     return Single.fromCallable(this::getValidPoPToken)
-        .doOnSuccess(token -> Log.d(TAG, "Retrieved PoPToken to delete Chirp : " + token))
+        .doOnSuccess(token -> logger.debug("Retrieved PoPToken to delete Chirp : " + token))
         .flatMap(
             token -> {
               Channel channel =
@@ -217,13 +219,13 @@ public class SocialMediaViewModel extends AndroidViewModel {
    * @return true if the sender is the current user
    */
   public boolean isOwner(String sender) {
-    Log.d(TAG, "Testing if the sender is also the owner");
+    logger.debug("Testing if the sender is also the owner");
 
     try {
       PoPToken token = getValidPoPToken();
       return sender.equals(token.getPublicKey().getEncoded());
     } catch (KeyException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
+      ErrorUtils.logAndShow(getApplication(), logger, e, R.string.error_retrieve_own_token);
       return false;
     }
   }

@@ -18,6 +18,9 @@ import com.github.dedis.popstellar.ui.lao.LaoActivity;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.ui.lao.event.rollcall.RollCallViewModel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +32,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 @AndroidEntryPoint
 public class TokenListFragment extends Fragment {
 
-  public static final String TAG = TokenListFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(TokenListFragment.class);
 
   private TokenListFragmentBinding binding;
   private LaoViewModel laoViewModel;
@@ -126,6 +129,7 @@ public class TokenListFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
+    LaoActivity.addBackNavigationCallbackToEvents(
+        requireActivity(), getViewLifecycleOwner(), logger);
   }
 }

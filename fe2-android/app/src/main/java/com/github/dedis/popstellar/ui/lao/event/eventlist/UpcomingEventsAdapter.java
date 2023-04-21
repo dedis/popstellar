@@ -13,6 +13,8 @@ import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,8 +27,8 @@ public class UpcomingEventsAdapter extends EventsAdapter {
       Observable<Set<Event>> observable,
       LaoViewModel viewModel,
       FragmentActivity activity,
-      String tag) {
-    super(observable, viewModel, activity, tag);
+      Logger logger) {
+    super(observable, viewModel, activity, logger);
   }
 
   @SuppressLint("NotifyDataSetChanged")

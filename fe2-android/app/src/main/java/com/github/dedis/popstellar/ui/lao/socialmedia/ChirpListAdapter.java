@@ -11,6 +11,9 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -18,7 +21,7 @@ import static android.text.format.DateUtils.getRelativeTimeSpanString;
 
 public class ChirpListAdapter extends BaseAdapter {
 
-  private static final String TAG = ChirpListAdapter.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ChirpListAdapter.class);
 
   private final LaoViewModel laoViewModel;
   private final SocialMediaViewModel socialMediaViewModel;
@@ -38,7 +41,8 @@ public class ChirpListAdapter extends BaseAdapter {
             .getChirps()
             .subscribe(
                 this::replaceList,
-                err -> ErrorUtils.logAndShow(context, TAG, err, R.string.unknown_chirp_exception)));
+                err ->
+                    ErrorUtils.logAndShow(context, logger, err, R.string.unknown_chirp_exception)));
   }
 
   public void replaceList(List<Chirp> chirps) {
@@ -93,7 +97,7 @@ public class ChirpListAdapter extends BaseAdapter {
                                   .show(),
                           error ->
                               ErrorUtils.logAndShow(
-                                  context, TAG, error, R.string.error_delete_chirp))));
+                                  context, logger, error, R.string.error_delete_chirp))));
     } else {
       deleteChirp.setVisibility(View.GONE);
     }

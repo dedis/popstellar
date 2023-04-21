@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.*;
 
@@ -39,6 +38,9 @@ import com.google.gson.Gson;
 
 import net.glxn.qrgen.android.QRCode;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,7 +54,7 @@ import static com.github.dedis.popstellar.utility.Constants.*;
 @AndroidEntryPoint
 public class RollCallFragment extends Fragment {
 
-  public static final String TAG = RollCallFragment.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(RollCallFragment.class);
 
   @Inject Gson gson;
   @Inject RollCallRepository rollCallRepo;
@@ -99,7 +101,7 @@ public class RollCallFragment extends Fragment {
           rollCallRepo.getRollCallWithPersistentId(
               laoViewModel.getLaoId(), requireArguments().getString(ROLL_CALL_ID));
     } catch (UnknownRollCallException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
+      ErrorUtils.logAndShow(requireContext(), logger, e, R.string.unknown_roll_call_exception);
       return null;
     }
 
@@ -134,7 +136,7 @@ public class RollCallFragment extends Fragment {
                                   () -> RollCallFragment.newInstance(rollCall.getPersistentId())),
                           error ->
                               ErrorUtils.logAndShow(
-                                  requireContext(), TAG, error, R.string.error_open_rollcall)));
+                                  requireContext(), logger, error, R.string.error_open_rollcall)));
               break;
             case OPENED:
               // will add the scan to this fragment in the future
@@ -149,7 +151,7 @@ public class RollCallFragment extends Fragment {
                                   EventListFragment::newInstance),
                           error ->
                               ErrorUtils.logAndShow(
-                                  requireContext(), TAG, error, R.string.error_close_rollcall)));
+                                  requireContext(), logger, error, R.string.error_close_rollcall)));
               break;
             default:
               throw new IllegalStateException("Roll-Call should not be in a " + state + " state");
@@ -171,13 +173,13 @@ public class RollCallFragment extends Fragment {
             .getRollCallObservable(rollCall.getPersistentId())
             .subscribe(
                 rc -> {
-                  Log.d(TAG, "Received rc update: " + rc);
+                  logger.debug("Received rc update: " + rc);
                   rollCall = rc;
                   setUpStateDependantContent();
                 },
                 error ->
                     ErrorUtils.logAndShow(
-                        requireContext(), TAG, error, R.string.unknown_roll_call_exception)));
+                        requireContext(), logger, error, R.string.unknown_roll_call_exception)));
 
     handleBackNav();
     return binding.getRoot();
@@ -193,7 +195,7 @@ public class RollCallFragment extends Fragment {
           rollCallRepo.getRollCallWithPersistentId(
               laoViewModel.getLaoId(), requireArguments().getString(ROLL_CALL_ID));
     } catch (UnknownRollCallException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_roll_call_exception);
+      ErrorUtils.logAndShow(requireContext(), logger, e, R.string.unknown_roll_call_exception);
     }
   }
 
@@ -201,10 +203,10 @@ public class RollCallFragment extends Fragment {
     try {
       return laoViewModel.getCurrentPopToken(rollCall);
     } catch (KeyException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.key_generation_exception);
+      ErrorUtils.logAndShow(requireContext(), logger, e, R.string.key_generation_exception);
       return null;
     } catch (UnknownLaoException e) {
-      ErrorUtils.logAndShow(requireContext(), TAG, e, R.string.unknown_lao_exception);
+      ErrorUtils.logAndShow(requireContext(), logger, e, R.string.unknown_lao_exception);
       return null;
     }
   }
@@ -360,7 +362,7 @@ public class RollCallFragment extends Fragment {
     }
 
     String pk = popToken.getPublicKey().getEncoded();
-    Log.d(TAG, "key displayed is " + pk);
+    logger.debug("key displayed is " + pk);
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
     binding.rollCallPkQrCode.setVisibility((rollCall.isOpen()) ? View.VISIBLE : View.INVISIBLE);
@@ -437,7 +439,8 @@ public class RollCallFragment extends Fragment {
   }
 
   private void handleBackNav() {
-    LaoActivity.addBackNavigationCallbackToEvents(requireActivity(), getViewLifecycleOwner(), TAG);
+    LaoActivity.addBackNavigationCallbackToEvents(
+        requireActivity(), getViewLifecycleOwner(), logger);
   }
 
   /**

@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.*;
 import com.github.dedis.popstellar.model.objects.*;
@@ -14,6 +13,9 @@ import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.UnknownLaoException;
 import com.github.dedis.popstellar.utility.error.UnknownRollCallException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -21,7 +23,7 @@ import javax.inject.Inject;
 /** Roll Call messages handler class */
 public final class RollCallHandler {
 
-  public static final String TAG = RollCallHandler.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(RollCallHandler.class);
 
   private static final String ROLL_CALL_NAME = "Roll Call Name : ";
   private static final String MESSAGE_ID = "Message ID : ";
@@ -51,7 +53,7 @@ public final class RollCallHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
+    logger.debug("handleCreateRollCall: " + channel + " name " + createRollCall.getName());
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     RollCallBuilder builder = new RollCallBuilder();
@@ -86,7 +88,7 @@ public final class RollCallHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
+    logger.debug("handleOpenRollCall: " + channel + " msg=" + openRollCall);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     String updateId = openRollCall.getUpdateId();
@@ -126,7 +128,7 @@ public final class RollCallHandler {
     Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    Log.d(TAG, "handleCloseRollCall: " + channel);
+    logger.debug("handleCloseRollCall: " + channel);
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
 
     String updateId = closeRollCall.getUpdateId();
@@ -168,8 +170,8 @@ public final class RollCallHandler {
                     .getMessageSender()
                     .subscribe(channel.subChannel("social").subChannel(token.getEncoded()))
                     .subscribe(
-                        () -> Log.d(TAG, "subscription a success"),
-                        error -> Log.d(TAG, "subscription error")));
+                        () -> logger.debug("subscription a success"),
+                        error -> logger.debug("subscription error")));
 
     laoRepo.updateLao(lao);
   }

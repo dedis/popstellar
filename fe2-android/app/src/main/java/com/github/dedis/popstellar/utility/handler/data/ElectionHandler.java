@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -13,6 +11,9 @@ import com.github.dedis.popstellar.model.objects.view.LaoView;
 import com.github.dedis.popstellar.repository.*;
 import com.github.dedis.popstellar.utility.error.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 
 import javax.inject.Inject;
@@ -22,7 +23,7 @@ import static com.github.dedis.popstellar.model.objects.event.EventState.*;
 /** Election messages handler class */
 public final class ElectionHandler {
 
-  public static final String TAG = ElectionHandler.class.getSimpleName();
+  private static final Logger logger = LogManager.getLogger(ElectionHandler.class);
 
   private final LAORepository laoRepo;
   private final MessageRepository messageRepo;
@@ -52,7 +53,7 @@ public final class ElectionHandler {
     }
 
     LaoView laoView = laoRepo.getLaoViewByChannel(channel);
-    Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
+    logger.debug("handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
 
     Election election =
         new Election.ElectionBuilder(
@@ -72,11 +73,11 @@ public final class ElectionHandler {
         .getMessageSender()
         .subscribe(election.getChannel())
         .doOnError(
-            err -> Log.e(TAG, "An error occurred while subscribing to election channel", err))
+            err -> logger.error("An error occurred while subscribing to election channel", err))
         .onErrorComplete()
         .subscribe();
 
-    Log.d(TAG, "election id " + election.getId());
+    logger.debug("election id " + election.getId());
 
     Lao lao = laoView.createLaoCopy();
     lao.updateWitnessMessage(messageId, electionSetupWitnessMessage(messageId, election));
@@ -93,10 +94,10 @@ public final class ElectionHandler {
       throws UnknownElectionException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handling election result");
+    logger.debug("handling election result");
 
     List<ElectionResultQuestion> resultsQuestions = electionResult.getElectionQuestionResults();
-    Log.d(TAG, "size of resultsQuestions is " + resultsQuestions.size());
+    logger.debug("size of resultsQuestions is " + resultsQuestions.size());
     // No need to check here that resultsQuestions is not empty, as it is already done at the
     // creation of the ElectionResult Data
 
@@ -134,7 +135,7 @@ public final class ElectionHandler {
       throws InvalidStateException, UnknownElectionException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleOpenElection: channel " + channel);
+    logger.debug("handleOpenElection: channel " + channel);
     Election election = electionRepository.getElectionByChannel(channel);
 
     // If the state is not created, then this message is invalid
@@ -147,7 +148,7 @@ public final class ElectionHandler {
     Election updated =
         election.builder().setState(OPENED).setStart(openElection.getOpenedAt()).build();
 
-    Log.d(TAG, "election opened " + updated.getStartTimestamp());
+    logger.debug("election opened " + updated.getStartTimestamp());
     electionRepository.updateElection(updated);
   }
 
@@ -162,7 +163,7 @@ public final class ElectionHandler {
       throws UnknownElectionException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleElectionEnd: channel " + channel);
+    logger.debug("handleElectionEnd: channel " + channel);
     Election election =
         electionRepository.getElectionByChannel(channel).builder().setState(CLOSED).build();
 
@@ -181,7 +182,7 @@ public final class ElectionHandler {
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
-    Log.d(TAG, "handleCastVote: channel " + channel);
+    logger.debug("handleCastVote: channel " + channel);
     Election election = electionRepository.getElectionByChannel(channel);
     // Verify the vote was created before the end of the election or the election is not closed yet
     if (election.getEndTimestamp() >= castVote.getCreation() || election.getState() != CLOSED) {
@@ -255,7 +256,7 @@ public final class ElectionHandler {
       throws UnknownElectionException {
     Channel channel = context.getChannel();
 
-    Log.d(TAG, "handleElectionKey: channel " + channel);
+    logger.debug("handleElectionKey: channel " + channel);
 
     Election election =
         electionRepository
@@ -266,6 +267,6 @@ public final class ElectionHandler {
 
     electionRepository.updateElection(election);
 
-    Log.d(TAG, "handleElectionKey: election key has been set ");
+    logger.debug("handleElectionKey: election key has been set ");
   }
 }
