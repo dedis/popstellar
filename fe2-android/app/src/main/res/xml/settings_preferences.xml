@@ -6,7 +6,8 @@
     <SwitchPreference
       android:key="enable_logging"
       android:title="@string/settings_logging"
-      android:summary="@string/settings_logging_summary"
+      android:summaryOff="@string/settings_logging_summary_off"
+      android:summaryOn="@string/settings_logging_summary_on"
       android:defaultValue="false" />
 
   </PreferenceCategory>

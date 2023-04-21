@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.ui.home;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -68,8 +69,39 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  public void onResume() {
+    super.onResume();
+  }
+
   private void handleTopAppBar() {
     viewModel.getPageTitle().observe(this, binding.topAppBar::setTitle);
+
+    Drawable overflowMenuIcon = binding.topAppBar.getOverflowIcon();
+
+    // Observe whether the home icon or back arrow should be displayed
+    viewModel
+        .isHome()
+        .observe(
+            this,
+            isHome -> {
+              if (Boolean.TRUE.equals(isHome)) {
+                binding.topAppBar.setNavigationIcon(R.drawable.home_icon);
+                binding.topAppBar.setOverflowIcon(overflowMenuIcon);
+              } else {
+                binding.topAppBar.setNavigationIcon(R.drawable.back_arrow_icon);
+                binding.topAppBar.setOverflowIcon(null);
+              }
+            });
+
+    // Listen to click on left icon of toolbar
+    binding.topAppBar.setNavigationOnClickListener(
+        view -> {
+          if (Boolean.FALSE.equals(viewModel.isHome().getValue())) {
+            // Press back arrow
+            onBackPressed();
+          }
+        });
 
     // Set menu items behaviour
     binding.topAppBar.setOnMenuItemClickListener(
@@ -117,7 +149,9 @@ public class HomeActivity extends AppCompatActivity {
   public void onBackPressed() {
     Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
     if (!(fragment instanceof SeedWalletFragment)) {
-      setCurrentFragment(getSupportFragmentManager(), R.id.fragment_home, HomeFragment::new);
+      setCurrentFragment(
+          getSupportFragmentManager(), R.id.fragment_home, HomeFragment::newInstance);
+      viewModel.setIsHome(true);
     }
     // Move the application to background if back button is pressed on home
     if (fragment instanceof HomeFragment) {
@@ -137,13 +171,13 @@ public class HomeActivity extends AppCompatActivity {
                 setCurrentFragment(
                     getSupportFragmentManager(),
                     R.id.fragment_seed_wallet,
-                    SeedWalletFragment::new);
+                    SeedWalletFragment::newInstance);
               })
           .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
           .show();
     } else {
       setCurrentFragment(
-          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::new);
+          getSupportFragmentManager(), R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
     }
   }
 
@@ -171,7 +205,8 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void handleSettings() {
-    setCurrentFragment(getSupportFragmentManager(), R.id.fragment_settings, SettingsFragment::new);
+    setCurrentFragment(
+        getSupportFragmentManager(), R.id.fragment_settings, SettingsFragment::newInstance);
   }
 
   private void restoreStoredState() {

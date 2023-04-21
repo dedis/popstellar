@@ -45,6 +45,7 @@ public class HomeViewModel extends AndroidViewModel
 
   private final LiveData<List<String>> laoIdList;
   private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
+  private final MutableLiveData<Boolean> isHome = new MutableLiveData<>(Boolean.TRUE);
 
   /** Dependencies for this class */
   private final Gson gson;
@@ -183,6 +184,16 @@ public class HomeViewModel extends AndroidViewModel
   @Override
   public void setPageTitle(int titleId) {
     mPageTitle.postValue(titleId);
+  }
+
+  public MutableLiveData<Boolean> isHome() {
+    return isHome;
+  }
+
+  public void setIsHome(boolean isHome) {
+    if (!Boolean.valueOf(isHome).equals(this.isHome.getValue())) {
+      this.isHome.setValue(isHome);
+    }
   }
 
   public boolean isWalletSetUp() {
