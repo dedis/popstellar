@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
 
 import { makeIcon } from '../../../core/components/PoPIcon';
 import PoPTouchableOpacity from '../../../core/components/PoPTouchableOpacity';
@@ -8,6 +9,7 @@ import QrCodeScanner, {
 } from '../../../core/components/QrCodeScanner';
 import QrCodeScanOverlay from '../../../core/components/QrCodeScanOverlay';
 import { Typography } from '../../../core/styles';
+import { FOUR_SECONDS } from '../../../resources/const';
 import STRINGS from '../../../resources/strings';
 import { PoPchaHooks } from '../hooks';
 import { PoPchaFeature } from '../interface';
@@ -28,8 +30,36 @@ const PoPchaScanner = () => {
   const [showScanner, setShowScanner] = useState(false);
   const [textScanned, setTextScanned] = useState('');
 
+  const toast = useToast();
   const verifyScannedInfo = (data: string) => {
-    setTextScanned(data);
+    // data of format: "ip_address:port_number/authorize?item1=value1&item2=value2..."
+    if (!data.includes('/authorize?')) {
+      toast.show('Invalid QR code data format', {
+        type: 'warning',
+        placement: 'bottom',
+        duration: FOUR_SECONDS,
+      });
+      return false;
+    }
+    const address = data.split('/')[0];
+    const params = data.split('/')[1].split('?')[1].split('&');
+    const paramsDict: { [key: string]: string } = {};
+    params.forEach((param) => {
+      const key = param.split('=')[0];
+      const value = param.split('=')[1];
+      paramsDict[key] = value;
+    });
+    setTextScanned(`address: ${address} params: ${JSON.stringify(paramsDict)}`);
+
+    // verify it is the correct lao id
+    if (paramsDict.lao_id !== laoId.toString()) {
+      toast.show('Invalid Lao ID', {
+        type: 'warning',
+        placement: 'bottom',
+        duration: FOUR_SECONDS,
+      });
+      return false;
+    }
     return true;
   };
 
