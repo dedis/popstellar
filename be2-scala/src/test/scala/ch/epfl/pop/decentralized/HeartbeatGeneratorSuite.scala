@@ -1,6 +1,6 @@
 package ch.epfl.pop.decentralized
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Source
 import akka.testkit.{TestKit, TestProbe}
@@ -30,21 +30,17 @@ class HeartbeatGeneratorSuite extends TestKit(ActorSystem("HeartbeatGeneratorSui
   final val MESSAGE4_ID: Hash = Hash(Base64Data.encode("message4Id"))
   final val MESSAGE5_ID: Hash = Hash(Base64Data.encode("message5Id"))
 
-  final val generatorRef: AskableActorRef = system.actorOf(Props(new HeartbeatGenerator(toyDbActorRef)))
+  final val generatorRef: ActorRef = system.actorOf(Props(new HeartbeatGenerator(toyDbActorRef)))
   override def afterAll(): Unit = {
     // Stops the test actor system
     TestKit.shutdownActorSystem(system)
   }
 
   test("generator should send a result to the connectionMediator"){
-    val expected = Map(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE2_ID))
+    val expected = Map(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE4_ID))
     val testProbe = TestProbe()
-    val ask = generatorRef ? Monitor.GenerateAndSendHeartbeat(testProbe.ref)
-    Await.ready(ask, duration).value match {
-      case Some(Success(heartbeat : Heartbeat)) => heartbeat.channelsToMessageIds should equal(expected)
-      case _ => 1 should equal(0)
-    }
-
+    generatorRef ! Monitor.GenerateAndSendHeartbeat(testProbe.ref)
+    testProbe.expectMsg(Heartbeat(expected))
   }
 
 }

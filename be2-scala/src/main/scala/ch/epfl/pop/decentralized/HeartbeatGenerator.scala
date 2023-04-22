@@ -20,7 +20,7 @@ case class HeartbeatGenerator(dbRef: AskableActorRef) extends Actor with ActorLo
     *   a map from the channels to message ids, None when errors are encountered
     */
   private def retrieveHeartbeatContent(): Option[HashMap[Channel, Set[Hash]]] = {
-    val askForChannels = dbRef ? DbActor.GetAllChannels
+    val askForChannels = dbRef ? DbActor.GetAllChannels()
     val setOfChannels: Set[Channel] = Await.ready(askForChannels, duration).value match {
       case Some(Success(DbActor.DbActorGetAllChannelsAck(set))) => set
       case Some(Failure(ex: DbActorNAckException)) =>
