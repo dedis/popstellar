@@ -36,7 +36,7 @@ class HeartbeatGeneratorSuite extends TestKit(ActorSystem("HeartbeatGeneratorSui
     TestKit.shutdownActorSystem(system)
   }
 
-  test("generator should send a result to the connectionMediator"){
+  test("generator should send a result to the connectionMediator") {
     val expected = Map(CHANNEL1 -> Set(MESSAGE1_ID), CHANNEL2 -> Set(MESSAGE4_ID))
     val testProbe = TestProbe()
     generatorRef ! Monitor.GenerateAndSendHeartbeat(testProbe.ref)
