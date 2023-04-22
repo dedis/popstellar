@@ -3,13 +3,13 @@
 
   <PreferenceCategory android:title="@string/settings_debugging">
     <EditTextPreference
-      android:key="server_url"
+      android:key="@string/settings_server_url_key"
       android:title="@string/settings_remote_server"
       android:summary="@string/settings_remote_server_info"
       android:defaultValue="" />
 
     <SwitchPreference
-      android:key="enable_logging"
+      android:key="@string/settings_logging_key"
       android:title="@string/settings_logging"
       android:summaryOff="@string/settings_logging_summary_off"
       android:summaryOn="@string/settings_logging_summary_on"

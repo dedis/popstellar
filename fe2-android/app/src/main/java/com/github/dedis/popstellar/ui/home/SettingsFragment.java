@@ -14,6 +14,8 @@ import com.github.dedis.popstellar.utility.NetworkLogger;
 import com.takisoft.preferencex.EditTextPreference;
 import com.takisoft.preferencex.PreferenceFragmentCompat;
 
+import java.util.Objects;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -68,10 +70,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         getPreferenceManager().findPreference(getString(R.string.settings_logging_key));
 
     // Initially the switch is disabled unless it's already on
-    enableLogging.setEnabled(enableLogging.isChecked());
+    Objects.requireNonNull(enableLogging).setEnabled(enableLogging.isChecked());
 
     // Initially the edit text is enabled unless the logging is already on
-    serverUrl.setEnabled(!enableLogging.isChecked());
+    Objects.requireNonNull(serverUrl).setEnabled(!enableLogging.isChecked());
 
     // Set the callback for managing the logging
     enableLogging.setOnPreferenceChangeListener(
