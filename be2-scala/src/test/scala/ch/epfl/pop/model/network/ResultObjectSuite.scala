@@ -1,4 +1,3 @@
-
 package ch.epfl.pop.model.network
 
 import ch.epfl.pop.model.network.method.message.Message
