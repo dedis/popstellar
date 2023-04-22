@@ -3,23 +3,21 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
-import ch.epfl.pop.model.network.method.{Catchup, GetMessagesById, Heartbeat, Subscribe, Unsubscribe}
+import ch.epfl.pop.model.network.method.{GetMessagesById, Heartbeat}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
+import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.model.network.method.message.Message
-
 import scala.collection.mutable
 import akka.stream.FlowShape
-import ch.epfl.pop.model.network.JsonRpcResponse
 import ch.epfl.pop.model.network.ResultObject
 
 import scala.collection.immutable.HashMap
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Await
 import scala.util.{Failure, Success}
 
 object ParamsWithMapHandler extends AskPatternConstants {
@@ -32,7 +30,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
         /* partitioner port numbers */
         val portPipelineError = 0
         val portHeartBeatHandler = 1
-        val portGetMsgsByIdHandler = 2
+        val portGetMessagesByIdHandler = 2
         val totalPorts = 3
 
         /* building blocks */
@@ -41,8 +39,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
           {
             case Right(jsonRpcMessage: JsonRpcRequest) => jsonRpcMessage.getParams match {
                 case _: Heartbeat       => portHeartBeatHandler
-                case _: GetMessagesById => portGetMsgsByIdHandler
-
+                case _: GetMessagesById => portGetMessagesByIdHandler
               }
             case _ => portPipelineError // Pipeline error goes directly in handlerMerger
           }
@@ -50,17 +47,15 @@ object ParamsWithMapHandler extends AskPatternConstants {
 
         val heartbeatHandler = builder.add(ParamsWithMapHandler.heartbeatHandler(dbActorRef))
         val getMessagesByIdHandler = builder.add(ParamsWithMapHandler.getMessagesByIdHandler(dbActorRef))
-
         val handlerMerger = builder.add(Merge[GraphMessage](totalPorts))
 
         /* glue the components together */
         handlerPartitioner.out(portPipelineError) ~> handlerMerger
         handlerPartitioner.out(portHeartBeatHandler) ~> heartbeatHandler ~> handlerMerger
-        handlerPartitioner.out(portGetMsgsByIdHandler) ~> getMessagesByIdHandler ~> handlerMerger
+        handlerPartitioner.out(portGetMessagesByIdHandler) ~> getMessagesByIdHandler ~> handlerMerger
 
         /* close the shape */
         FlowShape(handlerPartitioner.in, handlerMerger.out)
-
       }
   })
 
@@ -103,9 +98,9 @@ object ParamsWithMapHandler extends AskPatternConstants {
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "HeartbeatHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
     case graphMessage @ _ => graphMessage
-  }).filter(!isEmptyAnswer(_))
+  }).filter(!isGetMessagesByIdEmpty(_)) // Answer to heartbeats only if some messages are actually missing
 
-  private def getMessagesByIdHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
+  private def getMessagesByIdHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcMessage: JsonRpcRequest) =>
       val receivedRequest: Map[Channel, Set[Hash]] = jsonRpcMessage.getParams.asInstanceOf[GetMessagesById].channelsToMessageIds
       val response: mutable.HashMap[Channel, Set[Message]] = mutable.HashMap()
@@ -124,9 +119,9 @@ object ParamsWithMapHandler extends AskPatternConstants {
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "getMessagesByIdHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
     case graphMessage @ _ => graphMessage
-  })
+  }
 
-  private def isEmptyAnswer(graphMessage: GraphMessage): Boolean = {
+  private def isGetMessagesByIdEmpty(graphMessage: GraphMessage): Boolean = {
     graphMessage match {
       case Left(_) => false
       case Right(value) =>
