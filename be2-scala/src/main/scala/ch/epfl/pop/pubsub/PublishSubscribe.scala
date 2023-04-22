@@ -9,7 +9,7 @@ import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Partition}
 import ch.epfl.pop.decentralized.Monitor
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.pubsub.graph._
-import ch.epfl.pop.pubsub.graph.handlers.{ParamsWithChannelHandler, ParamsWithMessageHandler}
+import ch.epfl.pop.pubsub.graph.handlers.{ParamsWithChannelHandler, ParamsWithMapHandler, ParamsWithMessageHandler}
 
 object PublishSubscribe {
 
@@ -36,7 +36,8 @@ object PublishSubscribe {
         val portPipelineError = 0
         val portParamsWithMessage = 1
         val portParamsWithChannel = 2
-        val totalPorts = 3
+        val portParamsWithMap = 3
+        val totalPorts = 4
 
         /* building blocks */
         // input message from the client
@@ -52,12 +53,14 @@ object PublishSubscribe {
           {
             case Right(m: JsonRpcRequest) if m.hasParamsMessage => portParamsWithMessage // Publish and Broadcast messages
             case Right(m: JsonRpcRequest) if m.hasParamsChannel => portParamsWithChannel
+            case Right(_: JsonRpcRequest)                       => portParamsWithMap
             case _                                              => portPipelineError // Pipeline error goes directly in merger
           }
         ))
 
         val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph(messageRegistry))
         val hasChannelPartition = builder.add(ParamsWithChannelHandler.graph(clientActorRef))
+        val hasMapPartition = builder.add(ParamsWithMapHandler.graph(dbActorRef))
 
         val merger = builder.add(Merge[GraphMessage](totalPorts))
         val broadcast = builder.add(Broadcast[GraphMessage](2))
@@ -75,6 +78,7 @@ object PublishSubscribe {
         methodPartitioner.out(portPipelineError) ~> merger
         methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
         methodPartitioner.out(portParamsWithChannel) ~> hasChannelPartition ~> merger
+        methodPartitioner.out(portParamsWithMap) ~> hasMapPartition ~> merger
 
         merger ~> broadcast
         broadcast ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
