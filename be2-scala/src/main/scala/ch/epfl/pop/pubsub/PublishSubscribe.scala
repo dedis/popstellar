@@ -16,12 +16,12 @@ object PublishSubscribe {
 
   def getDbActorRef: AskableActorRef = dbActorRef
 
-  def buildGraph(mediatorActorRef: ActorRef, dbActorRefT: AskableActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
+  def buildGraph(mediatorActorRef: ActorRef, dbActorRefT: AskableActorRef, messageRegistry: MessageRegistry, connectionMediatorRef: ActorRef, isServer: Boolean)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] =>
       {
         import GraphDSL.Implicits._
 
-        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef))
+        val clientActorRef: ActorRef = system.actorOf(ClientActor.props(mediatorActorRef, connectionMediatorRef, isServer))
         dbActorRef = dbActorRefT
 
         /* partitioner port numbers */

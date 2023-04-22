@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.Failure
 
-final case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with AskPatternConstants {
+final case class ClientActor(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean) extends Actor with ActorLogging with AskPatternConstants {
 
   private var wsHandle: Option[ActorRef] = None
   private val subscribedChannels: mutable.Set[Channel] = mutable.Set.empty
@@ -79,7 +79,8 @@ final case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging
 }
 
 object ClientActor {
-  def props(mediator: ActorRef): Props = Props(new ClientActor(mediator))
+  def props(mediator: ActorRef, connectionMediatorRef: ActorRef, isServer: Boolean): Props =
+    Props(new ClientActor(mediator, connectionMediatorRef, isServer))
 
   sealed trait ClientActorMessage
 
