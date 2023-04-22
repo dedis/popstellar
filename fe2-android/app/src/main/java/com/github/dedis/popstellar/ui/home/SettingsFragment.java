@@ -10,6 +10,7 @@ import androidx.preference.SwitchPreference;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.utility.MessageValidator;
+import com.github.dedis.popstellar.utility.NetworkLogger;
 import com.takisoft.preferencex.EditTextPreference;
 import com.takisoft.preferencex.PreferenceFragmentCompat;
 
@@ -66,6 +67,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     SwitchPreference enableLogging =
         getPreferenceManager().findPreference(getString(R.string.settings_logging_key));
 
+    // Initially the switch is disabled unless it's already on
+    enableLogging.setEnabled(enableLogging.isChecked());
+
+    // Initially the edit text is enabled unless the logging is already on
+    serverUrl.setEnabled(!enableLogging.isChecked());
+
     // Set the callback for managing the logging
     enableLogging.setOnPreferenceChangeListener(
         ((preference, newValue) -> {
@@ -93,6 +100,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
           try {
             MessageValidator.verify().checkValidUrl(newUrl);
+            // Save the server url
+            NetworkLogger.setServerUrl(newUrl);
             // Enable the switch preference based on URL validity
             enableLogging.setEnabled(true);
             return true;
@@ -101,8 +110,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             // Show an error message and prevent the preference from being updated
             Toast.makeText(getContext(), R.string.error_settings_url_server, Toast.LENGTH_SHORT)
                 .show();
-            // Return false to not save an incorrect preference
-            return false;
+            return true;
           }
         });
   }

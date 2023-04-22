@@ -71,6 +71,12 @@ public class HomeActivity extends AppCompatActivity {
   private void handleTopAppBar() {
     viewModel.getPageTitle().observe(this, binding.topAppBar::setTitle);
 
+    setNavigation();
+    setMenuItemListener();
+    observeWallet();
+  }
+
+  private void setNavigation() {
     // Observe whether the home icon or back arrow should be displayed
     viewModel
         .isHome()
@@ -109,7 +115,9 @@ public class HomeActivity extends AppCompatActivity {
                 .show();
           }
         });
+  }
 
+  private void setMenuItemListener() {
     // Set menu items behaviour
     binding.topAppBar.setOnMenuItemClickListener(
         item -> {
@@ -122,7 +130,9 @@ public class HomeActivity extends AppCompatActivity {
           }
           return true;
         });
+  }
 
+  private void observeWallet() {
     // Listen to wallet status to adapt the menu item title
     viewModel
         .getIsWalletSetUpEvent()
@@ -211,7 +221,8 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void handleSettings() {
-    setCurrentFragment(getSupportFragmentManager(), 0, SettingsFragment::newInstance);
+    ActivityUtils.setFragmentInContainer(
+        getSupportFragmentManager(), R.id.fragment_container_home, SettingsFragment::newInstance);
   }
 
   private void restoreStoredState() {

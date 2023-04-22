@@ -40,6 +40,14 @@ public class ActivityUtils {
     ActivityUtils.replaceFragmentInActivity(manager, fragment, containerId);
   }
 
+  public static void setFragmentInContainer(
+      FragmentManager manager, int containerId, Supplier<Fragment> fragmentSupplier) {
+    Fragment fragment = fragmentSupplier.get();
+
+    // Set the new fragment in the container
+    ActivityUtils.replaceFragmentInActivity(manager, fragment, containerId);
+  }
+
   public static void replaceFragmentInActivity(
       @NonNull FragmentManager fragmentManager, @NonNull Fragment fragment, int frameId) {
     FragmentTransaction transaction = fragmentManager.beginTransaction();

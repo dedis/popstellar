@@ -24,7 +24,7 @@ public class NetworkLogger extends Timber.Tree {
   private static final String TAG = NetworkLogger.class.getSimpleName();
 
   /** URL of the remote server to which sending the logs */
-  private static String serverUrl;
+  private static final StringBuilder serverUrl = new StringBuilder();
 
   private static WebSocket webSocket;
   /**
@@ -37,16 +37,15 @@ public class NetworkLogger extends Timber.Tree {
    * Boolean which is atomically set by the user from the settings and checked by the loggers. This
    * value is set based on the settings, which is persisted even after the application is closed
    */
-  public static AtomicBoolean sendToServer;
+  private static final AtomicBoolean sendToServer = new AtomicBoolean(false);
 
   public NetworkLogger(Context context) {
-    sendToServer =
-        new AtomicBoolean(
-            PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(context.getString(R.string.settings_logging_key), false));
-    serverUrl =
+    sendToServer.set(
+        (PreferenceManager.getDefaultSharedPreferences(context)
+            .getBoolean(context.getString(R.string.settings_logging_key), false)));
+    serverUrl.append(
         PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(context.getString(R.string.settings_server_url_key), "");
+            .getString(context.getString(R.string.settings_server_url_key), ""));
   }
 
   @Override
@@ -87,10 +86,14 @@ public class NetworkLogger extends Timber.Tree {
     closeWebSocket();
   }
 
+  public static void setServerUrl(String url) {
+    serverUrl.replace(0, serverUrl.length(), url);
+  }
+
   @SuppressLint("LogNotTimber")
   private static void connectWebSocket() {
     try {
-      Request request = new Request.Builder().url(serverUrl).build();
+      Request request = new Request.Builder().url(serverUrl.toString()).build();
       OkHttpClient client = new OkHttpClient();
       // Create the socket with an empty listener
       webSocket =

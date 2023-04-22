@@ -13,8 +13,7 @@
       android:title="@string/settings_logging"
       android:summaryOff="@string/settings_logging_summary_off"
       android:summaryOn="@string/settings_logging_summary_on"
-      android:defaultValue="false"
-      android:enabled="false" />
+      android:defaultValue="false" />
 
   </PreferenceCategory>
 
