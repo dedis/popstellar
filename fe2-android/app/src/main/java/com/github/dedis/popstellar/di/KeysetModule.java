@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.di;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.crypto.tink.KeyTemplates;
 import com.google.crypto.tink.aead.AeadConfig;
@@ -26,6 +25,7 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+import timber.log.Timber;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -76,7 +76,7 @@ public class KeysetModule {
 
       return future.join();
     } catch (GeneralSecurityException e) {
-      Log.e(TAG, "Could not retrieve the device keyset from the app", e);
+      Timber.tag(TAG).e(e, "Could not retrieve the device keyset from the app");
       throw new SecurityException("Could not retrieve the device keyset from the app", e);
     }
   }
@@ -108,7 +108,7 @@ public class KeysetModule {
 
       return future.join();
     } catch (GeneralSecurityException e) {
-      Log.e(TAG, "Could not retrieve the wallet keyset from the app", e);
+      Timber.tag(TAG).e(e, "Could not retrieve the wallet keyset from the app");
       throw new SecurityException("Could not retrieve the wallet keyset from the app", e);
     }
   }

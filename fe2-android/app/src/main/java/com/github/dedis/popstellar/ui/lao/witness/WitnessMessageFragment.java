@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.lao.witness;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.ListView;
 
@@ -16,6 +15,7 @@ import com.github.dedis.popstellar.ui.lao.LaoViewModel;
 import java.util.ArrayList;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 @AndroidEntryPoint
 public class WitnessMessageFragment extends Fragment {
@@ -60,7 +60,7 @@ public class WitnessMessageFragment extends Fragment {
         .observe(
             requireActivity(),
             messages -> {
-              Log.d(TAG, "witness messages updated");
+              Timber.tag(TAG).d("witness messages updated");
               adapter.replaceList(messages);
             });
   }

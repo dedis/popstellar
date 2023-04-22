@@ -278,6 +278,9 @@ dependencies {
     testImplementation "org.slf4j:slf4j-api:$slf4j_version"
     testImplementation "org.slf4j:slf4j-simple:$slf4j_version"
 
+    // ================== Timber =================
+    implementation 'com.jakewharton.timber:timber:5.0.1'
+
     // ================= Pretty Time =================
     implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'
 

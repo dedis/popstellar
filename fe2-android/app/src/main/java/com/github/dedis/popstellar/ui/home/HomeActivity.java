@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
@@ -25,6 +24,7 @@ import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import timber.log.Timber;
 
 /** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
@@ -105,7 +105,7 @@ public class HomeActivity extends AppCompatActivity {
             new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.app_name)
                 .setMessage(R.string.app_info)
-                .setPositiveButton(R.string.ok, null)
+                .setNeutralButton(R.string.ok, (dialog, which) -> dialog.dismiss())
                 .show();
           }
         });
@@ -147,7 +147,7 @@ public class HomeActivity extends AppCompatActivity {
       viewModel.savePersistentData();
     } catch (GeneralSecurityException e) {
       // We do not display the security error to the user
-      Log.d(TAG, "Storage was unsuccessful due to wallet error " + e);
+      Timber.tag(TAG).d(e, "Storage was unsuccessful due to wallet error");
       Toast.makeText(this, R.string.error_storage_wallet, Toast.LENGTH_SHORT).show();
     }
   }

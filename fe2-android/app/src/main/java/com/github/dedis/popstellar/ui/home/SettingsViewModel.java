@@ -1,35 +1,34 @@
 package com.github.dedis.popstellar.ui.home;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
-import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.utility.NetworkLogger;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import timber.log.Timber;
 
 @HiltViewModel
 public class SettingsViewModel extends AndroidViewModel {
 
   public static final String TAG = SettingsViewModel.class.getSimpleName();
 
-  private final GlobalNetworkManager networkManager;
-
   @Inject
-  public SettingsViewModel(@NonNull Application application, GlobalNetworkManager networkManager) {
+  public SettingsViewModel(@NonNull Application application) {
     super(application);
-    this.networkManager = networkManager;
   }
 
   public void enableLogging() {
-    Log.d(TAG, "Enabling logging");
+    Timber.tag(TAG).d("Enabling logging");
+    NetworkLogger.enableRemote();
   }
 
   public void disableLogging() {
-    Log.d(TAG, "Disabling logging");
+    Timber.tag(TAG).d("Disabling logging");
+    NetworkLogger.disableRemote();
   }
 }

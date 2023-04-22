@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -13,6 +11,8 @@ import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import timber.log.Timber;
 
 /** General message handler class */
 @Singleton
@@ -39,15 +39,15 @@ public final class MessageHandler {
   public void handleMessage(MessageSender messageSender, Channel channel, MessageGeneral message)
       throws DataHandlingException, UnknownLaoException, UnknownRollCallException,
           UnknownElectionException, NoRollCallException {
-    Log.d(TAG, "handle incoming message");
+    Timber.tag(TAG).d("handle incoming message");
 
     if (messageRepo.isMessagePresent(message.getMessageId())) {
-      Log.d(TAG, "the message has already been handled in the past");
+      Timber.tag(TAG).d("the message has already been handled in the past");
       return;
     }
 
     Data data = message.getData();
-    Log.d(TAG, "data with class: " + data.getClass());
+    Timber.tag(TAG).d("data with class: %s", data.getClass());
     Objects dataObj = Objects.find(data.getObject());
     Action dataAction = Action.find(data.getAction());
 

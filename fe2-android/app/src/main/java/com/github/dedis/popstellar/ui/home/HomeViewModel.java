@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.home;
 
 import android.app.Application;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +32,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 @HiltViewModel
 public class HomeViewModel extends AndroidViewModel
@@ -99,7 +99,7 @@ public class HomeViewModel extends AndroidViewModel
     try {
       laoData = ConnectToLao.extractFrom(gson, data);
     } catch (JsonParseException e) {
-      Log.e(TAG, "Invalid QRCode laoData", e);
+      Timber.tag(TAG).e(e, "Invalid QRCode laoData");
       Toast.makeText(
               getApplication().getApplicationContext(),
               R.string.invalid_qrcode_data,
@@ -120,12 +120,12 @@ public class HomeViewModel extends AndroidViewModel
     if (data == null) {
       return;
     }
-    Log.d(TAG, "Saved state found : " + data);
+    Timber.tag(TAG).d("Saved state found : %s", data);
 
     if (!isWalletSetUp()) {
-      Log.d(TAG, "Restoring wallet");
+      Timber.tag(TAG).d("Restoring wallet");
       String[] seed = data.getWalletSeed();
-      Log.d(TAG, "seed is " + Arrays.toString(seed));
+      Timber.tag(TAG).d("seed is %s", Arrays.toString(seed));
       if (seed.length == 0) {
         ErrorUtils.logAndShow(
             getApplication().getApplicationContext(), TAG, R.string.no_seed_storage_found);
@@ -135,16 +135,16 @@ public class HomeViewModel extends AndroidViewModel
       try {
         importSeed(appended);
       } catch (GeneralSecurityException | SeedValidationException e) {
-        Log.e(TAG, "error importing seed from storage");
+        Timber.tag(TAG).e(e, "error importing seed from storage");
         return;
       }
     }
 
     if (data.getSubscriptions().equals(networkManager.getMessageSender().getSubscriptions())) {
-      Log.d(TAG, "current state is up to date");
+      Timber.tag(TAG).d("current state is up to date");
       return;
     }
-    Log.d(TAG, "restoring connections");
+    Timber.tag(TAG).d("restoring connections");
     networkManager.connect(data.getServerAddress(), data.getSubscriptions());
     getApplication()
         .startActivity(

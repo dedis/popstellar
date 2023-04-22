@@ -1,7 +1,5 @@
 package com.github.dedis.popstellar.repository;
 
-import android.util.Log;
-
 import com.github.dedis.popstellar.model.objects.OutputObject;
 import com.github.dedis.popstellar.model.objects.digitalcash.TransactionObject;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -17,6 +15,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
+import timber.log.Timber;
 
 @Singleton
 public class DigitalCashRepository {
@@ -45,7 +44,7 @@ public class DigitalCashRepository {
 
   public void updateTransactions(String laoId, TransactionObject transaction)
       throws NoRollCallException {
-    Log.d(TAG, "updating transactions on Lao " + laoId + " and transaction " + transaction);
+    Timber.tag(TAG).d("updating transactions on Lao %s and transaction %s", laoId, transaction);
     getLaoTransactions(laoId).updateTransactions(transaction);
   }
 
@@ -76,7 +75,7 @@ public class DigitalCashRepository {
       transactionsSubject.values().forEach(Observer::onComplete);
       transactionsSubject.clear();
       attendees.forEach(publicKey -> hashDictionary.put(publicKey.computeHash(), publicKey));
-      Log.d(TAG, "initializing digital cash with attendees " + attendees);
+      Timber.tag(TAG).d("initializing digital cash with attendees %s", attendees);
     }
 
     public synchronized void updateTransactions(TransactionObject transaction)
