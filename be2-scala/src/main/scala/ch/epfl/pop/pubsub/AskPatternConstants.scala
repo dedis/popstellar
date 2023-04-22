@@ -8,5 +8,5 @@ import scala.concurrent.duration.{Duration, FiniteDuration}
 
 trait AskPatternConstants {
   implicit final val duration: FiniteDuration = Duration(1, TimeUnit.SECONDS)
-  implicit final val timout: Timeout = Timeout(duration)
+  implicit final val timeout: Timeout = Timeout(duration)
 }
