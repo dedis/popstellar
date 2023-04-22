@@ -9,13 +9,11 @@ Feature: Update a LAO
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
     * call read('classpath:be/constants.feature')
+    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     * string channel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
-  # After setting up a valid lao, subscribing to it and sending a catchup, test that
-  # sending a valid update lao message receives a valid response from the backend.
   Scenario: Update Lao should succeed with a valid update request
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-    And def updateLaoRequest =
+    Given def updateLaoRequest =
       """
         {
           "object": "lao",
@@ -31,11 +29,8 @@ Feature: Update a LAO
     Then match answer contains VALID_MESSAGE
     And match frontend.receiveNoMoreResponses() == true
 
-  # After setting up a valid lao, subscribing to it and sending a catchup, test that
-  # sending an update lao message with empty name receives an error message from the backend.
   Scenario: Update Lao request with empty lao name should fail with an error response
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-    And def badUpdateLaoReq =
+    Given def badUpdateLaoReq =
       """
         {
           "object": "lao",
@@ -52,11 +47,8 @@ Feature: Update a LAO
     And match frontend.receiveNoMoreResponses() == true
 
 
-  # After setting up a valid lao, subscribing to it and sending a catchup, test that
-  # sending an update lao message negative time receives an error message from the backend.
   Scenario: Update Lao with negative last_modified should fail with an error response
-    Given call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-    And def badUpdateLaoReq =
+    Given def badUpdateLaoReq =
       """
         {
           "object": "lao",
