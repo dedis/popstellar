@@ -74,9 +74,8 @@ object ParamsWithMapHandler extends AskPatternConstants {
       val ask = dbActorRef ? DbActor.GetAllChannels()
       Await.ready(ask, duration).value match {
         case Some(Success(DbActor.DbActorGetAllChannelsAck(channels))) => setOfChannels = channels
-
-        case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"couldn't retrieve local set of channels", jsonRpcMessage.getId))
-        case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
+        case Some(Failure(ex: DbActorNAckException))                   => Left(PipelineError(ex.code, s"couldn't retrieve local set of channels", jsonRpcMessage.getId))
+        case reply                                                     => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
       }
 
       /** third step is to ask the DB for the content of each channel in terms of message ids. * */
