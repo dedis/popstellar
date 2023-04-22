@@ -29,8 +29,6 @@ import timber.log.Timber;
 
 public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-  private static final String TAG = EventsAdapter.class.getSimpleName();
-
   private List<Event> events;
   private final LaoViewModel laoViewModel;
   private final FragmentActivity activity;
@@ -53,7 +51,7 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             .map(eventList -> eventList.stream().sorted().collect(Collectors.toList()))
             .subscribe(
                 this::updateEventSet,
-                err -> Timber.tag(TAG).e(err, "Error subscribing to event set")));
+                err -> Timber.tag(tag).e(err, "Error subscribing to event set")));
   }
 
   public abstract void updateEventSet(List<Event> events);

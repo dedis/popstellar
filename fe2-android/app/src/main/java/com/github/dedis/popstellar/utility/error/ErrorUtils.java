@@ -54,7 +54,7 @@ public class ErrorUtils {
       Context context, String tag, Throwable error, @StringRes int action, String... actionArgs) {
     String exceptionMsg = getLocalizedMessage(context, error, action, actionArgs);
 
-    Timber.tag(tag).e(error, exceptionMsg);
+    Timber.tag(tag).e(error);
     displayToast(context, exceptionMsg);
   }
 

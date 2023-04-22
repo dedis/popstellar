@@ -104,4 +104,30 @@ public class MessageValidatorTest {
     assertThrows(
         IllegalArgumentException.class, () -> MessageValidator.verify().checkListNotEmpty(null));
   }
+
+  @Test
+  public void testCheckValidUrl() {
+    MessageValidator.verify().checkValidUrl("http://example.com");
+    MessageValidator.verify().checkValidUrl("https://example.com");
+    MessageValidator.verify().checkValidUrl("ws://example.com");
+    MessageValidator.verify().checkValidUrl("wss://10.0.2.2:8000/path");
+    MessageValidator.verify().checkValidUrl("https://example.com/path/to/file.html");
+    MessageValidator.verify().checkValidUrl("wss://example.com/path/to/file");
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> MessageValidator.verify().checkValidUrl("Random String"));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> MessageValidator.verify().checkValidUrl("example.com"));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> MessageValidator.verify().checkValidUrl("http:example.com"));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> MessageValidator.verify().checkValidUrl("://example.com"));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> MessageValidator.verify().checkValidUrl("http://example."));
+  }
 }

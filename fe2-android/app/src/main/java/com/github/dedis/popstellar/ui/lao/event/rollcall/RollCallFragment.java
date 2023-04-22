@@ -360,7 +360,7 @@ public class RollCallFragment extends Fragment {
     }
 
     String pk = popToken.getPublicKey().getEncoded();
-    Timber.tag(TAG).d(TAG, "key displayed is " + pk);
+    Timber.tag(TAG).d("key displayed is %s", pk);
 
     // Set the QR visible only if the rollcall is opened and the user isn't the organizer
     binding.rollCallPkQrCode.setVisibility((rollCall.isOpen()) ? View.VISIBLE : View.INVISIBLE);

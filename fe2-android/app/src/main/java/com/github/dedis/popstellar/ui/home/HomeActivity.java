@@ -84,10 +84,10 @@ public class HomeActivity extends AppCompatActivity {
                 Fragment fragment =
                     getSupportFragmentManager().findFragmentById(R.id.fragment_container_home);
                 // If the fragment is not the seed wallet then make the back arrow appear
-                if (!(fragment instanceof SeedWalletFragment)) {
-                  binding.topAppBar.setNavigationIcon(R.drawable.back_arrow_icon);
-                } else {
+                if (fragment instanceof SeedWalletFragment) {
                   binding.topAppBar.setNavigationIcon(null);
+                } else {
+                  binding.topAppBar.setNavigationIcon(R.drawable.back_arrow_icon);
                 }
                 // Disable the overflow menu
                 binding.topAppBar.getMenu().setGroupVisible(0, false);
@@ -211,8 +211,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void handleSettings() {
-    setCurrentFragment(
-        getSupportFragmentManager(), R.id.fragment_settings, SettingsFragment::newInstance);
+    setCurrentFragment(getSupportFragmentManager(), 0, SettingsFragment::newInstance);
   }
 
   private void restoreStoredState() {

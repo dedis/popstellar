@@ -2,12 +2,16 @@ package com.github.dedis.popstellar.ui.home;
 
 import android.os.Bundle;
 import android.view.*;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.SwitchPreference;
 
 import com.github.dedis.popstellar.R;
-import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat;
+import com.github.dedis.popstellar.utility.MessageValidator;
+import com.takisoft.preferencex.EditTextPreference;
+import com.takisoft.preferencex.PreferenceFragmentCompat;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -23,7 +27,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
   private SettingsViewModel settingsViewModel;
   private HomeViewModel homeViewModel;
 
-  public SettingsFragment() {}
+  public SettingsFragment() {
+    // Empty constructor
+  }
 
   @Override
   public void onCreatePreferencesFix(@Nullable Bundle savedInstanceState, String rootKey) {
@@ -55,18 +61,49 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
   /** Function that sets the callback for switching the preferences in the section "Debugging" */
   private void setDebuggingPreferences() {
+    EditTextPreference serverUrl =
+        getPreferenceManager().findPreference(getString(R.string.settings_server_url_key));
+    SwitchPreference enableLogging =
+        getPreferenceManager().findPreference(getString(R.string.settings_logging_key));
+
     // Set the callback for managing the logging
-    getPreferenceManager()
-        .findPreference("enable_logging")
-        .setOnPreferenceChangeListener(
-            ((preference, newValue) -> {
-              boolean selected = (boolean) newValue;
-              if (selected) {
-                settingsViewModel.enableLogging();
-              } else {
-                settingsViewModel.disableLogging();
-              }
-              return true;
-            }));
+    enableLogging.setOnPreferenceChangeListener(
+        ((preference, newValue) -> {
+          // Save the URL preference if the switch is turned on
+          boolean isLoggingEnabled = (Boolean) newValue;
+
+          if (isLoggingEnabled) {
+            settingsViewModel.enableLogging();
+          } else {
+            settingsViewModel.disableLogging();
+          }
+          // Enable the edit text if switch off, disable it if on
+          // (i.e. the switch has to be off to change the server address)
+          serverUrl.setEnabled(!isLoggingEnabled);
+
+          // Return true to allow the preference to be saved
+          return true;
+        }));
+
+    // Set the callback for managing the server url
+    serverUrl.setOnPreferenceChangeListener(
+        (preference, newValue) -> {
+          // Check if the new value is a valid URL
+          String newUrl = (String) newValue;
+
+          try {
+            MessageValidator.verify().checkValidUrl(newUrl);
+            // Enable the switch preference based on URL validity
+            enableLogging.setEnabled(true);
+            return true;
+          } catch (IllegalArgumentException e) {
+            enableLogging.setEnabled(false);
+            // Show an error message and prevent the preference from being updated
+            Toast.makeText(getContext(), R.string.error_settings_url_server, Toast.LENGTH_SHORT)
+                .show();
+            // Return false to not save an incorrect preference
+            return false;
+          }
+        });
   }
 }
