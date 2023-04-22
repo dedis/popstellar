@@ -51,7 +51,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     testProbe.expectMsgType[Monitor.GenerateAndSendHeartbeat](timeout)
   }
 
-  test("monitor should not schedule single hearbeats when receiving a heartbeat or get_messages_by_id") {
+  test("monitor should not schedule any heartbeats when receiving a heartbeat or get_messages_by_id") {
 
     val heartbeat = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.HEARTBEAT, new ParamsWithMap(Map.empty), None)
     val getMessagesById = JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, MethodType.GET_MESSAGES_BY_ID, new ParamsWithMap(Map.empty), None)
@@ -76,7 +76,7 @@ class MonitorSuite extends TestKit(ActorSystem("MonitorSuiteActorSystem")) with 
     testProbe.expectNoMessage(timeout)
   }
 
-  test("monitor should send heartbeats only when servers are connected") {
+  test("monitor should send heartbeats if and only if servers are connected") {
 
     val testProbe = TestProbe()
     val monitorRef = system.actorOf(
