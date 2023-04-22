@@ -175,6 +175,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     override def read(json: JsValue): ResultObject = json match {
       case JsNumber(resultInt)  => new ResultObject(resultInt.toInt)
       case JsArray(resultArray) => new ResultObject(resultArray.map(_.convertTo[Message]).toList)
+      case JsObject(resultMap)  => new ResultObject(resultMap.map { case (k, v) => (Channel(k), v.convertTo[Set[Message]]) })
       case _                    => throw new IllegalArgumentException(s"Unrecognizable channel value in $json")
     }
 
