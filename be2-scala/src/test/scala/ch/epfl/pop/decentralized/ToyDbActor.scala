@@ -17,12 +17,13 @@ final case class ToyDbActor() extends Actor {
   final val MESSAGE1: Message = Message(null, null, null, MESSAGE1_ID, null, null)
   final val MESSAGE4: Message = Message(null, null, null, MESSAGE4_ID, null, null)
   override def receive: Receive = {
-    case DbActor.GetAllChannels() => sender() ! DbActor.DbActorGetAllChannelsAck(Set(Channel(CHANNEL1_NAME), Channel(CHANNEL2_NAME)))
+    case DbActor.GetAllChannels() =>
+      sender() ! DbActor.DbActorGetAllChannelsAck(Set(Channel(CHANNEL1_NAME), Channel(CHANNEL2_NAME)))
     case DbActor.ReadChannelData(channel) =>
       if (channel.channel.equals(CHANNEL1_NAME)) {
-        sender() ! DbActor.DbActorReadChannelDataAck(ChannelData(ObjectType.LAO, List(MESSAGE1_ID)))
+        sender() ! DbActor.DbActorReadChannelDataAck(ChannelData(ObjectType.LAO,List(MESSAGE1_ID)))
       } else {
-        sender() ! DbActor.DbActorReadChannelDataAck(ChannelData(ObjectType.LAO, List(MESSAGE4_ID)))
+        sender() ! DbActor.DbActorReadChannelDataAck(ChannelData(ObjectType.LAO,List(MESSAGE4_ID)))
       }
     case DbActor.Catchup(channel) =>
       if (channel.channel.equals(CHANNEL1_NAME)) {

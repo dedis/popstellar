@@ -103,7 +103,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "HeartbeatHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
     case graphMessage @ _ => graphMessage
-  })
+  }).filter(!isEmptyAnswer(_))
 
   private def getMessagesByIdHandler(dbActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map({
     case Right(jsonRpcMessage: JsonRpcRequest) =>
@@ -124,7 +124,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "getMessagesByIdHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
     case graphMessage @ _ => graphMessage
-  }).filter(!isEmptyAnswer(_))
+  })
 
   private def isEmptyAnswer(graphMessage: GraphMessage): Boolean = {
     graphMessage match {
