@@ -10,6 +10,7 @@ import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
 import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
+import ch.epfl.pop.decentralized.{ConnectionMediator, HeartbeatGenerator, Monitor}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor
 import org.iq80.leveldb.Options
@@ -45,6 +46,11 @@ object Server {
       val messageRegistry: MessageRegistry = MessageRegistry()
       val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
       val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry)), "DbActor")
+
+      // Create necessary actors for server-server communications
+      val heartbeatGenRef: ActorRef = system.actorOf(HeartbeatGenerator.props(dbActorRef))
+      val monitorRef: ActorRef = system.actorOf(Monitor.props(heartbeatGenRef))
+      val connectionMediatorRef: ActorRef = system.actorOf(ConnectionMediator.props(monitorRef, pubSubMediatorRef, dbActorRef, messageRegistry))
 
       // Setup routes
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = {
