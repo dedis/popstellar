@@ -27,7 +27,6 @@ class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSy
   final val rpc: String = "rpc"
   final val id: Option[Int] = Some(0)
 
-
   test("sending a heartbeat correctly returns the missing ids") {
     val input: List[GraphMessage] = List(Right(VALID_RECEIVED_HEARTBEAT_RPC))
     val source = Source(input)

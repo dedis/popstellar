@@ -86,7 +86,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
         Await.ready(ask, duration).value match {
           case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
             val setOfIds = channelData.messages.toSet
-            localHeartBeat += (channel -> setOfIds.toSet)
+            localHeartBeat += (channel -> setOfIds)
           case Some(Failure(ex: DbActorNAckException)) => Left(PipelineError(ex.code, s"couldn't readChannelData for local heartbeat", jsonRpcMessage.getId))
           case reply                                   => Left(PipelineError(ErrorCodes.SERVER_ERROR.id, s"heartbeatHandler failed : unexpected DbActor reply '$reply'", jsonRpcMessage.getId))
         }
@@ -125,6 +125,17 @@ object ParamsWithMapHandler extends AskPatternConstants {
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       Left(PipelineError(ErrorCodes.SERVER_ERROR.id, "getMessagesByIdHandler received a 'JsonRpcResponse'", jsonRpcMessage.id))
     case graphMessage @ _ => graphMessage
-  })
+  }).filter(!isEmptyAnswer(_))
+
+  private def isEmptyAnswer(graphMessage: GraphMessage): Boolean = {
+    graphMessage match {
+      case Left(_) => false
+      case Right(value) =>
+        value match {
+          case response: JsonRpcResponse if response.result.get.resultMap.get.isEmpty => true
+          case _                                                                      => false
+        }
+    }
+  }
 
 }
