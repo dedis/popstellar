@@ -182,6 +182,8 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     override def write(obj: ResultObject): JsValue = {
       if (obj.isIntResult) {
         JsNumber(obj.resultInt.getOrElse(0))
+      } else if (obj.resultMap.isDefined) {
+        JsObject(obj.resultMap.get.map { case (chan, set) => (chan.channel, set.toJson) })
       } else {
         JsArray(obj.resultMessages.getOrElse(Nil).map(m => m.toJson).toVector)
       }
