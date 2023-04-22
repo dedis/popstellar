@@ -5,7 +5,8 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.pattern.AskableActorRef
 import akka.stream.FlowShape
-import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
+import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Partition}
+import ch.epfl.pop.decentralized.Monitor
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.pubsub.graph._
 import ch.epfl.pop.pubsub.graph.handlers.{ParamsWithChannelHandler, ParamsWithMessageHandler}
@@ -16,7 +17,14 @@ object PublishSubscribe {
 
   def getDbActorRef: AskableActorRef = dbActorRef
 
-  def buildGraph(mediatorActorRef: ActorRef, dbActorRefT: AskableActorRef, messageRegistry: MessageRegistry, connectionMediatorRef: ActorRef, isServer: Boolean)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
+  def buildGraph(
+      mediatorActorRef: ActorRef,
+      dbActorRefT: AskableActorRef,
+      messageRegistry: MessageRegistry,
+      monitorRef: ActorRef,
+      connectionMediatorRef: ActorRef,
+      isServer: Boolean
+  )(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] =>
       {
         import GraphDSL.Implicits._
@@ -52,7 +60,9 @@ object PublishSubscribe {
         val hasChannelPartition = builder.add(ParamsWithChannelHandler.graph(clientActorRef))
 
         val merger = builder.add(Merge[GraphMessage](totalPorts))
+        val broadcast = builder.add(Broadcast[GraphMessage](2))
 
+        val monitorSink = builder.add(Monitor.sink(monitorRef))
         val jsonRpcAnswerGenerator = builder.add(AnswerGenerator.generator)
         val jsonRpcAnswerer = builder.add(Answerer.answerer(clientActorRef, mediatorActorRef))
 
@@ -66,7 +76,9 @@ object PublishSubscribe {
         methodPartitioner.out(portParamsWithMessage) ~> hasMessagePartition ~> merger
         methodPartitioner.out(portParamsWithChannel) ~> hasChannelPartition ~> merger
 
-        merger ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
+        merger ~> broadcast
+        broadcast ~> jsonRpcAnswerGenerator ~> jsonRpcAnswerer ~> output
+        broadcast ~> monitorSink
 
         /* close the shape */
         FlowShape(input.in, output.out)

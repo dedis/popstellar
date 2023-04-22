@@ -32,6 +32,7 @@ final case class ConnectionMediator(
             mediatorRef,
             dbActorRef,
             messageRegistry,
+            monitorRef,
             self,
             isServer = true
           )

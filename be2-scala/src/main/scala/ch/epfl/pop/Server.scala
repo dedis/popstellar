@@ -56,11 +56,25 @@ object Server {
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = {
         path(config.clientPath) {
           handleWebSocketMessages(
-            PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry, connectionMediatorRef, isServer = false)(system)
+            PublishSubscribe.buildGraph(
+              pubSubMediatorRef,
+              dbActorRef,
+              messageRegistry,
+              monitorRef,
+              connectionMediatorRef,
+              isServer = false
+            )(system)
           )
         } ~ path(config.serverPath) {
           handleWebSocketMessages(
-            PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry, connectionMediatorRef, isServer = true)(system)
+            PublishSubscribe.buildGraph(
+              pubSubMediatorRef,
+              dbActorRef,
+              messageRegistry,
+              monitorRef,
+              connectionMediatorRef,
+              isServer = true
+            )(system)
           )
         }
       }
