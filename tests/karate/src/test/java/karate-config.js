@@ -25,7 +25,7 @@ function fn() {
     config.host = '127.0.0.1';
     config.port = 8000;
     // TODO: change this to server once the paths are updated on scala
-    config.path = '';
+    config.path = 'client';
     config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
   } else {
     config.port = 9005;

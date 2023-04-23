@@ -16,7 +16,7 @@ Feature: Send heartbeats to other servers
     # After lao creation, wait (10 seconds for now) and check that a heartbeat message was received
   Scenario: Server should send heartbeat messages
     Given wait(10)
-    And def heartbeatMessages = frontend.getMessagesByMethod('heartbeat')
+    When def heartbeatMessages = frontend.getMessagesByMethod('heartbeat')
     Then assert heartbeatMessages.length > 0
 
     # Check that after sending a heartbeat message with unknown messages, the server responds with a getMessagesByID request
