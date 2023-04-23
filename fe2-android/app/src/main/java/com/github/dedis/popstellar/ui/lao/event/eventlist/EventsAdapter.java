@@ -11,8 +11,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.*;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.lao.LaoActivity;
@@ -104,6 +103,16 @@ public abstract class EventsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 activity.getSupportFragmentManager(),
                 R.id.fragment_roll_call,
                 () -> RollCallFragment.newInstance(rollCall.getPersistentId())));
+  }
+
+  private void handleMeetingContent(EventViewHolder eventViewHolder, Meeting meeting) {
+    eventViewHolder.eventIcon.setImageResource(R.drawable.ic_meeting);
+    eventViewHolder.eventCard.setOnClickListener(
+        view ->
+            LaoActivity.setCurrentFragment(
+                activity.getSupportFragmentManager(),
+                R.id.fragment_meeting,
+                () -> RollCallFragment.newInstance(meeting.getPersistentId())));
   }
 
   private void handleTimeAndLocation(EventViewHolder viewHolder, Event event) {

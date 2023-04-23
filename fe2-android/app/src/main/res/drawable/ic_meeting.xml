@@ -1,0 +1,23 @@
+<vector android:height="68dp" android:viewportHeight="500"
+    android:viewportWidth="500" android:width="68dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="?attr/colorOnSurfaceInverse"
+        android:pathData="M96,80L416,80A48,48 0,0 1,464 128L464,416A48,48 0,0 1,416 464L96,464A48,48 0,0 1,48 416L48,128A48,48 0,0 1,96 80z"
+        android:strokeColor="?attr/colorOnSurface"
+        android:strokeLineJoin="round" android:strokeWidth="32"/>
+    <path android:fillColor="?attr/colorOnSurfaceInverse" android:pathData="M296,232m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"/>
+    <path android:fillColor="?attr/colorOnSurfaceInverse" android:pathData="M376,232m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"/>
+    <path android:fillColor="?attr/colorOnSurfaceInverse" android:pathData="M296,312m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"/>
+    <path android:fillColor="?attr/colorOnSurfaceInverse" android:pathData="M376,312m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"/>
+    <path android:fillColor="?attr/colorOnSurfaceInverse" android:pathData="M136,312m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"/>
+    <path android:fillColor="?attr/colorOnSurfaceInverse" android:pathData="M216,312m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"/>
+    <path android:fillColor="?attr/colorOnSurfaceInverse" android:pathData="M136,392m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"/>
+    <path android:fillColor="?attr/colorOnSurfaceInverse" android:pathData="M216,392m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"/>
+    <path android:fillColor="?attr/colorOnSurfaceInverse" android:pathData="M296,392m-24,0a24,24 0,1 1,48 0a24,24 0,1 1,-48 0"/>
+    <path android:fillColor="?attr/colorOnSurface"
+        android:pathData="M128,48v32M384,48v32"
+        android:strokeColor="?attr/colorOnSurface" android:strokeLineCap="round"
+        android:strokeLineJoin="round" android:strokeWidth="32"/>
+    <path android:fillColor="?attr/colorOnSurface" android:pathData="M464,160H48"
+        android:strokeColor="?attr/colorOnSurface"
+        android:strokeLineJoin="round" android:strokeWidth="32"/>
+</vector>
