@@ -45,6 +45,8 @@ public class HomeViewModel extends AndroidViewModel
 
   private final LiveData<List<String>> laoIdList;
   private final MutableLiveData<Integer> mPageTitle = new MutableLiveData<>();
+
+  /** This LiveData boolean is used to indicate whether the HomeFragment is displayed */
   private final MutableLiveData<Boolean> isHome = new MutableLiveData<>(Boolean.TRUE);
 
   /** Dependencies for this class */
@@ -190,6 +192,11 @@ public class HomeViewModel extends AndroidViewModel
     return isHome;
   }
 
+  /**
+   * Function to set the liveData isHome.
+   *
+   * @param isHome true if the current fragment is HomeFragment, false otherwise
+   */
   public void setIsHome(boolean isHome) {
     if (!Boolean.valueOf(isHome).equals(this.isHome.getValue())) {
       this.isHome.setValue(isHome);
