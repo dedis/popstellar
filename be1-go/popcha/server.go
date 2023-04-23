@@ -252,7 +252,7 @@ func (as *AuthorizationServer) newChallengeServer(endpoint string) *http.Server 
 	// handler for request endpoint
 	r.PathPrefix(fmt.Sprintf("/%s", endpoint)).HandlerFunc(as.HandleRequest)
 	//handler for pop backend communication endpoint
-	r.PathPrefix(fmt.Sprintf("/response")).HandlerFunc(as.responseEndpoint)
+	r.PathPrefix("/response").HandlerFunc(as.responseEndpoint)
 
 	srv := &http.Server{
 		Addr:    as.challengeServAddr,
@@ -383,26 +383,23 @@ func (as *AuthorizationServer) responseEndpoint(w http.ResponseWriter, r *http.R
 	}
 
 	// the server will read the messages from the client, and write it to the javascript websocket.
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			as.log.Error().Msgf(" Error while reading websocket messages on /response: %v", err)
-			return
-		}
-		as.connsMutex.Lock()
-		co, ok := as.internalConns[p]
-		// verifying that the javascript connection has not been deleted
-		if string(message) != "" && ok {
-			err = co.WriteMessage(mt, message)
-			if err != nil {
-				as.log.Error().Msgf("Error while writing websocket message on /response: %v", err)
-			}
-			//once the message has been sent to the javascript websocket, delete the connection from the map
-			delete(as.internalConns, p)
-		}
-		as.connsMutex.Unlock()
+	mt, message, err := c.ReadMessage()
+	if err != nil {
+		as.log.Error().Msgf(" Error while reading websocket messages on /response: %v", err)
 		return
 	}
+	as.connsMutex.Lock()
+	co, ok := as.internalConns[p]
+	// verifying that the javascript connection has not been deleted
+	if string(message) != "" && ok {
+		err = co.WriteMessage(mt, message)
+		if err != nil {
+			as.log.Error().Msgf("Error while writing websocket message on /response: %v", err)
+		}
+		//once the message has been sent to the javascript websocket, delete the connection from the map
+		delete(as.internalConns, p)
+	}
+	as.connsMutex.Unlock()
 }
 
 // ValidateAuthRequest takes an OpenID request, and validates its parameters according to the PoPCHA and Implicit
