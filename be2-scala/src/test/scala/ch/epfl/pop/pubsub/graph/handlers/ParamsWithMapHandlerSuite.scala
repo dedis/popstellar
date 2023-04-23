@@ -55,4 +55,18 @@ class ParamsWithMapHandlerSuite extends TestKit(ActorSystem("HbActorSuiteActorSy
 
   }
 
+  test("receiving a heartbeat with unknown channel asks back for this channel") {
+    val input: List[GraphMessage] = List(Right(VALID_RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT_RPC))
+    val source = Source(input)
+    val s = source.via(boxUnderTest).runWith(Sink.seq[GraphMessage])
+    Await.ready(s, duration).value match {
+      case Some(Success(seq)) => seq.toList.head match {
+        case Right(jsonRpcReq: JsonRpcRequest) => jsonRpcReq.getParams.asInstanceOf[GetMessagesById].channelsToMessageIds should equal(EXPECTED_UNKNOWN_CHANNEL_MISSING_MESSAGE_IDS)
+        case _ => 1 should equal(0)
+      }
+
+      case _ => 1 should equal(0)
+    }
+  }
+
 }
