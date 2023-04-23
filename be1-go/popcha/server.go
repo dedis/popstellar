@@ -9,6 +9,7 @@ import (
 	"github.com/ajstarks/svgo"
 	"github.com/boombuler/barcode/qr"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
 	"github.com/zitadel/oidc/v2/pkg/oidc"
 	"github.com/zitadel/oidc/v2/pkg/op"
@@ -37,7 +38,7 @@ const (
 	tokenLifeTimeHour = 24
 
 	// qrCodeWebPage file path for valid QRCode Displaying page
-	qrCodeWebPage = "qrcode/popcha.html"
+	qrCodeWebPage = "resources/popcha.html"
 
 	// qrSize size of QRCode SVG
 	qrSize = 10
@@ -58,6 +59,8 @@ const (
 	Profile      = "profile"
 	LoginHint    = "login_hint"
 )
+
+var upgrader = websocket.Upgrader{}
 
 // clientParams implements op.Client
 // as PoPCHA don't support registered clients, clientParams is an alternative which defines parameters
@@ -175,10 +178,12 @@ type AuthorizationServer struct {
 	httpServer        *http.Server
 	hub               hub.Hub
 	challengeServAddr string
+	internalConns     map[string]*websocket.Conn
 	key               [32]byte // key for encryption of data, optional?
 	Stopped           chan struct{}
 	Started           chan struct{}
 	closing           *sync.Mutex
+	connsMutex        *sync.Mutex
 }
 
 func NewAuthServer(hub hub.Hub, st string, httpAddr string, httpPort int, seed string,
@@ -196,6 +201,8 @@ func NewAuthServer(hub hub.Hub, st string, httpAddr string, httpPort int, seed s
 		Stopped:           make(chan struct{}, 1),
 		Started:           make(chan struct{}, 1),
 		closing:           &sync.Mutex{},
+		internalConns:     make(map[string]*websocket.Conn),
+		connsMutex:        &sync.Mutex{},
 	}
 
 	as.httpServer = as.newChallengeServer(st)
@@ -208,7 +215,7 @@ func (as *AuthorizationServer) Start() {
 		as.log.Info().Msgf("starting the authorization server at: %s", as.challengeServAddr)
 		as.Started <- struct{}{}
 		err := as.httpServer.ListenAndServe()
-		if err != nil && !xerrors.Is(err, http.ErrServerClosed) {
+		if err != nil && err != http.ErrServerClosed {
 			as.log.Fatal().Err(err).Msg("Error while starting the challenge server: %v")
 		}
 
@@ -229,12 +236,23 @@ func (as *AuthorizationServer) Shutdown() error {
 	return nil
 }
 
+// WSConnStatus returns the number of ongoing requests on the authorization server
+func (as *AuthorizationServer) WSConnStatus() int {
+	as.connsMutex.Lock()
+	conns := len(as.internalConns)
+	as.connsMutex.Unlock()
+	return conns
+}
+
 // newChallengeServer creates a new HTTP Server containing a multiplexing router,
-// given an endpoint.
+// given the request endpoint.
 func (as *AuthorizationServer) newChallengeServer(endpoint string) *http.Server {
 
 	r := mux.NewRouter()
+	// handler for request endpoint
 	r.PathPrefix(fmt.Sprintf("/%s", endpoint)).HandlerFunc(as.HandleRequest)
+	//handler for pop backend communication endpoint
+	r.PathPrefix(fmt.Sprintf("/response")).HandlerFunc(as.responseEndpoint)
 
 	srv := &http.Server{
 		Addr:    as.challengeServAddr,
@@ -266,12 +284,13 @@ func (as *AuthorizationServer) HandleRequest(w http.ResponseWriter, req *http.Re
 	}
 
 	// generate PoPCHA QRCode
-	err = as.generateQRCode(w, req)
+	err = as.generateQRCode(w, req, oidcReq.LoginHint, oidcReq.ClientID, oidcReq.Nonce, oidcReq.RedirectURI)
 	if err != nil {
 		as.handleBadRequest(w, err, "Error while generating PoPCHA QRCode")
 	}
 }
 
+// helper handling errors when receiving http requests.
 func (as *AuthorizationServer) handleBadRequest(w http.ResponseWriter, err error, msg string) {
 	as.log.Err(err).Msg(msg)
 	w.WriteHeader(badRequestCode)
@@ -282,7 +301,8 @@ func (as *AuthorizationServer) handleBadRequest(w http.ResponseWriter, err error
 }
 
 // generateQRCode builds a PoPCHA QRCode and executes an HTML template including it, given authorization parameters.
-func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.Request) error {
+func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.Request, laoID string, clientID string,
+	nonce string, redirectHost string) error {
 	var buffer bytes.Buffer
 	// new SVG buffer
 	s := svg.New(&buffer)
@@ -304,11 +324,15 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 	// finalizing the buffer construction
 	s.End()
 
-	// internal HTML template struct, including the svg buffer
+	// internal HTML template struct, including the svg buffer, the Websocket and redirect addresses
 	d := struct {
-		SVGImage template.HTML
+		SVGImage      template.HTML
+		WebSocketAddr string
+		RedirectHost  string
 	}{
-		SVGImage: template.HTML(buffer.String()),
+		SVGImage:      template.HTML(buffer.String()),
+		WebSocketAddr: "ws://" + req.Host + strings.Join([]string{"/response", laoID, "authentication", clientID, nonce}, "/"),
+		RedirectHost:  redirectHost,
 	}
 
 	templateFile := qrCodeWebPage
@@ -326,6 +350,59 @@ func (as *AuthorizationServer) generateQRCode(w http.ResponseWriter, req *http.R
 		return err
 	}
 	return nil
+}
+
+// helper method used for handling redirect uri by the Webpage websocket. Requests on the /response endpoint are
+// solely. handled through websocket. Because of the protocol, the first websocket to send a request will be the JS
+// one.
+func (as *AuthorizationServer) responseEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	//websocket upgrade
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		as.log.Error().Msgf("Error while trying to upgrade connection to Websocket: %v", err)
+		return
+	}
+	p := r.URL.Path[len("/response/"):]
+	// if the path is empty, send an error and return
+	if p == "" {
+		as.log.Error().Msg("Error while receiving a request on /response: empty path")
+		return
+	} else {
+		as.connsMutex.Lock()
+		_, ok := as.internalConns[p]
+		// if no connection on that path has been made, add it to the map
+		if !ok {
+			as.internalConns[p] = c
+			as.connsMutex.Unlock()
+			// the first connection is the javascript websocket. It will simply receive a message
+			// from the client.
+			return
+		}
+		as.connsMutex.Unlock()
+	}
+
+	// the server will read the messages from the client, and write it to the javascript websocket.
+	for {
+		mt, message, err := c.ReadMessage()
+		if err != nil {
+			as.log.Error().Msgf(" Error while reading websocket messages on /response: %v", err)
+			return
+		}
+		as.connsMutex.Lock()
+		co, ok := as.internalConns[p]
+		// verifying that the javascript connection has not been deleted
+		if string(message) != "" && ok {
+			err = co.WriteMessage(mt, message)
+			if err != nil {
+				as.log.Error().Msgf("Error while writing websocket message on /response: %v", err)
+			}
+			//once the message has been sent to the javascript websocket, delete the connection from the map
+			delete(as.internalConns, p)
+		}
+		as.connsMutex.Unlock()
+		return
+	}
 }
 
 // ValidateAuthRequest takes an OpenID request, and validates its parameters according to the PoPCHA and Implicit

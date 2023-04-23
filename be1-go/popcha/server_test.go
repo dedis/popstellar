@@ -2,6 +2,7 @@ package popcha
 
 import (
 	"bytes"
+	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/require"
@@ -29,7 +30,7 @@ const (
 	BaseURL       = "http://localhost:3003/authorize?"
 )
 
-// genString is a helper method generating a string in the alpha-numerical alphabet
+// genString is a helper method generating a string in the alphanumerical alphabet
 func genString(r *rand.Rand, s int) string {
 	if s == 0 {
 		s += 1
@@ -69,22 +70,28 @@ func TestAuthorizationServerHandleValidateRequest(t *testing.T) {
 		3003, "random_string", l)
 	require.NoError(t, err, "could not create AuthServer")
 	s.Start()
-
+	<-s.Started
 	// let the server properly start
 	time.Sleep(1 * time.Second)
 
 	// send a valid mock authorization request
 	res, err := sendValidAuthRequest()
 	require.NoError(t, err)
+
+	time.Sleep(time.Second)
+
 	require.Equal(t, 200, res.StatusCode)
 	err = s.Shutdown()
+	<-s.Stopped
 	require.NoError(t, err)
 
 }
 
 // helper method generating a valid authorization request with some pre-determined parameters.
 func sendValidAuthRequest() (*http.Response, error) {
-	qrURL := createAuthRequestURL()
+	qrURL := createAuthRequestURL("random_nonce", "v4l1d_client_id",
+		strings.Join([]string{OpenID, Profile}, " "), "v4l1d_lao_id", "http://localhost:3008/",
+		ResTypeMulti, "st4te")
 	res, err := http.Get(qrURL)
 	log.Info().Msg(qrURL)
 	if err != nil {
@@ -94,15 +101,16 @@ func sendValidAuthRequest() (*http.Response, error) {
 }
 
 // helper method creating a valid authorization request URL
-func createAuthRequestURL() string {
+func createAuthRequestURL(nonce string, clientID string, scope string, loginHint string,
+	redirectURI string, responseType string, state string) string {
 	params := url.Values{}
-	params.Add(Nonce, "random_nonce")
-	params.Add(ClientID, "v4l1d_client_id")
-	params.Add(Scope, strings.Join([]string{OpenID, Profile}, " "))
-	params.Add(LoginHint, "v4l1d_lao_id")
-	params.Add(RedirectURI, "localhost:3008")
-	params.Add(ResponseType, ResTypeMulti)
-	params.Add(State, "st4te")
+	params.Add(Nonce, nonce)
+	params.Add(ClientID, clientID)
+	params.Add(Scope, scope)
+	params.Add(LoginHint, loginHint)
+	params.Add(RedirectURI, redirectURI)
+	params.Add(ResponseType, responseType)
+	params.Add(State, state)
 
 	qrURL := BaseURL + params.Encode()
 	return qrURL
@@ -115,6 +123,7 @@ func TestAuthRequestFails(t *testing.T) {
 		3003, "random_string", l)
 	require.NoError(t, err, "could not create AuthServer")
 	s.Start()
+	<-s.Started
 	// let the server properly start
 	time.Sleep(1 * time.Second)
 
@@ -145,12 +154,12 @@ func TestAuthRequestFails(t *testing.T) {
 	require.NoError(t, err)
 
 	bodyBytes = helperValidateGetAndParseBody(t, res)
-
 	// we require that there are 5 missing arguments
 	helperMissingArgs(t, bodyBytes, 5)
 
 	err = s.Shutdown()
 	require.NoError(t, err)
+	<-s.Stopped
 
 }
 
@@ -158,6 +167,8 @@ func TestAuthRequestFails(t *testing.T) {
 func helperValidateGetAndParseBody(t *testing.T, res *http.Response) []byte {
 	require.Equal(t, res.StatusCode, badRequestCode)
 	bodyBytes, err := io.ReadAll(res.Body)
+	require.NoError(t, err)
+	err = res.Body.Close()
 	require.NoError(t, err)
 	return bodyBytes
 }
@@ -168,6 +179,65 @@ func helperMissingArgs(t *testing.T, body []byte, n int) {
 	require.Equal(t, len(missingArgs), n)
 }
 
+// TestAuthorizationServerWebsocket starts the AS, and tests the websocket connection between the webpage and the
+// server. It also tests that no error is thrown when a client sends a message to the webpage websocket through the
+// server.
+func TestAuthorizationServerWebsocket(t *testing.T) {
+
+	// starting the authorization server
+	l := popstellar.Logger
+	s, err := NewAuthServer(fakeHub{}, "authorize", "localhost",
+		3003, "random_string", l)
+	require.NoError(t, err, "could not create AuthServer")
+	s.Start()
+	<-s.Started
+	// let the server properly start
+	time.Sleep(1 * time.Second)
+
+	//parameters definition for the unit test
+	clientID := "client"
+	laoID := "lao"
+	nonce := "nonce"
+	state := "state"
+	redirectURI := "localhost:3003/authorize?"
+	scope := strings.Join([]string{OpenID, Profile}, " ")
+	resType := ResTypeMulti
+
+	// create the URL of the PopCHA webpage
+	u := createAuthRequestURL(nonce, clientID, scope, laoID, redirectURI, resType, state)
+
+	_, err = http.Get(u)
+	require.NoError(t, err)
+	l.Info().Msg(u)
+
+	time.Sleep(2 * time.Second)
+
+	// constructing the unique URL endpoint of the PopCHA Websocket server.
+	popChaPath := strings.Join([]string{"/response", laoID, "authentication", clientID, nonce}, "/")
+
+	//  ws://popcha.example/response/lao/authentication/client/nonce
+	popChaWsURL := url.URL{Scheme: "ws", Host: "localhost:3003", Path: popChaPath}
+
+	// instantiating websocket connection
+	client, err := newWSClient(popChaWsURL)
+	require.NoError(t, err)
+	time.Sleep(2 * time.Second)
+
+	//creating fake redirect URI parameters, for example just with the clientID. We are not
+	// testing the validity of the parameters here, but rather that the websocket protocol doesn't
+	// throw errors.
+	fakeParams := url.Values{}
+	fakeParams.Add("client_id", clientID)
+	err = client.conn.WriteMessage(websocket.TextMessage, []byte(fakeParams.Encode()))
+	require.NoError(t, err)
+
+	time.Sleep(2 * time.Second)
+
+	err = s.Shutdown()
+	require.NoError(t, err)
+	<-s.Stopped
+}
+
 // TestClientParams tests the validity of the client parameters
 func TestClientParams(t *testing.T) {
 	l := zerolog.New(io.Discard)
@@ -175,7 +245,7 @@ func TestClientParams(t *testing.T) {
 		3003, "random_string", l)
 	require.NoError(t, err, "could not create AuthServer")
 	s.Start()
-
+	<-s.Started
 	// let the server properly start
 	time.Sleep(1 * time.Second)
 
@@ -199,6 +269,7 @@ func TestClientParams(t *testing.T) {
 
 	err = s.Shutdown()
 	require.NoError(t, err)
+	<-s.Stopped
 }
 
 // generates a valid client for PopCHA
@@ -259,4 +330,17 @@ func validClientParams(c clientParams) bool {
 
 type fakeHub struct {
 	hub.Hub
+}
+
+type fakeWSClient struct {
+	conn *websocket.Conn
+}
+
+func newWSClient(urlPath url.URL) (*fakeWSClient, error) {
+	conn, _, err := websocket.DefaultDialer.Dial(urlPath.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	return &fakeWSClient{conn: conn}, nil
+
 }
