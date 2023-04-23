@@ -313,9 +313,9 @@ object JsonRpcRequestExample {
   final val EXPECTED_MISSING_MESSAGES = Map(CHANNEL1 -> Set(MESSAGE1))
   final val EXPECTED_GET_MSGS_BY_ID_RPC_RESPONSE: JsonRpcResponse = JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(new ResultObject(EXPECTED_MISSING_MESSAGES)), None, None)
 
-  //defining a heartbeat on an unknown channel
+  // defining a heartbeat on an unknown channel
   final val RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT_PARAMS = Map(CHANNEL3 -> Set(MESSAGE6_ID))
-  final val RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT : Heartbeat = Heartbeat(RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT_PARAMS)
+  final val RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT: Heartbeat = Heartbeat(RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT_PARAMS)
   final val VALID_RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.HEARTBEAT, RECEIVED_UNKNOWN_CHANNEL_HEARTBEAT, id)
 
   final val EXPECTED_UNKNOWN_CHANNEL_MISSING_MESSAGE_IDS = Map(CHANNEL3 -> Set(MESSAGE6_ID))
