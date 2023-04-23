@@ -126,7 +126,7 @@ object ParamsWithMapHandler extends AskPatternConstants {
       case Left(_) => false
       case Right(value) =>
         value match {
-          case response: JsonRpcResponse if response.result.get.resultMap.get.isEmpty => true
+          case response: JsonRpcRequest => response.getParams.asInstanceOf[GetMessagesById].channelsToMessageIds.isEmpty
           case _                                                                      => false
         }
     }
