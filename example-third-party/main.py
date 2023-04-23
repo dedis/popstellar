@@ -8,7 +8,7 @@ from typing import IO
 
 from flask import Flask, redirect, request, Response
 
-from authentication import get_url
+from authentication import get_url, validate_args
 
 # Define the global variables
 home_page_html: str = ""
@@ -30,14 +30,14 @@ def check_config(config_file: IO) -> bool:
         return False
     if "host_url" not in config.keys() or config["host_url"] == "":
         raise ValueError(
-                "The \"server_url\" property should be set in "
-                "config.json and not empty"
-                )
+            "The \"server_url\" property should be set in "
+            "config.json and not empty"
+        )
     if "host_port" not in config.keys() or config["host_port"] < 1:
         raise ValueError(
-                "The \"server_port\" should be set in config.json "
-                "and greater than 0"
-                )
+            "The \"server_port\" should be set in config.json "
+            "and greater than 0"
+        )
     return True
 
 
@@ -48,10 +48,12 @@ def check_provider(provider: dict) -> bool:
     :param provider: The provider to check
     :return: True if the provider is valid
     """
-    valid_lao_id = ("lao_id" in provider) and (len(provider["lao_id"]) > 0)
+    valid_lao_id = (("lao_id" in provider) and (len(provider["lao_id"]) == 44)
+                    and provider["lao_id"].endswith("="))
     valid_domain = (("domain" in provider) and ('/' not in provider["domain"])
                     and not provider["domain"].startswith("http"))
-    return valid_lao_id and valid_domain
+    valid_public_key = len(provider["public_key"]) > 0
+    return valid_lao_id and valid_domain and valid_public_key
 
 
 def filter_providers() -> None:
@@ -86,9 +88,9 @@ def on_startup() -> None:
         in enumerate(providers)]
     base_home_html = open("model/index.html", "r").read()
     home_page_html = base_home_html.replace(
-            "<!-- Insert options -->",
-            ''.join(providers_html)
-            )
+        "<!-- Insert options -->",
+        ''.join(providers_html)
+    )
 
 
 app = Flask("Example_authentication_server")
@@ -112,15 +114,31 @@ def authentication() -> Response:
     Redirect the user to the PoPCHA based authentication server
     :return: A response which includes a redirect to the original website
     """
-    provider_id: int = int(request.args.get("serverAndLaoId"))
+    provider_id: int = request.args.get("serverAndLaoId", -1, type=int)
+    if provider_id < 0:  # if serverAndLaoId is not an int
+        return redirect("/")
     url = get_url(
-            providers[provider_id]["domain"],
-            providers[provider_id]["lao_id"],
-            config["client_id"]
-            )
+        providers[provider_id]["domain"],
+        providers[provider_id]["lao_id"],
+        config["client_id"]
+    )
     return redirect(url)
 
 
+# Step3: Process the callback/authentication response
+@app.route("/cb")
+def authentication_callback() -> Response:
+    """
+    Redirects the user after the authentication callback has been verified
+    :return: A response which redirects the user to the homePage if the login
+    is not valid or to a new "app" page if the login answer is valid
+    """
+    valid_answer: bool = validate_args(request.args)
+    if valid_answer:
+        return redirect(valid_login_url(request.args))
+    else:
+        return redirect("/")
+
 # Step 0: Starts the server
 if __name__ == "__main__":
-    app.run(host = config["host_url"], port = config["host_port"], debug = True)
+    app.run(host=config["host_url"], port=config["host_port"], debug=True)

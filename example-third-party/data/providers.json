@@ -1,14 +1,17 @@
 [
   {
     "domain": "valid.example",
-    "lao_id": "FirstLaoID"
+    "lao_id": "FirstLaoID",
+    "public_key": ""
   },
   {
     "domain": "valid2.server.example:8000",
-    "lao_id": "SecondLaoID"
+    "lao_id": "SecondLaoID",
+    "public_key": ""
   },
   {
     "domain": "http://invalid.server.example:8000",
-    "lao_id": "ThirdLaoID"
+    "lao_id": "ThirdLaoID",
+    "public_key": ""
   }
 ]
