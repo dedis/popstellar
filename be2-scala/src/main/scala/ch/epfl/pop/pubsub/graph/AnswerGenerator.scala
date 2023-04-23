@@ -60,6 +60,9 @@ class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternConstants {
           ))
       }
 
+    // Let get_messages_by_id answer go through
+    case Right(_: JsonRpcResponse) => graphMessage
+
     // Convert PipelineErrors into negative JsonRpcResponses
     case Left(pipelineError: PipelineError) => Right(JsonRpcResponse(
         RpcValidator.JSON_RPC_VERSION,
