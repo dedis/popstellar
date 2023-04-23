@@ -292,8 +292,8 @@ object JsonRpcRequestExample {
   final val MESSAGE5: Message = Message(null, null, null, MESSAGE5_ID, null, null)
 
   // defining a received heartbeat
-  final val RECEIVED_HEART_BEAT_PARAMS = Map(CHANNEL1 -> Set(MESSAGE1_ID, MESSAGE2_ID, MESSAGE3_ID), CHANNEL2 -> Set(MESSAGE4_ID, MESSAGE5_ID))
-  final val RECEIVED_HEARTBEAT: Heartbeat = Heartbeat(RECEIVED_HEART_BEAT_PARAMS)
+  final val RECEIVED_HEARTBEAT_PARAMS = Map(CHANNEL1 -> Set(MESSAGE1_ID, MESSAGE2_ID, MESSAGE3_ID), CHANNEL2 -> Set(MESSAGE4_ID, MESSAGE5_ID))
+  final val RECEIVED_HEARTBEAT: Heartbeat = Heartbeat(RECEIVED_HEARTBEAT_PARAMS)
   final val VALID_RECEIVED_HEARTBEAT_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.HEARTBEAT, RECEIVED_HEARTBEAT, id)
 
   // defining what the answer to the received heartbeat should be
@@ -306,7 +306,7 @@ object JsonRpcRequestExample {
   final val RECEIVED_GET_MSG_BY_ID: GetMessagesById = GetMessagesById(RECEIVED_GET_MSG_BY_ID_PARAMS)
   final val VALID_RECEIVED_GET_MSG_BY_ID_RPC: JsonRpcRequest = JsonRpcRequest(rpc, MethodType.GET_MESSAGES_BY_ID, RECEIVED_GET_MSG_BY_ID, id)
 
-  // defined what the answer to the received getMsgsById should be
+  // defining what the answer to the received getMsgsById should be
   final val EXPECTED_MISSING_MESSAGES = Map(CHANNEL1 -> Set(MESSAGE1))
   final val EXPECTED_GET_MSGS_BY_ID_RPC_RESPONSE: JsonRpcResponse = JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(new ResultObject(EXPECTED_MISSING_MESSAGES)), None, None)
 
