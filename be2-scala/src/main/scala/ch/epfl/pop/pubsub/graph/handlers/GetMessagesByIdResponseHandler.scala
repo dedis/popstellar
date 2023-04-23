@@ -9,6 +9,10 @@ import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 import ch.epfl.pop.storage.DbActor
 import akka.stream.FlowShape
 
+/**
+ * This object's job is to handle responses it receives from other servers after sending a heartbeat.
+ * When receiving the missing messages, the server's job is to write them on the data base.
+ */
 object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
   def graph(dbActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
