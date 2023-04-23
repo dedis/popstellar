@@ -27,6 +27,7 @@ public class NetworkLogger extends Timber.Tree {
   private static final StringBuilder serverUrl = new StringBuilder();
 
   private static WebSocket webSocket;
+
   /**
    * As the connection is implemented static to be opened and closed only once, its access is
    * synchronized through this lock
@@ -38,15 +39,6 @@ public class NetworkLogger extends Timber.Tree {
    * value is set based on the settings, which is persisted even after the application is closed
    */
   private static final AtomicBoolean sendToServer = new AtomicBoolean(false);
-
-  public NetworkLogger(Context context) {
-    sendToServer.set(
-        (PreferenceManager.getDefaultSharedPreferences(context)
-            .getBoolean(context.getString(R.string.settings_logging_key), false)));
-    serverUrl.append(
-        PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(context.getString(R.string.settings_server_url_key), ""));
-  }
 
   @Override
   protected void log(int priority, String tag, @NonNull String message, Throwable t) {
@@ -62,16 +54,62 @@ public class NetworkLogger extends Timber.Tree {
 
     // Send the log message to the remote server
     if (sendToServer.get()) {
-      String log =
-          t == null
-              ? String.format(
-                  "[%s]-[%s]-%s: %s",
-                  Clock.systemUTC().instant(), getPriorityString(priority), tag, message)
-              : String.format(
-                  "[%s]-[%s]-%s: %s%nERROR: %s",
-                  Clock.systemUTC().instant(), getPriorityString(priority), tag, message, error);
+      String log = buildRemoteLog(priority, tag, message, error);
       sendToServer(log);
     }
+  }
+
+  /**
+   * Initialize the value of server url and the enable flag from the application context, based on
+   * the preference value persisted in memory
+   *
+   * @param context application context
+   */
+  public static void loadFromPersistPreference(Context context) {
+    // Retrieve the server url and the enable flag from the persisted preferences
+    sendToServer.set(
+        (PreferenceManager.getDefaultSharedPreferences(context)
+            .getBoolean(context.getString(R.string.settings_logging_key), false)));
+    serverUrl.append(
+        PreferenceManager.getDefaultSharedPreferences(context)
+            .getString(context.getString(R.string.settings_server_url_key), ""));
+  }
+
+  /**
+   * Function that builds the log string to send to the server
+   *
+   * @param priority Debug, Info, Error, Warn
+   * @param tag class name
+   * @param message log message
+   * @param error stack trace of the error if present, empty if no error
+   * @return log string
+   */
+  private String buildRemoteLog(int priority, String tag, String message, String error) {
+    // Transform the priority code into a string
+    String priorityString;
+    switch (priority) {
+      case Log.DEBUG:
+        priorityString = "D/:";
+        break;
+      case Log.INFO:
+        priorityString = "I/:";
+        break;
+      case Log.WARN:
+        priorityString = "W/:";
+        break;
+      case Log.ERROR:
+        priorityString = "E/:";
+        break;
+      default:
+        priorityString = "UNKNOWN/:";
+    }
+
+    String timestamp = String.valueOf(Clock.systemUTC().instant());
+
+    return error.isEmpty()
+        ? String.format("[%s] - %s %s: %s", timestamp, priorityString, tag, message)
+        : String.format(
+            "[%s] - %s %s: %s%nERROR: %s", timestamp, priorityString, tag, message, error);
   }
 
   /** Function to enable the remote logging. It opens the websocket */
@@ -90,6 +128,7 @@ public class NetworkLogger extends Timber.Tree {
     serverUrl.replace(0, serverUrl.length(), url);
   }
 
+  /** Function which opens the web socket with the server */
   @SuppressLint("LogNotTimber")
   private static void connectWebSocket() {
     try {
@@ -130,21 +169,6 @@ public class NetworkLogger extends Timber.Tree {
       if (webSocket != null) {
         webSocket.send(log);
       }
-    }
-  }
-
-  private String getPriorityString(int priority) {
-    switch (priority) {
-      case Log.DEBUG:
-        return "D/";
-      case Log.INFO:
-        return "I/";
-      case Log.WARN:
-        return "W/";
-      case Log.ERROR:
-        return "E/";
-      default:
-        return "UNKNOWN/";
     }
   }
 }

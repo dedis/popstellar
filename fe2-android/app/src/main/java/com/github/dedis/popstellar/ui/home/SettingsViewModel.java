@@ -23,12 +23,12 @@ public class SettingsViewModel extends AndroidViewModel {
   }
 
   public void enableLogging() {
-    Timber.tag(TAG).d("Enabling logging");
+    Timber.tag(TAG).d("Enabling remote logging");
     NetworkLogger.enableRemote();
   }
 
   public void disableLogging() {
-    Timber.tag(TAG).d("Disabling logging");
+    Timber.tag(TAG).d("Disabling remote logging");
     NetworkLogger.disableRemote();
   }
 }
