@@ -9,10 +9,8 @@ import ch.epfl.pop.pubsub.{AskPatternConstants, ClientActor, PubSubMediator}
 import ch.epfl.pop.storage.DbActor
 import akka.stream.FlowShape
 
-/**
- * This object's job is to handle responses it receives from other servers after sending a heartbeat.
- * When receiving the missing messages, the server's job is to write them on the data base.
- */
+/** This object's job is to handle responses it receives from other servers after sending a heartbeat. When receiving the missing messages, the server's job is to write them on the data base.
+  */
 object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
   def graph(dbActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
@@ -45,7 +43,7 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
 
         /* glue the components together */
         handlerPartitioner.out(portPipelineError) ~> handlerMerger
-        handlerPartitioner.out(portResponseHandler) ~> responseHandler
+        handlerPartitioner.out(portResponseHandler) ~> responseHandler ~> handlerMerger
 
         /* close the shape */
         FlowShape(handlerPartitioner.in, handlerMerger.out)
@@ -53,7 +51,7 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
       }
   })
 
-  private def responseHandler(dbActorRef: ActorRef): Sink[GraphMessage, NotUsed] = Flow[GraphMessage].collect {
+  private def responseHandler(dbActorRef: ActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Right(jsonRpcMessage: JsonRpcResponse) =>
       val receivedResponse = jsonRpcMessage.result.get.resultMap.get
       receivedResponse.keys.foreach(channel => {
@@ -61,6 +59,8 @@ object GetMessagesByIdResponseHandler extends AskPatternConstants {
           dbActorRef ! DbActor.Write(channel, message)
         })
       })
-  }.to(Sink.ignore)
+      Right(jsonRpcMessage)
+    case value @ _ => value
+  }.filter(_ => false)
 
 }
