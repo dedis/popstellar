@@ -33,6 +33,7 @@ public abstract class DataRegistryModule {
   public static DataRegistry provideDataRegistry(
       LaoHandler laoHandler,
       RollCallHandler rollCallHandler,
+      MeetingHandler meetingHandler,
       ElectionHandler electionHandler,
       ConsensusHandler consensusHandler,
       ChirpHandler chirpHandler,
@@ -48,8 +49,8 @@ public abstract class DataRegistryModule {
 
     // Meeting
     builder
-        .add(MEETING, CREATE, CreateMeeting.class, null)
-        .add(MEETING, STATE, StateMeeting.class, null);
+        .add(MEETING, CREATE, CreateMeeting.class, meetingHandler::handleCreateMeeting)
+        .add(MEETING, STATE, StateMeeting.class, meetingHandler::handleStateMeeting);
 
     // Message
     builder.add(MESSAGE, WITNESS, WitnessMessageSignature.class, null);

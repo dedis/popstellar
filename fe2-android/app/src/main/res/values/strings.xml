@@ -83,6 +83,9 @@
   <string name="reopen_rollcall">REOPEN</string>
   <string name="rc_manual_hint">Attendee token</string>
 
+  <!-- Meeting Event -->
+  <string name="meeting_title_required">Meeting Title*</string>
+
   <!-- QR code -->
   <string name="qrcode_scanning_add_witness">Scan personal QR code of the witness to add</string>
   <string name="qrcode_scanning_connect_lao">Scan the invite QR code to join the LAO</string>
