@@ -46,8 +46,13 @@ object Server {
       val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
       val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, messageRegistry)), "DbActor")
 
-      def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(config.path) {
-        handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry)(system))
+      // Setup routes
+      def publishSubscribeRoute: RequestContext => Future[RouteResult] = {
+        path(config.clientPath) {
+          handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry)(system))
+        } ~ path(config.serverPath) {
+          handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry)(system))
+        }
       }
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
@@ -55,7 +60,10 @@ object Server {
       val bindingFuture = Http().newServerAt(config.interface, config.port).bindFlow(publishSubscribeRoute)
 
       bindingFuture.onComplete {
-        case Success(_) => println(f"ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.path}")
+        case Success(_) =>
+          println(f"[Client] ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.clientPath}")
+          println(f"[Server] ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.serverPath}")
+
         case Failure(_) =>
           logger.error(
             "ch.epfl.pop.Server failed to start. Terminating actor system"
