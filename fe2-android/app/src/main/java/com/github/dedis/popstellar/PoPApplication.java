@@ -18,7 +18,7 @@ public class PoPApplication extends Application {
   public void onCreate() {
     super.onCreate();
     // Associate the custom logger to Timber
-    NetworkLogger.loadFromPersistPreference(getApplicationContext());
+    NetworkLogger.loadFromPersistPreference(this);
     Timber.plant(new NetworkLogger());
   }
 }
