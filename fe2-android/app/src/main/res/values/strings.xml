@@ -127,6 +127,10 @@
   <string name="roll_call_description_title">Description</string>
   <string name="roll_call_location_title">Location</string>
 
+  <!-- Meeting -->
+  <string name="meeting_title">Meeting</string>
+  <string name="meeting_setup_title">Meeting Setup</string>
+
   <!-- Election Event -->
   <string name="election_title">Election</string>
   <string name="election_result_title">Election Result</string>
@@ -285,6 +289,7 @@
   <string name="error_send_vote">Could not send the vote\n%1$s</string>
   <string name="error_create_election">Could not create the election\n%1$s</string>
   <string name="error_create_rollcall">Could not create the rollcall\n%1$s</string>
+  <string name="error_create_meeting">Could not create the meeting\n%1$s</string>
   <string name="error_start_election">Could not start the election\n%1$s</string>
   <string name="error_consensus_accept">Could not accept the consensus\n%1$s</string>
   <string name="error_open_rollcall">Could not open the rollcall\n%1$s</string>
@@ -319,6 +324,7 @@
   <string name="unknown_election_exception">Unknown election</string>
   <string name="unknown_chirp_exception">Unknown Chirp</string>
   <string name="unknown_roll_call_exception">Unknown Roll Call</string>
+  <string name="unknown_meeting_exception">Unknown Meeting</string>
   <string name="already_open_roll_call_exception">Another Roll Call is already open</string>
   <string name="lao_coins">LAO coins</string>
   <string name="invalid_qrcode_data">Invalid QRCode laoData</string>

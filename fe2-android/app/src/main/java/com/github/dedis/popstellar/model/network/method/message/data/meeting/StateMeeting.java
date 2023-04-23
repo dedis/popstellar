@@ -2,8 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
-import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.model.objects.Meeting;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
@@ -54,8 +53,7 @@ public class StateMeeting extends Data {
       long end,
       String modificationId,
       List<String> modificationSignatures) {
-    if (!id.equals(
-        Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name))) {
+    if (!id.equals(Meeting.generateStateMeetingId(laoId, creation, name))) {
       throw new IllegalArgumentException(
           "StateMeeting id must be Hash(\"M\"||laoId||creation||name)");
     }

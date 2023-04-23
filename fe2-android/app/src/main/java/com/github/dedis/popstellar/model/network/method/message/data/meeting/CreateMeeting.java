@@ -2,8 +2,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.meeting;
 
 import com.github.dedis.popstellar.model.Immutable;
 import com.github.dedis.popstellar.model.network.method.message.data.*;
-import com.github.dedis.popstellar.model.objects.event.EventType;
-import com.github.dedis.popstellar.utility.security.Hash;
+import com.github.dedis.popstellar.model.objects.Meeting;
 
 /** Data sent to create a new meeting */
 @Immutable
@@ -30,8 +29,7 @@ public class CreateMeeting extends Data {
    */
   public CreateMeeting(
       String laoId, String id, String name, long creation, String location, long start, long end) {
-    if (!id.equals(
-        Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name))) {
+    if (!id.equals(Meeting.generateCreateMeetingId(laoId, creation, name))) {
       throw new IllegalArgumentException(
           "CreateMeeting id must be Hash(\"M\"||laoId||creation||name)");
     }
@@ -45,7 +43,7 @@ public class CreateMeeting extends Data {
 
   public CreateMeeting(
       String laoId, String name, long creation, String location, long start, long end) {
-    id = Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name);
+    id = Meeting.generateCreateMeetingId(laoId, creation, name);
     this.name = name;
     this.creation = creation;
     this.location = location;

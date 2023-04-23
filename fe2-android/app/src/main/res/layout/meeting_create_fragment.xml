@@ -69,7 +69,7 @@
           style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
           <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/roll_call_event_location_text"
+            android:id="@+id/meeting_event_location_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/rc_location_title"
@@ -82,7 +82,7 @@
     </LinearLayout>
 
     <LinearLayout
-      android:id="@+id/roll_call_confirm_cancel"
+      android:id="@+id/meeting_confirm_cancel"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
@@ -91,7 +91,7 @@
       app:layout_constraintRight_toRightOf="parent">
 
       <Button
-        android:id="@+id/roll_call_confirm"
+        android:id="@+id/meeting_confirm"
         android:layout_width="match_parent"
         android:textAllCaps="false"
         android:padding="@dimen/padding_standard"
