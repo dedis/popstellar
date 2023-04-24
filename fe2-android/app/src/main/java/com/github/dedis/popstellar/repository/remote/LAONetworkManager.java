@@ -257,8 +257,8 @@ public class LAONetworkManager implements MessageSender {
   }
 
   /**
-   * This function distinguish an unrecoverable failure based on the number of attempts of
-   * reprocessing.
+   * This function distinguishes an unrecoverable failure according to the number of reprocessing
+   * attempts.
    *
    * @param message Message failed to be handled to be reprocessed
    */
