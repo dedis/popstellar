@@ -45,7 +45,7 @@ const (
 
 	// heartbeatDelay represents the number of seconds
 	// between heartbeat messages
-	heartbeatDelay = 4
+	heartbeatDelay = 4 * time.Second
 )
 
 var suite = crypto.Suite
@@ -90,7 +90,7 @@ type Hub struct {
 	globalInbox inbox.Inbox
 
 	// messageIdsByChannel stores all the message ids and the corresponding channel ids
-	// to help servers
+	// to help servers determine in which channel the message ids go
 	messageIdsByChannel map[string][]string
 }
 
@@ -186,18 +186,28 @@ func NewHub(pubKeyOwner kyber.Point, serverAddress string, log zerolog.Logger,
 
 // Start implements hub.Hub
 func (h *Hub) Start() {
-	ticker := time.NewTicker(time.Second * heartbeatDelay)
-	defer ticker.Stop()
-
 	go func() {
-		h.log.Info().Msg("Start check messages")
+		ticker := time.NewTicker(heartbeatDelay)
+		defer ticker.Stop()
+
 		for {
 			select {
 			case <-ticker.C:
 				err := h.sendHeartbeatToServers()
 				if err != nil {
-					h.log.Err(err).Msgf("Failed to send heartbeat message to servers %v", err)
+					h.log.Err(err).Msg("problem sending heartbeat to servers")
 				}
+			case <-h.stop:
+				h.log.Info().Msg("stopping the hub")
+				return
+			}
+		}
+	}()
+
+	go func() {
+		h.log.Info().Msg("Start check messages")
+		for {
+			select {
 			case incomingMessage := <-h.messageChan:
 				ok := h.workers.TryAcquire(1)
 				if !ok {
