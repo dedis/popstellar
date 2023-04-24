@@ -193,10 +193,7 @@ func (h *Hub) Start() {
 		for {
 			select {
 			case <-ticker.C:
-				err := h.sendHeartbeatToServers()
-				if err != nil {
-					h.log.Err(err).Msg("problem sending heartbeat to servers")
-				}
+				h.sendHeartbeatToServers()
 			case <-h.stop:
 				h.log.Info().Msg("stopping the hub")
 				return
@@ -537,7 +534,7 @@ func (h *Hub) sendGetMessagesByIdToServer(socket socket.Socket, missingIds map[s
 }
 
 // sendHeartbeatToServers sends a heartbeat message to all servers
-func (h *Hub) sendHeartbeatToServers() error {
+func (h *Hub) sendHeartbeatToServers() {
 	h.Lock()
 	defer h.Unlock()
 	h.updateRecords()
@@ -554,12 +551,11 @@ func (h *Hub) sendHeartbeatToServers() error {
 
 		buf, err := json.Marshal(heartbeatMessage)
 		if err != nil {
-			return xerrors.Errorf("failed to marshal heartbeat query: %v", err)
+			h.log.Err(err).Msg("Failed to marshal and send heartbeat query")
 		}
 
 		h.serverSockets.SendToAll(buf)
 	}
-	return nil
 }
 
 // broadcastToServers broadcast a message to all other known servers
